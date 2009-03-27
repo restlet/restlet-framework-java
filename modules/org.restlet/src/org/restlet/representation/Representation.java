@@ -48,7 +48,6 @@ import org.restlet.Context;
 import org.restlet.data.Digest;
 import org.restlet.data.MediaType;
 import org.restlet.data.Range;
-import org.restlet.data.Tag;
 import org.restlet.engine.io.ByteUtils;
 import org.restlet.engine.util.DateUtils;
 
@@ -76,7 +75,7 @@ import org.restlet.engine.util.DateUtils;
  *      >Source dissertation</a>
  * @author Jerome Louvel
  */
-public abstract class Representation extends Variant {
+public abstract class Representation extends RepresentationInfo {
     /**
      * Empty representation with no content.
      */
@@ -160,9 +159,6 @@ public abstract class Representation extends Variant {
     /** Indicates if the representation's content is transient. */
     private volatile boolean isTransient;
 
-    /** The modification date. */
-    private volatile Date modificationDate;
-
     /**
      * The expected size. Dynamic representations can have any size, but
      * sometimes we can know in advance the expected size. If this expected size
@@ -170,9 +166,6 @@ public abstract class Representation extends Variant {
      * be guessed by the representation (like a file size).
      */
     private volatile long size;
-
-    /** The tag. */
-    private volatile Tag tag;
 
     /**
      * Indicates where in the full content the partial content available should
@@ -203,8 +196,6 @@ public abstract class Representation extends Variant {
         this.range = null;
         this.size = UNKNOWN_SIZE;
         this.expirationDate = null;
-        this.modificationDate = null;
-        this.tag = null;
     }
 
     /**
@@ -381,16 +372,6 @@ public abstract class Representation extends Variant {
     }
 
     /**
-     * Returns the last date when this representation was modified. If this
-     * information is not known, returns null.
-     * 
-     * @return The modification date.
-     */
-    public Date getModificationDate() {
-        return this.modificationDate;
-    }
-
-    /**
      * Returns the range where in the full content the partial content available
      * should be applied.
      * 
@@ -430,15 +411,6 @@ public abstract class Representation extends Variant {
      * @throws IOException
      */
     public abstract InputStream getStream() throws IOException;
-
-    /**
-     * Returns the tag.
-     * 
-     * @return The tag.
-     */
-    public Tag getTag() {
-        return this.tag;
-    }
 
     /**
      * Converts the representation to a string value. Be careful when using this
@@ -566,17 +538,6 @@ public abstract class Representation extends Variant {
     }
 
     /**
-     * Sets the last date when this representation was modified. If this
-     * information is not known, pass null.
-     * 
-     * @param modificationDate
-     *            The modification date.
-     */
-    public void setModificationDate(Date modificationDate) {
-        this.modificationDate = DateUtils.unmodifiable(modificationDate);
-    }
-
-    /**
      * Sets the range where in the full content the partial content available
      * should be applied.
      * 
@@ -595,16 +556,6 @@ public abstract class Representation extends Variant {
      */
     public void setSize(long expectedSize) {
         this.size = expectedSize;
-    }
-
-    /**
-     * Sets the tag.
-     * 
-     * @param tag
-     *            The tag.
-     */
-    public void setTag(Tag tag) {
-        this.tag = tag;
     }
 
     /**

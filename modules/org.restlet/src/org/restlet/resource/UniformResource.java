@@ -54,7 +54,6 @@ import org.restlet.data.Response;
 import org.restlet.data.ServerInfo;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
-import org.restlet.representation.Variant;
 import org.restlet.util.Series;
 
 /**
@@ -112,45 +111,9 @@ public abstract class UniformResource {
     }
 
     /**
-     * Deletes the resource and all its representations.
-     * 
-     * @throws ResourceException
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.7">HTTP
-     *      DELETE method</a>
-     */
-    public abstract Representation delete() throws ResourceException;
-
-    /**
-     * Represents the resource using content negotiation to select the best
-     * variant based on the client preferences.
-     * 
-     * @return The best representation.
-     * @throws ResourceException
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.3">HTTP
-     *      GET method</a>
-     */
-    public abstract Representation get() throws ResourceException;
-
-    /**
-     * Represents the resource using a given variant.
-     * 
-     * @param variant
-     *            The variant representation to retrieve.
-     * @return The representation matching the given variant.
-     * @throws ResourceException
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.3">HTTP
-     *      GET method</a>
-     */
-    public abstract Representation get(Variant variant)
-            throws ResourceException;
-
-    /**
      * Returns the set of methods allowed for the current client by the
      * resource. The result can vary based on the client's user agent,
-     * authentification and authorization data provided by the client.
+     * authentication and authorization data provided by the client.
      * 
      * @return The set of allowed methods.
      */
@@ -296,6 +259,16 @@ public abstract class UniformResource {
     }
 
     /**
+     * Returns the method.
+     * 
+     * @return The method.
+     * @see Request#getMethod()
+     */
+    public Method getMethod() {
+        return getRequest().getMethod();
+    }
+
+    /**
      * Returns the original reference as requested by the client. Note that this
      * property is not used during request routing.
      * 
@@ -413,36 +386,6 @@ public abstract class UniformResource {
     public abstract Representation handle() throws ResourceException;
 
     /**
-     * Represents the resource using content negotiation to select the best
-     * variant based on the client preferences. This method is identical to
-     * {@link #get()} but doesn't return the actual content of the
-     * representation, only its metadata.
-     * 
-     * @return The best representation.
-     * @throws ResourceException
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.4">HTTP
-     *      HEAD method</a>
-     */
-    public abstract Representation head() throws ResourceException;
-
-    /**
-     * Represents the resource using a given variant. This method is identical
-     * to {@link #get(Variant)} but doesn't return the actual content of the
-     * representation, only its metadata.
-     * 
-     * @param variant
-     *            The variant representation to retrieve.
-     * @return The representation matching the given variant.
-     * @throws ResourceException
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.4">HTTP
-     *      HEAD method</a>
-     */
-    public abstract Representation head(Variant variant)
-            throws ResourceException;
-
-    /**
      * Initialization method that is invoked either by the
      * {@link #UniformResource(Context, Request, Response)} constructor or right
      * after the default {@link #UniformResource()} constructor. It sets the
@@ -471,61 +414,6 @@ public abstract class UniformResource {
     public boolean isConfidential() {
         return getRequest().isConfidential();
     }
-
-    /**
-     * Describes the resource using content negotiation to select the best
-     * variant based on the client preferences.
-     * 
-     * @return The best description.
-     * @throws ResourceException
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.2">HTTP
-     *      OPTIONS method</a>
-     */
-    public abstract Representation options() throws ResourceException;
-
-    /**
-     * Describes the resource using a given variant.
-     * 
-     * @param variant
-     *            The description variant to match.
-     * @return The matched description or null.
-     * @throws ResourceException
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.2">HTTP
-     *      OPTIONS method</a>
-     */
-    public abstract Representation options(Variant variant)
-            throws ResourceException;
-
-    /**
-     * Posts a representation to the resource at the target URI reference.
-     * 
-     * @param entity
-     *            The posted entity.
-     * @return The optional result entity.
-     * @throws ResourceException
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.5">HTTP
-     *      POST method</a>
-     */
-    public abstract Representation post(Representation entity)
-            throws ResourceException;
-
-    /**
-     * Creates or updates a resource with the given representation as new state
-     * to be stored.
-     * 
-     * @param representation
-     *            The representation to store.
-     * @return The optional result entity.
-     * @throws ResourceException
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6">HTTP
-     *      PUT method</a>
-     */
-    public abstract Representation put(Representation representation)
-            throws ResourceException;
 
     /**
      * Releases the request and response entities. If the entity is transient

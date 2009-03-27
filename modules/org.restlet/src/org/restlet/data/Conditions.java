@@ -36,7 +36,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.restlet.engine.util.DateUtils;
-import org.restlet.representation.Representation;
+import org.restlet.representation.RepresentationInfo;
 
 /**
  * Set of conditions applying to a request. This is equivalent to the HTTP
@@ -130,15 +130,14 @@ public final class Conditions {
      * 
      * @param method
      *            The request method.
-     * @param representation
-     *            The representation whose entity tag or date of modification
-     *            will be tested
+     * @param representationInfo
+     *            The representation information that will be tested.
      * @return Null if the requested method can be performed, the status of the
      *         response otherwise.
      */
-    public Status getStatus(Method method, Representation representation) {
-        return getStatus(method, representation != null, representation
-                .getTag(), representation.getModificationDate());
+    public Status getStatus(Method method, RepresentationInfo representationInfo) {
+        return getStatus(method, representationInfo != null, representationInfo
+                .getTag(), representationInfo.getModificationDate());
     }
 
     /**

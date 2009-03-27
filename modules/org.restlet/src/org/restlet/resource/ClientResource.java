@@ -43,7 +43,9 @@ import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
 import org.restlet.data.Cookie;
+import org.restlet.data.MediaType;
 import org.restlet.data.Method;
+import org.restlet.data.Preference;
 import org.restlet.data.Protocol;
 import org.restlet.data.Range;
 import org.restlet.data.Reference;
@@ -54,7 +56,11 @@ import org.restlet.representation.Variant;
 import org.restlet.util.Series;
 
 /**
- * Client-side resource. Acts like a proxy of a target resource.
+ * Client-side resource. Acts like a proxy of a target resource.<br>
+ * <br>
+ * Concurrency note: instances of the class are not designed to be shared among
+ * several threads. If thread-safety is necessary, consider using the
+ * lower-level {@link Client} class instead.
  * 
  * @author Jerome Louvel
  */
@@ -225,9 +231,8 @@ public class ClientResource extends UniformResource {
      * 
      * @return The optional response entity.
      */
-    @Override
     public Representation delete() throws ResourceException {
-        getRequest().setMethod(Method.DELETE);
+        setMethod(Method.DELETE);
         return handle();
     }
 
@@ -247,14 +252,13 @@ public class ClientResource extends UniformResource {
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.3">HTTP
      *      GET method</a>
      */
-    @Override
     public Representation get() throws ResourceException {
-        getRequest().setMethod(Method.GET);
+        setMethod(Method.GET);
         return handle();
     }
 
     /**
-     * Represents the resource using a given variant.<br>
+     * Represents the resource using a given media type.<br>
      * <br>
      * Note that the client preferences will be automatically adjusted, but only
      * for this request. If you want to change them once for all, you can use
@@ -262,21 +266,23 @@ public class ClientResource extends UniformResource {
      * <br>
      * If a success status is not returned, then a resource exception is thrown.
      * 
-     * @param variant
-     *            The variant representation to retrieve.
-     * @return The representation matching the given variant.
+     * @param mediaType
+     *            The media type of the representation to retrieve.
+     * @return The representation matching the given media type.
      * @throws ResourceException
      * @see <a
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.3">HTTP
      *      GET method</a>
      */
-    @Override
-    public Representation get(Variant variant) throws ResourceException {
+    public Representation get(MediaType mediaType) throws ResourceException {
         // Save the current client info
         ClientInfo currentClientInfo = getClientInfo();
 
         // Create a fresh one for this request
-        setClientInfo(variant.createClientInfo());
+        ClientInfo newClientInfo = new ClientInfo();
+        newClientInfo.getAcceptedMediaTypes().add(
+                new Preference<MediaType>(mediaType));
+        setClientInfo(newClientInfo);
         Representation result = get();
 
         // Restore the current client info
@@ -342,7 +348,7 @@ public class ClientResource extends UniformResource {
             getNext().handle(getRequest(), getResponse());
             result = getResponse().getEntity();
 
-            if (!getResponse().getStatus().isSuccess()) {
+            if (!getStatus().isSuccess()) {
                 throw new ResourceException(getStatus());
             }
         } else {
@@ -381,16 +387,15 @@ public class ClientResource extends UniformResource {
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.4">HTTP
      *      HEAD method</a>
      */
-    @Override
     public Representation head() throws ResourceException {
-        getRequest().setMethod(Method.HEAD);
+        setMethod(Method.HEAD);
         return handle();
     }
 
     /**
-     * Represents the resource using a given variant. This method is identical
-     * to {@link #get(Variant)} but doesn't return the actual content of the
-     * representation, only its metadata.<br>
+     * Represents the resource using a given media type. This method is
+     * identical to {@link #get(Variant)} but doesn't return the actual content
+     * of the representation, only its metadata.<br>
      * <br>
      * Note that the client preferences will be automatically adjusted, but only
      * for this request. If you want to change them once for all, you can use
@@ -398,20 +403,23 @@ public class ClientResource extends UniformResource {
      * <br>
      * If a success status is not returned, then a resource exception is thrown.
      * 
-     * @param variant
-     * @return The representation matching the given variant.
+     * @param mediaType
+     *            The media type of the representation to retrieve.
+     * @return The representation matching the given media type.
      * @throws ResourceException
      * @see <a
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.4">HTTP
      *      HEAD method</a>
      */
-    @Override
-    public Representation head(Variant variant) throws ResourceException {
+    public Representation head(MediaType mediaType) throws ResourceException {
         // Save the current client info
         ClientInfo currentClientInfo = getClientInfo();
 
         // Create a fresh one for this request
-        setClientInfo(variant.createClientInfo());
+        ClientInfo newClientInfo = new ClientInfo();
+        newClientInfo.getAcceptedMediaTypes().add(
+                new Preference<MediaType>(mediaType));
+        setClientInfo(newClientInfo);
         Representation result = head();
 
         // Restore the current client info
@@ -431,32 +439,33 @@ public class ClientResource extends UniformResource {
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.2">HTTP
      *      OPTIONS method</a>
      */
-    @Override
     public Representation options() throws ResourceException {
-        getRequest().setMethod(Method.HEAD);
+        setMethod(Method.HEAD);
         return handle();
     }
 
     /**
-     * Describes the resource using a given variant.<br>
+     * Describes the resource using a given media type.<br>
      * <br>
      * If a success status is not returned, then a resource exception is thrown.
      * 
-     * @param variant
-     *            The description variant to match.
+     * @param mediaType
+     *            The media type of the representation to retrieve.
      * @return The matched description or null.
      * @throws ResourceException
      * @see <a
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.2">HTTP
      *      OPTIONS method</a>
      */
-    @Override
-    public Representation options(Variant variant) throws ResourceException {
+    public Representation options(MediaType mediaType) throws ResourceException {
         // Save the current client info
         ClientInfo currentClientInfo = getClientInfo();
 
         // Create a fresh one for this request
-        setClientInfo(variant.createClientInfo());
+        ClientInfo newClientInfo = new ClientInfo();
+        newClientInfo.getAcceptedMediaTypes().add(
+                new Preference<MediaType>(mediaType));
+        setClientInfo(newClientInfo);
         Representation result = options();
 
         // Restore the current client info
@@ -477,9 +486,8 @@ public class ClientResource extends UniformResource {
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.5">HTTP
      *      POST method</a>
      */
-    @Override
     public Representation post(Representation entity) throws ResourceException {
-        getRequest().setMethod(Method.POST);
+        setMethod(Method.POST);
         getRequest().setEntity(entity);
         return handle();
     }
@@ -498,10 +506,9 @@ public class ClientResource extends UniformResource {
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6">HTTP
      *      PUT method</a>
      */
-    @Override
     public Representation put(Representation representation)
             throws ResourceException {
-        getRequest().setMethod(Method.PUT);
+        setMethod(Method.PUT);
         getRequest().setEntity(representation);
         return handle();
     }
@@ -571,6 +578,17 @@ public class ClientResource extends UniformResource {
      */
     public void setHostRef(String hostUri) {
         getRequest().setHostRef(hostUri);
+    }
+
+    /**
+     * Sets the method called.
+     * 
+     * @param method
+     *            The method called.
+     * @see Request#setMethod(Method)
+     */
+    public void setMethod(Method method) {
+        getRequest().setMethod(method);
     }
 
     /**

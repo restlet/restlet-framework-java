@@ -119,6 +119,11 @@ Changes log
           customization as version 3.0 has proper 'Accept' header.
         - Added a JaxbRepresentation#setValidationEventHandler method.
         - Added Variant#isCompatible() method.
+        - Added an org.restlet.representation.RepresentationInfo class
+          that contains the "lastModified" and "tags" properties from
+          Representation which is now a subclass. Variant is the super
+          class. Useful to check conditions without pulling a full
+          representation. Suggested by Lars Heuer. 
     - Misc
         - Upgraded Simple server to version 4.1.8. 
           Contributed by Niall Gallagher.
