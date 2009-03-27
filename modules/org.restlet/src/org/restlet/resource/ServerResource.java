@@ -81,10 +81,11 @@ public class ServerResource extends UniformResource {
     private volatile Map<Method, Object> variants;
 
     /**
-     * Initializer block to ensure that the basic properties of the Resource are
-     * initialized consistently across constructors.
+     * Initializer block to ensure that the basic properties are initialized
+     * consistently across constructors.
      */
     {
+        this.exists = true;
         this.negotiated = true;
         this.variants = null;
     }
@@ -128,8 +129,12 @@ public class ServerResource extends UniformResource {
     }
 
     /**
+     * Verifies the optional request conditions and continue the processing if
+     * possible. Note that in order to evaluate those conditions,
+     * {@link #getInfo()} or {@link #getInfo(Variant)} methods might be invoked.
      * 
      * @param method
+     *            The method to handle.
      * @return
      * @throws ResourceException
      */
@@ -142,13 +147,15 @@ public class ServerResource extends UniformResource {
             setStatus(Status.CLIENT_ERROR_PRECONDITION_FAILED,
                     "A non existing resource can't match any tag.");
         } else {
+            RepresentationInfo representationInfo = null;
+
             if (isNegotiated()) {
-                result = doNegotiatedHandle(method);
+                representationInfo = doNegotiatedHandle(Method.GET);
             } else {
-                result = doHandle(method);
+                representationInfo = doHandle(Method.GET);
             }
 
-            if (result == null) {
+            if (representationInfo == null) {
                 if ((getStatus() == null)
                         || (getStatus().isSuccess() && !Status.SUCCESS_NO_CONTENT
                                 .equals(getStatus()))) {
@@ -157,17 +164,22 @@ public class ServerResource extends UniformResource {
                     // Keep the current status as the developer might prefer a
                     // special status like 'method not authorized'.
                 }
-            } else {
-                // The given representation (even if null) must meet the request
-                // conditions (if any).
-                if (getRequest().getConditions().hasSome()) {
-                    final Status status = getRequest().getConditions()
-                            .getStatus(getRequest().getMethod(), result);
+            } else if (getRequest().getConditions().hasSome()) {
+                Status status = getConditions().getStatus(getMethod(),
+                        representationInfo);
 
-                    if (status != null) {
-                        setStatus(status);
-                        result = null;
-                    }
+                if (status != null) {
+                    setStatus(status);
+                }
+            }
+
+            if ((getStatus() != null) && getStatus().isSuccess()) {
+                // Conditions where passed successfully.
+                // Continue the normal processing
+                if (isNegotiated()) {
+                    result = doNegotiatedHandle(method);
+                } else {
+                    result = doHandle(method);
                 }
             }
         }
@@ -182,6 +194,7 @@ public class ServerResource extends UniformResource {
      * {@link #delete()}, {@link #head()} or {@link #options()} methods.
      * 
      * @param method
+     *            The method to handle.
      * @return
      * @throws ResourceException
      */
@@ -220,6 +233,7 @@ public class ServerResource extends UniformResource {
      * {@link #head(Variant)} or {@link #options(Variant)} methods.
      * 
      * @param method
+     *            The method to handle.
      * @return
      * @throws ResourceException
      */
@@ -254,6 +268,7 @@ public class ServerResource extends UniformResource {
     /**
      * 
      * @param method
+     *            The method to handle.
      * @return
      * @throws ResourceException
      */
@@ -309,6 +324,7 @@ public class ServerResource extends UniformResource {
      *            The variant whose full representation must be returned.
      * @return The full representation for the variant.
      * @see #getVariants()
+     * @throws ResourceException
      */
     public Representation get(Variant variant) throws ResourceException {
         Representation result = null;
@@ -350,9 +366,6 @@ public class ServerResource extends UniformResource {
      * 
      * @return Information about the best representation.
      * @throws ResourceException
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.3">HTTP
-     *      GET method</a>
      */
     public RepresentationInfo getInfo() throws ResourceException {
         return get();
@@ -369,6 +382,7 @@ public class ServerResource extends UniformResource {
      * @param variant
      *            The variant whose representation information must be returned.
      * @return Information about the best representation.
+     * @throws ResourceException
      */
     public RepresentationInfo getInfo(Variant variant) throws ResourceException {
         return get(variant);

@@ -90,6 +90,14 @@ public abstract class UniformResource {
     private volatile Response response;
 
     /**
+     * Clean-up method. It is suggested to override it in order to clean-up the
+     * state of the resource. By default, it does nothing.
+     */
+    public void destroy() {
+
+    }
+
+    /**
      * Returns the set of methods allowed for the current client by the
      * resource. The result can vary based on the client's user agent,
      * authentication and authorization data provided by the client.
@@ -365,10 +373,9 @@ public abstract class UniformResource {
     public abstract Representation handle() throws ResourceException;
 
     /**
-     * Initialization method that is invoked either by the
-     * {@link #UniformResource(Context, Request, Response)} constructor or right
-     * after the default {@link #UniformResource()} constructor. It sets the
-     * environment of the current resource instance.
+     * Initialization method setting the environment of the current resource
+     * instance. It is suggested to override it in order to initialize the state
+     * of the resource.
      * 
      * @param context
      *            The current context.

@@ -580,7 +580,7 @@ public class Resource extends Handler {
                     getResponse().setStatus(re.getStatus(), re);
                 }
 
-                // HTTP spec says that PUT may return
+                // HTTP specification says that PUT may return
                 // the list of allowed methods
                 updateAllowedMethods();
             } else {

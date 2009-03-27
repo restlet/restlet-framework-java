@@ -45,8 +45,7 @@ import org.restlet.resource.ServerResource;
  * effectively handle the call. Based on a given {@link ServerResource} or
  * {@link Handler} subclass, it is also capable of instantiating the target with
  * the context, request and response without requiring the usage of a Finder
- * subclass. It will use either the constructor with three arguments: context,
- * request, response; or it will invoke the default constructor then invoke the
+ * subclass. It will use the default constructor then invoke the
  * {@link ServerResource#init(Context, Request, Response)} method.<br>
  * <br>
  * Once the target has been found, the call is automatically dispatched to the
@@ -60,6 +59,9 @@ import org.restlet.resource.ServerResource;
  * <br>
  * If no matching handle*() method is found, then a
  * Status.CLIENT_ERROR_METHOD_NOT_ALLOWED is returned.<br>
+ * <br>
+ * Once the call is handled, the {@link ServerResource#destroy()} method is
+ * invoked to permit clean-up actions.<br>
  * <br>
  * Concurrency note: instances of this class or its subclasses can be invoked by
  * several threads at the same time and therefore must be thread-safe. You
@@ -163,35 +165,9 @@ public class Finder extends Restlet {
 
         if (targetClass != null) {
             try {
-                Constructor<?> constructor;
-                try {
-                    // Invoke the constructor with Context, Request and Response
-                    // parameters
-                    constructor = targetClass.getConstructor(Context.class,
-                            Request.class, Response.class);
-                    result = (ServerResource) constructor.newInstance(
-                            getContext(), request, response);
-                } catch (NoSuchMethodException nsme) {
-                    // Invoke the default constructor then the init(Context,
-                    // Request, Response) method.
-                    constructor = targetClass.getConstructor();
-                    if (constructor != null) {
-                        result = (ServerResource) constructor.newInstance();
-                        result.init(getContext(), request, response);
-                    }
-                }
-            } catch (InvocationTargetException e) {
-                if (e.getCause() instanceof Error) {
-                    throw (Error) e.getCause();
-                } else if (e.getCause() instanceof RuntimeException) {
-                    throw (RuntimeException) e.getCause();
-                } else {
-                    getLogger()
-                            .log(
-                                    Level.WARNING,
-                                    "Exception while instantiating the target server resource.",
-                                    e);
-                }
+                // Invoke the constructor with Context, Request and Response
+                // parameters
+                result = targetClass.newInstance();
             } catch (Exception e) {
                 getLogger()
                         .log(
@@ -224,7 +200,7 @@ public class Finder extends Restlet {
 
     /**
      * Creates a new instance of a given handler class. Note that Error and
-     * RuntimeException thrown by Handler constructors are rethrown by this
+     * RuntimeException thrown by Handler constructors are re-thrown by this
      * method. Other exception are caught and logged.
      * 
      * @param request
@@ -418,6 +394,7 @@ public class Finder extends Restlet {
                 // further.
             } else if (targetHandler == null) {
                 final ServerResource targetResource = find(request, response);
+                targetResource.init(getContext(), request, response);
 
                 if (!response.getStatus().equals(Status.SUCCESS_OK)) {
                     // Probably during the instantiation of the target server
@@ -431,6 +408,8 @@ public class Finder extends Restlet {
                 } else {
                     targetResource.handle();
                 }
+
+                targetResource.destroy();
             } else {
                 final Method method = request.getMethod();
 
