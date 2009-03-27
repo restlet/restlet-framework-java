@@ -90,23 +90,6 @@ public class Server extends Connector {
      *            The context.
      * @param protocols
      *            The connector protocols.
-     * @param port
-     *            The listening port.
-     * @param targetClass
-     *            The target server resource.
-     */
-    public Server(Context context, List<Protocol> protocols, int port,
-            Class<? extends ServerResource> targetClass) {
-        this(context, protocols, null, port, new Finder(context, targetClass));
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param context
-     *            The context.
-     * @param protocols
-     *            The connector protocols.
      * @param address
      *            The optional listening IP address (useful if multiple IP
      *            addresses available). You can also use a domain name as an

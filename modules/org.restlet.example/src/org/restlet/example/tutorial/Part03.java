@@ -43,16 +43,27 @@ import org.restlet.resource.ServerResource;
  * 
  * @author Jerome Louvel
  */
-public class Part03 extends ServerResource {
+public class Part03 {
 
-    @Override
-    public Representation get() throws ResourceException {
-        return new StringRepresentation("Hello World!", MediaType.TEXT_PLAIN);
+    /**
+     * The simplest "Hello World!" server resource.
+     */
+    private class HelloResource extends ServerResource {
+
+        @Override
+        public Representation get() throws ResourceException {
+            return new StringRepresentation("Hello World!",
+                    MediaType.TEXT_PLAIN);
+        }
+
     }
 
+    /**
+     * Main method.
+     */
     public static void main(String[] args) throws Exception {
-
         // Create the HTTP server and listen on port 8182
-        new Server(Protocol.HTTP, 8182, Part03.class).start();
+        new Server(Protocol.HTTP, 8182, HelloResource.class).start();
     }
+
 }
