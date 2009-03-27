@@ -74,21 +74,23 @@ import com.threecrickets.scripturian.ScriptSource;
  * a buffer. This buffer is then cached, and <i>only then</i> sent to the
  * client. This is the default mode and recommended for most scripts. Scripts
  * can control the duration of their individual cache by changing the value of
- * script.cacheDuration (see {@link EmbeddedScript}). Because output is not sent
- * to the client until after the script finished its run, it is possible for the
- * script to determine output characteristics at any time by changing the values
- * of container.mediaType, container.characterSet, and container.language (see
+ * <code>script.cacheDuration</code> (see {@link EmbeddedScript}). Because
+ * output is not sent to the client until after the script finished its run, it
+ * is possible for the script to determine output characteristics at any time by
+ * changing the values of <code>container.mediaType</code>,
+ * <code>container.characterSet</code>, and <code>container.language</code> (see
  * below).</li>
  * <li>Streaming mode: Output is sent to the client <i>while</i> the script
  * runs. This is recommended for scripts that need to output a very large amount
  * of string, which might take a long time, or that might otherwise encounter
  * slow-downs while running. In either case, you want the client to receive
  * ongoing output. The output of the script is not cached, and the value of
- * script.cacheDuration is reset to 0. To enter streaming mode, call
- * container.stream() (see below for details). Note that you must determine
- * output characteristics (container.mediaType, container.characterSet, and
- * container.language) <i>before</i> entering streaming mode. Trying to change
- * them while running in streaming mode will raise an exception.
+ * <code>script.cacheDuration</code> is reset to 0. To enter streaming mode,
+ * call <code>container.stream()</code> (see below for details). Note that you
+ * must determine output characteristics (<code>container.mediaType</code>,
+ * <code>container.characterSet</code>, and <code>container.language</code>)
+ * <i>before</i> entering streaming mode. Trying to change them while running in
+ * streaming mode will raise an exception.
  * </ul>
  * <p>
  * A special container environment is created for scripts, with some useful
@@ -119,14 +121,14 @@ import com.threecrickets.scripturian.ScriptSource;
  * method will return true and cause the script to run again, where this next
  * run will be in streaming mode. Whatever output the script created in the
  * current run is discarded, and all further exceptions are ignored. For this
- * reason, it's probably best to call container.stream() as early as possible in
- * the script, and then to quit the script as soon as possible if it returns
- * true. For example, your script can start by testing whether it will have a
- * lot of output, and if so, set output characteristics, call
- * container.stream(), and quit. If you are already in streaming mode, calling
- * this method has no effect and returns false. Note that a good way to quit the
- * script is to throw an exception, because it will end the script and otherwise
- * be ignored.</li>
+ * reason, it's probably best to call <code>container.stream()</code> as early
+ * as possible in the script, and then to quit the script as soon as possible if
+ * it returns true. For example, your script can start by testing whether it
+ * will have a lot of output, and if so, set output characteristics, call
+ * <code>container.stream()</code>, and quit. If you are already in streaming
+ * mode, calling this method has no effect and returns false. Note that a good
+ * way to quit the script is to throw an exception, because it will end the
+ * script and otherwise be ignored.</li>
  * </ul>
  * Read-only attributes:
  * <ul>
@@ -157,13 +159,13 @@ import com.threecrickets.scripturian.ScriptSource;
  * <ul>
  * <li><code>container.mediaType</code>: The {@link MediaType} that will be used
  * for the generated string. Defaults to what the client requested (in
- * container.variant). If not in streaming mode, your script can change this to
- * something else.</li>
+ * <code>container.variant</code>). If not in streaming mode, your script can
+ * change this to something else.</li>
  * <li><code>container.characterSet</code>: The {@link CharacterSet} that will
  * be used for the generated string. Defaults to what the client requested (in
- * container.variant), or to the value of {@link #getDefaultCharacterSet()} if
- * the client did not specify it. If not in streaming mode, your script can
- * change this to something else.</li>
+ * <code>container.variant</code>), or to the value of
+ * {@link #getDefaultCharacterSet()} if the client did not specify it. If not in
+ * streaming mode, your script can change this to something else.</li>
  * <li><code>container.language</code>: The {@link Language} that will be used
  * for the generated string. Defaults to null. If not in streaming mode, your
  * script can change this to something else.</li>

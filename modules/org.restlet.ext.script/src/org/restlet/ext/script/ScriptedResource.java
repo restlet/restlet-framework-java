@@ -71,33 +71,34 @@ import com.threecrickets.scripturian.ScriptSource;
  * {@link Representation}. Other types will be automatically converted to string
  * representation using the client's requested media type and character set.
  * These, and the language of the representation (defaulting to null), can be
- * read and changed via container.mediaType, container.characterSet, and
- * container.language. Additionally, you can use container.variant to
- * interrogate the client's provided list of supported languages and encoding.</li>
+ * read and changed via <code>container.mediaType</code>,
+ * <code>container.characterSet</code>, and <code>container.language</code>.
+ * Additionally, you can use <code>container.variant</code> to interrogate the
+ * client's provided list of supported languages and encoding.</li>
  * <li><code>acceptRepresentation()</code>: This function is called for the POST
  * verb, which is expected to behave as a logical "update" of the resource's
  * state. The expectation is that container.entity represents an update to the
- * state, that will affect future calls to represent(). As such, it may be
- * possible to accept logically partial representations of the state. You may
- * optionally return a representation, in the same way as represent(). Because
- * many scripting languages functions return the last statement's value by
- * default, you must explicitly return a null if you do not want to return a
- * representation to the client.</li>
+ * state, that will affect future calls to <code>represent()</code>. As such, it
+ * may be possible to accept logically partial representations of the state. You
+ * may optionally return a representation, in the same way as
+ * <code>represent()</code>. Because many scripting languages functions return
+ * the last statement's value by default, you must explicitly return a null if
+ * you do not want to return a representation to the client.</li>
  * <li><code>storeRepresentation()</code>: This function is called for the PUT
  * verb, which is expected to behave as a logical "create" of the resource's
  * state. The expectation is that container.entity represents an entirely new
- * state, that will affect future calls to represent(). Unlike
- * acceptRepresentation(), it is expected that the representation be logically
- * complete. You may optionally return a representation, in the same way as
- * represent(). Because JavaScript functions return the last statement's value
- * by default, you must explicitly return a null if you do not want to return a
- * representation to the client.</li>
+ * state, that will affect future calls to <code>represent()</code>. Unlike
+ * <code>acceptRepresentation()</code>, it is expected that the representation
+ * be logically complete. You may optionally return a representation, in the
+ * same way as <code>represent()</code>. Because JavaScript functions return the
+ * last statement's value by default, you must explicitly return a null if you
+ * do not want to return a representation to the client.</li>
  * <li><code>removeRepresentations()</code>: This function is called for the
  * DELETE verb, which is expected to behave as a logical "delete" of the
- * resource's state. The expectation is that subsequent calls to represent()
- * will fail. As such, it doesn't make sense to return a representation, and any
- * returned value will ignored. Still, it's a good idea to return null to avoid
- * any passing of value.</li>
+ * resource's state. The expectation is that subsequent calls to
+ * <code>represent()</code> will fail. As such, it doesn't make sense to return
+ * a representation, and any returned value will ignored. Still, it's a good
+ * idea to return null to avoid any passing of value.</li>
  * </ul>
  * <p>
  * Names of these entry point can be configured via attributes in the
@@ -145,15 +146,18 @@ import com.threecrickets.scripturian.ScriptSource;
  * <ul>
  * <li><code>container.resource</code>: The instance of this resource. Acts as a
  * "this" reference for the script. For example, during a call to
- * initializeResource(), this can be used to change the characteristics of the
- * resource. Otherwise, you can use it to access the request and response.</li>
+ * <code>initializeResource()</code>, this can be used to change the
+ * characteristics of the resource. Otherwise, you can use it to access the
+ * request and response.</li>
  * <li><code>container.variant</code>: The {@link Variant} of this request.
  * Useful for interrogating the client's preferences. This is available only in
- * represent(), acceptRepresentation() and storeRepresentation().</li>
+ * <code>represent()</code>, <code>acceptRepresentation()</code> and
+ * <code>storeRepresentation()</code>.</li>
  * <li><code>container.entity</code>: The {@link Representation} of an entity
- * provided with this request. Available only in acceptRepresentation() and
- * storeRepresentation(). Note that container.variant is identical to
- * container.entity when available.</li>
+ * provided with this request. Available only in
+ * <code>acceptRepresentation()</code> and <code>storeRepresentation()</code>.
+ * Note that <code>container.variant</code> is identical to
+ * <code>container.entity</code> when available.</li>
  * <li><code>container.writer</code>: Allows the script direct access to the
  * {@link Writer}. This should rarely be necessary, because by default the
  * standard output for your scripting engine would be directed to it, and the
