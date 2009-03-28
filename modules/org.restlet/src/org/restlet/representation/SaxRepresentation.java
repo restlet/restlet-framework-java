@@ -237,13 +237,16 @@ public class SaxRepresentation extends XmlRepresentation {
 
     @Override
     public void write(OutputStream outputStream) throws IOException {
-        write(new XmlWriter(outputStream, (getCharacterSet() == null) ? "UTF-8"
-                : getCharacterSet().toString()));
+        XmlWriter xmlWriter = new XmlWriter(outputStream,
+                (getCharacterSet() == null) ? "UTF-8" : getCharacterSet()
+                        .toString());
+        write(xmlWriter);
+        xmlWriter.flush();
     }
 
     /**
      * Writes the representation to a XML writer. The default implementation
-     * does nothing and is intended to be overriden.
+     * does nothing and is intended to be overridden.
      * 
      * @param writer
      *            The XML writer to write to.
