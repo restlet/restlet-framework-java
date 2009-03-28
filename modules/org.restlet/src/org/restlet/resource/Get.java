@@ -49,10 +49,6 @@ import org.restlet.engine.Method;
 @Method("GET")
 public @interface Get {
 
-    /**
-     * Representable media types specified either via extension names or full
-     * MIME type.
-     */
-    String[] value() default "*/*";
+    String value() default "";
 
 }

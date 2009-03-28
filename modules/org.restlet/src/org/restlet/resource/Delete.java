@@ -49,4 +49,6 @@ import org.restlet.engine.Method;
 @Method("DELETE")
 public @interface Delete {
 
+    String value() default "";
+
 }

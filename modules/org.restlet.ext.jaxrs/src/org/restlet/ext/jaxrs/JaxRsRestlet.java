@@ -139,7 +139,7 @@ public class JaxRsRestlet extends Restlet {
     private final ResourceClasses resourceClasses;
 
     /**
-     * Contains and handles the exceptions occuring while in resource objects
+     * Contains and handles the exceptions occurring while in resource objects
      * and providers, and also for the other cases where the runtime environment
      * should throw {@link WebApplicationException}.
      */

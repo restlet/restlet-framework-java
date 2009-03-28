@@ -30,6 +30,8 @@
 
 package org.restlet.resource;
 
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -69,6 +71,9 @@ import org.restlet.util.Series;
  */
 public class ServerResource extends UniformResource {
 
+    /** Indicates if annotations are supported. */
+    private boolean annotated;
+
     /** Indicates if the identified resource exists. */
     private boolean exists;
 
@@ -81,14 +86,24 @@ public class ServerResource extends UniformResource {
     /** The modifiable list of variants. */
     private volatile Map<Method, Object> variants;
 
+    /** The modifiable list of annotation descriptors. */
+    private volatile List<AnnotationInfo> annotations;
+
+    private class AnnotationInfo {
+        Method restletMethod;
+
+        java.lang.reflect.Method javaMethod;
+    }
+
     /**
      * Initializer block to ensure that the basic properties are initialized
      * consistently across constructors.
      */
     {
+        this.annotated = true;
         this.conditional = true;
         this.exists = true;
-        this.negotiated = false;
+        this.negotiated = true;
         this.variants = null;
     }
 
@@ -143,6 +158,27 @@ public class ServerResource extends UniformResource {
     public Representation delete(Variant variant) throws ResourceException {
         setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
         return null;
+    }
+
+    /**
+     * Describes the available variants to help client-side content negotiation.
+     * Return null by default.
+     * 
+     * @return The description of available variants.
+     */
+    protected Representation describeVariants() {
+        Representation result = null;
+
+        // The list of all variants is transmitted to the client
+        // final ReferenceList refs = new ReferenceList(variants.size());
+        // for (final Variant variant : variants) {
+        // if (variant.getIdentifier() != null) {
+        // refs.add(variant.getIdentifier());
+        // }
+        // }
+        //
+        // result = refs.getTextRepresentation();
+        return result;
     }
 
     /**
@@ -361,27 +397,6 @@ public class ServerResource extends UniformResource {
     }
 
     /**
-     * Describes the available variants to help client-side content negotiation.
-     * Return null by default.
-     * 
-     * @return The description of available variants.
-     */
-    protected Representation describeVariants() {
-        Representation result = null;
-
-        // The list of all variants is transmitted to the client
-        // final ReferenceList refs = new ReferenceList(variants.size());
-        // for (final Variant variant : variants) {
-        // if (variant.getIdentifier() != null) {
-        // refs.add(variant.getIdentifier());
-        // }
-        // }
-        //
-        // result = refs.getTextRepresentation();
-        return result;
-    }
-
-    /**
      * Returns information about the resource's representation. Those metadata
      * are important for conditional method processing. The advantage over the
      * complete {@link Representation} class is that it is much lighter to
@@ -475,6 +490,51 @@ public class ServerResource extends UniformResource {
     }
 
     /**
+     * 
+     */
+    @SuppressWarnings("unchecked")
+    private void discoverAnnotations() {
+        String attributeName = "org.restlet.resource.ServerResource.annotations."
+                + getClass().getCanonicalName();
+
+        if (getContext() != null) {
+            this.annotations = (List<AnnotationInfo>) getContext()
+                    .getAttributes().get(attributeName);
+        }
+
+        if (this.annotations == null) {
+            this.annotations = new ArrayList<AnnotationInfo>();
+
+            if (getContext() != null) {
+                getContext().getAttributes().put(attributeName,
+                        this.annotations);
+            }
+
+            for (java.lang.reflect.Method method : getClass().getMethods()) {
+                for (Annotation annotation : method.getAnnotations()) {
+
+                    Annotation methodAnnotation = annotation.annotationType()
+                            .getAnnotation(org.restlet.engine.Method.class);
+
+                    if (methodAnnotation != null) {
+                        Method restletMethod = Method
+                                .valueOf(((org.restlet.engine.Method) methodAnnotation)
+                                        .value());
+
+                        String toString = annotation.toString();
+                        int startIndex = annotation.annotationType()
+                                .getCanonicalName().length() + 8;
+                        int endIndex = toString.length() - 1;
+                        String value = toString.substring(startIndex, endIndex);
+                        System.out.println(value);
+                    }
+                }
+            }
+
+        }
+    }
+
+    /**
      * Handles any call to this resource. The default implementation check the
      * {@link #isConditional()} and {@link #isNegotiated()} method to determine
      * which one of the {@link #doConditionalHandle()},
@@ -495,6 +555,10 @@ public class ServerResource extends UniformResource {
         Representation result = null;
 
         try {
+            if (isAnnotated()) {
+                discoverAnnotations();
+            }
+
             if (isConditional()) {
                 result = doConditionalHandle(getMethod());
             } else if (isNegotiated()) {
@@ -556,6 +620,15 @@ public class ServerResource extends UniformResource {
      */
     public Representation head(Variant variant) throws ResourceException {
         return get(variant);
+    }
+
+    /**
+     * Indicates if annotations are supported.
+     * 
+     * @return True if annotations are supported.
+     */
+    public boolean isAnnotated() {
+        return annotated;
     }
 
     /**
@@ -714,6 +787,16 @@ public class ServerResource extends UniformResource {
      */
     public void setAllowedMethods(Set<Method> allowedMethods) {
         getResponse().setAllowedMethods(allowedMethods);
+    }
+
+    /**
+     * Indicates if annotations are supported.
+     * 
+     * @param annotated
+     *            Indicates if annotations are supported.
+     */
+    public void setAnnotated(boolean annotated) {
+        this.annotated = annotated;
     }
 
     /**

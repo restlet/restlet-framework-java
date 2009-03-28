@@ -31,11 +31,8 @@
 package org.restlet.example.tutorial;
 
 import org.restlet.Server;
-import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
-import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
-import org.restlet.resource.ResourceException;
+import org.restlet.resource.Get;
 import org.restlet.resource.ServerResource;
 
 /**
@@ -43,19 +40,11 @@ import org.restlet.resource.ServerResource;
  * 
  * @author Jerome Louvel
  */
-public class Part03 {
+public class Part03 extends ServerResource {
 
-    /**
-     * The simplest "Hello World!" server resource.
-     */
-    private class HelloResource extends ServerResource {
-
-        @Override
-        public Representation get() throws ResourceException {
-            return new StringRepresentation("Hello World!",
-                    MediaType.TEXT_PLAIN);
-        }
-
+    @Get("xml")
+    public String toString() {
+        return "Hello World!";
     }
 
     /**
@@ -63,7 +52,7 @@ public class Part03 {
      */
     public static void main(String[] args) throws Exception {
         // Create the HTTP server and listen on port 8182
-        new Server(Protocol.HTTP, 8182, HelloResource.class).start();
+        new Server(Protocol.HTTP, 8182, Part03.class).start();
     }
 
 }

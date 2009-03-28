@@ -49,4 +49,6 @@ import org.restlet.engine.Method;
 @Method("OPTIONS")
 public @interface Options {
 
+    String value() default "";
+
 }

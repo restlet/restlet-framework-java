@@ -49,10 +49,6 @@ import org.restlet.engine.Method;
 @Method("POST")
 public @interface Post {
 
-    /**
-     * Acceptable media types specified either via extension names or full MIME
-     * type.
-     */
-    String[] value() default "*/*";
+    String value() default "";
 
 }
