@@ -34,9 +34,11 @@ import java.io.InputStream;
 
 import java.sql.Blob;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 
 import javax.servlet.ServletConfig;
 
@@ -162,20 +164,19 @@ public class XdbServletWarClientHelper extends ServletWarClientHelper {
           getLogger().info("looking resources at: " + xdbResPath);
           stmt.setString(1, xdbResPath);
           rset = stmt.executeQuery();
-          if (rset.next()) {
-            final ReferenceList rl = new ReferenceList();
-            rl.setIdentifier(request.getResourceRef());
+          final ReferenceList rl = new ReferenceList();
+          final String baseUri = request.getResourceRef().getScheme() + "://" + basePath;
+          rl.setIdentifier(request.getResourceRef());
 
-            while (rset.next()) {
-              entry =
-                  rset.getString(1) + (("true".equalsIgnoreCase(rset.getString(2))) ?
-                                       "/" : "");
-              getLogger().info("Reference: " + basePath + entry);
-              rl.add(new Reference(basePath + entry));
-            }
-
-            output = rl.getTextRepresentation();
+          while (rset.next()) {
+            entry =
+                rset.getString(1) + (("true".equalsIgnoreCase(rset.getString(2))) ?
+                                     "/" : "");
+            getLogger().info("Reference: " + baseUri + entry);
+            rl.add(new Reference(baseUri + entry));
           }
+
+          output = rl.getTextRepresentation();
         } catch (SQLException sqe) {
           getLogger().throwing("XdbServletWarClientHelper", "handleWar", sqe);
           throw new RuntimeException("Exception querying resource_view - xdbResPath: " +
@@ -189,35 +190,43 @@ public class XdbServletWarClientHelper extends ServletWarClientHelper {
       } else {
         // Return the entry content
         try {
-          InputStream is = null;
           stmt =
-              this.conn.prepareStatement("select xdburitype(?).getBlob()," + "xdburitype(?).getContentType() " +
-                                         "from dual");
+              this.conn.prepareStatement("select xdbURIType(any_path).getBlob()," +
+                                                "extractValue(res,'/Resource/ModificationDate')," +
+                                                "extractValue(res,'/Resource/ContentType') " +
+                                                "from resource_view where equals_path(res,?)=1");
           stmt.setString(1, xdbResPath);
-          stmt.setString(2, xdbResPath);
           getLogger().info("looking resources at: " + xdbResPath);
           rset = stmt.executeQuery();
           if (rset.next()) {
             final Blob blob = (Blob)rset.getObject(1);
-            final String mediaType = rset.getString(2);
-            is = blob.getBinaryStream();
-            final MetadataService metadataService =
-              getMetadataService(request);
-            output =
-                new InputRepresentation(is, metadataService.getDefaultMediaType());
-            output.setIdentifier(request.getResourceRef());
-            updateMetadata(metadataService, entry, output);
-
-            // See if the Servlet context specified
-            // a particular Mime Type
-            if (mediaType != null) {
-              getLogger().info("mediaType: " + mediaType);
-              output.setMediaType(new MediaType(mediaType));
+            final Timestamp modTime = rset.getTimestamp(2);
+            final String mediaType = rset.getString(3);
+            if (blob != null) {
+              InputStream is = null;
+              is = blob.getBinaryStream();
+              final MetadataService metadataService =
+                getMetadataService(request);
+              output =
+                  new InputRepresentation(is, metadataService.getDefaultMediaType());
+              output.setIdentifier(request.getResourceRef());
+              updateMetadata(metadataService, entry, output);
+              // See if the Servlet context specified
+              // a particular Mime Type
+              if (mediaType != null) {
+                getLogger().info("mediaType: " + mediaType);
+                getLogger().info("modTime: " + modTime);
+                output.setMediaType(new MediaType(mediaType));
+                output.setModificationDate(new Date(modTime.getTime()));
+              }
+              response.setEntity(output);
+              response.setStatus(Status.SUCCESS_OK);
+            } else {
+              // Blob content is null, sure is an Schema based resource
+              response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
             }
           }
 
-          response.setEntity(output);
-          response.setStatus(Status.SUCCESS_OK);
         } catch (SQLException sqe) {
           if (sqe.getErrorCode() == 31001) {
             // ORA-31001: Invalid resource handle or path name
