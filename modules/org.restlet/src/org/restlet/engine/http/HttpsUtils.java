@@ -47,7 +47,7 @@ import org.restlet.engine.security.SslContextFactory;
  * 
  * @author Jerome Louvel
  */
-public class HttpsUtils extends HttpUtils {
+public class HttpsUtils {
 
     /** Cache of SSL key sizes for various cipher suites. */
     private final static ConcurrentMap<String, Integer> keySizesCache = new ConcurrentHashMap<String, Integer>();
@@ -218,5 +218,12 @@ public class HttpsUtils extends HttpUtils {
         }
 
         return result;
+    }
+
+    /**
+     * Private constructor to ensure that the class acts as a true utility class
+     * i.e. it isn't instantiable and extensible.
+     */
+    private HttpsUtils() {
     }
 }

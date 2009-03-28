@@ -46,6 +46,7 @@ import org.restlet.data.Reference;
  * @author Jerome Louvel
  */
 public class HttpUtils {
+
     /**
      * Appends a source string as an HTTP comment.
      * 
@@ -523,5 +524,12 @@ public class HttpUtils {
         os.write(header.getValue().getBytes());
         os.write(13); // CR
         os.write(10); // LF
+    }
+
+    /**
+     * Private constructor to ensure that the class acts as a true utility class
+     * i.e. it isn't instantiable and extensible.
+     */
+    private HttpUtils() {
     }
 }

@@ -37,19 +37,69 @@ import org.restlet.representation.Variant;
 import org.restlet.resource.UniformResource;
 
 /**
+ * Utilities for the converter service.
  * 
  * @author Jerome Louvel
  */
 public class ConverterUtils {
 
-    public static <T> ConverterHelper getHelper(Variant variant,
+    /**
+     * Returns the best converter helper matching the given parameters.
+     * 
+     * @param sourceObject
+     *            The object to convert to a representation.
+     * @param targetVariant
+     *            The target representation variant.
+     * @param resource
+     *            The optional parent resource.
+     * @return The matched converter helper or null.
+     */
+    public static ConverterHelper getHelper(Object sourceObject,
+            Variant targetVariant, UniformResource resource) {
+
+        List<Variant> variants;
+        for (ConverterHelper ch : Engine.getInstance()
+                .getRegisteredConverters()) {
+
+            variants = ch.getVariants(sourceObject.getClass());
+
+            if (variants != null) {
+                if (targetVariant != null) {
+                    for (Variant variant : variants) {
+                        if (variant.isCompatible(targetVariant)) {
+                            return ch;
+                        }
+                    }
+                } else {
+                    return ch;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns the best converter helper matching the given parameters.
+     * 
+     * @param <T>
+     *            The target class.
+     * @param sourceVariant
+     *            The source representation variant.
+     * @param targetClass
+     *            The target class.
+     * @param resource
+     *            The parent resource.
+     * @return The matched converter helper or null.
+     */
+    public static <T> ConverterHelper getHelper(Variant sourceVariant,
             Class<T> targetClass, UniformResource resource) {
 
         List<Class<?>> classes;
         for (ConverterHelper ch : Engine.getInstance()
                 .getRegisteredConverters()) {
 
-            classes = ch.getObjectClasses(variant);
+            classes = ch.getObjectClasses(sourceVariant);
 
             if (classes != null) {
                 if (targetClass != null) {
@@ -67,28 +117,10 @@ public class ConverterUtils {
         return null;
     }
 
-    public static ConverterHelper getHelper(Object object,
-            Variant targetVariant, UniformResource resource) {
-
-        List<Variant> variants;
-        for (ConverterHelper ch : Engine.getInstance()
-                .getRegisteredConverters()) {
-
-            variants = ch.getVariants(object.getClass());
-
-            if (variants != null) {
-                if (targetVariant != null) {
-                    for (Variant variant : variants) {
-                        if (variant.isCompatible(targetVariant)) {
-                            return ch;
-                        }
-                    }
-                } else {
-                    return ch;
-                }
-            }
-        }
-
-        return null;
+    /**
+     * Private constructor to ensure that the class acts as a true utility class
+     * i.e. it isn't instantiable and extensible.
+     */
+    private ConverterUtils() {
     }
 }

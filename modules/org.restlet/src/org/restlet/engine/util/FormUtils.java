@@ -51,29 +51,6 @@ import org.restlet.representation.Representation;
 public class FormUtils {
 
     /**
-     * Indicates if the searched parameter is specified in the given media
-     * range.
-     * 
-     * @param searchedParam
-     *            The searched parameter.
-     * @param mediaRange
-     *            The media range to inspect.
-     * @return True if the searched parameter is specified in the given media
-     *         range.
-     */
-    public static boolean isParameterFound(Parameter searchedParam,
-            MediaType mediaRange) {
-        boolean result = false;
-
-        for (final Iterator<Parameter> iter = mediaRange.getParameters()
-                .iterator(); !result && iter.hasNext();) {
-            result = searchedParam.equals(iter.next());
-        }
-
-        return result;
-    }
-
-    /**
      * Creates a parameter.
      * 
      * @param name
@@ -244,6 +221,29 @@ public class FormUtils {
     }
 
     /**
+     * Indicates if the searched parameter is specified in the given media
+     * range.
+     * 
+     * @param searchedParam
+     *            The searched parameter.
+     * @param mediaRange
+     *            The media range to inspect.
+     * @return True if the searched parameter is specified in the given media
+     *         range.
+     */
+    public static boolean isParameterFound(Parameter searchedParam,
+            MediaType mediaRange) {
+        boolean result = false;
+
+        for (final Iterator<Parameter> iter = mediaRange.getParameters()
+                .iterator(); !result && iter.hasNext();) {
+            result = searchedParam.equals(iter.next());
+        }
+
+        return result;
+    }
+
+    /**
      * Parses a post into a given form.
      * 
      * @param form
@@ -301,5 +301,12 @@ public class FormUtils {
 
             fr.addParameters(form);
         }
+    }
+
+    /**
+     * Private constructor to ensure that the class acts as a true utility class
+     * i.e. it isn't instantiable and extensible.
+     */
+    private FormUtils() {
     }
 }

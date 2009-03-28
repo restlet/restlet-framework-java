@@ -371,4 +371,11 @@ public class ConnegUtils {
 
         return (comptabibleMediaType ? score : -1.0f);
     }
+
+    /**
+     * Private constructor to ensure that the class acts as a true utility class
+     * i.e. it isn't instantiable and extensible.
+     */
+    private ConnegUtils() {
+    }
 }

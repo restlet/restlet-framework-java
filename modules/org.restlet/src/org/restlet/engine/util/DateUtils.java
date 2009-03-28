@@ -49,10 +49,9 @@ import java.util.WeakHashMap;
 public final class DateUtils {
 
     /**
-     * Class acting as an immutable date class based on the
-     * {@link java.util.Date} class.
+     * Class acting as an immutable date class based on the {@link Date} class.
      * 
-     * Throws {@link UnsupportedOperationException} when muttable methods are
+     * Throws {@link UnsupportedOperationException} when mutable methods are
      * invoked.
      * 
      * @author Piyush Purang (ppurang@gmail.com)

@@ -46,6 +46,7 @@ import org.restlet.engine.util.DateUtils;
  * @author Jerome Louvel
  */
 public class CookieUtils {
+
     /**
      * Appends a source string as an HTTP comment.
      * 
@@ -347,6 +348,13 @@ public class CookieUtils {
             throw new IllegalArgumentException(
                     "Could not read the cookie setting", e);
         }
+    }
+
+    /**
+     * Private constructor to ensure that the class acts as a true utility class
+     * i.e. it isn't instantiable and extensible.
+     */
+    private CookieUtils() {
     }
 
 }

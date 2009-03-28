@@ -44,6 +44,7 @@ import javax.crypto.spec.SecretKeySpec;
  * @author Jerome Louvel
  */
 public class DigestUtils {
+
     /**
      * General regex pattern to extract comma separated name-value components.
      * This pattern captures one name and value per match(), and is repeatedly
@@ -105,7 +106,7 @@ public class DigestUtils {
         }
 
         return result;
-    };
+    }
 
     /**
      * Converts a source string to its HMAC/SHA-1 value.
@@ -118,7 +119,7 @@ public class DigestUtils {
      */
     public static byte[] toHMac(String source, String secretKey) {
         return toHMac(source, secretKey.getBytes());
-    }
+    };
 
     /**
      * Converts a source string to its HMAC/SHA256 value.
@@ -267,6 +268,13 @@ public class DigestUtils {
             throw new RuntimeException(
                     "No SHA1 algorithm, unable to compute SHA1");
         }
+    }
+
+    /**
+     * Private constructor to ensure that the class acts as a true utility class
+     * i.e. it isn't instantiable and extensible.
+     */
+    private DigestUtils() {
     }
 
 }

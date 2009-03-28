@@ -90,4 +90,11 @@ public class StringUtils {
         return source.substring(beginIndex, endIndex);
     }
 
+    /**
+     * Private constructor to ensure that the class acts as a true utility class
+     * i.e. it isn't instantiable and extensible.
+     */
+    private StringUtils() {
+    }
+
 }

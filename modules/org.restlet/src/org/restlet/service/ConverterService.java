@@ -72,11 +72,11 @@ public class ConverterService extends Service {
      * Returns the list of object classes that can be converted from a given
      * variant.
      * 
-     * @param variant
+     * @param sourceVariant
      *            The source variant.
      * @return The list of object class that can be converted.
      */
-    public List<Class<?>> getObjectClasses(Variant variant) {
+    public List<Class<?>> getObjectClasses(Variant sourceVariant) {
         return null;
     }
 
@@ -84,24 +84,25 @@ public class ConverterService extends Service {
      * Returns the list of variants that can be converted from a given object
      * class.
      * 
-     * @param objectClass
-     *            The source object class.
+     * @param sourceClass
+     *            The source class.
      * @return The list of variants that can be converted.
      */
-    public List<Variant> getVariants(Class<?> objectClass) {
+    public List<Variant> getVariants(Class<?> sourceClass) {
         return null;
     }
 
     /**
      * Converts a Representation into a regular Java object.
      * 
-     * @param representation
-     *            The representation to convert.
+     * @param sourceRepresentation
+     *            The source representation to convert.
      * @return The converted Java object.
      * @throws IOException
      */
-    public Object toObject(Representation representation) throws IOException {
-        return toObject(representation, null, null);
+    public Object toObject(Representation sourceRepresentation)
+            throws IOException {
+        return toObject(sourceRepresentation, null, null);
     }
 
     /**
@@ -109,27 +110,27 @@ public class ConverterService extends Service {
      * 
      * @param <T>
      *            The expected class of the Java object.
-     * @param representation
-     *            The representation to convert.
+     * @param sourceRepresentation
+     *            The source representation to convert.
      * @param targetClass
      *            The target class of the Java object.
      * @param resource
-     *            The calling resource.
+     *            The parent resource.
      * @return The converted Java object.
      * @throws IOException
      */
-    public <T> T toObject(Representation representation, Class<T> targetClass,
-            UniformResource resource) throws IOException {
+    public <T> T toObject(Representation sourceRepresentation,
+            Class<T> targetClass, UniformResource resource) throws IOException {
         T result = null;
-        ConverterHelper ch = ConverterUtils.getHelper(representation,
+        ConverterHelper ch = ConverterUtils.getHelper(sourceRepresentation,
                 targetClass, resource);
 
         if (ch != null) {
-            result = ch.toObject(representation, targetClass, resource);
+            result = ch.toObject(sourceRepresentation, targetClass, resource);
         } else {
             Context.getCurrentLogger().warning(
                     "Unable to find a converter for this representation : "
-                            + representation);
+                            + sourceRepresentation);
         }
 
         return result;
@@ -138,36 +139,37 @@ public class ConverterService extends Service {
     /**
      * Converts a regular Java object into a Representation.
      * 
-     * @param object
-     *            The object to convert.
+     * @param sourceObject
+     *            The source object to convert.
      * @return The converted representation.
      */
-    public Representation toRepresentation(Object object) {
-        return toRepresentation(object, null, null);
+    public Representation toRepresentation(Object sourceObject) {
+        return toRepresentation(sourceObject, null, null);
     }
 
     /**
      * Converts a regular Java object into a Representation.
      * 
-     * @param object
-     *            The object to convert.
+     * @param sourceObject
+     *            The source object to convert.
      * @param targetVariant
-     *            The target variant.
+     *            The target representation variant.
      * @param resource
-     *            The calling resource.
+     *            The parent resource.
      * @return The converted representation.
      */
-    public Representation toRepresentation(Object object,
+    public Representation toRepresentation(Object sourceObject,
             Variant targetVariant, UniformResource resource) {
         Representation result = null;
-        ConverterHelper ch = ConverterUtils.getHelper(object, targetVariant,
-                resource);
+        ConverterHelper ch = ConverterUtils.getHelper(sourceObject,
+                targetVariant, resource);
 
         if (ch != null) {
-            result = ch.toRepresentation(object, targetVariant, resource);
+            result = ch.toRepresentation(sourceObject, targetVariant, resource);
         } else {
             Context.getCurrentLogger().warning(
-                    "Unable to find a converter for this object : " + object);
+                    "Unable to find a converter for this object : "
+                            + sourceObject);
         }
 
         return result;
