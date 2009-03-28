@@ -274,44 +274,45 @@ public class XdbServerServlet extends ServerServlet {
         Class<?> targetClass;
 
         if (doubleDotPos > 0) {
+          final String sch = className.substring(0, doubleDotPos).toUpperCase();
+          final String cName = className.substring(doubleDotPos + 1);
+          if (System.getProperty("java.vm.name").equals("JServer VM")) {
             // Use DbmsJava by reflection to avoid dependency to Oracle libs
             // at compiling time
-            final String sch = className.substring(0, doubleDotPos).toUpperCase();
-            final String cName = className.substring(doubleDotPos + 1);
             try {
-                final Class<?> loaderClass = Engine
-                        .loadClass("oracle.aurora.rdbms.DbmsJava");
-                final Method meth = loaderClass.getMethod(
-                        "classForNameAndSchema", new Class[] { String.class,
-                                String.class });
-                log("[Noelios Restlet Engine] - Schema: " + sch + " class: "
-                        + cName + " loader: " + loaderClass);
-                targetClass = (Class<?>) meth.invoke(null, new Object[] {
-                        cName, sch });
+              final Class<?> loaderClass =
+                Engine.loadClass("oracle.aurora.rdbms.DbmsJava");
+              final Method meth =
+                loaderClass.getMethod("classForNameAndSchema", new Class[] { String.class,
+                                                                             String.class });
+              log("[Noelios Restlet Engine] - Schema: " + sch + " class: " +
+                  cName + " loader: " + loaderClass);
+              targetClass =
+                  (Class<?>)meth.invoke(null, new Object[] { cName, sch });
             } catch (NoSuchMethodException nse) {
-                log(
-                        "[Noelios Restlet Engine] - Could not instantiate a class using SCHEMA: "
-                                + sch + " and class: " + cName, nse);
-                targetClass = Engine.loadClass(className);
+              log("[Noelios Restlet Engine] - Could not instantiate a class using SCHEMA: " +
+                  sch + " and class: " + cName, nse);
+              targetClass = Engine.loadClass(className);
             } catch (IllegalAccessException iae) {
-                log(
-                        "[Noelios Restlet Engine] - Could not instantiate a class using SCHEMA: "
-                                + sch + " and class: " + cName, iae);
-                targetClass = Engine.loadClass(className);
+              log("[Noelios Restlet Engine] - Could not instantiate a class using SCHEMA: " +
+                  sch + " and class: " + cName, iae);
+              targetClass = Engine.loadClass(className);
             } catch (InvocationTargetException ite) {
-                log(
-                        "[Noelios Restlet Engine] - Could not instantiate a class using SCHEMA: "
-                                + sch + " and class: " + cName, ite);
-                targetClass = Engine.loadClass(className);
+              log("[Noelios Restlet Engine] - Could not instantiate a class using SCHEMA: " +
+                  sch + " and class: " + cName, ite);
+              targetClass = Engine.loadClass(className);
             } catch (AccessControlException ace) {
-                log(
-                        "[Noelios Restlet Engine] - Could not instantiate a class using oracle.aurora.rdbms.DbmsJava "
-                                + sch + " and class: " + cName, ace);
-                targetClass = Engine.loadClass(className);
+              log("[Noelios Restlet Engine] - Could not instantiate a class using oracle.aurora.rdbms.DbmsJava " +
+                  sch + " and class: " + cName, ace);
+              targetClass = Engine.loadClass(className);
             }
-        } else {
+          } else {
             targetClass = Engine.loadClass(className);
+          }
+        } else { // Not running inside OJVM, may be outside testing
+          targetClass = Engine.loadClass(className);
         }
+
         return targetClass;
     }
 
