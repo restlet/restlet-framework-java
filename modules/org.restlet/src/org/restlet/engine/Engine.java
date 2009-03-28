@@ -51,7 +51,7 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
 import org.restlet.data.Response;
 import org.restlet.engine.converter.ConverterHelper;
-import org.restlet.engine.converter.DomConverter;
+import org.restlet.engine.converter.DefaultConverter;
 import org.restlet.engine.http.StreamClientHelper;
 import org.restlet.engine.http.StreamServerHelper;
 import org.restlet.engine.local.ClapClientHelper;
@@ -613,7 +613,7 @@ public class Engine {
      * Registers the default converters.
      */
     public void registerDefaultConverters() {
-        getRegisteredConverters().add(new DomConverter());
+        getRegisteredConverters().add(new DefaultConverter());
     }
 
     /**
