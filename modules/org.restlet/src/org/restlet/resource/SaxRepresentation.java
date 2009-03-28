@@ -233,8 +233,11 @@ public class SaxRepresentation extends XmlRepresentation {
 
     @Override
     public void write(OutputStream outputStream) throws IOException {
-        write(new XmlWriter(outputStream, (getCharacterSet() == null) ? "UTF-8"
-                : getCharacterSet().toString()));
+        XmlWriter xmlWriter = new XmlWriter(outputStream,
+                (getCharacterSet() == null) ? "UTF-8" : getCharacterSet()
+                        .toString());
+        write(xmlWriter);
+        xmlWriter.flush();
     }
 
     /**
