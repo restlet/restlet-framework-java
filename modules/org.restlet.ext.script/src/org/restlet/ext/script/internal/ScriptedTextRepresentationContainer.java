@@ -16,12 +16,31 @@ import org.restlet.representation.Representation;
  * @see ScriptedTextRepresentation
  */
 public class ScriptedTextRepresentationContainer {
+    /**
+     * Access to the representation itself.
+     */
     private final ScriptedTextRepresentation representation;
 
+    /**
+     * Allows the script direct access to the {@link Writer}.
+     */
     private final Writer writer;
 
+    /**
+     * Same as {@link #writer}, for standard error.
+     */
     private final Writer errorWriter;
 
+    /**
+     * Constructor.
+     * 
+     * @param representation
+     *            The representation
+     * @param writer
+     *            The writer
+     * @param errorWriter
+     *            The error writer
+     */
     public ScriptedTextRepresentationContainer(
             ScriptedTextRepresentation representation, Writer writer,
             Writer errorWriter) {
@@ -59,8 +78,7 @@ public class ScriptedTextRepresentationContainer {
      * @return The script engine manager
      */
     public ScriptEngineManager getScriptEngineManager() {
-        return null;
-        // return getRepresentation().getScriptEngineManager();
+        return this.representation.getEmbeddedScript().getScriptEngineManager();
     }
 
     /**

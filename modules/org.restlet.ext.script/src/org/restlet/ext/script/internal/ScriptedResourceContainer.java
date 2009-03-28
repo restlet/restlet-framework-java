@@ -52,6 +52,7 @@ import org.restlet.resource.Resource;
 import org.restlet.resource.ResourceException;
 
 import com.threecrickets.scripturian.EmbeddedScript;
+import com.threecrickets.scripturian.ScriptContextController;
 import com.threecrickets.scripturian.ScriptSource;
 
 /**
@@ -62,24 +63,61 @@ import com.threecrickets.scripturian.ScriptSource;
  * @see ScriptedResource
  */
 public class ScriptedResourceContainer {
+    /**
+     * The instance of this resource.
+     */
     private final ScriptedResource resource;
 
+    /**
+     * The {@link Variant} of this request.
+     */
     private final Variant variant;
 
+    /**
+     * The {@link Representation} of an entity provided with this request.
+     */
     private final Representation entity;
 
+    /**
+     * The {@link MediaType} that will be used if you return an arbitrary type
+     * for <code>represent()</code>, <code>acceptRepresentation()</code> and
+     * <code>storeRepresentation()</code>.
+     */
     private MediaType mediaType;
 
+    /**
+     * The {@link CharacterSet} that will be used if you return an arbitrary
+     * type for <code>represent()</code>, <code>acceptRepresentation()</code>
+     * and <code>storeRepresentation()</code>.
+     */
     private CharacterSet characterSet;
 
+    /**
+     * The {@link Language} that will be used if you return an arbitrary type
+     * for <code>represent()</code>, <code>acceptRepresentation()</code> and
+     * <code>storeRepresentation()</code>.
+     */
     private Language language;
 
+    /**
+     * Allows the script direct access to the {@link Writer}. Delegates to
+     * standard output.
+     */
     private final Writer writer = new OutputStreamWriter(System.out);
 
+    /**
+     * Same as {@link #writer}, for standard error. Delegates to standard error.
+     */
     private final Writer errorWriter = new OutputStreamWriter(System.err);
 
+    /**
+     * The script context controller.
+     */
     private final ScriptedResourceScriptContextController scriptContextController;
 
+    /**
+     * A cache of script engines used by {@link EmbeddedScript}.
+     */
     private final ConcurrentMap<String, ScriptEngine> scriptEngines = new ConcurrentHashMap<String, ScriptEngine>();
 
     /**
@@ -148,10 +186,11 @@ public class ScriptedResourceContainer {
 
     /**
      * The {@link CharacterSet} that will be used if you return an arbitrary
-     * type for represent(), acceptRepresentation() and storeRepresentation().
-     * Defaults to what the client requested (in container.variant), or to the
-     * value of {@link ScriptedResource#getDefaultCharacterSet()} if the client
-     * did not specify it.
+     * type for <code>represent()</code>, <code>acceptRepresentation()</code>
+     * and <code>storeRepresentation()</code>. Defaults to what the client
+     * requested (in <code>container.variant</code>), or to the value of
+     * {@link ScriptedResource#getDefaultCharacterSet()} if the client did not
+     * specify it.
      * 
      * @return The character set
      * @see #setCharacterSet(CharacterSet)
@@ -162,8 +201,10 @@ public class ScriptedResourceContainer {
 
     /**
      * The {@link Representation} of an entity provided with this request.
-     * Available only in acceptRepresentation() and storeRepresentation(). Note
-     * that container.variant is identical to container.entity when available.
+     * Available only in <code>acceptRepresentation()</code> and
+     * <code>storeRepresentation()</code>. Note that
+     * <code>container.variant</code> is identical to
+     * <code>container.entity</code> when available.
      * 
      * @return The entity's representation or null if not available
      */
@@ -182,8 +223,8 @@ public class ScriptedResourceContainer {
 
     /**
      * The {@link Language} that will be used if you return an arbitrary type
-     * for represent(), acceptRepresentation() and storeRepresentation().
-     * Defaults to null.
+     * for <code>represent()</code>, <code>acceptRepresentation()</code> and
+     * <code>storeRepresentation()</code>. Defaults to null.
      * 
      * @return The language or null if not set
      * @see #setLanguage(Language)
@@ -194,8 +235,9 @@ public class ScriptedResourceContainer {
 
     /**
      * The {@link MediaType} that will be used if you return an arbitrary type
-     * for represent(), acceptRepresentation() and storeRepresentation().
-     * Defaults to what the client requested (in container.variant).
+     * for <code>represent()</code>, <code>acceptRepresentation()</code> and
+     * <code>storeRepresentation()</code>. Defaults to what the client requested
+     * (in <code>container.variant</code>).
      * 
      * @return The media type
      * @see #setMediaType(MediaType)
@@ -206,9 +248,9 @@ public class ScriptedResourceContainer {
 
     /**
      * The instance of this resource. Acts as a "this" reference for the script.
-     * For example, during a call to initializeResource(), this can be used to
-     * change the characteristics of the resource. Otherwise, you can use it to
-     * access the request and response.
+     * For example, during a call to <code>initializeResource()</code>, this can
+     * be used to change the characteristics of the resource. Otherwise, you can
+     * use it to access the request and response.
      * 
      * @return The resource
      */
@@ -229,8 +271,9 @@ public class ScriptedResourceContainer {
 
     /**
      * The {@link Variant} of this request. Useful for interrogating the
-     * client's preferences. This is available only in represent(),
-     * acceptRepresentation() and storeRepresentation().
+     * client's preferences. This is available only in <code>represent()</code>,
+     * <code>acceptRepresentation()</code> and
+     * <code>storeRepresentation()</code>.
      * 
      * @return The variant or null if not available
      */
@@ -317,7 +360,7 @@ public class ScriptedResourceContainer {
      *            Name of entry point
      * @return Result of invocation
      * @throws ResourceException
-     * @see {@link EmbeddedScript#invoke(String, com.threecrickets.scripturian.ScriptContextController)}
+     * @see {@link EmbeddedScript#invoke(String, ScriptContextController)}
      */
     public Object invoke(String entryPointName) throws ResourceException {
         String name = ScriptUtils.getRelativePart(this.resource.getRequest(),

@@ -47,9 +47,8 @@ import com.threecrickets.scripturian.ScriptContextController;
 
 /**
  * Filter response's entity to allow for embedded scriptlets. Internally wraps
- * the entity in a {@link ScriptedTextRepresentation}. In order for this to
- * work, the entity must be textual, that is it must support
- * {@link Representation#getText()}.
+ * the entity in a {@link ScriptedTextRepresentation}. As part of the process,
+ * the entity is translated into text via {@link Representation#getText()}.
  * <p>
  * Note that scripts are not cached; they are parsed and run anew for every
  * entity that passes through the filter. If you are passing the same entities
@@ -65,12 +64,27 @@ import com.threecrickets.scripturian.ScriptContextController;
  * @see ScriptedTextRepresentation
  */
 public class ScriptedTextFilter extends Filter {
+    /**
+     * The default script engine name to be used if the script doesn't specify
+     * one.
+     */
     private String defaultScriptEngineName;
 
+    /**
+     * Whether or not compilation is attempted for script engines that support
+     * it.
+     */
     private boolean allowCompilation;
 
+    /**
+     * The {@link ScriptEngineManager} used to create the script engines for the
+     * scripts.
+     */
     private ScriptEngineManager scriptEngineManager;
 
+    /**
+     * An optional {@link ScriptContextController} to be used with the scripts.
+     */
     private ScriptContextController scriptContextController;
 
     /**

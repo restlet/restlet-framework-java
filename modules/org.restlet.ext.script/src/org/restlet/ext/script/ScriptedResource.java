@@ -110,7 +110,9 @@ import com.threecrickets.scripturian.ScriptSource;
  * {@link #getRemoveRepresentationsEntryPointName()}.
  * <p>
  * Before using this resource, make sure to configure a valid source in the
- * application's {@link Context}; see {@link #getScriptSource()}.
+ * application's {@link Context}; see {@link #getScriptSource()}. This source is
+ * accessible from the script itself, via <code>script.source</code> (see
+ * {@link EmbeddedScript}).
  * <p>
  * Note that the embedded script's output is sent to the system's standard
  * output. Most likely, you will not want to output anything from the script.
@@ -248,43 +250,104 @@ import com.threecrickets.scripturian.ScriptSource;
  * @see ScriptedTextResource
  */
 public class ScriptedResource extends Resource {
+    /**
+     * The {@link ScriptEngineManager} used to create the script engines for the
+     * scripts.
+     */
     private ScriptEngineManager scriptEngineManager;
 
+    /**
+     * Whether or not compilation is attempted for script engines that support
+     * it.
+     */
     private Boolean allowCompilation;
 
+    /**
+     * The {@link ScriptSource} used to fetch scripts.
+     */
     private ScriptSource<EmbeddedScript> scriptSource;
 
+    /**
+     * Files with this extension can have the extension omitted from the URL,
+     * allowing for nicer URLs.
+     */
     private String extension;
 
+    /**
+     * If the URL points to a directory rather than a file, and that directory
+     * contains a file with this name, then it will be used.
+     */
     private String defaultName;
 
+    /**
+     * The default script engine name to be used if the script doesn't specify
+     * one.
+     */
     private String defaultScriptEngineName;
 
+    /**
+     * The default character set to be used if the client does not specify it.
+     */
     private CharacterSet defaultCharacterSet;
 
+    /**
+     * The default variable name for the container instance.
+     */
     private String containerVariableName;
 
+    /**
+     * An optional {@link ScriptContextController} to be used with the scripts.
+     */
     private ScriptContextController scriptContextController;
 
+    /**
+     * The name of the <code>initializeResource()</code> entry point in the
+     * script.
+     */
     private String initializeResourceEntryPointName;
 
+    /**
+     * The name of the <code>represent()</code> entry point in the script.
+     */
     private String representEntryPointName;
 
+    /**
+     * The name of the <code>acceptRepresentation()</code> entry point in the
+     * script.
+     */
     private String acceptRepresentationEntryPointName;
 
+    /**
+     * The name of the <code>storeRepresentation()</code> entry point in the
+     * script.
+     */
     private String storeRepresentationEntryPointName;
 
+    /**
+     * The name of the <code>removeRepresentations()</code> entry point in the
+     * script.
+     */
     private String removeRepresentationsEntryPointName;
 
+    /**
+     * This is so we can see the source code for scripts by adding
+     * <code>?source=true</code> to the URL.
+     */
     private Boolean sourceViewable;
 
+    /**
+     * Constant.
+     */
     private static final String SOURCE = "source";
 
+    /**
+     * Constant.
+     */
     private static final String TRUE = "true";
 
     /**
-     * Constructs the resource, and delegates to the initializeResource entry
-     * point in the script.
+     * Constructs the resource, and delegates to the
+     * <code>initializeResource()</code> entry point in the script.
      * 
      * @param context
      *            The Restlet context
@@ -308,7 +371,8 @@ public class ScriptedResource extends Resource {
     }
 
     /**
-     * Delegates to the acceptRepresentation entry point in the script.
+     * Delegates to the <code>acceptRepresentation()</code> entry point in the
+     * script.
      * 
      * @param entity
      * @see #getAcceptRepresentationEntryPointName()
@@ -334,14 +398,14 @@ public class ScriptedResource extends Resource {
     }
 
     /**
-     * The name of the acceptRepresentation entry point in the script. Defaults
-     * to "acceptRepresentation".
+     * The name of the <code>acceptRepresentation()</code> entry point in the
+     * script. Defaults to "acceptRepresentation".
      * <p>
      * This setting can be configured by setting an attribute named
      * "org.restlet.ext.script.ScriptedResource.acceptRepresentationEntryPointName"
      * in the application's {@link Context}.
      * 
-     * @return The name of the "acceptRepresentation" entry point
+     * @return The name of the <code>acceptRepresentation()</code> entry point
      */
     public String getAcceptRepresentationEntryPointName() {
         if (this.acceptRepresentationEntryPointName == null) {
@@ -480,14 +544,14 @@ public class ScriptedResource extends Resource {
     }
 
     /**
-     * The name of the initializeResource entry point in the script. Defaults to
-     * "initialize".
+     * The name of the <code>initializeResource()</code> entry point in the
+     * script. Defaults to "initialize".
      * <p>
      * This setting can be configured by setting an attribute named
      * "org.restlet.ext.script.ScriptedResource.initializeResourceEntryPointName"
      * in the application's {@link Context}.
      * 
-     * @return The name of the "initializeResource" entry point
+     * @return The name of the <code>initializeResource()</code> entry point
      */
     public String getInitializeResourceEntryPointName() {
         if (this.initializeResourceEntryPointName == null) {
@@ -504,14 +568,14 @@ public class ScriptedResource extends Resource {
     }
 
     /**
-     * The name of the removeRepresentations entry point in the script. Defaults
-     * to "removeRepresentations".
+     * The name of the <code>removeRepresentations()</code> entry point in the
+     * script. Defaults to "removeRepresentations".
      * <p>
      * This setting can be configured by setting an attribute named
      * "org.restlet.ext.script.ScriptedResource.removeRepresentationsEntryPointName"
      * in the application's {@link Context}.
      * 
-     * @return The name of the "removeRepresentations" entry point
+     * @return The name of the <code>removeRepresentations()</code> entry point
      */
     public String getRemoveRepresentationsEntryPointName() {
         if (this.removeRepresentationsEntryPointName == null) {
@@ -528,14 +592,14 @@ public class ScriptedResource extends Resource {
     }
 
     /**
-     * The name of the represent entry point in the script. Defaults to
-     * "represent".
+     * The name of the <code>represent()</code> entry point in the script.
+     * Defaults to "represent".
      * <p>
      * This setting can be configured by setting an attribute named
      * "org.restlet.ext.script.ScriptedResource.representEntryPointName" in the
      * application's {@link Context}.
      * 
-     * @return The name of the "represent" entry point
+     * @return The name of the <code>represent()</code> entry point
      */
     public String getRepresentEntryPointName() {
         if (this.representEntryPointName == null) {
@@ -623,14 +687,14 @@ public class ScriptedResource extends Resource {
     }
 
     /**
-     * The name of the storeRepresentation entry point in the script. Defaults
-     * to "storeRepresentation".
+     * The name of the <code>storeRepresentation()</code> entry point in the
+     * script. Defaults to "storeRepresentation".
      * <p>
      * This setting can be configured by setting an attribute named
      * "org.restlet.ext.script.ScriptedResource.storeRepresentationEntryPointName"
      * in the application's {@link Context}.
      * 
-     * @return The name of the "storeRepresentation" entry point
+     * @return The name of the <code>storeRepresentation()</code> entry point
      */
     public String getStoreRepresentationEntryPointName() {
         if (this.storeRepresentationEntryPointName == null) {
@@ -671,9 +735,9 @@ public class ScriptedResource extends Resource {
     }
 
     /**
-     * This is so we can see the source code for scripts by adding ?source=true
-     * to the URL. You probably wouldn't want this for most applications.
-     * Defaults to false.
+     * This is so we can see the source code for scripts by adding
+     * <code>?source=true</code> to the URL. You probably wouldn't want this for
+     * most applications. Defaults to false.
      * <p>
      * This setting can be configured by setting an attribute named
      * "org.restlet.ext.script.ScriptedResource.sourceViewable" in the
@@ -696,7 +760,8 @@ public class ScriptedResource extends Resource {
     }
 
     /**
-     * Delegates to the removeRepresentations entry point in the script.
+     * Delegates to the <code>removeRepresentations()</code> entry point in the
+     * script.
      * 
      * @see #getRemoveRepresentationsEntryPointName()
      * @see Resource#removeRepresentations()
@@ -710,7 +775,7 @@ public class ScriptedResource extends Resource {
     }
 
     /**
-     * Delegates to the represent entry point in the script.
+     * Delegates to the <code>represent()</code> entry point in the script.
      * 
      * @param variant
      * @return A representation of the resource's state
@@ -751,7 +816,8 @@ public class ScriptedResource extends Resource {
     }
 
     /**
-     * Delegates to the storeRepresentation entry point in the script.
+     * Delegates to the <code>storeRepresentation()</code> entry point in the
+     * script.
      * 
      * @param entity
      * @see #getStoreRepresentationEntryPointName()

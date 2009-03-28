@@ -94,12 +94,25 @@ import com.threecrickets.scripturian.ScriptContextController;
  * @see ScriptedTextResource
  */
 public class ScriptedTextRepresentation extends WriterRepresentation {
+    /**
+     * The wrapped embedded script instance.
+     */
     private final EmbeddedScript embeddedScript;
 
+    /**
+     * The error writer. Note that we currently do nothing with whatever the
+     * script writes here. Future versions may provide access to this.
+     */
     private final StringWriter errorWriter = new StringWriter();
 
+    /**
+     * An optional {@link ScriptContextController} to be used with the scripts.
+     */
     private ScriptContextController scriptContextController;
 
+    /**
+     * A cache of script engines used by {@link EmbeddedScript}.
+     */
     private final ConcurrentMap<String, ScriptEngine> scriptEngines = new ConcurrentHashMap<String, ScriptEngine>();
 
     /**

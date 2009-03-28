@@ -13,12 +13,31 @@ import com.threecrickets.scripturian.ScriptContextController;
  */
 public class ScriptedTextRepresentationScriptContextController implements
         ScriptContextController {
+    /**
+     * The representation.
+     */
     private final ScriptedTextRepresentation representation;
 
+    /**
+     * The container.
+     */
     private final ScriptedTextRepresentationContainer container;
 
+    /**
+     * The container variable name.
+     */
     private final String containerVariableName;
 
+    /**
+     * Constructor.
+     * 
+     * @param representation
+     *            The representation
+     * @param container
+     *            The container
+     * @param containerVariableName
+     *            The container variable name
+     */
     public ScriptedTextRepresentationScriptContextController(
             ScriptedTextRepresentation representation,
             ScriptedTextRepresentationContainer container,

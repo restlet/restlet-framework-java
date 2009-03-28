@@ -34,7 +34,6 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -62,31 +61,72 @@ import com.threecrickets.scripturian.ScriptSource;
  * @author Tal Liron
  */
 public class ScriptedTextResourceContainer {
+    /**
+     * The resource.
+     */
     private final ScriptedTextResource resource;
 
+    /**
+     * Flag to signify that we should enter streaming mode.
+     */
     private boolean startStreaming;
 
+    /**
+     * The {@link Variant} of this request.
+     */
     private final Variant variant;
 
-    private final Map<String, RepresentableString> cache;
+    /**
+     * Cache for caching mode.
+     */
+    private final ConcurrentMap<String, RepresentableString> cache;
 
+    /**
+     * The {@link MediaType} that will be used for the generated string.
+     */
     private MediaType mediaType;
 
+    /**
+     * The {@link CharacterSet} that will be used for the generated string.
+     */
     private CharacterSet characterSet;
 
+    /**
+     * The {@link Language} that will be used for the generated string.
+     */
     private Language language;
 
+    /**
+     * This boolean is true when the writer is in streaming mode.
+     */
     protected boolean isStreaming;
 
+    /**
+     * Allows the script direct access to the {@link Writer}.
+     */
     private Writer writer;
 
+    /**
+     * /** Same as {@link #writer}, for standard error. (Nothing is currently
+     * done with the contents of this, but this may change in future
+     * implementations.)
+     */
     private final Writer errorWriter = new StringWriter();
 
+    /**
+     * Buffer used for caching mode.
+     */
     private StringBuffer buffer;
 
-    protected final ScriptedTextResourceScriptContextController scriptContextController;
+    /**
+     * The script context controller.
+     */
+    private final ScriptedTextResourceScriptContextController scriptContextController;
 
-    protected final ConcurrentMap<String, ScriptEngine> scriptEngines = new ConcurrentHashMap<String, ScriptEngine>();
+    /**
+     * A cache of script engines used by {@link EmbeddedScript}.
+     */
+    private final ConcurrentMap<String, ScriptEngine> scriptEngines = new ConcurrentHashMap<String, ScriptEngine>();
 
     /**
      * Constructs a container with media type and character set according to the
@@ -98,10 +138,10 @@ public class ScriptedTextResourceContainer {
      * @param variant
      *            The variant
      * @param cache
-     *            The cache
+     *            The cache (used for caching mode)
      */
     public ScriptedTextResourceContainer(ScriptedTextResource resource,
-            Variant variant, Map<String, RepresentableString> cache) {
+            Variant variant, ConcurrentMap<String, RepresentableString> cache) {
         this.resource = resource;
         this.variant = variant;
         this.cache = cache;
@@ -227,6 +267,7 @@ public class ScriptedTextResourceContainer {
      * output is sent to the client.
      * 
      * @return The writer
+     * @see #setWriter(Writer)
      */
     public Writer getWriter() {
         return this.writer;
@@ -272,6 +313,8 @@ public class ScriptedTextResourceContainer {
      */
     public Representation include(String name, String scriptEngineName)
             throws IOException, ScriptException {
+        Writer writer = getWriter();
+        boolean isStreaming = isStreaming();
 
         // Get script descriptor
         ScriptSource.ScriptDescriptor<EmbeddedScript> scriptDescriptor = this.resource
@@ -296,8 +339,8 @@ public class ScriptedTextResourceContainer {
         // Special handling for trivial scripts
         String trivial = script.getTrivial();
         if (trivial != null) {
-            if (getWriter() != null) {
-                getWriter().write(trivial);
+            if (writer != null) {
+                writer.write(trivial);
             }
             return new StringRepresentation(trivial, getMediaType(),
                     getLanguage(), getCharacterSet());
@@ -306,35 +349,38 @@ public class ScriptedTextResourceContainer {
         int startPosition = 0;
 
         // Make sure we have a valid writer for caching mode
-        if (!isStreaming()) {
-            if (getWriter() == null) {
+        if (!isStreaming) {
+            if (writer == null) {
                 StringWriter stringWriter = new StringWriter();
                 this.buffer = stringWriter.getBuffer();
-                setWriter(new BufferedWriter(stringWriter));
+                writer = new BufferedWriter(stringWriter);
+                setWriter(writer);
             } else {
-                getWriter().flush();
+                writer.flush();
                 startPosition = this.buffer.length();
             }
         }
 
         try {
             // Do not allow caching in streaming mode
-            if (script.run(getWriter(), getErrorWriter(), this.scriptEngines,
-                    this.scriptContextController, !isStreaming())) {
+            if (script.run(writer, getErrorWriter(), this.scriptEngines,
+                    this.scriptContextController, !isStreaming)) {
 
                 // Did the script ask us to start streaming?
                 if (this.startStreaming) {
                     this.startStreaming = false;
 
                     // Note that this will cause the script to run again!
-                    return new ScriptedTextStreamingRepresentation(this, script);
+                    return new ScriptedTextStreamingRepresentation(this,
+                            this.scriptEngines, this.scriptContextController,
+                            script);
                 }
 
-                if (isStreaming()) {
+                if (isStreaming) {
                     // Nothing to return in streaming mode
                     return null;
                 } else {
-                    getWriter().flush();
+                    writer.flush();
 
                     // Get the buffer from when we ran the script
                     RepresentableString string = new RepresentableString(
@@ -357,8 +403,8 @@ public class ScriptedTextResourceContainer {
                 // Attempt to use cache
                 RepresentableString string = this.cache.get(name);
                 if (string != null) {
-                    if (getWriter() != null) {
-                        getWriter().write(string.getString());
+                    if (writer != null) {
+                        writer.write(string.getString());
                     }
                     return string.represent();
                 } else {
@@ -371,7 +417,9 @@ public class ScriptedTextResourceContainer {
                 this.startStreaming = false;
 
                 // Note that this will cause the script to run again!
-                return new ScriptedTextStreamingRepresentation(this, script);
+                return new ScriptedTextStreamingRepresentation(this,
+                        this.scriptEngines, this.scriptContextController,
+                        script);
 
                 // Note that we will allow exceptions in scripts that ask us
                 // to start streaming! In fact, throwing an exception is a
@@ -437,6 +485,11 @@ public class ScriptedTextResourceContainer {
         this.mediaType = mediaType;
     }
 
+    /**
+     * @param writer
+     *            The writer
+     * @see #getWriter()
+     */
     public void setWriter(Writer writer) {
         this.writer = writer;
     }

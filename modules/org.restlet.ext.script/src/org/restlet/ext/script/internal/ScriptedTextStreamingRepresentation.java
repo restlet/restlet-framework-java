@@ -33,7 +33,9 @@ package org.restlet.ext.script.internal;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Arrays;
+import java.util.concurrent.ConcurrentMap;
 
+import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
 import org.restlet.data.Language;
@@ -41,6 +43,7 @@ import org.restlet.ext.script.ScriptedTextResource;
 import org.restlet.representation.WriterRepresentation;
 
 import com.threecrickets.scripturian.EmbeddedScript;
+import com.threecrickets.scripturian.ScriptContextController;
 
 /**
  * Representation used in streaming mode of {@link ScriptedTextResource}.
@@ -49,24 +52,49 @@ import com.threecrickets.scripturian.EmbeddedScript;
  * @ScriptedTextResource
  */
 class ScriptedTextStreamingRepresentation extends WriterRepresentation {
+    /**
+     * The container.
+     */
     private final ScriptedTextResourceContainer container;
 
+    /**
+     * The embedded script instance.
+     */
     private final EmbeddedScript script;
+
+    /**
+     * The script context controller.
+     */
+    private final ScriptContextController scriptContextController;
+
+    /**
+     * A cache of script engines used by {@link EmbeddedScript}.
+     */
+    private final ConcurrentMap<String, ScriptEngine> scriptEngines;
 
     /**
      * Constructor.
      * 
      * @param container
      *            The container
+     * @param scriptEngines
+     *            A cache of script engines used by {@link EmbeddedScript}.
+     * @param scriptContextController
+     *            The script context controller
      * @param script
-     *            The script
+     *            The embedded script instance
      */
     public ScriptedTextStreamingRepresentation(
-            ScriptedTextResourceContainer container, EmbeddedScript script) {
+            ScriptedTextResourceContainer container,
+            ConcurrentMap<String, ScriptEngine> scriptEngines,
+            ScriptContextController scriptContextController,
+            EmbeddedScript script) {
         // Note that we are setting representation characteristics
         // before we actually run the script
         super(container.getMediaType());
         this.container = container;
+        this.scriptEngines = scriptEngines;
+        this.scriptContextController = scriptContextController;
         setCharacterSet(container.getCharacterSet());
         if (container.getLanguage() != null) {
             setLanguages(Arrays
@@ -82,8 +110,7 @@ class ScriptedTextStreamingRepresentation extends WriterRepresentation {
         this.container.setWriter(writer);
         try {
             this.script.run(writer, this.container.getErrorWriter(),
-                    this.container.scriptEngines,
-                    this.container.scriptContextController, false);
+                    this.scriptEngines, this.scriptContextController, false);
         } catch (ScriptException e) {
             IOException ioe = new IOException("Script exception");
             ioe.initCause(e);

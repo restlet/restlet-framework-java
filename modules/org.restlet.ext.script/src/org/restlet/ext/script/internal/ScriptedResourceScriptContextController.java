@@ -43,8 +43,14 @@ import com.threecrickets.scripturian.ScriptContextController;
  */
 class ScriptedResourceScriptContextController implements
         ScriptContextController {
+    /**
+     * The resource.
+     */
     private final ScriptedResource resource;
 
+    /**
+     * The container.
+     */
     private final ScriptedResourceContainer container;
 
     /**
@@ -52,6 +58,8 @@ class ScriptedResourceScriptContextController implements
      * 
      * @param resource
      *            The resource
+     * @param container
+     *            The container
      */
     ScriptedResourceScriptContextController(ScriptedResource resource,
             ScriptedResourceContainer container) {

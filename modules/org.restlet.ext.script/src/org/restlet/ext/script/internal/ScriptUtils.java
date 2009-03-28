@@ -66,6 +66,9 @@ public abstract class ScriptUtils {
         }
     }
 
+    /**
+     * Private constructor.
+     */
     private ScriptUtils() {
     }
 }

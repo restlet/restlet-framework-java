@@ -33,7 +33,6 @@ package org.restlet.ext.script;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -66,7 +65,9 @@ import com.threecrickets.scripturian.ScriptSource;
  * verbs.
  * <p>
  * Before using this resource, make sure to configure a valid source in the
- * application's {@link Context}; see {@link #getScriptSource()}.
+ * application's {@link Context}; see {@link #getScriptSource()}. This source is
+ * accessible from the script itself, via <code>script.source</code> (see
+ * {@link EmbeddedScript}).
  * <p>
  * This resource supports two modes of output:
  * <ul>
@@ -214,29 +215,70 @@ import com.threecrickets.scripturian.ScriptSource;
  * @see ScriptedResource
  */
 public class ScriptedTextResource extends Resource {
+    /**
+     * The {@link ScriptEngineManager} used to create the script engines for the
+     * scripts.
+     */
     private ScriptEngineManager scriptEngineManager;
 
+    /**
+     * The {@link ScriptSource} used to fetch scripts.
+     */
     private ScriptSource<EmbeddedScript> scriptSource;
 
+    /**
+     * If the URL points to a directory rather than a file, and that directory
+     * contains a file with this name, then it will be used.
+     */
     private String defaultName;
 
+    /**
+     * The default script engine name to be used if the script doesn't specify
+     * one.
+     */
     private String defaultScriptEngineName;
 
+    /**
+     * The default character set to be used if the client does not specify it.
+     */
     private CharacterSet defaultCharacterSet;
 
+    /**
+     * The default variable name for the container instance.
+     */
     private String containerVariableName;
 
+    /**
+     * An optional {@link ScriptContextController} to be used with the scripts.
+     */
     private ScriptContextController scriptContextController;
 
+    /**
+     * Whether or not compilation is attempted for script engines that support
+     * it.
+     */
     private Boolean allowCompilation;
 
+    /**
+     * This is so we can see the source code for scripts by adding
+     * <code>?source=true</code> to the URL.
+     */
     private Boolean sourceViewable;
 
+    /**
+     * Constant.
+     */
     private static final String SOURCE = "source";
 
+    /**
+     * Constant.
+     */
     private static final String TRUE = "true";
 
-    private static Map<String, RepresentableString> cache = new ConcurrentHashMap<String, RepresentableString>();
+    /**
+     * Cache used for caching mode.
+     */
+    private static ConcurrentMap<String, RepresentableString> cache = new ConcurrentHashMap<String, RepresentableString>();
 
     /**
      * Constructs the resource.
@@ -266,7 +308,12 @@ public class ScriptedTextResource extends Resource {
         response.setEntity(represent());
     }
 
-    private Map<String, RepresentableString> getCache() {
+    /**
+     * Cache used for caching mode.
+     * 
+     * @return The cache
+     */
+    private ConcurrentMap<String, RepresentableString> getCache() {
         /*
          * 
          * TODO:
@@ -476,9 +523,9 @@ public class ScriptedTextResource extends Resource {
     }
 
     /**
-     * This is so we can see the source code for scripts by adding ?source=true
-     * to the URL. You probably wouldn't want this for most applications.
-     * Defaults to false.
+     * This is so we can see the source code for scripts by adding
+     * <code>?source=true</code> to the URL. You probably wouldn't want this for
+     * most applications. Defaults to false.
      * <p>
      * This setting can be configured by setting an attribute named
      * "org.restlet.ext.script.ScriptedTextResource.sourceViewable" in the

@@ -42,12 +42,24 @@ import org.restlet.representation.StringRepresentation;
  * @author Tal Liron
  */
 public class RepresentableString {
+    /**
+     * The stored string.
+     */
     private final String string;
 
+    /**
+     * The media type.
+     */
     private final MediaType mediaType;
 
+    /**
+     * The language.
+     */
     private final Language language;
 
+    /**
+     * The character set.
+     */
     private final CharacterSet characterSet;
 
     /**
