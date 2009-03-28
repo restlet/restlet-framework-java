@@ -33,16 +33,30 @@ package org.restlet.engine.util;
 import org.restlet.data.Method;
 
 /**
+ * Descriptor for method annotations.
  * 
  * @author Jerome Louvel
  */
 public class AnnotationInfo {
+    /** The matching Restlet method. */
     private Method restletMethod;
 
+    /** The annotated Java method. */
     private java.lang.reflect.Method javaMethod;
 
+    /** The annotation value. */
     private String value;
 
+    /**
+     * Constructor.
+     * 
+     * @param restletMethod
+     *            The matching Restlet method.
+     * @param javaMethod
+     *            The annotated Java method.
+     * @param value
+     *            The annotation value.
+     */
     public AnnotationInfo(Method restletMethod,
             java.lang.reflect.Method javaMethod, String value) {
         super();
@@ -51,26 +65,59 @@ public class AnnotationInfo {
         this.value = value;
     }
 
+    /**
+     * Returns the annotated Java method.
+     * 
+     * @return The annotated Java method.
+     */
     public java.lang.reflect.Method getJavaMethod() {
         return javaMethod;
     }
 
+    /**
+     * Returns the matching Restlet method.
+     * 
+     * @return The matching Restlet method.
+     */
     public Method getRestletMethod() {
         return restletMethod;
     }
 
+    /**
+     * Returns the annotation value.
+     * 
+     * @return The annotation value.
+     */
     public String getValue() {
         return value;
     }
 
+    /**
+     * Sets the annotated Java method.
+     * 
+     * @param javaMethod
+     *            The annotated Java method.
+     */
     public void setJavaMethod(java.lang.reflect.Method javaMethod) {
         this.javaMethod = javaMethod;
     }
 
+    /**
+     * Sets the matching Restlet method.
+     * 
+     * @param restletMethod
+     *            The matching Restlet method.
+     */
     public void setRestletMethod(Method restletMethod) {
         this.restletMethod = restletMethod;
     }
 
+    /**
+     * Sets the annotation value.
+     * 
+     * @param value
+     *            The annotation value.
+     */
     public void setValue(String value) {
         this.value = value;
     }

@@ -30,7 +30,8 @@
 
 package org.restlet.resource;
 
-import java.lang.annotation.Annotation;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -54,9 +55,11 @@ import org.restlet.data.ServerInfo;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
 import org.restlet.engine.util.AnnotationInfo;
+import org.restlet.engine.util.AnnotationUtils;
 import org.restlet.representation.Representation;
 import org.restlet.representation.RepresentationInfo;
 import org.restlet.representation.Variant;
+import org.restlet.service.ConverterService;
 import org.restlet.util.Series;
 
 /**
@@ -71,6 +74,9 @@ import org.restlet.util.Series;
  * @author Jerome Louvel
  */
 public class ServerResource extends UniformResource {
+
+    /** The preferred variant. */
+    private Variant preferredVariant;
 
     /** Indicates if annotations are supported. */
     private boolean annotated;
@@ -177,54 +183,6 @@ public class ServerResource extends UniformResource {
     }
 
     /**
-     * 
-     */
-    @SuppressWarnings("unchecked")
-    private void discoverAnnotations() {
-        String attributeName = "org.restlet.resource.ServerResource.annotations."
-                + getClass().getCanonicalName();
-
-        if (getContext() != null) {
-            this.annotations = (List<AnnotationInfo>) getContext()
-                    .getAttributes().get(attributeName);
-        }
-
-        if (this.annotations == null) {
-            this.annotations = new ArrayList<AnnotationInfo>();
-
-            if (getContext() != null) {
-                getContext().getAttributes().put(attributeName,
-                        this.annotations);
-            }
-
-            for (java.lang.reflect.Method javaMethod : getClass().getMethods()) {
-                for (Annotation annotation : javaMethod.getAnnotations()) {
-
-                    Annotation methodAnnotation = annotation.annotationType()
-                            .getAnnotation(org.restlet.engine.Method.class);
-
-                    if (methodAnnotation != null) {
-                        Method restletMethod = Method
-                                .valueOf(((org.restlet.engine.Method) methodAnnotation)
-                                        .value());
-
-                        String toString = annotation.toString();
-                        int startIndex = annotation.annotationType()
-                                .getCanonicalName().length() + 8;
-                        int endIndex = toString.length() - 1;
-                        String value = toString.substring(startIndex, endIndex);
-
-                        // Add the annotation descriptor
-                        this.annotations.add(new AnnotationInfo(restletMethod,
-                                javaMethod, value));
-                    }
-                }
-            }
-
-        }
-    }
-
-    /**
      * Verifies the optional request conditions and continue the processing if
      * possible. Note that in order to evaluate those conditions,
      * {@link #getInfo()} or {@link #getInfo(Variant)} methods might be invoked.
@@ -243,15 +201,15 @@ public class ServerResource extends UniformResource {
             setStatus(Status.CLIENT_ERROR_PRECONDITION_FAILED,
                     "A non existing resource can't match any tag.");
         } else {
-            RepresentationInfo representationInfo = null;
+            RepresentationInfo resultInfo = null;
 
             if (isNegotiated()) {
-                representationInfo = doNegotiatedHandle(Method.GET);
+                resultInfo = getInfo(getPreferredVariant());
             } else {
-                representationInfo = doHandle(Method.GET);
+                resultInfo = getInfo();
             }
 
-            if (representationInfo == null) {
+            if (resultInfo == null) {
                 if ((getStatus() == null)
                         || (getStatus().isSuccess() && !Status.SUCCESS_NO_CONTENT
                                 .equals(getStatus()))) {
@@ -262,7 +220,7 @@ public class ServerResource extends UniformResource {
                 }
             } else if (getRequest().getConditions().hasSome()) {
                 Status status = getConditions().getStatus(getMethod(),
-                        representationInfo);
+                        resultInfo);
 
                 if (status != null) {
                     setStatus(status);
@@ -272,8 +230,8 @@ public class ServerResource extends UniformResource {
             if ((getStatus() != null) && getStatus().isSuccess()) {
                 // Conditions where passed successfully.
                 // Continue the normal processing
-                if (representationInfo instanceof Representation) {
-                    result = (Representation) representationInfo;
+                if (resultInfo instanceof Representation) {
+                    result = (Representation) resultInfo;
                 } else {
                     if (isNegotiated()) {
                         result = doNegotiatedHandle(method);
@@ -304,20 +262,35 @@ public class ServerResource extends UniformResource {
         if (method == null) {
             setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "No method specified");
         } else {
-            if (method.equals(Method.GET)) {
-                result = get();
-            } else if (method.equals(Method.POST)) {
-                result = post(getRequest().getEntity());
-            } else if (method.equals(Method.PUT)) {
-                result = put(getRequest().getEntity());
-            } else if (method.equals(Method.DELETE)) {
-                result = delete();
-            } else if (method.equals(Method.HEAD)) {
-                result = head();
-            } else if (method.equals(Method.OPTIONS)) {
-                result = options();
+            boolean found = false;
+            java.lang.reflect.Method javaMethod = null;
+
+            if (isAnnotated() && hasAnnotations()) {
+                javaMethod = getJavaMethod(method);
+
+                if (javaMethod != null) {
+                    found = true;
+                }
+            }
+
+            if (found) {
+                result = invokeJavaMethod(javaMethod);
             } else {
-                setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+                if (method.equals(Method.GET)) {
+                    result = get();
+                } else if (method.equals(Method.POST)) {
+                    result = post(getRequest().getEntity());
+                } else if (method.equals(Method.PUT)) {
+                    result = put(getRequest().getEntity());
+                } else if (method.equals(Method.DELETE)) {
+                    result = delete();
+                } else if (method.equals(Method.HEAD)) {
+                    result = head();
+                } else if (method.equals(Method.OPTIONS)) {
+                    result = options();
+                } else {
+                    setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+                }
             }
         }
 
@@ -440,6 +413,16 @@ public class ServerResource extends UniformResource {
     }
 
     /**
+     * Returns the application's converter service or create a new one.
+     * 
+     * @return The converter service.
+     */
+    private ConverterService getConverterService() {
+        return getApplication() == null ? new ConverterService()
+                : getApplication().getConverterService();
+    }
+
+    /**
      * Returns information about the resource's representation. Those metadata
      * are important for conditional method processing. The advantage over the
      * complete {@link Representation} class is that it is much lighter to
@@ -472,30 +455,49 @@ public class ServerResource extends UniformResource {
     }
 
     /**
-     * Returns the preferred variant according to the client preferences
-     * specified in the request.
+     * Returns the annotated Java method matching the given Restlet method.
+     * 
+     * @param restletMethod
+     * @return
+     */
+    private java.lang.reflect.Method getJavaMethod(Method restletMethod) {
+        for (AnnotationInfo annotationInfo : this.annotations) {
+            if (restletMethod.equals(annotationInfo.getRestletMethod())) {
+                return annotationInfo.getJavaMethod();
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns the preferred variant.
      * 
      * @return The preferred variant.
      */
+    @SuppressWarnings("unchecked")
     public Variant getPreferredVariant() {
-        Variant result = null;
-        List<Variant> variants = (List<Variant>) getVariants().get(getMethod());
+        if (this.preferredVariant == null) {
+            List<Variant> variants = (List<Variant>) getVariants().get(
+                    getMethod());
 
-        if ((variants != null) && (!variants.isEmpty())) {
-            Language language = null;
-            // Compute the preferred variant. Get the default language
-            // preference from the Application (if any).
-            final Application app = Application.getCurrent();
+            if ((variants != null) && (!variants.isEmpty())) {
+                Language language = null;
+                // Compute the preferred variant. Get the default language
+                // preference from the Application (if any).
+                final Application app = Application.getCurrent();
 
-            if (app != null) {
-                language = app.getMetadataService().getDefaultLanguage();
+                if (app != null) {
+                    language = app.getMetadataService().getDefaultLanguage();
+                }
+
+                this.preferredVariant = getClientInfo().getPreferredVariant(
+                        variants, language);
+
             }
-
-            result = getClientInfo().getPreferredVariant(variants, language);
-
         }
 
-        return result;
+        return preferredVariant;
     }
 
     /**
@@ -554,7 +556,8 @@ public class ServerResource extends UniformResource {
 
         try {
             if (isAnnotated()) {
-                discoverAnnotations();
+                this.annotations = AnnotationUtils.getAnnotationDescriptors(
+                        getContext(), getClass());
             }
 
             if (isConditional()) {
@@ -575,6 +578,10 @@ public class ServerResource extends UniformResource {
         }
 
         return result;
+    }
+
+    private boolean hasAnnotations() {
+        return this.annotations != null;
     }
 
     /**
@@ -618,6 +625,58 @@ public class ServerResource extends UniformResource {
      */
     public Representation head(Variant variant) throws ResourceException {
         return get(variant);
+    }
+
+    @SuppressWarnings("unchecked")
+    private Representation invokeJavaMethod(java.lang.reflect.Method javaMethod) {
+        Representation result = null;
+        ConverterService cs = getConverterService();
+        Class<?>[] parameterTypes = javaMethod.getParameterTypes();
+        List<Object> parameters = null;
+        Object resultObject = null;
+
+        try {
+            if (parameterTypes.length > 0) {
+                parameters = new ArrayList<Object>();
+
+                for (Class<?> parameterType : parameterTypes) {
+                    if (getRequest().getEntity() != null) {
+                        try {
+                            parameters.add(cs.toObject(
+                                    getRequest().getEntity(), parameterType,
+                                    this));
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            parameters.add(null);
+                        }
+                    } else {
+                        parameters.add(null);
+                    }
+                }
+
+                // Actually invoke the method
+                resultObject = javaMethod.invoke(this, parameters.toArray());
+            } else {
+                // Actually invoke the method
+                resultObject = javaMethod.invoke(this);
+            }
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+
+        if (resultObject != null) {
+            Class<?> returnType = javaMethod.getReturnType();
+
+            if (returnType != null) {
+                result = cs.toRepresentation(resultObject);
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -902,6 +961,16 @@ public class ServerResource extends UniformResource {
      */
     public void setNegotiated(boolean negotiateContent) {
         this.negotiated = negotiateContent;
+    }
+
+    /**
+     * Sets the preferred variant.
+     * 
+     * @param preferredVariant
+     *            The preferred variant.
+     */
+    public void setPreferredVariant(Variant preferredVariant) {
+        this.preferredVariant = preferredVariant;
     }
 
     /**
