@@ -36,6 +36,8 @@ import org.restlet.data.Reference;
 
 /**
  * Represents a URI token inside a RDF N3 document.
+ * 
+ * @author Thierry Boileau
  */
 class UriToken extends LexicalUnit {
     /**

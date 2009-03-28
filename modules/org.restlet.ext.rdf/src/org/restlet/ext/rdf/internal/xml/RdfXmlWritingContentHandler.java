@@ -42,11 +42,13 @@ import org.restlet.ext.rdf.Literal;
 
 /**
  * Handler of RDF content according to the RDF XML syntax.
+ * 
+ * @author Thierry Boileau
  */
 public class RdfXmlWritingContentHandler extends GraphHandler {
 
     /** Buffered writer. */
-    // TODO plutôt un XMLWriter?
+    // TODO better to use a XMLWriter?
     BufferedWriter bw;
 
     /**

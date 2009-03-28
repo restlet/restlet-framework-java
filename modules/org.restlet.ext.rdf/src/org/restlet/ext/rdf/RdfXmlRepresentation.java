@@ -45,35 +45,35 @@ import org.restlet.representation.Representation;
  */
 public class RdfXmlRepresentation extends RdfRepresentation {
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param linkSet
-	 *            The given graph of links.
-	 */
-	public RdfXmlRepresentation(Graph linkSet) {
-		super(linkSet);
-	}
+    /**
+     * Constructor.
+     * 
+     * @param linkSet
+     *            The given graph of links.
+     */
+    public RdfXmlRepresentation(Graph linkSet) {
+        super(linkSet);
+    }
 
-	/**
-	 * Constructor. Parses the given representation into the given graph.
-	 * 
-	 * @param rdfRepresentation
-	 *            The RDF N3 representation to parse.
-	 * @param linkSet
-	 *            The graph to update.
-	 * @throws IOException
-	 */
-	public RdfXmlRepresentation(Representation rdfRepresentation, Graph linkSet)
-			throws IOException {
-		super(linkSet);
-		new RdfXmlParsingContentHandler(linkSet, rdfRepresentation);
-	}
+    /**
+     * Constructor. Parses the given representation into the given graph.
+     * 
+     * @param rdfRepresentation
+     *            The RDF N3 representation to parse.
+     * @param linkSet
+     *            The graph to update.
+     * @throws IOException
+     */
+    public RdfXmlRepresentation(Representation rdfRepresentation, Graph linkSet)
+            throws IOException {
+        super(linkSet);
+        new RdfXmlParsingContentHandler(linkSet, rdfRepresentation);
+    }
 
-	@Override
-	public void write(OutputStream outputStream) throws IOException {
-		if (getGraph() != null) {
-			new RdfXmlWritingContentHandler(getGraph(), outputStream);
-		}
-	}
+    @Override
+    public void write(OutputStream outputStream) throws IOException {
+        if (getGraph() != null) {
+            new RdfXmlWritingContentHandler(getGraph(), outputStream);
+        }
+    }
 }

@@ -37,65 +37,67 @@ import org.restlet.ext.rdf.internal.RdfConstants;
 
 /**
  * Represents a still unidentified N3 token.
+ * 
+ * @author Thierry Boileau
  */
 class Token extends LexicalUnit {
 
-	/**
-	 * Constructor with arguments.
-	 * 
-	 * @param contentHandler
-	 *            The document's parent handler.
-	 * @param context
-	 *            The parsing context.
-	 */
-	public Token(RdfN3ParsingContentHandler contentHandler, Context context)
-			throws IOException {
-		super(contentHandler, context);
-		this.parse();
-	}
+    /**
+     * Constructor with arguments.
+     * 
+     * @param contentHandler
+     *            The document's parent handler.
+     * @param context
+     *            The parsing context.
+     */
+    public Token(RdfN3ParsingContentHandler contentHandler, Context context)
+            throws IOException {
+        super(contentHandler, context);
+        this.parse();
+    }
 
-	/**
-	 * Constructor with value.
-	 * 
-	 * @param value
-	 *            The value of the current lexical unit.
-	 */
-	public Token(String value) {
-		super(value);
-	}
+    /**
+     * Constructor with value.
+     * 
+     * @param value
+     *            The value of the current lexical unit.
+     */
+    public Token(String value) {
+        super(value);
+    }
 
-	@Override
-	public void parse() throws IOException {
-		int c;
-		do {
-			c = getContentHandler().step();
-		} while (c != RdfN3ParsingContentHandler.EOF
-				&& !RdfN3ParsingContentHandler.isDelimiter(c));
-		setValue(getContentHandler().getCurrentToken());
-	}
+    @Override
+    public void parse() throws IOException {
+        int c;
+        do {
+            c = getContentHandler().step();
+        } while (c != RdfN3ParsingContentHandler.EOF
+                && !RdfN3ParsingContentHandler.isDelimiter(c));
+        setValue(getContentHandler().getCurrentToken());
+    }
 
-	@Override
-	public Object resolve() {
-		Object result = null;
-		if (getContext().isQName(getValue())) {
-			result = (getContext() != null) ? getContext().resolve(getValue())
-					: getValue();
-		} else {
-			// Must be a literal
-			if (getValue().charAt(0) > '0' && getValue().charAt(0) < '9') {
-				if (getValue().contains(".")) {
-					// Consider it as a float
-					result = new Literal(getValue(),
-							RdfConstants.XML_SCHEMA_TYPE_FLOAT);
-				} else {
-					// Consider it as an integer
-					result = new Literal(getValue(),
-							RdfConstants.XML_SCHEMA_TYPE_INTEGER);
-				}
-			} else {
-				// TODO What kind of literal?
-			}
-		}
-		return result;
-	}
+    @Override
+    public Object resolve() {
+        Object result = null;
+        if (getContext().isQName(getValue())) {
+            result = (getContext() != null) ? getContext().resolve(getValue())
+                    : getValue();
+        } else {
+            // Must be a literal
+            if (getValue().charAt(0) > '0' && getValue().charAt(0) < '9') {
+                if (getValue().contains(".")) {
+                    // Consider it as a float
+                    result = new Literal(getValue(),
+                            RdfConstants.XML_SCHEMA_TYPE_FLOAT);
+                } else {
+                    // Consider it as an integer
+                    result = new Literal(getValue(),
+                            RdfConstants.XML_SCHEMA_TYPE_INTEGER);
+                }
+            } else {
+                // TODO What kind of literal?
+            }
+        }
+        return result;
+    }
 }

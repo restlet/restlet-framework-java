@@ -27,7 +27,7 @@
  * 
  * Restlet is a registered trademark of Noelios Technologies.
  */
- 
+
 package org.restlet.ext.rdf;
 
 import org.restlet.data.Language;
@@ -38,7 +38,8 @@ import org.restlet.data.Reference;
  * reference and language properties.
  * 
  * @author Jerome Louvel
- * @see <a href="http://www.w3.org/TR/rdf-concepts/#section-Graph-Literal">RDF literals</a>
+ * @see <a href="http://www.w3.org/TR/rdf-concepts/#section-Graph-Literal">RDF
+ *      literals</a>
  */
 public class Literal {
 

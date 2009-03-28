@@ -34,6 +34,8 @@ import java.io.IOException;
 
 /**
  * Represents a lexical unit inside a N3 document.
+ * 
+ * @author Thierry Boileau
  */
 public abstract class LexicalUnit {
 
@@ -54,7 +56,8 @@ public abstract class LexicalUnit {
      * @param context
      *            The parsing context.
      */
-    public LexicalUnit(RdfN3ParsingContentHandler contentHandler, Context context) {
+    public LexicalUnit(RdfN3ParsingContentHandler contentHandler,
+            Context context) {
         super();
         this.contentHandler = contentHandler;
         this.context = context;

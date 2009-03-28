@@ -40,8 +40,11 @@ import org.restlet.data.Reference;
 /**
  * Contains essentials data updated during the parsing of a N3 document such as
  * the list of known namespaces, keywords.
+ * 
+ * @author Thierry Boileau
  */
 public class Context {
+
     /** The value of the "base" keyword. */
     private Reference base;
 

@@ -40,11 +40,13 @@ import org.restlet.ext.rdf.LinkReference;
 /**
  * Represents a blank node inside a RDF N3 document. Contains all the logic to
  * parse a blank node in N3 documents.
+ * 
+ * @author Thierry Boileau
  */
 public class BlankNodeToken extends LexicalUnit {
 
     /** List of lexical units contained by this blank node. */
-    List<LexicalUnit> lexicalUnits;
+    private List<LexicalUnit> lexicalUnits;
 
     /** Indicates if the given blank node has been already resolved. */
     private boolean resolved = false;

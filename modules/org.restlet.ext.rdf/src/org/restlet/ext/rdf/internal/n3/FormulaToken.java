@@ -35,6 +35,8 @@ import java.io.IOException;
 /**
  * Allows to parse a formula in RDF N3 notation. Please note that this kind of
  * feature is not supported yet.
+ * 
+ * @author Thierry Boileau
  */
 public class FormulaToken extends LexicalUnit {
 
@@ -44,8 +46,8 @@ public class FormulaToken extends LexicalUnit {
         return null;
     }
 
-    public FormulaToken(RdfN3ParsingContentHandler contentHandler, Context context)
-            throws IOException {
+    public FormulaToken(RdfN3ParsingContentHandler contentHandler,
+            Context context) throws IOException {
         super(contentHandler, context);
         this.parse();
     }

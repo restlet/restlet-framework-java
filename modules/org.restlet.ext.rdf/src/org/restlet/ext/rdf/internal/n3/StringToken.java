@@ -38,6 +38,8 @@ import org.restlet.ext.rdf.Literal;
 /**
  * Represents a string of characters. This string could have a type and a
  * language.
+ * 
+ * @author Thierry Boileau
  */
 class StringToken extends LexicalUnit {
     /** Does this string contains at least a new line character? */
@@ -57,8 +59,8 @@ class StringToken extends LexicalUnit {
      * @param context
      *            The parsing context.
      */
-    public StringToken(RdfN3ParsingContentHandler contentHandler, Context context)
-            throws IOException {
+    public StringToken(RdfN3ParsingContentHandler contentHandler,
+            Context context) throws IOException {
         super(contentHandler, context);
         multiLines = false;
         this.parse();

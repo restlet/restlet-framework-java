@@ -45,71 +45,71 @@ import org.restlet.representation.Representation;
  */
 public abstract class RdfRepresentation extends OutputRepresentation {
 
-	/** The inner graph of links. */
-	private Graph graph;
+    /** The inner graph of links. */
+    private Graph graph;
 
-	/**
-	 * Constructor with argument.
-	 * 
-	 * @param linkSet
-	 *            The graph of link.
-	 */
-	public RdfRepresentation(Graph linkSet) {
-		super(null);
-		this.graph = linkSet;
-	}
+    /**
+     * Constructor with argument.
+     * 
+     * @param linkSet
+     *            The graph of link.
+     */
+    public RdfRepresentation(Graph linkSet) {
+        super(null);
+        this.graph = linkSet;
+    }
 
-	/**
-	 * Constructor that parsed a given RDF representation into a link set.
-	 * 
-	 * @param rdfRepresentation
-	 *            The RDF representation to parse.
-	 * @param linkSet
-	 *            The link set to update.
-	 * @throws IOException
-	 */
-	public RdfRepresentation(Representation rdfRepresentation, Graph linkSet)
-			throws IOException {
-		this(linkSet);
-		if (MediaType.TEXT_RDF_N3.equals(rdfRepresentation.getMediaType())) {
-			new RdfN3Representation(rdfRepresentation, linkSet);
-		} else if (MediaType.TEXT_XML.equals(rdfRepresentation.getMediaType())) {
-			new RdfXmlRepresentation(rdfRepresentation, linkSet);
-		} else if (MediaType.APPLICATION_ALL_XML.includes(rdfRepresentation
-				.getMediaType())) {
-			new RdfXmlRepresentation(rdfRepresentation, linkSet);
-		}
-		// Parsing for other media types goes here.
-	}
+    /**
+     * Constructor that parsed a given RDF representation into a link set.
+     * 
+     * @param rdfRepresentation
+     *            The RDF representation to parse.
+     * @param linkSet
+     *            The link set to update.
+     * @throws IOException
+     */
+    public RdfRepresentation(Representation rdfRepresentation, Graph linkSet)
+            throws IOException {
+        this(linkSet);
+        if (MediaType.TEXT_RDF_N3.equals(rdfRepresentation.getMediaType())) {
+            new RdfN3Representation(rdfRepresentation, linkSet);
+        } else if (MediaType.TEXT_XML.equals(rdfRepresentation.getMediaType())) {
+            new RdfXmlRepresentation(rdfRepresentation, linkSet);
+        } else if (MediaType.APPLICATION_ALL_XML.includes(rdfRepresentation
+                .getMediaType())) {
+            new RdfXmlRepresentation(rdfRepresentation, linkSet);
+        }
+        // Parsing for other media types goes here.
+    }
 
-	/**
-	 * Returns the graph of links.
-	 * 
-	 * @return The graph of links.
-	 */
-	public Graph getGraph() {
-		return graph;
-	}
+    /**
+     * Returns the graph of links.
+     * 
+     * @return The graph of links.
+     */
+    public Graph getGraph() {
+        return graph;
+    }
 
-	/**
-	 * Sets the graph of links.
-	 * 
-	 * @param linkSet
-	 *            The graph of links.
-	 */
-	public void setGraph(Graph linkSet) {
-		this.graph = linkSet;
-	}
+    /**
+     * Sets the graph of links.
+     * 
+     * @param linkSet
+     *            The graph of links.
+     */
+    public void setGraph(Graph linkSet) {
+        this.graph = linkSet;
+    }
 
-	@Override
-	public void write(OutputStream outputStream) throws IOException {
-		if (MediaType.TEXT_RDF_N3.equals(getMediaType())) {
-			new RdfN3Representation(getGraph()).write(outputStream);
-		} else if (MediaType.TEXT_XML.equals(getMediaType())) {
-			new RdfXmlRepresentation(getGraph()).write(outputStream);
-		} else if (MediaType.APPLICATION_ALL_XML.includes(getMediaType())) {
-			new RdfXmlRepresentation(getGraph()).write(outputStream);
-		}
-		// Writing for other media types goes here.
-	}
+    @Override
+    public void write(OutputStream outputStream) throws IOException {
+        if (MediaType.TEXT_RDF_N3.equals(getMediaType())) {
+            new RdfN3Representation(getGraph()).write(outputStream);
+        } else if (MediaType.TEXT_XML.equals(getMediaType())) {
+            new RdfXmlRepresentation(getGraph()).write(outputStream);
+        } else if (MediaType.APPLICATION_ALL_XML.includes(getMediaType())) {
+            new RdfXmlRepresentation(getGraph()).write(outputStream);
+        }
+        // Writing for other media types goes here.
+    }
 }
