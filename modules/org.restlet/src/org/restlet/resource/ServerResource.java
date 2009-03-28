@@ -69,7 +69,10 @@ import org.restlet.util.Series;
  * Concurrency note: contrary to the {@link org.restlet.Uniform} class and its
  * main {@link Restlet} subclass where a single instance can handle several
  * calls concurrently, one instance of {@link ServerResource} is created for
- * each call handled and accessed by only one thread at a time.
+ * each call handled and accessed by only one thread at a time.<br>
+ * <br>
+ * Note: The current implementation isn't complete and doesn't support the full
+ * syntax. This is work in progress and should only be used for experimentation.
  * 
  * @author Jerome Louvel
  */
@@ -478,6 +481,7 @@ public class ServerResource extends UniformResource {
     @SuppressWarnings("unchecked")
     public Variant getPreferredVariant() {
         if (this.preferredVariant == null) {
+
             List<Variant> variants = (List<Variant>) getVariants().get(
                     getMethod());
 
@@ -627,7 +631,11 @@ public class ServerResource extends UniformResource {
         return get(variant);
     }
 
-    @SuppressWarnings("unchecked")
+    /**
+     * 
+     * @param javaMethod
+     * @return
+     */
     private Representation invokeJavaMethod(java.lang.reflect.Method javaMethod) {
         Representation result = null;
         ConverterService cs = getConverterService();

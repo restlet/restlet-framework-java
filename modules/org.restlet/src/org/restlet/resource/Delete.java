@@ -37,9 +37,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.restlet.engine.Method;
+import org.restlet.service.MetadataService;
 
 /**
- * Annotates method that removes representations.
+ * Annotates method that removes representations.<br>
+ * <br>
+ * Note: The current implementation isn't complete and doesn't support the full
+ * syntax. This is work in progress and should only be used for experimentation.
  * 
  * @author Jerome Louvel
  */
@@ -49,6 +53,14 @@ import org.restlet.engine.Method;
 @Method("DELETE")
 public @interface Delete {
 
+    /**
+     * Returns the optional list of response variants supported. The variants
+     * must be expressed using extension names as declared in the
+     * {@link MetadataService}. Example: "xml", "xml+fr", "xml|json + fr",
+     * "xml|json * fr|en", etc.
+     * 
+     * @return The optional list of response variants supported.
+     */
     String value() default "";
 
 }

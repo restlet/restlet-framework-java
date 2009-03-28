@@ -71,7 +71,10 @@ import org.restlet.util.Series;
  * Concurrency note: contrary to the {@link org.restlet.Uniform} class and its
  * main {@link Restlet} subclass where a single instance can handle several
  * calls concurrently, one instance of {@link UniformResource} is created for
- * each call handled and accessed by only one thread at a time.
+ * each call handled and accessed by only one thread at a time.<br>
+ * <br>
+ * Note: The current implementation isn't complete and doesn't support the full
+ * syntax. This is work in progress and should only be used for experimentation.
  * 
  * @see <a
  *      href="http://roy.gbiv.com/pubs/dissertation/rest_arch_style.htm#sec_5_1_5">Source

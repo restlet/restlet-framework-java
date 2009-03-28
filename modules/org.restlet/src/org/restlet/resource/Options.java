@@ -39,7 +39,10 @@ import java.lang.annotation.Target;
 import org.restlet.engine.Method;
 
 /**
- * Annotates method that describe a resource.
+ * Annotates method that describe a resource.<br>
+ * <br>
+ * Note: The current implementation isn't complete and doesn't support the full
+ * syntax. This is work in progress and should only be used for experimentation.
  * 
  * @author Jerome Louvel
  */
