@@ -30,6 +30,7 @@
 
 package org.restlet.example.tutorial;
 
+import org.restlet.data.MediaType;
 import org.restlet.resource.ClientResource;
 
 /**
@@ -40,13 +41,13 @@ import org.restlet.resource.ClientResource;
 public class Part02b {
     public static void main(String[] args) throws Exception {
         // Create the client resource
-        ClientResource resource = new ClientResource("http://www.restlet.org");
-
-        // Specify a referrer URI reference
-        resource.setReferrerRef("http://www.mysite.org");
+        ClientResource resource = new ClientResource("http://localhost:8182");
 
         // Write the response entity on the console
-        resource.get().write(System.out);
+        resource.get(MediaType.TEXT_PLAIN).write(System.out);
+
+        // Write the response entity on the console
+        resource.get(MediaType.TEXT_XML).write(System.out);
     }
 
 }

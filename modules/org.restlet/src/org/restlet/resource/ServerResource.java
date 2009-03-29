@@ -56,6 +56,7 @@ import org.restlet.data.Status;
 import org.restlet.data.Tag;
 import org.restlet.engine.util.AnnotationInfo;
 import org.restlet.engine.util.AnnotationUtils;
+import org.restlet.engine.util.VariantInfo;
 import org.restlet.representation.Representation;
 import org.restlet.representation.RepresentationInfo;
 import org.restlet.representation.Variant;
@@ -78,8 +79,8 @@ import org.restlet.util.Series;
  */
 public class ServerResource extends UniformResource {
 
-    /** The preferred variant. */
-    private Variant preferredVariant;
+    /** The preferred variant info. */
+    private VariantInfo preferredVariant;
 
     /** Indicates if annotations are supported. */
     private boolean annotated;
@@ -207,7 +208,7 @@ public class ServerResource extends UniformResource {
             RepresentationInfo resultInfo = null;
 
             if (isNegotiated()) {
-                resultInfo = getInfo(getPreferredVariant());
+                resultInfo = getInfo(getPreferredVariant(method).getVariant());
             } else {
                 resultInfo = getInfo();
             }
@@ -266,19 +267,17 @@ public class ServerResource extends UniformResource {
             setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "No method specified");
         } else {
             boolean found = false;
-            java.lang.reflect.Method javaMethod = null;
 
             if (isAnnotated() && hasAnnotations()) {
-                javaMethod = getJavaMethod(method);
+                java.lang.reflect.Method javaMethod = getJavaMethod(method);
 
                 if (javaMethod != null) {
                     found = true;
+                    result = invokeJavaMethod(javaMethod);
                 }
             }
 
-            if (found) {
-                result = invokeJavaMethod(javaMethod);
-            } else {
+            if (!found) {
                 if (method.equals(Method.GET)) {
                     result = get();
                 } else if (method.equals(Method.POST)) {
@@ -350,16 +349,16 @@ public class ServerResource extends UniformResource {
     protected Representation doNegotiatedHandle(Method method)
             throws ResourceException {
         Representation result = null;
-        Variant preferredVariant = getPreferredVariant();
+        VariantInfo preferredVariantInfo = getPreferredVariant(method);
 
-        if (preferredVariant == null) {
+        if (preferredVariantInfo == null) {
             // No variant was found matching the client preferences
             setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
             result = describeVariants();
         } else {
             // Update the variant dimensions used for content negotiation
             updateDimensions();
-            result = doHandle(method, preferredVariant);
+            result = doHandle(method, preferredVariantInfo.getVariant());
         }
 
         return result;
@@ -479,11 +478,25 @@ public class ServerResource extends UniformResource {
      * @return The preferred variant.
      */
     @SuppressWarnings("unchecked")
-    public Variant getPreferredVariant() {
+    public VariantInfo getPreferredVariant(Method method) {
         if (this.preferredVariant == null) {
-
             List<Variant> variants = (List<Variant>) getVariants().get(
                     getMethod());
+
+            if (isAnnotated() && hasAnnotations()) {
+                ConverterService cs = getConverterService();
+
+                for (AnnotationInfo annotationInfo : this.annotations) {
+                    if (method.equals(annotationInfo.getRestletMethod())) {
+                        List<Variant> methodVariants = cs
+                                .getVariants(annotationInfo.getJavaReturnType());
+
+                        if (methodVariants != null) {
+                            variants.addAll(methodVariants);
+                        }
+                    }
+                }
+            }
 
             if ((variants != null) && (!variants.isEmpty())) {
                 Language language = null;
@@ -495,9 +508,8 @@ public class ServerResource extends UniformResource {
                     language = app.getMetadataService().getDefaultLanguage();
                 }
 
-                this.preferredVariant = getClientInfo().getPreferredVariant(
-                        variants, language);
-
+                this.preferredVariant = new VariantInfo(null, getClientInfo()
+                        .getPreferredVariant(variants, language));
             }
         }
 
@@ -977,7 +989,7 @@ public class ServerResource extends UniformResource {
      * @param preferredVariant
      *            The preferred variant.
      */
-    public void setPreferredVariant(Variant preferredVariant) {
+    public void setPreferredVariant(VariantInfo preferredVariant) {
         this.preferredVariant = preferredVariant;
     }
 

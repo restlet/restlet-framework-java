@@ -75,6 +75,24 @@ public class AnnotationInfo {
     }
 
     /**
+     * Returns the parameter types of the Java method.
+     * 
+     * @return The parameter types of the Java method.
+     */
+    public Class<?>[] getJavaParameterTypes() {
+        return getJavaMethod().getParameterTypes();
+    }
+
+    /**
+     * Returns the return type of the Java method.
+     * 
+     * @return The return type of the Java method.
+     */
+    public Class<?> getJavaReturnType() {
+        return getJavaMethod().getReturnType();
+    }
+
+    /**
      * Returns the matching Restlet method.
      * 
      * @return The matching Restlet method.
