@@ -85,6 +85,9 @@ public class ServerResource extends UniformResource {
     /** Indicates if annotations are supported. */
     private boolean annotated;
 
+    /** Indicates if the annotations where extracted. */
+    private boolean introspected;
+
     /** Indicates if the identified resource exists. */
     private boolean exists;
 
@@ -97,7 +100,7 @@ public class ServerResource extends UniformResource {
     /** The modifiable list of variants. */
     private volatile Map<Method, Object> variants;
 
-    /** The modifiable list of annotation descriptors. */
+    /** The annotation descriptors. */
     private volatile List<AnnotationInfo> annotations;
 
     /**
@@ -108,6 +111,7 @@ public class ServerResource extends UniformResource {
         this.annotated = true;
         this.conditional = true;
         this.exists = true;
+        this.introspected = false;
         this.negotiated = true;
         this.variants = null;
     }
@@ -268,7 +272,7 @@ public class ServerResource extends UniformResource {
         } else {
             boolean found = false;
 
-            if (isAnnotated() && hasAnnotations()) {
+            if (hasAnnotations()) {
                 java.lang.reflect.Method javaMethod = getJavaMethod(method);
 
                 if (javaMethod != null) {
@@ -415,6 +419,21 @@ public class ServerResource extends UniformResource {
     }
 
     /**
+     * Returns the annotation descriptors.
+     * 
+     * @return The annotation descriptors.
+     */
+    private List<AnnotationInfo> getAnnotations() {
+        if (isAnnotated() && !isIntrospected()) {
+            this.annotations = AnnotationUtils.getAnnotationDescriptors(
+                    getContext(), getClass());
+            setIntrospected(true);
+        }
+
+        return this.annotations;
+    }
+
+    /**
      * Returns the application's converter service or create a new one.
      * 
      * @return The converter service.
@@ -478,7 +497,7 @@ public class ServerResource extends UniformResource {
      * @return The preferred variant.
      */
     @SuppressWarnings("unchecked")
-    public VariantInfo getPreferredVariant(Method method) {
+    private VariantInfo getPreferredVariant(Method method) {
         if (this.preferredVariant == null) {
             List<Variant> variants = (List<Variant>) getVariants().get(
                     getMethod());
@@ -571,11 +590,6 @@ public class ServerResource extends UniformResource {
         Representation result = null;
 
         try {
-            if (isAnnotated()) {
-                this.annotations = AnnotationUtils.getAnnotationDescriptors(
-                        getContext(), getClass());
-            }
-
             if (isConditional()) {
                 result = doConditionalHandle(getMethod());
             } else if (isNegotiated()) {
@@ -597,7 +611,7 @@ public class ServerResource extends UniformResource {
     }
 
     private boolean hasAnnotations() {
-        return this.annotations != null;
+        return getAnnotations() != null;
     }
 
     /**
@@ -736,6 +750,15 @@ public class ServerResource extends UniformResource {
      */
     public boolean isInRole(String roleName) {
         return getClientInfo().isInRole(getApplication().findRole(roleName));
+    }
+
+    /**
+     * Indicates if the annotations where extracted.
+     * 
+     * @return True if the annotations where extracted.
+     */
+    private boolean isIntrospected() {
+        return introspected;
     }
 
     /**
@@ -947,6 +970,16 @@ public class ServerResource extends UniformResource {
     }
 
     /**
+     * Indicates if the annotations where extracted.
+     * 
+     * @param introspected
+     *            True if the annotations where extracted.
+     */
+    private void setIntrospected(boolean introspected) {
+        this.introspected = introspected;
+    }
+
+    /**
      * Sets the reference that the client should follow for redirections or
      * resource creations.
      * 
@@ -981,16 +1014,6 @@ public class ServerResource extends UniformResource {
      */
     public void setNegotiated(boolean negotiateContent) {
         this.negotiated = negotiateContent;
-    }
-
-    /**
-     * Sets the preferred variant.
-     * 
-     * @param preferredVariant
-     *            The preferred variant.
-     */
-    public void setPreferredVariant(VariantInfo preferredVariant) {
-        this.preferredVariant = preferredVariant;
     }
 
     /**
