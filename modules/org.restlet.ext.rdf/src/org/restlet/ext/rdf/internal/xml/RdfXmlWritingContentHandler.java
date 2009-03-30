@@ -124,7 +124,8 @@ public class RdfXmlWritingContentHandler extends GraphHandler {
 				}
 				if (target.getDatatypeRef() != null) {
 					attr.addAttribute(RDF_SYNTAX, "datatype", "rdf:datatype",
-							"text", getPrefix(target.getDatatypeRef()));
+							"text", target.getDatatypeRef()
+									.toString(true, true));
 				}
 				this.writer.startElement(typeRef.getTargetRef().toString(true,
 						true), getPrefix(typeRef.getTargetRef()), null, attr);
@@ -202,11 +203,11 @@ public class RdfXmlWritingContentHandler extends GraphHandler {
 	private void writeNode(Reference reference, boolean subject) {
 		AttributesImpl atts = new AttributesImpl();
 		if (LinkReference.isBlank(reference)) {
-			atts.addAttribute(RDF_SYNTAX, "NodeId", "rdf:NodeId", "text", reference
-					.getTargetRef().toString(true, true));
+			atts.addAttribute(RDF_SYNTAX, "NodeId", "rdf:NodeId", "text",
+					reference.getTargetRef().toString(true, true));
 		} else {
-			atts.addAttribute(RDF_SYNTAX, "about", "rdf:about", "text", reference
-					.getTargetRef().toString(true, true));
+			atts.addAttribute(RDF_SYNTAX, "about", "rdf:about", "text",
+					reference.getTargetRef().toString(true, true));
 		}
 		try {
 			if (!subject) {
