@@ -50,11 +50,12 @@ import org.xml.sax.helpers.AttributesImpl;
  */
 public class RdfXmlWritingContentHandler extends GraphHandler {
 
-	/** XML writer. */
-	private XmlWriter writer;
-
+	/** . */
 	private final String RDF_SYNTAX = RdfConstants.RDF_SYNTAX.toString(true,
 			true);
+
+	/** XML writer. */
+	private XmlWriter writer;
 
 	/**
 	 * Constructor.
@@ -70,16 +71,92 @@ public class RdfXmlWritingContentHandler extends GraphHandler {
 			throws IOException, SAXException {
 		super();
 		this.writer = writer;
-		writer.setPrefix(RDF_SYNTAX, "rdf");
-		writer.setPrefix(RdfConstants.XML_SCHEMA.toString(true, true), "type");
+		this.writer.setPrefix(RDF_SYNTAX, "rdf");
+		this.writer.setPrefix(RdfConstants.XML_SCHEMA.toString(true, true),
+				"type");
+		// Discover the list of known namespaces
+		discoverNamespaces(linkset, writer);
+
 		writer.setDataFormat(true);
 		writer.setIndentStep(3);
 		this.writer.startDocument();
 		this.writer.startElement(RDF_SYNTAX, "RDF");
+
 		this.write(linkset);
 		this.writer.endElement(RDF_SYNTAX, "RDF");
 		this.writer.endDocument();
 		this.writer.flush();
+	}
+
+	/**
+	 * Updates the list of known namespaces of the XML writer for the given
+	 * graph of links.
+	 * 
+	 * @param linkset
+	 *            The given graph of links.
+	 * @param xmlWriter
+	 *            the XML writer.
+	 */
+	private void discoverNamespaces(Graph linkset, XmlWriter xmlWriter) {
+		for (Link link : linkset) {
+			discoverNamespaces(link, xmlWriter);
+		}
+	}
+
+	/**
+	 * Updates the list of known namespaces of the XML writer for the given
+	 * link.
+	 * 
+	 * @param link
+	 *            The given link.
+	 * @param xmlWriter
+	 *            the XML writer.
+	 */
+	private void discoverNamespaces(Link link, XmlWriter xmlWriter) {
+		if (link.hasLinkSource()) {
+			discoverNamespaces(link.getSourceAsLink(), xmlWriter);
+		} else if (link.hasGraphSource()) {
+			discoverNamespaces(link.getSourceAsGraph(), xmlWriter);
+		}
+		discoverNamespaces(link.getTypeRef(), xmlWriter);
+		if (link.hasLinkTarget()) {
+			discoverNamespaces(link.getTargetAsLink(), xmlWriter);
+		} else if (link.hasGraphSource()) {
+			discoverNamespaces(link.getSourceAsGraph(), xmlWriter);
+		}
+	}
+
+	/**
+	 * Updates the list of known namespaces of the XML writer for the given
+	 * reference.
+	 * 
+	 * @param reference
+	 *            The given reference.
+	 * @param xmlWriter
+	 *            the XML writer.
+	 */
+	private void discoverNamespaces(Reference reference, XmlWriter xmlWriter) {
+		if (!LinkReference.isBlank(reference)) {
+			xmlWriter.forceNSDecl(getNamespace(reference));
+		}
+	}
+
+	/**
+	 * Returns the namespace of the given reference.
+	 * 
+	 * @param reference
+	 *            the given reference.
+	 * @return The namespace of the given reference.
+	 */
+	private String getNamespace(Reference reference) {
+		String prefix = getPrefix(reference);
+		String ref = reference.toString(true, true);
+		if (prefix != null) {
+			return ref.substring(0, ref.length() - prefix.length());
+		} else {
+			return ref;
+		}
+
 	}
 
 	/**
@@ -88,7 +165,8 @@ public class RdfXmlWritingContentHandler extends GraphHandler {
 	 * 
 	 * @param ref
 	 *            the given reference.
-	 * @return
+	 * @return The prefix of the qualified name representing the given
+	 *         reference.
 	 */
 	private String getPrefix(Reference ref) {
 		String result = null;
@@ -116,6 +194,9 @@ public class RdfXmlWritingContentHandler extends GraphHandler {
 	public void link(Reference source, Reference typeRef, Literal target) {
 		try {
 			writeNode(source, true);
+
+			String typeRefNs = getNamespace(typeRef.getTargetRef());
+			String typeRefPrefix = getPrefix(typeRef.getTargetRef());
 			if (target.getLanguage() != null || target.getDatatypeRef() != null) {
 				AttributesImpl attr = new AttributesImpl();
 				if (target.getLanguage() != null) {
@@ -127,14 +208,12 @@ public class RdfXmlWritingContentHandler extends GraphHandler {
 							"text", target.getDatatypeRef()
 									.toString(true, true));
 				}
-				this.writer.startElement(typeRef.getTargetRef().toString(true,
-						true), getPrefix(typeRef.getTargetRef()), null, attr);
+				this.writer.startElement(typeRefNs, typeRefPrefix, null, attr);
 			} else {
-				this.writer.startElement(typeRef.getTargetRef().toString(true,
-						true));
+				this.writer.startElement(typeRefNs, typeRefPrefix);
 			}
 			this.writer.characters(target.getValue());
-			this.writer.endElement(typeRef.getTargetRef().toString(true, true));
+			this.writer.endElement(typeRefNs, typeRefPrefix);
 			this.writer.endElement(RDF_SYNTAX, "Description");
 		} catch (SAXException e) {
 			e.printStackTrace();
@@ -145,9 +224,11 @@ public class RdfXmlWritingContentHandler extends GraphHandler {
 	public void link(Reference source, Reference typeRef, Reference target) {
 		try {
 			writeNode(source, true);
-			this.writer.startElement(typeRef.getTargetRef()
-					.toString(true, true));
+			String typeRefNs = getNamespace(typeRef.getTargetRef());
+			String typeRefPrefix = getPrefix(typeRef.getTargetRef());
+			this.writer.startElement(typeRefNs, typeRefPrefix);
 			writeNode(target, false);
+			this.writer.endElement(typeRefNs, typeRefPrefix);
 			this.writer.endElement(RDF_SYNTAX, "Description");
 		} catch (SAXException e) {
 			e.printStackTrace();
