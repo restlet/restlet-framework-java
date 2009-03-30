@@ -43,9 +43,9 @@ $static_module = Module.new do
 			# Note: another thread might have changed our value in the meantime.
 			# We'll make sure there is no duplication.
 
-			old = $container.resource.context.attributes.put_if_absent name, value
-			if old != nil
-				value = old
+			existing = $container.resource.context.attributes.put_if_absent name, value
+			if existing != nil
+				value = existing
 			end
 
 		end
