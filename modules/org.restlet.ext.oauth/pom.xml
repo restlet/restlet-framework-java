@@ -23,7 +23,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>net.oauth</groupId>
-			<artifactId>core</artifactId>
+			<artifactId>oauth-core</artifactId>
 			<version>${lib-oauth-version}</version>
 		</dependency>
 		<dependency>
