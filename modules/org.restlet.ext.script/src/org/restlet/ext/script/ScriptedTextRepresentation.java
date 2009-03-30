@@ -75,9 +75,6 @@ import com.threecrickets.scripturian.ScriptContextController;
  * <li><code>container.errorWriter</code>: Same as above, for standard error.
  * (Nothing is currently done with the contents of this, but this may change in
  * future implementations.)</li>
- * <li><code>container.scriptEngineManager</code>: This is the
- * {@link ScriptEngineManager} used to create the script engine. Scripts may use
- * it to get information about what other engines are available.</li>
  * </ul>
  * <p>
  * Note that this container environment is very limited. The include tag of

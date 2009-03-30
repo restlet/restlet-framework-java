@@ -2,8 +2,6 @@ package org.restlet.ext.script.internal;
 
 import java.io.Writer;
 
-import javax.script.ScriptEngineManager;
-
 import org.restlet.ext.script.ScriptedTextRepresentation;
 import org.restlet.representation.Representation;
 
@@ -68,17 +66,6 @@ public class ScriptedTextRepresentationContainer {
      */
     public ScriptedTextRepresentation getRepresentation() {
         return this.representation;
-    }
-
-    /**
-     * This is the {@link ScriptEngineManager} used to create the script engine.
-     * Scripts may use it to get information about what other engines are
-     * available.
-     * 
-     * @return The script engine manager
-     */
-    public ScriptEngineManager getScriptEngineManager() {
-        return this.representation.getEmbeddedScript().getScriptEngineManager();
     }
 
     /**

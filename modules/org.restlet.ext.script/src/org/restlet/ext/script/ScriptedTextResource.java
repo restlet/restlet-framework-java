@@ -152,9 +152,6 @@ import com.threecrickets.scripturian.ScriptSource;
  * <li><code>container.errorWriter</code>: Same as above, for standard error.
  * (Nothing is currently done with the contents of this, but this may change in
  * future implementations.)</li>
- * <li><code>container.scriptEngineManager</code>: This is the
- * {@link ScriptEngineManager} used to create the script engine. Scripts may use
- * it to get information about what other engines are available.</li>
  * </ul>
  * Modifiable attributes:
  * <ul>
@@ -185,6 +182,10 @@ import com.threecrickets.scripturian.ScriptSource;
  * <code>org.restlet.ext.script.ScriptedTextResource.containerVariableName:</code>
  * {@link String}, defaults to "container". See
  * {@link #getContainerVariableName()}.</li>
+ * <li>
+ * <code>org.restlet.ext.script.ScriptedTextResource.cache:</code>
+ * {@link ConcurrentMap}, defaults to a new instance of
+ * {@link ConcurrentHashMap}. See {@link #getCache()}.</li>
  * <li>
  * <code>org.restlet.ext.script.ScriptedTextResource.defaultCharacterSet:</code>
  * {@link CharacterSet}, defaults to {@link CharacterSet#UTF_8}. See
@@ -278,7 +279,7 @@ public class ScriptedTextResource extends Resource {
     /**
      * Cache used for caching mode.
      */
-    private static ConcurrentMap<String, RepresentableString> cache = new ConcurrentHashMap<String, RepresentableString>();
+    private ConcurrentMap<String, RepresentableString> cache;
 
     /**
      * Constructs the resource.
@@ -309,24 +310,33 @@ public class ScriptedTextResource extends Resource {
     }
 
     /**
-     * Cache used for caching mode.
+     * Cache used for caching mode. Defaults to a new instance of
+     * {@link ConcurrentHashMap}. It is stored in the application's
+     * {@link Context} for persistence across requests and for sharing among
+     * instances of {@link ScriptedTextResource}.
+     * <p>
+     * This setting can be configured by setting an attribute named
+     * <code>org.restlet.ext.script.ScriptedTextResource.cache</code> in the
+     * application's {@link Context}.
      * 
      * @return The cache
      */
-    private ConcurrentMap<String, RepresentableString> getCache() {
-        /*
-         * 
-         * TODO:
-         * 
-         * if (this.cache == null) { ConcurrentMap<String, Object> attributes =
-         * Application.getCurrent().getContext() .getAttributes(); this.cache =
-         * (Map<String, RepresentableString>) attributes
-         * .get("org.restlet.ext.script.ScriptedTextResource.cache"); if
-         * (this.cache == null) { this.cache = new HashMap<String,
-         * RepresentableString>(); } }
-         */
+    @SuppressWarnings("unchecked")
+    public ConcurrentMap<String, RepresentableString> getCache() {
+        if (this.cache == null) {
+            ConcurrentMap<String, Object> attributes = getContext()
+                    .getAttributes();
+            this.cache = (ConcurrentMap<String, RepresentableString>) attributes
+                    .get("org.restlet.ext.script.ScriptedTextResource.cache");
+            if (this.cache == null) {
+                this.cache = new ConcurrentHashMap<String, RepresentableString>();
+                attributes.put(
+                        "org.restlet.ext.script.ScriptedTextResource.cache",
+                        this.cache);
+            }
+        }
 
-        return ScriptedTextResource.cache;
+        return this.cache;
     }
 
     /**
@@ -334,8 +344,8 @@ public class ScriptedTextResource extends Resource {
      * "container".
      * <p>
      * This setting can be configured by setting an attribute named
-     * "org.restlet.ext.script.ScriptedTextResource.containerVariableName" in
-     * the application's {@link Context}.
+     * <code>org.restlet.ext.script.ScriptedTextResource.containerVariableName</code>
+     * in the application's {@link Context}.
      * 
      * @return The container variable name
      */
@@ -358,8 +368,8 @@ public class ScriptedTextResource extends Resource {
      * Defaults to {@link CharacterSet#UTF_8}.
      * <p>
      * This setting can be configured by setting an attribute named
-     * "org.restlet.ext.script.ScriptedTextResource.defaultCharacterSet" in the
-     * application's {@link Context}.
+     * <code>org.restlet.ext.script.ScriptedTextResource.defaultCharacterSet</code>
+     * in the application's {@link Context}.
      * 
      * @return The default character set
      */
@@ -384,8 +394,8 @@ public class ScriptedTextResource extends Resource {
      * filenames. Defaults to "index.page".
      * <p>
      * This setting can be configured by setting an attribute named
-     * "org.restlet.ext.script.ScriptedTextResource.defaultName" in the
-     * application's {@link Context}.
+     * <code>org.restlet.ext.script.ScriptedTextResource.defaultName</code> in
+     * the application's {@link Context}.
      * 
      * @return The default name
      */
@@ -408,8 +418,8 @@ public class ScriptedTextResource extends Resource {
      * one. Defaults to "js".
      * <p>
      * This setting can be configured by setting an attribute named
-     * "org.restlet.ext.script.ScriptedTextResource.defaultScriptEngineName" in
-     * the application's {@link Context}.
+     * <code>org.restlet.ext.script.ScriptedTextResource.defaultScriptEngineName</code>
+     * in the application's {@link Context}.
      * 
      * @return The default script engine name
      */
@@ -432,8 +442,8 @@ public class ScriptedTextResource extends Resource {
      * Useful for adding your own global variables to the script.
      * <p>
      * This setting can be configured by setting an attribute named
-     * "org.restlet.ext.script.ScriptedTextResource.scriptContextController" in
-     * the application's {@link Context}.
+     * <code>org.restlet.ext.script.ScriptedTextResource.scriptContextController</code>
+     * in the application's {@link Context}.
      * 
      * @return The script context controller or null if none used
      */
@@ -453,8 +463,8 @@ public class ScriptedTextResource extends Resource {
      * scripts. Uses a default instance, but can be set to something else.
      * <p>
      * This setting can be configured by setting an attribute named
-     * "org.restlet.ext.script.ScriptedTextResource.scriptEngineManager" in the
-     * application's {@link Context}.
+     * <code>org.restlet.ext.script.ScriptedTextResource.scriptEngineManager</code>
+     * in the application's {@link Context}.
      * 
      * @return The script engine manager
      */
@@ -477,8 +487,8 @@ public class ScriptedTextResource extends Resource {
      * valid value before this class is used!
      * <p>
      * This setting can be configured by setting an attribute named
-     * "org.restlet.ext.script.ScriptedTextResource.scriptSource" in the
-     * application's {@link Context}.
+     * <code>org.restlet.ext.script.ScriptedTextResource.scriptSource</code> in
+     * the application's {@link Context}.
      * 
      * @return The script source
      */
@@ -503,8 +513,8 @@ public class ScriptedTextResource extends Resource {
      * it. Defaults to true.
      * <p>
      * This setting can be configured by setting an attribute named
-     * "org.restlet.ext.script.ScriptedTextResource.allowCompilation" in the
-     * application's {@link Context}.
+     * <code>org.restlet.ext.script.ScriptedTextResource.allowCompilation</code>
+     * in the application's {@link Context}.
      * 
      * @return Whether to allow compilation
      */
@@ -528,8 +538,8 @@ public class ScriptedTextResource extends Resource {
      * most applications. Defaults to false.
      * <p>
      * This setting can be configured by setting an attribute named
-     * "org.restlet.ext.script.ScriptedTextResource.sourceViewable" in the
-     * application's {@link Context}.
+     * <code>org.restlet.ext.script.ScriptedTextResource.sourceViewable</code>
+     * in the application's {@link Context}.
      * 
      * @return Whether to allow viewing of script source code
      */

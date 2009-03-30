@@ -38,7 +38,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 import org.restlet.data.CharacterSet;
@@ -233,17 +232,6 @@ public class ScriptedTextResourceContainer {
      */
     public Response getResponse() {
         return this.resource.getResponse();
-    }
-
-    /**
-     * This is the {@link ScriptEngineManager} used to create the script engine.
-     * Scripts may use it to get information about what other engines are
-     * available.
-     * 
-     * @return The script engine manager
-     */
-    public ScriptEngineManager getScriptEngineManager() {
-        return this.resource.getScriptEngineManager();
     }
 
     /**

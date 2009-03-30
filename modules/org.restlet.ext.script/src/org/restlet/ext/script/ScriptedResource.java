@@ -167,9 +167,6 @@ import com.threecrickets.scripturian.ScriptSource;
  * some scripting platforms may not provide adequate access or may otherwise be
  * broken.</li>
  * <li><code>container.errorWriter</code>: Same as above, for standard error.</li>
- * <li><code>container.scriptEngineManager</code>: This is the
- * {@link ScriptEngineManager} used to create the script engine. Scripts may use
- * it to get information about what other engines are available.</li>
  * </ul>
  * Modifiable attributes:
  * <ul>
@@ -402,7 +399,7 @@ public class ScriptedResource extends Resource {
      * script. Defaults to "acceptRepresentation".
      * <p>
      * This setting can be configured by setting an attribute named
-     * "org.restlet.ext.script.ScriptedResource.acceptRepresentationEntryPointName"
+     * <code>org.restlet.ext.script.ScriptedResource.acceptRepresentationEntryPointName</code>
      * in the application's {@link Context}.
      * 
      * @return The name of the <code>acceptRepresentation()</code> entry point
@@ -426,8 +423,8 @@ public class ScriptedResource extends Resource {
      * "container".
      * <p>
      * This setting can be configured by setting an attribute named
-     * "org.restlet.ext.script.ScriptedResource.containerVariableName" in the
-     * application's {@link Context}.
+     * <code>org.restlet.ext.script.ScriptedResource.containerVariableName</code>
+     * in the application's {@link Context}.
      * 
      * @return The container variable name
      */
@@ -450,8 +447,8 @@ public class ScriptedResource extends Resource {
      * Defaults to {@link CharacterSet#UTF_8}.
      * <p>
      * This setting can be configured by setting an attribute named
-     * "org.restlet.ext.script.ScriptedResource.defaultCharacterSet" in the
-     * application's {@link Context}.
+     * <code>org.restlet.ext.script.ScriptedResource.defaultCharacterSet</code>
+     * in the application's {@link Context}.
      * 
      * @return The default character set
      */
@@ -476,7 +473,7 @@ public class ScriptedResource extends Resource {
      * filenames. Defaults to "default.script".
      * <p>
      * This setting can be configured by setting an attribute named
-     * "org.restlet.ext.script.ScriptedResource.defaultName" in the
+     * <code>org.restlet.ext.script.ScriptedResource.defaultName</code> in the
      * application's {@link Context}.
      * 
      * @return The default name
@@ -500,8 +497,8 @@ public class ScriptedResource extends Resource {
      * one. Defaults to "js".
      * <p>
      * This setting can be configured by setting an attribute named
-     * "org.restlet.ext.script.ScriptedResource.defaultScriptEngineName" in the
-     * application's {@link Context}.
+     * <code>org.restlet.ext.script.ScriptedResource.defaultScriptEngineName</code>
+     * in the application's {@link Context}.
      * 
      * @return The default script engine name
      */
@@ -524,8 +521,8 @@ public class ScriptedResource extends Resource {
      * allowing for nicer URLs. Defaults to "script".
      * <p>
      * This setting can be configured by setting an attribute named
-     * "org.restlet.ext.script.ScriptedResource.extension" in the application's
-     * {@link Context}.
+     * <code>org.restlet.ext.script.ScriptedResource.extension</code> in the
+     * application's {@link Context}.
      * 
      * @return The extension
      */
@@ -548,7 +545,7 @@ public class ScriptedResource extends Resource {
      * script. Defaults to "initialize".
      * <p>
      * This setting can be configured by setting an attribute named
-     * "org.restlet.ext.script.ScriptedResource.initializeResourceEntryPointName"
+     * <code>org.restlet.ext.script.ScriptedResource.initializeResourceEntryPointName</code>
      * in the application's {@link Context}.
      * 
      * @return The name of the <code>initializeResource()</code> entry point
@@ -572,7 +569,7 @@ public class ScriptedResource extends Resource {
      * script. Defaults to "removeRepresentations".
      * <p>
      * This setting can be configured by setting an attribute named
-     * "org.restlet.ext.script.ScriptedResource.removeRepresentationsEntryPointName"
+     * <code>org.restlet.ext.script.ScriptedResource.removeRepresentationsEntryPointName</code>
      * in the application's {@link Context}.
      * 
      * @return The name of the <code>removeRepresentations()</code> entry point
@@ -596,8 +593,8 @@ public class ScriptedResource extends Resource {
      * Defaults to "represent".
      * <p>
      * This setting can be configured by setting an attribute named
-     * "org.restlet.ext.script.ScriptedResource.representEntryPointName" in the
-     * application's {@link Context}.
+     * <code>org.restlet.ext.script.ScriptedResource.representEntryPointName</code>
+     * in the application's {@link Context}.
      * 
      * @return The name of the <code>represent()</code> entry point
      */
@@ -620,8 +617,8 @@ public class ScriptedResource extends Resource {
      * Useful for adding your own global variables to the script.
      * <p>
      * This setting can be configured by setting an attribute named
-     * "org.restlet.ext.script.ScriptedResource.scriptContextController" in the
-     * application's {@link Context}.
+     * <code>org.restlet.ext.script.ScriptedResource.scriptContextController</code>
+     * in the application's {@link Context}.
      * 
      * @return The script context controller or null if none used
      */
@@ -641,8 +638,8 @@ public class ScriptedResource extends Resource {
      * scripts. Uses a default instance, but can be set to something else.
      * <p>
      * This setting can be configured by setting an attribute named
-     * "org.restlet.ext.script.ScriptedResource.scriptEngineManager" in the
-     * application's {@link Context}.
+     * <code>org.restlet.ext.script.ScriptedResource.scriptEngineManager</code>
+     * in the application's {@link Context}.
      * 
      * @return The script engine manager
      */
@@ -665,7 +662,7 @@ public class ScriptedResource extends Resource {
      * valid value before this class is used!
      * <p>
      * This setting can be configured by setting an attribute named
-     * "org.restlet.ext.script.ScriptedResource.scriptSource" in the
+     * <code>org.restlet.ext.script.ScriptedResource.scriptSource</code> in the
      * application's {@link Context}.
      * 
      * @return The script source
@@ -691,7 +688,7 @@ public class ScriptedResource extends Resource {
      * script. Defaults to "storeRepresentation".
      * <p>
      * This setting can be configured by setting an attribute named
-     * "org.restlet.ext.script.ScriptedResource.storeRepresentationEntryPointName"
+     * <code>org.restlet.ext.script.ScriptedResource.storeRepresentationEntryPointName</code>
      * in the application's {@link Context}.
      * 
      * @return The name of the <code>storeRepresentation()</code> entry point
@@ -715,8 +712,8 @@ public class ScriptedResource extends Resource {
      * it. Defaults to true.
      * <p>
      * This setting can be configured by setting an attribute named
-     * "org.restlet.ext.script.ScriptedResource.allowCompilation" in the
-     * application's {@link Context}.
+     * <code>org.restlet.ext.script.ScriptedResource.allowCompilation</code> in
+     * the application's {@link Context}.
      * 
      * @return Whether to allow compilation
      */
@@ -740,8 +737,8 @@ public class ScriptedResource extends Resource {
      * most applications. Defaults to false.
      * <p>
      * This setting can be configured by setting an attribute named
-     * "org.restlet.ext.script.ScriptedResource.sourceViewable" in the
-     * application's {@link Context}.
+     * <code>org.restlet.ext.script.ScriptedResource.sourceViewable</code> in
+     * the application's {@link Context}.
      * 
      * @return Whether to allow viewing of script source code
      */
