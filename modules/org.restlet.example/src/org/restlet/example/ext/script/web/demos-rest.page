@@ -57,7 +57,7 @@ function seeMainSource() {
 
 function seeIncludeSource() {
 	var resource = $('#resource').val();
-	window.location = resource + '/statics.fragment?source=true';
+	window.location = resource + '/context.fragment?source=true';
 }
 </script>
 
