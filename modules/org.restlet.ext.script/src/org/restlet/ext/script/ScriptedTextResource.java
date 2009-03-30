@@ -32,6 +32,7 @@ package org.restlet.ext.script;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -141,17 +142,6 @@ import com.threecrickets.scripturian.ScriptSource;
  * explicitly setting response characteristics.</li>
  * <li><code>container.isStreaming</code>: This boolean is true when the writer
  * is in streaming mode (see above).</li>
- * <li><code>container.writer</code>: Allows the script direct access to the
- * {@link Writer}. This should rarely be necessary, because by default the
- * standard output for your scripting engine would be directed to it, and the
- * scripting platform's native method for printing should be preferred. However,
- * some scripting platforms may not provide adequate access or may otherwise be
- * broken. Additionally, it may be useful to access the writer during streaming
- * mode. For example, you can call {@link Writer#flush()} to make sure all
- * output is sent to the client.</li>
- * <li><code>container.errorWriter</code>: Same as above, for standard error.
- * (Nothing is currently done with the contents of this, but this may change in
- * future implementations.)</li>
  * </ul>
  * Modifiable attributes:
  * <ul>
@@ -280,6 +270,18 @@ public class ScriptedTextResource extends Resource {
      * Cache used for caching mode.
      */
     private ConcurrentMap<String, RepresentableString> cache;
+
+    /**
+     * Same as {@link #writer}, for standard error. (Nothing is currently done
+     * with the contents of this, but this may change in future
+     * implementations.)
+     */
+    private Writer errorWriter = new StringWriter();
+
+    /**
+     * The {@link Writer} used by the {@link EmbeddedScript}.
+     */
+    private Writer writer;
 
     /**
      * Constructs the resource.
@@ -438,6 +440,18 @@ public class ScriptedTextResource extends Resource {
     }
 
     /**
+     * Same as {@link #getWriter()}, for standard error. (Nothing is currently
+     * done with the contents of this, but this may change in future
+     * implementations.)
+     * 
+     * @return The error writer
+     * @see #setErrorWriter(Writer)
+     */
+    public Writer getErrorWriter() {
+        return this.errorWriter;
+    }
+
+    /**
      * An optional {@link ScriptContextController} to be used with the scripts.
      * Useful for adding your own global variables to the script.
      * <p>
@@ -506,6 +520,16 @@ public class ScriptedTextResource extends Resource {
         }
 
         return this.scriptSource;
+    }
+
+    /**
+     * The {@link Writer} used by the {@link EmbeddedScript}.
+     * 
+     * @return The writer
+     * @see #setWriter(Writer)
+     */
+    public Writer getWriter() {
+        return this.writer;
     }
 
     /**
@@ -587,5 +611,23 @@ public class ScriptedTextResource extends Resource {
         } catch (ScriptException e) {
             throw new ResourceException(e);
         }
+    }
+
+    /**
+     * @param errorWriter
+     *            The error writer
+     * @see #getErrorWriter()
+     */
+    public void setErrorWriter(Writer errorWriter) {
+        this.errorWriter = errorWriter;
+    }
+
+    /**
+     * @param writer
+     *            The writer
+     * @see #getWriter()
+     */
+    public void setWriter(Writer writer) {
+        this.writer = writer;
     }
 }

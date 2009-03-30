@@ -52,6 +52,12 @@ import com.threecrickets.scripturian.ScriptContextController;
  * @ScriptedTextResource
  */
 class ScriptedTextStreamingRepresentation extends WriterRepresentation {
+
+    /**
+     * The resource.
+     */
+    private final ScriptedTextResource resource;
+
     /**
      * The container.
      */
@@ -75,6 +81,8 @@ class ScriptedTextStreamingRepresentation extends WriterRepresentation {
     /**
      * Constructor.
      * 
+     * @param resource
+     *            The resource
      * @param container
      *            The container
      * @param scriptEngines
@@ -84,7 +92,7 @@ class ScriptedTextStreamingRepresentation extends WriterRepresentation {
      * @param script
      *            The embedded script instance
      */
-    public ScriptedTextStreamingRepresentation(
+    public ScriptedTextStreamingRepresentation(ScriptedTextResource resource,
             ScriptedTextResourceContainer container,
             ConcurrentMap<String, ScriptEngine> scriptEngines,
             ScriptContextController scriptContextController,
@@ -92,6 +100,7 @@ class ScriptedTextStreamingRepresentation extends WriterRepresentation {
         // Note that we are setting representation characteristics
         // before we actually run the script
         super(container.getMediaType());
+        this.resource = resource;
         this.container = container;
         this.scriptEngines = scriptEngines;
         this.scriptContextController = scriptContextController;
@@ -107,9 +116,9 @@ class ScriptedTextStreamingRepresentation extends WriterRepresentation {
     public void write(Writer writer) throws IOException {
         // writer = new OutputStreamWriter(System.out);
         this.container.isStreaming = true;
-        this.container.setWriter(writer);
+        this.resource.setWriter(writer);
         try {
-            this.script.run(writer, this.container.getErrorWriter(),
+            this.script.run(writer, this.resource.getErrorWriter(),
                     this.scriptEngines, this.scriptContextController, false);
         } catch (ScriptException e) {
             IOException ioe = new IOException("Script exception");

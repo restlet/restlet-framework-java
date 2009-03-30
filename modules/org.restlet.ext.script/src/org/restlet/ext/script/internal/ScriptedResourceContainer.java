@@ -32,8 +32,6 @@ package org.restlet.ext.script.internal;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -97,17 +95,6 @@ public class ScriptedResourceContainer {
      * <code>storeRepresentation()</code>.
      */
     private Language language;
-
-    /**
-     * Allows the script direct access to the {@link Writer}. Delegates to
-     * standard output.
-     */
-    private final Writer writer = new OutputStreamWriter(System.out);
-
-    /**
-     * Same as {@link #writer}, for standard error. Delegates to standard error.
-     */
-    private final Writer errorWriter = new OutputStreamWriter(System.err);
 
     /**
      * The script context controller.
@@ -212,15 +199,6 @@ public class ScriptedResourceContainer {
     }
 
     /**
-     * Same as {@link #getWriter()}, for standard error.
-     * 
-     * @return The error writer
-     */
-    public Writer getErrorWriter() {
-        return this.errorWriter;
-    }
-
-    /**
      * The {@link Language} that will be used if you return an arbitrary type
      * for <code>represent()</code>, <code>acceptRepresentation()</code> and
      * <code>storeRepresentation()</code>. Defaults to null.
@@ -267,19 +245,6 @@ public class ScriptedResourceContainer {
      */
     public Variant getVariant() {
         return this.variant;
-    }
-
-    /**
-     * Allows the script direct access to the {@link Writer}. This should rarely
-     * be necessary, because by default the standard output for your scripting
-     * engine would be directed to it, and the scripting platform's native
-     * method for printing should be preferred. However, some scripting
-     * platforms may not provide adequate access or may otherwise be broken.
-     * 
-     * @return The writer
-     */
-    public Writer getWriter() {
-        return this.writer;
     }
 
     /**
@@ -337,8 +302,8 @@ public class ScriptedResourceContainer {
             scriptDescriptor.setScript(script);
         }
 
-        script.run(this.writer, this.errorWriter, this.scriptEngines,
-                this.scriptContextController, false);
+        script.run(this.resource.getWriter(), this.resource.getErrorWriter(),
+                this.scriptEngines, this.scriptContextController, false);
     }
 
     /**
@@ -366,7 +331,8 @@ public class ScriptedResourceContainer {
                         .getDefaultScriptEngineName(), this.resource
                         .isAllowCompilation(), this.resource.getScriptSource());
                 scriptDescriptor.setScript(script);
-                script.run(this.writer, this.errorWriter, this.scriptEngines,
+                script.run(this.resource.getWriter(), this.resource
+                        .getErrorWriter(), this.scriptEngines,
                         this.scriptContextController, false);
             }
 

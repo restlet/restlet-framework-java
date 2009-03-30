@@ -31,6 +31,7 @@
 package org.restlet.ext.script;
 
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.concurrent.ConcurrentMap;
 
@@ -160,13 +161,6 @@ import com.threecrickets.scripturian.ScriptSource;
  * <code>acceptRepresentation()</code> and <code>storeRepresentation()</code>.
  * Note that <code>container.variant</code> is identical to
  * <code>container.entity</code> when available.</li>
- * <li><code>container.writer</code>: Allows the script direct access to the
- * {@link Writer}. This should rarely be necessary, because by default the
- * standard output for your scripting engine would be directed to it, and the
- * scripting platform's native method for printing should be preferred. However,
- * some scripting platforms may not provide adequate access or may otherwise be
- * broken.</li>
- * <li><code>container.errorWriter</code>: Same as above, for standard error.</li>
  * </ul>
  * Modifiable attributes:
  * <ul>
@@ -211,6 +205,9 @@ import com.threecrickets.scripturian.ScriptSource;
  * {@link String}, defaults to "js". See {@link #getDefaultScriptEngineName()}.</li>
  * <li><code>org.restlet.ext.script.ScriptedResource.extension:</code>
  * {@link String} , defaults to "script". See {@link #getExtension()}.</li>
+ * <code>org.restlet.ext.script.ScriptedResource.errorWriter:</code>
+ * {@link Writer}, defaults to standard error. See {@link #getErrorWriter()}
+ * .</li>
  * <li>
  * <code>org.restlet.ext.script.ScriptedResource.initializeResourceEntryPointName:</code>
  * {@link String}, defaults to "initializeResource". See
@@ -240,6 +237,9 @@ import com.threecrickets.scripturian.ScriptSource;
  * <code>org.restlet.ext.script.ScriptedResource.storeRepresentationEntryPointName:</code>
  * {@link String}, defaults to "storeRepresentation". See
  * {@link #getStoreRepresentationEntryPointName()}.</li>
+ * <li>
+ * <code>org.restlet.ext.script.ScriptedResource.writer:</code> {@link Writer},
+ * defaults to standard output. See {@link #getWriter()}.</li>
  * </ul>
  * 
  * @author Tal Liron
@@ -341,6 +341,16 @@ public class ScriptedResource extends Resource {
      * Constant.
      */
     private static final String TRUE = "true";
+
+    /**
+     * The {@link Writer} used by the {@link EmbeddedScript}.
+     */
+    private Writer writer = new OutputStreamWriter(System.out);
+
+    /**
+     * Same as {@link #writer}, for standard error.
+     */
+    private Writer errorWriter = new OutputStreamWriter(System.err);
 
     /**
      * Constructs the resource, and delegates to the
@@ -514,6 +524,30 @@ public class ScriptedResource extends Resource {
         }
 
         return this.defaultScriptEngineName;
+    }
+
+    /**
+     * Same as {@link #getWriter()}, for standard error. Defaults to standard
+     * error.
+     * <p>
+     * This setting can be configured by setting an attribute named
+     * <code>org.restlet.ext.script.ScriptedResource.errorWriter</code> in the
+     * application's {@link Context}.
+     * 
+     * @return The error writer
+     */
+    public Writer getErrorWriter() {
+        if (this.errorWriter == null) {
+            ConcurrentMap<String, Object> attributes = getContext()
+                    .getAttributes();
+            this.errorWriter = (Writer) attributes
+                    .get("org.restlet.ext.script.ScriptedResource.errorWriter");
+            if (this.errorWriter == null) {
+                this.errorWriter = new OutputStreamWriter(System.out);
+            }
+        }
+
+        return this.errorWriter;
     }
 
     /**
@@ -705,6 +739,30 @@ public class ScriptedResource extends Resource {
         }
 
         return this.storeRepresentationEntryPointName;
+    }
+
+    /**
+     * The {@link Writer} used by the {@link EmbeddedScript}. Defaults to
+     * standard output.
+     * <p>
+     * This setting can be configured by setting an attribute named
+     * <code>org.restlet.ext.script.ScriptedResource.writer</code> in the
+     * application's {@link Context}.
+     * 
+     * @return The writer
+     */
+    public Writer getWriter() {
+        if (this.writer == null) {
+            ConcurrentMap<String, Object> attributes = getContext()
+                    .getAttributes();
+            this.writer = (Writer) attributes
+                    .get("org.restlet.ext.script.ScriptedResource.writer");
+            if (this.writer == null) {
+                this.writer = new OutputStreamWriter(System.out);
+            }
+        }
+
+        return this.writer;
     }
 
     /**

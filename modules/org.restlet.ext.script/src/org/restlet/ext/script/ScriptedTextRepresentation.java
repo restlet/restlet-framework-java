@@ -66,15 +66,6 @@ import com.threecrickets.scripturian.ScriptContextController;
  * itself. This can be useful for generating text according to set
  * characteristics. For example, calling {@link Representation#getLanguages()}
  * and generating the appropriate text.</li>
- * <li><code>container.writer</code>: Allows the script direct access to the
- * {@link Writer}. This should rarely be necessary, because by default the
- * standard output for your scripting engine would be directed to it, and the
- * scripting platform's native method for printing should be preferred. However,
- * some scripting platforms may not provide adequate access or may otherwise be
- * broken.</li>
- * <li><code>container.errorWriter</code>: Same as above, for standard error.
- * (Nothing is currently done with the contents of this, but this may change in
- * future implementations.)</li>
  * </ul>
  * <p>
  * Note that this container environment is very limited. The include tag of
@@ -198,7 +189,7 @@ public class ScriptedTextRepresentation extends WriterRepresentation {
     public void write(Writer writer) throws IOException {
         try {
             ScriptedTextRepresentationContainer container = new ScriptedTextRepresentationContainer(
-                    this, writer, this.errorWriter);
+                    this);
             this.embeddedScript.run(writer, this.errorWriter,
                     this.scriptEngines,
                     new ScriptedTextRepresentationScriptContextController(this,

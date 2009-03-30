@@ -101,18 +101,6 @@ public class ScriptedTextResourceContainer {
     protected boolean isStreaming;
 
     /**
-     * Allows the script direct access to the {@link Writer}.
-     */
-    private Writer writer;
-
-    /**
-     * /** Same as {@link #writer}, for standard error. (Nothing is currently
-     * done with the contents of this, but this may change in future
-     * implementations.)
-     */
-    private final Writer errorWriter = new StringWriter();
-
-    /**
      * Buffer used for caching mode.
      */
     private StringBuffer buffer;
@@ -165,17 +153,6 @@ public class ScriptedTextResourceContainer {
      */
     public CharacterSet getCharacterSet() {
         return this.characterSet;
-    }
-
-    /**
-     * Same as {@link #getWriter()}, for standard error. (Nothing is currently
-     * done with the contents of this, but this may change in future
-     * implementations.)
-     * 
-     * @return The error writer
-     */
-    public Writer getErrorWriter() {
-        return this.errorWriter;
     }
 
     /**
@@ -245,23 +222,6 @@ public class ScriptedTextResourceContainer {
     }
 
     /**
-     * Allows the script direct access to the {@link Writer}. This should rarely
-     * be necessary, because by default the standard output for your scripting
-     * engine would be directed to it, and the scripting platform's native
-     * method for printing should be preferred. However, some scripting
-     * platforms may not provide adequate access or may otherwise be broken.
-     * Additionally, it may be useful to access the writer during streaming
-     * mode. For example, you can call {@link Writer#flush()} to make sure all
-     * output is sent to the client.
-     * 
-     * @return The writer
-     * @see #setWriter(Writer)
-     */
-    public Writer getWriter() {
-        return this.writer;
-    }
-
-    /**
      * This powerful method allows scripts to execute other scripts in place,
      * and is useful for creating large, maintainable applications based on
      * scripts. Included scripts can act as a library or toolkit and can even be
@@ -301,8 +261,8 @@ public class ScriptedTextResourceContainer {
      */
     public Representation include(String name, String scriptEngineName)
             throws IOException, ScriptException {
-        Writer writer = getWriter();
         boolean isStreaming = isStreaming();
+        Writer writer = this.resource.getWriter();
 
         // Get script descriptor
         ScriptSource.ScriptDescriptor<EmbeddedScript> scriptDescriptor = this.resource
@@ -342,7 +302,7 @@ public class ScriptedTextResourceContainer {
                 StringWriter stringWriter = new StringWriter();
                 this.buffer = stringWriter.getBuffer();
                 writer = new BufferedWriter(stringWriter);
-                setWriter(writer);
+                this.resource.setWriter(writer);
             } else {
                 writer.flush();
                 startPosition = this.buffer.length();
@@ -351,17 +311,18 @@ public class ScriptedTextResourceContainer {
 
         try {
             // Do not allow caching in streaming mode
-            if (script.run(writer, getErrorWriter(), this.scriptEngines,
-                    this.scriptContextController, !isStreaming)) {
+            if (script.run(writer, this.resource.getErrorWriter(),
+                    this.scriptEngines, this.scriptContextController,
+                    !isStreaming)) {
 
                 // Did the script ask us to start streaming?
                 if (this.startStreaming) {
                     this.startStreaming = false;
 
                     // Note that this will cause the script to run again!
-                    return new ScriptedTextStreamingRepresentation(this,
-                            this.scriptEngines, this.scriptContextController,
-                            script);
+                    return new ScriptedTextStreamingRepresentation(
+                            this.resource, this, this.scriptEngines,
+                            this.scriptContextController, script);
                 }
 
                 if (isStreaming) {
@@ -405,8 +366,8 @@ public class ScriptedTextResourceContainer {
                 this.startStreaming = false;
 
                 // Note that this will cause the script to run again!
-                return new ScriptedTextStreamingRepresentation(this,
-                        this.scriptEngines, this.scriptContextController,
+                return new ScriptedTextStreamingRepresentation(this.resource,
+                        this, this.scriptEngines, this.scriptContextController,
                         script);
 
                 // Note that we will allow exceptions in scripts that ask us
@@ -471,15 +432,6 @@ public class ScriptedTextResourceContainer {
                     "Cannot change media type while streaming");
         }
         this.mediaType = mediaType;
-    }
-
-    /**
-     * @param writer
-     *            The writer
-     * @see #getWriter()
-     */
-    public void setWriter(Writer writer) {
-        this.writer = writer;
     }
 
     /**
