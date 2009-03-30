@@ -203,11 +203,10 @@ import com.threecrickets.scripturian.ScriptSource;
  * <li>
  * <code>org.restlet.ext.script.ScriptedResource.defaultScriptEngineName:</code>
  * {@link String}, defaults to "js". See {@link #getDefaultScriptEngineName()}.</li>
+ * <li><code>org.restlet.ext.script.ScriptedResource.errorWriter:</code>
+ * {@link Writer}, defaults to standard error. See {@link #getErrorWriter()}.</li>
  * <li><code>org.restlet.ext.script.ScriptedResource.extension:</code>
- * {@link String} , defaults to "script". See {@link #getExtension()}.</li>
- * <code>org.restlet.ext.script.ScriptedResource.errorWriter:</code>
- * {@link Writer}, defaults to standard error. See {@link #getErrorWriter()}
- * .</li>
+ * {@link String}, defaults to "script". See {@link #getExtension()}.</li>
  * <li>
  * <code>org.restlet.ext.script.ScriptedResource.initializeResourceEntryPointName:</code>
  * {@link String}, defaults to "initializeResource". See
