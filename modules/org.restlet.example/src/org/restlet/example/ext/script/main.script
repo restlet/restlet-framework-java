@@ -77,6 +77,7 @@ application.statusService.contactEmail = applicationContactEmail;
 //
 
 var component = new Component();
+component.logService.loggerName = applicationLoggerName;
 component.servers.add(Protocol.HTTP, serverPort);
 component.clients.add(Protocol.FILE);
 component.defaultHost.attach(application);
