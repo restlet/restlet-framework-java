@@ -27,6 +27,7 @@ importClass(
 	org.restlet.Router,
 	org.restlet.Redirector,
 	org.restlet.data.Protocol,
+	org.restlet.data.Reference,
 	org.restlet.util.Template,
 	org.restlet.ext.script.ScriptedResource,
 	org.restlet.ext.script.ScriptedTextResource,
@@ -67,6 +68,9 @@ var application = new JavaAdapter(Application, {
 		return router;
 	}
 });
+
+application.statusService.homeRef = new Reference(applicationHomeURL);
+application.statusService.contactEmail = applicationContactEmail;
 
 //
 // Component
