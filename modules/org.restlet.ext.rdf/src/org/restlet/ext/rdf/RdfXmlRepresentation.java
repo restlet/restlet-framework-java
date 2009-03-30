@@ -36,6 +36,8 @@ import java.io.OutputStream;
 import org.restlet.ext.rdf.internal.xml.RdfXmlParsingContentHandler;
 import org.restlet.ext.rdf.internal.xml.RdfXmlWritingContentHandler;
 import org.restlet.representation.Representation;
+import org.restlet.util.XmlWriter;
+import org.xml.sax.SAXException;
 
 /**
  * Representation for RDF/n3 documents. It knows how to serialize and
@@ -45,35 +47,58 @@ import org.restlet.representation.Representation;
  */
 public class RdfXmlRepresentation extends RdfRepresentation {
 
-    /**
-     * Constructor.
-     * 
-     * @param linkSet
-     *            The given graph of links.
-     */
-    public RdfXmlRepresentation(Graph linkSet) {
-        super(linkSet);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param linkSet
+	 *            The given graph of links.
+	 */
+	public RdfXmlRepresentation(Graph linkSet) {
+		super(linkSet);
+	}
 
-    /**
-     * Constructor. Parses the given representation into the given graph.
-     * 
-     * @param rdfRepresentation
-     *            The RDF N3 representation to parse.
-     * @param linkSet
-     *            The graph to update.
-     * @throws IOException
-     */
-    public RdfXmlRepresentation(Representation rdfRepresentation, Graph linkSet)
-            throws IOException {
-        super(linkSet);
-        new RdfXmlParsingContentHandler(linkSet, rdfRepresentation);
-    }
+	/**
+	 * Constructor. Parses the given representation into the given graph.
+	 * 
+	 * @param rdfRepresentation
+	 *            The RDF N3 representation to parse.
+	 * @param linkSet
+	 *            The graph to update.
+	 * @throws IOException
+	 */
+	public RdfXmlRepresentation(Representation rdfRepresentation, Graph linkSet)
+			throws IOException {
+		super(linkSet);
+		new RdfXmlParsingContentHandler(linkSet, rdfRepresentation);
+	}
 
-    @Override
-    public void write(OutputStream outputStream) throws IOException {
-        if (getGraph() != null) {
-            new RdfXmlWritingContentHandler(getGraph(), outputStream);
-        }
-    }
+	@Override
+	public void write(OutputStream outputStream) throws IOException {
+		if (getGraph() != null) {
+
+			XmlWriter xmlWriter = new XmlWriter(outputStream,
+					(getCharacterSet() == null) ? "UTF-8" : getCharacterSet()
+							.toString());
+			write(xmlWriter);
+		}
+	}
+
+	/**
+	 * Writes the representation to a XML writer.
+	 * 
+	 * @param xmlWriter
+	 *            The XML writer to write to.
+	 * @throws IOException
+	 */
+	public void write(XmlWriter xmlWriter) throws IOException {
+		if (getGraph() != null) {
+			try {
+				new RdfXmlWritingContentHandler(getGraph(), xmlWriter);
+				xmlWriter.flush();
+			} catch (SAXException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
 }
