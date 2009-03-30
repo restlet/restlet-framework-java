@@ -179,13 +179,13 @@ import com.threecrickets.scripturian.ScriptSource;
  * <code>org.restlet.ext.script.ScriptedTextResource.allowCompilation:</code>
  * {@link Boolean}, defaults to true. See {@link #isAllowCompilation()}.</li>
  * <li>
- * <code>org.restlet.ext.script.ScriptedTextResource.containerVariableName:</code>
- * {@link String}, defaults to "container". See
- * {@link #getContainerVariableName()}.</li>
- * <li>
  * <code>org.restlet.ext.script.ScriptedTextResource.cache:</code>
  * {@link ConcurrentMap}, defaults to a new instance of
  * {@link ConcurrentHashMap}. See {@link #getCache()}.</li>
+ * <li>
+ * <code>org.restlet.ext.script.ScriptedTextResource.containerVariableName:</code>
+ * {@link String}, defaults to "container". See
+ * {@link #getContainerVariableName()}.</li>
  * <li>
  * <code>org.restlet.ext.script.ScriptedTextResource.defaultCharacterSet:</code>
  * {@link CharacterSet}, defaults to {@link CharacterSet#UTF_8}. See
