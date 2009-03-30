@@ -39,7 +39,7 @@ print 'This page was dynamically generated at ' . System::currentTimeMillis();
 //
 
 ?>
-<?& $script->statics->get('exampleBasePath') . 'demos/quercus.fragment' ?>
+<?& $script->meta->get('exampleBasePath') . 'demos/quercus.fragment' ?>
 <?
 
 //
@@ -67,11 +67,11 @@ function printFactory($factory) {
 ?>
 <h3>Script engine used:</h3>
 <?
-printFactory($script->scriptEngine->factory);
+printFactory($script->engine->factory);
 ?>
 <h3>Available script engines:</h3>
 <?
-$factories = $container->scriptEngineManager->engineFactories->toArray();
+$factories = $script->engineManager->engineFactories->toArray();
 foreach($factories as $factory) {
 	printFactory($factory);
 }

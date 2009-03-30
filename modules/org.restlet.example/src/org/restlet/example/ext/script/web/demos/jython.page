@@ -44,7 +44,7 @@ sys.stdout.write('This page was dynamically generated at ' + str(System.currentT
 #
 
 %>
-<%& script.statics['exampleBasePath'] + 'demos/jython.fragment' %>
+<%& script.meta['exampleBasePath'] + 'demos/jython.fragment' %>
 <%
 
 #
@@ -66,11 +66,11 @@ def print_factory(factory):
 %>
 <h3>Script engine used:</h3>
 <%
-print_factory(script.scriptEngine.factory)
+print_factory(script.engine.factory)
 %>
 <h3>Available script engines:</h3>
 <%
-factories = container.scriptEngineManager.engineFactories.toArray()
+factories = script.engineManager.engineFactories.toArray()
 for factory in factories:
 	print_factory(factory)
 %>

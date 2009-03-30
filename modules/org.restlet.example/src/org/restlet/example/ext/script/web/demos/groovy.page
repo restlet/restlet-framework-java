@@ -40,7 +40,7 @@ print 'This page was dynamically generated at ' + System.currentTimeMillis()
 //
 
 %>
-<%& script.statics['exampleBasePath'] + 'demos/groovy.fragment' %>
+<%& script.meta['exampleBasePath'] + 'demos/groovy.fragment' %>
 <%
 
 //
@@ -69,11 +69,11 @@ def printFactory = { factory ->
 %>
 <h3>Script engine used:</h3>
 <%
-printFactory script.scriptEngine.factory
+printFactory script.engine.factory
 %>
 <h3>Available script engines:</h3>
 <%
-def factories = container.scriptEngineManager.engineFactories.toArray()
+def factories = script.engineManager.engineFactories.toArray()
 for(def factory in factories){
 	printFactory factory
 }

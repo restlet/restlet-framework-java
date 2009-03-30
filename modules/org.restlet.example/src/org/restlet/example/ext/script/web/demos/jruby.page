@@ -42,7 +42,7 @@ print 'This page was dynamically generated at ', System.current_time_millis
 #
 
 %>
-<%& $script.statics['exampleBasePath'] + 'demos/jruby.fragment' %>
+<%& $script.meta['exampleBasePath'] + 'demos/jruby.fragment' %>
 <%
 
 # (See comments in jruby.fragment)
@@ -75,11 +75,11 @@ end
 %>
 <h3>Script engine used:</h3>
 <%
-print_factory $script.script_engine.factory
+print_factory $script.engine.factory
 %>
 <h3>Available script engines:</h3>
 <%
-factories = $container.script_engine_manager.engine_factories.to_array
+factories = $script.engine_manager.engine_factories.to_array
 for factory in factories
 	print_factory factory
 end

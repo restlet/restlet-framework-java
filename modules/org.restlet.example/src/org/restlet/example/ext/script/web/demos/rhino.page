@@ -35,7 +35,7 @@ print('This page was dynamically generated at ' + java.lang.System.currentTimeMi
 //
 
 %>
-<%& script.staticScope.get('exampleBasePath') + 'demos/rhino.fragment' %>
+<%& script.meta.get('exampleBasePath') + 'demos/rhino.fragment' %>
 <%
 
 //
@@ -63,11 +63,11 @@ function printFactory(factory) {
 %>
 <h3>Script engine used:</h3>
 <%
-printFactory(script.scriptEngine.factory);
+printFactory(script.engine.factory);
 %>
 <h3>Available script engines:</h3>
 <%
-var factories = container.scriptEngineManager.engineFactories.toArray();
+var factories = script.engineManager.engineFactories.toArray();
 for(var i = 0; i < factories.length; i++) {
 	printFactory(factories[i]);
 }

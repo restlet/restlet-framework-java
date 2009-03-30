@@ -1,16 +1,16 @@
 <%
 
-// Helper to access the static scope
+// Helper to access the context attributes
 
-function getStaticValue(name, getDefaultValue) {
-	var value = script.staticScope.get(name);
+function getContextAttribute(name, getDefaultValue) {
+	var value = container.resource.context.attributes.get(name);
 	if(value == null) {
 		value = getDefaultValue();
 
 		// Note: another thread might have changed our value in the meantime.
 		// We'll make sure there is no duplication.
 
-		var old = script.staticScope.putIfAbsent(name, value);
+		var old = container.resource.context.attributes.putIfAbsent(name, value);
 		if(old != null) {
 			value = old;
 		}

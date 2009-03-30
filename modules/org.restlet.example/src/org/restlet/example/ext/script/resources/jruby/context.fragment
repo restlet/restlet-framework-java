@@ -33,17 +33,17 @@
 
 $static_module = Module.new do
 
-	# Helper to access the static scope
+	# Helper to access the context attributes
 
-	def get_static_value name
-		value = $script.static_scope[name]
+	def get_context_attribute name
+		value = $container.resource.context.attributes[name]
 		if value == nil
 			value = yield
 
 			# Note: another thread might have changed our value in the meantime.
 			# We'll make sure there is no duplication.
 
-			old = $script.static_scope.put_if_absent name, value
+			old = $container.resource.context.attributes.put_if_absent name, value
 			if old != nil
 				value = old
 			end

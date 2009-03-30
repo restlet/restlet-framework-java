@@ -17,9 +17,9 @@ from org.restlet.data import MediaType
 from org.restlet.representation import Variant
 from org.restlet.ext.json import JsonRepresentation
 
-# Include the static scope library
+# Include the context library
 
-container.include('jython/static.fragment')
+container.include('jython/context.fragment')
 
 # Include the minjson library
 # (Note that we made a small change to minjson in order to accommodate Jython.
@@ -30,21 +30,22 @@ import minjson as json
 
 # State
 #
-# These make sure that our state is properly stored in the static scope,
+# These make sure that our state is properly stored in the context,
 # so that we always use the same state, even if this script is recompiled.
 
 def getStateLock():
 	def createDefault():
 		return ReentrantReadWriteLock()
-	return getStaticValue('jython.stateLock', createDefault)
+	return getContextAttribute('jython.stateLock', createDefault)
 
 def getState():
 	def createDefault():
 		return {'name': 'Coraline', 'media': 'Film', 'rating': 'A+', 'characters': ['Coraline', 'Wybie', 'Mom', 'Dad']}
-	return getStaticValue('jython.state', createDefault)
+	return getContextAttribute('jython.state', createDefault)
 
 def setState(value):
-	script.staticScope['jython.state'] = value
+	global container
+	container.resource.context.attributes['jython.state'] = value
 
 # This function is called when the resource is initialized. We will use it to set
 # general characteristics for the resource.

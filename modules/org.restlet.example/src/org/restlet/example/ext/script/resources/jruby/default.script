@@ -19,30 +19,30 @@ import org.restlet.data.MediaType
 import org.restlet.ext.json.JsonRepresentation
 import org.json.JSONObject
 
-# Include the static scope library
+# Include the context library
 
-$container.include 'jruby/static.fragment'
+$container.include 'jruby/context.fragment'
 include $static_module
 
 # State
 #
-# These make sure that our state is properly stored in the static scope,
+# These make sure that our state is properly stored in the context,
 # so that we always use the same state, even if this script is recompiled.
 
 def get_state_lock
-	return get_static_value('jruby.stateLock') do
+	return get_context_attribute('jruby.stateLock') do
 		ReentrantReadWriteLock.new
 	end
 end
 
 def get_state
-	return get_static_value('jruby.state') do
+	return get_context_attribute('jruby.state') do
 		{'name' => 'Coraline', 'media' => 'Film', 'rating' => 'A+', 'characters' => ['Coraline', 'Wybie', 'Mom', 'Dad']}
 	end
 end
 
 def set_state value
-	$script.static_scope['jruby.state'] = value
+	$container.resource.context.attributes['jruby.state'] = value
 end
 
 $state = get_state()
