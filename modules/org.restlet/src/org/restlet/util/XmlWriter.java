@@ -106,7 +106,7 @@ import org.xml.sax.helpers.XMLFilterImpl;
  * </p>
  * 
  * <pre>
- *           &lt;?xml version=&quot;1.0&quot; standalone=&quot;yes&quot;?&gt;
+ *           &lt;?xml version=&quot;1.0&quot; standalone='yes'?&gt;
  *          
  *           &lt;greeting&gt;Hello, world!&lt;/greeting&gt;
  * </pre>
