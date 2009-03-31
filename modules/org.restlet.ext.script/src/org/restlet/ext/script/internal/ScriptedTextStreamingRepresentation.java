@@ -79,6 +79,11 @@ class ScriptedTextStreamingRepresentation extends WriterRepresentation {
     private final ConcurrentMap<String, ScriptEngine> scriptEngines;
 
     /**
+     * Whether to flush the writers after every line.
+     */
+    private final boolean flushLines;
+
+    /**
      * Constructor.
      * 
      * @param resource
@@ -91,12 +96,14 @@ class ScriptedTextStreamingRepresentation extends WriterRepresentation {
      *            The script context controller
      * @param script
      *            The embedded script instance
+     * @param flushLines
+     *            Whether to flush the writers after every line
      */
     public ScriptedTextStreamingRepresentation(ScriptedTextResource resource,
             ScriptedTextResourceContainer container,
             ConcurrentMap<String, ScriptEngine> scriptEngines,
             ScriptContextController scriptContextController,
-            EmbeddedScript script) {
+            EmbeddedScript script, boolean flushLines) {
         // Note that we are setting representation characteristics
         // before we actually run the script
         super(container.getMediaType());
@@ -104,6 +111,7 @@ class ScriptedTextStreamingRepresentation extends WriterRepresentation {
         this.container = container;
         this.scriptEngines = scriptEngines;
         this.scriptContextController = scriptContextController;
+        this.flushLines = flushLines;
         setCharacterSet(container.getCharacterSet());
         if (container.getLanguage() != null) {
             setLanguages(Arrays
@@ -119,7 +127,8 @@ class ScriptedTextStreamingRepresentation extends WriterRepresentation {
         this.resource.setWriter(writer);
         try {
             this.script.run(writer, this.resource.getErrorWriter(),
-                    this.scriptEngines, this.scriptContextController, false);
+                    this.flushLines, this.scriptEngines,
+                    this.scriptContextController, false);
         } catch (ScriptException e) {
             IOException ioe = new IOException("Script exception");
             ioe.initCause(e);

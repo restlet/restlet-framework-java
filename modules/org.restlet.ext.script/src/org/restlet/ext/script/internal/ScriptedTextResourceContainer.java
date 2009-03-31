@@ -81,6 +81,11 @@ public class ScriptedTextResourceContainer {
     private final ConcurrentMap<String, RepresentableString> cache;
 
     /**
+     * Whether to flush the writers after every line in streaming mode.
+     */
+    private boolean flushLines;
+
+    /**
      * The {@link MediaType} that will be used for the generated string.
      */
     private MediaType mediaType;
@@ -311,7 +316,7 @@ public class ScriptedTextResourceContainer {
 
         try {
             // Do not allow caching in streaming mode
-            if (script.run(writer, this.resource.getErrorWriter(),
+            if (script.run(writer, this.resource.getErrorWriter(), false,
                     this.scriptEngines, this.scriptContextController,
                     !isStreaming)) {
 
@@ -322,7 +327,8 @@ public class ScriptedTextResourceContainer {
                     // Note that this will cause the script to run again!
                     return new ScriptedTextStreamingRepresentation(
                             this.resource, this, this.scriptEngines,
-                            this.scriptContextController, script);
+                            this.scriptContextController, script,
+                            this.flushLines);
                 }
 
                 if (isStreaming) {
@@ -368,7 +374,7 @@ public class ScriptedTextResourceContainer {
                 // Note that this will cause the script to run again!
                 return new ScriptedTextStreamingRepresentation(this.resource,
                         this, this.scriptEngines, this.scriptContextController,
-                        script);
+                        script, this.flushLines);
 
                 // Note that we will allow exceptions in scripts that ask us
                 // to start streaming! In fact, throwing an exception is a
@@ -447,15 +453,46 @@ public class ScriptedTextResourceContainer {
      * no effect and returns false. Note that a good way to quit the script is
      * to throw an exception, because it will end the script and otherwise be
      * ignored.
+     * <p>
+     * By default, writers will be automatically flushed after every line in
+     * streaming mode. If you want to disable this behavior, use
+     * {@link #stream(boolean)}.
      * 
-     * @return True is started streaming mode, false if already in streaming
+     * @return True if started streaming mode, false if already in streaming
      *         mode
+     * @see #stream(boolean)
      */
     public boolean stream() {
+        return stream(true);
+    }
+
+    /**
+     * If you are in caching mode, calling this method will return true and
+     * cause the script to run again, where this next run will be in streaming
+     * mode. Whatever output the script created in the current run is discarded,
+     * and all further exceptions are ignored. For this reason, it's probably
+     * best to call container.stream() as early as possible in the script, and
+     * then to quit the script as soon as possible if it returns true. For
+     * example, your script can start by testing whether it will have a lot of
+     * output, and if so, set output characteristics, call container.stream(),
+     * and quit. If you are already in streaming mode, calling this method has
+     * no effect and returns false. Note that a good way to quit the script is
+     * to throw an exception, because it will end the script and otherwise be
+     * ignored.
+     * 
+     * @param flushLines
+     *            Whether to flush the writers after every line in streaming
+     *            mode
+     * @return True if started streaming mode, false if already in streaming
+     *         mode
+     * @see #stream()
+     */
+    public boolean stream(boolean flushLines) {
         if (isStreaming()) {
             return false;
         }
         this.startStreaming = true;
+        this.flushLines = flushLines;
         return true;
     }
 }

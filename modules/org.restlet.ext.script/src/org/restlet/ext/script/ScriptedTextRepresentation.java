@@ -190,7 +190,7 @@ public class ScriptedTextRepresentation extends WriterRepresentation {
         try {
             ScriptedTextRepresentationContainer container = new ScriptedTextRepresentationContainer(
                     this);
-            this.embeddedScript.run(writer, this.errorWriter,
+            this.embeddedScript.run(writer, this.errorWriter, false,
                     this.scriptEngines,
                     new ScriptedTextRepresentationScriptContextController(this,
                             container, this.embeddedScript

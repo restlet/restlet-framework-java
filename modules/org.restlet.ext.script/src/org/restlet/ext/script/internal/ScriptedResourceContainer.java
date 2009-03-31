@@ -303,7 +303,7 @@ public class ScriptedResourceContainer {
         }
 
         script.run(this.resource.getWriter(), this.resource.getErrorWriter(),
-                this.scriptEngines, this.scriptContextController, false);
+                true, this.scriptEngines, this.scriptContextController, false);
     }
 
     /**
@@ -332,7 +332,7 @@ public class ScriptedResourceContainer {
                         .isAllowCompilation(), this.resource.getScriptSource());
                 scriptDescriptor.setScript(script);
                 script.run(this.resource.getWriter(), this.resource
-                        .getErrorWriter(), this.scriptEngines,
+                        .getErrorWriter(), true, this.scriptEngines,
                         this.scriptContextController, false);
             }
 

@@ -130,7 +130,12 @@ import com.threecrickets.scripturian.ScriptSource;
  * <code>container.stream()</code>, and quit. If you are already in streaming
  * mode, calling this method has no effect and returns false. Note that a good
  * way to quit the script is to throw an exception, because it will end the
- * script and otherwise be ignored.</li>
+ * script and otherwise be ignored. By default, writers will be automatically
+ * flushed after every line in streaming mode. If you want to disable this
+ * behavior, use <code>container.stream(flushLines)</code>.</li>
+ * <li><code>container.stream(flushLines)</code>: This version of the above adds
+ * a boolean argument to let you control whether to flush the writer after every
+ * line in streaming mode. By default auto-flushing is enabled.</li>
  * </ul>
  * Read-only attributes:
  * <ul>
