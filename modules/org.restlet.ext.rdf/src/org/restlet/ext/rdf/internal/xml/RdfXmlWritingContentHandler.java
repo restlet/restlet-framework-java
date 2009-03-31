@@ -113,6 +113,8 @@ public class RdfXmlWritingContentHandler extends GraphHandler {
 	 *            the XML writer.
 	 */
 	private void discoverNamespaces(Link link, XmlWriter xmlWriter) {
+		// The subject of the link is not discovered, it is generated as the
+		// value of an "about" attribute.
 		if (link.hasLinkSource()) {
 			discoverNamespaces(link.getSourceAsLink(), xmlWriter);
 		} else if (link.hasGraphSource()) {
