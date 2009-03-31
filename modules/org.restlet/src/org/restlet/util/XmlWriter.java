@@ -1263,7 +1263,7 @@ public final class XmlWriter extends XMLFilterImpl {
     @Override
     public void startDocument() throws SAXException {
         reset();
-        write("<?xml version=\"1.0\" standalone=\"yes\"?>\n\n");
+        write("<?xml version=\"1.0\" standalone='yes'?>\n\n");
         super.startDocument();
     }
 
