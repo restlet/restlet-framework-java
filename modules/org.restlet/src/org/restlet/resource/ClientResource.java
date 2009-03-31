@@ -328,16 +328,13 @@ public class ClientResource extends UniformResource {
     }
 
     /**
-     * Handles the call by invoking the next handler.<br>
-     * <br>
-     * If a success status is not returned, then a resource exception is thrown.
+     * Handles the call by invoking the next handler.
      * 
      * @return The optional response entity.
-     * @throws ResourceException
      * @see #getNext()
      */
     @Override
-    public Representation handle() throws ResourceException {
+    public Representation handle() {
         Representation result = null;
 
         if (!hasNext()) {
@@ -352,10 +349,6 @@ public class ClientResource extends UniformResource {
         if (hasNext()) {
             getNext().handle(getRequest(), getResponse());
             result = getResponse().getEntity();
-
-            if (!getStatus().isSuccess()) {
-                throw new ResourceException(getStatus());
-            }
         } else {
             getLogger()
                     .warning(

@@ -31,9 +31,11 @@
 package org.restlet.service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.Context;
+import org.restlet.engine.Engine;
 import org.restlet.engine.converter.ConverterHelper;
 import org.restlet.engine.converter.ConverterUtils;
 import org.restlet.representation.Representation;
@@ -77,7 +79,23 @@ public class ConverterService extends Service {
      * @return The list of object class that can be converted.
      */
     public List<Class<?>> getObjectClasses(Variant sourceVariant) {
-        return null;
+        List<Class<?>> result = null;
+        List<Class<?>> helperObjectClasses = null;
+
+        for (ConverterHelper ch : Engine.getInstance()
+                .getRegisteredConverters()) {
+            helperObjectClasses = ch.getObjectClasses(sourceVariant);
+
+            if (helperObjectClasses != null) {
+                if (result == null) {
+                    result = new ArrayList<Class<?>>();
+                }
+
+                result.addAll(helperObjectClasses);
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -89,7 +107,23 @@ public class ConverterService extends Service {
      * @return The list of variants that can be converted.
      */
     public List<Variant> getVariants(Class<?> sourceClass) {
-        return null;
+        List<Variant> result = null;
+        List<Variant> helperVariants = null;
+
+        for (ConverterHelper ch : Engine.getInstance()
+                .getRegisteredConverters()) {
+            helperVariants = ch.getVariants(sourceClass);
+
+            if (helperVariants != null) {
+                if (result == null) {
+                    result = new ArrayList<Variant>();
+                }
+
+                result.addAll(helperVariants);
+            }
+        }
+
+        return result;
     }
 
     /**

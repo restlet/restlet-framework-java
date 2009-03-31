@@ -86,7 +86,7 @@ public class ServerResource extends UniformResource {
     private boolean annotated;
 
     /** Indicates if the annotations where extracted. */
-    private boolean introspected;
+    private static boolean introspected;
 
     /** Indicates if the identified resource exists. */
     private boolean exists;
@@ -101,7 +101,12 @@ public class ServerResource extends UniformResource {
     private volatile Map<Method, Object> variants;
 
     /** The annotation descriptors. */
-    private volatile List<AnnotationInfo> annotations;
+    private static List<AnnotationInfo> annotations;
+
+    static {
+        introspected = false;
+        annotations = null;
+    }
 
     /**
      * Initializer block to ensure that the basic properties are initialized
@@ -111,7 +116,6 @@ public class ServerResource extends UniformResource {
         this.annotated = true;
         this.conditional = true;
         this.exists = true;
-        this.introspected = false;
         this.negotiated = true;
         this.variants = null;
     }
@@ -607,12 +611,11 @@ public class ServerResource extends UniformResource {
      */
     private List<AnnotationInfo> getAnnotations() {
         if (isAnnotated() && !isIntrospected()) {
-            this.annotations = AnnotationUtils.getAnnotationDescriptors(
-                    getContext(), getClass());
+            annotations = AnnotationUtils.getAnnotationDescriptors(getClass());
             setIntrospected(true);
         }
 
-        return this.annotations;
+        return annotations;
     }
 
     /**
@@ -683,7 +686,7 @@ public class ServerResource extends UniformResource {
                 List<Variant> annoVariants = null;
                 Method method = getMethod();
 
-                for (AnnotationInfo annotationInfo : this.annotations) {
+                for (AnnotationInfo annotationInfo : annotations) {
                     if (method.equals(annotationInfo.getRestletMethod())) {
                         annoVariants = cs.getVariants(annotationInfo
                                 .getJavaReturnType());
@@ -1131,7 +1134,7 @@ public class ServerResource extends UniformResource {
      *            True if the annotations where extracted.
      */
     private void setIntrospected(boolean introspected) {
-        this.introspected = introspected;
+        ServerResource.introspected = introspected;
     }
 
     /**

@@ -4,7 +4,6 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.restlet.Context;
 import org.restlet.data.Method;
 import org.restlet.resource.UniformResource;
 
@@ -18,53 +17,38 @@ public class AnnotationUtils {
     /**
      * Returns the annotation descriptors for the given resource class.
      * 
-     * @param context
-     *            The optional parent context used for caching.
      * @param resourceClass
      *            The resource class to introspect.
      * @return The list of annotation descriptors.
      */
-    @SuppressWarnings("unchecked")
     public static List<AnnotationInfo> getAnnotationDescriptors(
-            Context context, Class<? extends UniformResource> resourceClass) {
+            Class<? extends UniformResource> resourceClass) {
         List<AnnotationInfo> result = null;
-        String attributeName = "org.restlet.resource.ServerResource.annotations."
-                + resourceClass.getCanonicalName();
 
-        if (context != null) {
-            result = (List<AnnotationInfo>) context.getAttributes().get(
-                    attributeName);
-        }
+        for (java.lang.reflect.Method javaMethod : resourceClass.getMethods()) {
+            for (Annotation annotation : javaMethod.getAnnotations()) {
 
-        if (result == null) {
-            result = new ArrayList<AnnotationInfo>();
+                Annotation methodAnnotation = annotation.annotationType()
+                        .getAnnotation(org.restlet.engine.Method.class);
 
-            if (context != null) {
-                context.getAttributes().put(attributeName, result);
-            }
+                if (methodAnnotation != null) {
+                    Method restletMethod = Method
+                            .valueOf(((org.restlet.engine.Method) methodAnnotation)
+                                    .value());
 
-            for (java.lang.reflect.Method javaMethod : resourceClass
-                    .getMethods()) {
-                for (Annotation annotation : javaMethod.getAnnotations()) {
+                    String toString = annotation.toString();
+                    int startIndex = annotation.annotationType()
+                            .getCanonicalName().length() + 8;
+                    int endIndex = toString.length() - 1;
+                    String value = toString.substring(startIndex, endIndex);
 
-                    Annotation methodAnnotation = annotation.annotationType()
-                            .getAnnotation(org.restlet.engine.Method.class);
-
-                    if (methodAnnotation != null) {
-                        Method restletMethod = Method
-                                .valueOf(((org.restlet.engine.Method) methodAnnotation)
-                                        .value());
-
-                        String toString = annotation.toString();
-                        int startIndex = annotation.annotationType()
-                                .getCanonicalName().length() + 8;
-                        int endIndex = toString.length() - 1;
-                        String value = toString.substring(startIndex, endIndex);
-
-                        // Add the annotation descriptor
-                        result.add(new AnnotationInfo(restletMethod,
-                                javaMethod, value));
+                    // Add the annotation descriptor
+                    if (result == null) {
+                        result = new ArrayList<AnnotationInfo>();
                     }
+
+                    result.add(new AnnotationInfo(restletMethod, javaMethod,
+                            value));
                 }
             }
         }

@@ -48,21 +48,21 @@ public abstract class ConverterHelper {
      * Returns the list of object classes that can be converted from a given
      * variant.
      * 
-     * @param variant
+     * @param sourceVariant
      *            The source variant.
      * @return The list of object class that can be converted.
      */
-    public abstract List<Class<?>> getObjectClasses(Variant variant);
+    public abstract List<Class<?>> getObjectClasses(Variant sourceVariant);
 
     /**
      * Returns the list of variants that can be converted from a given object
      * class.
      * 
-     * @param objectClass
+     * @param sourceClass
      *            The source object class.
      * @return The list of variants that can be converted.
      */
-    public abstract List<Variant> getVariants(Class<?> objectClass);
+    public abstract List<Variant> getVariants(Class<?> sourceClass);
 
     /**
      * Converts a Representation into a regular Java object.

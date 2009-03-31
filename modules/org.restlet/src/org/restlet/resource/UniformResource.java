@@ -373,9 +373,8 @@ public abstract class UniformResource {
      * Handles the call composed of the current context, request and response.
      * 
      * @return The optional response entity.
-     * @throws ResourceException
      */
-    public abstract Representation handle() throws ResourceException;
+    public abstract Representation handle();
 
     /**
      * Initialization method setting the environment of the current resource
