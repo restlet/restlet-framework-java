@@ -60,12 +60,12 @@ public class Part11 extends Application {
      */
     public static void main(String[] args) throws Exception {
         // Create a component
-        final Component component = new Component();
+        Component component = new Component();
         component.getServers().add(Protocol.HTTP, 8182);
         component.getClients().add(Protocol.FILE);
 
         // Create an application
-        final Application application = new Part11();
+        Application application = new Part11();
 
         // Attach the application to the component and start it
         component.getDefaultHost().attach(application);
@@ -75,46 +75,46 @@ public class Part11 extends Application {
     @Override
     public Restlet createRoot() {
         // Create a root router
-        final Router router = new Router(getContext());
+        Router router = new Router(getContext());
 
         // Attach a guard to secure access to the directory
-        final Guard guard = new Guard(getContext(), ChallengeScheme.HTTP_BASIC,
+        Guard guard = new Guard(getContext(), ChallengeScheme.HTTP_BASIC,
                 "Restlet tutorial");
         guard.getSecrets().put("scott", "tiger".toCharArray());
         router.attach("/docs/", guard);
 
         // Create a directory able to expose a hierarchy of files
-        final Directory directory = new Directory(getContext(), ROOT_URI);
+        Directory directory = new Directory(getContext(), ROOT_URI);
         guard.setNext(directory);
 
         // Create the account handler
-        final Restlet account = new Restlet() {
+        Restlet account = new Restlet() {
             @Override
             public void handle(Request request, Response response) {
                 // Print the requested URI path
-                final String message = "Account of user \""
+                String message = "Account of user \""
                         + request.getAttributes().get("user") + "\"";
                 response.setEntity(message, MediaType.TEXT_PLAIN);
             }
         };
 
         // Create the orders handler
-        final Restlet orders = new Restlet(getContext()) {
+        Restlet orders = new Restlet(getContext()) {
             @Override
             public void handle(Request request, Response response) {
                 // Print the user name of the requested orders
-                final String message = "Orders of user \""
+                String message = "Orders of user \""
                         + request.getAttributes().get("user") + "\"";
                 response.setEntity(message, MediaType.TEXT_PLAIN);
             }
         };
 
         // Create the order handler
-        final Restlet order = new Restlet(getContext()) {
+        Restlet order = new Restlet(getContext()) {
             @Override
             public void handle(Request request, Response response) {
                 // Print the user name of the requested orders
-                final String message = "Order \""
+                String message = "Order \""
                         + request.getAttributes().get("order")
                         + "\" for user \""
                         + request.getAttributes().get("user") + "\"";

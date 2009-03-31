@@ -56,12 +56,12 @@ public class Part09a extends Application {
      */
     public static void main(String[] args) throws Exception {
         // Create a component
-        final Component component = new Component();
+        Component component = new Component();
         component.getServers().add(Protocol.HTTP, 8182);
         component.getClients().add(Protocol.FILE);
 
         // Create an application
-        final Application application = new Part09a();
+        Application application = new Part09a();
 
         // Attach the application to the component and start it
         component.getDefaultHost().attachDefault(application);
@@ -71,12 +71,12 @@ public class Part09a extends Application {
     @Override
     public Restlet createRoot() {
         // Create a Guard
-        final Guard guard = new Guard(getContext(), ChallengeScheme.HTTP_BASIC,
+        Guard guard = new Guard(getContext(), ChallengeScheme.HTTP_BASIC,
                 "Tutorial");
         guard.getSecrets().put("scott", "tiger".toCharArray());
 
         // Create a Directory able to return a deep hierarchy of files
-        final Directory directory = new Directory(getContext(), ROOT_URI);
+        Directory directory = new Directory(getContext(), ROOT_URI);
         guard.setNext(directory);
         return guard;
     }

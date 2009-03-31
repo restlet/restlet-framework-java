@@ -30,13 +30,10 @@
 
 package org.restlet.example.tutorial;
 
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.resource.Get;
 import org.restlet.resource.ServerResource;
-import org.w3c.dom.Document;
 
 /**
  * Listening to Web browsers.
@@ -45,9 +42,6 @@ import org.w3c.dom.Document;
  */
 public class Part03 extends ServerResource {
 
-    /**
-     * Main method.
-     */
     public static void main(String[] args) throws Exception {
         // Create the HTTP server and listen on port 8182
         new Server(Protocol.HTTP, 8182, Part03.class).start();
@@ -56,14 +50,6 @@ public class Part03 extends ServerResource {
     @Get
     public String toString() {
         return "hello, world";
-    }
-
-    @Get
-    public Document toXml() throws Exception {
-        Document doc = DocumentBuilderFactory.newInstance()
-                .newDocumentBuilder().newDocument();
-        doc.appendChild(doc.createElement("toto"));
-        return doc;
     }
 
 }

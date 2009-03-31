@@ -30,14 +30,7 @@
 
 package org.restlet.example.tutorial;
 
-import org.restlet.Context;
-import org.restlet.data.MediaType;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
-import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
-import org.restlet.representation.Variant;
-import org.restlet.resource.ResourceException;
+import org.restlet.resource.Get;
 
 /**
  * Related to the part 12 of the tutorial.
@@ -46,20 +39,9 @@ import org.restlet.resource.ResourceException;
  */
 public class OrdersResource extends UserResource {
 
-    public OrdersResource(Context context, Request request, Response response) {
-        super(context, request, response);
-    }
-
-    @Override
-    public Representation represent(Variant variant) throws ResourceException {
-        Representation result = null;
-
-        if (variant.getMediaType().equals(MediaType.TEXT_PLAIN)) {
-            result = new StringRepresentation("Orders of user \""
-                    + this.userName + "\"");
-        }
-
-        return result;
+    @Get
+    public String toString() {
+        return "Orders of user \"" + this.userName + "\"";
     }
 
 }

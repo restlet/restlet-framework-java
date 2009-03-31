@@ -73,7 +73,8 @@ import org.restlet.util.Series;
  * each call handled and accessed by only one thread at a time.<br>
  * <br>
  * Note: The current implementation isn't complete and doesn't support the full
- * syntax. This is work in progress and should only be used for experimentation.
+ * annotation syntax. This is work in progress and should only be used for
+ * experimentation.
  * 
  * @author Jerome Louvel
  */

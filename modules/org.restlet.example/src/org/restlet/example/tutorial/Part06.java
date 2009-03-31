@@ -51,7 +51,7 @@ public class Part06 {
         component.getClients().add(Protocol.FILE);
 
         // Create an application
-        final Application application = new Application() {
+        Application application = new Application() {
             @Override
             public Restlet createRoot() {
                 return new Directory(getContext(), ROOT_URI);

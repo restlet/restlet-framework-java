@@ -31,41 +31,29 @@
 package org.restlet.example.tutorial;
 
 import org.restlet.Context;
-import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
-import org.restlet.representation.Variant;
-import org.restlet.resource.Resource;
-import org.restlet.resource.ResourceException;
+import org.restlet.resource.Get;
+import org.restlet.resource.ServerResource;
 
 /**
  * Related to the part 12 of the tutorial.
  * 
  * @author Jerome Louvel
  */
-public class UserResource extends Resource {
+public class UserResource extends ServerResource {
     String userName;
 
     Object user;
 
-    public UserResource(Context context, Request request, Response response) {
-        super(context, request, response);
+    @Override
+    public void init(Context context, Request request, Response response) {
         this.userName = (String) request.getAttributes().get("user");
         this.user = null; // Could be a lookup to a domain object.
-
-        // Here we add the representation variants exposed
-        getVariants().add(new Variant(MediaType.TEXT_PLAIN));
     }
 
-    @Override
-    public Representation represent(Variant variant) throws ResourceException {
-        Representation result = null;
-        if (variant.getMediaType().equals(MediaType.TEXT_PLAIN)) {
-            result = new StringRepresentation("Account of user \""
-                    + this.userName + "\"");
-        }
-        return result;
+    @Get
+    public String toString() {
+        return "Account of user \"" + this.userName + "\"";
     }
 }

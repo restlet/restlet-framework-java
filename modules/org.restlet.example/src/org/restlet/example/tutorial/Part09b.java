@@ -30,14 +30,10 @@
 
 package org.restlet.example.tutorial;
 
-import org.restlet.Client;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
-import org.restlet.data.Method;
-import org.restlet.data.Protocol;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.resource.ClientResource;
 
 /**
  * Authenticating to an HTTP server.
@@ -47,23 +43,21 @@ import org.restlet.data.Status;
 public class Part09b {
     public static void main(String[] args) throws Exception {
         // Prepare the request
-        final Request request = new Request(Method.GET,
-                "http://localhost:8182/");
+        ClientResource resource = new ClientResource("http://localhost:8182/");
 
         // Add the client authentication to the call
-        final ChallengeScheme scheme = ChallengeScheme.HTTP_BASIC;
-        final ChallengeResponse authentication = new ChallengeResponse(scheme,
+        ChallengeScheme scheme = ChallengeScheme.HTTP_BASIC;
+        ChallengeResponse authentication = new ChallengeResponse(scheme,
                 "scott", "tiger");
-        request.setChallengeResponse(authentication);
+        resource.setChallengeResponse(authentication);
 
-        // Ask to the HTTP client connector to handle the call
-        final Client client = new Client(Protocol.HTTP);
-        final Response response = client.handle(request);
+        // Send the HTTP GET request
+        resource.get();
 
-        if (response.getStatus().isSuccess()) {
+        if (resource.getStatus().isSuccess()) {
             // Output the response entity on the JVM console
-            response.getEntity().write(System.out);
-        } else if (response.getStatus()
+            resource.getResponseEntity().write(System.out);
+        } else if (resource.getStatus()
                 .equals(Status.CLIENT_ERROR_UNAUTHORIZED)) {
             // Unauthorized access
             System.out
@@ -71,7 +65,7 @@ public class Part09b {
         } else {
             // Unexpected status
             System.out.println("An unexpected status was returned: "
-                    + response.getStatus());
+                    + resource.getStatus());
         }
     }
 

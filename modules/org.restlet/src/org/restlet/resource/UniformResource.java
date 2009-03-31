@@ -53,7 +53,9 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.ServerInfo;
 import org.restlet.data.Status;
+import org.restlet.representation.DomRepresentation;
 import org.restlet.representation.Representation;
+import org.restlet.representation.SaxRepresentation;
 import org.restlet.util.Series;
 
 /**
@@ -330,12 +332,132 @@ public abstract class UniformResource {
     }
 
     /**
+     * Returns the request entity representation.
+     * 
+     * @return The request entity representation.
+     */
+    public Representation getRequestEntity() {
+        return getRequest().getEntity();
+    }
+
+    /**
+     * Returns the request entity as a DOM representation.<br>
+     * This method can be called several times and will always return the same
+     * representation instance. Note that if the entity is large this method can
+     * result in important memory consumption. In this case, consider using a
+     * SAX representation.
+     * 
+     * @return The entity as a DOM representation.
+     */
+    public DomRepresentation getRequestEntityAsDom() {
+        return getRequest().getEntityAsDom();
+    }
+
+    /**
+     * Returns the request entity as a form.<br>
+     * This method can be called several times and will always return the same
+     * form instance. Note that if the entity is large this method can result in
+     * important memory consumption.
+     * 
+     * @return The entity as a form.
+     */
+    public Form getRequestEntityAsForm() {
+        return getRequest().getEntityAsForm();
+    }
+
+    /**
+     * Returns the request entity as a SAX representation.<br>
+     * This method can be called several times and will always return the same
+     * representation instance. Note that generally this type of representation
+     * can only be parsed once. If you evaluate an XPath expression, it can also
+     * only be done once. If you need to reuse the entity multiple times,
+     * consider using the getEntityAsDom() method instead.
+     * 
+     * @return The entity as a SAX representation.
+     */
+    public SaxRepresentation getRequestEntityAsSax() {
+        return getRequest().getEntityAsSax();
+    }
+
+    /**
+     * Returns the request entity as text.<br>
+     * This method can be called several times and will always return the same
+     * text. Note that if the entity is large this method can result in
+     * important memory consumption.
+     * 
+     * @return The entity as text.
+     */
+    public String getRequestEntityAsText() {
+        return getRequest().getEntityAsText();
+    }
+
+    /**
      * Returns the handled response.
      * 
      * @return The handled response.
      */
     public Response getResponse() {
         return response;
+    }
+
+    /**
+     * Returns the response entity representation.
+     * 
+     * @return The response entity representation.
+     */
+    public Representation getResponseEntity() {
+        return getResponse().getEntity();
+    }
+
+    /**
+     * Returns the response entity as a DOM representation.<br>
+     * This method can be called several times and will always return the same
+     * representation instance. Note that if the entity is large this method can
+     * result in important memory consumption. In this case, consider using a
+     * SAX representation.
+     * 
+     * @return The entity as a DOM representation.
+     */
+    public DomRepresentation getResponseEntityAsDom() {
+        return getResponse().getEntityAsDom();
+    }
+
+    /**
+     * Returns the response entity as a form.<br>
+     * This method can be called several times and will always return the same
+     * form instance. Note that if the entity is large this method can result in
+     * important memory consumption.
+     * 
+     * @return The entity as a form.
+     */
+    public Form getResponseEntityAsForm() {
+        return getResponse().getEntityAsForm();
+    }
+
+    /**
+     * Returns the response entity as a SAX representation.<br>
+     * This method can be called several times and will always return the same
+     * representation instance. Note that generally this type of representation
+     * can only be parsed once. If you evaluate an XPath expression, it can also
+     * only be done once. If you need to reuse the entity multiple times,
+     * consider using the getEntityAsDom() method instead.
+     * 
+     * @return The entity as a SAX representation.
+     */
+    public SaxRepresentation getResponseEntityAsSax() {
+        return getResponse().getEntityAsSax();
+    }
+
+    /**
+     * Returns the response entity as text.<br>
+     * This method can be called several times and will always return the same
+     * text. Note that if the entity is large this method can result in
+     * important memory consumption.
+     * 
+     * @return The entity as text.
+     */
+    public String getResponseEntityAsText() {
+        return getResponse().getEntityAsText();
     }
 
     /**

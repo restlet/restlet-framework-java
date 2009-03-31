@@ -54,11 +54,11 @@ public class Part10 extends Application {
      */
     public static void main(String[] args) throws Exception {
         // Create a component
-        final Component component = new Component();
+        Component component = new Component();
         component.getServers().add(Protocol.HTTP, 8182);
 
         // Create an application
-        final Application application = new Part10();
+        Application application = new Part10();
 
         // Attach the application to the component and start it
         component.getDefaultHost().attachDefault(application);
@@ -68,21 +68,21 @@ public class Part10 extends Application {
     @Override
     public Restlet createRoot() {
         // Create a root router
-        final Router router = new Router(getContext());
+        Router router = new Router(getContext());
 
         // Create a Redirector to Google search service
-        final String target = "http://www.google.com/search?q=site:mysite.org+{keywords}";
-        final Redirector redirector = new Redirector(getContext(), target,
+        String target = "http://www.google.com/search?q=site:mysite.org+{keywords}";
+        Redirector redirector = new Redirector(getContext(), target,
                 Redirector.MODE_CLIENT_TEMPORARY);
 
         // Attach the redirector to the router
-        final Route route = router.attach("/search", redirector);
+        Route route = router.attach("/search", redirector);
 
         // While routing requests to the application, extract a query parameter
         // For instance :
         // http://localhost:8182/search?kwd=myKeyword1+myKeyword2
         // will be routed to
-        //http://www.google.com/search?q=site:mysite.org+myKeyword1%20myKeyword2
+        // http://www.google.com/search?q=site:mysite.org+myKeyword1%20myKeyword2
         route.extractQuery("keywords", "kwd", true);
 
         // Return the root router
