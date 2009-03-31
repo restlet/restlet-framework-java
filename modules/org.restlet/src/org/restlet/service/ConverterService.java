@@ -33,6 +33,7 @@ package org.restlet.service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 import org.restlet.Context;
 import org.restlet.engine.Engine;
@@ -199,7 +200,13 @@ public class ConverterService extends Service {
                 targetVariant, resource);
 
         if (ch != null) {
-            result = ch.toRepresentation(sourceObject, targetVariant, resource);
+            try {
+                result = ch.toRepresentation(sourceObject, targetVariant,
+                        resource);
+            } catch (IOException e) {
+                Context.getCurrentLogger().log(Level.WARNING,
+                        "Unable to convert object to a representation", e);
+            }
         } else {
             Context.getCurrentLogger().warning(
                     "Unable to find a converter for this object : "

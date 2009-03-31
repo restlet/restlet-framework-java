@@ -31,9 +31,10 @@
 package org.restlet.engine.converter;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import java.util.ArrayList;
+import java.nio.channels.ReadableByteChannel;
 import java.util.List;
 
 import org.restlet.data.MediaType;
@@ -42,8 +43,10 @@ import org.restlet.representation.FileRepresentation;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.ReaderRepresentation;
 import org.restlet.representation.Representation;
+import org.restlet.representation.SaxRepresentation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
+import org.restlet.representation.XmlRepresentation;
 import org.restlet.resource.UniformResource;
 import org.w3c.dom.Document;
 
@@ -57,9 +60,25 @@ public class DefaultConverter extends ConverterHelper {
     @Override
     public List<Class<?>> getObjectClasses(Variant variant) {
         List<Class<?>> result = null;
-        MediaType mediaType = variant.getMediaType();
 
-        if (mediaType != null) {
+        result = addObjectClass(result, String.class);
+        result = addObjectClass(result, InputStream.class);
+        result = addObjectClass(result, Reader.class);
+        result = addObjectClass(result, ReadableByteChannel.class);
+
+        if (variant.getMediaType() != null) {
+            MediaType mediaType = variant.getMediaType();
+
+            if (MediaType.APPLICATION_ALL_XML.equals(mediaType)
+                    || MediaType.TEXT_XML.equals(mediaType)
+                    || MediaType.APPLICATION_ATOMPUB_SERVICE.equals(mediaType)
+                    || MediaType.APPLICATION_ATOM.equals(mediaType)
+                    || MediaType.APPLICATION_RDF_XML.equals(mediaType)
+                    || MediaType.APPLICATION_WADL.equals(mediaType)
+                    || MediaType.APPLICATION_XHTML.equals(mediaType)) {
+                result = addObjectClass(result, Document.class);
+                result = addObjectClass(result, XmlRepresentation.class);
+            }
 
         }
 
@@ -70,44 +89,89 @@ public class DefaultConverter extends ConverterHelper {
     public List<Variant> getVariants(Class<?> objectClass) {
         List<Variant> result = null;
 
-        if (String.class.isAssignableFrom(objectClass)) {
+        if (String.class.isAssignableFrom(objectClass)
+                || StringRepresentation.class.isAssignableFrom(objectClass)) {
             result = addVariant(result, new Variant(MediaType.TEXT_ALL));
-        } else if (Document.class.isAssignableFrom(objectClass)) {
+        } else if (Document.class.isAssignableFrom(objectClass)
+                || DomRepresentation.class.isAssignableFrom(objectClass)) {
             result = addVariant(result, new Variant(
                     MediaType.APPLICATION_ALL_XML));
             result = addVariant(result, new Variant(MediaType.TEXT_XML));
-        } else if (File.class.isAssignableFrom(objectClass)) {
+        } else if (File.class.isAssignableFrom(objectClass)
+                || FileRepresentation.class.isAssignableFrom(objectClass)) {
             result = addVariant(result, new Variant(
                     MediaType.APPLICATION_OCTET_STREAM));
-        } else if (InputStream.class.isAssignableFrom(objectClass)) {
+        } else if (InputStream.class.isAssignableFrom(objectClass)
+                || InputRepresentation.class.isAssignableFrom(objectClass)) {
             result = addVariant(result, new Variant(
                     MediaType.APPLICATION_OCTET_STREAM));
-        } else if (Reader.class.isAssignableFrom(objectClass)) {
+        } else if (Reader.class.isAssignableFrom(objectClass)
+                || ReaderRepresentation.class.isAssignableFrom(objectClass)) {
             result = addVariant(result, new Variant(MediaType.TEXT_ALL));
+        } else if (Representation.class.isAssignableFrom(objectClass)) {
+            result = addVariant(result, new Variant(
+                    MediaType.APPLICATION_OCTET_STREAM));
+        } else if (SaxRepresentation.class.isAssignableFrom(objectClass)) {
+            result = addVariant(result, new Variant(
+                    MediaType.APPLICATION_ALL_XML));
+            result = addVariant(result, new Variant(MediaType.TEXT_XML));
         }
 
         return result;
     }
 
-    private List<Variant> addVariant(List<Variant> variants, Variant variant) {
-        if (variants == null) {
-            variants = new ArrayList<Variant>();
-        }
-
-        variants.add(variant);
-        return variants;
-    }
-
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T toObject(Representation representation, Class<T> targetClass,
-            UniformResource resource) {
+            UniformResource resource) throws IOException {
+        Object result = null;
 
-        return null;
+        if (targetClass.isAssignableFrom(representation.getClass())) {
+            result = (T) representation;
+        } else {
+            if (String.class.isAssignableFrom(targetClass)) {
+                result = representation.getText();
+            } else if (StringRepresentation.class.isAssignableFrom(targetClass)) {
+                result = new StringRepresentation(representation.getText(),
+                        representation.getMediaType());
+            } else if (Document.class.isAssignableFrom(targetClass)) {
+                result = new DomRepresentation(representation).getDocument();
+            } else if (DomRepresentation.class.isAssignableFrom(targetClass)) {
+                result = new DomRepresentation(representation);
+            } else if (File.class.isAssignableFrom(targetClass)) {
+                if (representation instanceof FileRepresentation) {
+                    result = ((FileRepresentation) representation).getFile();
+                }
+            } else if (InputStream.class.isAssignableFrom(targetClass)) {
+                result = representation.getStream();
+            } else if (InputRepresentation.class.isAssignableFrom(targetClass)) {
+                result = new InputRepresentation(representation.getStream());
+            } else if (Reader.class.isAssignableFrom(targetClass)) {
+                result = representation.getReader();
+            } else if (ReaderRepresentation.class.isAssignableFrom(targetClass)) {
+                result = new ReaderRepresentation(representation.getReader());
+            } else if (SaxRepresentation.class.isAssignableFrom(targetClass)) {
+                result = new SaxRepresentation(representation);
+            }
+        }
+
+        if (result instanceof Representation) {
+            Representation resultRepresentation = (Representation) result;
+
+            // Copy the variant metadata
+            resultRepresentation.setCharacterSet(representation
+                    .getCharacterSet());
+            resultRepresentation.setMediaType(representation.getMediaType());
+            resultRepresentation.setEncodings(representation.getEncodings());
+            resultRepresentation.setLanguages(representation.getLanguages());
+        }
+
+        return (T) result;
     }
 
     @Override
     public Representation toRepresentation(Object object,
-            Variant targetVariant, UniformResource resource) {
+            Variant targetVariant, UniformResource resource) throws IOException {
         Representation result = null;
 
         if (object instanceof String) {
@@ -124,6 +188,8 @@ public class DefaultConverter extends ConverterHelper {
         } else if (object instanceof Reader) {
             result = new ReaderRepresentation((Reader) object,
                     targetVariant == null ? null : targetVariant.getMediaType());
+        } else if (object instanceof Representation) {
+            result = (Representation) object;
         }
 
         if ((result != null) && (targetVariant != null)) {

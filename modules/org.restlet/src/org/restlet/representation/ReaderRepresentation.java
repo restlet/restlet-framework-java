@@ -54,6 +54,16 @@ public class ReaderRepresentation extends CharacterRepresentation {
      * 
      * @param reader
      *            The representation's stream.
+     */
+    public ReaderRepresentation(Reader reader) {
+        this(reader, null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param reader
+     *            The representation's stream.
      * @param mediaType
      *            The representation's media type.
      */

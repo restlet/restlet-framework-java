@@ -54,6 +54,16 @@ public class InputRepresentation extends StreamRepresentation {
      * 
      * @param inputStream
      *            The representation's stream.
+     */
+    public InputRepresentation(InputStream inputStream) {
+        this(inputStream, null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param inputStream
+     *            The representation's stream.
      * @param mediaType
      *            The representation's media type.
      */

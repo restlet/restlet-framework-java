@@ -31,6 +31,7 @@
 package org.restlet.engine.converter;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.representation.Representation;
@@ -43,6 +44,43 @@ import org.restlet.resource.UniformResource;
  * @author Jerome Louvel
  */
 public abstract class ConverterHelper {
+
+    /**
+     * Adds an object class to the given list. Creates a new list if necessary.
+     * 
+     * @param objectClasses
+     *            The object classes list to update or null.
+     * @param objectClass
+     *            The object class to add.
+     * @return The input object classes list or a new one.
+     */
+    protected List<Class<?>> addObjectClass(List<Class<?>> objectClasses,
+            Class<?> objectClass) {
+        if (objectClasses == null) {
+            objectClasses = new ArrayList<Class<?>>();
+        }
+
+        objectClasses.add(objectClass);
+        return objectClasses;
+    }
+
+    /**
+     * Adds a variant to the given list. Creates a new list if necessary.
+     * 
+     * @param variants
+     *            The variants list to update or null.
+     * @param variant
+     *            The variant to add.
+     * @return The input variants list or a new one.
+     */
+    protected List<Variant> addVariant(List<Variant> variants, Variant variant) {
+        if (variants == null) {
+            variants = new ArrayList<Variant>();
+        }
+
+        variants.add(variant);
+        return variants;
+    }
 
     /**
      * Returns the list of object classes that can be converted from a given
@@ -92,6 +130,6 @@ public abstract class ConverterHelper {
      * @return The converted representation.
      */
     public abstract Representation toRepresentation(Object object,
-            Variant targetVariant, UniformResource resource);
+            Variant targetVariant, UniformResource resource) throws IOException;
 
 }

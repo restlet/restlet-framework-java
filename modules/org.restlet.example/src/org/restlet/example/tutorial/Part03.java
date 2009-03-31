@@ -53,13 +53,9 @@ public class Part03 extends ServerResource {
         new Server(Protocol.HTTP, 8182, Part03.class).start();
     }
 
-    public Part03() {
-        setConditional(false);
-    }
-
     @Get
     public String toString() {
-        return "Hello World!";
+        return "hello, world";
     }
 
     @Get
