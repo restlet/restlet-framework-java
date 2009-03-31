@@ -46,7 +46,7 @@ import org.restlet.data.Protocol;
 public class Part06 {
     public static void main(String[] args) throws Exception {
         // Create a component
-        final Component component = new Component();
+        Component component = new Component();
         component.getServers().add(Protocol.HTTP, 8182);
         component.getClients().add(Protocol.FILE);
 

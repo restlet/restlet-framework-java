@@ -52,11 +52,11 @@ public class Part12 extends Application {
      */
     public static void main(String[] args) throws Exception {
         // Create a component
-        final Component component = new Component();
+        Component component = new Component();
         component.getServers().add(Protocol.HTTP, 8182);
 
         // Create an application
-        final Application application = new Part12();
+        Application application = new Part12();
 
         // Attach the application to the component and start it
         component.getDefaultHost().attachDefault(application);
@@ -66,7 +66,7 @@ public class Part12 extends Application {
     @Override
     public Restlet createRoot() {
         // Create a router
-        final Router router = new Router(getContext());
+        Router router = new Router(getContext());
 
         // Attach the resources to the router
         router.attach("/users/{user}", UserResource.class);
