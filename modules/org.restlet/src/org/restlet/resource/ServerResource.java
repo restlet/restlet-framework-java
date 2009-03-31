@@ -54,9 +54,9 @@ import org.restlet.data.Response;
 import org.restlet.data.ServerInfo;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
-import org.restlet.engine.util.VariantInfo;
 import org.restlet.engine.util.AnnotationInfo;
 import org.restlet.engine.util.AnnotationUtils;
+import org.restlet.engine.util.VariantInfo;
 import org.restlet.representation.Representation;
 import org.restlet.representation.RepresentationInfo;
 import org.restlet.representation.Variant;
@@ -436,7 +436,16 @@ public class ServerResource extends UniformResource {
             }
 
             if (resultObject != null) {
-                result = cs.toRepresentation(resultObject, variant, this);
+                // TODO This is a shortcut in case the resource does not
+                // precise the media-type of the representation. This should be
+                // enhanced, maybe with a media type "unknown" for the
+                // negociated variant.
+                if (resultObject instanceof Representation) {
+                    result = (Representation) resultObject;
+                } else {
+                    result = cs.toRepresentation(resultObject, variant, this);
+                }
+
             }
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
