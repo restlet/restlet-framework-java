@@ -57,7 +57,6 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.restlet.Context;
 import org.restlet.Restlet;
-import org.restlet.Router;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -108,6 +107,7 @@ import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyWriter;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyWriterSubSet;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
+import org.restlet.routing.Router;
 import org.restlet.service.MetadataService;
 
 /**

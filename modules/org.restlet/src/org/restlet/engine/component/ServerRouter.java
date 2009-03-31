@@ -32,12 +32,12 @@ package org.restlet.engine.component;
 
 import org.restlet.Component;
 import org.restlet.Restlet;
-import org.restlet.Route;
-import org.restlet.Router;
-import org.restlet.VirtualHost;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.routing.Route;
+import org.restlet.routing.Router;
+import org.restlet.routing.VirtualHost;
 
 /**
  * Router that collects calls from all server connectors and dispatches them to

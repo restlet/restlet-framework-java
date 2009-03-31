@@ -36,7 +36,6 @@ import java.util.Date;
 
 import org.restlet.Application;
 import org.restlet.Component;
-import org.restlet.Directory;
 import org.restlet.Restlet;
 import org.restlet.data.LocalReference;
 import org.restlet.data.Method;
@@ -47,6 +46,7 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
+import org.restlet.resource.Directory;
 
 /**
  * Unit tests for the Directory class.

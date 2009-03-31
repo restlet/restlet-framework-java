@@ -35,7 +35,6 @@ import org.restlet.Client;
 import org.restlet.Component;
 import org.restlet.Context;
 import org.restlet.Restlet;
-import org.restlet.Router;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
@@ -45,6 +44,7 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.Resource;
+import org.restlet.routing.Router;
 
 /**
  * This tests the ability of the connectors to handle chunked encoding.

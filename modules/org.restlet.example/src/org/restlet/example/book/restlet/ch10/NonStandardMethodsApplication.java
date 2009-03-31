@@ -32,7 +32,7 @@ package org.restlet.example.book.restlet.ch10;
 
 import org.restlet.Application;
 import org.restlet.Restlet;
-import org.restlet.Router;
+import org.restlet.routing.Router;
 
 /**
  *

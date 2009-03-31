@@ -35,12 +35,12 @@ import java.util.List;
 import org.restlet.Client;
 import org.restlet.Component;
 import org.restlet.Context;
-import org.restlet.Route;
 import org.restlet.Server;
-import org.restlet.VirtualHost;
 import org.restlet.data.Parameter;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
+import org.restlet.routing.Route;
+import org.restlet.routing.VirtualHost;
 import org.restlet.util.ClientList;
 import org.restlet.util.ServerList;
 

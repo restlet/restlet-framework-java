@@ -33,11 +33,11 @@ package org.restlet.engine.component;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
-import org.restlet.Route;
-import org.restlet.Router;
-import org.restlet.VirtualHost;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.routing.Route;
+import org.restlet.routing.Router;
+import org.restlet.routing.VirtualHost;
 
 /**
  * Route based on a target VirtualHost.

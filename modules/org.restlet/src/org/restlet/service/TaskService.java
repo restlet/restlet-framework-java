@@ -45,8 +45,8 @@ import java.util.concurrent.TimeoutException;
 
 import org.restlet.Application;
 import org.restlet.Context;
-import org.restlet.VirtualHost;
 import org.restlet.data.Response;
+import org.restlet.routing.VirtualHost;
 
 /**
  * Application service capable of running tasks asynchronously. The service

@@ -40,7 +40,7 @@ import org.restlet.data.ChallengeScheme;
  * 
  * @author Jerome Louvel
  */
-public class ChallengeGuard extends Guard {
+public class ChallengeGuard extends UniformGuard {
 
     /**
      * Constructor which creates a {@link ChallengeAuthenticator} for the given

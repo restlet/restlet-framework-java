@@ -39,9 +39,7 @@ import org.junit.Test;
 import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
-import org.restlet.Directory;
 import org.restlet.Restlet;
-import org.restlet.Router;
 import org.restlet.data.Form;
 import org.restlet.data.LocalReference;
 import org.restlet.data.Method;
@@ -52,6 +50,8 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.representation.StringRepresentation;
+import org.restlet.resource.Directory;
+import org.restlet.routing.Router;
 
 /**
  * Test {@link org.restlet.data.Range}.

@@ -34,15 +34,15 @@ import static org.restlet.example.tutorial.Constants.ROOT_URI;
 
 import org.restlet.Application;
 import org.restlet.Component;
-import org.restlet.Directory;
 import org.restlet.Guard;
 import org.restlet.Restlet;
-import org.restlet.Router;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.resource.Directory;
+import org.restlet.routing.Router;
 
 /**
  * Routers and hierarchical URIs

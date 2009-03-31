@@ -31,9 +31,9 @@
 package org.restlet.security;
 
 import org.restlet.Context;
-import org.restlet.Filter;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.routing.Filter;
 
 /**
  * Filter authenticating the subject sending the request.

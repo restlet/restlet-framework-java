@@ -28,10 +28,12 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet;
+package org.restlet.routing;
 
 import java.util.logging.Level;
 
+import org.restlet.Context;
+import org.restlet.Restlet;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;

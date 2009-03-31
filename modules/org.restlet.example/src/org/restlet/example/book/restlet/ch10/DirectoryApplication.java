@@ -31,10 +31,10 @@
 package org.restlet.example.book.restlet.ch10;
 
 import org.restlet.Application;
-import org.restlet.Directory;
 import org.restlet.Restlet;
 import org.restlet.data.LocalReference;
 import org.restlet.data.Protocol;
+import org.restlet.resource.Directory;
 
 /**
  *

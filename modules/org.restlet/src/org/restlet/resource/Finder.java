@@ -28,17 +28,18 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet;
+package org.restlet.resource;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 
+import org.restlet.Context;
+import org.restlet.Restlet;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.resource.ServerResource;
 
 /**
  * Restlet that can find the target server resource or handler that will

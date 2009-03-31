@@ -34,7 +34,7 @@ import java.io.File;
 
 import org.restlet.Application;
 import org.restlet.Restlet;
-import org.restlet.Router;
+import org.restlet.routing.Router;
 
 import freemarker.template.Configuration;
 

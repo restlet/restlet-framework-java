@@ -31,10 +31,10 @@
 package org.restlet.test.ext.spring;
 
 import org.restlet.Restlet;
-import org.restlet.Route;
 import org.restlet.ext.spring.SpringBeanFinder;
 import org.restlet.ext.spring.SpringBeanRouter;
 import org.restlet.resource.Resource;
+import org.restlet.routing.Route;
 import org.restlet.test.RestletTestCase;
 import org.restlet.util.RouteList;
 import org.springframework.beans.factory.config.BeanDefinition;

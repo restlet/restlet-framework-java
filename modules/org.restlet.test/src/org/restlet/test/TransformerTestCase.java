@@ -35,11 +35,11 @@ import java.io.ByteArrayOutputStream;
 import junit.framework.TestCase;
 
 import org.restlet.Component;
-import org.restlet.Transformer;
 import org.restlet.data.MediaType;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.TransformRepresentation;
+import org.restlet.routing.Transformer;
 
 /**
  * Test case for the Transformer class.

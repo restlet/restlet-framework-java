@@ -43,6 +43,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.engine.security.AuthenticatorUtils;
+import org.restlet.routing.Filter;
 import org.restlet.util.Resolver;
 
 /**

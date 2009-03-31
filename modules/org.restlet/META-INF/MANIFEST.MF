@@ -18,6 +18,7 @@ Export-Package: org.restlet,
  org.restlet.engine.util,
  org.restlet.representation,
  org.restlet.resource,
+ org.restlet.routing,
  org.restlet.security,
  org.restlet.service,
  org.restlet.util

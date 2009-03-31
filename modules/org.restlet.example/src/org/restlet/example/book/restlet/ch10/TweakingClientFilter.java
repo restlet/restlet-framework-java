@@ -31,12 +31,12 @@
 package org.restlet.example.book.restlet.ch10;
 
 import org.restlet.Context;
-import org.restlet.Filter;
 import org.restlet.Restlet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.routing.Filter;
 
 /**
  *

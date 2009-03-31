@@ -37,7 +37,6 @@ import java.net.URL;
 import java.util.Map;
 
 import org.restlet.Context;
-import org.restlet.Filter;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Encoding;
@@ -54,6 +53,7 @@ import org.restlet.data.Response;
 import org.restlet.engine.Engine;
 import org.restlet.engine.http.HttpConstants;
 import org.restlet.engine.http.PreferenceUtils;
+import org.restlet.routing.Filter;
 import org.restlet.service.MetadataService;
 import org.restlet.service.TunnelService;
 import org.restlet.util.Series;

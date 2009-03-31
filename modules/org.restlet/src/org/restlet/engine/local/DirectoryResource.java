@@ -39,7 +39,6 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 
 import org.restlet.Context;
-import org.restlet.Directory;
 import org.restlet.Uniform;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -51,6 +50,7 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
+import org.restlet.resource.Directory;
 import org.restlet.resource.Resource;
 import org.restlet.resource.ResourceException;
 

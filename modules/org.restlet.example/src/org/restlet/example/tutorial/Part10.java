@@ -32,11 +32,11 @@ package org.restlet.example.tutorial;
 
 import org.restlet.Application;
 import org.restlet.Component;
-import org.restlet.Redirector;
 import org.restlet.Restlet;
-import org.restlet.Route;
-import org.restlet.Router;
 import org.restlet.data.Protocol;
+import org.restlet.routing.Redirector;
+import org.restlet.routing.Route;
+import org.restlet.routing.Router;
 
 /**
  * URI rewriting and redirection.

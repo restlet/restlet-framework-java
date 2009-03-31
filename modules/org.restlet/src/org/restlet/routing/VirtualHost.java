@@ -28,13 +28,16 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet;
+package org.restlet.routing;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import org.restlet.Context;
+import org.restlet.Restlet;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.resource.Finder;
 
 /**
  * Router of calls from Server connectors to Restlets. The attached Restlets are

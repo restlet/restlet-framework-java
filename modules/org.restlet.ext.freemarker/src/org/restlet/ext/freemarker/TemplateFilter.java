@@ -31,11 +31,11 @@
 package org.restlet.ext.freemarker;
 
 import org.restlet.Context;
-import org.restlet.Filter;
 import org.restlet.Restlet;
 import org.restlet.data.Encoding;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.routing.Filter;
 import org.restlet.util.Resolver;
 
 import freemarker.template.Configuration;

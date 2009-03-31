@@ -31,9 +31,9 @@
 package org.restlet.test;
 
 import org.restlet.Context;
-import org.restlet.Filter;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.routing.Filter;
 
 /**
  * Thin layer around an AbstractFilter. Takes care about being started and

@@ -33,9 +33,9 @@ package org.restlet.ext.spring;
 import java.util.logging.Level;
 
 import org.restlet.Context;
-import org.restlet.Finder;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.resource.Finder;
 import org.restlet.resource.Resource;
 
 /**

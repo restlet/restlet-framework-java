@@ -31,10 +31,10 @@
 package org.restlet.security;
 
 import org.restlet.Context;
-import org.restlet.Filter;
 import org.restlet.Restlet;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.routing.Filter;
 
 /**
  * Filter guarding the access to an attached Restlet. More concretely, it guards
@@ -52,7 +52,7 @@ import org.restlet.data.Response;
  *      Guarding access to sensitive resources</a>
  * @author Jerome Louvel
  */
-public class Guard extends Filter {
+public class UniformGuard extends Filter {
 
     /** The authenticator. */
     private Authenticator authenticator;
@@ -70,7 +70,7 @@ public class Guard extends Filter {
      * @param authorizer
      *            The authorizer.
      */
-    public Guard(Context context, Authenticator authenticator,
+    public UniformGuard(Context context, Authenticator authenticator,
             Authorizer authorizer) {
         super(context);
         setAuthenticator(authenticator);

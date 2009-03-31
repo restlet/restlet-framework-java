@@ -32,11 +32,11 @@ package org.restlet.engine.application;
 
 import org.restlet.Application;
 import org.restlet.Context;
-import org.restlet.Filter;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.engine.ChainHelper;
 import org.restlet.engine.StatusFilter;
+import org.restlet.routing.Filter;
 
 /**
  * Application implementation.

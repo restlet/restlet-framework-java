@@ -36,12 +36,12 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 import org.restlet.Context;
-import org.restlet.Filter;
 import org.restlet.Restlet;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
+import org.restlet.routing.Filter;
 
 import com.threecrickets.scripturian.ScriptContextController;
 

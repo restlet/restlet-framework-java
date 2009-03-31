@@ -28,13 +28,15 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet;
+package org.restlet.resource;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.restlet.Application;
+import org.restlet.Context;
 import org.restlet.data.Form;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
@@ -56,7 +58,7 @@ import org.restlet.util.Template;
  * set for common methods like GET, POST, PUT, DELETE, HEAD and OPTIONS.
  * Extension methods like MOVE or PATCH are automatically supported using Java
  * introspection. The actual dispatching of the call to those methods is
- * dynamically done by the {@link org.restlet.Finder} class.<br>
+ * dynamically done by the {@link org.restlet.resource.Finder} class.<br>
  * <br>
  * The HEAD method has a default implementation based on the GET method and the
  * OPTIONS method automatically updates the list of allowed methods in the
@@ -75,7 +77,7 @@ import org.restlet.util.Template;
  * a Handler instance is not reused by several calls and is only invoked by one
  * thread. Therefore, it doesn't have to be thread-safe.<br>
  * 
- * @see org.restlet.Finder
+ * @see org.restlet.resource.Finder
  * @author Jerome Louvel
  */
 public abstract class Handler {

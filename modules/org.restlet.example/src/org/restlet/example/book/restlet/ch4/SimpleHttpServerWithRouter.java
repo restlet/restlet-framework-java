@@ -31,12 +31,12 @@
 package org.restlet.example.book.restlet.ch4;
 
 import org.restlet.Restlet;
-import org.restlet.Router;
 import org.restlet.Server;
 import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.routing.Router;
 
 /**
  *

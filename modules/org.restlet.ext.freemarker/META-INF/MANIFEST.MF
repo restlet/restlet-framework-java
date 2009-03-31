@@ -14,6 +14,7 @@ Import-Package: freemarker.template,
  org.restlet.data,
  org.restlet.representation,
  org.restlet.resource,
+ org.restlet.routing,
  org.restlet.service,
  org.restlet.util
 Bundle-RequiredExecutionEnvironment: J2SE-1.5

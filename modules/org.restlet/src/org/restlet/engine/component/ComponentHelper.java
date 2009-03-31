@@ -36,12 +36,12 @@ import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
 import org.restlet.Restlet;
-import org.restlet.Route;
 import org.restlet.Server;
-import org.restlet.VirtualHost;
 import org.restlet.data.Protocol;
 import org.restlet.engine.ChainHelper;
 import org.restlet.engine.StatusFilter;
+import org.restlet.routing.Route;
+import org.restlet.routing.VirtualHost;
 
 /**
  * Component helper.

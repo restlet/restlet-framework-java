@@ -34,9 +34,9 @@ import java.io.File;
 
 import org.restlet.Component;
 import org.restlet.Restlet;
-import org.restlet.Route;
-import org.restlet.Router;
 import org.restlet.data.Protocol;
+import org.restlet.routing.Route;
+import org.restlet.routing.Router;
 import org.restlet.util.Variable;
 
 import com.db4o.Db4o;

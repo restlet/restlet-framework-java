@@ -157,7 +157,7 @@ public abstract class RestletServerTestCase extends TestCase {
      * @param challengeScheme
      * @return
      */
-    public static Guard createGuard(final Context context,
+    public static UniformGuard createGuard(final Context context,
             final ChallengeScheme challengeScheme) {
         MemoryRealm realm = new MemoryRealm();
 

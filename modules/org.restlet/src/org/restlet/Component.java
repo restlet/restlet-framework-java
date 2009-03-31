@@ -50,7 +50,11 @@ import org.restlet.engine.util.DefaultSaxHandler;
 import org.restlet.representation.DomRepresentation;
 import org.restlet.representation.FileRepresentation;
 import org.restlet.representation.Representation;
+import org.restlet.resource.Finder;
 import org.restlet.resource.Resource;
+import org.restlet.routing.Route;
+import org.restlet.routing.Router;
+import org.restlet.routing.VirtualHost;
 import org.restlet.service.LogService;
 import org.restlet.service.RealmService;
 import org.restlet.service.StatusService;
@@ -624,7 +628,7 @@ public class Component extends Restlet {
      * current Component.<br>
      * <br>
      * The second use case is the composition/mash-up of several representations
-     * via the {@link org.restlet.Transformer} class for example. For this you
+     * via the {@link org.restlet.routing.Transformer} class for example. For this you
      * can leverage the XPath's document() function or the XSLT's include and
      * import elements with RIAP URIs.
      * 

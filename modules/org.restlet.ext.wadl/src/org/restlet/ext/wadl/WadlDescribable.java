@@ -30,7 +30,7 @@
  
 package org.restlet.ext.wadl;
 
-import org.restlet.Directory;
+import org.restlet.resource.Directory;
 
 /**
  * Interface that any Restlet can implement in order to provide their own WADL

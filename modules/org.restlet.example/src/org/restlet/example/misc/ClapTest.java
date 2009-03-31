@@ -32,9 +32,9 @@ package org.restlet.example.misc;
 
 import org.restlet.Application;
 import org.restlet.Component;
-import org.restlet.Directory;
 import org.restlet.Restlet;
 import org.restlet.data.Protocol;
+import org.restlet.resource.Directory;
 
 /**
  * HTTP server exposing a Directory of resources based on a local CLAP client

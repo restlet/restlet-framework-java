@@ -35,7 +35,6 @@ import java.util.List;
 
 import org.restlet.Application;
 import org.restlet.Context;
-import org.restlet.Handler;
 import org.restlet.data.Dimension;
 import org.restlet.data.Language;
 import org.restlet.data.Parameter;
@@ -94,7 +93,7 @@ import org.restlet.util.Series;
  *      href="http://www.restlet.org/documentation/1.1/tutorial#part12">Tutorial
  *      : Reaching target Resources</a>
  * @see org.restlet.representation.Representation
- * @see org.restlet.Finder
+ * @see org.restlet.resource.Finder
  * @author Jerome Louvel
  * @author Thierry Boileau
  * @author Konstantin Laufer (laufer@cs.luc.edu)

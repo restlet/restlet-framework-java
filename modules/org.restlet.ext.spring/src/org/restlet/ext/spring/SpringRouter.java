@@ -35,9 +35,9 @@ import java.util.logging.Level;
 
 import org.restlet.Context;
 import org.restlet.Restlet;
-import org.restlet.Router;
 import org.restlet.engine.Engine;
 import org.restlet.resource.Resource;
+import org.restlet.routing.Router;
 
 /**
  * Router that is easily configurable with Spring. Here is a usage example:

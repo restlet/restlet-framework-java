@@ -32,9 +32,9 @@ package org.restlet.test;
 
 import junit.framework.TestCase;
 
-import org.restlet.Route;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.routing.Route;
 import org.restlet.util.RouteList;
 
 /**

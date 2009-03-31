@@ -39,15 +39,8 @@ import java.util.logging.Level;
 import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Context;
-import org.restlet.Directory;
-import org.restlet.Filter;
-import org.restlet.Finder;
-import org.restlet.Handler;
 import org.restlet.Restlet;
-import org.restlet.Route;
-import org.restlet.Router;
 import org.restlet.Server;
-import org.restlet.VirtualHost;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
@@ -60,7 +53,14 @@ import org.restlet.data.Status;
 import org.restlet.engine.Engine;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
+import org.restlet.resource.Directory;
+import org.restlet.resource.Finder;
+import org.restlet.resource.Handler;
 import org.restlet.resource.Resource;
+import org.restlet.routing.Filter;
+import org.restlet.routing.Route;
+import org.restlet.routing.Router;
+import org.restlet.routing.VirtualHost;
 
 /**
  * WADL configured application. Can automatically configure itself given a WADL

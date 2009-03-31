@@ -33,9 +33,9 @@ package org.restlet.engine.component;
 import org.restlet.Client;
 import org.restlet.Component;
 import org.restlet.Restlet;
-import org.restlet.Router;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.routing.Router;
 
 /**
  * Router that collects calls from all applications and dispatches them to the

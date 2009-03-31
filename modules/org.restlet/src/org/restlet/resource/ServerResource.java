@@ -131,11 +131,10 @@ public class ServerResource extends UniformResource {
     }
 
     /**
-     * Deletes the resource and all its representations.<br>
-     * <br>
-     * This method is only invoked if content negotiation has been disabled as
-     * indicated by the {@link #isNegotiated()}, otherwise the
-     * {@link #delete(Variant)} method is invoked.<br>
+     * Deletes the resource and all its representations. This method is only
+     * invoked if content negotiation has been disabled as indicated by the
+     * {@link #isNegotiated()}, otherwise the {@link #delete(Variant)} method is
+     * invoked.<br>
      * <br>
      * The default behavior is to set the response status to
      * {@link Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.
@@ -537,11 +536,9 @@ public class ServerResource extends UniformResource {
     }
 
     /**
-     * Returns a full representation.<br>
-     * <br>
-     * This method is only invoked if content negotiation has been disabled as
-     * indicated by the {@link #isNegotiated()}, otherwise the
-     * {@link #get(Variant)} method is invoked.<br>
+     * Returns a full representation. This method is only invoked if content
+     * negotiation has been disabled as indicated by the {@link #isNegotiated()}
+     * , otherwise the {@link #get(Variant)} method is invoked.<br>
      * <br>
      * The default behavior is to set the response status to
      * {@link Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.
@@ -847,8 +844,7 @@ public class ServerResource extends UniformResource {
     }
 
     /**
-     * Returns a representation whose metadata will be returned to the client.<br>
-     * <br>
+     * Returns a representation whose metadata will be returned to the client.
      * This method is only invoked if content negotiation has been disabled as
      * indicated by the {@link #isNegotiated()}, otherwise the
      * {@link #get(Variant)} method is invoked.<br>

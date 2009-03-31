@@ -33,12 +33,12 @@ package org.restlet.engine.component;
 import java.util.Iterator;
 
 import org.restlet.Component;
-import org.restlet.VirtualHost;
 import org.restlet.data.LocalReference;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.engine.TemplateDispatcher;
+import org.restlet.routing.VirtualHost;
 
 /**
  * Component client dispatcher.

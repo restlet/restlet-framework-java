@@ -33,11 +33,11 @@ package org.restlet.engine.component;
 import java.util.logging.Level;
 
 import org.restlet.Client;
-import org.restlet.Route;
-import org.restlet.Router;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.routing.Route;
+import org.restlet.routing.Router;
 
 /**
  * Router scorer based on a target client connector.

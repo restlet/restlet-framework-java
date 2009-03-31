@@ -37,10 +37,10 @@ import javax.ws.rs.core.Application;
 
 import org.restlet.Component;
 import org.restlet.Context;
-import org.restlet.Filter;
 import org.restlet.Restlet;
 import org.restlet.data.ClientInfo;
-import org.restlet.security.Guard;
+import org.restlet.routing.Filter;
+import org.restlet.security.UniformGuard;
 
 /**
  * <p>
@@ -52,9 +52,9 @@ import org.restlet.security.Guard;
  * {@link JaxRsApplication#JaxRsApplication(Context)}.
  * <ul>
  * <li>Add your {@link Application}(s) by calling {@link #add(Application)}.</li>
- * <li>If you need authentication, set a {@link Guard} and perhaps an
- * {@link RoleChecker}, see {@link #setGuard(Guard)} or
- * {@link #setAuthentication(Guard, RoleChecker)}.</li>
+ * <li>If you need authentication, set a {@link UniformGuard} and perhaps an
+ * {@link RoleChecker}, see {@link #setGuard(UniformGuard)} or
+ * {@link #setAuthentication(UniformGuard, RoleChecker)}.</li>
  * </ul>
  * At least add the JaxRsApplication to a {@link Component}.
  * </p>
@@ -69,7 +69,7 @@ public class JaxRsApplication extends org.restlet.Application {
 
     /**
      * The Guard to use (either {@link org.restlet.Guard} or
-     * {@link org.restlet.security.Guard}). May be null.
+     * {@link org.restlet.security.UniformGuard}). May be null.
      */
     private volatile Filter guard;
 
@@ -214,7 +214,7 @@ public class JaxRsApplication extends org.restlet.Application {
     }
 
     /**
-     * Sets the objects to check the authentication. The {@link Guard} checks
+     * Sets the objects to check the authentication. The {@link UniformGuard} checks
      * the username and password (e.g.), the {@link RoleChecker} manages the
      * role management for the JAX-RS extension.
      * 
@@ -222,13 +222,13 @@ public class JaxRsApplication extends org.restlet.Application {
      *            the Guard to use.
      * @param roleChecker
      *            the RoleChecker to use
-     * @see #setGuard(Guard)
+     * @see #setGuard(UniformGuard)
      * @see #setRoleChecker(RoleChecker)
      * @deprecated Use {@link ClientInfo#isInRole(org.restlet.security.Role)}
      *             instead
      */
     @Deprecated
-    public void setAuthentication(Guard guard, RoleChecker roleChecker) {
+    public void setAuthentication(UniformGuard guard, RoleChecker roleChecker) {
         setGuard(guard);
         setRoleChecker(roleChecker);
     }
@@ -240,19 +240,19 @@ public class JaxRsApplication extends org.restlet.Application {
     }
 
     /**
-     * Sets the {@link Guard} to use. It should typically use the
+     * Sets the {@link UniformGuard} to use. It should typically use the
      * {@link Context} of this application.<br>
      * The new one is ignored, after the root Restlet is created (see
      * {@link #createRoot()}.
      * 
      * <p>
      * This replaced the guard set via
-     * {@link #setGuard(org.restlet.security.Guard)}.
+     * {@link #setGuard(org.restlet.security.UniformGuard)}.
      * 
      * @param guard
      *            the Guard to use.
-     * @see #setAuthentication(Guard, RoleChecker)
-     * @see #setGuard(org.restlet.security.Guard)
+     * @see #setAuthentication(UniformGuard, RoleChecker)
+     * @see #setGuard(org.restlet.security.UniformGuard)
      */
     public void setGuard(org.restlet.Guard guard) {
         this.guard = guard;
@@ -267,7 +267,7 @@ public class JaxRsApplication extends org.restlet.Application {
      * @param guard
      *            the Guard to use.
      */
-    public void setGuard(org.restlet.security.Guard guard) {
+    public void setGuard(org.restlet.security.UniformGuard guard) {
         this.guard = guard;
     }
 
@@ -288,8 +288,8 @@ public class JaxRsApplication extends org.restlet.Application {
      * If you give an RoleChecker, you should also give a Guard.
      * 
      * @param roleChecker
-     * @see #setAuthentication(Guard, RoleChecker)
-     * @see #setGuard(Guard)
+     * @see #setAuthentication(UniformGuard, RoleChecker)
+     * @see #setGuard(UniformGuard)
      * @deprecated Use {@link ClientInfo#isInRole(org.restlet.security.Role)}
      *             instead
      */

@@ -36,9 +36,9 @@ import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.restlet.Restlet;
-import org.restlet.Route;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.routing.Route;
 
 /**
  * Modifiable list of routes with some helper methods. Note that this class

@@ -34,7 +34,7 @@ import java.util.Map;
 
 import org.restlet.Component;
 import org.restlet.Context;
-import org.restlet.VirtualHost;
+import org.restlet.routing.VirtualHost;
 
 /**
  * Virtual host that is easily configurable with Spring. Here is a usage

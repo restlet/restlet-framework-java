@@ -33,7 +33,6 @@ package org.restlet.engine;
 import java.util.logging.Level;
 
 import org.restlet.Context;
-import org.restlet.Filter;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
@@ -41,6 +40,7 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
+import org.restlet.routing.Filter;
 import org.restlet.service.StatusService;
 
 /**

@@ -40,6 +40,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.engine.Engine;
 import org.restlet.engine.Helper;
+import org.restlet.resource.Finder;
 import org.restlet.resource.Resource;
 import org.restlet.resource.ServerResource;
 

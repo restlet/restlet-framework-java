@@ -33,8 +33,8 @@ package org.restlet.example.tutorial;
 import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Restlet;
-import org.restlet.Router;
 import org.restlet.data.Protocol;
+import org.restlet.routing.Router;
 
 /**
  * Reaching target Resources

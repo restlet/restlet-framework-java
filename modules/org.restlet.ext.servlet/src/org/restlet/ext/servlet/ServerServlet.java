@@ -45,15 +45,15 @@ import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
 import org.restlet.Context;
-import org.restlet.Route;
 import org.restlet.Server;
-import org.restlet.VirtualHost;
 import org.restlet.data.Protocol;
 import org.restlet.data.Response;
 import org.restlet.engine.Engine;
 import org.restlet.engine.component.ComponentContext;
 import org.restlet.engine.http.HttpServerCall;
 import org.restlet.engine.http.HttpServerHelper;
+import org.restlet.routing.Route;
+import org.restlet.routing.VirtualHost;
 
 /**
  * Servlet acting like an HTTP server connector. See <a

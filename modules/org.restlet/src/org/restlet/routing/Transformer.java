@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet;
+package org.restlet.routing;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;

@@ -126,6 +126,12 @@ Changes log
           representation. Suggested by Lars Heuer. 
         - Added Method.ALL constant. Useful to declare variants common
           to all methods in the new ServerResource class.
+        - Added new org.restlet.routing package and moved Filter, 
+          Router, Redirector and subclasses to it.
+        - Moved Directory, Finder and Handler to org.restlet.resource
+          package.
+        - Renamed org.restlet.security.Guard to UniformGuard in order to
+          move org.restlet.Guard to this security package.
     - Misc
         - Upgraded Simple server to version 4.1.9. 
           Contributed by Niall Gallagher.

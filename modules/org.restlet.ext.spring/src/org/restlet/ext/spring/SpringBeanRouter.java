@@ -30,9 +30,9 @@
 
 package org.restlet.ext.spring;
 
-import org.restlet.Finder;
-import org.restlet.Router;
+import org.restlet.resource.Finder;
 import org.restlet.resource.Resource;
+import org.restlet.routing.Router;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;

@@ -36,9 +36,7 @@ import java.util.Properties;
 
 import org.restlet.Client;
 import org.restlet.Component;
-import org.restlet.Directory;
 import org.restlet.Restlet;
-import org.restlet.Router;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.LocalReference;
 import org.restlet.data.MediaType;
@@ -58,6 +56,8 @@ import org.restlet.example.book.restlet.ch8.resources.MailboxesResource;
 import org.restlet.example.book.restlet.ch8.resources.MailsResource;
 import org.restlet.example.book.restlet.ch8.resources.UserResource;
 import org.restlet.example.book.restlet.ch8.resources.UsersResource;
+import org.restlet.resource.Directory;
+import org.restlet.routing.Router;
 
 /**
  * The main Web application.

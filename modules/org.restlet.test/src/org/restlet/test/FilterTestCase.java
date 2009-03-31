@@ -30,13 +30,13 @@
 
 package org.restlet.test;
 
-import org.restlet.Filter;
 import org.restlet.Restlet;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.routing.Filter;
 
 /**
- * Test {@link org.restlet.Filter}.
+ * Test {@link org.restlet.routing.Filter}.
  * 
  * @author Lars Heuer (heuer[at]semagia.com) <a
  *         href="http://www.semagia.com/">Semagia</a>
