@@ -40,7 +40,7 @@ import org.restlet.util.XmlWriter;
 import org.xml.sax.SAXException;
 
 /**
- * Representation for RDF/n3 documents. It knows how to serialize and
+ * Representation for RDF/XML documents. It knows how to serialize and
  * deserialize a {@link Graph}.
  * 
  * @author Thierry Boileau
