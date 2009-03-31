@@ -568,7 +568,7 @@ public final class ClientInfo {
     /**
      * Indicates if the identifier or principal has been authenticated. The
      * application is responsible for updating this property, relying on a
-     * {@link org.restlet.Guard} or manually.
+     * {@link org.restlet.security.Guard} or manually.
      * 
      * @return True if the identifier or principal has been authenticated.
      */
@@ -680,7 +680,7 @@ public final class ClientInfo {
     /**
      * Indicates if the identifier or principal has been authenticated. The
      * application is responsible for updating this property, relying on a
-     * {@link org.restlet.Guard} or manually.
+     * {@link org.restlet.security.Guard} or manually.
      * 
      * @param authenticated
      *            True if the identifier or principal has been authenticated.

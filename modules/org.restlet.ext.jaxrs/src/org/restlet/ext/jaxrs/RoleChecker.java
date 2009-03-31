@@ -38,8 +38,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
-import org.restlet.Guard;
 import org.restlet.data.ClientInfo;
+import org.restlet.security.Guard;
 
 /**
  * <p>

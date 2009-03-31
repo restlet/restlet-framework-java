@@ -68,7 +68,7 @@ import org.restlet.security.UniformGuard;
 public class JaxRsApplication extends org.restlet.Application {
 
     /**
-     * The Guard to use (either {@link org.restlet.Guard} or
+     * The Guard to use (either {@link org.restlet.security.Guard} or
      * {@link org.restlet.security.UniformGuard}). May be null.
      */
     private volatile Filter guard;
@@ -254,7 +254,7 @@ public class JaxRsApplication extends org.restlet.Application {
      * @see #setAuthentication(UniformGuard, RoleChecker)
      * @see #setGuard(org.restlet.security.UniformGuard)
      */
-    public void setGuard(org.restlet.Guard guard) {
+    public void setGuard(org.restlet.security.Guard guard) {
         this.guard = guard;
     }
 
@@ -262,7 +262,7 @@ public class JaxRsApplication extends org.restlet.Application {
      * Set the Guard from the org.restlet.security package. This should be
      * called before the root Restlet is created.
      * <p>
-     * This replaced the guard set via {@link #setGuard(org.restlet.Guard)}.
+     * This replaced the guard set via {@link #setGuard(org.restlet.security.Guard)}.
      * 
      * @param guard
      *            the Guard to use.

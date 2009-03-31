@@ -31,11 +31,11 @@
 package org.restlet.example.book.restlet.ch8;
 
 import org.restlet.Context;
-import org.restlet.Guard;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Request;
 import org.restlet.example.book.restlet.ch8.objects.ObjectsFacade;
 import org.restlet.example.book.restlet.ch8.objects.User;
+import org.restlet.security.Guard;
 
 /**
  * Guard access to the RMEP application.

@@ -32,7 +32,6 @@ package org.restlet.engine.security;
 
 import javax.security.auth.login.CredentialException;
 
-import org.restlet.Guard;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
@@ -42,6 +41,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.engine.util.Base64;
 import org.restlet.engine.util.DigestUtils;
+import org.restlet.security.Guard;
 import org.restlet.util.Series;
 
 /**

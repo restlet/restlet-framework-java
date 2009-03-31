@@ -36,7 +36,7 @@ import org.restlet.data.ChallengeScheme;
 /**
  * Guard that controls that incoming requests are properly authenticated against
  * a given challenge scheme. The features provided by this class are similar to
- * the now deprecated {@link org.restlet.Guard} class.
+ * the now deprecated {@link org.restlet.security.Guard} class.
  * 
  * @author Jerome Louvel
  */

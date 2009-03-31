@@ -35,9 +35,9 @@ import net.oauth.OAuthMessage;
 import net.oauth.SimpleOAuthValidator;
 
 import org.restlet.Context;
-import org.restlet.Guard;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Request;
+import org.restlet.security.Guard;
 
 /**
  * Handles authentication using

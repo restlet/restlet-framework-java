@@ -49,7 +49,7 @@ public final class ChallengeResponse {
     /**
      * Indicates if the identifier or principal has been authenticated. The
      * application is responsible for updating this property, relying on a
-     * {@link org.restlet.Guard} or manually.
+     * {@link org.restlet.security.Guard} or manually.
      */
     private volatile boolean authenticated;
 
@@ -276,7 +276,7 @@ public final class ChallengeResponse {
     /**
      * Indicates if the identifier or principal has been authenticated. The
      * application is responsible for updating this property, relying on a
-     * {@link org.restlet.Guard} or manually.
+     * {@link org.restlet.security.Guard} or manually.
      * 
      * @return True if the identifier or principal has been authenticated.
      * @deprecated Use {@link ClientInfo#isAuthenticated()} instead.
@@ -289,7 +289,7 @@ public final class ChallengeResponse {
     /**
      * Indicates if the identifier or principal has been authenticated. The
      * application is responsible for updating this property, relying on a
-     * {@link org.restlet.Guard} or manually.
+     * {@link org.restlet.security.Guard} or manually.
      * 
      * @param authenticated
      *            True if the identifier or principal has been authenticated.
