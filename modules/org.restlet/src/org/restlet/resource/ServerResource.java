@@ -415,7 +415,8 @@ public class ServerResource extends UniformResource {
         Object resultObject = null;
 
         try {
-            if (annotationInfo.getJavaParameterTypes() != null) {
+            if ((annotationInfo.getJavaParameterTypes() != null)
+                    && (annotationInfo.getJavaParameterTypes().length > 0)) {
                 List<Object> parameters = new ArrayList<Object>();
 
                 for (Class<?> param : annotationInfo.getJavaParameterTypes()) {
@@ -674,7 +675,10 @@ public class ServerResource extends UniformResource {
                                 variants = new ArrayList<Variant>();
                             }
 
-                            variants.addAll(annoVariants);
+                            for (Variant v : annoVariants) {
+                                variants
+                                        .add(new VariantInfo(v, annotationInfo));
+                            }
                         }
                     }
                 }

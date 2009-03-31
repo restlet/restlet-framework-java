@@ -46,13 +46,28 @@ public class VariantInfo extends Variant {
     /**
      * Constructor.
      * 
+     * @param variant
+     *            The variant to enrich.
+     * @param annotationInfo
+     *            The optional annotation descriptor.
+     */
+    public VariantInfo(Variant variant, AnnotationInfo annotationInfo) {
+        super(variant.getMediaType());
+        setCharacterSet(variant.getCharacterSet());
+        setEncodings(variant.getEncodings());
+        setLanguages(variant.getLanguages());
+        this.annotationInfo = annotationInfo;
+    }
+
+    /**
+     * Constructor.
+     * 
      * @param mediaType
      *            The media type.
      * @param annotationInfo
      *            The optional annotation descriptor.
      */
-    public VariantInfo(MediaType mediaType, AnnotationInfo annotationInfo,
-            Variant variant) {
+    public VariantInfo(MediaType mediaType, AnnotationInfo annotationInfo) {
         super(mediaType);
         this.annotationInfo = annotationInfo;
     }
