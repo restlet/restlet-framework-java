@@ -268,18 +268,11 @@ public class ServerResource extends UniformResource {
         if (method == null) {
             setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "No method specified");
         } else {
-            boolean found = false;
+            AnnotationInfo annotationInfo = getAnnotation(method);
 
-            if (hasAnnotations()) {
-                java.lang.reflect.Method javaMethod = getJavaMethod(method);
-
-                if (javaMethod != null) {
-                    found = true;
-                    result = invokeJavaMethod(javaMethod);
-                }
-            }
-
-            if (!found) {
+            if (annotationInfo != null) {
+                result = doHandle(annotationInfo);
+            } else {
                 if (method.equals(Method.GET)) {
                     result = get();
                 } else if (method.equals(Method.POST)) {
@@ -296,6 +289,54 @@ public class ServerResource extends UniformResource {
                     setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
                 }
             }
+        }
+
+        return result;
+    }
+
+    private Representation doHandle(AnnotationInfo annotationInfo) {
+        Representation result = null;
+        ConverterService cs = getConverterService();
+        Class<?>[] parameterTypes = annotationInfo.getJavaParameterTypes();
+        List<Object> parameters = null;
+        Object resultObject = null;
+
+        try {
+            if (parameterTypes.length > 0) {
+                parameters = new ArrayList<Object>();
+
+                for (Class<?> parameterType : parameterTypes) {
+                    if (getRequest().getEntity() != null) {
+                        try {
+                            parameters.add(cs.toObject(
+                                    getRequest().getEntity(), parameterType,
+                                    this));
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            parameters.add(null);
+                        }
+                    } else {
+                        parameters.add(null);
+                    }
+                }
+
+                // Actually invoke the method
+                resultObject = annotationInfo.getJavaMethod().invoke(this,
+                        parameters);
+            } else {
+                // Actually invoke the method
+                resultObject = annotationInfo.getJavaMethod().invoke(this);
+            }
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+
+        if (resultObject != null) {
+            result = cs.toRepresentation(resultObject);
         }
 
         return result;
@@ -482,6 +523,23 @@ public class ServerResource extends UniformResource {
     }
 
     /**
+     * Returns the first annotation descriptor matching the given method.
+     * 
+     * @param method
+     *            The method to match.
+     * @return The annotation descriptor.
+     */
+    private AnnotationInfo getAnnotation(Method method) {
+        for (AnnotationInfo annotationInfo : getAnnotations()) {
+            if (annotationInfo.getRestletMethod().equals(method)) {
+                return annotationInfo;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Returns the annotation descriptors.
      * 
      * @return The annotation descriptors.
@@ -536,22 +594,6 @@ public class ServerResource extends UniformResource {
      */
     public RepresentationInfo getInfo(Variant variant) throws ResourceException {
         return get(variant);
-    }
-
-    /**
-     * Returns the annotated Java method matching the given Restlet method.
-     * 
-     * @param restletMethod
-     * @return
-     */
-    private java.lang.reflect.Method getJavaMethod(Method restletMethod) {
-        for (AnnotationInfo annotationInfo : this.annotations) {
-            if (restletMethod.equals(annotationInfo.getRestletMethod())) {
-                return annotationInfo.getJavaMethod();
-            }
-        }
-
-        return null;
     }
 
     /**
@@ -760,62 +802,6 @@ public class ServerResource extends UniformResource {
      */
     public Representation head(Variant variant) throws ResourceException {
         return get(variant);
-    }
-
-    /**
-     * 
-     * @param javaMethod
-     * @return
-     */
-    private Representation invokeJavaMethod(java.lang.reflect.Method javaMethod) {
-        Representation result = null;
-        ConverterService cs = getConverterService();
-        Class<?>[] parameterTypes = javaMethod.getParameterTypes();
-        List<Object> parameters = null;
-        Object resultObject = null;
-
-        try {
-            if (parameterTypes.length > 0) {
-                parameters = new ArrayList<Object>();
-
-                for (Class<?> parameterType : parameterTypes) {
-                    if (getRequest().getEntity() != null) {
-                        try {
-                            parameters.add(cs.toObject(
-                                    getRequest().getEntity(), parameterType,
-                                    this));
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                            parameters.add(null);
-                        }
-                    } else {
-                        parameters.add(null);
-                    }
-                }
-
-                // Actually invoke the method
-                resultObject = javaMethod.invoke(this, parameters.toArray());
-            } else {
-                // Actually invoke the method
-                resultObject = javaMethod.invoke(this);
-            }
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        }
-
-        if (resultObject != null) {
-            Class<?> returnType = javaMethod.getReturnType();
-
-            if (returnType != null) {
-                result = cs.toRepresentation(resultObject);
-            }
-        }
-
-        return result;
     }
 
     /**
