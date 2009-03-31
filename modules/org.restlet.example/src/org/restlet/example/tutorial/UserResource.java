@@ -30,9 +30,6 @@
 
 package org.restlet.example.tutorial;
 
-import org.restlet.Context;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.resource.Get;
 import org.restlet.resource.ServerResource;
 
@@ -47,8 +44,8 @@ public class UserResource extends ServerResource {
     Object user;
 
     @Override
-    public void init(Context context, Request request, Response response) {
-        this.userName = (String) request.getAttributes().get("user");
+    public void init() {
+        this.userName = (String) getRequestAttributes().get("user");
         this.user = null; // Could be a lookup to a domain object.
     }
 

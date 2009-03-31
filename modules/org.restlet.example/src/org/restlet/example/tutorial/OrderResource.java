@@ -30,9 +30,7 @@
 
 package org.restlet.example.tutorial;
 
-import org.restlet.Context;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
+import org.restlet.resource.Get;
 
 /**
  * Related to the part 12 of the tutorial.
@@ -45,12 +43,12 @@ public class OrderResource extends UserResource {
     Object order;
 
     @Override
-    public void init(Context context, Request request, Response response) {
-        this.orderId = (String) request.getAttributes().get("order");
+    public void init() {
+        this.orderId = (String) getRequestAttributes().get("order");
         this.order = null; // Could be a lookup to a domain object.
     }
 
-    @Override
+    @Get
     public String toString() {
         return "Order \"" + this.orderId + "\" for user \"" + this.userName
                 + "\"";

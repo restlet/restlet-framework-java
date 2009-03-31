@@ -31,6 +31,7 @@
 package org.restlet.resource;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -97,6 +98,8 @@ public abstract class UniformResource {
     /**
      * Clean-up method. It is suggested to override it in order to clean-up the
      * state of the resource. By default, it does nothing.
+     * 
+     * @see #init()
      */
     public void destroy() {
 
@@ -332,6 +335,16 @@ public abstract class UniformResource {
     }
 
     /**
+     * Returns the request attributes.
+     * 
+     * @return The request attributes.
+     * @see Request#getAttributes()
+     */
+    public Map<String, Object> getRequestAttributes() {
+        return getRequest().getAttributes();
+    }
+
+    /**
      * Returns the request entity representation.
      * 
      * @return The request entity representation.
@@ -398,6 +411,16 @@ public abstract class UniformResource {
      */
     public Response getResponse() {
         return response;
+    }
+
+    /**
+     * Returns the response attributes.
+     * 
+     * @return The response attributes.
+     * @see Response#getAttributes()
+     */
+    public Map<String, Object> getResponseAttributes() {
+        return getResponse().getAttributes();
     }
 
     /**
@@ -499,9 +522,17 @@ public abstract class UniformResource {
     public abstract Representation handle();
 
     /**
+     * Initialization method that can be overridden in order to initialize the
+     * state of the resource. By default it does nothing.
+     * 
+     * @see #destroy()
+     */
+    protected void init() {
+    }
+
+    /**
      * Initialization method setting the environment of the current resource
-     * instance. It is suggested to override it in order to initialize the state
-     * of the resource.
+     * instance. It the calls the {@link #init()} method that can be overriden.
      * 
      * @param context
      *            The current context.
@@ -510,10 +541,11 @@ public abstract class UniformResource {
      * @param response
      *            The handled response.
      */
-    public void init(Context context, Request request, Response response) {
+    public final void init(Context context, Request request, Response response) {
         this.context = context;
         this.request = request;
         this.response = response;
+        init();
     }
 
     /**
