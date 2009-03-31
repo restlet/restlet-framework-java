@@ -176,7 +176,7 @@ import org.xml.sax.helpers.XMLFilterImpl;
  * </p>
  * 
  * <pre>
- *           &lt;?xml version=&quot;1.0&quot; standalone=&quot;yes&quot;?&gt;
+ *           &lt;?xml version=&quot;1.0&quot; standalone='yes'?&gt;
  *          
  *           &lt;_NS1:foo xmlns:_NS1=&quot;http://www.foo.com/ns/&quot;/&gt;
  * </pre>
@@ -216,7 +216,7 @@ import org.xml.sax.helpers.XMLFilterImpl;
  * </p>
  * 
  * <pre>
- *           &lt;?xml version=&quot;1.0&quot; standalone=&quot;yes&quot;?&gt;
+ *           &lt;?xml version=&quot;1.0&quot; standalone='yes'?&gt;
  *          
  *           &lt;foo:foo xmlns:foo=&quot;http://www.foo.com/ns/&quot;/&gt;
  * </pre>
@@ -237,7 +237,7 @@ import org.xml.sax.helpers.XMLFilterImpl;
  * </p>
  * 
  * <pre>
- *           &lt;?xml version=&quot;1.0&quot; standalone=&quot;yes&quot;?&gt;
+ *           &lt;?xml version=&quot;1.0&quot; standalone='yes'?&gt;
  *          
  *           &lt;foo xmlns=&quot;http://www.foo.com/ns/&quot;/&gt;
  * </pre>
@@ -249,7 +249,7 @@ import org.xml.sax.helpers.XMLFilterImpl;
  * </p>
  * 
  * <pre>
- *           &lt;xml version=&quot;1.0&quot; standalone=&quot;yes&quot;?&gt;
+ *           &lt;xml version=&quot;1.0&quot; standalone='yes'?&gt;
  *          
  *           &lt;rdf:RDF xmlns:rdf=&quot;http://www.w3.org/1999/02/22-rdf-syntax-ns#&quot;&gt;
  *            &lt;rdf:Description about=&quot;http://www.foo.com/ids/books/12345&quot;&gt;
@@ -278,7 +278,7 @@ import org.xml.sax.helpers.XMLFilterImpl;
  * </p>
  * 
  * <pre>
- *           &lt;xml version=&quot;1.0&quot; standalone=&quot;yes&quot;?&gt;
+ *           &lt;xml version=&quot;1.0&quot; standalone='yes'?&gt;
  *          
  *           &lt;rdf:RDF xmlns:rdf=&quot;http://www.w3.org/1999/02/22-rdf-syntax-ns#&quot;
  *                       xmlns:dc=&quot;http://www.purl.org/dc/&quot;&gt;
@@ -344,7 +344,7 @@ import org.xml.sax.helpers.XMLFilterImpl;
  * </p>
  * 
  * <pre>
- *           &lt;?xml version=&quot;1.0&quot; standalone=&quot;yes&quot;?&gt;
+ *           &lt;?xml version=&quot;1.0&quot; standalone='yes'?&gt;
  *          
  *           &lt;Person&gt;
  *             &lt;name&gt;Jane Smith&lt;/name&gt;
@@ -1266,7 +1266,7 @@ public final class XmlWriter extends XMLFilterImpl {
     @Override
     public void startDocument() throws SAXException {
         reset();
-        write("<?xml version=\"1.0\" standalone=\"yes\"?>\n\n");
+        write("<?xml version=\"1.0\" standalone='yes'?>\n\n");
         super.startDocument();
     }
 
