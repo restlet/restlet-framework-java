@@ -47,6 +47,7 @@ import org.restlet.data.ChallengeRequest;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Dimension;
 import org.restlet.data.Language;
+import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
@@ -141,9 +142,9 @@ public class ServerResource extends UniformResource {
      * 
      * @return The optional response entity.
      * @throws ResourceException
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.7">HTTP
-     *      DELETE method</a>
+     * @see <a *
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.7"
+     *      >HTTP * DELETE method< /a>
      */
     protected Representation delete() throws ResourceException {
         setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
@@ -165,9 +166,9 @@ public class ServerResource extends UniformResource {
      *            The variant of the response entity.
      * @return The optional response entity.
      * @throws ResourceException
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.7">HTTP
-     *      DELETE method</a>
+     * @see <a *
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.7"
+     *      >HTTP * DELETE method< /a>
      */
     protected Representation delete(Variant variant) throws ResourceException {
         setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
@@ -547,9 +548,9 @@ public class ServerResource extends UniformResource {
      * 
      * @return The resource's representation.
      * @throws ResourceException
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.3">HTTP
-     *      GET method</a>
+     * @see <a *
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.3"
+     *      >HTTP * GET method< /a>
      */
     protected Representation get() throws ResourceException {
         setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
@@ -664,7 +665,6 @@ public class ServerResource extends UniformResource {
      * 
      * @return The preferred variant.
      */
-    @SuppressWarnings("unchecked")
     public Variant getPreferredVariant() {
         if (this.preferredVariant == null) {
             List<Variant> variants = null;
@@ -694,9 +694,9 @@ public class ServerResource extends UniformResource {
                 }
             }
 
-            // Add variants defined for the current method
-            List<Variant> methodVariants = (List<Variant>) getVariants().get(
-                    getMethod());
+            // TODO Could be enhanced.
+            // Add variants strictly defined for the current method
+            List<Variant> methodVariants = getVariants(getMethod());
             if (methodVariants != null) {
                 if (variants == null) {
                     variants = new ArrayList<Variant>();
@@ -706,14 +706,13 @@ public class ServerResource extends UniformResource {
             }
 
             // Add variants defined for all methods
-            List<Variant> allVariants = (List<Variant>) getVariants().get(
-                    Method.ALL);
-            if (allVariants != null) {
+            methodVariants = getVariants(Method.ALL);
+            if (methodVariants != null) {
                 if (variants == null) {
                     variants = new ArrayList<Variant>();
                 }
 
-                variants.addAll(allVariants);
+                variants.addAll(methodVariants);
             }
 
             // If variants were found, select the best matching one
@@ -733,6 +732,34 @@ public class ServerResource extends UniformResource {
         }
 
         return preferredVariant;
+    }
+
+    /**
+     * Returns the list of variants strictly declared for a given method.
+     * 
+     * @param method
+     *            The given method.
+     * @return The list of variant declared for a given method.
+     */
+    @SuppressWarnings("unchecked")
+    public List<Variant> getVariants(Method method) {
+        List<Variant> result = null;
+
+        Object object = getVariants().get(method);
+        if (object != null) {
+            if (object instanceof Variant) {
+                result = new ArrayList<Variant>();
+                result.add((Variant) object);
+            } else if (object instanceof MediaType) {
+                result = new ArrayList<Variant>();
+                result.add(new Variant((MediaType) object));
+            } else {
+                result = new ArrayList<Variant>();
+                result.addAll((List<Variant>) object);
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -831,9 +858,9 @@ public class ServerResource extends UniformResource {
      * 
      * @return The resource's representation.
      * @throws ResourceException
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.3">HTTP
-     *      GET method</a>
+     * @see <a *
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.3"
+     *      >HTTP * GET method< /a>
      */
     protected Representation head() throws ResourceException {
         return get();
@@ -955,9 +982,9 @@ public class ServerResource extends UniformResource {
      *            The posted entity.
      * @return The optional response entity.
      * @throws ResourceException
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.5">HTTP
-     *      POST method</a>
+     * @see <a *
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.5"
+     *      >HTTP * POST method< /a>
      */
     protected Representation post(Representation entity)
             throws ResourceException {
@@ -976,9 +1003,9 @@ public class ServerResource extends UniformResource {
      *            The variant of the response entity.
      * @return The optional result entity.
      * @throws ResourceException
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.5">HTTP
-     *      POST method</a>
+     * @see <a *
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.5"
+     *      >HTTP * POST method< /a>
      */
     protected Representation post(Representation entity, Variant variant)
             throws ResourceException {
@@ -995,9 +1022,9 @@ public class ServerResource extends UniformResource {
      *            The representation to store.
      * @return The optional result entity.
      * @throws ResourceException
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6">HTTP
-     *      PUT method</a>
+     * @see <a *
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6"
+     *      >HTTP * PUT method< /a>
      */
     protected Representation put(Representation representation)
             throws ResourceException {
@@ -1016,9 +1043,9 @@ public class ServerResource extends UniformResource {
      *            The variant of the response entity.
      * @return The optional result entity.
      * @throws ResourceException
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6">HTTP
-     *      PUT method</a>
+     * @see <a *
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6"
+     *      >HTTP * PUT method< /a>
      */
     protected Representation put(Representation representation, Variant variant)
             throws ResourceException {
