@@ -91,11 +91,10 @@ public class DefaultConverter extends ConverterHelper {
 
         if (String.class.isAssignableFrom(objectClass)
                 || StringRepresentation.class.isAssignableFrom(objectClass)) {
-            result = addVariant(result, new Variant(MediaType.TEXT_ALL));
+            result = addVariant(result, new Variant(MediaType.TEXT_PLAIN));
         } else if (Document.class.isAssignableFrom(objectClass)
                 || DomRepresentation.class.isAssignableFrom(objectClass)) {
-            result = addVariant(result, new Variant(
-                    MediaType.APPLICATION_ALL_XML));
+            result = addVariant(result, new Variant(MediaType.APPLICATION_XML));
             result = addVariant(result, new Variant(MediaType.TEXT_XML));
         } else if (File.class.isAssignableFrom(objectClass)
                 || FileRepresentation.class.isAssignableFrom(objectClass)) {
@@ -107,13 +106,12 @@ public class DefaultConverter extends ConverterHelper {
                     MediaType.APPLICATION_OCTET_STREAM));
         } else if (Reader.class.isAssignableFrom(objectClass)
                 || ReaderRepresentation.class.isAssignableFrom(objectClass)) {
-            result = addVariant(result, new Variant(MediaType.TEXT_ALL));
+            result = addVariant(result, new Variant(MediaType.TEXT_PLAIN));
         } else if (Representation.class.isAssignableFrom(objectClass)) {
             result = addVariant(result, new Variant(
                     MediaType.APPLICATION_OCTET_STREAM));
         } else if (SaxRepresentation.class.isAssignableFrom(objectClass)) {
-            result = addVariant(result, new Variant(
-                    MediaType.APPLICATION_ALL_XML));
+            result = addVariant(result, new Variant(MediaType.APPLICATION_XML));
             result = addVariant(result, new Variant(MediaType.TEXT_XML));
         }
 

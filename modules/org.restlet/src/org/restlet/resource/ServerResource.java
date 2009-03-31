@@ -54,9 +54,9 @@ import org.restlet.data.Response;
 import org.restlet.data.ServerInfo;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
+import org.restlet.engine.util.AnnotatedVariant;
 import org.restlet.engine.util.AnnotationInfo;
 import org.restlet.engine.util.AnnotationUtils;
-import org.restlet.engine.util.VariantInfo;
 import org.restlet.representation.Representation;
 import org.restlet.representation.RepresentationInfo;
 import org.restlet.representation.Variant;
@@ -79,8 +79,8 @@ import org.restlet.util.Series;
  */
 public class ServerResource extends UniformResource {
 
-    /** The preferred variant info. */
-    private volatile VariantInfo preferredVariant;
+    /** The preferred variant. */
+    private volatile Variant preferredVariant;
 
     /** Indicates if annotations are supported. */
     private boolean annotated;
@@ -214,7 +214,7 @@ public class ServerResource extends UniformResource {
             RepresentationInfo resultInfo = null;
 
             if (isNegotiated()) {
-                resultInfo = doGetInfo(getPreferredVariantInfo());
+                resultInfo = doGetInfo(getPreferredVariant());
             } else {
                 resultInfo = doGetInfo();
             }
@@ -280,20 +280,20 @@ public class ServerResource extends UniformResource {
      * Returns a descriptor of the response entity returned by a negotiated
      * {@link Method#GET} call.
      * 
-     * @param variantInfo
+     * @param variant
      *            The selected variant descriptor.
      * @return The response entity descriptor.
      * @throws ResourceException
      */
-    private RepresentationInfo doGetInfo(VariantInfo variantInfo)
+    private RepresentationInfo doGetInfo(Variant variant)
             throws ResourceException {
         RepresentationInfo result = null;
 
-        if (variantInfo.getAnnotationInfo() != null) {
-            result = doHandle(variantInfo.getAnnotationInfo(), variantInfo
-                    .getVariant());
+        if (variant instanceof AnnotatedVariant) {
+            result = doHandle(((AnnotatedVariant) variant).getAnnotationInfo(),
+                    variant);
         } else {
-            result = getInfo(variantInfo.getVariant());
+            result = getInfo(variant);
         }
 
         return result;
@@ -488,25 +488,6 @@ public class ServerResource extends UniformResource {
     }
 
     /**
-     * Handles a call with content negotiation for the selected variant. It
-     * relies either on an annotated method or on a regular method.
-     * 
-     * @param variantInfo
-     *            The variant descriptor.
-     * @return The response entity.
-     * @throws ResourceException
-     */
-    private Representation doHandle(VariantInfo variantInfo)
-            throws ResourceException {
-        if (variantInfo.getAnnotationInfo() != null) {
-            return doHandle(variantInfo.getAnnotationInfo(), variantInfo
-                    .getVariant());
-        } else {
-            return doHandle(variantInfo.getVariant());
-        }
-    }
-
-    /**
      * Effectively handles a call with content negotiation of the response
      * entity. The default behavior is to dispatch the call to call a matching
      * annotated method or one of the {@link #get(Variant)},
@@ -522,16 +503,22 @@ public class ServerResource extends UniformResource {
      */
     protected Representation doNegotiatedHandle() throws ResourceException {
         Representation result = null;
-        VariantInfo preferredVariantInfo = getPreferredVariantInfo();
+        Variant preferredVariant = getPreferredVariant();
 
-        if (preferredVariantInfo == null) {
+        if (preferredVariant == null) {
             // No variant was found matching the client preferences
             setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
             result = describeVariants();
         } else {
             // Update the variant dimensions used for content negotiation
             updateDimensions();
-            result = doHandle(preferredVariantInfo);
+
+            if (preferredVariant instanceof AnnotatedVariant) {
+                result = doHandle(((AnnotatedVariant) preferredVariant)
+                        .getAnnotationInfo(), preferredVariant);
+            } else {
+                result = doHandle(preferredVariant);
+            }
         }
 
         return result;
@@ -666,17 +653,8 @@ public class ServerResource extends UniformResource {
      * 
      * @return The preferred variant.
      */
-    public Variant getPreferredVariant() {
-        return getPreferredVariantInfo().getVariant();
-    }
-
-    /**
-     * Returns the preferred variant.
-     * 
-     * @return The preferred variant.
-     */
     @SuppressWarnings("unchecked")
-    private VariantInfo getPreferredVariantInfo() {
+    public Variant getPreferredVariant() {
         if (this.preferredVariant == null) {
             List<Variant> variants = null;
 
@@ -735,8 +713,8 @@ public class ServerResource extends UniformResource {
                     language = app.getMetadataService().getDefaultLanguage();
                 }
 
-                this.preferredVariant = new VariantInfo(null, getClientInfo()
-                        .getPreferredVariant(variants, language));
+                this.preferredVariant = getClientInfo().getPreferredVariant(
+                        variants, language);
             }
         }
 

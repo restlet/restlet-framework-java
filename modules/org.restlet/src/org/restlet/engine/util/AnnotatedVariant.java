@@ -30,31 +30,31 @@
 
 package org.restlet.engine.util;
 
+import org.restlet.data.MediaType;
 import org.restlet.representation.Variant;
 
 /**
+ * Variant that is declared by an annotated Java method.
  * 
  * @author Jerome Louvel
  */
-public class VariantInfo {
+public class AnnotatedVariant extends Variant {
 
     /** The optional annotation descriptor. */
     private AnnotationInfo annotationInfo;
 
-    /** The variant. */
-    private Variant variant;
-
     /**
      * Constructor.
      * 
+     * @param mediaType
+     *            The media type.
      * @param annotationInfo
      *            The optional annotation descriptor.
-     * @param variant
-     *            The variant.
      */
-    public VariantInfo(AnnotationInfo annotationInfo, Variant variant) {
+    public AnnotatedVariant(MediaType mediaType, AnnotationInfo annotationInfo,
+            Variant variant) {
+        super(mediaType);
         this.annotationInfo = annotationInfo;
-        this.variant = variant;
     }
 
     /**
@@ -67,15 +67,6 @@ public class VariantInfo {
     }
 
     /**
-     * Returns the variant.
-     * 
-     * @return The variant.
-     */
-    public Variant getVariant() {
-        return variant;
-    }
-
-    /**
      * Sets the annotation descriptor.
      * 
      * @param annotationInfo
@@ -85,13 +76,4 @@ public class VariantInfo {
         this.annotationInfo = annotationInfo;
     }
 
-    /**
-     * Sets the variant.
-     * 
-     * @param variant
-     *            The variant.
-     */
-    public void setVariant(Variant variant) {
-        this.variant = variant;
-    }
 }
