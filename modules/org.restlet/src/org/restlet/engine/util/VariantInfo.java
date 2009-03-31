@@ -38,7 +38,7 @@ import org.restlet.representation.Variant;
  * 
  * @author Jerome Louvel
  */
-public class AnnotatedVariant extends Variant {
+public class VariantInfo extends Variant {
 
     /** The optional annotation descriptor. */
     private AnnotationInfo annotationInfo;
@@ -51,7 +51,7 @@ public class AnnotatedVariant extends Variant {
      * @param annotationInfo
      *            The optional annotation descriptor.
      */
-    public AnnotatedVariant(MediaType mediaType, AnnotationInfo annotationInfo,
+    public VariantInfo(MediaType mediaType, AnnotationInfo annotationInfo,
             Variant variant) {
         super(mediaType);
         this.annotationInfo = annotationInfo;

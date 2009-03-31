@@ -54,7 +54,7 @@ import org.restlet.data.Response;
 import org.restlet.data.ServerInfo;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
-import org.restlet.engine.util.AnnotatedVariant;
+import org.restlet.engine.util.VariantInfo;
 import org.restlet.engine.util.AnnotationInfo;
 import org.restlet.engine.util.AnnotationUtils;
 import org.restlet.representation.Representation;
@@ -289,8 +289,8 @@ public class ServerResource extends UniformResource {
             throws ResourceException {
         RepresentationInfo result = null;
 
-        if (variant instanceof AnnotatedVariant) {
-            result = doHandle(((AnnotatedVariant) variant).getAnnotationInfo(),
+        if (variant instanceof VariantInfo) {
+            result = doHandle(((VariantInfo) variant).getAnnotationInfo(),
                     variant);
         } else {
             result = getInfo(variant);
@@ -513,8 +513,8 @@ public class ServerResource extends UniformResource {
             // Update the variant dimensions used for content negotiation
             updateDimensions();
 
-            if (preferredVariant instanceof AnnotatedVariant) {
-                result = doHandle(((AnnotatedVariant) preferredVariant)
+            if (preferredVariant instanceof VariantInfo) {
+                result = doHandle(((VariantInfo) preferredVariant)
                         .getAnnotationInfo(), preferredVariant);
             } else {
                 result = doHandle(preferredVariant);
