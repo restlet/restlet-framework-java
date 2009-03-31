@@ -80,7 +80,7 @@ import org.restlet.util.Series;
 public class ServerResource extends UniformResource {
 
     /** The preferred variant info. */
-    private VariantInfo preferredVariant;
+    private volatile VariantInfo preferredVariant;
 
     /** Indicates if annotations are supported. */
     private boolean annotated;
@@ -140,7 +140,7 @@ public class ServerResource extends UniformResource {
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.7">HTTP
      *      DELETE method</a>
      */
-    public Representation delete() throws ResourceException {
+    protected Representation delete() throws ResourceException {
         setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
         return null;
     }
@@ -164,7 +164,7 @@ public class ServerResource extends UniformResource {
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.7">HTTP
      *      DELETE method</a>
      */
-    public Representation delete(Variant variant) throws ResourceException {
+    protected Representation delete(Variant variant) throws ResourceException {
         setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
         return null;
     }
@@ -191,9 +191,10 @@ public class ServerResource extends UniformResource {
     }
 
     /**
-     * Verifies the optional request conditions and continue the processing if
-     * possible. Note that in order to evaluate those conditions,
-     * {@link #getInfo()} or {@link #getInfo(Variant)} methods might be invoked.
+     * Handles a call by first verifying the optional request conditions and
+     * continue the processing if possible. Note that in order to evaluate those
+     * conditions, {@link #getInfo()} or {@link #getInfo(Variant)} methods might
+     * be invoked.
      * 
      * @return The response entity.
      * @throws ResourceException
@@ -209,8 +210,7 @@ public class ServerResource extends UniformResource {
             RepresentationInfo resultInfo = null;
 
             if (isNegotiated()) {
-                resultInfo = getInfo(getPreferredVariant(getMethod())
-                        .getVariant());
+                resultInfo = getInfo(getPreferredVariantInfo().getVariant());
             } else {
                 resultInfo = getInfo();
             }
@@ -294,6 +294,13 @@ public class ServerResource extends UniformResource {
         return result;
     }
 
+    /**
+     * Effectively handle a call using an annotated method.
+     * 
+     * @param annotationInfo
+     *            The annotation descriptor.
+     * @return The response entity.
+     */
     private Representation doHandle(AnnotationInfo annotationInfo) {
         Representation result = null;
         ConverterService cs = getConverterService();
@@ -433,9 +440,12 @@ public class ServerResource extends UniformResource {
     }
 
     /**
+     * Handles a call with content negotiation for the selected variant. It
+     * relies either on an annotated method or on a regular method.
      * 
      * @param variantInfo
-     * @return
+     *            The variant descriptor.
+     * @return The response entity.
      * @throws ResourceException
      */
     private Representation doHandle(VariantInfo variantInfo)
@@ -449,15 +459,22 @@ public class ServerResource extends UniformResource {
     }
 
     /**
-     * Handles the content negotiation of a call.
+     * Effectively handles a call with content negotiation of the response
+     * entity. The default behavior is to dispatch the call to call a matching
+     * annotated method or one of the {@link #get(Variant)},
+     * {@link #post(Representation,Variant)},
+     * {@link #put(Representation,Variant)}, {@link #delete(Variant)},
+     * {@link #head(Variant)} or {@link #options(Variant)} methods.<br>
+     * <br>
+     * If no acceptable variant is found, the
+     * {@link Status#CLIENT_ERROR_NOT_ACCEPTABLE} status is set.
      * 
      * @return The response entity.
      * @throws ResourceException
      */
     protected Representation doNegotiatedHandle() throws ResourceException {
         Representation result = null;
-        Method method = getMethod();
-        VariantInfo preferredVariantInfo = getPreferredVariant(method);
+        VariantInfo preferredVariantInfo = getPreferredVariantInfo();
 
         if (preferredVariantInfo == null) {
             // No variant was found matching the client preferences
@@ -488,7 +505,7 @@ public class ServerResource extends UniformResource {
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.3">HTTP
      *      GET method</a>
      */
-    public Representation get() throws ResourceException {
+    protected Representation get() throws ResourceException {
         setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
         return null;
     }
@@ -512,7 +529,7 @@ public class ServerResource extends UniformResource {
      * @see #getVariants()
      * @throws ResourceException
      */
-    public Representation get(Variant variant) throws ResourceException {
+    protected Representation get(Variant variant) throws ResourceException {
         Representation result = null;
 
         if (variant instanceof Representation) {
@@ -575,7 +592,7 @@ public class ServerResource extends UniformResource {
      * @return Information about the resource's representation.
      * @throws ResourceException
      */
-    public RepresentationInfo getInfo() throws ResourceException {
+    protected RepresentationInfo getInfo() throws ResourceException {
         return get();
     }
 
@@ -592,7 +609,8 @@ public class ServerResource extends UniformResource {
      * @return Information about the resource's representation.
      * @throws ResourceException
      */
-    public RepresentationInfo getInfo(Variant variant) throws ResourceException {
+    protected RepresentationInfo getInfo(Variant variant)
+            throws ResourceException {
         return get(variant);
     }
 
@@ -602,7 +620,7 @@ public class ServerResource extends UniformResource {
      * @return The preferred variant.
      */
     public Variant getPreferredVariant() {
-        return getPreferredVariant(getMethod()).getVariant();
+        return getPreferredVariantInfo().getVariant();
     }
 
     /**
@@ -611,7 +629,7 @@ public class ServerResource extends UniformResource {
      * @return The preferred variant.
      */
     @SuppressWarnings("unchecked")
-    private VariantInfo getPreferredVariant(Method method) {
+    private VariantInfo getPreferredVariantInfo() {
         if (this.preferredVariant == null) {
             List<Variant> variants = null;
 
@@ -619,6 +637,7 @@ public class ServerResource extends UniformResource {
             if (isAnnotated() && hasAnnotations()) {
                 ConverterService cs = getConverterService();
                 List<Variant> annoVariants = null;
+                Method method = getMethod();
 
                 for (AnnotationInfo annotationInfo : this.annotations) {
                     if (method.equals(annotationInfo.getRestletMethod())) {
@@ -697,7 +716,7 @@ public class ServerResource extends UniformResource {
      * @return The list of variants.
      * @see #getRepresentation(Variant)
      */
-    public Map<Method, Object> getVariants() {
+    protected Map<Method, Object> getVariants() {
         // Lazy initialization with double-check.
         Map<Method, Object> v = this.variants;
         if (v == null) {
@@ -777,7 +796,7 @@ public class ServerResource extends UniformResource {
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.3">HTTP
      *      GET method</a>
      */
-    public Representation head() throws ResourceException {
+    protected Representation head() throws ResourceException {
         return get();
     }
 
@@ -800,7 +819,7 @@ public class ServerResource extends UniformResource {
      * @see #getVariants()
      * @throws ResourceException
      */
-    public Representation head(Variant variant) throws ResourceException {
+    protected Representation head(Variant variant) throws ResourceException {
         return get(variant);
     }
 
@@ -869,7 +888,7 @@ public class ServerResource extends UniformResource {
      * 
      * @return The optional response entity.
      */
-    public Representation options() throws ResourceException {
+    protected Representation options() throws ResourceException {
         setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
         return null;
     }
@@ -883,7 +902,7 @@ public class ServerResource extends UniformResource {
      *            The variant of the response entity.
      * @return The optional response entity.
      */
-    public Representation options(Variant variant) throws ResourceException {
+    protected Representation options(Variant variant) throws ResourceException {
         setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
         return null;
     }
@@ -901,7 +920,8 @@ public class ServerResource extends UniformResource {
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.5">HTTP
      *      POST method</a>
      */
-    public Representation post(Representation entity) throws ResourceException {
+    protected Representation post(Representation entity)
+            throws ResourceException {
         setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
         return null;
     }
@@ -921,7 +941,7 @@ public class ServerResource extends UniformResource {
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.5">HTTP
      *      POST method</a>
      */
-    public Representation post(Representation entity, Variant variant)
+    protected Representation post(Representation entity, Variant variant)
             throws ResourceException {
         setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
         return null;
@@ -940,7 +960,7 @@ public class ServerResource extends UniformResource {
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6">HTTP
      *      PUT method</a>
      */
-    public Representation put(Representation representation)
+    protected Representation put(Representation representation)
             throws ResourceException {
         setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
         return null;
@@ -961,7 +981,7 @@ public class ServerResource extends UniformResource {
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6">HTTP
      *      PUT method</a>
      */
-    public Representation put(Representation representation, Variant variant)
+    protected Representation put(Representation representation, Variant variant)
             throws ResourceException {
         setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
         return null;
