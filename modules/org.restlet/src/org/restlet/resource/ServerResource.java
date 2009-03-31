@@ -210,9 +210,9 @@ public class ServerResource extends UniformResource {
             RepresentationInfo resultInfo = null;
 
             if (isNegotiated()) {
-                resultInfo = getInfo(getPreferredVariantInfo().getVariant());
+                resultInfo = doGetInfo(getPreferredVariantInfo());
             } else {
-                resultInfo = getInfo();
+                resultInfo = doGetInfo();
             }
 
             if (resultInfo == null) {
@@ -246,6 +246,50 @@ public class ServerResource extends UniformResource {
                     }
                 }
             }
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns a descriptor of the response entity returned by a
+     * {@link Method#GET} call.
+     * 
+     * @return The response entity.
+     * @throws ResourceException
+     */
+    protected RepresentationInfo doGetInfo() throws ResourceException {
+        RepresentationInfo result = null;
+
+        AnnotationInfo annotationInfo = getAnnotation(Method.GET);
+
+        if (annotationInfo != null) {
+            result = doHandle(annotationInfo);
+        } else {
+            result = getInfo();
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns a descriptor of the response entity returned by a negotiated
+     * {@link Method#GET} call.
+     * 
+     * @param variantInfo
+     *            The selected variant descriptor.
+     * @return The response entity descriptor.
+     * @throws ResourceException
+     */
+    private RepresentationInfo doGetInfo(VariantInfo variantInfo)
+            throws ResourceException {
+        RepresentationInfo result = null;
+
+        if (variantInfo.getAnnotationInfo() != null) {
+            result = doHandle(variantInfo.getAnnotationInfo(), variantInfo
+                    .getVariant());
+        } else {
+            result = getInfo(variantInfo.getVariant());
         }
 
         return result;
@@ -351,56 +395,17 @@ public class ServerResource extends UniformResource {
 
     /**
      * Effectively handles a call with content negotiation of the response
-     * entity. The default behavior is to dispatch the call to one of the
-     * {@link #get(Variant)}, {@link #post(Representation,Variant)},
-     * {@link #put(Representation,Variant)}, {@link #delete(Variant)},
-     * {@link #head(Variant)} or {@link #options(Variant)} methods.
-     * 
-     * @param variant
-     *            The response variant expected.
-     * @return The response entity.
-     * @throws ResourceException
-     */
-    protected Representation doHandle(Variant variant) throws ResourceException {
-        Representation result = null;
-        Method method = getMethod();
-
-        if (method == null) {
-            setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "No method specified");
-        } else {
-            if (method.equals(Method.GET)) {
-                result = get(variant);
-            } else if (method.equals(Method.POST)) {
-                result = post(getRequest().getEntity(), variant);
-            } else if (method.equals(Method.PUT)) {
-                result = put(getRequest().getEntity(), variant);
-            } else if (method.equals(Method.DELETE)) {
-                result = delete(variant);
-            } else if (method.equals(Method.HEAD)) {
-                result = head(variant);
-            } else if (method.equals(Method.OPTIONS)) {
-                result = options(variant);
-            } else {
-                setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * Effectively handles a call with content negotiation of the response
      * entity using an annotated method.
      * 
-     * @param variant
-     *            The response variant expected.
      * @param annotationInfo
      *            The annotation descriptor.
+     * @param variant
+     *            The response variant expected.
      * @return The response entity.
      * @throws ResourceException
      */
-    private Representation doHandle(Variant variant,
-            AnnotationInfo annotationInfo) {
+    private Representation doHandle(AnnotationInfo annotationInfo,
+            Variant variant) {
         Representation result = null;
         ConverterService cs = getConverterService();
         Object resultObject = null;
@@ -440,6 +445,45 @@ public class ServerResource extends UniformResource {
     }
 
     /**
+     * Effectively handles a call with content negotiation of the response
+     * entity. The default behavior is to dispatch the call to one of the
+     * {@link #get(Variant)}, {@link #post(Representation,Variant)},
+     * {@link #put(Representation,Variant)}, {@link #delete(Variant)},
+     * {@link #head(Variant)} or {@link #options(Variant)} methods.
+     * 
+     * @param variant
+     *            The response variant expected.
+     * @return The response entity.
+     * @throws ResourceException
+     */
+    protected Representation doHandle(Variant variant) throws ResourceException {
+        Representation result = null;
+        Method method = getMethod();
+
+        if (method == null) {
+            setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "No method specified");
+        } else {
+            if (method.equals(Method.GET)) {
+                result = get(variant);
+            } else if (method.equals(Method.POST)) {
+                result = post(getRequest().getEntity(), variant);
+            } else if (method.equals(Method.PUT)) {
+                result = put(getRequest().getEntity(), variant);
+            } else if (method.equals(Method.DELETE)) {
+                result = delete(variant);
+            } else if (method.equals(Method.HEAD)) {
+                result = head(variant);
+            } else if (method.equals(Method.OPTIONS)) {
+                result = options(variant);
+            } else {
+                setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+            }
+        }
+
+        return result;
+    }
+
+    /**
      * Handles a call with content negotiation for the selected variant. It
      * relies either on an annotated method or on a regular method.
      * 
@@ -451,8 +495,8 @@ public class ServerResource extends UniformResource {
     private Representation doHandle(VariantInfo variantInfo)
             throws ResourceException {
         if (variantInfo.getAnnotationInfo() != null) {
-            return doHandle(variantInfo.getVariant(), variantInfo
-                    .getAnnotationInfo());
+            return doHandle(variantInfo.getAnnotationInfo(), variantInfo
+                    .getVariant());
         } else {
             return doHandle(variantInfo.getVariant());
         }
