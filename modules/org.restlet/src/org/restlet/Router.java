@@ -37,6 +37,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Resource;
+import org.restlet.resource.ServerResource;
 import org.restlet.util.RouteList;
 import org.restlet.util.Template;
 
@@ -202,8 +203,7 @@ public class Router extends Restlet {
      *            The target Resource class to attach.
      * @return The created route.
      */
-    public Route attach(String pathTemplate,
-            Class<? extends Resource> targetClass) {
+    public Route attach(String pathTemplate, Class<?> targetClass) {
         return attach(pathTemplate, createFinder(targetClass));
     }
 
@@ -234,7 +234,7 @@ public class Router extends Restlet {
      *            The target Resource class to attach.
      * @return The created route.
      */
-    public Route attachDefault(Class<? extends Resource> defaultTargetClass) {
+    public Route attachDefault(Class<?> defaultTargetClass) {
         return attachDefault(createFinder(defaultTargetClass));
     }
 
@@ -260,21 +260,30 @@ public class Router extends Restlet {
      *            The target Resource class to attach.
      * @return The new finder instance.
      */
-    public Finder createFinder(Class<? extends Resource> targetClass) {
+    public Finder createFinder(Class<?> targetClass) {
         Finder result = null;
 
-        if (getFinderClass() != null) {
-            try {
-                final Constructor<? extends Finder> constructor = getFinderClass()
-                        .getConstructor(Context.class, Class.class);
+        if (Resource.class.isAssignableFrom(targetClass)
+                || ServerResource.class.isAssignableFrom(targetClass)) {
+            if (getFinderClass() != null) {
+                try {
+                    final Constructor<? extends Finder> constructor = getFinderClass()
+                            .getConstructor(Context.class, Class.class);
 
-                if (constructor != null) {
-                    result = constructor.newInstance(getContext(), targetClass);
+                    if (constructor != null) {
+                        result = constructor.newInstance(getContext(),
+                                targetClass);
+                    }
+                } catch (Exception e) {
+                    getLogger().log(Level.WARNING,
+                            "Exception while instantiating the finder.", e);
                 }
-            } catch (Exception e) {
-                getLogger().log(Level.WARNING,
-                        "Exception while instantiating the finder.", e);
             }
+        } else {
+            getLogger()
+                    .log(
+                            Level.WARNING,
+                            "Cannot create a Finder for the given target class, since it is neither a subclass of Resource nor a subclass of ServerResource.");
         }
 
         return result;

@@ -35,7 +35,6 @@ import java.net.UnknownHostException;
 
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.resource.Resource;
 
 /**
  * Router of calls from Server connectors to Restlets. The attached Restlets are
@@ -64,10 +63,10 @@ import org.restlet.resource.Resource;
  * should be especially careful when storing state in member variables.
  * 
  * @see java.util.regex.Pattern
- * @see <a href="http://en.wikipedia.org/wiki/Virtual_hosting">Wikipedia -
- *      Virtual Hosting</a>
- * @see <a href="http://httpd.apache.org/docs/2.2/vhosts/">Apache - Virtual
- *      Hosting</a>
+ * @see <a href="http://en.wikipedia.org/wiki/Virtual_hosting">Wikipedia - *
+ *      Virtual Hosting< /a>
+ * @see <a href="http://httpd.apache.org/docs/2.2/vhosts/">Apache - Virtual *
+ *      Hosting< /a>
  * @author Jerome Louvel
  */
 public class VirtualHost extends Router {
@@ -318,7 +317,7 @@ public class VirtualHost extends Router {
      * @return The new finder instance.
      */
     @Override
-    public Finder createFinder(Class<? extends Resource> targetClass) {
+    public Finder createFinder(Class<?> targetClass) {
         Finder result = super.createFinder(targetClass);
         result.setContext(getContext().createChildContext());
         return result;

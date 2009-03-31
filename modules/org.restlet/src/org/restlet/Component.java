@@ -257,8 +257,7 @@ public class Component extends Restlet {
                     }
 
                     @Override
-                    public Finder createFinder(
-                            Class<? extends Resource> targetClass) {
+                    public Finder createFinder(Class<?> targetClass) {
                         Finder result = super.createFinder(targetClass);
                         result.setContext(getContext().createChildContext());
                         return result;
