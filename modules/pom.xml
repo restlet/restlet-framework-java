@@ -87,7 +87,7 @@
 		<lib-scripturian-version>1.0.0.rc2</lib-scripturian-version>
 		<lib-script-version>1.0</lib-script-version>
 		<lib-servlet-version>2.5</lib-servlet-version>
-		<lib-simple-version>4.1.8</lib-simple-version>
+		<lib-simple-version>4.1.9</lib-simple-version>
 		<lib-solr-version>1.3.0</lib-solr-version>
 		<lib-spring-modules-db4o-version>0.9</lib-spring-modules-db4o-version>
 		<lib-spring-version>2.5.6</lib-spring-version>

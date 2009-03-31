@@ -127,7 +127,7 @@ Changes log
         - Added Method.ALL constant. Useful to declare variants common
           to all methods in the new ServerResource class.
     - Misc
-        - Upgraded Simple server to version 4.1.8. 
+        - Upgraded Simple server to version 4.1.9. 
           Contributed by Niall Gallagher.
         - Fixed Javadocs typos in Router and Resource. 
           Contributed by Raif S. Naffah.
