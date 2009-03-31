@@ -42,11 +42,6 @@ importClass(
 var application = new JavaAdapter(Application, {
 
 	createRoot: function() {
-	
-		this.setAuthor(applicationAuthor);
-		this.setName(applicationName);
-		this.setDescription(applicationDescription);
-		
 		var context = this.context;
 		var classLoader = this.getClass().classLoader;
 
@@ -61,23 +56,39 @@ var application = new JavaAdapter(Application, {
 		// Redirect to trailing slashes
 		for(var i in urlAddTrailingSlash) {
 			var url = urlAddTrailingSlash[i];
-			var route = router.attach(url, new Redirector(context, url + '/', Redirector.MODE_CLIENT_PERMANENT));
-			route.matchingMode = Template.MODE_EQUALS;
+			router.attach(url, new Redirector(context, url + '/', Redirector.MODE_CLIENT_PERMANENT)).matchingMode = Template.MODE_EQUALS;
 		}
 		
 		return router;
 	}
 });
 
+application.name = applicationName;
+application.description = applicationDescription;
+application.author = applicationAuthor;
+application.owner = applicationOwner;
 application.statusService.homeRef = new Reference(applicationHomeURL);
 application.statusService.contactEmail = applicationContactEmail;
+
+//
+// Logging
+//
+
+java.util.logging.LogManager.getLogManager().reset();
+try {
+org.slf4j.bridge.SLF4JBridgeHandler.install();
+} catch(x) {}
+
+try {
+org.apache.log4j.PropertyConfigurator.configure('conf/log4j.conf');
+} catch(x) {}
 
 //
 // Component
 //
 
 var component = new Component();
-component.logService.loggerName = applicationLoggerName;
+component.logService.loggerName = componentWebLoggerName;
 component.servers.add(Protocol.HTTP, serverPort);
 component.clients.add(Protocol.FILE);
 component.defaultHost.attach(application);
@@ -85,6 +96,8 @@ component.defaultHost.attach(application);
 //
 // Context
 //
+
+application.context.logger = applicationLoggerName;
 
 var attributes = application.context.attributes;
 
@@ -111,4 +124,4 @@ attributes.put('org.restlet.ext.script.ScriptedTextResource.sourceViewable', scr
 
 component.start();
 
-%>
+%>main.script finished
