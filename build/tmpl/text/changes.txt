@@ -124,6 +124,8 @@ Changes log
           Representation which is now a subclass. Variant is the super
           class. Useful to check conditions without pulling a full
           representation. Suggested by Lars Heuer. 
+        - Added Method.ALL constant. Useful to declare variants common
+          to all methods in the new ServerResource class.
     - Misc
         - Upgraded Simple server to version 4.1.8. 
           Contributed by Niall Gallagher.

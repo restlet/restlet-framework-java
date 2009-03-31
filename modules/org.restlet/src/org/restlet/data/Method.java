@@ -41,6 +41,12 @@ public final class Method extends Metadata {
     private static final String BASE_WEBDAV = "http://www.webdav.org/specs/rfc2518.html";
 
     /**
+     * Pseudo-method use to match all methods.
+     */
+    public static final Method ALL = new Method("*",
+            "Pseudo-method use to match all methods.");
+
+    /**
      * Used with a proxy that can dynamically switch to being a tunnel.
      * 
      * @see <a
