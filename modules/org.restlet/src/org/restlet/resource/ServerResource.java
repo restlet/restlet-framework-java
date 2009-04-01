@@ -86,23 +86,23 @@ public class ServerResource extends UniformResource {
     /** Indicates if annotations are supported. */
     private boolean annotated;
 
-    /** Indicates if the annotations where extracted. */
-    private boolean introspected;
+    /** The annotation descriptors. */
+    private volatile List<AnnotationInfo> annotations;
+
+    /** Indicates if conditional handling is enabled. */
+    private boolean conditional;
 
     /** Indicates if the identified resource exists. */
     private boolean exists;
 
-    /** Indicates if conditional handling is enabled. */
-    private boolean conditional;
+    /** Indicates if the annotations where extracted. */
+    private boolean introspected;
 
     /** Indicates if content negotiation of response entities is enabled. */
     private boolean negotiated;
 
     /** The modifiable list of variants. */
     private volatile Map<Method, Object> variants;
-
-    /** The annotation descriptors. */
-    private volatile List<AnnotationInfo> annotations;
 
     /**
      * Initializer block to ensure that the basic properties are initialized
@@ -377,7 +377,7 @@ public class ServerResource extends UniformResource {
 
                 // Actually invoke the method
                 resultObject = annotationInfo.getJavaMethod().invoke(this,
-                        parameters);
+                        parameters.toArray());
             } else {
                 // Actually invoke the method
                 resultObject = annotationInfo.getJavaMethod().invoke(this);
@@ -517,22 +517,40 @@ public class ServerResource extends UniformResource {
      */
     protected Representation doNegotiatedHandle() throws ResourceException {
         Representation result = null;
-        Variant preferredVariant = getPreferredVariant(getMethod());
 
-        if (preferredVariant == null) {
-            // No variant was found matching the client preferences
-            setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
-            result = describeVariants();
-        } else {
-            // Update the variant dimensions used for content negotiation
-            updateDimensions();
+        List<Variant> variants = getAvailableVariants(getMethod());
 
-            if (preferredVariant instanceof VariantInfo) {
-                result = doHandle(((VariantInfo) preferredVariant)
-                        .getAnnotationInfo(), preferredVariant);
-            } else {
-                result = doHandle(preferredVariant);
+        if ((variants != null) && (!variants.isEmpty())) {
+            // If variants were found, select the best matching one
+            Language language = null;
+            // Compute the preferred variant. Get the default language
+            // preference from the Application (if any).
+            final Application app = Application.getCurrent();
+
+            if (app != null) {
+                language = app.getMetadataService().getDefaultLanguage();
             }
+
+            Variant preferredVariant = getClientInfo().getPreferredVariant(
+                    variants, language);
+            if (preferredVariant == null) {
+                // No variant was found matching the client preferences
+                setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
+                result = describeVariants();
+            } else {
+                // Update the variant dimensions used for content negotiation
+                updateDimensions();
+
+                if (preferredVariant instanceof VariantInfo) {
+                    result = doHandle(((VariantInfo) preferredVariant)
+                            .getAnnotationInfo(), preferredVariant);
+                } else {
+                    result = doHandle(preferredVariant);
+                }
+            }
+        } else {
+            // No variant declared for this method.
+            result = doHandle();
         }
 
         return result;
@@ -619,6 +637,80 @@ public class ServerResource extends UniformResource {
     }
 
     /**
+     * Return the list of available variants for the given method.
+     * 
+     * @param method
+     *            The method.
+     * @return The list of available variants for the given method.
+     */
+    private List<Variant> getAvailableVariants(Method method) {
+        List<Variant> result = null;
+
+        // Add annotation-based variants in priority
+        if (isAnnotated() && hasAnnotations()) {
+            ConverterService cs = getConverterService();
+            List<Variant> annoVariants = null;
+
+            for (AnnotationInfo annotationInfo : annotations) {
+                if (method.equals(annotationInfo.getRestletMethod())) {
+                    if (annotationInfo.getValue() != null) {
+                        MetadataService ms = getApplication()
+                                .getMetadataService();
+
+                        if (ms == null) {
+                            ms = new MetadataService();
+                        }
+                        Metadata metadata = ms.getMetadata(annotationInfo
+                                .getValue());
+
+                        if (metadata instanceof MediaType) {
+                            if (result == null) {
+                                result = new ArrayList<Variant>();
+                            }
+                            result.add(new VariantInfo((MediaType) metadata,
+                                    annotationInfo));
+                        }
+                    } else {
+                        annoVariants = cs.getVariants(annotationInfo
+                                .getJavaReturnType());
+                        if (annoVariants != null) {
+                            if (result == null) {
+                                result = new ArrayList<Variant>();
+                            }
+
+                            for (Variant v : annoVariants) {
+                                result.add(new VariantInfo(v, annotationInfo));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // TODO Could be enhanced.
+        // Add variants strictly defined for the current method
+        List<Variant> methodVariants = getVariants(getMethod());
+        if (methodVariants != null) {
+            if (result == null) {
+                result = new ArrayList<Variant>();
+            }
+
+            result.addAll(methodVariants);
+        }
+
+        // Add variants defined for all methods
+        methodVariants = getVariants(Method.ALL);
+        if (methodVariants != null) {
+            if (result == null) {
+                result = new ArrayList<Variant>();
+            }
+
+            result.addAll(methodVariants);
+        }
+        return result;
+    }
+
+    /**
      * Returns the application's converter service or create a new one.
      * 
      * @return The converter service.
@@ -670,70 +762,7 @@ public class ServerResource extends UniformResource {
      */
     public Variant getPreferredVariant(Method method) {
         Variant result = null;
-        List<Variant> variants = null;
-
-        // Add annotation-based variants in priority
-        if (isAnnotated() && hasAnnotations()) {
-            ConverterService cs = getConverterService();
-            List<Variant> annoVariants = null;
-
-            for (AnnotationInfo annotationInfo : annotations) {
-                if (method.equals(annotationInfo.getRestletMethod())) {
-                    if (annotationInfo.getValue() != null) {
-                        MetadataService ms = getApplication()
-                                .getMetadataService();
-
-                        if (ms == null) {
-                            ms = new MetadataService();
-                        }
-                        Metadata metadata = ms.getMetadata(annotationInfo
-                                .getValue());
-                        
-                        if (metadata instanceof MediaType) {
-                            if (variants == null) {
-                                variants = new ArrayList<Variant>();
-                            }
-                            variants.add(new VariantInfo((MediaType) metadata,
-                                    annotationInfo));
-                        }
-                    } else {
-                        annoVariants = cs.getVariants(annotationInfo
-                                .getJavaReturnType());
-                        if (annoVariants != null) {
-                            if (variants == null) {
-                                variants = new ArrayList<Variant>();
-                            }
-
-                            for (Variant v : annoVariants) {
-                                variants
-                                        .add(new VariantInfo(v, annotationInfo));
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // TODO Could be enhanced.
-        // Add variants strictly defined for the current method
-        List<Variant> methodVariants = getVariants(getMethod());
-        if (methodVariants != null) {
-            if (variants == null) {
-                variants = new ArrayList<Variant>();
-            }
-
-            variants.addAll(methodVariants);
-        }
-
-        // Add variants defined for all methods
-        methodVariants = getVariants(Method.ALL);
-        if (methodVariants != null) {
-            if (variants == null) {
-                variants = new ArrayList<Variant>();
-            }
-
-            variants.addAll(methodVariants);
-        }
+        List<Variant> variants = getAvailableVariants(method);
 
         // If variants were found, select the best matching one
         if ((variants != null) && (!variants.isEmpty())) {
