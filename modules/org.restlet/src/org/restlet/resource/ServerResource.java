@@ -81,9 +81,6 @@ import org.restlet.util.Series;
  */
 public class ServerResource extends UniformResource {
 
-    /** The preferred variant. */
-    private volatile Variant preferredVariant;
-
     /** Indicates if annotations are supported. */
     private boolean annotated;
 
@@ -215,7 +212,7 @@ public class ServerResource extends UniformResource {
             RepresentationInfo resultInfo = null;
 
             if (isNegotiated()) {
-                resultInfo = doGetInfo(getPreferredVariant());
+                resultInfo = doGetInfo(getPreferredVariant(Method.GET));
             } else {
                 resultInfo = doGetInfo();
             }
@@ -241,7 +238,7 @@ public class ServerResource extends UniformResource {
             if ((getStatus() != null) && getStatus().isSuccess()) {
                 // Conditions where passed successfully.
                 // Continue the normal processing
-                // TODO Why testing "resultInfo instanceof Representation"?
+                // TODO Why testing "resultInfo instance of Representation"?
                 if ((Method.GET.equals(getRequest().getMethod()) || Method.HEAD
                         .equals(getRequest().getMethod()))
                         && resultInfo instanceof Representation) {
@@ -517,7 +514,7 @@ public class ServerResource extends UniformResource {
      */
     protected Representation doNegotiatedHandle() throws ResourceException {
         Representation result = null;
-        Variant preferredVariant = getPreferredVariant();
+        Variant preferredVariant = getPreferredVariant(getMethod());
 
         if (preferredVariant == null) {
             // No variant was found matching the client preferences
@@ -663,75 +660,73 @@ public class ServerResource extends UniformResource {
     /**
      * Returns the preferred variant.
      * 
+     * @param method
+     *            The method.
      * @return The preferred variant.
      */
-    public Variant getPreferredVariant() {
-        if (this.preferredVariant == null) {
-            List<Variant> variants = null;
+    public Variant getPreferredVariant(Method method) {
+        Variant result = null;
+        List<Variant> variants = null;
 
-            // Add annotation-based variants in priority
-            if (isAnnotated() && hasAnnotations()) {
-                ConverterService cs = getConverterService();
-                List<Variant> annoVariants = null;
-                Method method = getMethod();
+        // Add annotation-based variants in priority
+        if (isAnnotated() && hasAnnotations()) {
+            ConverterService cs = getConverterService();
+            List<Variant> annoVariants = null;
 
-                for (AnnotationInfo annotationInfo : annotations) {
-                    if (method.equals(annotationInfo.getRestletMethod())) {
-                        annoVariants = cs.getVariants(annotationInfo
-                                .getJavaReturnType());
+            for (AnnotationInfo annotationInfo : annotations) {
+                if (method.equals(annotationInfo.getRestletMethod())) {
+                    annoVariants = cs.getVariants(annotationInfo
+                            .getJavaReturnType());
 
-                        if (annoVariants != null) {
-                            if (variants == null) {
-                                variants = new ArrayList<Variant>();
-                            }
+                    if (annoVariants != null) {
+                        if (variants == null) {
+                            variants = new ArrayList<Variant>();
+                        }
 
-                            for (Variant v : annoVariants) {
-                                variants
-                                        .add(new VariantInfo(v, annotationInfo));
-                            }
+                        for (Variant v : annoVariants) {
+                            variants.add(new VariantInfo(v, annotationInfo));
                         }
                     }
                 }
             }
-
-            // TODO Could be enhanced.
-            // Add variants strictly defined for the current method
-            List<Variant> methodVariants = getVariants(getMethod());
-            if (methodVariants != null) {
-                if (variants == null) {
-                    variants = new ArrayList<Variant>();
-                }
-
-                variants.addAll(methodVariants);
-            }
-
-            // Add variants defined for all methods
-            methodVariants = getVariants(Method.ALL);
-            if (methodVariants != null) {
-                if (variants == null) {
-                    variants = new ArrayList<Variant>();
-                }
-
-                variants.addAll(methodVariants);
-            }
-
-            // If variants were found, select the best matching one
-            if ((variants != null) && (!variants.isEmpty())) {
-                Language language = null;
-                // Compute the preferred variant. Get the default language
-                // preference from the Application (if any).
-                final Application app = Application.getCurrent();
-
-                if (app != null) {
-                    language = app.getMetadataService().getDefaultLanguage();
-                }
-
-                this.preferredVariant = getClientInfo().getPreferredVariant(
-                        variants, language);
-            }
         }
 
-        return preferredVariant;
+        // TODO Could be enhanced.
+        // Add variants strictly defined for the current method
+        List<Variant> methodVariants = getVariants(getMethod());
+        if (methodVariants != null) {
+            if (variants == null) {
+                variants = new ArrayList<Variant>();
+            }
+
+            variants.addAll(methodVariants);
+        }
+
+        // Add variants defined for all methods
+        methodVariants = getVariants(Method.ALL);
+        if (methodVariants != null) {
+            if (variants == null) {
+                variants = new ArrayList<Variant>();
+            }
+
+            variants.addAll(methodVariants);
+        }
+
+        // If variants were found, select the best matching one
+        if ((variants != null) && (!variants.isEmpty())) {
+            Language language = null;
+            // Compute the preferred variant. Get the default language
+            // preference from the Application (if any).
+            final Application app = Application.getCurrent();
+
+            if (app != null) {
+                language = app.getMetadataService().getDefaultLanguage();
+            }
+
+            result = getClientInfo().getPreferredVariant(variants, language);
+        }
+
+        return result;
     }
 
     /**
