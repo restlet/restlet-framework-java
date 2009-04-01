@@ -302,9 +302,10 @@ public class Request extends Message {
      */
     public Protocol getProtocol() {
         Protocol result = null;
-        // Attempt to guess the protocol to use
-        // from the target reference scheme
+        
         if (getResourceRef() != null) {
+            // Attempt to guess the protocol to use
+            // from the target reference scheme
             result = getResourceRef().getSchemeProtocol();
             // Fallback: look at base reference scheme
             if (result == null) {
