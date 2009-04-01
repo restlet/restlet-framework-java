@@ -4,22 +4,22 @@ import java.io.IOException;
 
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
-import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.restlet.representation.DomRepresentation;
 import org.restlet.representation.Representation;
-import org.restlet.representation.Variant;
-import org.restlet.resource.ResourceException;
+import org.restlet.resource.Delete;
+import org.restlet.resource.Get;
+import org.restlet.resource.Put;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 public class ItemResource extends BaseResource {
 
-    /** The sequence of characters that identifies the resource. */
-    String itemName;
-
     /** The underlying Item object. */
     Item item;
+
+    /** The sequence of characters that identifies the resource. */
+    String itemName;
 
     @Override
     public void init() {
@@ -30,21 +30,14 @@ public class ItemResource extends BaseResource {
         // Get the item directly from the "persistence layer".
         this.item = getItems().get(itemName);
 
-        if (this.item != null) {
-            // Define the supported variant.
-            getVariants().put(Method.ALL, new Variant(MediaType.TEXT_XML));
-            // By default a resource cannot be updated.
-        } else {
-            // This resource is not available.
-            setExists(false);
-        }
+        setExists(this.item != null);
     }
 
     /**
      * Handle DELETE requests.
      */
-    @Override
-    public Representation delete() throws ResourceException {
+    @Delete
+    public Representation removeItem() {
         if (item != null) {
             // Remove the item from the list.
             getItems().remove(item.getName());
@@ -55,44 +48,11 @@ public class ItemResource extends BaseResource {
         return null;
     }
 
-    @Override
-    public Representation get(Variant variant) throws ResourceException {
-        // Generate the right representation according to its media type.
-        if (MediaType.TEXT_XML.equals(variant.getMediaType())) {
-            try {
-                DomRepresentation representation = new DomRepresentation(
-                        MediaType.TEXT_XML);
-                // Generate a DOM document representing the item.
-                Document d = representation.getDocument();
-
-                Element eltItem = d.createElement("item");
-                d.appendChild(eltItem);
-                Element eltName = d.createElement("name");
-                eltName.appendChild(d.createTextNode(item.getName()));
-                eltItem.appendChild(eltName);
-
-                Element eltDescription = d.createElement("description");
-                eltDescription.appendChild(d.createTextNode(item
-                        .getDescription()));
-                eltItem.appendChild(eltDescription);
-
-                d.normalizeDocument();
-
-                // Returns the XML representation of this document.
-                return representation;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return null;
-    }
-
     /**
      * Handle PUT requests.
      */
-    @Override
-    public Representation put(Representation entity) throws ResourceException {
+    @Put
+    public Representation storeItem(Representation entity) {
         // Tells if the item is to be created of not.
         boolean creation = (item == null);
 
@@ -112,6 +72,35 @@ public class ItemResource extends BaseResource {
             getResponse().setStatus(Status.SUCCESS_CREATED);
         } else {
             getResponse().setStatus(Status.SUCCESS_OK);
+        }
+
+        return null;
+    }
+
+    @Get("xml")
+    public Representation toXml() {
+        try {
+            DomRepresentation representation = new DomRepresentation(
+                    MediaType.TEXT_XML);
+            // Generate a DOM document representing the item.
+            Document d = representation.getDocument();
+
+            Element eltItem = d.createElement("item");
+            d.appendChild(eltItem);
+            Element eltName = d.createElement("name");
+            eltName.appendChild(d.createTextNode(item.getName()));
+            eltItem.appendChild(eltName);
+
+            Element eltDescription = d.createElement("description");
+            eltDescription.appendChild(d.createTextNode(item.getDescription()));
+            eltItem.appendChild(eltDescription);
+
+            d.normalizeDocument();
+
+            // Returns the XML representation of this document.
+            return representation;
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         return null;
