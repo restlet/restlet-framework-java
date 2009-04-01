@@ -154,6 +154,7 @@ public class ConverterService extends Service {
      * @return The converted Java object.
      * @throws IOException
      */
+    @SuppressWarnings("unchecked")
     public <T> T toObject(Representation sourceRepresentation,
             Class<T> targetClass, UniformResource resource) throws IOException {
         T result = null;
@@ -163,9 +164,14 @@ public class ConverterService extends Service {
         if (ch != null) {
             result = ch.toObject(sourceRepresentation, targetClass, resource);
         } else {
-            Context.getCurrentLogger().warning(
-                    "Unable to find a converter for this representation : "
-                            + sourceRepresentation);
+            // TODO there is no converter for Representation -> Representation
+            if (targetClass.isAssignableFrom(sourceRepresentation.getClass())) {
+                result = (T) sourceRepresentation;
+            } else {
+                Context.getCurrentLogger().warning(
+                        "Unable to find a converter for this representation : "
+                                + sourceRepresentation);
+            }
         }
 
         return result;

@@ -241,7 +241,10 @@ public class ServerResource extends UniformResource {
             if ((getStatus() != null) && getStatus().isSuccess()) {
                 // Conditions where passed successfully.
                 // Continue the normal processing
-                if (resultInfo instanceof Representation) {
+                // TODO Why testing "resultInfo instanceof Representation"?
+                if ((Method.GET.equals(getRequest().getMethod()) || Method.HEAD
+                        .equals(getRequest().getMethod()))
+                        && resultInfo instanceof Representation) {
                     result = (Representation) resultInfo;
                 } else {
                     if (isNegotiated()) {
@@ -431,7 +434,7 @@ public class ServerResource extends UniformResource {
                 }
 
                 resultObject = annotationInfo.getJavaMethod().invoke(this,
-                        parameters);
+                        parameters.toArray());
             } else {
                 resultObject = annotationInfo.getJavaMethod().invoke(this);
             }
@@ -750,9 +753,25 @@ public class ServerResource extends UniformResource {
             } else if (object instanceof MediaType) {
                 result = new ArrayList<Variant>();
                 result.add(new Variant((MediaType) object));
-            } else {
-                result = new ArrayList<Variant>();
-                result.addAll((List<Variant>) object);
+            } else if (object instanceof List) {
+                // Discover the list of variants
+                List list = (List) object;
+                if (!list.isEmpty()) {
+                    Object obj = list.get(0);
+                    if (obj instanceof Variant) {
+                        result = new ArrayList<Variant>();
+                        result.addAll((List<Variant>) object);
+                    } else if (obj instanceof MediaType) {
+                        result = new ArrayList<Variant>();
+                        for (Object object2 : list) {
+                            result.add(new Variant((MediaType) object2));
+                        }
+                    } else {
+                        // Not supported yet
+                    }
+                } else {
+                    // Not supported yet
+                }
             }
         }
 

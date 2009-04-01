@@ -25,7 +25,7 @@ public class AnnotationUtils {
             Class<? extends UniformResource> resourceClass) {
         List<AnnotationInfo> result = null;
 
-        for (java.lang.reflect.Method javaMethod : resourceClass.getMethods()) {
+        for (java.lang.reflect.Method javaMethod : resourceClass.getDeclaredMethods()) {
             for (Annotation annotation : javaMethod.getAnnotations()) {
 
                 Annotation methodAnnotation = annotation.annotationType()
