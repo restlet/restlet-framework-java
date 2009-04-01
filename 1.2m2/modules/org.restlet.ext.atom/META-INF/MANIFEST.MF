@@ -1,0 +1,20 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Restlet Extension - Atom
+Bundle-SymbolicName: org.restlet.ext.atom
+Bundle-Version: 1.2
+Bundle-Vendor: Noelios Technologies
+Export-Package: org.restlet.ext.atom;
+  uses:="org.restlet.data,
+   org.restlet.representation,
+   org.restlet,
+   org.restlet.util"
+Import-Package: org.restlet,
+ org.restlet.data,
+ org.restlet.engine.converter,
+ org.restlet.engine.util,
+ org.restlet.representation,
+ org.restlet.resource,
+ org.restlet.service,
+ org.restlet.util
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

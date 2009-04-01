@@ -1,0 +1,92 @@
+<html>
+<head>
+	<title>Embedded JavaScript Demo</title>
+	<link rel="stylesheet" type="text/css" href="../static/example.css" />
+</head>
+<body>
+<table width="100%"><tr valign="top"><td>
+<%
+
+//
+// Accessing the request
+//
+
+var form = container.request.resourceRef.queryAsForm;
+
+//
+// Stream this script
+//
+
+if(form.getFirstValue('stream') == 'true') if(container.stream()) throw null;
+
+//
+// Calling Java
+//
+
+script.cacheDuration = 5000;
+print('This page was dynamically generated at ' + java.lang.System.currentTimeMillis() + '');
+
+//
+// Including a script
+//
+// This is identical to:
+//
+//   container.include('path');
+//
+
+%>
+<%& script.meta.get('exampleBasePath') + 'demos/rhino.fragment' %>
+<%
+
+//
+// An example of a function
+//
+
+function printFactory(factory) {
+%>
+<p>
+	<i>Engine:</i> <%= factory.engineName %> version <%= factory.engineVersion %><br />
+	<i>Language:</i> <%= factory.languageName %> version <%= factory.languageVersion %><br />
+	<i>Names:</i> 
+<%
+	var names = factory.names.toArray();
+	for(var i = 0; i < names.length; i++) {
+		print(names[i]);
+		if(i < names.length - 1) {
+			print(', ');
+		}
+	}
+%>
+</p>
+<%
+}
+%>
+<h3>Script engine used:</h3>
+<%
+printFactory(script.engine.factory);
+%>
+<h3>Available script engines:</h3>
+<%
+var factories = script.engineManager.engineFactories.toArray();
+for(var i = 0; i < factories.length; i++) {
+	printFactory(factories[i]);
+}
+%>
+</td><td>
+<h3>The "id" attribute in the URL query is:</h3>
+<p><%= form.getFirstValue('id') %></p>
+<h3>A few tests:</h3>
+<%
+for(var i = 0; i < 10; i++) {
+%>
+A multiple of three: 
+<%
+	printTriple(i);
+%>
+<br />
+<%
+}
+%>
+</td></tr></table>
+</body>
+<html>

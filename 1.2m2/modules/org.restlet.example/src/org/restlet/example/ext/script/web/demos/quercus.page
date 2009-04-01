@@ -1,0 +1,97 @@
+<html>
+<head>
+	<title>Embedded PHP Demo</title>
+	<link rel="stylesheet" type="text/css" href="../static/example.css" />
+</head>
+<body>
+<table width="100%"><tr valign="top"><td>
+<?php
+
+//
+// Accessing the request
+//
+
+$form = $container->request->resourceRef->queryAsForm;
+
+//
+// Stream this script
+//
+
+if($form->getFirstValue('stream') == 'true') if($container->stream()) exit();
+
+$script->cacheDuration = 5000;
+
+//
+// Calling Java
+//
+
+import java.lang.System;
+print 'This page was dynamically generated at ' . System::currentTimeMillis();
+
+//
+// Including a script
+//
+// (see comments in quercus.fragment)
+//
+// This is identical to:
+//
+//   include $basePath . '/path';
+//
+
+?>
+<?& $script->meta->get('exampleBasePath') . 'demos/quercus.fragment' ?>
+<?
+
+//
+// An example of a function
+//
+
+function printFactory($factory) {
+?>
+<p>
+	Engine: <?= $factory->engineName ?> version <?= $factory->engineVersion ?><br />
+	Language: <?= $factory->languageName ?> version <?= $factory->languageVersion ?><br />
+	Names: 
+<?
+	$names = $factory->names->toArray();
+	for($i = 0; $i < count($names); $i++) {
+		print($names[$i]);
+		if($i < count($names) - 1) {
+			print ', ';
+		}
+	}
+?>
+</p>
+<?
+}
+?>
+<h3>Script engine used:</h3>
+<?
+printFactory($script->engine->factory);
+?>
+<h3>Available script engines:</h3>
+<?
+$factories = $script->engineManager->engineFactories->toArray();
+foreach($factories as $factory) {
+	printFactory($factory);
+}
+?>
+</td><td>
+<h3>The "id" attribute in the URL query is:</h3>
+<p><?= $form->getFirstValue('id') ?></p>
+<h3>A few tests:</h3>
+<?
+global $george;
+for($i = 0; $i < 10; $i++) {
+?>
+A multiple of three: 
+<?
+	printTriple($i);
+?>
+<br />
+<?
+}
+?>
+</td></tr></table>
+</body>
+<html>

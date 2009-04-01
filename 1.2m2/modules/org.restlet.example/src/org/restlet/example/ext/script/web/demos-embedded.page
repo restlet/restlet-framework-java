@@ -1,0 +1,53 @@
+<% script.cacheDuration = 5000; var exampleBasePath = script.meta.get('exampleBasePath'); %><%& exampleBasePath + 'header.fragment' %>
+
+<h2>Demos of HTML with Embedded Scripts</h2>
+<p>
+These demos all do pretty much the same thing, except that each uses a different scripting engine. They're here to show you that the engines
+are installed correctly on your system, and as examples of how to write embedded scripts for each platform. Note that at the top of each
+page you will see a timestamp -- this is used to test caching mode, during which the timestamp should stay constant for 5 seconds, no matter
+how many times you refresh the page. See <a href="performance.page">performance notes</a> for an explanation of the difference between caching and streaming mode.
+</p>
+
+<h3>JavaScript</h3>
+<p>
+<a href="demos/rhino.page?id=hello">caching mode</a><br />
+<a href="demos/rhino.page?id=hello&stream=true">streaming mode</a><br />
+Source code: <a href="demos/rhino.page?source=true">main</a>, <a href="demos/rhino.fragment?source=true">included</a>
+</p>
+
+<h3>PHP</h3>
+<p>
+<a href="demos/quercus.page?id=hello">caching mode</a><br />
+<a href="demos/quercus.page?id=hello&stream=true">streaming mode</a><br />
+Source code: <a href="demos/quercus.page?source=true">main</a>, <a href="demos/quercus.fragment?source=true">included</a>
+</p>
+
+<h3>Python (Jython)</h3>
+<p>
+<a href="demos/jython.page?id=hello">caching mode</a><br />
+<a href="demos/jython.page?id=hello&stream=true">streaming mode</a><br />
+Source code: <a href="demos/jython.page?source=true">main</a>, <a href="demos/jython.fragment?source=true">included</a>
+</p>
+
+<h3>Python (Jepp)</h3>
+<p>
+<a href="demos/jepp.page?id=hello">caching mode</a>
+<br /><a href="demos/jepp.page?id=hello&stream=true">streaming mode</a><br />
+Source code: <a href="demos/jepp.page?source=true">main</a>, <a href="demos/jepp.fragment?source=true">included</a>
+</p>
+
+<h3>Ruby</h3>
+<p>
+<a href="demos/jruby.page?id=hello">caching mode</a><br />
+<a href="demos/jruby.page?id=hello&stream=true">streaming mode</a><br />
+Source code: <a href="demos/jruby.page?source=true">main</a>, <a href="demos/jruby.fragment?source=true">included</a>
+</p>
+
+<h3>Groovy</h3>
+<p>
+<a href="demos/groovy.page?id=hello">caching mode</a><br />
+<a href="demos/groovy.page?id=hello&stream=true">streaming mode</a><br />
+Source code: <a href="demos/groovy.page?source=true">main</a>, <a href="demos/groovy.fragment?source=true">included</a>
+</p>
+
+<%& exampleBasePath + 'footer.fragment' %>

@@ -1,0 +1,18 @@
+<% script.cacheDuration = 5000; var exampleBasePath = script.meta.get('exampleBasePath'); %><%& exampleBasePath + 'header.fragment' %>
+
+<h2>Requirements</h2>
+
+<h3>Java 5</h3>
+<p>
+The <a href="http://java.sun.com/developer/technicalArticles/J2SE/Desktop/scripting/">Java scripting standard (JSR-223)</a> was officially introduced
+into Java 6. However, we realize that many projects still use Java 5, and that support for Java scripting is easy to add to Java 5.
+For this reason, we have built Scripturian on Java 5, and tested it on both Java 5 and Java 6.
+</p><p>
+Included in Scripturian is a library to add JSR-223 support to Java 5. You do not need this library if you are using Java 6.
+</p><p>
+Unfortunately, the <a href="https://scripting.dev.java.net/">Java scripting project</a> assumes Java 6, and its released support libraries
+will not work on Java 5. Luckily, it is relatively easy rebuild them for Java 5. To do this, simply check out the source code from CVS
+and build on a Java 5 platform with the addition of the JSR-223 support library.
+</p>
+
+<%& exampleBasePath + 'footer.fragment' %>

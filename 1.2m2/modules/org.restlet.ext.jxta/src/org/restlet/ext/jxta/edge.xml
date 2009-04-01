@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE org.http:configuration>
+<!--
+   Copyright 2005-2009 Noelios Technologies.
+   
+   The contents of this file are subject to the terms of one of the following
+   open source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL 1.0 (the
+   "Licenses"). You can select the license that you prefer but you may not use
+   this file except in compliance with one of these Licenses.
+   
+   You can obtain a copy of the LGPL 3.0 license at
+   http://www.opensource.org/licenses/lgpl-3.0.html
+  
+   You can obtain a copy of the LGPL 2.1 license at
+   http://www.opensource.org/licenses/lgpl-2.1.php
+  
+   You can obtain a copy of the CDDL 1.0 license at
+   http://www.opensource.org/licenses/cddl1.php
+  
+   You can obtain a copy of the EPL 1.0 license at
+   http://www.opensource.org/licenses/eclipse-1.0.php
+   
+   See the Licenses for the specific language governing permissions and
+   limitations under the Licenses.
+  
+   Alternatively, you can obtain a royalty free commercial license with less
+   limitations, transferable or non-transferable, directly at
+   http://www.noelios.com/products/restlet-engine
+  
+   Restlet is a registered trademark of Noelios Technologies.
+	
+   @author James Todd (james dot w dot todd at gmail dot com)
+-->
+<jxta>
+	<peer descriptor="edge" name="NetBeans" description="NetBeans" />
+
+	<network id="urn:jxta:uuid-7038704567907394506794356077903402"
+		name="ToddNet" description="ToddNet" autoRendezVousPeriod="-1">
+		<rendezVous bootstrap="file:///tmp/bogus.txt"
+			discovery="false">
+			<address>tcp://1.2.3.4:9801</address>
+			<address>http://1.2.3.4:9800</address>
+		</rendezVous>
+
+		<relays bootstrap="file:///tmp/bogus.txt" discovery="false">
+			<address>tcp://1.2.3.4:9801</address>
+			<address>http://1.2.3.4:9800</address>
+		</relays>
+		<!--
+			<group id="urn:http:uuid-1989101414002000081518002844102602"
+			name="MyJXTA"
+			password=""
+			description="">
+			<group id="urn:http:uuid-7210772407234707234021340724702802"
+			name="NetBeans"
+			password=""
+			description=""/>
+			</group>
+		-->
+	</network>
+
+	<transport>
+		<tcp>
+			<address>
+				<multicast>udp://224.0.1.85:1234</multicast>
+				tcp://${host.any}:0
+			</address>
+		</tcp>
+		<http>
+			<address>http://${host.any}:8700</address>
+		</http>
+	</transport>
+</jxta>

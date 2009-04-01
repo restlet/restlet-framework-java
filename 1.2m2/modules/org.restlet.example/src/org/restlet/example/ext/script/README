@@ -1,0 +1,102 @@
+           Introduction to the Restlet Example Application
+
+                        Written by Tal Liron
+
+This is an example application for using scripting languages with Restlet.
+It is designed to run as is on any Java 5 platform: all dependent libraries
+are included. It contains examples for all supported scripting languages.
+
+Included are Wrapper scripts to start the application on the Java virtual
+machine as a daemon or service on various operating systems. Starting the
+script for your operating system might be enough! The application should then
+be available for browsing by HTTP at port 8080.
+
+If it doesn't work, most likely the problem is that the conf/wrapper.conf
+isn't pointing to your Java virtual machine location. 
+
+Operating systems supported by Wrapper:
+
+(Both 32- and 64-bit architectures are supported unless explicitly stated)
+
+   AIX on PPC, HPUX on IA or PARISC, Linux on x86 or IA (64-bit only) or PPC,
+   Mac OS X, Solaris on SPARC or x86, Windows on x86 (32-bit only)
+
+The file structure of this application:
+
+example -     The Wrapper script. Run this! On most operating systems, you
+              need to enable the "executable" permission on this file first.
+              It is configured by conf/wrapper.conf.
+
+wrapper-* -   These are binary files used by the Wrapper script. Feel free to
+              delete those not used by your operating system.
+
+main.script - This is the script file first run by the wrapper. It is in charge
+              of starting the Restlet server component. It is configured by
+              conf/reslet.conf.
+
+conf/
+
+   These are editable configuration files.
+
+   wrapper.conf - Configuration file for the Wrapper. Here you point to
+                  the location of your Java virtual machine, define the Java
+                  classpath, as well as running parameters for the virtual
+                  machine. Also defined are the daemon/service names.
+
+   logging.conf - Configuration file for Java logging. Note that this example
+                  uses an enhanced version of Java logging, via x4juli,
+                  which allows for more powerful rolling file configurations.
+
+   restlet.conf - Configuration file for the Restlet server component.
+                  It is used by main.script. Here you can configure the HTTP
+                  port used, parameters for the Restlet application, and
+                  directories used by it.
+
+bin/
+
+   More binary files used by the Wrapper script.  Feel free to delete those
+   not used by your operating system.
+
+jar/
+
+   Java libraries used. Included are Wrapper, Restlet, logging libraries,
+   and of course all the supported scripting languages.
+
+log/
+
+   Log files. Configured by conf/logging.conf.
+   
+   wrapper.log -     Log for the Wrapper script. Here you can see if when and
+                     if the Java virtual machine was restarted, and failures
+                     during startup.
+
+   web.log -         Log of web requests, compatible with that of Apache HTTP
+                     server.
+   
+   application.log - Used by your application.  
+
+resources/
+
+   These are REST resources implemented in various scripting languages.
+   Their actual URL would depend on definitions in restlet.conf. Use
+   them as examples of how to implement your own REST resources.
+
+web/
+
+   Files under here are text files with embedded scripts. This is the root
+   URL of the server. They contain a mini-site explaining the power of
+   using scripting languages with Restlet, with links to the demos.
+
+   Of special importance is demos-rest.page, which contains an example of
+   how to access REST resources using JavaScript running in the client web
+   browser ("AJAX"). Note that it relies on the jQuery library for this.
+   
+web/test/
+
+   Here are examples of using embedded scripts in various languages to generate
+   HTML. Use them as examples on how to implement your own application.
+
+web/static/
+
+   Files under here are served as is by the server. This can include binary
+   files as well as text files.

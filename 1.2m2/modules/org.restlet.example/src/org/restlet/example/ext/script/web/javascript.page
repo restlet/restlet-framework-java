@@ -1,0 +1,32 @@
+<% script.cacheDuration = 5000; var exampleBasePath = script.meta.get('exampleBasePath'); %><%& exampleBasePath + 'header.fragment' %>
+
+<h2>Supported Scripting Language: JavaScript</h2>
+<p>
+JavaScript is a sensible choice for "AJAX" and other rich web client applications, because it's the same language used by web browsers
+and other client platforms. Web developers are already proficient in JavaScript, and can quickly be brought on board to a server-side
+project. Choosing JavaScript allows you to write server-side and client-side scripting in the same language, and even have each side share the same libraries.
+Couple it with Restlet's JSON extension, and you're on solid ground for rapid development.
+</p><p>
+Though not as feature-rich as <a href="python.page">Python</a> or <a href="ruby.page">Ruby</a>, JavaScript is still
+very powerful, and can support object-orientation, namespaces and other paradigms. Many libraries exist to help you with this.
+</p><p> 
+See <a href="http://helma.org/">Helma</a> and <a href="https://phobos.dev.java.net">Phobos</a> for other examples of platforms based on server-side JavaScript.
+<p>
+</p>
+
+<h3>Implementation</h3>
+<p>
+Your distribution of Java may already have JavaScript support built in, in which case you're already good to go.
+This is true for Sun's JDK and OpenJDK. Otherwise, JavaScript is implemented by Mozilla's <a href="http://www.mozilla.org/rhino/">Rhino</a>.
+</p><p>
+Note that Sun and OpenJDK's built-in JavaScript support is a simplified version of Rhino, which may limit the power of Scripturian, so that
+Mozilla's version is recommended. If you have both versions installed, use the "rhino-nonjdk" name to circumvent the built-in Rhino
+(see demo JavaScript source code).
+</p><p>
+Mozilla's Rhino requires a small library for
+<a href="http://java.sun.com/developer/technicalArticles/J2SE/Desktop/scripting/">Java scripting standard (JSR-223)</a>, which is available 
+at the <a href="https://scripting.dev.java.net/">Java scripting project</a>. (This was true for version 1.7R1.)
+See the <a href="requirements.page">requirement notes</a> if you are using Java 5.
+</p>
+
+<%& exampleBasePath + 'footer.fragment' %>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:app="http://www.w3.org/2007/app">
+   <title type="text">BitWorking | Joe Gregorio</title>
+   <link href="http://bitworking.org/projects/apptestsite/app.cgi/service/media/" rel="self" />
+   <link href="http://bitworking.org/" rel="alternate" />
+   <icon>http://bitworking.org/favicon.ico</icon>
+   <updated>2009-01-09T15:00:00.065144-04:00</updated>
+   <author>
+      <name>Joe Gregorio</name>
+   </author>
+   <id>http://bitworking.org/</id>
+   <entry>
+     <title>waves</title>
+     <link href="http://bitworking.org/news/202/waves" />
+     <link href="202/" rel="edit" />
+     <link href="202/;media" rel="edit-media" />
+     <id>http://bitworking.org/news/202/waves</id>
+     <updated>2009-01-09T15:00:00.065144-04:00</updated>
+     <app:edited>2009-01-09T15:00:00.065144-04:00</app:edited>
+     <summary type="xhtml">
+          <div xmlns="http://www.w3.org/1999/xhtml" />
+     </summary>
+         <link href="202/;media" rel="edit-media" />
+         <content src="202/;media" type="image/jpeg" />
+   </entry>
+
+</feed>

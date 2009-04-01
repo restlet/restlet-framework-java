@@ -1,0 +1,11 @@
+<% script.cacheDuration = 5000; var exampleBasePath = script.meta.get('exampleBasePath'); %><%& exampleBasePath + 'header.fragment' %>
+
+<h2>Other Scripting Platforms</h2>
+<p>
+To add a new language to Scripturian, you will first need to create an <a href="http://www.threecrickets.com/scripturian/static/javadoc/index.html?com/threecrickets/scripturian/EmbeddedScriptParsingHelper.html">EmbeddedScriptParsingHelper</a>
+for it. This is a small and usually very straightforward class, and can be used to solve problems with the Java scripting standard implementation.  
+Our experience has shown that adherence to the Java scripting standard is inconsistent.
+In fact, all script engines currently supported by Scripturian required special workarounds.
+</p>
+
+<%& exampleBasePath + 'footer.fragment' %>

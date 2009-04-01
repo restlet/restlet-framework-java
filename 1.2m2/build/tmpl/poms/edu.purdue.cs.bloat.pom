@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>@parent-group-id@</groupId>
+		<artifactId>@parent-artifact-id@</artifactId>
+		<version>@parent-version@</version>
+	</parent>
+
+   <groupId>@group-id@</groupId>
+   <artifactId>@artifact-id@</artifactId>
+   <version>@version@</version>
+
+   <name>The Bytecode-Level Optimizer and Analysis Tool</name>
+   <description>The Bytecode-Level Optimizer and Analysis Tool.</description>
+</project>

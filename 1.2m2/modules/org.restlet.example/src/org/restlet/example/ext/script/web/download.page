@@ -1,0 +1,28 @@
+<% script.cacheDuration = 5000; var exampleBasePath = script.meta.get('exampleBasePath'); %><%& exampleBasePath + 'header.fragment' %>
+
+<h2>Download</h2>
+
+<h3>Binary Distribution</h3>
+<p>
+Available at <a href="http://scripturian.tigris.org/servlets/ProjectDocumentList?folderID=10328">Tigris</a>.
+</p><p>
+This is just the Scripturian jar, plus JSR-223 support jar for Java 5. JSR-223 support is already included in Java 6.
+</p>
+
+<h3>Source Code</h3>
+<p>
+Available via Subversion at <a href="http://scripturian.tigris.org/source/browse/scripturian/">Tigris</a>.
+</p>
+
+<h3>It's in Restlet</h3>
+<p>
+Scripturian will be included in Restlet from version 1.2, for use in its <a href="restlet.page">optional script extension</a>.
+</p><p>
+Also included in Restlet is an example application designed to get you started immediately with only Java as the
+prerequisite. It contains a minimal Restlet distribution, Scripturian,
+<a href="http://www.mortbay.org/jetty/">Jetty</a> for the HTTP server, the scripting engines,
+and a pre-configured <a href="http://wrapper.tanukisoftware.org/">Wrapper</a> from <a href="http://www.tanukisoftware.com/">Tanuki Software</a>
+to bootstrap it all. Just start the Wrapper, and go!
+</p>
+
+<%& exampleBasePath + 'footer.fragment' %>

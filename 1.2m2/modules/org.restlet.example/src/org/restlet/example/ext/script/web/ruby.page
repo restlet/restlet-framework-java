@@ -1,0 +1,20 @@
+<% script.cacheDuration = 5000; var exampleBasePath = script.meta.get('exampleBasePath'); %><%& exampleBasePath + 'header.fragment' %>
+
+<h2>Supported Scripting Language: Ruby</h2>
+<p>
+And then there's Ruby, a relatively new language that can do most of what <a href="python.page">Python</a> can do and more. Unlike Python, it has a very loose and forgiving
+syntax, which is perfect for embedding. It can work with many styles of code, and as such it would be relatively easy to transition to Ruby from
+any of the above languages.
+</p><p>
+Ruby has some excellent libraries, and may be very productive for developing large applications.
+</p>
+
+<h3>Implementation</h3>
+<p>
+Ruby is implemented by <a href="http://jruby.codehaus.org/">JRuby</a>. Note that you also need a small library for
+<a href="http://java.sun.com/developer/technicalArticles/J2SE/Desktop/scripting/">Java scripting standard (JSR-223)</a>, which is available 
+at the <a href="https://scripting.dev.java.net/">Java scripting project</a>. (This was true for version 1.2.)
+See the <a href="requirements.page">requirement notes</a> if you are using Java 5.
+</p> 
+
+<%& exampleBasePath + 'footer.fragment' %>

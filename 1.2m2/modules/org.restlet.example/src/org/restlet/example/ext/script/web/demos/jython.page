@@ -1,0 +1,90 @@
+<html>
+<head>
+	<title>Embedded Python (Jython) Demo</title>
+	<link rel="stylesheet" type="text/css" href="../static/example.css" />
+</head>
+<body>
+<table width="100%"><tr valign="top"><td>
+<%python
+
+#
+# Accessing the request
+#
+
+form = container.getRequest().resourceRef.queryAsForm
+
+#
+# Stream this script
+#
+
+if form.getFirstValue('stream') == 'true':
+	if container.stream():
+		raise
+
+script.setCacheDuration(5000)
+
+#
+# Calling Java
+#
+
+from java.lang import *
+sys.stdout.write('This page was dynamically generated at ' + str(System.currentTimeMillis()))
+
+# (Note: Python's print statement can be used here, too, but it may not be the best choice
+# for outputting HTML due to its "softspace" feature. It is meant more for debugging than
+# for clean output. Also, it is no longer supported in Python 3. We'll prefer sys.stdout
+# in this example.)
+
+#
+# Including a script
+#
+# This is identical to:
+#
+#   container.include('path')
+#
+
+%>
+<%& script.meta['exampleBasePath'] + 'demos/jython.fragment' %>
+<%
+
+#
+# An example of a method
+#
+
+def print_factory(factory):
+	%><p>
+	Engine: <%= factory.engineName %> version <%= factory.engineVersion %><br />
+	Language: <%= factory.languageName %> version <%= factory.languageVersion %><br />
+	Names: <%
+	names = factory.names.toArray()
+	for i in range(len(names)):
+		sys.stdout.write(names[i])
+		if i < len(names) - 1:
+			sys.stdout.write(', ')
+	%></p><%
+
+%>
+<h3>Script engine used:</h3>
+<%
+print_factory(script.engine.factory)
+%>
+<h3>Available script engines:</h3>
+<%
+factories = script.engineManager.engineFactories.toArray()
+for factory in factories:
+	print_factory(factory)
+%>
+</td><td>
+<h3>The "id" attribute in the URL query is:</h3>
+<p><%= form.getFirstValue('id') %></p>
+<h3>A few tests:</h3>
+<%
+for i in range(10):
+	%>A multiple of three: <%
+	print_triple(i)
+	%><br /><%
+
+%>
+</td></tr></table>
+</body>
+<html>

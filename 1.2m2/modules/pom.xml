@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>org.restlet</groupId>
+	<artifactId>org.restlet.parent</artifactId>
+	<version>1.2-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<name>Restlet project</name>
+	<description>Lightweight REST framework</description>
+	<url>http://www.restlet.org</url>
+	<inceptionYear>2005</inceptionYear>
+
+	<scm>
+		<url>http://restlet.tigris.org/svn/restlet/modules/</url>
+	</scm>
+
+	<repositories>
+		<repository>
+			<id>maven-central</id>
+			<name>Central Maven repository</name>
+			<url>http://repo1.maven.org/maven2/</url>
+		</repository>
+		<repository>
+			<id>maven2-java</id>
+			<name>Java.net repository</name>
+			<url>http://download.java.net/maven/2</url>
+		</repository>
+        <repository>
+            <id>maven1-java</id>
+            <url>http://download.java.net/maven/1</url>
+            <layout>legacy</layout>
+        </repository>
+		<repository>
+			<id>maven-restlet</id>
+			<name>Restlet repository</name>
+			<url>http://maven.restlet.org</url>
+		</repository>
+	</repositories>
+
+	<properties>
+		<lib-activation-version>1.1.1</lib-activation-version>
+		<lib-antlr-version>3.0</lib-antlr-version>
+		<lib-bloat-version>1.0</lib-bloat-version>
+		<lib-bouncycastle-version>1.34</lib-bouncycastle-version>
+		<lib-cglib-version>2.1.3</lib-cglib-version>
+		<lib-cli-version>1.1</lib-cli-version>
+		<lib-codec-version>1.3</lib-codec-version>
+		<lib-collections-version>3.2</lib-collections-version>
+		<lib-db4o-nativequery-version>7.7.67</lib-db4o-nativequery-version>
+		<lib-db4o-version>7.7.67</lib-db4o-version>
+		<lib-dbcp-version>1.2.2</lib-dbcp-version>
+		<lib-fileupload-version>1.2</lib-fileupload-version>
+		<lib-freemarker-version>2.3.15</lib-freemarker-version>
+		<lib-grizzly-version>1.9.10</lib-grizzly-version>
+		<lib-groovy-version>1.6.0</lib-groovy-version>
+		<lib-gwt-version>1.5.3</lib-gwt-version>
+		<lib-httpclient-version>3.1</lib-httpclient-version>
+		<lib-io-version>1.4</lib-io-version>
+		<lib-javamail-version>1.4.1</lib-javamail-version>
+		<lib-jaxb-api-version>2.1</lib-jaxb-api-version>
+		<lib-jaxb-ri-version>2.1.10</lib-jaxb-ri-version>
+		<lib-jaxrs-version>1.0</lib-jaxrs-version>
+		<lib-jdom-version>1.1</lib-jdom-version>
+		<lib-jetty-version>6.1.15</lib-jetty-version>
+		<lib-jibx-version>1.1.5</lib-jibx-version>
+		<lib-jline-version>0.9.94</lib-jline-version>
+		<lib-jpython-version>2.2.1</lib-jpython-version>
+		<lib-jruby-version>1.2.0</lib-jruby-version>
+		<lib-json-version>2.0</lib-json-version>
+		<lib-jsslutils-version>0.5.1</lib-jsslutils-version>
+		<lib-junit-version>4.4</lib-junit-version>
+		<lib-jxta-version>2.5</lib-jxta-version>
+		<lib-lang-version>2.3</lib-lang-version>
+		<lib-logging-version>1.1</lib-logging-version>
+		<lib-lucene-version>2.4</lib-lucene-version>
+		<lib-mina-version>1.1.0</lib-mina-version>
+		<lib-oauth-version>20090315</lib-oauth-version>
+		<lib-osgi-version>1.0</lib-osgi-version>
+		<lib-pool-version>1.3</lib-pool-version>
+		<lib-quercus-version>3.2.1</lib-quercus-version>
+		<lib-retroweaver-version>1.2</lib-retroweaver-version>
+		<lib-rhino-version>1.7R1</lib-rhino-version>
+		<lib-rome-version>1.0</lib-rome-version>
+		<lib-scripturian-version>1.0.0.rc2</lib-scripturian-version>
+		<lib-script-version>1.0</lib-script-version>
+		<lib-servlet-version>2.5</lib-servlet-version>
+		<lib-simple-version>4.1.9</lib-simple-version>
+		<lib-solr-version>1.3.0</lib-solr-version>
+		<lib-spring-modules-db4o-version>0.9</lib-spring-modules-db4o-version>
+		<lib-spring-version>2.5.6</lib-spring-version>
+		<lib-stax-version>1.0.2</lib-stax-version>
+		<lib-tika-version>0.2</lib-tika-version>
+		<lib-velocity-version>1.5</lib-velocity-version>
+		<lib-wrapper-version>3.2.3</lib-wrapper-version>
+		<lib-xdb-version>11.1</lib-xdb-version>
+	</properties>
+
+	<modules>
+		<module>org.restlet</module>
+		<module>org.restlet.example</module>
+		<module>org.restlet.gwt</module>
+		<module>org.restlet.test</module>
+
+		<module>org.restlet.ext.atom</module>
+		<module>org.restlet.ext.fileupload</module>
+		<module>org.restlet.ext.freemarker</module>
+		<module>org.restlet.ext.grizzly</module>
+		<module>org.restlet.ext.gwt</module>
+		<module>org.restlet.ext.httpclient</module>
+		<module>org.restlet.ext.javamail</module>
+		<module>org.restlet.ext.jaxb</module>
+		<module>org.restlet.ext.jaxrs</module>
+		<module>org.restlet.ext.jdbc</module>
+		<module>org.restlet.ext.jetty</module>
+		<module>org.restlet.ext.jibx</module>
+		<module>org.restlet.ext.jmx</module>
+		<module>org.restlet.ext.json</module>
+		<!-- <module>org.restlet.ext.jxta</module> -->
+		<module>org.restlet.ext.lucene</module>
+		<module>org.restlet.ext.net</module>
+		<module>org.restlet.ext.oauth</module>
+		<module>org.restlet.ext.rdf</module>
+		<!-- <module>org.restlet.ext.script</module> -->
+		<module>org.restlet.ext.servlet</module>
+		<module>org.restlet.ext.shell</module>
+		<module>org.restlet.ext.simple</module>
+		<module>org.restlet.ext.spring</module>
+		<module>org.restlet.ext.ssl</module>
+		<module>org.restlet.ext.velocity</module>
+		<module>org.restlet.ext.wadl</module>
+		<module>org.restlet.ext.xdb</module>
+	</modules>
+
+	<licenses>
+		<license>
+			<name>LGPL 3.0 license</name>
+			<url>http://www.opensource.org/licenses/lgpl-3.0.html</url>
+		</license>
+		<license>
+			<name>LGPL 2.1 license</name>
+			<url>http://www.opensource.org/licenses/lgpl-2.1.php</url>
+		</license>
+		<license>
+			<name>CDDL 1.0 license</name>
+			<url>http://www.opensource.org/licenses/cddl1.php</url>
+		</license>
+		<license>
+			<name>EPL 1.0 license</name>
+			<url>http://www.opensource.org/licenses/eclipse-1.0.php</url>
+		</license>
+	</licenses>
+
+	<build>
+		<sourceDirectory>${basedir}/src</sourceDirectory>
+
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.5</source>
+					<target>1.5</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
