@@ -48,6 +48,7 @@ import org.restlet.data.CookieSetting;
 import org.restlet.data.Dimension;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
+import org.restlet.data.Metadata;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
@@ -62,6 +63,7 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.RepresentationInfo;
 import org.restlet.representation.Variant;
 import org.restlet.service.ConverterService;
+import org.restlet.service.MetadataService;
 import org.restlet.util.Series;
 
 /**
@@ -422,8 +424,12 @@ public class ServerResource extends UniformResource {
 
                 for (Class<?> param : annotationInfo.getJavaParameterTypes()) {
                     try {
-                        parameters.add(cs.toObject(getRequest().getEntity(),
-                                param, this));
+                        if (Variant.class.equals(param)) {
+                            parameters.add(variant);
+                        } else {
+                            parameters.add(cs.toObject(
+                                    getRequest().getEntity(), param, this));
+                        }
                     } catch (Throwable e) {
                         e.printStackTrace();
                         parameters.add(null);
@@ -675,16 +681,35 @@ public class ServerResource extends UniformResource {
 
             for (AnnotationInfo annotationInfo : annotations) {
                 if (method.equals(annotationInfo.getRestletMethod())) {
-                    annoVariants = cs.getVariants(annotationInfo
-                            .getJavaReturnType());
+                    if (annotationInfo.getValue() != null) {
+                        MetadataService ms = getApplication()
+                                .getMetadataService();
 
-                    if (annoVariants != null) {
-                        if (variants == null) {
-                            variants = new ArrayList<Variant>();
+                        if (ms == null) {
+                            ms = new MetadataService();
                         }
+                        Metadata metadata = ms.getMetadata(annotationInfo
+                                .getValue());
+                        
+                        if (metadata instanceof MediaType) {
+                            if (variants == null) {
+                                variants = new ArrayList<Variant>();
+                            }
+                            variants.add(new VariantInfo((MediaType) metadata,
+                                    annotationInfo));
+                        }
+                    } else {
+                        annoVariants = cs.getVariants(annotationInfo
+                                .getJavaReturnType());
+                        if (annoVariants != null) {
+                            if (variants == null) {
+                                variants = new ArrayList<Variant>();
+                            }
 
-                        for (Variant v : annoVariants) {
-                            variants.add(new VariantInfo(v, annotationInfo));
+                            for (Variant v : annoVariants) {
+                                variants
+                                        .add(new VariantInfo(v, annotationInfo));
+                            }
                         }
                     }
                 }

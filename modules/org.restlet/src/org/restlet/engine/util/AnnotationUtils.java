@@ -25,7 +25,8 @@ public class AnnotationUtils {
             Class<? extends UniformResource> resourceClass) {
         List<AnnotationInfo> result = null;
 
-        for (java.lang.reflect.Method javaMethod : resourceClass.getDeclaredMethods()) {
+        for (java.lang.reflect.Method javaMethod : resourceClass
+                .getDeclaredMethods()) {
             for (Annotation annotation : javaMethod.getAnnotations()) {
 
                 Annotation methodAnnotation = annotation.annotationType()
@@ -41,6 +42,9 @@ public class AnnotationUtils {
                             .getCanonicalName().length() + 8;
                     int endIndex = toString.length() - 1;
                     String value = toString.substring(startIndex, endIndex);
+                    if ("".equals(value)) {
+                        value = null;
+                    }
 
                     // Add the annotation descriptor
                     if (result == null) {
