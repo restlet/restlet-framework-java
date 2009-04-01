@@ -730,6 +730,40 @@ public class ServerResource extends UniformResource {
     }
 
     /**
+     * Returns the modifiable map of variant declarations. Creates a new
+     * instance if no one has been set. A variant can be a purely descriptive
+     * representation, with no actual content that can be served. It can also be
+     * a full representation in case a resource has only one variant or if the
+     * initialization cost is very low.<br>
+     * <br>
+     * Note that the order in which the variants are inserted in the list
+     * matters. For example, if the client has no preference defined, or if the
+     * acceptable variants have the same quality level for the client, the first
+     * acceptable variant in the list will be returned.<br>
+     * <br>
+     * It is recommended to not override this method and to simply use it at
+     * construction time to initialize the list of available variants.
+     * Overriding it may reconstruct the list for each call which can be
+     * expensive.
+     * 
+     * @return The list of variants.
+     * @see #get(Variant)
+     */
+    protected Map<Method, Object> getVariants() {
+        // Lazy initialization with double-check.
+        Map<Method, Object> v = this.variants;
+        if (v == null) {
+            synchronized (this) {
+                v = this.variants;
+                if (v == null) {
+                    this.variants = v = new TreeMap<Method, Object>();
+                }
+            }
+        }
+        return v;
+    }
+
+    /**
      * Returns the list of variants strictly declared for a given method.
      * 
      * @param method
@@ -771,40 +805,6 @@ public class ServerResource extends UniformResource {
         }
 
         return result;
-    }
-
-    /**
-     * Returns the modifiable map of variant declarations. Creates a new
-     * instance if no one has been set. A variant can be a purely descriptive
-     * representation, with no actual content that can be served. It can also be
-     * a full representation in case a resource has only one variant or if the
-     * initialization cost is very low.<br>
-     * <br>
-     * Note that the order in which the variants are inserted in the list
-     * matters. For example, if the client has no preference defined, or if the
-     * acceptable variants have the same quality level for the client, the first
-     * acceptable variant in the list will be returned.<br>
-     * <br>
-     * It is recommended to not override this method and to simply use it at
-     * construction time to initialize the list of available variants.
-     * Overriding it may reconstruct the list for each call which can be
-     * expensive.
-     * 
-     * @return The list of variants.
-     * @see #getRepresentation(Variant)
-     */
-    protected Map<Method, Object> getVariants() {
-        // Lazy initialization with double-check.
-        Map<Method, Object> v = this.variants;
-        if (v == null) {
-            synchronized (this) {
-                v = this.variants;
-                if (v == null) {
-                    this.variants = v = new TreeMap<Method, Object>();
-                }
-            }
-        }
-        return v;
     }
 
     /**
@@ -1280,7 +1280,6 @@ public class ServerResource extends UniformResource {
      * Invoked when the list of allowed methods needs to be updated. The
      * {@link #getAllowedMethods()} or the {@link #setAllowedMethods(Set)}
      * methods should be used. The default implementation does nothing.
-     * 
      */
     protected void updateAllowedMethods() {
     }
@@ -1289,8 +1288,6 @@ public class ServerResource extends UniformResource {
      * Update the dimensions that were used for content negotiation. By default,
      * it adds the {@link Dimension#CHARACTER_SET}, {@link Dimension#ENCODING},
      * {@link Dimension#LANGUAGE}and {@link Dimension#MEDIA_TYPE} constants.
-     * 
-     * @param
      */
     protected void updateDimensions() {
         getDimensions().add(Dimension.CHARACTER_SET);

@@ -50,7 +50,6 @@ import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.representation.Representation;
-import org.restlet.representation.Variant;
 import org.restlet.util.Series;
 
 /**
@@ -392,8 +391,8 @@ public class ClientResource extends UniformResource {
 
     /**
      * Represents the resource using a given media type. This method is
-     * identical to {@link #get(Variant)} but doesn't return the actual content
-     * of the representation, only its metadata.<br>
+     * identical to {@link #get(MediaType)} but doesn't return the actual
+     * content of the representation, only its metadata.<br>
      * <br>
      * Note that the client preferences will be automatically adjusted, but only
      * for this request. If you want to change them once for all, you can use

@@ -252,8 +252,7 @@ public final class ChallengeResponse {
 
     /**
      * Indicates if the identifier or principal has been authenticated. The
-     * application is responsible for updating this property, relying on a
-     * {@link org.restlet.Guard} or manually.
+     * application is responsible for updating this property.
      * 
      * @return True if the identifier or principal has been authenticated.
      */
@@ -263,8 +262,7 @@ public final class ChallengeResponse {
 
     /**
      * Indicates if the identifier or principal has been authenticated. The
-     * application is responsible for updating this property, relying on a
-     * {@link org.restlet.Guard} or manually.
+     * application is responsible for updating this property.
      * 
      * @param authenticated
      *            True if the identifier or principal has been authenticated.
@@ -274,10 +272,10 @@ public final class ChallengeResponse {
     }
 
     /**
-     * Sets the credential components.
+     * Sets the credentials components.
      * 
      * @param credentialComponents
-     *            The credential components.
+     *            The credentials components.
      */
     public void setCredentialComponents(Series<Parameter> credentialComponents) {
         this.parameters = credentialComponents;
