@@ -65,6 +65,10 @@ Changes log
         - Enhanced JsonRepresentation based on Tal Liron's contributions.
           Now supports indentation configuration and more manipulation
           and conversion methods.
+        - Added RDF extension that aims to support the parsing and 
+          writing of RDF representations. 
+        - Added support of parsing and writing of RDF/XML and RDF/N3
+          representations.
     - API changes
         - Added Role class and "roles" property to Application.
         - Fully refactored the security package introduce in 1.2 M1 
