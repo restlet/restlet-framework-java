@@ -37,7 +37,7 @@ importClass(
 // Logging
 //
 
-java.util.logging.LogManager.getLogManager().reset();
+java.util.logging.LogManager.logManager.reset();
 try {
 org.slf4j.bridge.SLF4JBridgeHandler.install();
 } catch(x) {}
@@ -68,7 +68,7 @@ var application = new JavaAdapter(Application, {
 		var classLoader = this.getClass().classLoader;
 
 		var directory = new Directory(context, new File(staticWebBasePath).toURI());
-		directory.setListingAllowed(staticWebDirectoryListingAllowed);
+		directory.listingAllowed = staticWebDirListingAllowed;
 
 		var router = new Router();
 		router.attach(resourceBaseURL, classLoader.loadClass('org.restlet.ext.script.ScriptedResource'));
