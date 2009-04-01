@@ -55,6 +55,7 @@ public class FirstResourceClientMain {
      */
     public static void get(ClientResource clientResource) throws IOException,
             ResourceException {
+        clientResource.get();
         if (clientResource.getStatus().isSuccess()
                 && clientResource.getResponseEntity().isAvailable()) {
             clientResource.getResponseEntity().write(System.out);
