@@ -4,6 +4,11 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - Bugs fixed
+        - Fixed bug with a ServerResource when an annotated method does 
+          not return a value.
+
+- 1.2 Milestone 2 (2009-04-01)
     - Breaking changes
         - Finder#createTarget() methods are now all protected. The 
           findTarget() method is now public. Suggested by Leigh Klotz.
