@@ -68,7 +68,7 @@ var application = new JavaAdapter(Application, {
 		var classLoader = this.getClass().classLoader;
 
 		var directory = new Directory(context, new File(staticWebBasePath).toURI());
-		directory.listingAllowed = staticWebDirListingAllowed;
+		directory.listingAllowed = staticWebDirectoryListingAllowed;
 
 		var router = new Router();
 		router.attach(resourceBaseURL, classLoader.loadClass('org.restlet.ext.script.ScriptedResource'));
