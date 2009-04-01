@@ -1,4 +1,4 @@
-package org.restlet.example.firstResourceApplication;
+package org.restlet.example.firstResource;
 
 public class Item {
     /** A description of the item. */

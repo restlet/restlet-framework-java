@@ -1,4 +1,4 @@
-package org.restlet.example.firstResourceApplication;
+package org.restlet.example.firstResource;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

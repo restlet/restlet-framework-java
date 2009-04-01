@@ -1,4 +1,4 @@
-package org.restlet.example.firstResourceApplication;
+package org.restlet.example.firstResource;
 
 import org.restlet.Component;
 import org.restlet.data.Protocol;
