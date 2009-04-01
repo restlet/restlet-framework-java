@@ -307,15 +307,18 @@ public class Request extends Message {
      * @return The protocol or null if not available.
      */
     public Protocol getProtocol() {
-        // Attempt to guess the protocol to use
-        // from the target reference scheme
-        Protocol result = (getResourceRef() != null) ? getResourceRef()
-                .getSchemeProtocol() : null;
+        Protocol result = null;
 
-        // Fallback: look at base reference scheme
-        if (result == null) {
-            result = (getResourceRef().getBaseRef() != null) ? getResourceRef()
-                    .getBaseRef().getSchemeProtocol() : null;
+        if (getResourceRef() != null) {
+            // Attempt to guess the protocol to use
+            // from the target reference scheme
+            result = getResourceRef().getSchemeProtocol();
+            // Fallback: look at base reference scheme
+            if (result == null) {
+                result = (getResourceRef().getBaseRef() != null) ? getResourceRef()
+                        .getBaseRef().getSchemeProtocol()
+                        : null;
+            }
         }
 
         return result;
