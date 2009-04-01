@@ -37,7 +37,7 @@ public class ItemsResource extends BaseResource {
 
         // Check that the item is not already registered.
         if (getItems().containsKey(itemName)) {
-            getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+            setStatus(Status.CLIENT_ERROR_NOT_FOUND);
             result = generateErrorRepresentation("Item " + itemName
                     + " already exists.", "1");
         } else {
@@ -45,7 +45,7 @@ public class ItemsResource extends BaseResource {
             getItems().put(itemName, new Item(itemName, itemDescription));
 
             // Set the response's status and entity
-            getResponse().setStatus(Status.SUCCESS_CREATED);
+            setStatus(Status.SUCCESS_CREATED);
             Representation rep = new StringRepresentation("Item created",
                     MediaType.TEXT_PLAIN);
             // Indicates where is located the new resource.

@@ -44,15 +44,17 @@ public class ItemResource extends BaseResource {
         }
 
         // Tells the client that the request has been successfully fulfilled.
-        getResponse().setStatus(Status.SUCCESS_NO_CONTENT);
+        setStatus(Status.SUCCESS_NO_CONTENT);
         return null;
     }
 
     /**
      * Handle PUT requests.
+     * 
+     * @throws IOException
      */
     @Put
-    public Representation storeItem(Representation entity) {
+    public Representation storeItem(Representation entity) throws IOException {
         // Tells if the item is to be created of not.
         boolean creation = (item == null);
 
@@ -69,9 +71,9 @@ public class ItemResource extends BaseResource {
         getItems().put(item.getName(), item);
 
         if (creation) {
-            getResponse().setStatus(Status.SUCCESS_CREATED);
+            setStatus(Status.SUCCESS_CREATED);
         } else {
-            getResponse().setStatus(Status.SUCCESS_OK);
+            setStatus(Status.SUCCESS_OK);
         }
 
         return null;
