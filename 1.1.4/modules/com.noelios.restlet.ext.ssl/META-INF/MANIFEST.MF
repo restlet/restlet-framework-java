@@ -1,0 +1,21 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Noelios Restlet Engine - Extension - Java ssl utils
+Bundle-SymbolicName: com.noelios.restlet.ext.ssl
+Bundle-Version: 1.1
+Bundle-Vendor: Noelios Technologies
+Export-Package: com.noelios.restlet.ext.ssl;
+  uses:="com.noelios.restlet.util,
+   jsslutils.sslcontext,
+   jsslutils.sslcontext.trustmanagers"
+Import-Package: com.noelios.restlet.util,
+ org.jsslutils.keystores,
+ org.jsslutils.sslcontext,
+ org.jsslutils.sslcontext.keymanagers,
+ org.jsslutils.sslcontext.trustmanagers,
+ org.restlet,
+ org.restlet.data,
+ org.restlet.resource,
+ org.restlet.service,
+ org.restlet.util
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
