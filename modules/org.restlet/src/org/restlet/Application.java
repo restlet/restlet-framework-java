@@ -49,7 +49,7 @@ import org.restlet.service.TaskService;
 import org.restlet.service.TunnelService;
 
 /**
- * Restlet that can be attached to one or more VirtualHosts. Applications are
+ * Restlet managing a coherent set of Resources and Services. Applications are
  * guaranteed to receive calls with their base reference set relatively to the
  * VirtualHost that served them. This class is both a descriptor able to create
  * the root Restlet and the actual Restlet that can be attached to one or more
@@ -61,7 +61,7 @@ import org.restlet.service.TunnelService;
  * <li>"connectorService" to declare necessary client and server connectors.</li>
  * <li>"converterService" to convert between regular objects and
  * representations.</li>
- * <li>"decoderService" to automatically decode or decompress request entities.</li>
+ * <li>"decoderService" to automatically decode or uncompress request entities.</li>
  * <li>"metadataService" to provide access to metadata and their associated
  * extension names.</li>
  * <li>"rangeService" to automatically exposes ranges of response entities.</li>

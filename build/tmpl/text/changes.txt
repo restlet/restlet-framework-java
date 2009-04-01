@@ -96,7 +96,7 @@ Changes log
         - Added a Message#getEntityAsText() method caching the text
           content to allow several reads along a chain of filters.
         - Added a Server#setTarget() method taking a Resource class as a
-          parameter. This is useful very minimalistic examples.
+          parameter. This is useful for minimalistic examples.
         - TunnelService now accepts query parameter values such as
           "application/xml" and now just registered extension names 
           such as "xml". Suggested by Paul Austin. 

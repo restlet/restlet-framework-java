@@ -40,7 +40,8 @@ import org.restlet.engine.Method;
 import org.restlet.service.MetadataService;
 
 /**
- * Annotates method that removes representations.<br>
+ * Annotation for methods that remove representations. Its semantics is
+ * equivalent to an HTTP DELETE method.<br>
  * <br>
  * Note: The current implementation isn't complete and doesn't support the full
  * syntax. This is work in progress and should only be used for experimentation.

@@ -39,7 +39,8 @@ import java.lang.annotation.Target;
 import org.restlet.engine.Method;
 
 /**
- * Annotates method that represents a resource.<br>
+ * Annotation for methods that retrieve a resource representation. Its semantics
+ * is equivalent to an HTTP GET method.<br>
  * <br>
  * Note: The current implementation isn't complete and doesn't support the full
  * syntax. This is work in progress and should only be used for experimentation.
