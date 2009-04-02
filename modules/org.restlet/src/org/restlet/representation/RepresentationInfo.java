@@ -47,7 +47,7 @@ import org.restlet.engine.util.DateUtils;
  *      >Source dissertation</a>
  * @author Jerome Louvel
  */
-public abstract class RepresentationInfo extends Variant {
+public class RepresentationInfo extends Variant {
 
     /** The modification date. */
     private volatile Date modificationDate;
@@ -111,6 +111,50 @@ public abstract class RepresentationInfo extends Variant {
      */
     public RepresentationInfo(MediaType mediaType, Tag tag) {
         this(mediaType, null, tag);
+    }
+
+    /**
+     * Constructor from a variant.
+     * 
+     * @param variant
+     *            The variant to copy.
+     * @param modificationDate
+     *            The modification date.
+     */
+    public RepresentationInfo(Variant variant, Date modificationDate) {
+        this(variant, modificationDate, null);
+    }
+
+    /**
+     * Constructor from a variant.
+     * 
+     * @param variant
+     *            The variant to copy.
+     * @param modificationDate
+     *            The modification date.
+     * @param tag
+     *            The tag.
+     */
+    public RepresentationInfo(Variant variant, Date modificationDate, Tag tag) {
+        setCharacterSet(variant.getCharacterSet());
+        setEncodings(variant.getEncodings());
+        setIdentifier(variant.getIdentifier());
+        setLanguages(variant.getLanguages());
+        setMediaType(variant.getMediaType());
+        setModificationDate(modificationDate);
+        setTag(tag);
+    }
+
+    /**
+     * Constructor from a variant.
+     * 
+     * @param variant
+     *            The variant to copy.
+     * @param tag
+     *            The tag.
+     */
+    public RepresentationInfo(Variant variant, Tag tag) {
+        this(variant, null, tag);
     }
 
     /**

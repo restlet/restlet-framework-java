@@ -4,9 +4,19 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - Breaking changes
+        - 
     - Bugs fixed
         - Fixed bug with a ServerResource when an annotated method does 
           not return a value.
+    - Enhancements
+        - Servlet's UserPrincipal is now transferred into Restlet's
+          ClientInfo#subject property. Suggested by Paul Davis.
+    - API changes
+        - RepresentationInfo is now concrete and has more constructors.
+          Suggested by Lars Heuer.
+    - Miscellaneous
+        - 
 
 - 1.2 Milestone 2 (2009-04-01)
     - Breaking changes

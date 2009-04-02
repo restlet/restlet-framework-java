@@ -34,6 +34,8 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.logging.Logger;
 
+import javax.security.auth.Subject;
+
 import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.data.Form;
@@ -127,6 +129,9 @@ public abstract class HttpCall {
 
     /** The status code. */
     private volatile int statusCode;
+
+    /** The security subject. */
+    private volatile Subject subject;
 
     /** The protocol version. */
     private volatile String version;
@@ -328,6 +333,15 @@ public abstract class HttpCall {
      */
     public int getStatusCode() throws IOException {
         return this.statusCode;
+    }
+
+    /**
+     * Returns the security subject.
+     * 
+     * @return The security subject.
+     */
+    public Subject getSubject() {
+        return this.subject;
     }
 
     /**
@@ -541,6 +555,16 @@ public abstract class HttpCall {
      */
     public void setStatusCode(int code) {
         this.statusCode = code;
+    }
+
+    /**
+     * Sets the security subject.
+     * 
+     * @param subject
+     *            The security subject.
+     */
+    public void setSubject(Subject subject) {
+        this.subject = subject;
     }
 
     /**

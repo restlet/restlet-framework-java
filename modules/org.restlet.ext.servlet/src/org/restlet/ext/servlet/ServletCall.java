@@ -42,6 +42,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 
+import javax.security.auth.Subject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -99,6 +100,23 @@ public class ServletCall extends HttpServerCall {
     /**
      * Constructor.
      * 
+     * @param server
+     *            The parent server.
+     * @param request
+     *            The HTTP Servlet request to wrap.
+     * @param response
+     *            The HTTP Servlet response to wrap.
+     */
+    public ServletCall(Server server, HttpServletRequest request,
+            HttpServletResponse response) {
+        super(server);
+        this.request = request;
+        this.response = response;
+    }
+
+    /**
+     * Constructor.
+     * 
      * @param serverAddress
      *            The server IP address.
      * @param serverPort
@@ -111,23 +129,6 @@ public class ServletCall extends HttpServerCall {
     public ServletCall(String serverAddress, int serverPort,
             HttpServletRequest request, HttpServletResponse response) {
         super(serverAddress, serverPort);
-        this.request = request;
-        this.response = response;
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param server
-     *            The parent server.
-     * @param request
-     *            The HTTP Servlet request to wrap.
-     * @param response
-     *            The HTTP Servlet response to wrap.
-     */
-    public ServletCall(Server server, HttpServletRequest request,
-            HttpServletResponse response) {
-        super(server);
         this.request = request;
         this.response = response;
     }
@@ -333,6 +334,18 @@ public class ServletCall extends HttpServerCall {
             keySize = super.getSslKeySize();
         }
         return keySize;
+    }
+
+    @Override
+    public Subject getSubject() {
+        Subject result = null;
+
+        if (getRequest().getUserPrincipal() != null) {
+            result = new Subject();
+            result.getPrincipals().add(getRequest().getUserPrincipal());
+        }
+
+        return result;
     }
 
     @Override
