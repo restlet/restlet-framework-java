@@ -13,6 +13,11 @@ h3 {
 	font-size: 14px;
 	font-style: italic;
 }
+h4 {
+	font-size: 14px;
+	font-style: italic;
+	font-weight: normal;
+}
 
 p {
 	font-size: 14px;

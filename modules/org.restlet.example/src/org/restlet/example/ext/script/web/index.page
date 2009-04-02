@@ -3,19 +3,28 @@
 <h2>About Scripturian</h2>
 <p>
 This library can make it very easy to integrate scripting into your Java-based product:
-</p><p>
-1) It provides <a href="http://www.threecrickets.com/scripturian/static/javadoc/index.html?com/threecrickets/scripturian/EmbeddedScript.html">embedded script</a> support for scripting languages,
+</p>
+
+<h4>1. Embedded Scripts</h4>
+<p>
+It provides <a href="http://www.threecrickets.com/scripturian/static/javadoc/index.html?com/threecrickets/scripturian/EmbeddedScript.html">embedded script</a> support for scripting languages,
 allowing you to mix plain text and embedded "scriptlets," in the style of PHP, JSP and ASP. At the minimum this can serve as a powerful
 templating solution for generating text and textual formats (such as HTML and XML), but at the maximum it's a powerful platform for building complex
-application using dynamic scripting languages. For example, a blogging or content management application can use it to give users complete control over
+applications using dynamic scripting languages. For example, a blogging or content management application can use it to give users complete control over
 theming/skinning, or it can be used to generate the entire HTML-based user interface. Couple this with scripting languages running on the client-side
 (JavaScript in Browsers, or ActiveScript in Flash) and you can create very rich user interfaces entirely in script.
-</p><p>
-2) It's not always easy to configure and start scripting engines in Java. Scripturian does it all for you. For example, any file
+</p>
+
+<h4>2. Automatic Configuration of Scripting Engines</h4>
+<p>
+It's not always easy to configure and start scripting engines in Java. Scripturian does it all for you. For example, any file
 with <span style="font-family: monospace;">&lt;%python</span> at the beginning will start the appropriate script engine. It's a straightforward equivalent of the
 <span style="font-family: monospace;">#!/</span> used by shells.
-</p><p>
-3) Scripturian allows you to <a href="http://www.threecrickets.com/scripturian/static/javadoc/index.html?com/threecrickets/scripturian/ScriptedMain.html">boot strap</a> Java
+</p>
+
+<h4>3. Bootstrapping Applications</h4>
+<p>
+Scripturian allows you to <a href="http://www.threecrickets.com/scripturian/static/javadoc/index.html?com/threecrickets/scripturian/ScriptedMain.html">boot strap</a> Java
 applications using a script, which makes it easy to quickly configure and make changes in how your applications start up without re-compilation.
 Even if you don't need any of the other features, you might find this one very useful in itself.
 </p><p>
