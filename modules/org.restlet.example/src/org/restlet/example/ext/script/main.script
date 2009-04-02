@@ -70,7 +70,7 @@ var application = new JavaAdapter(Application, {
 		var directory = new Directory(context, new File(staticWebBasePath).toURI());
 		directory.listingAllowed = staticWebDirectoryListingAllowed;
 
-		var router = new Router();
+		var router = new Router(context);
 		router.attach(resourceBaseURL, classLoader.loadClass('org.restlet.ext.script.ScriptedResource'));
 		router.attach(scriptedWebBaseURL, classLoader.loadClass('org.restlet.ext.script.ScriptedTextResource'));
 		router.attach(staticWebBaseURL, directory);
