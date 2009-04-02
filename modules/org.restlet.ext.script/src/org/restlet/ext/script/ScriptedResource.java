@@ -33,6 +33,7 @@ package org.restlet.ext.script;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 
 import javax.script.ScriptEngineManager;
@@ -41,6 +42,7 @@ import org.restlet.Context;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
+import org.restlet.data.Method;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -51,6 +53,7 @@ import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.Resource;
 import org.restlet.resource.ResourceException;
+import org.restlet.resource.ServerResource;
 
 import com.threecrickets.scripturian.EmbeddedScript;
 import com.threecrickets.scripturian.ScriptContextController;
@@ -161,6 +164,14 @@ import com.threecrickets.scripturian.ScriptSource;
  * <code>acceptRepresentation()</code> and <code>storeRepresentation()</code>.
  * Note that <code>container.variant</code> is identical to
  * <code>container.entity</code> when available.</li>
+ * <li><code>container.variants</code>: A map of possible variants or media
+ * types supported by this resource. You should initialize this during a call to
+ * <code>initializeResource()</code>. Values for the map can be
+ * {@link MediaType} constants, explicit {@link Variant} instances (in which
+ * case these variants will be returned immediately for their media type without
+ * calling the entry point), or a {@link List} containing both media types and
+ * variants. Use map key {@link Method#ALL} to indicate support for all methods.
+ * </li>
  * </ul>
  * Modifiable attributes:
  * <ul>
@@ -245,7 +256,7 @@ import com.threecrickets.scripturian.ScriptSource;
  * @see EmbeddedScript
  * @see ScriptedTextResource
  */
-public class ScriptedResource extends Resource {
+public class ScriptedResource extends ServerResource {
     /**
      * The {@link ScriptEngineManager} used to create the script engines for the
      * scripts.
@@ -352,53 +363,65 @@ public class ScriptedResource extends Resource {
     private Writer errorWriter = new OutputStreamWriter(System.err);
 
     /**
-     * Constructs the resource, and delegates to the
-     * <code>initializeResource()</code> entry point in the script.
+     * Delegates to the <code>removeRepresentations()</code> entry point in the
+     * script.
      * 
-     * @param context
-     *            The Restlet context
-     * @param request
-     *            The request
-     * @param response
-     *            The response
-     * @see #getInitializeResourceEntryPointName()
-     * @see org.restlet.resource.Resource#Resource(Context, Request, Response)
+     * @param variant
+     *            The variant of the response entity
+     * @return The optional result entity
+     * @throws ResourceException
+     * @see #getRemoveRepresentationsEntryPointName()
+     * @see Resource#removeRepresentations()
      */
-    public ScriptedResource(Context context, Request request, Response response) {
-        super(context, request, response);
-
+    @Override
+    public Representation delete(Variant variant) throws ResourceException {
         ScriptedResourceContainer container = new ScriptedResourceContainer(
-                this);
-        try {
-            container.invoke(getInitializeResourceEntryPointName());
-        } catch (ResourceException e) {
-            e.printStackTrace();
-        }
+                this, getVariants(), variant);
+
+        container.invoke(getRemoveRepresentationsEntryPointName());
+
+        return null;
     }
 
     /**
-     * Delegates to the <code>acceptRepresentation()</code> entry point in the
-     * script.
+     * Delegates to the <code>represent()</code> entry point in the script.
      * 
-     * @param entity
-     * @see #getAcceptRepresentationEntryPointName()
-     * @see Resource#acceptRepresentation(Representation)
+     * @param variant
+     *            The variant of the response entity
+     * @return The optional result entity
+     * @throws ResourceException
+     * @see #getRepresentEntryPointName()
+     * @see Resource#represent(Variant)
      */
     @Override
-    public void acceptRepresentation(Representation entity)
-            throws ResourceException {
+    public Representation get(Variant variant) throws ResourceException {
         ScriptedResourceContainer container = new ScriptedResourceContainer(
-                this, entity);
+                this, getVariants(), variant);
 
-        Object r = container.invoke(getAcceptRepresentationEntryPointName());
-        if (r != null) {
+        Request request = getRequest();
+        if (isSourceViewable()
+                && TRUE.equals(request.getResourceRef().getQueryAsForm()
+                        .getFirstValue(SOURCE))) {
+            // Represent script source
+            String name = ScriptUtils
+                    .getRelativePart(request, getDefaultName());
+            try {
+                return new StringRepresentation(getScriptSource()
+                        .getScriptDescriptor(name).getText());
+            } catch (IOException e) {
+                throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, e);
+            }
+        } else {
+            Object r = container.invoke(getRepresentEntryPointName());
+            if (r == null) {
+                return null;
+            }
             if (r instanceof Representation) {
-                getResponse().setEntity((Representation) r);
+                return (Representation) r;
             } else {
-                getResponse().setEntity(
-                        new StringRepresentation(r.toString(), container
-                                .getMediaType(), container.getLanguage(),
-                                container.getCharacterSet()));
+                return new StringRepresentation(r.toString(), container
+                        .getMediaType(), container.getLanguage(), container
+                        .getCharacterSet());
             }
         }
     }
@@ -765,6 +788,25 @@ public class ScriptedResource extends Resource {
     }
 
     /**
+     * Initializes the resource, and delegates to the
+     * <code>initializeResource()</code> entry point in the script.
+     * 
+     * @see #getInitializeResourceEntryPointName()
+     * @see org.restlet.resource.Resource#Resource(Context, Request, Response)
+     */
+    @Override
+    protected void init() {
+        setAnnotated(false);
+        ScriptedResourceContainer container = new ScriptedResourceContainer(
+                this, getVariants());
+        try {
+            container.invoke(getInitializeResourceEntryPointName());
+        } catch (ResourceException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * Whether or not compilation is attempted for script engines that support
      * it. Defaults to true.
      * <p>
@@ -814,51 +856,26 @@ public class ScriptedResource extends Resource {
     }
 
     /**
-     * Delegates to the <code>removeRepresentations()</code> entry point in the
+     * Delegates to the <code>acceptRepresentation()</code> entry point in the
      * script.
      * 
-     * @see #getRemoveRepresentationsEntryPointName()
-     * @see Resource#removeRepresentations()
-     */
-    @Override
-    public void removeRepresentations() throws ResourceException {
-        ScriptedResourceContainer container = new ScriptedResourceContainer(
-                this);
-
-        container.invoke(getRemoveRepresentationsEntryPointName());
-    }
-
-    /**
-     * Delegates to the <code>represent()</code> entry point in the script.
-     * 
+     * @param entity
+     *            The posted entity
      * @param variant
-     * @return A representation of the resource's state
-     * @see #getRepresentEntryPointName()
-     * @see Resource#represent(Variant)
+     *            The variant of the response entity
+     * @return The optional result entity
+     * @throws ResourceException
+     * @see #getAcceptRepresentationEntryPointName()
+     * @see Resource#acceptRepresentation(Representation)
      */
     @Override
-    public Representation represent(Variant variant) throws ResourceException {
+    public Representation post(Representation entity, Variant variant)
+            throws ResourceException {
         ScriptedResourceContainer container = new ScriptedResourceContainer(
-                this, variant);
+                this, getVariants(), entity, variant);
 
-        Request request = getRequest();
-        if (isSourceViewable()
-                && TRUE.equals(request.getResourceRef().getQueryAsForm()
-                        .getFirstValue(SOURCE))) {
-            // Represent script source
-            String name = ScriptUtils
-                    .getRelativePart(request, getDefaultName());
-            try {
-                return new StringRepresentation(getScriptSource()
-                        .getScriptDescriptor(name).getText());
-            } catch (IOException e) {
-                throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, e);
-            }
-        } else {
-            Object r = container.invoke(getRepresentEntryPointName());
-            if (r == null) {
-                return null;
-            }
+        Object r = container.invoke(getAcceptRepresentationEntryPointName());
+        if (r != null) {
             if (r instanceof Representation) {
                 return (Representation) r;
             } else {
@@ -867,6 +884,8 @@ public class ScriptedResource extends Resource {
                         .getCharacterSet());
             }
         }
+
+        return null;
     }
 
     /**
@@ -874,25 +893,31 @@ public class ScriptedResource extends Resource {
      * script.
      * 
      * @param entity
+     *            The posted entity
+     * @param variant
+     *            The variant of the response entity
+     * @return The optional result entity
+     * @throws ResourceException
      * @see #getStoreRepresentationEntryPointName()
      * @see Resource#storeRepresentation(Representation)
      */
     @Override
-    public void storeRepresentation(Representation entity)
+    public Representation put(Representation entity, Variant variant)
             throws ResourceException {
         ScriptedResourceContainer container = new ScriptedResourceContainer(
-                this, entity);
+                this, getVariants(), entity, variant);
 
         Object r = container.invoke(getStoreRepresentationEntryPointName());
         if (r != null) {
             if (r instanceof Representation) {
-                getResponse().setEntity((Representation) r);
+                return (Representation) r;
             } else {
-                getResponse().setEntity(
-                        new StringRepresentation(r.toString(), container
-                                .getMediaType(), container.getLanguage(),
-                                container.getCharacterSet()));
+                return new StringRepresentation(r.toString(), container
+                        .getMediaType(), container.getLanguage(), container
+                        .getCharacterSet());
             }
         }
+
+        return null;
     }
 }

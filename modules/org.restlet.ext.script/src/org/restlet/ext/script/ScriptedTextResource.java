@@ -34,6 +34,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -44,6 +47,7 @@ import org.restlet.Context;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
+import org.restlet.data.Method;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -53,8 +57,8 @@ import org.restlet.ext.script.internal.ScriptedTextResourceContainer;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
-import org.restlet.resource.Resource;
 import org.restlet.resource.ResourceException;
+import org.restlet.resource.ServerResource;
 
 import com.threecrickets.scripturian.EmbeddedScript;
 import com.threecrickets.scripturian.ScriptContextController;
@@ -210,7 +214,7 @@ import com.threecrickets.scripturian.ScriptSource;
  * @see EmbeddedScript
  * @see ScriptedResource
  */
-public class ScriptedTextResource extends Resource {
+public class ScriptedTextResource extends ServerResource {
     /**
      * The {@link ScriptEngineManager} used to create the script engines for the
      * scripts.
@@ -288,32 +292,36 @@ public class ScriptedTextResource extends Resource {
      */
     private Writer writer;
 
-    /**
-     * Constructs the resource.
-     * 
-     * @param context
-     *            The Restlet context
-     * @param request
-     *            The request
-     * @param response
-     *            The response
-     */
-    public ScriptedTextResource(Context context, Request request,
-            Response response) {
-        super(context, request, response);
-
-        getVariants().add(new Variant(MediaType.TEXT_HTML));
-        getVariants().add(new Variant(MediaType.TEXT_PLAIN));
-
-        setModifiable(true);
-    }
-
     @Override
-    public void acceptRepresentation(Representation entity)
-            throws ResourceException {
-        // Handle the same was as represent(variant)
-        Response response = getResponse();
-        response.setEntity(represent());
+    public Representation get(Variant variant) throws ResourceException {
+        Request request = getRequest();
+        String name = ScriptUtils.getRelativePart(request, getDefaultName());
+
+        try {
+            if (isSourceViewable()
+                    && TRUE.equals(request.getResourceRef().getQueryAsForm()
+                            .getFirstValue(SOURCE))) {
+                // Represent script source
+                return new StringRepresentation(getScriptSource()
+                        .getScriptDescriptor(name).getText());
+            } else {
+                // Run script and represent its output
+                ScriptedTextResourceContainer container = new ScriptedTextResourceContainer(
+                        this, variant, getCache());
+                Representation representation = container.include(name);
+                if (representation == null) {
+                    throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
+                } else {
+                    return representation;
+                }
+            }
+        } catch (FileNotFoundException e) {
+            throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, e);
+        } catch (IOException e) {
+            throw new ResourceException(e);
+        } catch (ScriptException e) {
+            throw new ResourceException(e);
+        }
     }
 
     /**
@@ -337,9 +345,13 @@ public class ScriptedTextResource extends Resource {
                     .get("org.restlet.ext.script.ScriptedTextResource.cache");
             if (this.cache == null) {
                 this.cache = new ConcurrentHashMap<String, RepresentableString>();
-                attributes.put(
-                        "org.restlet.ext.script.ScriptedTextResource.cache",
-                        this.cache);
+                ConcurrentMap<String, RepresentableString> existing = (ConcurrentMap<String, RepresentableString>) attributes
+                        .putIfAbsent(
+                                "org.restlet.ext.script.ScriptedTextResource.cache",
+                                this.cache);
+                if (existing != null) {
+                    this.cache = existing;
+                }
             }
         }
 
@@ -538,6 +550,19 @@ public class ScriptedTextResource extends Resource {
     }
 
     /**
+     * Initializes the resource.
+     */
+    @Override
+    protected void init() {
+        setAnnotated(false);
+        List<MediaType> mediaTypes = Arrays.asList(new MediaType[] {
+                MediaType.TEXT_HTML, MediaType.TEXT_PLAIN });
+        Map<Method, Object> variants = getVariants();
+        variants.put(Method.GET, mediaTypes);
+        variants.put(Method.POST, mediaTypes);
+    }
+
+    /**
      * Whether or not compilation is attempted for script engines that support
      * it. Defaults to true.
      * <p>
@@ -587,35 +612,9 @@ public class ScriptedTextResource extends Resource {
     }
 
     @Override
-    public Representation represent(Variant variant) throws ResourceException {
-        Request request = getRequest();
-        String name = ScriptUtils.getRelativePart(request, getDefaultName());
-
-        try {
-            if (isSourceViewable()
-                    && TRUE.equals(request.getResourceRef().getQueryAsForm()
-                            .getFirstValue(SOURCE))) {
-                // Represent script source
-                return new StringRepresentation(getScriptSource()
-                        .getScriptDescriptor(name).getText());
-            } else {
-                // Run script and represent its output
-                ScriptedTextResourceContainer container = new ScriptedTextResourceContainer(
-                        this, variant, getCache());
-                Representation representation = container.include(name);
-                if (representation == null) {
-                    throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
-                } else {
-                    return representation;
-                }
-            }
-        } catch (FileNotFoundException e) {
-            throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, e);
-        } catch (IOException e) {
-            throw new ResourceException(e);
-        } catch (ScriptException e) {
-            throw new ResourceException(e);
-        }
+    public Representation post(Representation entity) throws ResourceException {
+        // Handle the same was as get(variant)
+        return get(entity);
     }
 
     /**

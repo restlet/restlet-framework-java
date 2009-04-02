@@ -32,6 +32,7 @@ package org.restlet.ext.script.internal;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -41,11 +42,11 @@ import javax.script.ScriptException;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
+import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.restlet.ext.script.ScriptedResource;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
-import org.restlet.resource.Resource;
 import org.restlet.resource.ResourceException;
 
 import com.threecrickets.scripturian.EmbeddedScript;
@@ -64,6 +65,11 @@ public class ScriptedResourceContainer {
      * The instance of this resource.
      */
     private final ScriptedResource resource;
+
+    /**
+     * The variants of this resource.
+     */
+    private final Map<Method, Object> variants;
 
     /**
      * The {@link Variant} of this request.
@@ -112,9 +118,13 @@ public class ScriptedResourceContainer {
      * 
      * @param resource
      *            The resource
+     * @param variants
+     *            The variants of the resource
      */
-    public ScriptedResourceContainer(ScriptedResource resource) {
+    public ScriptedResourceContainer(ScriptedResource resource,
+            Map<Method, Object> variants) {
         this.resource = resource;
+        this.variants = variants;
         this.variant = null;
         this.entity = null;
         this.mediaType = MediaType.TEXT_PLAIN;
@@ -130,14 +140,19 @@ public class ScriptedResourceContainer {
      * 
      * @param resource
      *            The resource
+     * @param variants
+     *            The variants of the resource
      * @param entity
      *            The entity's representation
+     * @param variant
+     *            The request variant
      */
     public ScriptedResourceContainer(ScriptedResource resource,
-            Representation entity) {
+            Map<Method, Object> variants, Representation entity, Variant variant) {
         this.resource = resource;
-        this.variant = entity;
+        this.variants = variants;
         this.entity = entity;
+        this.variant = variant;
         this.mediaType = this.variant.getMediaType();
         this.characterSet = this.variant.getCharacterSet();
         if (this.characterSet == null) {
@@ -154,11 +169,15 @@ public class ScriptedResourceContainer {
      * 
      * @param resource
      *            The resource
+     * @param variants
+     *            The variants of the resource
      * @param variant
      *            The variant
      */
-    public ScriptedResourceContainer(ScriptedResource resource, Variant variant) {
+    public ScriptedResourceContainer(ScriptedResource resource,
+            Map<Method, Object> variants, Variant variant) {
         this.resource = resource;
+        this.variants = variants;
         this.variant = variant;
         this.entity = null;
         this.mediaType = variant.getMediaType();
@@ -231,7 +250,7 @@ public class ScriptedResourceContainer {
      * 
      * @return The resource
      */
-    public Resource getResource() {
+    public ScriptedResource getResource() {
         return this.resource;
     }
 
@@ -245,6 +264,21 @@ public class ScriptedResourceContainer {
      */
     public Variant getVariant() {
         return this.variant;
+    }
+
+    /**
+     * A map of possible variants or media types supported by this resource. You
+     * should initialize this during a call to <code>initializeResource()</code>
+     * . Values for the map can be {@link MediaType} constants, explicit
+     * {@link Variant} instances (in which case these variants will be returned
+     * immediately for their media type without calling the entry point), or a
+     * {@link List} containing both media types and variants. Use map key
+     * {@link Method#ALL} to indicate support for all methods.
+     * 
+     * @return The variants
+     */
+    public Map<Method, Object> getVariants() {
+        return this.variants;
     }
 
     /**
