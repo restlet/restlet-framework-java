@@ -55,18 +55,12 @@ $state_lock = get_state_lock()
 # general characteristics for the resource.
 	
 def initialize_resource
-	# The order in which we add the variants is their order of preference.
-	# Note that clients often include a wildcard (such as "*/*") in the
-	# "Accept" attribute of their request header, specifying that any media
-	# type will do, in which case the first one we add will be used.
-	
-    $container.resource.variants.add Variant.new(MediaType::APPLICATION_JSON)
-    $container.resource.variants.add Variant.new(MediaType::TEXT_PLAIN)
+	# The order in which we add the media types or variants is their order of
+	# preference. Note that clients often include a wildcard (such as "*/*") in the
+	# "Accept" attribute of their request header, specifying that any media type
+	# will do, in which case the first one we add will be used.
 
-	# Unmodifiable resources only support the represent() method
-	# (the GET verb)
-
-    $container.resource.modifiable = true
+	$container.variants[org.restlet.data.Method::ALL] = [MediaType::APPLICATION_JSON, MediaType::TEXT_PLAIN]
 end
 
 # This method is called for the GET verb, which is expected to behave as a

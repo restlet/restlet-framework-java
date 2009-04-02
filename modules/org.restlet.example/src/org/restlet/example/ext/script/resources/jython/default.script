@@ -12,8 +12,10 @@
 # your directory structure. See your configuration.script for more information.
 #
 
+from java.util import ArrayList
 from java.util.concurrent.locks import ReentrantReadWriteLock
 from org.restlet.data import MediaType
+from org.restlet.data import Method
 from org.restlet.representation import Variant
 from org.restlet.ext.json import JsonRepresentation
 
@@ -53,18 +55,15 @@ def setState(value):
 def initializeResource():
 	global container
 
-	# The order in which we add the variants is their order of preference.
-	# Note that clients often include a wildcard (such as "*/*") in the
-	# "Accept" attribute of their request header, specifying that any media
-	# type will do, in which case the first one we add will be used.
+	# The order in which we add the media types or variants is their order of
+	# preference. Note that clients often include a wildcard (such as "*/*") in the
+	# "Accept" attribute of their request header, specifying that any media type
+	# will do, in which case the first one we add will be used.
 
-	container.resource.variants.add(Variant(MediaType.APPLICATION_JSON))
-	container.resource.variants.add(Variant(MediaType.TEXT_PLAIN))
-
-	# Unmodifiable resources only support the represent() function
-	# (the GET verb)
-
-	container.resource.modifiable = True
+	mediaTypes = ArrayList()
+	mediaTypes.add(MediaType.APPLICATION_JSON)
+	mediaTypes.add(MediaType.TEXT_PLAIN)
+	container.variants[Method.ALL] = mediaTypes
 
 # This function is called for the GET verb, which is expected to behave as a
 # logical "read" of the resource's state.

@@ -13,8 +13,10 @@
 //
 
 importClass(
+	java.util.ArrayList,
 	java.util.concurrent.locks.ReentrantReadWriteLock,
 	org.restlet.data.MediaType,
+	org.restlet.data.Method,
 	org.restlet.representation.Variant,
 	org.restlet.ext.json.JsonRepresentation,
 	org.restlet.ext.script.ScriptedResource);
@@ -52,18 +54,15 @@ function setState(value) {
 // general characteristics for the resource.
 
 function initializeResource() {
-	// The order in which we add the variants is their order of preference.
-	// Note that clients often include a wildcard (such as "*/*") in the
-	// "Accept" attribute of their request header, specifying that any media
-	// type will do, in which case the first one we add will be used.	
-
-    container.resource.variants.add(new Variant(MediaType.APPLICATION_JSON));
-    container.resource.variants.add(new Variant(MediaType.TEXT_PLAIN));
-
-	// Unmodifiable resources only support the represent() function
-	// (the GET verb)
-
-    container.resource.modifiable = true;
+	// The order in which we add the media types or variants is their order of
+	// preference. Note that clients often include a wildcard (such as "*/*") in the
+	// "Accept" attribute of their request header, specifying that any media type
+	// will do, in which case the first one we add will be used.
+	
+	var mediaTypes = new ArrayList();
+	mediaTypes.add(MediaType.APPLICATION_JSON);
+	mediaTypes.add(MediaType.TEXT_PLAIN);
+    container.variants.put(Method.ALL, mediaTypes);
 }
 
 // This function is called for the GET verb, which is expected to behave as a
