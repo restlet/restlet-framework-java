@@ -118,7 +118,7 @@ public class MetadataService extends Service {
         addCommonExtensions();
     }
 
-    /**
+/**
      * Adds a common list of associations from extensions to metadata. The list
      * of languages extensions:<br>
      * <ul>
@@ -169,6 +169,8 @@ public class MetadataService extends Service {
      * <li>mp2, mp3: MPEG Audio Stream file</li>
      * <li>mp4: MPEG-4 video file</li>
      * <li>mpe, mpeg, mpg: MPEG video clip</li>
+     * <li>n3: RDF N3 document</li>
+     * <li>nt: RDF N-Triples document</li>
      * <li>odb: OpenDocument Database</li>
      * <li>odc: OpenDocument Chart</li>
      * <li>odf: OpenDocument Formula</li>
@@ -291,6 +293,8 @@ public class MetadataService extends Service {
         addExtension("mpe", MediaType.VIDEO_MPEG);
         addExtension("mpeg", MediaType.VIDEO_MPEG);
         addExtension("mpg", MediaType.VIDEO_MPEG);
+        addExtension("n3", MediaType.TEXT_RDF_N3);
+        addExtension("nt", MediaType.TEXT_PLAIN);
         addExtension("odb", MediaType.APPLICATION_OPENOFFICE_ODB);
         addExtension("odc", MediaType.APPLICATION_OPENOFFICE_ODC);
         addExtension("odf", MediaType.APPLICATION_OPENOFFICE_ODF);
