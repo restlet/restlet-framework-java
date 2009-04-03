@@ -16,6 +16,8 @@ Changes log
           Suggested by Simon Reinhardt.
         - Added support of the parsing and writing of RDF documents 
           expressed in N-Triples notation.
+        - Added support of the parsing and writing of RDF documents 
+          expressed in Turtle notation.
     - API changes
         - RepresentationInfo is now concrete and has more constructors.
           Suggested by Lars Heuer.
