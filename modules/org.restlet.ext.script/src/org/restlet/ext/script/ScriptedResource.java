@@ -795,7 +795,7 @@ public class ScriptedResource extends ServerResource {
      * @see org.restlet.resource.Resource#Resource(Context, Request, Response)
      */
     @Override
-    protected void init() {
+    protected void doInit() {
         setAnnotated(false);
         ScriptedResourceContainer container = new ScriptedResourceContainer(
                 this, getVariants());

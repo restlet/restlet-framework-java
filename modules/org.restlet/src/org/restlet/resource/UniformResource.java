@@ -96,13 +96,21 @@ public abstract class UniformResource {
     private volatile Response response;
 
     /**
-     * Clean-up method. It is suggested to override it in order to clean-up the
-     * state of the resource. By default, it does nothing.
+     * Set-up method that can be overridden in order to initialize the state of
+     * the resource. By default it does nothing.
      * 
-     * @see #init()
+     * @see #release()
      */
-    public void destroy() {
+    protected void doInit() throws ResourceException {
+    }
 
+    /**
+     * Clean-up method that can be overridden in order to release the state of
+     * the resource. By default it does nothing.
+     * 
+     * @see #release()
+     */
+    protected void doRelease() throws ResourceException {
     }
 
     /**
@@ -522,17 +530,9 @@ public abstract class UniformResource {
     public abstract Representation handle();
 
     /**
-     * Initialization method that can be overridden in order to initialize the
-     * state of the resource. By default it does nothing.
-     * 
-     * @see #destroy()
-     */
-    protected void init() {
-    }
-
-    /**
      * Initialization method setting the environment of the current resource
-     * instance. It the calls the {@link #init()} method that can be overriden.
+     * instance. It the calls the {@link #doInit()} method that can be
+     * overridden.
      * 
      * @param context
      *            The current context.
@@ -545,7 +545,14 @@ public abstract class UniformResource {
         this.context = context;
         this.request = request;
         this.response = response;
-        init();
+
+        try {
+            doInit();
+        } catch (ResourceException e) {
+            if (getResponse() != null) {
+                getResponse().setStatus(e.getStatus());
+            }
+        }
     }
 
     /**
@@ -560,15 +567,21 @@ public abstract class UniformResource {
     }
 
     /**
-     * Releases the request and response entities. If the entity is transient
-     * and hasn't been read yet, all the remaining content will be discarded,
-     * any open socket, channel, file or similar source of content will be
-     * immediately closed.
+     * Releases the resource. First calls the {@link #doRelease()} method then
+     * {@link Request#release()} and finally {@link Response#release()}.
      * 
+     * @see #doRelease()
      * @see Request#release()
      * @see Response#release()
      */
-    public void release() {
+    public final void release() {
+        try {
+            doRelease();
+        } catch (ResourceException e) {
+            if (getResponse() != null) {
+                getResponse().setStatus(e.getStatus());
+            }
+        }
         getRequest().release();
         getResponse().release();
     }

@@ -44,7 +44,7 @@ public class UserResource extends ServerResource {
     Object user;
 
     @Override
-    public void init() {
+    public void doInit() {
         this.userName = (String) getRequestAttributes().get("user");
         this.user = null; // Could be a lookup to a domain object.
     }

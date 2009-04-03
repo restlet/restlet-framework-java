@@ -19,6 +19,13 @@ Changes log
     - API changes
         - RepresentationInfo is now concrete and has more constructors.
           Suggested by Lars Heuer.
+        - UniformResource#init() now throws ResourceException and 
+          catches it to update the response. Suggested by Lars Heuer.
+        - Renamed UniformResource#init() into doInit().
+        - Renamed UniformResource#destroy() into release().
+        - Added an UniformResource#doRelease() method.
+        - ClientResource now overrides finalize() to call the release()
+          method.
     - Miscellaneous
         - Component XML configuration has been moved into an Engine 
           ComponentXmlParser class.

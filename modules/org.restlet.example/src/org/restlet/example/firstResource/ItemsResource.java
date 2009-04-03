@@ -93,7 +93,7 @@ public class ItemsResource extends BaseResource {
     }
 
     @Override
-    public void init() {
+    public void doInit() {
         // Get the items directly from the "persistence layer".
         items = getItems().values();
     }

@@ -553,7 +553,7 @@ public class ScriptedTextResource extends ServerResource {
      * Initializes the resource.
      */
     @Override
-    protected void init() {
+    protected void doInit() {
         setAnnotated(false);
         List<MediaType> mediaTypes = Arrays.asList(new MediaType[] {
                 MediaType.TEXT_HTML, MediaType.TEXT_PLAIN });

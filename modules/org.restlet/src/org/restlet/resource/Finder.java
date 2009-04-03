@@ -453,7 +453,7 @@ public class Finder extends Restlet {
                     targetResource.handle();
                 }
 
-                targetResource.destroy();
+                targetResource.release();
             }
         }
     }

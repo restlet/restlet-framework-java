@@ -263,6 +263,14 @@ public class ClientResource extends UniformResource {
     }
 
     /**
+     * Calls the {@link #release()}.
+     */
+    @Override
+    protected void finalize() throws Throwable {
+        release();
+    }
+
+    /**
      * Represents the resource using content negotiation to select the best
      * variant based on the client preferences.<br>
      * <br>

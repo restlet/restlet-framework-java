@@ -22,7 +22,7 @@ public class ItemResource extends BaseResource {
     String itemName;
 
     @Override
-    public void init() {
+    public void doInit() {
         // Get the "itemName" attribute value taken from the URI template
         // /items/{itemName}.
         this.itemName = (String) getRequest().getAttributes().get("itemName");
