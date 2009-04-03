@@ -125,7 +125,9 @@ public class Context {
             if (base != null) {
                 result = new Reference(base + qname.substring(index + 1));
             } else {
-                // TODO Error, this prefix has not been declared!
+                org.restlet.Context.getCurrentLogger().warning(
+                        "Error, this prefix " + prefix
+                                + "has not been declared!");
                 result = null;
             }
         } else {
@@ -134,7 +136,8 @@ public class Context {
                 if (qname != null) {
                     result = new Reference(base + qname);
                 } else {
-                    // TODO Error, the empty prefix has not been declared!
+                    org.restlet.Context.getCurrentLogger().warning(
+                            "Error, the empty prefix has not been declared!");
                 }
             } else {
                 result = new Reference(getBase().toString() + qname);

@@ -150,7 +150,8 @@ public class BlankNodeToken extends LexicalUnit {
                 return LinkReference.createBlank(getValue());
             }
         } else {
-            // TODO Error
+            org.restlet.Context.getCurrentLogger().warning(
+                    "A blank node has been detected with a null value.");
         }
 
         return null;

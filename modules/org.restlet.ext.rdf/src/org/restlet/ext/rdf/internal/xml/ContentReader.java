@@ -296,10 +296,16 @@ class ContentReader extends DefaultHandler {
                 link(currentSubject, this.currentPredicate,
                         (Literal) this.currentObject);
             } else {
-                // TODO Error.
+                org.restlet.Context
+                        .getCurrentLogger()
+                        .warning(
+                                "Cannot write the representation of a statement due to the fact that the object is neither a Reference nor a literal.");
             }
         } else {
-            // TODO Error.
+            org.restlet.Context
+                    .getCurrentLogger()
+                    .warning(
+                            "Cannot write the representation of a statement due to the fact that the subject is not a Reference.");
         }
     }
 

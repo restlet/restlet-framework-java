@@ -42,7 +42,8 @@ public class FormulaToken extends LexicalUnit {
 
     @Override
     public Object resolve() {
-        // TODO Auto-generated method stub
+        org.restlet.Context.getCurrentLogger().warning(
+                "Formulae are not supported yet.");
         return null;
     }
 

@@ -76,7 +76,10 @@ class ListToken extends LexicalUnit {
                         RdfConstants.LIST_FIRST,
                         new Reference((String) element));
             } else {
-                // TODO Error.
+                org.restlet.Context
+                        .getCurrentLogger()
+                        .warning(
+                                "The list contains an element which is neither a Reference nor a literal.");
             }
 
             Reference restBlankNode = (Reference) new BlankNodeToken(

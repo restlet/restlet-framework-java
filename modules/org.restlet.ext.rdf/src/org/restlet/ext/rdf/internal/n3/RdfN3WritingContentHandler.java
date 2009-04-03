@@ -114,7 +114,9 @@ public class RdfN3WritingContentHandler extends GraphHandler {
             this.bw.write(" ");
             write(target);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
+            org.restlet.Context.getCurrentLogger().warning(
+                    "Cannot write the representation of a statement due to "
+                            + e.getMessage());
         }
     }
 
@@ -128,7 +130,9 @@ public class RdfN3WritingContentHandler extends GraphHandler {
             this.bw.write(" ");
             write(target, this.context.getPrefixes());
         } catch (IOException e) {
-            // TODO Auto-generated catch block
+            org.restlet.Context.getCurrentLogger().warning(
+                    "Cannot write the representation of a statement due to "
+                            + e.getMessage());
         }
     }
 
@@ -151,7 +155,9 @@ public class RdfN3WritingContentHandler extends GraphHandler {
             }
             write(target);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
+            org.restlet.Context.getCurrentLogger().warning(
+                    "Cannot write the representation of a statement due to "
+                            + e.getMessage());
         }
     }
 
@@ -176,7 +182,9 @@ public class RdfN3WritingContentHandler extends GraphHandler {
             }
             write(target, this.context.getPrefixes());
         } catch (IOException e) {
-            // TODO Auto-generated catch block
+            org.restlet.Context.getCurrentLogger().warning(
+                    "Cannot write the representation of a statement due to "
+                            + e.getMessage());
         }
     }
 
@@ -185,7 +193,6 @@ public class RdfN3WritingContentHandler extends GraphHandler {
      * 
      * @param linkset
      *            the given graph of links.
-     * @throws IOException
      * @throws IOException
      */
     private void write(Graph linkset) throws IOException {
@@ -201,10 +208,13 @@ public class RdfN3WritingContentHandler extends GraphHandler {
                 } else if (link.hasLiteralTarget()) {
                     link(link.getSourceAsReference(), link.getTypeRef(), link
                             .getTargetAsLiteral());
-                } else if (link.hasLiteralTarget()) {
+                } else if (link.hasLinkTarget()) {
                     // TODO Hande source as link.
                 } else {
-                    // Error?
+                    org.restlet.Context
+                            .getCurrentLogger()
+                            .warning(
+                                    "Cannot write the representation of a statement due to the fact that the object is neither a Reference nor a literal.");
                 }
             } else if (link.hasGraphSource()) {
                 this.writeExtraDot = false;
@@ -214,10 +224,13 @@ public class RdfN3WritingContentHandler extends GraphHandler {
                 } else if (link.hasLiteralTarget()) {
                     link(link.getSourceAsGraph(), link.getTypeRef(), link
                             .getTargetAsLiteral());
-                } else if (link.hasLiteralTarget()) {
+                } else if (link.hasLinkTarget()) {
                     // TODO Handle source as link.
                 } else {
-                    // Error?
+                    org.restlet.Context
+                            .getCurrentLogger()
+                            .warning(
+                                    "Cannot write the representation of a statement due to the fact that the object is neither a Reference nor a literal.");
                 }
                 this.bw.write(".\n");
             }
@@ -230,14 +243,10 @@ public class RdfN3WritingContentHandler extends GraphHandler {
     }
 
     /**
-     * Writes the representation of a given reference to a byte stream.
+     * Writes the representation of a literal.
      * 
-     * @param outputStream
-     *            The output stream.
-     * @param reference
-     *            The reference to write.
-     * @param prefixes
-     *            The map of known namespaces.
+     * @param literal
+     *            The literal to write.
      * @throws IOException
      */
     private void write(Literal literal) throws IOException {

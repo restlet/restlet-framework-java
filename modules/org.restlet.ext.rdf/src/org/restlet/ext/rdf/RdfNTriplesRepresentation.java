@@ -33,17 +33,17 @@ package org.restlet.ext.rdf;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.restlet.ext.rdf.internal.n3.RdfN3ParsingContentHandler;
-import org.restlet.ext.rdf.internal.n3.RdfN3WritingContentHandler;
+import org.restlet.ext.rdf.internal.Ntriples.RdfNTriplesParsingContentHandler;
+import org.restlet.ext.rdf.internal.Ntriples.RdfNTriplesWritingContentHandler;
 import org.restlet.representation.Representation;
 
 /**
- * Representation for RDF/N3 documents. It knows how to serialize and
+ * Representation for RDF/N-Triples documents. It knows how to serialize and
  * deserialize a {@link Graph}.
  * 
  * @author Thierry Boileau
  */
-public class RdfN3Representation extends RdfRepresentation {
+public class RdfNTriplesRepresentation extends RdfRepresentation {
 
     /**
      * Constructor.
@@ -51,7 +51,7 @@ public class RdfN3Representation extends RdfRepresentation {
      * @param linkSet
      *            The given graph of links.
      */
-    public RdfN3Representation(Graph linkSet) {
+    public RdfNTriplesRepresentation(Graph linkSet) {
         super(linkSet);
     }
 
@@ -64,16 +64,16 @@ public class RdfN3Representation extends RdfRepresentation {
      *            The graph to update.
      * @throws IOException
      */
-    public RdfN3Representation(Representation rdfRepresentation, Graph linkSet)
-            throws IOException {
+    public RdfNTriplesRepresentation(Representation rdfRepresentation,
+            Graph linkSet) throws IOException {
         super(linkSet);
-        new RdfN3ParsingContentHandler(linkSet, rdfRepresentation);
+        new RdfNTriplesParsingContentHandler(linkSet, rdfRepresentation);
     }
 
     @Override
     public void write(OutputStream outputStream) throws IOException {
         if (getGraph() != null) {
-            new RdfN3WritingContentHandler(getGraph(), outputStream);
+            new RdfNTriplesWritingContentHandler(getGraph(), outputStream);
         }
     }
 }

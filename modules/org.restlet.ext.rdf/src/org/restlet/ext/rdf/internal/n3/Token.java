@@ -95,7 +95,8 @@ class Token extends LexicalUnit {
                             RdfConstants.XML_SCHEMA_TYPE_INTEGER);
                 }
             } else {
-                // TODO What kind of literal?
+                org.restlet.Context.getCurrentLogger().warning(
+                        "Cannot identify this token value: " + getValue());
             }
         }
         return result;

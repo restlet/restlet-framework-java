@@ -383,7 +383,10 @@ public class RdfN3ParsingContentHandler extends GraphHandler {
             } else if (target instanceof Literal) {
                 link((Reference) source, typeRef, (Literal) target);
             } else {
-                // Error?
+                org.restlet.Context
+                        .getCurrentLogger()
+                        .warning(
+                                "The N3 document contains an object which is neither a Reference nor a literal.");
             }
         } else if (source instanceof Graph) {
             if (target instanceof Reference) {
@@ -391,7 +394,10 @@ public class RdfN3ParsingContentHandler extends GraphHandler {
             } else if (target instanceof Literal) {
                 link((Graph) source, typeRef, (Literal) target);
             } else {
-                // Error?
+                org.restlet.Context
+                        .getCurrentLogger()
+                        .warning(
+                                "The N3 document contains an object which is neither a Reference nor a literal.");
             }
         }
     }
@@ -491,7 +497,8 @@ public class RdfN3ParsingContentHandler extends GraphHandler {
             }
             consumeStatement();
         } else {
-            // TODO @ForAll and @ForSome are not supported yet.
+            org.restlet.Context.getCurrentLogger().warning(
+                    "@ForAll and @ForSome are not supported yet.");
             consumeStatement();
         }
     }
@@ -558,13 +565,11 @@ public class RdfN3ParsingContentHandler extends GraphHandler {
                 discard();
                 break;
             case ';':
-                // TODO
                 step();
                 discard();
                 lexicalUnits.add(new Token(";"));
                 break;
             case ',':
-                // TODO
                 step();
                 discard();
                 lexicalUnits.add(new Token(","));
