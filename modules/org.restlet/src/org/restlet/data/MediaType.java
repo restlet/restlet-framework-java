@@ -497,7 +497,7 @@ public final class MediaType extends Metadata {
     public static final MediaType TEXT_PLAIN = register("text/plain",
             "Plain text");
 
-    public static final MediaType TEXT_RDF_N3 = register("text/rdf+n3",
+    public static final MediaType TEXT_RDF_N3 = register("text/n3",
             "N3 serialized Resource Description Framework document");
 
     public static final MediaType TEXT_TSV = register(
