@@ -12,8 +12,10 @@ Changes log
     - Enhancements
         - Servlet's UserPrincipal is now transferred into Restlet's
           ClientInfo#subject property. Suggested by Paul Davis.
-        - Updated Media type RDF N3 from "text/rdf+n3" to "text/n3". Suggested
-          by Simon Reinhardt.
+        - Updated Media type RDF N3 from "text/rdf+n3" to "text/n3". 
+          Suggested by Simon Reinhardt.
+        - Added support of the parsing and writing of RDF documents 
+          expressed in N-Triples notation.
     - API changes
         - RepresentationInfo is now concrete and has more constructors.
           Suggested by Lars Heuer.
