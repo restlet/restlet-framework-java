@@ -36,7 +36,6 @@ import java.util.List;
 
 import org.restlet.data.Reference;
 import org.restlet.ext.rdf.Graph;
-import org.restlet.ext.rdf.GraphHandler;
 import org.restlet.ext.rdf.Literal;
 import org.restlet.ext.rdf.internal.RdfConstants;
 import org.restlet.ext.rdf.internal.turtle.BlankNodeToken;
@@ -70,16 +69,6 @@ public class RdfN3ParsingContentHandler extends RdfTurtleParsingContentHandler {
         super(linkSet, rdfN3Representation);
     }
 
-    /**
-     * Loops over the given list of lexical units and generates the adequat
-     * calls to link* methods.
-     * 
-     * @see GraphHandler#link(Graph, Reference, Reference)
-     * @see GraphHandler#link(Reference, Reference, Literal)
-     * @see GraphHandler#link(Reference, Reference, Reference)
-     * @param lexicalUnits
-     *            The list of lexical units used to generate the links.
-     */
     @Override
     protected void generateLinks(List<LexicalUnit> lexicalUnits) {
         Object currentSubject = null;
@@ -172,13 +161,7 @@ public class RdfN3ParsingContentHandler extends RdfTurtleParsingContentHandler {
         return result;
     }
 
-    /**
-     * Returns true if the given character is a delimiter.
-     * 
-     * @param c
-     *            The given character to check.
-     * @return true if the given character is a delimiter.
-     */
+    @Override
     protected boolean isDelimiter(int c) {
         return isWhiteSpace(c) || c == '^' || c == '!' || c == '=' || c == '<'
                 || c == '"' || c == '{' || c == '}' || c == '[' || c == ']'
@@ -242,53 +225,49 @@ public class RdfN3ParsingContentHandler extends RdfTurtleParsingContentHandler {
         super.link(source, typeRef, target);
     }
 
-    protected void parseFormula(FormulaToken f) throws IOException {
-        step();
-        do {
-            parseStatement(new Context());
-        } while (!isEndOfFile(getChar()) && getChar() != '}');
-        if (getChar() == '}') {
-            // Set the cursor at the right of the formula token.
-            step();
-        }
-    }
-
-    protected void parseBlankNode(BlankNodeToken bn) throws IOException {
+    @Override
+    protected void parseBlankNode(BlankNodeToken blankNode) throws IOException {
         step();
         do {
             consumeWhiteSpaces();
             switch (getChar()) {
             case '(':
-                bn.getLexicalUnits().add(new ListToken(this, getContext()));
+                blankNode.getLexicalUnits().add(
+                        new ListToken(this, getContext()));
                 break;
             case '<':
                 if (step() == '=') {
-                    bn.getLexicalUnits().add(new Token("<="));
+                    blankNode.getLexicalUnits().add(new Token("<="));
                     step();
                     discard();
                 } else {
                     stepBack();
-                    bn.getLexicalUnits().add(new UriToken(this, getContext()));
+                    blankNode.getLexicalUnits().add(
+                            new UriToken(this, getContext()));
                 }
                 break;
             case '_':
-                bn.getLexicalUnits().add(new BlankNodeToken(parseToken()));
+                blankNode.getLexicalUnits().add(
+                        new BlankNodeToken(parseToken()));
                 break;
             case '"':
-                bn.getLexicalUnits().add(new StringToken(this, getContext()));
+                blankNode.getLexicalUnits().add(
+                        new StringToken(this, getContext()));
                 break;
             case '[':
-                bn.getLexicalUnits()
-                        .add(new BlankNodeToken(this, getContext()));
+                blankNode.getLexicalUnits().add(
+                        new BlankNodeToken(this, getContext()));
                 break;
             case '{':
-                bn.getLexicalUnits().add(new FormulaToken(this, getContext()));
+                blankNode.getLexicalUnits().add(
+                        new FormulaToken(this, getContext()));
                 break;
             case ']':
                 break;
             default:
                 if (!isEndOfFile(getChar())) {
-                    bn.getLexicalUnits().add(new Token(this, getContext()));
+                    blankNode.getLexicalUnits().add(
+                            new Token(this, getContext()));
                 }
                 break;
             }
@@ -301,12 +280,77 @@ public class RdfN3ParsingContentHandler extends RdfTurtleParsingContentHandler {
     }
 
     /**
-     * Reads the current statement until its end, and parses it.
+     * Parses the given formula token.
      * 
-     * @param context
-     *            The current context.
+     * @param formulaToken
+     *            The formula token to parse.
      * @throws IOException
      */
+    protected void parseFormula(FormulaToken formulaToken) throws IOException {
+        step();
+        do {
+            parseStatement(new Context());
+        } while (!isEndOfFile(getChar()) && getChar() != '}');
+        if (getChar() == '}') {
+            // Set the cursor at the right of the formula token.
+            step();
+        }
+    }
+
+    @Override
+    protected void parseList(ListToken listToken) throws IOException {
+        step();
+        do {
+            consumeWhiteSpaces();
+            switch (getChar()) {
+            case '(':
+                listToken.getLexicalUnits().add(
+                        new ListToken(this, getContext()));
+                break;
+            case '<':
+                if (step() == '=') {
+                    listToken.getLexicalUnits().add(new Token("<="));
+                    step();
+                    discard();
+                } else {
+                    stepBack();
+                    listToken.getLexicalUnits().add(
+                            new UriToken(this, getContext()));
+                }
+                break;
+            case '_':
+                listToken.getLexicalUnits().add(
+                        new BlankNodeToken(this.parseToken()));
+                break;
+            case '"':
+                listToken.getLexicalUnits().add(
+                        new StringToken(this, getContext()));
+                break;
+            case '[':
+                listToken.getLexicalUnits().add(
+                        new BlankNodeToken(this, getContext()));
+                break;
+            case '{':
+                listToken.getLexicalUnits().add(
+                        new FormulaToken(this, getContext()));
+                break;
+            case ')':
+                break;
+            default:
+                if (!isEndOfFile(getChar())) {
+                    listToken.getLexicalUnits().add(
+                            new Token(this, getContext()));
+                }
+                break;
+            }
+        } while (!isEndOfFile(getChar()) && getChar() != ')');
+        if (getChar() == ')') {
+            // Set the cursor at the right of the list token.
+            step();
+        }
+    }
+
+    @Override
     protected void parseStatement(Context context) throws IOException {
         List<LexicalUnit> lexicalUnits = new ArrayList<LexicalUnit>();
         do {
@@ -387,52 +431,6 @@ public class RdfN3ParsingContentHandler extends RdfTurtleParsingContentHandler {
 
         // Generate the links
         generateLinks(lexicalUnits);
-    }
-
-    @Override
-    protected void parseList(ListToken l) throws IOException {
-        step();
-        do {
-            consumeWhiteSpaces();
-            switch (getChar()) {
-            case '(':
-                l.getLexicalUnits().add(new ListToken(this, getContext()));
-                break;
-            case '<':
-                if (step() == '=') {
-                    l.getLexicalUnits().add(new Token("<="));
-                    step();
-                    discard();
-                } else {
-                    stepBack();
-                    l.getLexicalUnits().add(new UriToken(this, getContext()));
-                }
-                break;
-            case '_':
-                l.getLexicalUnits().add(new BlankNodeToken(this.parseToken()));
-                break;
-            case '"':
-                l.getLexicalUnits().add(new StringToken(this, getContext()));
-                break;
-            case '[':
-                l.getLexicalUnits().add(new BlankNodeToken(this, getContext()));
-                break;
-            case '{':
-                l.getLexicalUnits().add(new FormulaToken(this, getContext()));
-                break;
-            case ')':
-                break;
-            default:
-                if (!isEndOfFile(getChar())) {
-                    l.getLexicalUnits().add(new Token(this, getContext()));
-                }
-                break;
-            }
-        } while (!isEndOfFile(getChar()) && getChar() != ')');
-        if (getChar() == ')') {
-            // Set the cursor at the right of the list token.
-            step();
-        }
     }
 
 }
