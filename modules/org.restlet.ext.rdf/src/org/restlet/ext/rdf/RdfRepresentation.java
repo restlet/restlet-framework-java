@@ -112,7 +112,7 @@ public abstract class RdfRepresentation extends OutputRepresentation {
             new RdfXmlRepresentation(getGraph()).write(outputStream);
         } else if (MediaType.APPLICATION_ALL_XML.includes(getMediaType())) {
             new RdfXmlRepresentation(getGraph()).write(outputStream);
-        } else (MediaType.TEXT_RDF_N3.equals(getMediaType())) {
+        } else if (MediaType.TEXT_PLAIN.equals(getMediaType())) {
             new RdfNTriplesRepresentation(getGraph()).write(outputStream);
         }
         // Writing for other media types goes here.
