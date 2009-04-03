@@ -81,6 +81,9 @@ public abstract class RdfRepresentation extends OutputRepresentation {
         } else if (MediaType.TEXT_PLAIN
                 .equals(rdfRepresentation.getMediaType())) {
             new RdfNTriplesRepresentation(rdfRepresentation, linkSet);
+        } else if (MediaType.APPLICATION_RDF_TURTLE.equals(rdfRepresentation
+                .getMediaType())) {
+            new RdfTurtleRepresentation(rdfRepresentation, linkSet);
         }
         // Parsing for other media types goes here.
     }
@@ -114,6 +117,8 @@ public abstract class RdfRepresentation extends OutputRepresentation {
             new RdfXmlRepresentation(getGraph()).write(outputStream);
         } else if (MediaType.TEXT_PLAIN.equals(getMediaType())) {
             new RdfNTriplesRepresentation(getGraph()).write(outputStream);
+        } else if (MediaType.APPLICATION_RDF_TURTLE.equals(getMediaType())) {
+            new RdfTurtleRepresentation(getGraph()).write(outputStream);
         }
         // Writing for other media types goes here.
     }

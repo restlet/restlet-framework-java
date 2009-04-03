@@ -70,8 +70,8 @@ public class Graph extends CopyOnWriteArraySet<Link> {
 
     /**
      * Constructor that parses a given RDF representation into a set of links.
-     * The following RDF media types are supported: RDF/XML, RDF/n3 and
-     * RDF/Turtle.
+     * The following RDF media types are supported: RDF/XML, RDF/n3, RDF/Turtle
+     * and RDF/N-Triples.
      * 
      * NOT IMPLEMENTED YET
      * 
@@ -85,13 +85,15 @@ public class Graph extends CopyOnWriteArraySet<Link> {
             new RdfN3Representation(rdfRepresentation, this);
         } else if (MediaType.APPLICATION_RDF_XML.equals(rdfRepresentation
                 .getMediaType(), true)) {
-            // TODO : call the engine for parsing
-            // new RdfXmlRepresentation(rdfRepresentation, this);
+            new RdfXmlRepresentation(rdfRepresentation, this);
         } else if (MediaType.APPLICATION_RDF_TURTLE.equals(rdfRepresentation
                 .getMediaType(), true)) {
-            // TODO : call the engine for parsing
-            // new RdfTurtleRepresentation(rdfRepresentation, this);
+            new RdfTurtleRepresentation(rdfRepresentation, this);
+        } else if (MediaType.TEXT_PLAIN.equals(
+                rdfRepresentation.getMediaType(), true)) {
+            new RdfNTriplesRepresentation(rdfRepresentation, this);
         }
+
     }
 
     /**
@@ -182,34 +184,37 @@ public class Graph extends CopyOnWriteArraySet<Link> {
     /**
      * Returns a representation in the RDF/n3 format.
      * 
-     * NOT IMPLEMENTED YET
-     * 
      * @return A representation in the RDF/n3 format.
      */
     public Representation getRdfN3Representation() {
-        return null; // new RdfN3Representation(this);
+        return new RdfN3Representation(this);
+    }
+
+    /**
+     * Returns a representation in the RDF/N-Triples format.
+     * 
+     * @return A representation in the RDF/N-Triples format.
+     */
+    public Representation getRdfNTriplesRepresentation() {
+        return new RdfNTriplesRepresentation(this);
     }
 
     /**
      * Returns a representation in the RDF/Turtle format.
      * 
-     * NOT IMPLEMENTED YET
-     * 
      * @return A representation in the RDF/Turtle format.
      */
     public Representation getRdfTurtleRepresentation() {
-        return null;
+        return new RdfTurtleRepresentation(this);
     }
 
     /**
      * Returns a representation in the RDF/XML format.
      * 
-     * NOT IMPLEMENTED YET
-     * 
      * @return A representation in the RDF/XML format.
      */
     public Representation getRdfXmlRepresentation() {
-        return null;
+        return new RdfXmlRepresentation(this);
     }
 
     /**

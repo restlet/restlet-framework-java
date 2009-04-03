@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.rdf.internal.n3;
+package org.restlet.ext.rdf.internal.turtle;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -48,6 +48,10 @@ public class BlankNodeToken extends LexicalUnit {
     /** List of lexical units contained by this blank node. */
     private List<LexicalUnit> lexicalUnits;
 
+    public List<LexicalUnit> getLexicalUnits() {
+        return lexicalUnits;
+    }
+
     /** Indicates if the given blank node has been already resolved. */
     private boolean resolved = false;
 
@@ -61,11 +65,11 @@ public class BlankNodeToken extends LexicalUnit {
      *            The context used to resolved references.
      * @throws IOException
      */
-    public BlankNodeToken(RdfN3ParsingContentHandler contentHandler,
+    public BlankNodeToken(RdfTurtleParsingContentHandler contentHandler,
             Context context) throws IOException {
         super(contentHandler, context);
         lexicalUnits = new ArrayList<LexicalUnit>();
-        this.setValue("_:" + RdfN3ParsingContentHandler.newBlankNodeId());
+        this.setValue("_:" + contentHandler.newBlankNodeId());
         lexicalUnits.add(this);
         this.parse();
     }
@@ -83,55 +87,7 @@ public class BlankNodeToken extends LexicalUnit {
 
     @Override
     public void parse() throws IOException {
-        getContentHandler().step();
-        do {
-            getContentHandler().consumeWhiteSpaces();
-            switch (getContentHandler().getChar()) {
-            case '(':
-                lexicalUnits.add(new ListToken(getContentHandler(),
-                        getContext()));
-                break;
-            case '<':
-                if (getContentHandler().step() == '=') {
-                    lexicalUnits.add(new Token("<="));
-                    getContentHandler().step();
-                    getContentHandler().discard();
-                } else {
-                    getContentHandler().stepBack();
-                    lexicalUnits.add(new UriToken(getContentHandler(),
-                            getContext()));
-                }
-                break;
-            case '_':
-                lexicalUnits.add(new BlankNodeToken(getContentHandler()
-                        .parseToken()));
-                break;
-            case '"':
-                lexicalUnits.add(new StringToken(getContentHandler(),
-                        getContext()));
-                break;
-            case '[':
-                lexicalUnits.add(new BlankNodeToken(getContentHandler(),
-                        getContext()));
-                break;
-            case '{':
-                lexicalUnits.add(new FormulaToken(getContentHandler(),
-                        getContext()));
-                break;
-            case ']':
-                break;
-            case RdfN3ParsingContentHandler.EOF:
-                break;
-            default:
-                lexicalUnits.add(new Token(getContentHandler(), getContext()));
-                break;
-            }
-        } while (getContentHandler().getChar() != RdfN3ParsingContentHandler.EOF
-                && getContentHandler().getChar() != ']');
-        if (getContentHandler().getChar() == ']') {
-            // Set the cursor at the right of the list token.
-            getContentHandler().step();
-        }
+        getContentHandler().parseBlankNode(this);
     }
 
     @Override

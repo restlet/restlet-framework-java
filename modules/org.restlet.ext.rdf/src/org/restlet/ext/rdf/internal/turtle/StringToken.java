@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.rdf.internal.n3;
+package org.restlet.ext.rdf.internal.turtle;
 
 import java.io.IOException;
 
@@ -41,15 +41,31 @@ import org.restlet.ext.rdf.Literal;
  * 
  * @author Thierry Boileau
  */
-class StringToken extends LexicalUnit {
+public class StringToken extends LexicalUnit {
+    /** The language of the value. */
+    private String language;
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
     /** Does this string contains at least a new line character? */
     private boolean multiLines;
 
     /** The type of the represented value. */
     private String type;
-
-    /** The language of the value. */
-    private String language;
 
     /**
      * Constructor with arguments.
@@ -59,7 +75,7 @@ class StringToken extends LexicalUnit {
      * @param context
      *            The parsing context.
      */
-    public StringToken(RdfN3ParsingContentHandler contentHandler,
+    public StringToken(RdfTurtleParsingContentHandler contentHandler,
             Context context) throws IOException {
         super(contentHandler, context);
         multiLines = false;
@@ -78,59 +94,7 @@ class StringToken extends LexicalUnit {
 
     @Override
     public void parse() throws IOException {
-        // Answer the question : is it multi lines or not?
-        // That is to say, is it delimited by 3 quotes or not?
-        int c1 = getContentHandler().step();
-        int c2 = getContentHandler().step();
-
-        if ((c1 == c2) && (c1 == '"')) {
-            multiLines = true;
-            getContentHandler().step();
-            getContentHandler().discard();
-            int[] tab = new int[3];
-            int cpt = 0; // Number of consecutives '"' characters.
-            int c = getContentHandler().getChar();
-            while (c != RdfN3ParsingContentHandler.EOF) {
-                if (c == '"') {
-                    tab[++cpt - 1] = c;
-                } else {
-                    cpt = 0;
-                }
-                if (cpt == 3) {
-                    // End of the string reached.
-                    getContentHandler().stepBack(2);
-                    setValue(getContentHandler().getCurrentToken());
-                    getContentHandler().step(3);
-                    getContentHandler().discard();
-                    break;
-                }
-                c = getContentHandler().step();
-            }
-        } else {
-            multiLines = false;
-            getContentHandler().stepBack(1);
-            getContentHandler().discard();
-            int c = getContentHandler().getChar();
-            while (c != RdfN3ParsingContentHandler.EOF && (c != '"')) {
-                c = getContentHandler().step();
-            }
-            setValue(getContentHandler().getCurrentToken());
-            getContentHandler().step();
-            getContentHandler().discard();
-        }
-
-        // Parse the type and language of literals
-        int c = getContentHandler().getChar();
-        if (c == '@') {
-            this.language = getContentHandler().parseToken();
-        } else if (c == '^') {
-            c = getContentHandler().step();
-            if (c == '^') {
-                this.type = getContentHandler().parseToken();
-            } else {
-                getContentHandler().stepBack();
-            }
-        }
+        getContentHandler().parseString(this);
     }
 
     @Override
@@ -143,5 +107,9 @@ class StringToken extends LexicalUnit {
             result.setLanguage(Language.valueOf(this.language));
         }
         return result;
+    }
+
+    public void setMultiLines(boolean multiLines) {
+        this.multiLines = multiLines;
     }
 }

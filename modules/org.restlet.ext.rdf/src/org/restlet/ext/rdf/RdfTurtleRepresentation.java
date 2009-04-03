@@ -33,19 +33,17 @@ package org.restlet.ext.rdf;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.restlet.ext.rdf.internal.xml.RdfXmlParsingContentHandler;
-import org.restlet.ext.rdf.internal.xml.RdfXmlWritingContentHandler;
+import org.restlet.ext.rdf.internal.turtle.RdfTurtleParsingContentHandler;
+import org.restlet.ext.rdf.internal.turtle.RdfTurtleWritingContentHandler;
 import org.restlet.representation.Representation;
-import org.restlet.util.XmlWriter;
-import org.xml.sax.SAXException;
 
 /**
- * Representation for RDF/XML documents. It knows how to serialize and
+ * Representation for RDF/Turtle documents. It knows how to serialize and
  * deserialize a {@link Graph}.
  * 
  * @author Thierry Boileau
  */
-public class RdfXmlRepresentation extends RdfRepresentation {
+public class RdfTurtleRepresentation extends RdfRepresentation {
 
     /**
      * Constructor.
@@ -53,7 +51,7 @@ public class RdfXmlRepresentation extends RdfRepresentation {
      * @param linkSet
      *            The given graph of links.
      */
-    public RdfXmlRepresentation(Graph linkSet) {
+    public RdfTurtleRepresentation(Graph linkSet) {
         super(linkSet);
     }
 
@@ -61,43 +59,22 @@ public class RdfXmlRepresentation extends RdfRepresentation {
      * Constructor. Parses the given representation into the given graph.
      * 
      * @param rdfRepresentation
-     *            The RDF XML representation to parse.
+     *            The RDF Turtle representation to parse.
      * @param linkSet
      *            The graph to update.
      * @throws IOException
      */
-    public RdfXmlRepresentation(Representation rdfRepresentation, Graph linkSet)
-            throws IOException {
+    public RdfTurtleRepresentation(Representation rdfRepresentation,
+            Graph linkSet) throws IOException {
         super(linkSet);
-        new RdfXmlParsingContentHandler(linkSet, rdfRepresentation).parse();
+        new RdfTurtleParsingContentHandler(linkSet, rdfRepresentation).parse();
     }
 
     @Override
     public void write(OutputStream outputStream) throws IOException {
         if (getGraph() != null) {
-
-            XmlWriter xmlWriter = new XmlWriter(outputStream,
-                    (getCharacterSet() == null) ? "UTF-8" : getCharacterSet()
-                            .toString());
-            write(xmlWriter);
+            new RdfTurtleWritingContentHandler(getGraph(), outputStream)
+                    .write();
         }
     }
-
-    /**
-     * Writes the representation to a XML writer.
-     * 
-     * @param xmlWriter
-     *            The XML writer to write to.
-     * @throws IOException
-     */
-    public void write(XmlWriter xmlWriter) throws IOException {
-        if (getGraph() != null) {
-            try {
-                new RdfXmlWritingContentHandler(getGraph(), xmlWriter).write();
-            } catch (SAXException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
 }

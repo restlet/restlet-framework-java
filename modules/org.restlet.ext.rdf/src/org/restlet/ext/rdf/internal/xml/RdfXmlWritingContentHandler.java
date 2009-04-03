@@ -50,7 +50,10 @@ import org.xml.sax.helpers.AttributesImpl;
  */
 public class RdfXmlWritingContentHandler extends GraphHandler {
 
-    /** . */
+    /** The set of links to write. */
+    private Graph linkSet;
+
+    /** URI of the RDF SYNTAX namespace. */
     private final String RDF_SYNTAX = RdfConstants.RDF_SYNTAX.toString(true,
             true);
 
@@ -67,25 +70,10 @@ public class RdfXmlWritingContentHandler extends GraphHandler {
      * @throws IOException
      * @throws SAXException
      */
-    public RdfXmlWritingContentHandler(Graph linkset, XmlWriter writer)
-            throws IOException, SAXException {
+    public RdfXmlWritingContentHandler(Graph linkSet, XmlWriter writer) {
         super();
+        this.linkSet = linkSet;
         this.writer = writer;
-        this.writer.setPrefix(RDF_SYNTAX, "rdf");
-        this.writer.setPrefix(RdfConstants.XML_SCHEMA.toString(true, true),
-                "type");
-        // Discover the list of known namespaces
-        discoverNamespaces(linkset, writer);
-
-        writer.setDataFormat(true);
-        writer.setIndentStep(3);
-        this.writer.startDocument();
-        this.writer.startElement(RDF_SYNTAX, "RDF");
-
-        this.write(linkset);
-        this.writer.endElement(RDF_SYNTAX, "RDF");
-        this.writer.endDocument();
-        this.writer.flush();
     }
 
     /**
@@ -242,6 +230,32 @@ public class RdfXmlWritingContentHandler extends GraphHandler {
             org.restlet.Context.getCurrentLogger().warning(
                     "Cannot write the representation of a statement due to: "
                             + e.getMessage());
+        }
+    }
+
+    /**
+     * Writes the current linkset.
+     * 
+     * @throws IOException
+     * @throws SAXException
+     */
+    public void write() throws IOException, SAXException {
+        if (this.linkSet != null) {
+            this.writer.setPrefix(RDF_SYNTAX, "rdf");
+            this.writer.setPrefix(RdfConstants.XML_SCHEMA.toString(true, true),
+                    "type");
+            // Discover the list of known namespaces
+            discoverNamespaces(this.linkSet, this.writer);
+
+            writer.setDataFormat(true);
+            writer.setIndentStep(3);
+            this.writer.startDocument();
+            this.writer.startElement(RDF_SYNTAX, "RDF");
+
+            this.write(this.linkSet);
+            this.writer.endElement(RDF_SYNTAX, "RDF");
+            this.writer.endDocument();
+            this.writer.flush();
         }
     }
 

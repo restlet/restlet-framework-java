@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.rdf.internal.n3;
+package org.restlet.ext.rdf.internal.turtle;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -44,14 +44,13 @@ import org.restlet.ext.rdf.Link;
 import org.restlet.ext.rdf.LinkReference;
 import org.restlet.ext.rdf.Literal;
 import org.restlet.ext.rdf.internal.RdfConstants;
-import org.restlet.ext.rdf.internal.turtle.Context;
 
 /**
  * Handler of RDF content according to the N3 notation.
  * 
  * @author Thierry Boileau
  */
-public class RdfN3WritingContentHandler extends GraphHandler {
+public class RdfTurtleWritingContentHandler extends GraphHandler {
 
     /** Buffered writer. */
     private BufferedWriter bw;
@@ -81,8 +80,8 @@ public class RdfN3WritingContentHandler extends GraphHandler {
      * @throws IOException
      * @throws IOException
      */
-    public RdfN3WritingContentHandler(Graph linkSet, OutputStream outputStream)
-            throws IOException {
+    public RdfTurtleWritingContentHandler(Graph linkSet,
+            OutputStream outputStream) throws IOException {
         super();
         this.bw = new BufferedWriter(new OutputStreamWriter(outputStream));
         this.context = new Context();

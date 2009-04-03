@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.rdf.internal.n3;
+package org.restlet.ext.rdf.internal.turtle;
 
 import java.io.IOException;
 
@@ -36,11 +36,11 @@ import org.restlet.ext.rdf.Literal;
 import org.restlet.ext.rdf.internal.RdfConstants;
 
 /**
- * Represents a still unidentified N3 token.
+ * Represents a still unidentified Turtle token.
  * 
  * @author Thierry Boileau
  */
-class Token extends LexicalUnit {
+public class Token extends LexicalUnit {
 
     /**
      * Constructor with arguments.
@@ -50,7 +50,7 @@ class Token extends LexicalUnit {
      * @param context
      *            The parsing context.
      */
-    public Token(RdfN3ParsingContentHandler contentHandler, Context context)
+    public Token(RdfTurtleParsingContentHandler contentHandler, Context context)
             throws IOException {
         super(contentHandler, context);
         this.parse();
@@ -68,12 +68,7 @@ class Token extends LexicalUnit {
 
     @Override
     public void parse() throws IOException {
-        int c;
-        do {
-            c = getContentHandler().step();
-        } while (c != RdfN3ParsingContentHandler.EOF
-                && !RdfN3ParsingContentHandler.isDelimiter(c));
-        setValue(getContentHandler().getCurrentToken());
+        getContentHandler().parseToken(this);
     }
 
     @Override

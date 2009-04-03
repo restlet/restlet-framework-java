@@ -28,10 +28,11 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.rdf.internal.n3;
+package org.restlet.ext.rdf.internal.turtle;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.restlet.data.Reference;
@@ -39,22 +40,22 @@ import org.restlet.ext.rdf.Graph;
 import org.restlet.ext.rdf.GraphHandler;
 import org.restlet.ext.rdf.Literal;
 import org.restlet.ext.rdf.internal.RdfConstants;
-import org.restlet.ext.rdf.internal.turtle.BlankNodeToken;
-import org.restlet.ext.rdf.internal.turtle.Context;
-import org.restlet.ext.rdf.internal.turtle.LexicalUnit;
-import org.restlet.ext.rdf.internal.turtle.ListToken;
-import org.restlet.ext.rdf.internal.turtle.RdfTurtleParsingContentHandler;
-import org.restlet.ext.rdf.internal.turtle.StringToken;
-import org.restlet.ext.rdf.internal.turtle.Token;
-import org.restlet.ext.rdf.internal.turtle.UriToken;
+import org.restlet.ext.rdf.internal.ntriples.RdfNTriplesParsingContentHandler;
 import org.restlet.representation.Representation;
 
 /**
- * Handler of RDF content according to the N3 notation.
+ * Handler of RDF content according to the RDF Turtle notation.
  * 
  * @author Thierry Boileau
  */
-public class RdfN3ParsingContentHandler extends RdfTurtleParsingContentHandler {
+public class RdfTurtleParsingContentHandler extends
+        RdfNTriplesParsingContentHandler {
+
+    /** Increment used to identify inner blank nodes. */
+    private int blankNodeId = 0;
+
+    /** The current context object. */
+    private Context context;
 
     /**
      * Constructor.
@@ -65,9 +66,12 @@ public class RdfN3ParsingContentHandler extends RdfTurtleParsingContentHandler {
      *            The representation to read.
      * @throws IOException
      */
-    public RdfN3ParsingContentHandler(Graph linkSet,
+    public RdfTurtleParsingContentHandler(Graph linkSet,
             Representation rdfN3Representation) throws IOException {
         super(linkSet, rdfN3Representation);
+        this.context = new Context();
+        context.getKeywords().addAll(
+                Arrays.asList("a", "is", "of", "this", "has"));
     }
 
     /**
@@ -80,7 +84,6 @@ public class RdfN3ParsingContentHandler extends RdfTurtleParsingContentHandler {
      * @param lexicalUnits
      *            The list of lexical units used to generate the links.
      */
-    @Override
     protected void generateLinks(List<LexicalUnit> lexicalUnits) {
         Object currentSubject = null;
         Reference currentPredicate = null;
@@ -154,6 +157,15 @@ public class RdfN3ParsingContentHandler extends RdfTurtleParsingContentHandler {
     }
 
     /**
+     * Returns the current context.
+     * 
+     * @return The current context.
+     */
+    protected Context getContext() {
+        return context;
+    }
+
+    /**
      * Returns the given lexical unit as a predicate.
      * 
      * @param lexicalUnit
@@ -181,9 +193,8 @@ public class RdfN3ParsingContentHandler extends RdfTurtleParsingContentHandler {
      */
     protected boolean isDelimiter(int c) {
         return isWhiteSpace(c) || c == '^' || c == '!' || c == '=' || c == '<'
-                || c == '"' || c == '{' || c == '}' || c == '[' || c == ']'
-                || c == '(' || c == ')' || c == '.' || c == ';' || c == ','
-                || c == '@';
+                || c == '"' || c == '[' || c == ']' || c == '(' || c == ')'
+                || c == '.' || c == ';' || c == ',' || c == '@';
     }
 
     @Override
@@ -216,7 +227,7 @@ public class RdfN3ParsingContentHandler extends RdfTurtleParsingContentHandler {
                 org.restlet.Context
                         .getCurrentLogger()
                         .warning(
-                                "The N3 document contains an object which is neither a Reference nor a literal.");
+                                "The RDF Turtle document contains an object which is neither a Reference nor a literal.");
             }
         } else if (source instanceof Graph) {
             if (target instanceof Reference) {
@@ -227,7 +238,7 @@ public class RdfN3ParsingContentHandler extends RdfTurtleParsingContentHandler {
                 org.restlet.Context
                         .getCurrentLogger()
                         .warning(
-                                "The N3 document contains an object which is neither a Reference nor a literal.");
+                                "The RDF Turtle document contains an object which is neither a Reference nor a literal.");
             }
         }
     }
@@ -242,15 +253,40 @@ public class RdfN3ParsingContentHandler extends RdfTurtleParsingContentHandler {
         super.link(source, typeRef, target);
     }
 
-    protected void parseFormula(FormulaToken f) throws IOException {
+    /**
+     * Returns the identifier of a new blank node.
+     * 
+     * @return The identifier of a new blank node.
+     */
+    protected String newBlankNodeId() {
+        return "#_bn" + blankNodeId++;
+    }
+
+    /**
+     * Parses the current representation.
+     * 
+     * @throws IOException
+     */
+    public void parse() throws IOException {
+        // Init the reading.
         step();
         do {
-            parseStatement(new Context());
-        } while (!isEndOfFile(getChar()) && getChar() != '}');
-        if (getChar() == '}') {
-            // Set the cursor at the right of the formula token.
-            step();
-        }
+            consumeWhiteSpaces();
+            switch (getChar()) {
+            case '@':
+                parseDirective(this.context);
+                break;
+            case '#':
+                parseComment();
+                break;
+            case '.':
+                step();
+                break;
+            default:
+                parseStatement(this.context);
+                break;
+            }
+        } while (!isEndOfFile(getChar()));
     }
 
     protected void parseBlankNode(BlankNodeToken bn) throws IOException {
@@ -259,7 +295,7 @@ public class RdfN3ParsingContentHandler extends RdfTurtleParsingContentHandler {
             consumeWhiteSpaces();
             switch (getChar()) {
             case '(':
-                bn.getLexicalUnits().add(new ListToken(this, getContext()));
+                bn.getLexicalUnits().add(new ListToken(this, this.context));
                 break;
             case '<':
                 if (step() == '=') {
@@ -268,28 +304,26 @@ public class RdfN3ParsingContentHandler extends RdfTurtleParsingContentHandler {
                     discard();
                 } else {
                     stepBack();
-                    bn.getLexicalUnits().add(new UriToken(this, getContext()));
+                    bn.getLexicalUnits().add(new UriToken(this, this.context));
                 }
                 break;
             case '_':
-                bn.getLexicalUnits().add(new BlankNodeToken(parseToken()));
+                bn.getLexicalUnits().add(new BlankNodeToken(this.parseToken()));
                 break;
             case '"':
-                bn.getLexicalUnits().add(new StringToken(this, getContext()));
+                bn.getLexicalUnits().add(new StringToken(this, this.context));
                 break;
             case '[':
                 bn.getLexicalUnits()
-                        .add(new BlankNodeToken(this, getContext()));
-                break;
-            case '{':
-                bn.getLexicalUnits().add(new FormulaToken(this, getContext()));
+                        .add(new BlankNodeToken(this, this.context));
                 break;
             case ']':
                 break;
             default:
                 if (!isEndOfFile(getChar())) {
-                    bn.getLexicalUnits().add(new Token(this, getContext()));
+                    bn.getLexicalUnits().add(new Token(this, this.context));
                 }
+
                 break;
             }
         } while (!isEndOfFile(getChar()) && getChar() != ']');
@@ -297,7 +331,92 @@ public class RdfN3ParsingContentHandler extends RdfTurtleParsingContentHandler {
             // Set the cursor at the right of the list token.
             step();
         }
+    }
 
+    /**
+     * Parse the current directive and update the context according to the kind
+     * of directive ("base", "prefix", etc).
+     * 
+     * @param context
+     *            The context to update.
+     * @throws IOException
+     */
+    protected void parseDirective(Context context) throws IOException {
+        // Remove the leading '@' character.
+        step();
+        discard();
+        String currentKeyword = parseToken();
+        if ("base".equalsIgnoreCase(currentKeyword)) {
+            consumeWhiteSpaces();
+            String base = parseUri();
+            Reference ref = new Reference(base);
+            if (ref.isRelative()) {
+                context.getBase().addSegment(base);
+            } else {
+                context.setBase(ref);
+            }
+            consumeStatement();
+        } else if ("prefix".equalsIgnoreCase(currentKeyword)) {
+            consumeWhiteSpaces();
+            String prefix = parseToken();
+            consumeWhiteSpaces();
+            String uri = parseUri();
+            context.getPrefixes().put(prefix, uri);
+            consumeStatement();
+        } else if ("keywords".equalsIgnoreCase(currentKeyword)) {
+            consumeWhiteSpaces();
+            int c;
+            do {
+                c = step();
+            } while (!isEndOfFile(c) && c != '.');
+            String strKeywords = getCurrentToken();
+            String[] keywords = strKeywords.split(",");
+            context.getKeywords().clear();
+            for (String keyword : keywords) {
+                context.getKeywords().add(keyword.trim());
+            }
+            consumeStatement();
+        } else {
+            org.restlet.Context.getCurrentLogger().warning(
+                    "@" + currentKeyword + " directive is not supported.");
+            consumeStatement();
+        }
+    }
+
+    protected void parseList(ListToken l) throws IOException {
+        step();
+        do {
+            consumeWhiteSpaces();
+            switch (getChar()) {
+            case '(':
+                l.getLexicalUnits().add(new ListToken(this, this.context));
+                break;
+            case '<':
+                stepBack();
+                l.getLexicalUnits().add(new UriToken(this, this.context));
+                break;
+            case '_':
+                l.getLexicalUnits().add(new BlankNodeToken(parseToken()));
+                break;
+            case '"':
+                l.getLexicalUnits().add(new StringToken(this, this.context));
+                break;
+            case '[':
+                l.getLexicalUnits().add(new BlankNodeToken(this, this.context));
+                break;
+            case ')':
+                break;
+            default:
+                if (!isEndOfFile(getChar())) {
+                    l.getLexicalUnits().add(new Token(this, this.context));
+                }
+                break;
+            }
+        } while (!isEndOfFile(getChar()) && getChar() != ')');
+        if (getChar() == ')') {
+            // Set the cursor at the right of the list token.
+            step();
+        }
     }
 
     /**
@@ -371,9 +490,6 @@ public class RdfN3ParsingContentHandler extends RdfTurtleParsingContentHandler {
                 discard();
                 lexicalUnits.add(new Token(","));
                 break;
-            case '{':
-                lexicalUnits.add(new FormulaToken(this, context));
-                break;
             case '.':
                 break;
             default:
@@ -382,57 +498,79 @@ public class RdfN3ParsingContentHandler extends RdfTurtleParsingContentHandler {
                 }
                 break;
             }
-        } while (!isEndOfFile(getChar()) && getChar() != '.'
-                && getChar() != '}');
+        } while (!isEndOfFile(getChar()) && getChar() != '.');
 
         // Generate the links
         generateLinks(lexicalUnits);
     }
 
-    @Override
-    protected void parseList(ListToken l) throws IOException {
-        step();
-        do {
-            consumeWhiteSpaces();
-            switch (getChar()) {
-            case '(':
-                l.getLexicalUnits().add(new ListToken(this, getContext()));
-                break;
-            case '<':
-                if (step() == '=') {
-                    l.getLexicalUnits().add(new Token("<="));
-                    step();
-                    discard();
-                } else {
-                    stepBack();
-                    l.getLexicalUnits().add(new UriToken(this, getContext()));
-                }
-                break;
-            case '_':
-                l.getLexicalUnits().add(new BlankNodeToken(this.parseToken()));
-                break;
-            case '"':
-                l.getLexicalUnits().add(new StringToken(this, getContext()));
-                break;
-            case '[':
-                l.getLexicalUnits().add(new BlankNodeToken(this, getContext()));
-                break;
-            case '{':
-                l.getLexicalUnits().add(new FormulaToken(this, getContext()));
-                break;
-            case ')':
-                break;
-            default:
-                if (!isEndOfFile(getChar())) {
-                    l.getLexicalUnits().add(new Token(this, getContext()));
-                }
-                break;
-            }
-        } while (!isEndOfFile(getChar()) && getChar() != ')');
-        if (getChar() == ')') {
-            // Set the cursor at the right of the list token.
+    protected void parseString(StringToken u) throws IOException {
+        // Answer the question : is it multi lines or not?
+        // That is to say, is it delimited by 3 quotes or not?
+        int c1 = step();
+        int c2 = step();
+
+        if ((c1 == c2) && (c1 == '"')) {
+            u.setMultiLines(true);
             step();
+            discard();
+            int[] tab = new int[3];
+            int cpt = 0; // Number of consecutives '"' characters.
+            int c = getChar();
+            while (!isEndOfFile(c)) {
+                if (c == '"') {
+                    tab[++cpt - 1] = c;
+                } else {
+                    cpt = 0;
+                }
+                if (cpt == 3) {
+                    // End of the string reached.
+                    stepBack(2);
+                    u.setValue(getCurrentToken());
+                    step(3);
+                    discard();
+                    break;
+                }
+                c = step();
+            }
+        } else {
+            u.setMultiLines(false);
+            stepBack(1);
+            discard();
+            int c = getChar();
+            while (!isEndOfFile(c) && (c != '"')) {
+                c = step();
+            }
+            u.setValue(getCurrentToken());
+            step();
+            discard();
         }
+
+        // Parse the type and language of literals
+        int c = getChar();
+        if (c == '@') {
+            u.setLanguage(parseToken());
+        } else if (c == '^') {
+            c = step();
+            if (c == '^') {
+                u.setType(parseToken());
+            } else {
+                stepBack();
+            }
+        }
+
     }
 
+    protected void parseToken(Token t) throws IOException {
+        int c;
+        do {
+            c = step();
+        } while (!isEndOfFile(c) && !isDelimiter(c));
+        t.setValue(getCurrentToken());
+
+    }
+
+    protected void parseUri(UriToken u) throws IOException {
+        u.setValue(parseUri());
+    }
 }

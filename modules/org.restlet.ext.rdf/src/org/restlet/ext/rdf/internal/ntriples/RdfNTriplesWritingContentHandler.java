@@ -52,6 +52,9 @@ public class RdfNTriplesWritingContentHandler extends GraphHandler {
     /** Buffered writer. */
     private BufferedWriter bw;
 
+    /** The graph of links to write. */
+    private Graph linkSet;
+
     /**
      * Constructor.
      * 
@@ -62,12 +65,11 @@ public class RdfNTriplesWritingContentHandler extends GraphHandler {
      * @throws IOException
      * @throws IOException
      */
-    public RdfNTriplesWritingContentHandler(Graph linkset,
+    public RdfNTriplesWritingContentHandler(Graph linkSet,
             OutputStream outputStream) throws IOException {
         super();
+        this.linkSet = linkSet;
         this.bw = new BufferedWriter(new OutputStreamWriter(outputStream));
-        this.write(linkset);
-        this.bw.flush();
     }
 
     @Override
@@ -109,6 +111,18 @@ public class RdfNTriplesWritingContentHandler extends GraphHandler {
             org.restlet.Context.getCurrentLogger().warning(
                     "Cannot write the representation of a statement due to: "
                             + e.getMessage());
+        }
+    }
+
+    /**
+     * Writes the current graph of links.
+     * 
+     * @throws IOException
+     */
+    public void write() throws IOException {
+        if (this.linkSet != null) {
+            write(this.linkSet);
+            this.bw.flush();
         }
     }
 

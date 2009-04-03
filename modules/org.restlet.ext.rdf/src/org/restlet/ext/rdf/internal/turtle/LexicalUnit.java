@@ -28,19 +28,19 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.rdf.internal.n3;
+package org.restlet.ext.rdf.internal.turtle;
 
 import java.io.IOException;
 
 /**
- * Represents a lexical unit inside a N3 document.
+ * Represents a lexical unit inside a Turtle document.
  * 
  * @author Thierry Boileau
  */
 public abstract class LexicalUnit {
 
-    /** The content handler of the current N3 document. */
-    private RdfN3ParsingContentHandler contentHandler;
+    /** The content handler of the current Turtle document. */
+    private RdfTurtleParsingContentHandler contentHandler;
 
     /** The context maintained during the parsing. */
     private Context context;
@@ -56,7 +56,7 @@ public abstract class LexicalUnit {
      * @param context
      *            The parsing context.
      */
-    public LexicalUnit(RdfN3ParsingContentHandler contentHandler,
+    public LexicalUnit(RdfTurtleParsingContentHandler contentHandler,
             Context context) {
         super();
         this.contentHandler = contentHandler;
@@ -79,7 +79,7 @@ public abstract class LexicalUnit {
      * 
      * @return The document's parent handler.
      */
-    public RdfN3ParsingContentHandler getContentHandler() {
+    public RdfTurtleParsingContentHandler getContentHandler() {
         return contentHandler;
     }
 

@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.rdf.internal.n3;
+package org.restlet.ext.rdf.internal.turtle;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,13 +38,17 @@ import org.restlet.data.Reference;
 import org.restlet.ext.rdf.internal.RdfConstants;
 
 /**
- * Represents a list of N3 tokens.
+ * Represents a list of Turtle tokens.
  * 
  * @author Thierry Boileau
  */
-class ListToken extends LexicalUnit {
+public class ListToken extends LexicalUnit {
     /** The list of contained tokens. */
     List<LexicalUnit> lexicalUnits;
+
+    public List<LexicalUnit> getLexicalUnits() {
+        return lexicalUnits;
+    }
 
     /**
      * Constructor with arguments.
@@ -54,8 +58,8 @@ class ListToken extends LexicalUnit {
      * @param context
      *            The parsing context.
      */
-    public ListToken(RdfN3ParsingContentHandler contentHandler, Context context)
-            throws IOException {
+    public ListToken(RdfTurtleParsingContentHandler contentHandler,
+            Context context) throws IOException {
         super(contentHandler, context);
         lexicalUnits = new ArrayList<LexicalUnit>();
         this.parse();
@@ -64,7 +68,7 @@ class ListToken extends LexicalUnit {
     @Override
     public Object resolve() {
         Reference currentBlankNode = (Reference) new BlankNodeToken(
-                RdfN3ParsingContentHandler.newBlankNodeId()).resolve();
+                getContentHandler().newBlankNodeId()).resolve();
         for (LexicalUnit lexicalUnit : lexicalUnits) {
             Object element = lexicalUnit.resolve();
 
@@ -83,7 +87,7 @@ class ListToken extends LexicalUnit {
             }
 
             Reference restBlankNode = (Reference) new BlankNodeToken(
-                    RdfN3ParsingContentHandler.newBlankNodeId()).resolve();
+                    getContentHandler().newBlankNodeId()).resolve();
 
             getContentHandler().link(currentBlankNode, RdfConstants.LIST_REST,
                     restBlankNode);
@@ -102,54 +106,6 @@ class ListToken extends LexicalUnit {
 
     @Override
     public void parse() throws IOException {
-        getContentHandler().step();
-        do {
-            getContentHandler().consumeWhiteSpaces();
-            switch (getContentHandler().getChar()) {
-            case '(':
-                lexicalUnits.add(new ListToken(getContentHandler(),
-                        getContext()));
-                break;
-            case '<':
-                if (getContentHandler().step() == '=') {
-                    lexicalUnits.add(new Token("<="));
-                    getContentHandler().step();
-                    getContentHandler().discard();
-                } else {
-                    getContentHandler().stepBack();
-                    lexicalUnits.add(new UriToken(getContentHandler(),
-                            getContext()));
-                }
-                break;
-            case '_':
-                lexicalUnits.add(new BlankNodeToken(getContentHandler()
-                        .parseToken()));
-                break;
-            case '"':
-                lexicalUnits.add(new StringToken(getContentHandler(),
-                        getContext()));
-                break;
-            case '[':
-                lexicalUnits.add(new BlankNodeToken(getContentHandler(),
-                        getContext()));
-                break;
-            case '{':
-                lexicalUnits.add(new FormulaToken(getContentHandler(),
-                        getContext()));
-                break;
-            case ')':
-                break;
-            case RdfN3ParsingContentHandler.EOF:
-                break;
-            default:
-                lexicalUnits.add(new Token(getContentHandler(), getContext()));
-                break;
-            }
-        } while (getContentHandler().getChar() != RdfN3ParsingContentHandler.EOF
-                && getContentHandler().getChar() != ')');
-        if (getContentHandler().getChar() == ')') {
-            // Set the cursor at the right of the list token.
-            getContentHandler().step();
-        }
+        getContentHandler().parseList(this);
     }
 }

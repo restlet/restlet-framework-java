@@ -59,7 +59,7 @@ public class RdfNTriplesRepresentation extends RdfRepresentation {
      * Constructor. Parses the given representation into the given graph.
      * 
      * @param rdfRepresentation
-     *            The RDF N3 representation to parse.
+     *            The RDF N-Triples representation to parse.
      * @param linkSet
      *            The graph to update.
      * @throws IOException
@@ -67,13 +67,15 @@ public class RdfNTriplesRepresentation extends RdfRepresentation {
     public RdfNTriplesRepresentation(Representation rdfRepresentation,
             Graph linkSet) throws IOException {
         super(linkSet);
-        new RdfNTriplesParsingContentHandler(linkSet, rdfRepresentation);
+        new RdfNTriplesParsingContentHandler(linkSet, rdfRepresentation)
+                .parse();
     }
 
     @Override
     public void write(OutputStream outputStream) throws IOException {
         if (getGraph() != null) {
-            new RdfNTriplesWritingContentHandler(getGraph(), outputStream);
+            new RdfNTriplesWritingContentHandler(getGraph(), outputStream).write();
         }
     }
+
 }

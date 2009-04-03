@@ -41,7 +41,6 @@ import org.restlet.ext.rdf.Graph;
 import org.restlet.ext.rdf.GraphHandler;
 import org.restlet.ext.rdf.LinkReference;
 import org.restlet.ext.rdf.Literal;
-import org.restlet.ext.rdf.internal.n3.RdfN3ParsingContentHandler;
 import org.restlet.representation.Representation;
 
 /**
@@ -51,60 +50,23 @@ import org.restlet.representation.Representation;
  */
 public class RdfNTriplesParsingContentHandler extends GraphHandler {
 
-    /** Size of the reading buffer. */
-    private static final int BUFFER_SIZE = 4096;
-
-    /** End of reading buffer marker. */
-    public static final int EOF = 0;
-
-    /**
-     * Returns true if the given character is alphanumeric.
-     * 
-     * @param c
-     *            The given character to check.
-     * @return true if the given character is alphanumeric.
-     */
-    public static boolean isAlphaNum(int c) {
-        return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')
-                || (c >= '0' && c <= '9');
-    }
-
-    /**
-     * Returns true if the given character is a delimiter.
-     * 
-     * @param c
-     *            The given character to check.
-     * @return true if the given character is a delimiter.
-     */
-    public static boolean isDelimiter(int c) {
-        return isWhiteSpace(c) || c == '^' || c == '!' || c == '=' || c == '<'
-                || c == '"' || c == '{' || c == '}' || c == '[' || c == ']'
-                || c == '(' || c == ')' || c == '.' || c == ';' || c == ','
-                || c == '@';
-    }
-
-    /**
-     * Returns true if the given character is a whitespace.
-     * 
-     * @param c
-     *            The given character to check.
-     * @return true if the given character is a whitespace.
-     */
-    public static boolean isWhiteSpace(int c) {
-        return c == ' ' || c == '\n' || c == '\r' || c == '\t';
-    }
-
     /** Internal buffered reader. */
     private BufferedReader br;
 
     /** The reading buffer. */
     private final char[] buffer;
 
+    /** Size of the reading buffer. */
+    private final int BUFFER_SIZE = 4096;
+
+    /** End of reading buffer marker. */
+    public final int EOF = 0;
+
     /** The set of links to update when parsing. */
     private Graph linkSet;
 
     /** The representation to read. */
-    private Representation rdfNTriplesRepresentation;
+    private Representation rdfRepresentation;
 
     /**
      * Index that discovers the end of the current token and the beginning of
@@ -120,26 +82,25 @@ public class RdfNTriplesParsingContentHandler extends GraphHandler {
      * 
      * @param linkSet
      *            The set of links to update during the parsing.
-     * @param rdfNTriplesRepresentation
+     * @param rdfRepresentation
      *            The representation to read.
      * @throws IOException
      */
     public RdfNTriplesParsingContentHandler(Graph linkSet,
-            Representation rdfNTriplesRepresentation) throws IOException {
+            Representation rdfRepresentation) throws IOException {
         super();
         this.linkSet = linkSet;
-        this.rdfNTriplesRepresentation = rdfNTriplesRepresentation;
+        this.rdfRepresentation = rdfRepresentation;
 
         // Initialize the buffer in two parts
-        this.buffer = new char[(RdfNTriplesParsingContentHandler.BUFFER_SIZE + 1) * 2];
+        this.buffer = new char[(BUFFER_SIZE + 1) * 2];
         // Mark the upper index of each part.
-        this.buffer[RdfNTriplesParsingContentHandler.BUFFER_SIZE] = this.buffer[2 * RdfNTriplesParsingContentHandler.BUFFER_SIZE + 1] = EOF;
-        this.scoutIndex = 2 * RdfNTriplesParsingContentHandler.BUFFER_SIZE;
+        this.buffer[BUFFER_SIZE] = this.buffer[2 * BUFFER_SIZE + 1] = EOF;
+        this.scoutIndex = 2 * BUFFER_SIZE;
         this.startTokenIndex = 0;
 
         this.br = new BufferedReader(new InputStreamReader(
-                this.rdfNTriplesRepresentation.getStream()));
-        parse();
+                this.rdfRepresentation.getStream()));
     }
 
     /**
@@ -148,9 +109,9 @@ public class RdfNTriplesParsingContentHandler extends GraphHandler {
      * 
      * @throws IOException
      */
-    public void consumeStatement() throws IOException {
+    protected void consumeStatement() throws IOException {
         int c = getChar();
-        while (c != RdfNTriplesParsingContentHandler.EOF && c != '.') {
+        while (!isEndOfFile(c) && c != '.') {
             c = step();
         }
         if (getChar() == '.') {
@@ -166,8 +127,8 @@ public class RdfNTriplesParsingContentHandler extends GraphHandler {
      * 
      * @throws IOException
      */
-    public void consumeWhiteSpaces() throws IOException {
-        while (RdfNTriplesParsingContentHandler.isWhiteSpace(getChar())) {
+    protected void consumeWhiteSpaces() throws IOException {
+        while (isWhiteSpace(getChar())) {
             step();
         }
         discard();
@@ -177,7 +138,7 @@ public class RdfNTriplesParsingContentHandler extends GraphHandler {
      * Discard all read characters. A call to {@link getCurrentToken} will
      * return a single character.
      */
-    public void discard() {
+    protected void discard() {
         startTokenIndex = scoutIndex;
     }
 
@@ -186,7 +147,7 @@ public class RdfNTriplesParsingContentHandler extends GraphHandler {
      * 
      * @return The current parsed character.
      */
-    public char getChar() {
+    protected char getChar() {
         return (char) buffer[scoutIndex];
     }
 
@@ -195,34 +156,34 @@ public class RdfNTriplesParsingContentHandler extends GraphHandler {
      * 
      * @return The current token.
      */
-    public String getCurrentToken() {
+    protected String getCurrentToken() {
         StringBuilder builder = new StringBuilder();
         if (startTokenIndex <= scoutIndex) {
-            if (scoutIndex <= RdfNTriplesParsingContentHandler.BUFFER_SIZE) {
+            if (scoutIndex <= BUFFER_SIZE) {
                 for (int i = startTokenIndex; i < scoutIndex; i++) {
                     builder.append((char) buffer[i]);
                 }
             } else {
-                for (int i = startTokenIndex; i < RdfNTriplesParsingContentHandler.BUFFER_SIZE; i++) {
+                for (int i = startTokenIndex; i < BUFFER_SIZE; i++) {
                     builder.append((char) buffer[i]);
                 }
-                for (int i = RdfNTriplesParsingContentHandler.BUFFER_SIZE + 1; i < scoutIndex; i++) {
+                for (int i = BUFFER_SIZE + 1; i < scoutIndex; i++) {
                     builder.append((char) buffer[i]);
                 }
             }
         } else {
-            if (startTokenIndex <= RdfNTriplesParsingContentHandler.BUFFER_SIZE) {
-                for (int i = startTokenIndex; i < RdfNTriplesParsingContentHandler.BUFFER_SIZE; i++) {
+            if (startTokenIndex <= BUFFER_SIZE) {
+                for (int i = startTokenIndex; i < BUFFER_SIZE; i++) {
                     builder.append((char) buffer[i]);
                 }
-                for (int i = RdfNTriplesParsingContentHandler.BUFFER_SIZE + 1; i < (2 * RdfNTriplesParsingContentHandler.BUFFER_SIZE + 1); i++) {
+                for (int i = BUFFER_SIZE + 1; i < (2 * BUFFER_SIZE + 1); i++) {
                     builder.append((char) buffer[i]);
                 }
                 for (int i = 0; i < scoutIndex; i++) {
                     builder.append((char) buffer[i]);
                 }
             } else {
-                for (int i = startTokenIndex; i < (2 * RdfNTriplesParsingContentHandler.BUFFER_SIZE + 1); i++) {
+                for (int i = startTokenIndex; i < (2 * BUFFER_SIZE + 1); i++) {
                     builder.append((char) buffer[i]);
                 }
                 for (int i = 0; i < scoutIndex; i++) {
@@ -233,6 +194,48 @@ public class RdfNTriplesParsingContentHandler extends GraphHandler {
         // the current token is consumed.
         startTokenIndex = scoutIndex;
         return builder.toString();
+    }
+
+    public Graph getLinkSet() {
+        return linkSet;
+    }
+
+    /**
+     * Returns true if the given character is alphanumeric.
+     * 
+     * @param c
+     *            The given character to check.
+     * @return true if the given character is alphanumeric.
+     */
+    protected boolean isAlphaNum(int c) {
+        return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')
+                || (c >= '0' && c <= '9');
+    }
+
+    /**
+     * Returns true if the given character is a delimiter.
+     * 
+     * @param c
+     *            The given character to check.
+     * @return true if the given character is a delimiter.
+     */
+    protected boolean isDelimiter(int c) {
+        return isWhiteSpace(c) || c == '"' || c == '.';
+    }
+
+    protected boolean isEndOfFile(int c) {
+        return c == EOF;
+    }
+
+    /**
+     * Returns true if the given character is a whitespace.
+     * 
+     * @param c
+     *            The given character to check.
+     * @return true if the given character is a whitespace.
+     */
+    protected boolean isWhiteSpace(int c) {
+        return c == ' ' || c == '\n' || c == '\r' || c == '\t';
     }
 
     @Override
@@ -262,7 +265,7 @@ public class RdfNTriplesParsingContentHandler extends GraphHandler {
      * 
      * @throws IOException
      */
-    private void parse() throws IOException {
+    public void parse() throws IOException {
         // Init the reading.
         step();
         do {
@@ -278,8 +281,7 @@ public class RdfNTriplesParsingContentHandler extends GraphHandler {
                 parseStatement();
                 break;
             }
-        } while (getChar() != RdfNTriplesParsingContentHandler.EOF);
-
+        } while (!isEndOfFile(getChar()));
     }
 
     /**
@@ -287,12 +289,11 @@ public class RdfNTriplesParsingContentHandler extends GraphHandler {
      * 
      * @throws IOException
      */
-    public void parseComment() throws IOException {
+    protected void parseComment() throws IOException {
         int c;
         do {
             c = step();
-        } while (c != RdfNTriplesParsingContentHandler.EOF && c != '\n'
-                && c != '\r');
+        } while (!isEndOfFile(getChar()) && c != '\n' && c != '\r');
         discard();
     }
 
@@ -303,7 +304,7 @@ public class RdfNTriplesParsingContentHandler extends GraphHandler {
      *            The current context.
      * @throws IOException
      */
-    public void parseStatement() throws IOException {
+    protected void parseStatement() throws IOException {
         List<Reference> lexicalUnits = new ArrayList<Reference>();
         String object = null;
         do {
@@ -320,7 +321,7 @@ public class RdfNTriplesParsingContentHandler extends GraphHandler {
                 stepBack(1);
                 discard();
                 int c = getChar();
-                while (c != RdfN3ParsingContentHandler.EOF && (c != '"')) {
+                while (!isEndOfFile(c) && (c != '"')) {
                     c = step();
                 }
                 object = getCurrentToken();
@@ -329,13 +330,13 @@ public class RdfNTriplesParsingContentHandler extends GraphHandler {
                 break;
             case '.':
                 break;
-            case RdfNTriplesParsingContentHandler.EOF:
+            case EOF:
                 break;
             default:
                 break;
             }
-        } while (getChar() != RdfNTriplesParsingContentHandler.EOF
-                && getChar() != '.' && getChar() != '}');
+        } while (!isEndOfFile(getChar()) && getChar() != '.'
+                && getChar() != '}');
 
         // Generate the links
         if (object != null) {
@@ -352,11 +353,11 @@ public class RdfNTriplesParsingContentHandler extends GraphHandler {
      * @return The value of the current token.
      * @throws IOException
      */
-    public String parseToken() throws IOException {
+    protected String parseToken() throws IOException {
         int c;
         do {
             c = step();
-        } while (c != RdfNTriplesParsingContentHandler.EOF && !isDelimiter(c));
+        } while (!isEndOfFile(c) && !isDelimiter(c));
         String result = getCurrentToken();
         return result;
     }
@@ -367,11 +368,11 @@ public class RdfNTriplesParsingContentHandler extends GraphHandler {
      * @return The value of the current URI.
      * @throws IOException
      */
-    public String parseUri() throws IOException {
+    protected String parseUri() throws IOException {
         StringBuilder builder = new StringBuilder();
         // Suppose the current character is "<".
         int c = step();
-        while (c != RdfNTriplesParsingContentHandler.EOF && c != '>') {
+        while (c != EOF && c != '>') {
             if (!isWhiteSpace(c)) {
                 // Discard white spaces.
                 builder.append((char) c);
@@ -393,33 +394,30 @@ public class RdfNTriplesParsingContentHandler extends GraphHandler {
      * @return The new read character.
      * @throws IOException
      */
-    public int step() throws IOException {
+    protected int step() throws IOException {
         scoutIndex++;
-        if (buffer[scoutIndex] == RdfNTriplesParsingContentHandler.EOF) {
-            if (scoutIndex == RdfNTriplesParsingContentHandler.BUFFER_SIZE) {
+        if (buffer[scoutIndex] == EOF) {
+            if (scoutIndex == BUFFER_SIZE) {
                 // Reached the end of the first part of the buffer, read into
                 // the second one.
                 scoutIndex++;
-                int len = this.br.read(buffer, 0,
-                        RdfNTriplesParsingContentHandler.BUFFER_SIZE);
+                int len = this.br.read(buffer, 0, BUFFER_SIZE);
                 if (len == -1) {
                     // End of the stream reached
-                    buffer[scoutIndex] = RdfNTriplesParsingContentHandler.EOF;
+                    buffer[scoutIndex] = EOF;
                 } else {
-                    buffer[RdfNTriplesParsingContentHandler.BUFFER_SIZE + len
-                            + 1] = RdfNTriplesParsingContentHandler.EOF;
+                    buffer[BUFFER_SIZE + len + 1] = EOF;
                 }
-            } else if (scoutIndex == (2 * RdfNTriplesParsingContentHandler.BUFFER_SIZE + 1)) {
+            } else if (scoutIndex == (2 * BUFFER_SIZE + 1)) {
                 scoutIndex = 0;
                 // Reached the end of the second part of the buffer, read into
                 // the first one.
-                int len = this.br.read(buffer, 0,
-                        RdfNTriplesParsingContentHandler.BUFFER_SIZE);
+                int len = this.br.read(buffer, 0, BUFFER_SIZE);
                 if (len == -1) {
                     // End of the stream reached
-                    buffer[scoutIndex] = RdfNTriplesParsingContentHandler.EOF;
+                    buffer[scoutIndex] = EOF;
                 } else {
-                    buffer[len] = RdfNTriplesParsingContentHandler.EOF;
+                    buffer[len] = EOF;
                 }
             } else {
                 // Reached the end of the stream.
@@ -433,10 +431,10 @@ public class RdfNTriplesParsingContentHandler extends GraphHandler {
      * Steps forward.
      * 
      * @param n
-     *            the number of steps to go forward.
+     *            The number of steps to go forward.
      * @throws IOException
      */
-    public void step(int n) throws IOException {
+    protected void step(int n) throws IOException {
         for (int i = 0; i < n; i++) {
             step();
         }
@@ -446,7 +444,7 @@ public class RdfNTriplesParsingContentHandler extends GraphHandler {
      * Steps back of one step.
      * 
      */
-    public void stepBack() {
+    protected void stepBack() {
         stepBack(1);
     }
 
@@ -454,13 +452,12 @@ public class RdfNTriplesParsingContentHandler extends GraphHandler {
      * Steps back.
      * 
      * @param n
-     *            the number of steps to go back.
+     *            The number of steps to go back.
      */
-    public void stepBack(int n) {
+    protected void stepBack(int n) {
         scoutIndex -= n;
         if (scoutIndex < 0) {
-            scoutIndex = RdfNTriplesParsingContentHandler.BUFFER_SIZE * 2 + 1
-                    - scoutIndex;
+            scoutIndex = BUFFER_SIZE * 2 + 1 - scoutIndex;
         }
     }
 }

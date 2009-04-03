@@ -32,6 +32,9 @@ package org.restlet.ext.rdf.internal.n3;
 
 import java.io.IOException;
 
+import org.restlet.ext.rdf.internal.turtle.Context;
+import org.restlet.ext.rdf.internal.turtle.LexicalUnit;
+
 /**
  * Allows to parse a formula in RDF N3 notation. Please note that this kind of
  * feature is not supported yet.
@@ -55,14 +58,6 @@ public class FormulaToken extends LexicalUnit {
 
     @Override
     public void parse() throws IOException {
-        getContentHandler().step();
-        do {
-            getContentHandler().parseStatement(new Context());
-        } while (getContentHandler().getChar() != RdfN3ParsingContentHandler.EOF
-                && getContentHandler().getChar() != '}');
-        if (getContentHandler().getChar() == '}') {
-            // Set the cursor at the right of the list token.
-            getContentHandler().step();
-        }
+        ((RdfN3ParsingContentHandler) getContentHandler()).parseFormula(this);
     }
 }

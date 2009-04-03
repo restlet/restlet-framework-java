@@ -46,7 +46,7 @@ import org.restlet.representation.SaxRepresentation;
  */
 public class RdfXmlParsingContentHandler extends GraphHandler {
 
-    /** The set of links to update when parsing, or to read when writing. */
+    /** The set of links to update when parsing. */
     private Graph linkSet;
 
     /** The representation to read. */
@@ -59,10 +59,9 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
      *            The set of links to update during the parsing.
      * @param rdfXmlRepresentation
      *            The representation to read.
-     * @throws IOException
      */
     public RdfXmlParsingContentHandler(Graph linkSet,
-            Representation rdfXmlRepresentation) throws IOException {
+            Representation rdfXmlRepresentation) {
         super();
         this.linkSet = linkSet;
         if (rdfXmlRepresentation instanceof SaxRepresentation) {
@@ -75,8 +74,6 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
             this.rdfXmlRepresentation.setIdentifier(rdfXmlRepresentation
                     .getIdentifier());
         }
-
-        parse();
     }
 
     @Override
@@ -112,7 +109,7 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
      * 
      * @throws IOException
      */
-    private void parse() throws IOException {
+    public void parse() throws IOException {
         this.rdfXmlRepresentation.parse(new ContentReader(this,
                 rdfXmlRepresentation));
     }

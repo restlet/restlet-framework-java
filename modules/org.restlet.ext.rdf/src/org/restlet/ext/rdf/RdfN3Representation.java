@@ -67,13 +67,13 @@ public class RdfN3Representation extends RdfRepresentation {
     public RdfN3Representation(Representation rdfRepresentation, Graph linkSet)
             throws IOException {
         super(linkSet);
-        new RdfN3ParsingContentHandler(linkSet, rdfRepresentation);
+        new RdfN3ParsingContentHandler(linkSet, rdfRepresentation).parse();
     }
 
     @Override
     public void write(OutputStream outputStream) throws IOException {
         if (getGraph() != null) {
-            new RdfN3WritingContentHandler(getGraph(), outputStream);
+            new RdfN3WritingContentHandler(getGraph(), outputStream).write();
         }
     }
 }

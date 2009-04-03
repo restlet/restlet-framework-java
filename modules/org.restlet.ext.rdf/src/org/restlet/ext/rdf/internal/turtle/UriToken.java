@@ -28,18 +28,18 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.rdf.internal.n3;
+package org.restlet.ext.rdf.internal.turtle;
 
 import java.io.IOException;
 
 import org.restlet.data.Reference;
 
 /**
- * Represents a URI token inside a RDF N3 document.
+ * Represents a URI token inside a RDF Turtle document.
  * 
  * @author Thierry Boileau
  */
-class UriToken extends LexicalUnit {
+public class UriToken extends LexicalUnit {
     /**
      * Constructor with arguments.
      * 
@@ -48,15 +48,15 @@ class UriToken extends LexicalUnit {
      * @param context
      *            The parsing context.
      */
-    public UriToken(RdfN3ParsingContentHandler contentHandler, Context context)
-            throws IOException {
+    public UriToken(RdfTurtleParsingContentHandler contentHandler,
+            Context context) throws IOException {
         super(contentHandler, context);
         this.parse();
     }
 
     @Override
     public void parse() throws IOException {
-        setValue(getContentHandler().parseUri());
+        getContentHandler().parseUri(this);
     }
 
     @Override
