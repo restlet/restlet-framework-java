@@ -20,7 +20,8 @@ Changes log
         - RepresentationInfo is now concrete and has more constructors.
           Suggested by Lars Heuer.
     - Miscellaneous
-        - 
+        - Component XML configuration has been moved into an Engine 
+          ComponentXmlParser class.
 
 - 1.2 Milestone 2 (2009-04-01)
     - Breaking changes

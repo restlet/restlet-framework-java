@@ -371,7 +371,7 @@ public class Server extends Connector {
      * @param address
      *            The optional listening IP address (local host used if null).
      */
-    protected void setAddress(String address) {
+    public void setAddress(String address) {
         this.address = address;
     }
 
