@@ -33,8 +33,8 @@ package org.restlet.ext.rdf;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.restlet.ext.rdf.internal.Ntriples.RdfNTriplesParsingContentHandler;
-import org.restlet.ext.rdf.internal.Ntriples.RdfNTriplesWritingContentHandler;
+import org.restlet.ext.rdf.internal.ntriples.RdfNTriplesParsingContentHandler;
+import org.restlet.ext.rdf.internal.ntriples.RdfNTriplesWritingContentHandler;
 import org.restlet.representation.Representation;
 
 /**

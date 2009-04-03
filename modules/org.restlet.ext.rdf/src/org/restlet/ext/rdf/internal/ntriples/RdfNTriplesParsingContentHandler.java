@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.rdf.internal.Ntriples;
+package org.restlet.ext.rdf.internal.ntriples;
 
 import java.io.BufferedReader;
 import java.io.IOException;
