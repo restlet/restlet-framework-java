@@ -264,7 +264,6 @@ public class ServerResource extends UniformResource {
      */
     protected RepresentationInfo doGetInfo() throws ResourceException {
         RepresentationInfo result = null;
-
         AnnotationInfo annotationInfo = getAnnotation(Method.GET);
 
         if (annotationInfo != null) {
