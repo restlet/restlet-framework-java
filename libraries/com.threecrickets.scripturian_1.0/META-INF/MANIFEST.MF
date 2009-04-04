@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Scripturian
 Bundle-SymbolicName: com.threecrickets.scripturian
-Bundle-Version: 1.0.0.rc2
+Bundle-Version: 1.0.0.rc3
 Bundle-ClassPath: com.threecrickets.scripturian.jar
 Bundle-Vendor: Three Crickets
 Export-Package: com.threecrickets.scripturian;uses:="javax.script",
