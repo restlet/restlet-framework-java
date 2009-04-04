@@ -21,7 +21,7 @@ import org.json.JSONObject
 
 // Include the context library
 
-container.include('groovy/context.fragment')
+script.container.include('groovy/context.fragment')
 
 // State
 //
@@ -41,7 +41,7 @@ getState = {
 }
 
 setState = { value ->
-	container.resource.context.attributes['groovy.state'] = value 
+	script.container.resource.context.attributes['groovy.state'] = value 
 }
 
 // This closure is called when the resource is initialized. We will use it to set
@@ -53,7 +53,7 @@ initializeResource = {
 	// "Accept" attribute of their request header, specifying that any media type
 	// will do, in which case the first one we add will be used.
 
-	container.variants[Method.ALL] = [MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN]
+	script.container.variants[Method.ALL] = [MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN]
 }
 
 // This closure is called for the GET verb, which is expected to behave as a
@@ -64,10 +64,11 @@ initializeResource = {
 // org.restlet.resource.Representation. Other types will be automatically converted to
 // string representation using the client's requested media type and character set.
 // These, and the language of the representation (defaulting to null), can be read and
-// changed via container.mediaType, container.characterSet, and container.language.
+// changed via script.container.mediaType, script.container.characterSet, and
+//  script.container.language.
 //
-// Additionally, you can use container.variant to interrogate the client's provided list
-// of supported languages and encoding.
+// Additionally, you can use script.container.variant to interrogate the client's provided
+// list of supported languages and encoding.
 
 represent = {
 	def r
@@ -85,7 +86,7 @@ represent = {
 	// Return a representation appropriate for the requested media type
 	// of the possible options we created in initializeResource()
 
-	if(container.mediaType == MediaType.APPLICATION_JSON)
+	if(script.container.mediaType == MediaType.APPLICATION_JSON)
 		r = new JsonRepresentation(r)
 
 	return r
@@ -94,7 +95,7 @@ represent = {
 // This closure is called for the POST verb, which is expected to behave as a
 // logical "update" of the resource's state.
 //
-// The expectation is that container.entity represents an update to the state,
+// The expectation is that script.container.entity represents an update to the state,
 // that will affect future calls to represent(). As such, it may be possible
 // to accept logically partial representations of the state.
 //
@@ -107,7 +108,7 @@ acceptRepresentation = {
 	// Note that we are using the JSON library to parse the entity. While
 	// a simple eval() would also work, the JSONObject constructor is much safer.
 	
-	def update = new JSONObject(container.entity.text)
+	def update = new JSONObject(script.container.entity.text)
 	def stateLock = getStateLock()
 	def state = getState()
 	
@@ -128,7 +129,7 @@ acceptRepresentation = {
 // This closure is called for the PUT verb, which is expected to behave as a
 // logical "create" of the resource's state.
 //
-// The expectation is that container.entity represents an entirely new state,
+// The expectation is that script.container.entity represents an entirely new state,
 // that will affect future calls to represent(). Unlike acceptRepresentation(),
 // it is expected that the representation be logically complete.
 //
@@ -140,7 +141,7 @@ acceptRepresentation = {
 storeRepresentation = {
 	// See comment in acceptRepresentation()
 
-	def entity = new JSONObject(container.entity.text)
+	def entity = new JSONObject(script.container.entity.text)
 
 	def state = [:]
 	for(def key in entity.keys()) {

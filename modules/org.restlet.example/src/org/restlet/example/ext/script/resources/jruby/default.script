@@ -21,7 +21,7 @@ import org.json.JSONObject
 
 # Include the context library
 
-$container.include 'jruby/context.fragment'
+$script.container.include 'jruby/context.fragment'
 include $static_module
 
 # State
@@ -42,7 +42,7 @@ def get_state
 end
 
 def set_state value
-	$container.resource.context.attributes['jruby.state'] = value
+	$script.container.resource.context.attributes['jruby.state'] = value
 end
 
 $state = get_state()
@@ -60,7 +60,7 @@ def initialize_resource
 	# "Accept" attribute of their request header, specifying that any media type
 	# will do, in which case the first one we add will be used.
 
-	$container.variants[org.restlet.data.Method::ALL] = [MediaType::APPLICATION_JSON, MediaType::TEXT_PLAIN]
+	$script.container.variants[org.restlet.data.Method::ALL] = [MediaType::APPLICATION_JSON, MediaType::TEXT_PLAIN]
 end
 
 # This method is called for the GET verb, which is expected to behave as a
@@ -71,10 +71,11 @@ end
 # org.restlet.resource.Representation. Other types will be automatically converted to
 # string representation using the client's requested media type and character set.
 # These, and the language of the representation (defaulting to None), can be read and
-# changed via $container.media_type, $container.character_set, and $container.language.
+# changed via $script.container.media_type, $script.container.character_set, and
+# $script.container.language.
 #
-# Additionally, you can use $container.variant to interrogate the client's provided list
-# of supported languages and encoding.
+# Additionally, you can use $script.container.variant to interrogate the client's provided
+# list of supported languages and encoding.
 
 def represent
 	r = nil
@@ -91,7 +92,7 @@ def represent
 	# Return a representation appropriate for the requested media type
 	# of the possible options we created in initialize_resource()
 
-	if $container.media_type == MediaType::APPLICATION_JSON
+	if $script.container.media_type == MediaType::APPLICATION_JSON
 		return JsonRepresentation.new r
 	end
 
@@ -101,7 +102,7 @@ end
 # This method is called for the POST verb, which is expected to behave as a
 # logical "update" of the resource's state.
 #
-# The expectation is that container.entity represents an update to the state,
+# The expectation is that script.container.entity represents an update to the state,
 # that will affect future calls to represent. As such, it may be possible
 # to accept logically partial representations of the state.
 #
@@ -111,7 +112,7 @@ end
 # to the client.
 
 def accept_representation
-	update = JSONObject.new $container.entity.text
+	update = JSONObject.new $script.container.entity.text
 	state_lock = get_state_lock()
 	state = get_state()
 	
@@ -131,7 +132,7 @@ end
 # This method is called for the PUT verb, which is expected to behave as a
 # logical "create" of the resource's state.
 #
-# The expectation is that container.entity represents an entirely new state,
+# The expectation is that script.container.entity represents an entirely new state,
 # that will affect future calls to represent. Unlike accept_representation,
 # it is expected that the representation be logically complete.
 #
@@ -141,7 +142,7 @@ end
 # to the client.
 
 def store_representation
-	update = JSONObject.new $container.entity.text
+	update = JSONObject.new $script.container.entity.text
 
 	state = {}	
 	for key in update.keys

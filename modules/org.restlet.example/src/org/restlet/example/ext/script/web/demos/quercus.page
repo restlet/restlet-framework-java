@@ -11,13 +11,13 @@
 // Accessing the request
 //
 
-$form = $container->request->resourceRef->queryAsForm;
+$form = $script->container->request->resourceRef->queryAsForm;
 
 //
 // Stream this script
 //
 
-if($form->getFirstValue('stream') == 'true') if($container->stream()) exit();
+if($form->getFirstValue('stream') == 'true') if($script->container->stream()) exit();
 
 $script->cacheDuration = 5000;
 

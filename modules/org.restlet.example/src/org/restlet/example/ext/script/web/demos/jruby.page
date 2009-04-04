@@ -11,14 +11,14 @@
 # Accessing the request
 #
 
-form = $container.request.resource_ref.query_as_form
+form = $script.container.request.resource_ref.query_as_form
 
 #
 # Stream this script
 #
 
 if form.get_first_value('stream') == 'true'
-	if $container.stream()
+	if $script.container.stream()
 		raise
 	end
 end
@@ -38,7 +38,7 @@ print 'This page was dynamically generated at ', System.current_time_millis
 #
 # This is identical to:
 #
-#   $container.include 'path'
+#   $script.container.include 'path'
 #
 
 %>

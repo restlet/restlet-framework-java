@@ -21,13 +21,13 @@ from org.restlet.ext.json import JsonRepresentation
 
 # Include the context library
 
-container.include('jython/context.fragment')
+script.container.include('jython/context.fragment')
 
 # Include the minjson library
 # (Note that we made a small change to minjson in order to accommodate Jython.
 # See line 334 there.)
 
-sys.path.append(str(script.source.basePath) + '/jython/')
+sys.path.append(str(script.container.source.basePath) + '/jython/')
 import minjson as json
 
 # State
@@ -46,14 +46,14 @@ def getState():
 	return getContextAttribute('jython.state', createDefault)
 
 def setState(value):
-	global container
-	container.resource.context.attributes['jython.state'] = value
+	global script
+	script.container.resource.context.attributes['jython.state'] = value
 
 # This function is called when the resource is initialized. We will use it to set
 # general characteristics for the resource.
 
 def initializeResource():
-	global container
+	global script
 
 	# The order in which we add the media types or variants is their order of
 	# preference. Note that clients often include a wildcard (such as "*/*") in the
@@ -63,7 +63,7 @@ def initializeResource():
 	mediaTypes = ArrayList()
 	mediaTypes.add(MediaType.APPLICATION_JSON)
 	mediaTypes.add(MediaType.TEXT_PLAIN)
-	container.variants[Method.ALL] = mediaTypes
+	script.container.variants[Method.ALL] = mediaTypes
 
 # This function is called for the GET verb, which is expected to behave as a
 # logical "read" of the resource's state.
@@ -73,12 +73,15 @@ def initializeResource():
 # org.restlet.resource.Representation. Other types will be automatically converted to
 # string representation using the client's requested media type and character set.
 # These, and the language of the representation (defaulting to None), can be read and
-# changed via container.mediaType, container.characterSet, and container.language.
+# changed via script.container.mediaType, script.container.characterSet, and
+# script.container.language.
 #
-# Additionally, you can use container.variant to interrogate the client's provided list
-# of supported languages and encoding.
+# Additionally, you can use script.container.variant to interrogate the client's provided
+# list of supported languages and encoding.
 
 def represent():
+	global script
+
 	r = None
 	stateLock = getStateLock()
 	state = getState()
@@ -92,7 +95,7 @@ def represent():
 	# Return a representation appropriate for the requested media type
 	# of the possible options we created in initializeResource()
 
-	if container.mediaType == MediaType.APPLICATION_JSON:
+	if script.container.mediaType == MediaType.APPLICATION_JSON:
 		r = JsonRepresentation(r)
 		
 	return r
@@ -100,7 +103,7 @@ def represent():
 # This function is called for the POST verb, which is expected to behave as a
 # logical "update" of the resource's state.
 #
-# The expectation is that container.entity represents an update to the state,
+# The expectation is that script.container.entity represents an update to the state,
 # that will affect future calls to represent(). As such, it may be possible
 # to accept logically partial representations of the state.
 #
@@ -110,10 +113,12 @@ def represent():
 # to the client.
 
 def acceptRepresentation():
+	global script
+
 	# Note that we are using the minjson library to parse the entity. While
 	# a simple eval() would also work, minjson.read() is much safer.
 
-	update = json.read(container.entity.text)
+	update = json.read(script.container.entity.text)
 	stateLock = getStateLock()
 	state = getState()
 
@@ -130,7 +135,7 @@ def acceptRepresentation():
 # This function is called for the PUT verb, which is expected to behave as a
 # logical "create" of the resource's state.
 #
-# The expectation is that container.entity represents an entirely new state,
+# The expectation is that script.container.entity represents an entirely new state,
 # that will affect future calls to represent(). Unlike acceptRepresentation(),
 # it is expected that the representation be logically complete.
 #
@@ -140,9 +145,11 @@ def acceptRepresentation():
 # to the client.
 
 def storeRepresentation():
+	global script
+
 	# See comment in acceptRepresentation()
 
-	update = json.read(container.entity.text)
+	update = json.read(script.container.entity.text)
 	setState(update)
 
 	return represent()

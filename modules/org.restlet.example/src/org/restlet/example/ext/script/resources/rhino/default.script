@@ -23,11 +23,11 @@ importClass(
 
 // Include the context library
 
-container.include('rhino/context.fragment');
+script.container.include('rhino/context.fragment');
 
 // Include the JSON library
-print(container.resource.defaultScriptEngineName);
-container.include('rhino/json2.js', container.resource.defaultScriptEngineName);
+print(script.container.resource.defaultScriptEngineName);
+script.container.include('rhino/json2.js', script.container.resource.defaultScriptEngineName);
 
 // State
 //
@@ -47,7 +47,7 @@ function getState() {
 }
 
 function setState(value) {
-	container.resource.context.attributes.put('rhino.state', value); 
+	script.container.resource.context.attributes.put('rhino.state', value); 
 }
 
 // This function is called when the resource is initialized. We will use it to set
@@ -62,7 +62,7 @@ function initializeResource() {
 	var mediaTypes = new ArrayList();
 	mediaTypes.add(MediaType.APPLICATION_JSON);
 	mediaTypes.add(MediaType.TEXT_PLAIN);
-    container.variants.put(Method.ALL, mediaTypes);
+    script.container.variants.put(Method.ALL, mediaTypes);
 }
 
 // This function is called for the GET verb, which is expected to behave as a
@@ -73,10 +73,11 @@ function initializeResource() {
 // org.restlet.resource.Representation. Other types will be automatically converted to
 // string representation using the client's requested media type and character set.
 // These, and the language of the representation (defaulting to null), can be read and
-// changed via container.mediaType, container.characterSet, and container.language.
+// changed via script.container.mediaType, script.container.characterSet, and
+// script.container.language.
 //
-// Additionally, you can use container.variant to interrogate the client's provided list
-// of supported languages and encoding.
+// Additionally, you can use script.container.variant to interrogate the client's provided
+// list of supported languages and encoding.
 
 function represent() {
 	var r;
@@ -94,7 +95,7 @@ function represent() {
 	// Return a representation appropriate for the requested media type
 	// of the possible options we created in initializeResource()
 
-	if(container.mediaType == MediaType.APPLICATION_JSON) {
+	if(script.container.mediaType == MediaType.APPLICATION_JSON) {
 		r = new JsonRepresentation(r);
 	}
 	
@@ -104,7 +105,7 @@ function represent() {
 // This function is called for the POST verb, which is expected to behave as a
 // logical "update" of the resource's state.
 //
-// The expectation is that container.entity represents an update to the state,
+// The expectation is that script.container.entity represents an update to the state,
 // that will affect future calls to represent(). As such, it may be possible
 // to accept logically partial representations of the state.
 //
@@ -121,7 +122,7 @@ function acceptRepresentation() {
 	// in this case the JSON library specifically expects a JavaScript string
 	// object.
 	
-	var update = JSON.parse(String(container.entity.text));
+	var update = JSON.parse(String(script.container.entity.text));
 	var stateLock = getStateLock();
 	var state = getState();
 	
@@ -141,7 +142,7 @@ function acceptRepresentation() {
 // This function is called for the PUT verb, which is expected to behave as a
 // logical "create" of the resource's state.
 //
-// The expectation is that container.entity represents an entirely new state,
+// The expectation is that script.container.entity represents an entirely new state,
 // that will affect future calls to represent(). Unlike acceptRepresentation(),
 // it is expected that the representation be logically complete.
 //
@@ -153,7 +154,7 @@ function acceptRepresentation() {
 function storeRepresentation() {
 	// See comment in acceptRepresentation()
 
-	var update = JSON.parse(String(container.entity.text));
+	var update = JSON.parse(String(script.container.entity.text));
 	setState(update);
 	
 	return represent();
