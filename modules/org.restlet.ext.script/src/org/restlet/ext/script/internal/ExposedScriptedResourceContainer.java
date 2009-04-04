@@ -32,11 +32,12 @@ package org.restlet.ext.script.internal;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import javax.script.ScriptEngine;
+import javax.script.ScriptContext;
 import javax.script.ScriptException;
 
 import org.restlet.data.CharacterSet;
@@ -54,13 +55,13 @@ import com.threecrickets.scripturian.ScriptContextController;
 import com.threecrickets.scripturian.ScriptSource;
 
 /**
- * This is the type of the "container" variable exposed to the script. The name
- * is set according to {@link ScriptedResource#getContainerVariableName()}.
+ * This is the type of the <code>script.container</code> variable exposed to the
+ * script.
  * 
  * @author Tal Liron
  * @see ScriptedResource
  */
-public class ScriptedResourceContainer {
+public class ExposedScriptedResourceContainer {
     /**
      * The instance of this resource.
      */
@@ -103,14 +104,9 @@ public class ScriptedResourceContainer {
     private Language language;
 
     /**
-     * The script context controller.
+     * A cache of script contexts used by {@link EmbeddedScript}.
      */
-    private final ScriptedResourceScriptContextController scriptContextController;
-
-    /**
-     * A cache of script engines used by {@link EmbeddedScript}.
-     */
-    private final ConcurrentMap<String, ScriptEngine> scriptEngines = new ConcurrentHashMap<String, ScriptEngine>();
+    private final ConcurrentMap<String, ScriptContext> scriptContexts = new ConcurrentHashMap<String, ScriptContext>();
 
     /**
      * Constructs a container with no variant or entity, plain text media type,
@@ -121,7 +117,7 @@ public class ScriptedResourceContainer {
      * @param variants
      *            The variants of the resource
      */
-    public ScriptedResourceContainer(ScriptedResource resource,
+    public ExposedScriptedResourceContainer(ScriptedResource resource,
             Map<Method, Object> variants) {
         this.resource = resource;
         this.variants = variants;
@@ -129,8 +125,6 @@ public class ScriptedResourceContainer {
         this.entity = null;
         this.mediaType = MediaType.TEXT_PLAIN;
         this.characterSet = resource.getDefaultCharacterSet();
-        this.scriptContextController = new ScriptedResourceScriptContextController(
-                resource, this);
     }
 
     /**
@@ -147,7 +141,7 @@ public class ScriptedResourceContainer {
      * @param variant
      *            The request variant
      */
-    public ScriptedResourceContainer(ScriptedResource resource,
+    public ExposedScriptedResourceContainer(ScriptedResource resource,
             Map<Method, Object> variants, Representation entity, Variant variant) {
         this.resource = resource;
         this.variants = variants;
@@ -158,8 +152,6 @@ public class ScriptedResourceContainer {
         if (this.characterSet == null) {
             this.characterSet = resource.getDefaultCharacterSet();
         }
-        this.scriptContextController = new ScriptedResourceScriptContextController(
-                resource, this);
     }
 
     /**
@@ -174,7 +166,7 @@ public class ScriptedResourceContainer {
      * @param variant
      *            The variant
      */
-    public ScriptedResourceContainer(ScriptedResource resource,
+    public ExposedScriptedResourceContainer(ScriptedResource resource,
             Map<Method, Object> variants, Variant variant) {
         this.resource = resource;
         this.variants = variants;
@@ -185,8 +177,6 @@ public class ScriptedResourceContainer {
         if (this.characterSet == null) {
             this.characterSet = resource.getDefaultCharacterSet();
         }
-        this.scriptContextController = new ScriptedResourceScriptContextController(
-                resource, this);
     }
 
     /**
@@ -252,6 +242,15 @@ public class ScriptedResourceContainer {
      */
     public ScriptedResource getResource() {
         return this.resource;
+    }
+
+    /**
+     * The {@link ScriptSource} used to fetch and cache scripts.
+     * 
+     * @return The script source
+     */
+    public ScriptSource<EmbeddedScript> getSource() {
+        return this.resource.getScriptSource();
     }
 
     /**
@@ -332,12 +331,13 @@ public class ScriptedResourceContainer {
             script = new EmbeddedScript(text, this.resource
                     .getScriptEngineManager(), this.resource
                     .getDefaultScriptEngineName(), this.resource
-                    .isAllowCompilation(), this.resource.getScriptSource());
+                    .isAllowCompilation());
             scriptDescriptor.setScript(script);
         }
 
         script.run(this.resource.getWriter(), this.resource.getErrorWriter(),
-                true, this.scriptEngines, this.scriptContextController, false);
+                true, this.scriptContexts, this, this.resource
+                        .getScriptContextController(), false);
     }
 
     /**
@@ -347,7 +347,7 @@ public class ScriptedResourceContainer {
      *            Name of entry point
      * @return Result of invocation
      * @throws ResourceException
-     * @see {@link EmbeddedScript#invoke(String, ScriptContextController)}
+     * @see {@link EmbeddedScript#invoke(String, Object, ScriptContextController)}
      */
     public Object invoke(String entryPointName) throws ResourceException {
         String name = ScriptUtils.getRelativePart(this.resource.getRequest(),
@@ -363,14 +363,15 @@ public class ScriptedResourceContainer {
                 script = new EmbeddedScript(text, this.resource
                         .getScriptEngineManager(), this.resource
                         .getDefaultScriptEngineName(), this.resource
-                        .isAllowCompilation(), this.resource.getScriptSource());
+                        .isAllowCompilation());
                 scriptDescriptor.setScript(script);
                 script.run(this.resource.getWriter(), this.resource
-                        .getErrorWriter(), true, this.scriptEngines,
-                        this.scriptContextController, false);
+                        .getErrorWriter(), true, this.scriptContexts, this,
+                        this.resource.getScriptContextController(), false);
             }
 
-            return script.invoke(entryPointName, this.scriptContextController);
+            return script.invoke(entryPointName, this.scriptContexts, this,
+                    this.resource.getScriptContextController());
         } catch (FileNotFoundException e) {
             throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, e);
         } catch (IOException e) {

@@ -37,7 +37,7 @@ import java.io.Writer;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import javax.script.ScriptEngine;
+import javax.script.ScriptContext;
 import javax.script.ScriptException;
 
 import org.restlet.data.CharacterSet;
@@ -54,12 +54,12 @@ import com.threecrickets.scripturian.EmbeddedScript;
 import com.threecrickets.scripturian.ScriptSource;
 
 /**
- * This is the type of the "container" variable exposed to the script. The name
- * is set according to {@link ScriptedTextResource#getContainerVariableName()}.
+ * This is the type of the <code>script.container</code> variable exposed to the
+ * script.
  * 
  * @author Tal Liron
  */
-public class ScriptedTextResourceContainer {
+public class ExposedScriptedTextResourceContainer {
     /**
      * The resource.
      */
@@ -111,14 +111,9 @@ public class ScriptedTextResourceContainer {
     private StringBuffer buffer;
 
     /**
-     * The script context controller.
+     * A cache of script contexts used by {@link EmbeddedScript}.
      */
-    private final ScriptedTextResourceScriptContextController scriptContextController;
-
-    /**
-     * A cache of script engines used by {@link EmbeddedScript}.
-     */
-    private final ConcurrentMap<String, ScriptEngine> scriptEngines = new ConcurrentHashMap<String, ScriptEngine>();
+    private final ConcurrentMap<String, ScriptContext> scriptContexts = new ConcurrentHashMap<String, ScriptContext>();
 
     /**
      * Constructs a container with media type and character set according to the
@@ -132,7 +127,7 @@ public class ScriptedTextResourceContainer {
      * @param cache
      *            The cache (used for caching mode)
      */
-    public ScriptedTextResourceContainer(ScriptedTextResource resource,
+    public ExposedScriptedTextResourceContainer(ScriptedTextResource resource,
             Variant variant, ConcurrentMap<String, RepresentableString> cache) {
         this.resource = resource;
         this.variant = variant;
@@ -142,8 +137,6 @@ public class ScriptedTextResourceContainer {
         if (this.characterSet == null) {
             this.characterSet = resource.getDefaultCharacterSet();
         }
-        this.scriptContextController = new ScriptedTextResourceScriptContextController(
-                resource, this);
     }
 
     /**
@@ -217,6 +210,15 @@ public class ScriptedTextResourceContainer {
     }
 
     /**
+     * The {@link ScriptSource} used to fetch and cache scripts.
+     * 
+     * @return The script source
+     */
+    public ScriptSource<EmbeddedScript> getSource() {
+        return this.resource.getScriptSource();
+    }
+
+    /**
      * The {@link Variant} of this request. Useful for interrogating the
      * client's preferences.
      * 
@@ -285,7 +287,7 @@ public class ScriptedTextResourceContainer {
             script = new EmbeddedScript(text, this.resource
                     .getScriptEngineManager(), this.resource
                     .getDefaultScriptEngineName(), this.resource
-                    .isAllowCompilation(), this.resource.getScriptSource());
+                    .isAllowCompilation());
             scriptDescriptor.setScript(script);
         }
 
@@ -317,8 +319,8 @@ public class ScriptedTextResourceContainer {
         try {
             // Do not allow caching in streaming mode
             if (script.run(writer, this.resource.getErrorWriter(), false,
-                    this.scriptEngines, this.scriptContextController,
-                    !isStreaming)) {
+                    this.scriptContexts, this, this.resource
+                            .getScriptContextController(), !isStreaming)) {
 
                 // Did the script ask us to start streaming?
                 if (this.startStreaming) {
@@ -326,8 +328,8 @@ public class ScriptedTextResourceContainer {
 
                     // Note that this will cause the script to run again!
                     return new ScriptedTextStreamingRepresentation(
-                            this.resource, this, this.scriptEngines,
-                            this.scriptContextController, script,
+                            this.resource, this, this.scriptContexts,
+                            this.resource.getScriptContextController(), script,
                             this.flushLines);
                 }
 
@@ -373,8 +375,9 @@ public class ScriptedTextResourceContainer {
 
                 // Note that this will cause the script to run again!
                 return new ScriptedTextStreamingRepresentation(this.resource,
-                        this, this.scriptEngines, this.scriptContextController,
-                        script, this.flushLines);
+                        this, this.scriptContexts, this.resource
+                                .getScriptContextController(), script,
+                        this.flushLines);
 
                 // Note that we will allow exceptions in scripts that ask us
                 // to start streaming! In fact, throwing an exception is a

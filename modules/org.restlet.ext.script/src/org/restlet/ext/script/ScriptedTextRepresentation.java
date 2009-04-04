@@ -36,14 +36,13 @@ import java.io.Writer;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import javax.script.ScriptEngine;
+import javax.script.ScriptContext;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
-import org.restlet.ext.script.internal.ScriptedTextRepresentationContainer;
-import org.restlet.ext.script.internal.ScriptedTextRepresentationScriptContextController;
+import org.restlet.ext.script.internal.ExposedScriptedTextRepresentationContainer;
 import org.restlet.representation.Representation;
 import org.restlet.representation.WriterRepresentation;
 
@@ -58,15 +57,14 @@ import com.threecrickets.scripturian.ScriptContextController;
  * <p>
  * A special container environment is created for scripts, with some useful
  * services. It is available to the script as a global variable named
- * "container" (or anything else returned by
- * {@link EmbeddedScript#getContainerVariableName()}). The following read-only
+ * <code>script.container<code>. The following read-only
  * attributes are available:
  * <ul>
- * <li><code>container.representation</code>: Access to the representation
- * itself. This can be useful for generating text according to set
- * characteristics. For example, calling {@link Representation#getLanguages()}
- * and generating the appropriate text.</li>
- * </ul>
+ * <li><code>script.container.representation</code>: Access to the
+ * representation itself. This can be useful for generating text according to
+ * set characteristics. For example, calling
+ * {@link Representation#getLanguages()} and generating the appropriate
+ * text.</li> </ul>
  * <p>
  * Note that this container environment is very limited. The include tag of
  * {@link EmbeddedScript} will not work here, nor is any caching of the script
@@ -97,11 +95,6 @@ public class ScriptedTextRepresentation extends WriterRepresentation {
      * An optional {@link ScriptContextController} to be used with the scripts.
      */
     private ScriptContextController scriptContextController;
-
-    /**
-     * A cache of script engines used by {@link EmbeddedScript}.
-     */
-    private final ConcurrentMap<String, ScriptEngine> scriptEngines = new ConcurrentHashMap<String, ScriptEngine>();
 
     /**
      * Construct an instance to wrap an existing embedded script instance.
@@ -153,7 +146,7 @@ public class ScriptedTextRepresentation extends WriterRepresentation {
             ScriptEngineManager scriptEngineManager) throws ScriptException {
         super(mediaType);
         this.embeddedScript = new EmbeddedScript(text, scriptEngineManager,
-                defaultScriptEngineName, allowCompilation, null);
+                defaultScriptEngineName, allowCompilation);
     }
 
     /**
@@ -188,13 +181,11 @@ public class ScriptedTextRepresentation extends WriterRepresentation {
     @Override
     public void write(Writer writer) throws IOException {
         try {
-            ScriptedTextRepresentationContainer container = new ScriptedTextRepresentationContainer(
-                    this);
+            ConcurrentMap<String, ScriptContext> scriptContexts = new ConcurrentHashMap<String, ScriptContext>();
             this.embeddedScript.run(writer, this.errorWriter, false,
-                    this.scriptEngines,
-                    new ScriptedTextRepresentationScriptContextController(this,
-                            container, this.embeddedScript
-                                    .getContainerVariableName()), false);
+                    scriptContexts,
+                    new ExposedScriptedTextRepresentationContainer(this),
+                    getScriptContextController(), false);
         } catch (ScriptException e) {
             IOException ioe = new IOException("Script exception");
             ioe.initCause(e);

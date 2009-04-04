@@ -46,8 +46,8 @@ import org.restlet.data.Method;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.ext.script.internal.ExposedScriptedResourceContainer;
 import org.restlet.ext.script.internal.ScriptUtils;
-import org.restlet.ext.script.internal.ScriptedResourceContainer;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
@@ -115,8 +115,7 @@ import com.threecrickets.scripturian.ScriptSource;
  * <p>
  * Before using this resource, make sure to configure a valid source in the
  * application's {@link Context}; see {@link #getScriptSource()}. This source is
- * accessible from the script itself, via <code>script.source</code> (see
- * {@link EmbeddedScript}).
+ * accessible from the script itself, via <code>script.container.source</code>.
  * <p>
  * Note that the embedded script's output is sent to the system's standard
  * output. Most likely, you will not want to output anything from the script.
@@ -125,16 +124,13 @@ import com.threecrickets.scripturian.ScriptSource;
  * <p>
  * A special container environment is created for scripts, with some useful
  * services. It is available to the script as a global variable named
- * "container". This name can be configured via the application's
- * {@link Context} (see {@link #getContainerVariableName()}), though if you want
- * the embedded script include tag to work, you must also set
- * {@link EmbeddedScript#containerVariableName} to be the same. For some other
- * global variables available to scripts, see {@link EmbeddedScript}.
+ * <code>script.container</code>. For some other global variables available to
+ * scripts, see {@link EmbeddedScript}.
  * <p>
  * Operations:
  * <ul>
- * <li><code>container.include(name)</code>: This powerful method allows scripts
- * to execute other scripts in place, and is useful for creating large,
+ * <li><code>script.container.include(name)</code>: This powerful method allows
+ * scripts to execute other scripts in place, and is useful for creating large,
  * maintainable applications based on scripts. Included scripts can act as a
  * library or toolkit and can even be shared among many applications. The
  * included script does not have to be in the same language or use the same
@@ -144,29 +140,31 @@ import com.threecrickets.scripturian.ScriptSource;
  * JRuby, every script is run in its own scope, so that sharing would have to be
  * done explicitly in the global scope. See the included embedded Ruby script
  * example for a discussion of various ways to do this.</li>
- * <li><code>container.include(name, scriptEngineName)</code>: As the above,
+ * <li><code>script.container.include(name, engineName)</code>: As the above,
  * except that the script is not embedded. As such, you must explicitly specify
  * the name of the scripting engine that should evaluate it.</li>
  * </ul>
  * Read-only attributes:
  * <ul>
- * <li><code>container.resource</code>: The instance of this resource. Acts as a
- * "this" reference for the script. For example, during a call to
+ * <li><code>script.container.entity</code>: The {@link Representation} of an
+ * entity provided with this request. Available only in
+ * <code>acceptRepresentation()</code> and <code>storeRepresentation()</code>.
+ * Note that <code>script.container.variant</code> is identical to
+ * <code>script.container.entity</code> when available.</li>
+ * <li><code>script.container.resource</code>: The instance of this resource.
+ * Acts as a "this" reference for the script. For example, during a call to
  * <code>initializeResource()</code>, this can be used to change the
  * characteristics of the resource. Otherwise, you can use it to access the
  * request and response.</li>
- * <li><code>container.variant</code>: The {@link Variant} of this request.
- * Useful for interrogating the client's preferences. This is available only in
- * <code>represent()</code>, <code>acceptRepresentation()</code> and
+ * <li><code>script.container.source</code>: The source used for the script; see
+ * {@link #getScriptSource()}.</li>
+ * <li><code>script.container.variant</code>: The {@link Variant} of this
+ * request. Useful for interrogating the client's preferences. This is available
+ * only in <code>represent()</code>, <code>acceptRepresentation()</code> and
  * <code>storeRepresentation()</code>.</li>
- * <li><code>container.entity</code>: The {@link Representation} of an entity
- * provided with this request. Available only in
- * <code>acceptRepresentation()</code> and <code>storeRepresentation()</code>.
- * Note that <code>container.variant</code> is identical to
- * <code>container.entity</code> when available.</li>
- * <li><code>container.variants</code>: A map of possible variants or media
- * types supported by this resource. You should initialize this during a call to
- * <code>initializeResource()</code>. Values for the map can be
+ * <li><code>script.container.variants</code>: A map of possible variants or
+ * media types supported by this resource. You should initialize this during a
+ * call to <code>initializeResource()</code>. Values for the map can be
  * {@link MediaType} constants, explicit {@link Variant} instances (in which
  * case these variants will be returned immediately for their media type without
  * calling the entry point), or a {@link List} containing both media types and
@@ -175,18 +173,21 @@ import com.threecrickets.scripturian.ScriptSource;
  * </ul>
  * Modifiable attributes:
  * <ul>
- * <li><code>container.mediaType</code>: The {@link MediaType} that will be used
- * if you return an arbitrary type for represent(), acceptRepresentation() and
- * storeRepresentation(). Defaults to what the client requested (in
- * container.variant).</li>
- * <li><code>container.characterSet</code>: The {@link CharacterSet} that will
- * be used if you return an arbitrary type for represent(),
- * acceptRepresentation() and storeRepresentation(). Defaults to what the client
- * requested (in container.variant), or to the value of
+ * <li><code>script.container.mediaType</code>: The {@link MediaType} that will
+ * be used if you return an arbitrary type for <code>represent()</code>,
+ * <code>acceptRepresentation()</code> and <code>storeRepresentation()</code>.
+ * Defaults to what the client requested (in
+ * <code>script.container.variant</code>).</li>
+ * <li><code>script.container.characterSet</code>: The {@link CharacterSet} that
+ * will be used if you return an arbitrary type for <code>represent()</code>,
+ * <code>acceptRepresentation()</code> and <code>storeRepresentation()</code>.
+ * Defaults to what the client requested (in
+ * <code>script.container.variant</code>), or to the value of
  * {@link #getDefaultCharacterSet()} if the client did not specify it.</li>
- * <li><code>container.language</code>: The {@link Language} that will be used
- * if you return an arbitrary type for represent(), acceptRepresentation() and
- * storeRepresentation(). Defaults to null.</li>
+ * <li><code>script.container.language</code>: The {@link Language} that will be
+ * used if you return an arbitrary type for <code>represent()</code>,
+ * <code>acceptRepresentation()</code> and <code>storeRepresentation()</code>.
+ * Defaults to null.</li>
  * </ul>
  * <p>
  * In addition to the above, a {@link ScriptContextController} can be set to add
@@ -202,10 +203,6 @@ import com.threecrickets.scripturian.ScriptSource;
  * <li>
  * <code>org.restlet.ext.script.ScriptedResource.allowCompilation:</code>
  * {@link Boolean}, defaults to true. See {@link #isAllowCompilation()}.</li>
- * <li>
- * <code>org.restlet.ext.script.ScriptedResource.containerVariableName:</code>
- * {@link String}, defaults to "container". See
- * {@link #getContainerVariableName()}.</li>
  * <li><code>org.restlet.ext.script.ScriptedResource.defaultCharacterSet:</code>
  * {@link CharacterSet}, defaults to {@link CharacterSet#UTF_8}. See
  * {@link #getDefaultCharacterSet()}.</li>
@@ -298,11 +295,6 @@ public class ScriptedResource extends ServerResource {
     private CharacterSet defaultCharacterSet;
 
     /**
-     * The default variable name for the container instance.
-     */
-    private String containerVariableName;
-
-    /**
      * An optional {@link ScriptContextController} to be used with the scripts.
      */
     private ScriptContextController scriptContextController;
@@ -375,12 +367,31 @@ public class ScriptedResource extends ServerResource {
      */
     @Override
     public Representation delete(Variant variant) throws ResourceException {
-        ScriptedResourceContainer container = new ScriptedResourceContainer(
+        ExposedScriptedResourceContainer container = new ExposedScriptedResourceContainer(
                 this, getVariants(), variant);
 
         container.invoke(getRemoveRepresentationsEntryPointName());
 
         return null;
+    }
+
+    /**
+     * Initializes the resource, and delegates to the
+     * <code>initializeResource()</code> entry point in the script.
+     * 
+     * @see #getInitializeResourceEntryPointName()
+     * @see org.restlet.resource.Resource#Resource(Context, Request, Response)
+     */
+    @Override
+    protected void doInit() throws ResourceException {
+        setAnnotated(false);
+        ExposedScriptedResourceContainer container = new ExposedScriptedResourceContainer(
+                this, getVariants());
+        try {
+            container.invoke(getInitializeResourceEntryPointName());
+        } catch (ResourceException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -395,7 +406,7 @@ public class ScriptedResource extends ServerResource {
      */
     @Override
     public Representation get(Variant variant) throws ResourceException {
-        ScriptedResourceContainer container = new ScriptedResourceContainer(
+        ExposedScriptedResourceContainer container = new ExposedScriptedResourceContainer(
                 this, getVariants(), variant);
 
         Request request = getRequest();
@@ -448,30 +459,6 @@ public class ScriptedResource extends ServerResource {
         }
 
         return this.acceptRepresentationEntryPointName;
-    }
-
-    /**
-     * The default variable name for the container instance. Defaults to
-     * "container".
-     * <p>
-     * This setting can be configured by setting an attribute named
-     * <code>org.restlet.ext.script.ScriptedResource.containerVariableName</code>
-     * in the application's {@link Context}.
-     * 
-     * @return The container variable name
-     */
-    public String getContainerVariableName() {
-        if (this.containerVariableName == null) {
-            ConcurrentMap<String, Object> attributes = getContext()
-                    .getAttributes();
-            this.containerVariableName = (String) attributes
-                    .get("org.restlet.ext.script.ScriptedResource.containerVariableName");
-            if (this.containerVariableName == null) {
-                this.containerVariableName = "container";
-            }
-        }
-
-        return this.containerVariableName;
     }
 
     /**
@@ -714,8 +701,8 @@ public class ScriptedResource extends ServerResource {
     }
 
     /**
-     * The {@link ScriptSource} used to fetch scripts. This must be set to a
-     * valid value before this class is used!
+     * The {@link ScriptSource} used to fetch and cache scripts. This must be
+     * set to a valid value before this class is used!
      * <p>
      * This setting can be configured by setting an attribute named
      * <code>org.restlet.ext.script.ScriptedResource.scriptSource</code> in the
@@ -788,25 +775,6 @@ public class ScriptedResource extends ServerResource {
     }
 
     /**
-     * Initializes the resource, and delegates to the
-     * <code>initializeResource()</code> entry point in the script.
-     * 
-     * @see #getInitializeResourceEntryPointName()
-     * @see org.restlet.resource.Resource#Resource(Context, Request, Response)
-     */
-    @Override
-    protected void doInit() {
-        setAnnotated(false);
-        ScriptedResourceContainer container = new ScriptedResourceContainer(
-                this, getVariants());
-        try {
-            container.invoke(getInitializeResourceEntryPointName());
-        } catch (ResourceException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
      * Whether or not compilation is attempted for script engines that support
      * it. Defaults to true.
      * <p>
@@ -871,7 +839,7 @@ public class ScriptedResource extends ServerResource {
     @Override
     public Representation post(Representation entity, Variant variant)
             throws ResourceException {
-        ScriptedResourceContainer container = new ScriptedResourceContainer(
+        ExposedScriptedResourceContainer container = new ExposedScriptedResourceContainer(
                 this, getVariants(), entity, variant);
 
         Object r = container.invoke(getAcceptRepresentationEntryPointName());
@@ -904,7 +872,7 @@ public class ScriptedResource extends ServerResource {
     @Override
     public Representation put(Representation entity, Variant variant)
             throws ResourceException {
-        ScriptedResourceContainer container = new ScriptedResourceContainer(
+        ExposedScriptedResourceContainer container = new ExposedScriptedResourceContainer(
                 this, getVariants(), entity, variant);
 
         Object r = container.invoke(getStoreRepresentationEntryPointName());

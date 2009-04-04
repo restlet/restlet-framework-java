@@ -4,14 +4,13 @@ import org.restlet.ext.script.ScriptedTextRepresentation;
 import org.restlet.representation.Representation;
 
 /**
- * This is the type of the "container" variable exposed to the script. The name
- * is set according to
- * {@link ScriptedTextRepresentation#getContainerVariableName()}.
+ * This is the type of the <code>script.container</code> variable exposed to the
+ * script.
  * 
  * @author Tal Liron
  * @see ScriptedTextRepresentation
  */
-public class ScriptedTextRepresentationContainer {
+public class ExposedScriptedTextRepresentationContainer {
     /**
      * Access to the representation itself.
      */
@@ -23,7 +22,7 @@ public class ScriptedTextRepresentationContainer {
      * @param representation
      *            The representation
      */
-    public ScriptedTextRepresentationContainer(
+    public ExposedScriptedTextRepresentationContainer(
             ScriptedTextRepresentation representation) {
         this.representation = representation;
     }

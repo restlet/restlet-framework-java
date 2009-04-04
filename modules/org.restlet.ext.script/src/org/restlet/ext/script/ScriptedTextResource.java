@@ -51,9 +51,9 @@ import org.restlet.data.Method;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.ext.script.internal.ExposedScriptedTextResourceContainer;
 import org.restlet.ext.script.internal.RepresentableString;
 import org.restlet.ext.script.internal.ScriptUtils;
-import org.restlet.ext.script.internal.ScriptedTextResourceContainer;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
@@ -71,8 +71,7 @@ import com.threecrickets.scripturian.ScriptSource;
  * <p>
  * Before using this resource, make sure to configure a valid source in the
  * application's {@link Context}; see {@link #getScriptSource()}. This source is
- * accessible from the script itself, via <code>script.source</code> (see
- * {@link EmbeddedScript}).
+ * accessible from the script itself, via <code>container.script.source</code>.
  * <p>
  * This resource supports two modes of output:
  * <ul>
@@ -84,33 +83,32 @@ import com.threecrickets.scripturian.ScriptSource;
  * output is not sent to the client until after the script finished its run, it
  * is possible for the script to determine output characteristics at any time by
  * changing the values of <code>container.mediaType</code>,
- * <code>container.characterSet</code>, and <code>container.language</code> (see
- * below).</li>
+ * <code>script.container.characterSet</code>, and
+ * <code>script.container.language</code> (see below).</li>
  * <li>Streaming mode: Output is sent to the client <i>while</i> the script
  * runs. This is recommended for scripts that need to output a very large amount
  * of string, which might take a long time, or that might otherwise encounter
  * slow-downs while running. In either case, you want the client to receive
  * ongoing output. The output of the script is not cached, and the value of
  * <code>script.cacheDuration</code> is reset to 0. To enter streaming mode,
- * call <code>container.stream()</code> (see below for details). Note that you
- * must determine output characteristics (<code>container.mediaType</code>,
- * <code>container.characterSet</code>, and <code>container.language</code>)
- * <i>before</i> entering streaming mode. Trying to change them while running in
- * streaming mode will raise an exception.
+ * call <code>script.container.stream()</code> (see below for details). Note
+ * that you must determine output characteristics (
+ * <code>script.container.mediaType</code>,
+ * <code>script.container.characterSet</code>, and
+ * <code>script.container.language</code>) <i>before</i> entering streaming
+ * mode. Trying to change them while running in streaming mode will raise an
+ * exception.
  * </ul>
  * <p>
  * A special container environment is created for scripts, with some useful
  * services. It is available to the script as a global variable named
- * "container". This name can be configured via the application's
- * {@link Context} (see {@link #getContainerVariableName()}), though if you want
- * the embedded script include tag to work, you must also set
- * {@link EmbeddedScript#containerVariableName} to be the same. For some other
- * global variables available to scripts, see {@link EmbeddedScript}.
+ * <code>script.container</code>. For some other global variables available to
+ * scripts, see {@link EmbeddedScript}.
  * <p>
  * Operations:
  * <ul>
- * <li><code>container.include(name)</code>: This powerful method allows scripts
- * to execute other scripts in place, and is useful for creating large,
+ * <li><code>script.container.include(name)</code>: This powerful method allows
+ * scripts to execute other scripts in place, and is useful for creating large,
  * maintainable applications based on scripts. Included scripts can act as a
  * library or toolkit and can even be shared among many applications. The
  * included script does not have to be in the same language or use the same
@@ -120,52 +118,55 @@ import com.threecrickets.scripturian.ScriptSource;
  * JRuby, every script is run in its own scope, so that sharing would have to be
  * done explicitly in the global scope. See the included embedded Ruby script
  * example for a discussion of various ways to do this.</li>
- * <li><code>container.include(name, scriptEngineName)</code>: As the above,
+ * <li><code>script.container.include(name, engineName)</code>: As the above,
  * except that the script is not embedded. As such, you must explicitly specify
  * the name of the scripting engine that should evaluate it.</li>
- * <li><code>container.stream()</code>: If you are in caching mode, calling this
- * method will return true and cause the script to run again, where this next
- * run will be in streaming mode. Whatever output the script created in the
- * current run is discarded, and all further exceptions are ignored. For this
- * reason, it's probably best to call <code>container.stream()</code> as early
- * as possible in the script, and then to quit the script as soon as possible if
- * it returns true. For example, your script can start by testing whether it
- * will have a lot of output, and if so, set output characteristics, call
- * <code>container.stream()</code>, and quit. If you are already in streaming
- * mode, calling this method has no effect and returns false. Note that a good
- * way to quit the script is to throw an exception, because it will end the
- * script and otherwise be ignored. By default, writers will be automatically
- * flushed after every line in streaming mode. If you want to disable this
- * behavior, use <code>container.stream(flushLines)</code>.</li>
- * <li><code>container.stream(flushLines)</code>: This version of the above adds
- * a boolean argument to let you control whether to flush the writer after every
- * line in streaming mode. By default auto-flushing is enabled.</li>
+ * <li><code>script.container.stream()</code>: If you are in caching mode,
+ * calling this method will return true and cause the script to run again, where
+ * this next run will be in streaming mode. Whatever output the script created
+ * in the current run is discarded, and all further exceptions are ignored. For
+ * this reason, it's probably best to call
+ * <code>script.container.stream()</code> as early as possible in the script,
+ * and then to quit the script as soon as possible if it returns true. For
+ * example, your script can start by testing whether it will have a lot of
+ * output, and if so, set output characteristics, call
+ * <code>script.container.stream()</code>, and quit. If you are already in
+ * streaming mode, calling this method has no effect and returns false. Note
+ * that a good way to quit the script is to throw an exception, because it will
+ * end the script and otherwise be ignored. By default, writers will be
+ * automatically flushed after every line in streaming mode. If you want to
+ * disable this behavior, use <code>script.container.stream(flushLines)</code>.</li>
+ * <li><code>script.container.stream(flushLines)</code>: This version of the
+ * above adds a boolean argument to let you control whether to flush the writer
+ * after every line in streaming mode. By default auto-flushing is enabled.</li>
  * </ul>
  * Read-only attributes:
  * <ul>
- * <li><code>container.variant</code>: The {@link Variant} of this request.
- * Useful for interrogating the client's preferences.</li>
- * <li><code>container.request</code>: The {@link Request}. Useful for accessing
- * URL attributes, form parameters, etc.</li>
- * <li><code>container.response</code>: The {@link Response}. Useful for
+ * <li><code>script.container.isStreaming</code>: This boolean is true when the
+ * writer is in streaming mode (see above).</li>
+ * <li><code>script.container.request</code>: The {@link Request}. Useful for
+ * accessing URL attributes, form parameters, etc.</li>
+ * <li><code>script.container.response</code>: The {@link Response}. Useful for
  * explicitly setting response characteristics.</li>
- * <li><code>container.isStreaming</code>: This boolean is true when the writer
- * is in streaming mode (see above).</li>
+ * <li><code>script.container.source</code>: The source used for the script; see
+ * {@link #getScriptSource()}.</li>
+ * <li><code>script.container.variant</code>: The {@link Variant} of this
+ * request. Useful for interrogating the client's preferences.</li>
  * </ul>
  * Modifiable attributes:
  * <ul>
- * <li><code>container.mediaType</code>: The {@link MediaType} that will be used
- * for the generated string. Defaults to what the client requested (in
- * <code>container.variant</code>). If not in streaming mode, your script can
- * change this to something else.</li>
- * <li><code>container.characterSet</code>: The {@link CharacterSet} that will
- * be used for the generated string. Defaults to what the client requested (in
- * <code>container.variant</code>), or to the value of
+ * <li><code>script.container.characterSet</code>: The {@link CharacterSet} that
+ * will be used for the generated string. Defaults to what the client requested
+ * (in <code>script.container.variant</code>), or to the value of
  * {@link #getDefaultCharacterSet()} if the client did not specify it. If not in
  * streaming mode, your script can change this to something else.</li>
- * <li><code>container.language</code>: The {@link Language} that will be used
- * for the generated string. Defaults to null. If not in streaming mode, your
- * script can change this to something else.</li>
+ * <li><code>script.container.language</code>: The {@link Language} that will be
+ * used for the generated string. Defaults to null. If not in streaming mode,
+ * your script can change this to something else.</li>
+ * <li><code>script.container.mediaType</code>: The {@link MediaType} that will
+ * be used for the generated string. Defaults to what the client requested (in
+ * <code>script.container.variant</code>). If not in streaming mode, your script
+ * can change this to something else.</li>
  * </ul>
  * <p>
  * In addition to the above, a {@link ScriptContextController} can be set to add
@@ -181,10 +182,6 @@ import com.threecrickets.scripturian.ScriptSource;
  * <code>org.restlet.ext.script.ScriptedTextResource.cache:</code>
  * {@link ConcurrentMap}, defaults to a new instance of
  * {@link ConcurrentHashMap}. See {@link #getCache()}.</li>
- * <li>
- * <code>org.restlet.ext.script.ScriptedTextResource.containerVariableName:</code>
- * {@link String}, defaults to "container". See
- * {@link #getContainerVariableName()}.</li>
  * <li>
  * <code>org.restlet.ext.script.ScriptedTextResource.defaultCharacterSet:</code>
  * {@link CharacterSet}, defaults to {@link CharacterSet#UTF_8}. See
@@ -244,11 +241,6 @@ public class ScriptedTextResource extends ServerResource {
     private CharacterSet defaultCharacterSet;
 
     /**
-     * The default variable name for the container instance.
-     */
-    private String containerVariableName;
-
-    /**
      * An optional {@link ScriptContextController} to be used with the scripts.
      */
     private ScriptContextController scriptContextController;
@@ -292,6 +284,19 @@ public class ScriptedTextResource extends ServerResource {
      */
     private Writer writer;
 
+    /**
+     * Initializes the resource.
+     */
+    @Override
+    protected void doInit() throws ResourceException {
+        setAnnotated(false);
+        List<MediaType> mediaTypes = Arrays.asList(new MediaType[] {
+                MediaType.TEXT_HTML, MediaType.TEXT_PLAIN });
+        Map<Method, Object> variants = getVariants();
+        variants.put(Method.GET, mediaTypes);
+        variants.put(Method.POST, mediaTypes);
+    }
+
     @Override
     public Representation get(Variant variant) throws ResourceException {
         Request request = getRequest();
@@ -306,7 +311,7 @@ public class ScriptedTextResource extends ServerResource {
                         .getScriptDescriptor(name).getText());
             } else {
                 // Run script and represent its output
-                ScriptedTextResourceContainer container = new ScriptedTextResourceContainer(
+                ExposedScriptedTextResourceContainer container = new ExposedScriptedTextResourceContainer(
                         this, variant, getCache());
                 Representation representation = container.include(name);
                 if (representation == null) {
@@ -356,30 +361,6 @@ public class ScriptedTextResource extends ServerResource {
         }
 
         return this.cache;
-    }
-
-    /**
-     * The default variable name for the container instance. Defaults to
-     * "container".
-     * <p>
-     * This setting can be configured by setting an attribute named
-     * <code>org.restlet.ext.script.ScriptedTextResource.containerVariableName</code>
-     * in the application's {@link Context}.
-     * 
-     * @return The container variable name
-     */
-    public String getContainerVariableName() {
-        if (this.containerVariableName == null) {
-            ConcurrentMap<String, Object> attributes = getContext()
-                    .getAttributes();
-            this.containerVariableName = (String) attributes
-                    .get("org.restlet.ext.script.ScriptedTextResource.containerVariableName");
-            if (this.containerVariableName == null) {
-                this.containerVariableName = "container";
-            }
-        }
-
-        return this.containerVariableName;
     }
 
     /**
@@ -547,19 +528,6 @@ public class ScriptedTextResource extends ServerResource {
      */
     public Writer getWriter() {
         return this.writer;
-    }
-
-    /**
-     * Initializes the resource.
-     */
-    @Override
-    protected void doInit() {
-        setAnnotated(false);
-        List<MediaType> mediaTypes = Arrays.asList(new MediaType[] {
-                MediaType.TEXT_HTML, MediaType.TEXT_PLAIN });
-        Map<Method, Object> variants = getVariants();
-        variants.put(Method.GET, mediaTypes);
-        variants.put(Method.POST, mediaTypes);
     }
 
     /**
