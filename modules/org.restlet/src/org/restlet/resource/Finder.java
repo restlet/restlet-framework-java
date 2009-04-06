@@ -394,10 +394,8 @@ public class Finder extends Restlet {
 
                 if (!response.getStatus().equals(Status.SUCCESS_OK)) {
                     // Probably during the instantiation of the target handler,
-                    // or
-                    // earlier the status was changed from the default one.
-                    // Don't go
-                    // further.
+                    // or earlier the status was changed from the default one.
+                    // Don't go further.
                 } else {
                     final Method method = request.getMethod();
 
@@ -453,7 +451,8 @@ public class Finder extends Restlet {
                     targetResource.handle();
                 }
 
-                targetResource.release();
+                // TODO Happens too early.
+                // targetResource.release();
             }
         }
     }
