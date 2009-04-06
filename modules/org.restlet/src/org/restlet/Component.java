@@ -424,13 +424,14 @@ public class Component extends Restlet {
     }
 
     /**
-     * Sets the modifiable list of virtual hosts. Method synchronized to make
-     * compound action (clear, addAll) atomic, not for visibility.
+     * Sets the modifiable list of virtual hosts.
      * 
      * @param hosts
      *            The modifiable list of virtual hosts.
      */
     public synchronized void setHosts(List<VirtualHost> hosts) {
+        // Method synchronized to make compound action (clear, addAll) atomic,
+        // not for visibility.
         this.hosts.clear();
 
         if (hosts != null) {
