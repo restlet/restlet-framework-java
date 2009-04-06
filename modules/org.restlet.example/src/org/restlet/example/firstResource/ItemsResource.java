@@ -35,15 +35,9 @@ public class ItemsResource extends BaseResource {
         String itemName = form.getFirstValue("name");
         String itemDescription = form.getFirstValue("description");
 
-        // Check that the item is not already registered.
-        if (getItems().containsKey(itemName)) {
-            setStatus(Status.CLIENT_ERROR_NOT_FOUND);
-            result = generateErrorRepresentation("Item " + itemName
-                    + " already exists.", "1");
-        } else {
-            // Register the new item
-            getItems().put(itemName, new Item(itemName, itemDescription));
-
+        // Register the new item if one is not already registered.
+        if (!getItems().containsKey(itemName)
+                && putIfAbsent(itemName, itemDescription) != null) {
             // Set the response's status and entity
             setStatus(Status.SUCCESS_CREATED);
             Representation rep = new StringRepresentation("Item created",
@@ -52,6 +46,10 @@ public class ItemsResource extends BaseResource {
             rep.setIdentifier(getRequest().getResourceRef().getIdentifier()
                     + "/" + itemName);
             result = rep;
+        } else { // Item is already registered.
+            setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+            result = generateErrorRepresentation("Item " + itemName
+                    + " already exists.", "1");
         }
 
         return result;
