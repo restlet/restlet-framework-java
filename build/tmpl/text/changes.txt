@@ -9,6 +9,9 @@ Changes log
     - Bugs fixed
         - Fixed bug with a ServerResource when an annotated method does 
           not return a value.
+        - Fixed dependency issue in the org.restlet.example.pom. 
+          Reported by Marcelo Ochoa.
+          
     - Enhancements
         - Servlet's UserPrincipal is now transferred into Restlet's
           ClientInfo#subject property. Suggested by Paul Davis.

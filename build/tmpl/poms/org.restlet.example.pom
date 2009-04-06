@@ -35,7 +35,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.restlet</groupId>
-			<artifactId>org.restlet.atom</artifactId>
+			<artifactId>org.restlet.ext.atom</artifactId>
 			<version>${version}</version>
 		</dependency>
 		<dependency>
