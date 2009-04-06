@@ -44,6 +44,7 @@ public class OrderResource extends UserResource {
 
     @Override
     public void doInit() {
+        super.doInit();
         this.orderId = (String) getRequestAttributes().get("order");
         this.order = null; // Could be a lookup to a domain object.
     }
