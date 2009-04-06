@@ -37,7 +37,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import javax.script.ScriptContext;
+import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
 import org.restlet.data.CharacterSet;
@@ -104,9 +104,9 @@ public class ExposedScriptedResourceContainer {
     private Language language;
 
     /**
-     * A cache of script contexts used by {@link EmbeddedScript}.
+     * A cache of script engines used by {@link EmbeddedScript}.
      */
-    private final ConcurrentMap<String, ScriptContext> scriptContexts = new ConcurrentHashMap<String, ScriptContext>();
+    private final ConcurrentMap<String, ScriptEngine> scriptEngines = new ConcurrentHashMap<String, ScriptEngine>();
 
     /**
      * Constructs a container with no variant or entity, plain text media type,
@@ -336,7 +336,7 @@ public class ExposedScriptedResourceContainer {
         }
 
         script.run(this.resource.getWriter(), this.resource.getErrorWriter(),
-                true, this.scriptContexts, this, this.resource
+                true, this.scriptEngines, this, this.resource
                         .getScriptContextController(), false);
     }
 
@@ -366,12 +366,12 @@ public class ExposedScriptedResourceContainer {
                         .isAllowCompilation());
                 scriptDescriptor.setScript(script);
                 script.run(this.resource.getWriter(), this.resource
-                        .getErrorWriter(), true, this.scriptContexts, this,
+                        .getErrorWriter(), true, this.scriptEngines, this,
                         this.resource.getScriptContextController(), false);
             }
 
-            return script.invoke(entryPointName, this.scriptContexts, this,
-                    this.resource.getScriptContextController());
+            return script.invoke(entryPointName, this, this.resource
+                    .getScriptContextController());
         } catch (FileNotFoundException e) {
             throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, e);
         } catch (IOException e) {

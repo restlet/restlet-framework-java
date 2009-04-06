@@ -36,7 +36,7 @@ import java.io.Writer;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import javax.script.ScriptContext;
+import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
@@ -181,9 +181,9 @@ public class ScriptedTextRepresentation extends WriterRepresentation {
     @Override
     public void write(Writer writer) throws IOException {
         try {
-            ConcurrentMap<String, ScriptContext> scriptContexts = new ConcurrentHashMap<String, ScriptContext>();
+            ConcurrentMap<String, ScriptEngine> scriptEngines = new ConcurrentHashMap<String, ScriptEngine>();
             this.embeddedScript.run(writer, this.errorWriter, false,
-                    scriptContexts,
+                    scriptEngines,
                     new ExposedScriptedTextRepresentationContainer(this),
                     getScriptContextController(), false);
         } catch (ScriptException e) {

@@ -35,7 +35,7 @@ import java.io.Writer;
 import java.util.Arrays;
 import java.util.concurrent.ConcurrentMap;
 
-import javax.script.ScriptContext;
+import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
 import org.restlet.data.Language;
@@ -76,7 +76,7 @@ class ScriptedTextStreamingRepresentation extends WriterRepresentation {
     /**
      * A cache of script contexts used by {@link EmbeddedScript}.
      */
-    private final ConcurrentMap<String, ScriptContext> scriptContexts;
+    private final ConcurrentMap<String, ScriptEngine> scriptEngines;
 
     /**
      * Whether to flush the writers after every line.
@@ -90,8 +90,8 @@ class ScriptedTextStreamingRepresentation extends WriterRepresentation {
      *            The resource
      * @param container
      *            The container
-     * @param scriptContexts
-     *            A cache of script contexts used by {@link EmbeddedScript}.
+     * @param scriptEngines
+     *            A cache of script engines used by {@link EmbeddedScript}.
      * @param scriptContextController
      *            The script context controller
      * @param script
@@ -101,7 +101,7 @@ class ScriptedTextStreamingRepresentation extends WriterRepresentation {
      */
     public ScriptedTextStreamingRepresentation(ScriptedTextResource resource,
             ExposedScriptedTextResourceContainer container,
-            ConcurrentMap<String, ScriptContext> scriptContexts,
+            ConcurrentMap<String, ScriptEngine> scriptEngines,
             ScriptContextController scriptContextController,
             EmbeddedScript script, boolean flushLines) {
         // Note that we are setting representation characteristics
@@ -109,7 +109,7 @@ class ScriptedTextStreamingRepresentation extends WriterRepresentation {
         super(container.getMediaType());
         this.resource = resource;
         this.container = container;
-        this.scriptContexts = scriptContexts;
+        this.scriptEngines = scriptEngines;
         this.scriptContextController = scriptContextController;
         this.flushLines = flushLines;
         setCharacterSet(container.getCharacterSet());
@@ -127,7 +127,7 @@ class ScriptedTextStreamingRepresentation extends WriterRepresentation {
         this.resource.setWriter(writer);
         try {
             this.script.run(writer, this.resource.getErrorWriter(),
-                    this.flushLines, this.scriptContexts, this.container,
+                    this.flushLines, this.scriptEngines, this.container,
                     this.scriptContextController, false);
         } catch (ScriptException e) {
             IOException ioe = new IOException("Script exception");

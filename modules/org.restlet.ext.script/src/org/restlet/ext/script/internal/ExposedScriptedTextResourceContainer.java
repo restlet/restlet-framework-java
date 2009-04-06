@@ -37,7 +37,7 @@ import java.io.Writer;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import javax.script.ScriptContext;
+import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
 import org.restlet.data.CharacterSet;
@@ -111,9 +111,9 @@ public class ExposedScriptedTextResourceContainer {
     private StringBuffer buffer;
 
     /**
-     * A cache of script contexts used by {@link EmbeddedScript}.
+     * A cache of script engines used by {@link EmbeddedScript}.
      */
-    private final ConcurrentMap<String, ScriptContext> scriptContexts = new ConcurrentHashMap<String, ScriptContext>();
+    private final ConcurrentMap<String, ScriptEngine> scriptEngines = new ConcurrentHashMap<String, ScriptEngine>();
 
     /**
      * Constructs a container with media type and character set according to the
@@ -319,7 +319,7 @@ public class ExposedScriptedTextResourceContainer {
         try {
             // Do not allow caching in streaming mode
             if (script.run(writer, this.resource.getErrorWriter(), false,
-                    this.scriptContexts, this, this.resource
+                    this.scriptEngines, this, this.resource
                             .getScriptContextController(), !isStreaming)) {
 
                 // Did the script ask us to start streaming?
@@ -328,7 +328,7 @@ public class ExposedScriptedTextResourceContainer {
 
                     // Note that this will cause the script to run again!
                     return new ScriptedTextStreamingRepresentation(
-                            this.resource, this, this.scriptContexts,
+                            this.resource, this, this.scriptEngines,
                             this.resource.getScriptContextController(), script,
                             this.flushLines);
                 }
@@ -375,7 +375,7 @@ public class ExposedScriptedTextResourceContainer {
 
                 // Note that this will cause the script to run again!
                 return new ScriptedTextStreamingRepresentation(this.resource,
-                        this, this.scriptContexts, this.resource
+                        this, this.scriptEngines, this.resource
                                 .getScriptContextController(), script,
                         this.flushLines);
 

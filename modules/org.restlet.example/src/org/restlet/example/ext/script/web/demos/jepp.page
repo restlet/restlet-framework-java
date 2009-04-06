@@ -51,7 +51,7 @@ sys.stdout.write('This page was dynamically generated at ' + str(System.currentT
 # An example of a method
 #
 
-def print_factory(factory):
+def printFactory(factory):
 	%><p>
 	Engine: <%= factory.getEngineName() %> version <%= factory.getEngineVersion() %><br />
 	Language: <%= factory.getLanguageName() %> version <%= factory.getLanguageVersion() %><br />
@@ -66,13 +66,13 @@ def print_factory(factory):
 %>
 <h3>Script engine used:</h3>
 <%
-print_factory(script.getEngine().getFactory())
+printFactory(script.getEngine().getFactory())
 %>
 <h3>Available script engines:</h3>
 <%
 factories = script.getEngineManager().getEngineFactories().toArray()
 for factory in factories:
-	print_factory(factory)
+	printFactory(factory)
 %>
 </td><td>
 <h3>The "id" attribute in the URL query is:</h3>
@@ -81,7 +81,7 @@ for factory in factories:
 <%
 for i in range(10):
 	%>A multiple of three: <%
-	print_triple(i)
+	printTriple(i)
 	%><br /><%
 
 %>
