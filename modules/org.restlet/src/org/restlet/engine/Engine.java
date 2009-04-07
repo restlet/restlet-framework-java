@@ -147,11 +147,12 @@ public class Engine {
      * 
      * @return The registered Restlet engine.
      */
-    public static Engine getInstance() {
+    public static synchronized Engine getInstance() {
         Engine result = instance;
 
         if (result == null) {
-            result = new Engine();
+            instance = new Engine();
+            result = instance;
         }
 
         return result;
@@ -283,7 +284,7 @@ public class Engine {
      * @param engine
      *            The registered Restlet engine.
      */
-    public static void setInstance(Engine engine) {
+    public static synchronized void setInstance(Engine engine) {
         instance = engine;
     }
 
