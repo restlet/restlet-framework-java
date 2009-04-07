@@ -30,7 +30,6 @@
 
 package org.restlet.resource;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -42,6 +41,8 @@ import org.restlet.data.ReferenceList;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.engine.local.DirectoryResource;
+import org.restlet.engine.util.AlphaNumericComparator;
+import org.restlet.engine.util.AlphabeticalComparator;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 
@@ -78,154 +79,12 @@ import org.restlet.representation.Variant;
  */
 public class Directory extends Finder {
 
-    /**
-     * Allows to sort the list of references set by the resource.
-     * 
-     */
-    private class AlphabeticalComparator implements Comparator<Reference>,
-            Serializable {
-        private static final long serialVersionUID = 1L;
-
-        public int compare(Reference rep0, Reference rep1) {
-            final boolean bRep0Null = (rep0.getIdentifier() == null);
-            final boolean bRep1Null = (rep1.getIdentifier() == null);
-
-            if (bRep0Null && bRep1Null) {
-                return 0;
-            }
-            if (bRep0Null) {
-                return -1;
-            }
-            if (bRep1Null) {
-                return 1;
-            }
-            return compare(rep0.toString(false, false), rep1.toString(false,
-                    false));
-        }
-
-        public int compare(final String uri0, final String uri1) {
-            return uri0.compareTo(uri1);
-        }
-    }
-
-    /**
-     * Optimized public-domain implementation of a Java alphanumeric sort.
-     * <p>
-     * 
-     * This implementation uses a single comparison pass over the characters in
-     * a CharSequence, and returns as soon as a differing character is found,
-     * unless the difference occurs in a series of numeric characters, in which
-     * case that series is followed to its end. Numeric series of equal length
-     * are compared numerically, that is, according to the most significant
-     * (leftmost) differing digit. Series of unequal length are compared by
-     * their length.
-     * <p>
-     * 
-     * This implementation appears to be 2-5 times faster than alphanumeric
-     * comparators based based on substring analysis, with a lighter memory
-     * footprint.
-     * <p>
-     * 
-     * This alphanumeric comparator has approximately 20%-50% the performance of
-     * the lexical String.compareTo() operation. Character sequences without
-     * numeric data are compared more quickly.
-     * <p>
-     * 
-     * Dedicated to the public domain by the original author:
-     * http://creativecommons.org/licenses/publicdomain/
-     * 
-     * @author Rob Heittman, <a href="http://www.solertium.com">Solertium
-     *         Corporation</a>
-     */
-    private class AlphaNumericComparator extends AlphabeticalComparator {
-        private static final long serialVersionUID = 1L;
-
-        @Override
-        public int compare(final String uri0, final String uri1) {
-            int ptr = 0;
-            int msd = 0;
-            int diff = 0;
-            char a, b;
-
-            final int llength = uri0.length();
-            final int rlength = uri1.length();
-            final int min;
-
-            if (rlength < llength) {
-                min = rlength;
-            } else {
-                min = llength;
-            }
-
-            boolean rAtEnd, rHasNoMoreDigits;
-
-            while (ptr < min) {
-                a = uri0.charAt(ptr);
-                b = uri1.charAt(ptr);
-                diff = a - b;
-
-                if ((a > '9') || (b > '9') || (a < '0') || (b < '0')) {
-                    if (diff != 0) {
-                        return diff;
-                    }
-
-                    msd = 0;
-                } else {
-                    if (msd == 0) {
-                        msd = diff;
-                    }
-
-                    rAtEnd = rlength - ptr < 2;
-
-                    if (llength - ptr < 2) {
-                        if (rAtEnd) {
-                            return msd;
-                        }
-
-                        if (!isNotDigit(a) && !isNotDigit(b))
-                            return diff;
-                        else
-                            return -1;
-                    }
-
-                    if (rAtEnd) {
-                        if (!isNotDigit(a) && !isNotDigit(b))
-                            return diff;
-                        else
-                            return -1;
-                    }
-
-                    rHasNoMoreDigits = isNotDigit(uri1.charAt(ptr + 1));
-
-                    if (isNotDigit(uri0.charAt(ptr + 1))) {
-                        if (rHasNoMoreDigits && (msd != 0)) {
-                            return msd;
-                        }
-
-                        if (!rHasNoMoreDigits) {
-                            return -1;
-                        }
-                    } else {
-                        if (rHasNoMoreDigits) {
-                            return 1;
-                        }
-                    }
-                }
-                ptr++;
-            }
-            return llength - rlength;
-        }
-
-        protected boolean isNotDigit(final char x) {
-            return (x > '9') || (x < '0');
-        }
-
-    }
-
     /** The reference comparator to sort index pages. */
     private volatile Comparator<Reference> comparator;
 
-    /** Indicates if the subdirectories are deeply accessible (true by default). */
+    /**
+     * Indicates if the sub-directories are deeply accessible (true by default).
+     */
     private volatile boolean deeplyAccessible;
 
     /** The index name, without extensions (ex: "index" or "home"). */
@@ -363,7 +222,7 @@ public class Directory extends Finder {
     }
 
     /**
-     * Returns the root URI from which the relative resource URIs will be lookep
+     * Returns the root URI from which the relative resource URIs will be looked
      * up.
      * 
      * @return The root URI.
@@ -379,9 +238,9 @@ public class Directory extends Finder {
     }
 
     /**
-     * Indicates if the subdirectories are deeply accessible (true by default).
+     * Indicates if the sub-directories are deeply accessible (true by default).
      * 
-     * @return True if the subdirectories are deeply accessible.
+     * @return True if the sub-directories are deeply accessible.
      */
     public boolean isDeeplyAccessible() {
         return this.deeplyAccessible;
@@ -452,10 +311,10 @@ public class Directory extends Finder {
     }
 
     /**
-     * Indicates if the subdirectories are deeply accessible (true by default).
+     * Indicates if the sub-directories are deeply accessible (true by default).
      * 
      * @param deeplyAccessible
-     *            True if the subdirectories are deeply accessible.
+     *            True if the sub-directories are deeply accessible.
      */
     public void setDeeplyAccessible(boolean deeplyAccessible) {
         this.deeplyAccessible = deeplyAccessible;
