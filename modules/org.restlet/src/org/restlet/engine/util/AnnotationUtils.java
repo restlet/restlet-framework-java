@@ -44,7 +44,7 @@ public class AnnotationUtils {
             }
 
             for (java.lang.reflect.Method javaMethod : resourceClass
-                    .getDeclaredMethods()) {
+                    .getMethods()) {
                 for (Annotation annotation : javaMethod.getAnnotations()) {
 
                     Annotation methodAnnotation = annotation.annotationType()

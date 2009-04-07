@@ -12,6 +12,8 @@ Changes log
         - Fixed dependency issue in the org.restlet.example.pom. 
           Reported by Marcelo Ochoa.
         - ServerServlet ignores client connectors that are now available.
+        - Fixed issue with annotation inheritance. 
+          Contributed by Tal Liron.
     - Enhancements
         - Servlet's UserPrincipal is now transferred into Restlet's
           ClientInfo#subject property. Suggested by Paul Davis.
