@@ -104,6 +104,13 @@ public abstract class Connector extends Restlet {
     }
 
     /**
+     * Indicates the underlying connector helper is available.
+     * 
+     * @return True if the underlying connector helper is available.
+     */
+    public abstract boolean isAvailable();
+
+    /**
      * Sets the protocols simultaneously supported. Method synchronized to make
      * compound action (clear, addAll) atomic, not for visibility.
      * 

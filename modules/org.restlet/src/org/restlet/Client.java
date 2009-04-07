@@ -166,6 +166,16 @@ public class Client extends Connector {
     }
 
     /**
+     * Indicates the underlying connector helper is available.
+     * 
+     * @return True if the underlying connector helper is available.
+     */
+    @Override
+    public boolean isAvailable() {
+        return getHelper() != null;
+    }
+
+    /**
      * Sets the connection timeout.
      * 
      * @param connectTimeout

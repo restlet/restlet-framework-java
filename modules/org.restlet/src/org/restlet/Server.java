@@ -230,11 +230,13 @@ public class Server extends Connector {
      *            The connector protocol.
      * @param port
      *            The listening port.
-     * @param target
-     *            The target Restlet.
+     * @param targetClass
+     *            The target server resource.
      */
-    public Server(Protocol protocol, int port, Restlet target) {
-        this(null, protocol, port, target);
+    public Server(Protocol protocol, int port,
+            Class<? extends ServerResource> targetClass) {
+        this(null, protocol, port,
+                new Finder(Context.getCurrent(), targetClass));
     }
 
     /**
@@ -244,13 +246,11 @@ public class Server extends Connector {
      *            The connector protocol.
      * @param port
      *            The listening port.
-     * @param targetClass
-     *            The target server resource.
+     * @param target
+     *            The target Restlet.
      */
-    public Server(Protocol protocol, int port,
-            Class<? extends ServerResource> targetClass) {
-        this(null, protocol, port,
-                new Finder(Context.getCurrent(), targetClass));
+    public Server(Protocol protocol, int port, Restlet target) {
+        this(null, protocol, port, target);
     }
 
     /**
@@ -363,6 +363,16 @@ public class Server extends Connector {
      */
     public boolean hasTarget() {
         return this.target != null;
+    }
+
+    /**
+     * Indicates the underlying connector helper is available.
+     * 
+     * @return True if the underlying connector helper is available.
+     */
+    @Override
+    public boolean isAvailable() {
+        return getHelper() != null;
     }
 
     /**

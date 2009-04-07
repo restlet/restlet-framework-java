@@ -289,7 +289,7 @@ public class ServerServlet extends HttpServlet {
                     // Set the context based on the Servlet's context
                     application.setContext(parentContext.createChildContext());
                 } catch (NoSuchMethodException e) {
-                    log("[Noelios Restlet Engine] - The ServerServlet couldn't invoke the constructor of the target class. Please check this class has a constructor without parameter. The constructor with a parameter of type Context will be used instead.");
+                    log("[Restlet] ServerServlet couldn't invoke the constructor of the target class. Please check this class has a constructor without parameter. The constructor with a parameter of type Context will be used instead.");
                     // The constructor with the Context parameter does not
                     // exist. Create a new instance of the application class by
                     // invoking the constructor with the Context parameter.
@@ -299,24 +299,24 @@ public class ServerServlet extends HttpServlet {
                 }
             } catch (ClassNotFoundException e) {
                 log(
-                        "[Noelios Restlet Engine] - The ServerServlet couldn't find the target class. Please check that your classpath includes "
+                        "[Restlet] ServerServlet couldn't find the target class. Please check that your classpath includes "
                                 + applicationClassName, e);
 
             } catch (InstantiationException e) {
                 log(
-                        "[Noelios Restlet Engine] - The ServerServlet couldn't instantiate the target class. Please check this class has an empty constructor "
+                        "[Restlet] ServerServlet couldn't instantiate the target class. Please check this class has an empty constructor "
                                 + applicationClassName, e);
             } catch (IllegalAccessException e) {
                 log(
-                        "[Noelios Restlet Engine] - The ServerServlet couldn't instantiate the target class. Please check that you have to proper access rights to "
+                        "[Restlet] ServerServlet couldn't instantiate the target class. Please check that you have to proper access rights to "
                                 + applicationClassName, e);
             } catch (NoSuchMethodException e) {
                 log(
-                        "[Noelios Restlet Engine] - The ServerServlet couldn't invoke the constructor of the target class. Please check this class has a constructor with a single parameter of Context "
+                        "[Restlet] ServerServlet couldn't invoke the constructor of the target class. Please check this class has a constructor with a single parameter of Context "
                                 + applicationClassName, e);
             } catch (InvocationTargetException e) {
                 log(
-                        "[Noelios Restlet Engine] - The ServerServlet couldn't instantiate the target class. An exception was thrown while creating "
+                        "[Restlet] ServerServlet couldn't instantiate the target class. An exception was thrown while creating "
                                 + applicationClassName, e);
             }
         }
@@ -375,8 +375,8 @@ public class ServerServlet extends HttpServlet {
         Component component = null;
 
         // Look for the Component XML configuration file.
-        Client client = createWarClient(new Context(), getServletConfig());
-        Response response = client.get("war:///WEB-INF/restlet.xml");
+        Client warClient = createWarClient(new Context(), getServletConfig());
+        Response response = warClient.get("war:///WEB-INF/restlet.xml");
         if (response.getStatus().isSuccess() && response.isEntityAvailable()) {
             component = new Component(response.getEntity());
         }
@@ -398,15 +398,15 @@ public class ServerServlet extends HttpServlet {
                     component = (Component) targetClass.newInstance();
                 } catch (ClassNotFoundException e) {
                     log(
-                            "[Noelios Restlet Engine] - The ServerServlet couldn't find the target class. Please check that your classpath includes "
+                            "[Restlet] ServerServlet couldn't find the target class. Please check that your classpath includes "
                                     + componentClassName, e);
                 } catch (InstantiationException e) {
                     log(
-                            "[Noelios Restlet Engine] - The ServerServlet couldn't instantiate the target class. Please check this class has an empty constructor "
+                            "[Restlet] ServerServlet couldn't instantiate the target class. Please check this class has an empty constructor "
                                     + componentClassName, e);
                 } catch (IllegalAccessException e) {
                     log(
-                            "[Noelios Restlet Engine] - The ServerServlet couldn't instantiate the target class. Please check that you have to proper access rights to "
+                            "[Restlet] ServerServlet couldn't instantiate the target class. Please check that you have to proper access rights to "
                                     + componentClassName, e);
                 }
             }
@@ -425,9 +425,17 @@ public class ServerServlet extends HttpServlet {
             if (clientProtocolsString != null) {
                 final String[] clientProtocols = clientProtocolsString
                         .split(" ");
+                Client client;
+
                 for (final String clientProtocol : clientProtocols) {
-                    component.getClients()
-                            .add(Protocol.valueOf(clientProtocol));
+                    client = new Client(clientProtocol);
+
+                    if (client.isAvailable()) {
+                        component.getClients().add(client);
+                    } else {
+                        log("[Restlet] Couldn't find a client connector for protocol "
+                                + clientProtocol);
+                    }
                 }
             }
         }
@@ -495,8 +503,8 @@ public class ServerServlet extends HttpServlet {
 
             if (isDefaultComponent()) {
                 if (this.application != null) {
-                    log("[Noelios Restlet Engine] - Attaching application: "
-                            + this.application + " to URI: " + uriPattern);
+                    log("[Restlet] Attaching application: " + this.application
+                            + " to URI: " + uriPattern);
                     component.getDefaultHost().attach(uriPattern,
                             this.application);
                 }
@@ -593,9 +601,8 @@ public class ServerServlet extends HttpServlet {
                                     offsetPath
                                             + defaultRoute.getTemplate()
                                                     .getPattern());
-                            log("[Noelios Restlet Engine] - Attaching restlet: "
-                                    + defaultRoute.getNext()
-                                    + " to URI: "
+                            log("[Restlet] Attaching restlet: "
+                                    + defaultRoute.getNext() + " to URI: "
                                     + offsetPath
                                     + defaultRoute.getTemplate().getPattern());
                         }
@@ -603,9 +610,8 @@ public class ServerServlet extends HttpServlet {
                         // Shift the routes of the default host
                         for (final Route route : component.getDefaultHost()
                                 .getRoutes()) {
-                            log("[Noelios Restlet Engine] - Attaching restlet: "
-                                    + route.getNext()
-                                    + " to URI: "
+                            log("[Restlet] Attaching restlet: "
+                                    + route.getNext() + " to URI: "
                                     + offsetPath
                                     + route.getTemplate().getPattern());
                             route.getTemplate().setPattern(
@@ -622,7 +628,7 @@ public class ServerServlet extends HttpServlet {
                                         offsetPath
                                                 + defaultRoute.getTemplate()
                                                         .getPattern());
-                                log("[Noelios Restlet Engine] - Attaching restlet: "
+                                log("[Restlet] Attaching restlet: "
                                         + defaultRoute.getNext()
                                         + " to URI: "
                                         + offsetPath
@@ -631,9 +637,8 @@ public class ServerServlet extends HttpServlet {
                             }
                             // Shift the routes of the virtual host
                             for (final Route route : virtualHost.getRoutes()) {
-                                log("[Noelios Restlet Engine] - Attaching restlet: "
-                                        + route.getNext()
-                                        + " to URI: "
+                                log("[Restlet] Attaching restlet: "
+                                        + route.getNext() + " to URI: "
                                         + offsetPath
                                         + route.getTemplate().getPattern());
                                 route.getTemplate().setPattern(
@@ -881,7 +886,7 @@ public class ServerServlet extends HttpServlet {
         if (helper != null) {
             helper.handle(createCall(helper.getHelped(), request, response));
         } else {
-            log("[Noelios Restlet Engine] - Unable to get the Restlet HTTP server connector. Status code 500 returned.");
+            log("[Restlet] Unable to get the Restlet HTTP server connector. Status code 500 returned.");
             response.sendError(500);
         }
     }

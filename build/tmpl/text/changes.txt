@@ -11,7 +11,7 @@ Changes log
           not return a value.
         - Fixed dependency issue in the org.restlet.example.pom. 
           Reported by Marcelo Ochoa.
-          
+        - ServerServlet ignores client connectors that are now available.
     - Enhancements
         - Servlet's UserPrincipal is now transferred into Restlet's
           ClientInfo#subject property. Suggested by Paul Davis.
@@ -31,6 +31,8 @@ Changes log
         - Added an UniformResource#doRelease() method.
         - ClientResource now overrides finalize() to call the release()
           method.
+        - Connector#isAvailable() method added to test the presence
+          of the underlying connector helper.
     - Miscellaneous
         - Component XML configuration has been moved into an Engine 
           ComponentXmlParser class.
