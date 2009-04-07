@@ -1,7 +1,6 @@
 package org.restlet.example.firstResource;
 
 import java.io.IOException;
-import java.util.Collection;
 
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
@@ -20,9 +19,6 @@ import org.w3c.dom.Element;
  */
 public class ItemsResource extends BaseResource {
 
-    /** List of items. */
-    Collection<Item> items;
-
     /**
      * Handle POST requests: create a new item.
      */
@@ -37,7 +33,8 @@ public class ItemsResource extends BaseResource {
 
         // Register the new item if one is not already registered.
         if (!getItems().containsKey(itemName)
-                && putIfAbsent(itemName, itemDescription) != null) {
+                && getItems().putIfAbsent(itemName,
+                        new Item(itemName, itemDescription)) == null) {
             // Set the response's status and entity
             setStatus(Status.SUCCESS_CREATED);
             Representation rep = new StringRepresentation("Item created",
@@ -90,12 +87,6 @@ public class ItemsResource extends BaseResource {
         return result;
     }
 
-    @Override
-    public void doInit() {
-        // Get the items directly from the "persistence layer".
-        items = getItems().values();
-    }
-
     /**
      * Returns a listing of all registered items.
      */
@@ -110,7 +101,7 @@ public class ItemsResource extends BaseResource {
             Document d = representation.getDocument();
             Element r = d.createElement("items");
             d.appendChild(r);
-            for (Item item : items) {
+            for (Item item : getItems().values()) {
                 Element eltItem = d.createElement("item");
 
                 Element eltName = d.createElement("name");

@@ -1,29 +1,16 @@
 package org.restlet.example.firstResource;
 
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import org.restlet.Application;
-import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.routing.Router;
 
 public class FirstResourceApplication extends Application {
 
     /** The list of items is persisted in memory. */
-    private final Map<String, Item> items;
-
-    public FirstResourceApplication(Context context) {
-        super(context);
-        // We make sure that this attribute will support concurrent access.
-        items = new ConcurrentHashMap<String, Item>();
-    }
-
-    public FirstResourceApplication() {
-        super();
-        // We make sure that this attribute will support concurrent access.
-        items = new ConcurrentHashMap<String, Item>();
-    }
+    private final ConcurrentMap<String, Item> items = new ConcurrentHashMap<String, Item>();
 
     /**
      * Creates a root Restlet that will receive all incoming calls.
@@ -46,7 +33,7 @@ public class FirstResourceApplication extends Application {
      * 
      * @return the list of registered items.
      */
-    public Map<String, Item> getItems() {
+    public ConcurrentMap<String, Item> getItems() {
         return items;
     }
 }
