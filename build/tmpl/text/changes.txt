@@ -48,6 +48,9 @@ Changes log
           Remi Dewitte.
         - Added intercepter methods to ServerServlet needed for the 
           XDB extension. Contributed by Marcelo Ochoa.
+        - Added a "form" extension mapping in MetadataService for the
+          media type "application/www-form-urlencoded". 
+          Suggested by Tal Liron.
     - Miscellaneous
         - Component XML configuration has been moved into an Engine 
           ComponentXmlParser class.

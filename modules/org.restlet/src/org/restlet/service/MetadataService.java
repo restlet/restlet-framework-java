@@ -118,7 +118,7 @@ public class MetadataService extends Service {
         addCommonExtensions();
     }
 
-/**
+    /**
      * Adds a common list of associations from extensions to metadata. The list
      * of languages extensions:<br>
      * <ul>
@@ -148,6 +148,7 @@ public class MetadataService extends Service {
      * <li>eps: Encapsulated PostScript</li>
      * <li>exe: Executable File (Microsoft Corporation)</li>
      * <li>fmt: FreeMarker encoding</li>
+     * <li>form: Web forms (URL encoded)</li>
      * <li>gif: GIF image</li>
      * <li>hqx: BinHex 4 Compressed Archive (Macintosh)</li>
      * <li>htm, html: HTML document</li>
@@ -265,6 +266,7 @@ public class MetadataService extends Service {
         addExtension("eps", MediaType.APPLICATION_POSTSCRIPT);
         addExtension("exe", MediaType.APPLICATION_OCTET_STREAM);
         addExtension("fmt", Encoding.FREEMARKER);
+        addExtension("form", MediaType.APPLICATION_WWW_FORM);
         addExtension("gif", MediaType.IMAGE_GIF);
         addExtension("hqx", MediaType.APPLICATION_MAC_BINHEX40);
         addExtension("htm", MediaType.TEXT_HTML);
