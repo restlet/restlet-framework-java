@@ -105,19 +105,22 @@ public class GuardedExample {
                 .getContext().createChildContext());
 
         // create a Guard
-        final ChallengeGuard guard = new ChallengeGuard(application.getContext(),
-                ChallengeScheme.HTTP_BASIC, "JAX-RS example");
+        final ChallengeGuard guard = new ChallengeGuard(application
+                .getContext(), ChallengeScheme.HTTP_BASIC, "JAX-RS example");
 
-        // set valid users and thier passwords.
+        // set valid users and their passwords.
         MemoryRealm realm = new MemoryRealm();
-        application.getContext().setRealm(realm);
+        application.getContext().setEnroler(realm.getEnroler());
+        application.getContext().setVerifier(realm.getVerifier());
 
         Organization organization = new Organization();
         realm.getOrganizations().add(organization);
-        
+
         organization.getUsers().add(new User("admin", "adminPW".toCharArray()));
-        organization.getUsers().add(new User("alice", "alicesSecret".toCharArray()));
-        organization.getUsers().add(new User("bob", "bobsSecret".toCharArray()));
+        organization.getUsers().add(
+                new User("alice", "alicesSecret".toCharArray()));
+        organization.getUsers()
+                .add(new User("bob", "bobsSecret".toCharArray()));
 
         // create an RoleChecker (see above)
         final ExampleRoleChecker roleChecker = new ExampleRoleChecker();

@@ -39,7 +39,6 @@ import java.util.logging.Logger;
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.security.Enroler;
-import org.restlet.security.Realm;
 import org.restlet.security.Verifier;
 import org.restlet.util.Series;
 
@@ -339,17 +338,6 @@ public class Context {
         if (parameters != null) {
             this.parameters.addAll(parameters);
         }
-    }
-
-    /**
-     * Sets an enroler and a verifier based on the given realm.
-     * 
-     * @param realm
-     *            A security realm.
-     */
-    public void setRealm(Realm realm) {
-        setEnroler(realm.getEnroler());
-        setVerifier(realm.getVerifier());
     }
 
     /**

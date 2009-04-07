@@ -40,6 +40,8 @@ Changes log
           method.
         - Connector#isAvailable() method added to test the presence
           of the underlying connector helper.
+        - Removed Context#setRealm() to prevent potential threading 
+          issues. Reported by Tim Peierls.
     - Miscellaneous
         - Component XML configuration has been moved into an Engine 
           ComponentXmlParser class.

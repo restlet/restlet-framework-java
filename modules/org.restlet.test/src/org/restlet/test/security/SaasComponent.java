@@ -54,7 +54,8 @@ public class SaasComponent extends Component {
         MemoryRealm realm = new MemoryRealm();
         Organization customer1 = createOrganization1(realm, app);
         realm.getOrganizations().add(customer1);
-        context.setRealm(realm);
+        context.setEnroler(realm.getEnroler());
+        context.setVerifier(realm.getVerifier());
 
         // Organization customer2 = createOrganization2(realm, app);
         // realm.getOrganizations().add(customer2);

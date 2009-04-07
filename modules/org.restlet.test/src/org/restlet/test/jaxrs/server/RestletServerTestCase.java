@@ -165,10 +165,13 @@ public abstract class RestletServerTestCase extends TestCase {
         realm.getOrganizations().add(organization);
 
         organization.getUsers().add(new User("admin", "adminPW".toCharArray()));
-        organization.getUsers().add(new User("alice", "alicesSecret".toCharArray()));
-        organization.getUsers().add(new User("bob", "bobsSecret".toCharArray()));
+        organization.getUsers().add(
+                new User("alice", "alicesSecret".toCharArray()));
+        organization.getUsers()
+                .add(new User("bob", "bobsSecret".toCharArray()));
 
-        context.setRealm(realm);
+        context.setEnroler(realm.getEnroler());
+        context.setVerifier(realm.getVerifier());
 
         return new ChallengeGuard(context, challengeScheme, "");
     }
