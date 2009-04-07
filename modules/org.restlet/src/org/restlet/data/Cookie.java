@@ -30,7 +30,7 @@
 
 package org.restlet.data;
 
-import org.restlet.engine.Engine;
+import org.restlet.engine.util.SystemUtils;
 
 /**
  * Cookie provided by a client. To get the list of all cookies sent by a client,
@@ -177,7 +177,7 @@ public class Cookie extends Parameter {
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        return Engine.hashCode(super.hashCode(), getVersion(), getPath(),
+        return SystemUtils.hashCode(super.hashCode(), getVersion(), getPath(),
                 getDomain());
     }
 

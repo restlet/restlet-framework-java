@@ -30,7 +30,7 @@
 
 package org.restlet.data;
 
-import org.restlet.engine.Engine;
+import org.restlet.engine.util.SystemUtils;
 
 /**
  * Cookie setting provided by a server. This allows a server side application to
@@ -243,7 +243,7 @@ public final class CookieSetting extends Cookie {
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        return Engine.hashCode(super.hashCode(), getComment(), getMaxAge(),
+        return SystemUtils.hashCode(super.hashCode(), getComment(), getMaxAge(),
                 isSecure());
     }
 

@@ -103,6 +103,27 @@ public class SystemUtils {
     }
 
     /**
+     * Computes the hash code of a set of objects. Follows the algorithm
+     * specified in List.hasCode().
+     * 
+     * @param objects
+     *            the objects to compute the hashCode
+     * 
+     * @return The hash code of a set of objects.
+     */
+    public static int hashCode(Object... objects) {
+        int result = 1;
+
+        if (objects != null) {
+            for (final Object obj : objects) {
+                result = 31 * result + (obj == null ? 0 : obj.hashCode());
+            }
+        }
+
+        return result;
+    }
+
+    /**
      * Private constructor to ensure that the class acts as a true utility class
      * i.e. it isn't instantiable and extensible.
      */

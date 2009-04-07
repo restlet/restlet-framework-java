@@ -32,7 +32,7 @@ package org.restlet.data;
 
 import java.io.IOException;
 
-import org.restlet.engine.Engine;
+import org.restlet.engine.util.SystemUtils;
 
 /**
  * Multi-usage parameter. Note that the name and value properties are thread
@@ -169,7 +169,7 @@ public class Parameter implements Comparable<Parameter> {
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        return Engine.hashCode(getName(), getValue());
+        return SystemUtils.hashCode(getName(), getValue());
     }
 
     /**

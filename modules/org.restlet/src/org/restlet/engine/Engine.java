@@ -136,7 +136,7 @@ public class Engine {
         }
 
         if (result == null) {
-            result = Class.class.getClassLoader();
+            result = Engine.class.getClassLoader();
         }
 
         if (result == null) {
@@ -169,27 +169,6 @@ public class Engine {
      */
     private static ClassLoader getUserClassLoader() {
         return userClassLoader;
-    }
-
-    /**
-     * Computes the hash code of a set of objects. Follows the algorithm
-     * specified in List.hasCode().
-     * 
-     * @param objects
-     *            the objects to compute the hashCode
-     * 
-     * @return The hash code of a set of objects.
-     */
-    public static int hashCode(Object... objects) {
-        int result = 1;
-
-        if (objects != null) {
-            for (final Object obj : objects) {
-                result = 31 * result + (obj == null ? 0 : obj.hashCode());
-            }
-        }
-
-        return result;
     }
 
     /**
@@ -243,7 +222,7 @@ public class Engine {
 
         // Then, try using the current class's class loader
         if (result == null) {
-            result = loadClass(Class.class.getClassLoader(), className);
+            result = loadClass(Engine.class.getClassLoader(), className);
         }
 
         // Then, try using the caller's class loader

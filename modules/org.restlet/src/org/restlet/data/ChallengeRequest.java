@@ -30,7 +30,7 @@
 
 package org.restlet.data;
 
-import org.restlet.engine.Engine;
+import org.restlet.engine.util.SystemUtils;
 import org.restlet.util.Series;
 
 /**
@@ -139,7 +139,7 @@ public final class ChallengeRequest {
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        return Engine.hashCode(getScheme(), getRealm(), getParameters());
+        return SystemUtils.hashCode(getScheme(), getRealm(), getParameters());
     }
 
     /**

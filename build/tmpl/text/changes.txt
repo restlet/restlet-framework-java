@@ -16,6 +16,9 @@ Changes log
           Contributed by Tal Liron.
         - Fixed bug causing Engine to be instantiated several time.
           Reported by David Fogel. 
+        - Fixed potential issue in Engine classloading logic which used
+          Class.class instead of Engine.class to get the class's 
+          classloader. Reported by David Fogel.
     - Enhancements
         - Servlet's UserPrincipal is now transferred into Restlet's
           ClientInfo#subject property. Suggested by Paul Davis.

@@ -30,7 +30,7 @@
 
 package org.restlet.data;
 
-import org.restlet.engine.Engine;
+import org.restlet.engine.util.SystemUtils;
 import org.restlet.security.UserPrincipal;
 import org.restlet.util.Series;
 
@@ -266,10 +266,10 @@ public final class ChallengeResponse {
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        return Engine.hashCode(getScheme(), getIdentifier(),
-        		//Secret is simply discarded from hashcode calculation because
-        		//we don't want it to be materialized as a string
-                //(getSecret() == null) ? null : new String(getSecret()),
+        return SystemUtils.hashCode(getScheme(), getIdentifier(),
+        // Secret is simply discarded from hash code calculation because
+                // we don't want it to be materialized as a string
+                // (getSecret() == null) ? null : new String(getSecret()),
                 getCredentials());
     }
 

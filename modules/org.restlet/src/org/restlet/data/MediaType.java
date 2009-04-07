@@ -33,7 +33,7 @@ package org.restlet.data;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.restlet.engine.Engine;
+import org.restlet.engine.util.SystemUtils;
 import org.restlet.util.Series;
 
 /**
@@ -871,7 +871,7 @@ public final class MediaType extends Metadata {
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        return Engine.hashCode(super.hashCode(), getParameters());
+        return SystemUtils.hashCode(super.hashCode(), getParameters());
     }
 
     /**
