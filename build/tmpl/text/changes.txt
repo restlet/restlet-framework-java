@@ -44,6 +44,8 @@ Changes log
           issues. Reported by Tim Peierls.
         - Added new constructors to Representation based on the parent
           RepresentationInfo class. Suggested by Remi Dewitte.
+        - Added FileRepresentation#autoDelete property. Contributed by
+          Remi Dewitte.
     - Miscellaneous
         - Component XML configuration has been moved into an Engine 
           ComponentXmlParser class.

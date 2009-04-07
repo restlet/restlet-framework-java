@@ -71,6 +71,12 @@ public class FileRepresentation extends Representation {
         return new File(path);
     }
 
+    /**
+     * Indicates if this file should be automatically deleted on release of the
+     * representation.
+     */
+    private volatile boolean autoDelete;
+
     /** The file handle. */
     private volatile File file;
 
@@ -200,12 +206,42 @@ public class FileRepresentation extends Representation {
     }
 
     /**
+     * Indicates if this file should be automatically deleted on release of the
+     * representation.
+     * 
+     * @return True if this file should be automatically deleted on release of
+     *         the representation.
+     */
+    public boolean isAutoDelete() {
+        return autoDelete;
+    }
+
+    /**
      * Releases the file handle.
      */
     @Override
     public void release() {
+        if (isAutoDelete() && getFile() != null) {
+            try {
+                getFile().delete();
+            } catch (Exception e) {
+            }
+        }
+
         setFile(null);
         super.release();
+    }
+
+    /**
+     * Indicates if this file should be automatically deleted on release of the
+     * representation.
+     * 
+     * @param deleteOnRelease
+     *            True if this file should be automatically deleted on release
+     *            of the representation.
+     */
+    public void setAutoDelete(boolean deleteOnRelease) {
+        this.autoDelete = deleteOnRelease;
     }
 
     /**
