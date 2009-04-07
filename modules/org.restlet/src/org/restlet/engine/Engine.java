@@ -118,11 +118,15 @@ public class Engine {
             + VERSION;
 
     /**
-     * Returns the best class loader, first the engine class loader if available
-     * using {@link #getUserClassLoader()}, otherwise the current thread context
-     * class loader, or finally the classloader of the current class.
+     * Returns the best class loader, first the user class loader, or the
+     * current thread context class loader, or the classloader of the current
+     * class or finally the system classloader.
      * 
      * @return The best class loader.
+     * @see #getUserClassLoader()
+     * @see Thread#getContextClassLoader()
+     * @see Class#getClassLoader()
+     * @see ClassLoader#getSystemClassLoader()
      */
     public static ClassLoader getClassLoader() {
         ClassLoader result = getUserClassLoader();
@@ -151,8 +155,7 @@ public class Engine {
         Engine result = instance;
 
         if (result == null) {
-            instance = new Engine();
-            result = instance;
+            result = register();
         }
 
         return result;
@@ -213,13 +216,17 @@ public class Engine {
     }
 
     /**
-     * Returns the class object for the given name using the engine class loader
-     * fist, then the current thread context class loader, or the classloader of
-     * the current class.
+     * Returns the class object for the given name using the user classloader
+     * first, then the current thread context classloader, or the classloader of
+     * the current class or finally the system classloader.
      * 
      * @param className
      *            The class name to lookup.
      * @return The class object or null if the class was not found.
+     * @see #getUserClassLoader()
+     * @see Thread#getContextClassLoader()
+     * @see Class#forName(String)
+     * @see ClassLoader#getSystemClassLoader()
      */
     public static Class<?> loadClass(String className)
             throws ClassNotFoundException {
@@ -261,7 +268,7 @@ public class Engine {
      * 
      * @return The registered engine.
      */
-    public static Engine register() {
+    public static synchronized Engine register() {
         return register(true);
     }
 
@@ -272,7 +279,7 @@ public class Engine {
      *            True if plug-ins should be automatically discovered.
      * @return The registered engine.
      */
-    public static Engine register(boolean discoverPlugins) {
+    public static synchronized Engine register(boolean discoverPlugins) {
         final Engine result = new Engine(discoverPlugins);
         org.restlet.engine.Engine.setInstance(result);
         return result;
