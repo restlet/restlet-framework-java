@@ -46,6 +46,8 @@ Changes log
           RepresentationInfo class. Suggested by Remi Dewitte.
         - Added FileRepresentation#autoDelete property. Contributed by
           Remi Dewitte.
+        - Added intercepter methods to ServerServlet needed for the 
+          XDB extension. Contributed by Marcelo Ochoa.
     - Miscellaneous
         - Component XML configuration has been moved into an Engine 
           ComponentXmlParser class.

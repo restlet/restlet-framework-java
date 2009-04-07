@@ -493,12 +493,13 @@ public class ServerServlet extends HttpServlet {
         if (component != null) {
             // First, let's create a pseudo server
             final Server server = new Server(component.getContext()
-                    .createChildContext(), (List<Protocol>) null, request
-                    .getLocalAddr(), request.getLocalPort(), component);
+                    .createChildContext(), (List<Protocol>) null, this
+                    .getLocalAddr(request), this.getLocalPort(request),
+                    component);
             result = new HttpServerHelper(server);
 
             // Attach the hosted application(s) to the right path
-            final String uriPattern = request.getContextPath()
+            final String uriPattern = this.getContextPath(request)
                     + request.getServletPath();
 
             if (isDefaultComponent()) {
@@ -588,7 +589,7 @@ public class ServerServlet extends HttpServlet {
                         String offsetPath = null;
 
                         if (addContextPath) {
-                            offsetPath = request.getContextPath();
+                            offsetPath = this.getContextPath(request);
                         } else {
                             offsetPath = uriPattern;
                         }
@@ -756,6 +757,18 @@ public class ServerServlet extends HttpServlet {
     }
 
     /**
+     * Intercepter method need for subclasses such as XdbServerServlet.
+     * 
+     * @param request
+     *            The Servlet request.
+     * @return The portion of the request URI that indicates the context of the
+     *         request.
+     */
+    protected String getContextPath(HttpServletRequest request) {
+        return request.getContextPath();
+    }
+
+    /**
      * Returns the value of a given initialization parameter, first from the
      * Servlet configuration, then from the Web Application context.
      * 
@@ -778,6 +791,30 @@ public class ServerServlet extends HttpServlet {
         }
 
         return result;
+    }
+
+    /**
+     * Intercepter method need for subclasses such as XdbServerServlet.
+     * 
+     * @param request
+     *            The Servlet request.
+     * @return The Internet Protocol (IP) address of the interface on which the
+     *         request was received.
+     */
+    protected String getLocalAddr(HttpServletRequest request) {
+        return request.getLocalAddr();
+    }
+
+    /**
+     * Intercepter method need for subclasses such as XdbServerServlet.
+     * 
+     * @param request
+     *            The Servlet request.
+     * @return The Internet Protocol (IP) port number of the interface on which
+     *         the request was received
+     */
+    protected int getLocalPort(HttpServletRequest request) {
+        return request.getLocalPort();
     }
 
     /**
