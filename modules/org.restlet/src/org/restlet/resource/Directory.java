@@ -163,30 +163,45 @@ public class Directory extends Finder {
                 a = uri0.charAt(ptr);
                 b = uri1.charAt(ptr);
                 diff = a - b;
+
                 if ((a > '9') || (b > '9') || (a < '0') || (b < '0')) {
                     if (diff != 0) {
                         return diff;
                     }
+
                     msd = 0;
                 } else {
                     if (msd == 0) {
                         msd = diff;
                     }
+
                     rAtEnd = rlength - ptr < 2;
+
                     if (llength - ptr < 2) {
                         if (rAtEnd) {
                             return msd;
                         }
-                        return -1;
+
+                        if (!isNotDigit(a) && !isNotDigit(b))
+                            return diff;
+                        else
+                            return -1;
                     }
+
                     if (rAtEnd) {
-                        return 1;
+                        if (!isNotDigit(a) && !isNotDigit(b))
+                            return diff;
+                        else
+                            return -1;
                     }
+
                     rHasNoMoreDigits = isNotDigit(uri1.charAt(ptr + 1));
+
                     if (isNotDigit(uri0.charAt(ptr + 1))) {
                         if (rHasNoMoreDigits && (msd != 0)) {
                             return msd;
                         }
+
                         if (!rHasNoMoreDigits) {
                             return -1;
                         }
