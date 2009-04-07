@@ -42,6 +42,8 @@ Changes log
           of the underlying connector helper.
         - Removed Context#setRealm() to prevent potential threading 
           issues. Reported by Tim Peierls.
+        - Added new constructors to Representation based on the parent
+          RepresentationInfo class. Suggested by Remi Dewitte.
     - Miscellaneous
         - Component XML configuration has been moved into an Engine 
           ComponentXmlParser class.

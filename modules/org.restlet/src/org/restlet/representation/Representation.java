@@ -48,6 +48,7 @@ import org.restlet.Context;
 import org.restlet.data.Digest;
 import org.restlet.data.MediaType;
 import org.restlet.data.Range;
+import org.restlet.data.Tag;
 import org.restlet.engine.io.ByteUtils;
 import org.restlet.engine.util.DateUtils;
 
@@ -160,18 +161,18 @@ public abstract class Representation extends RepresentationInfo {
     private volatile boolean isTransient;
 
     /**
+     * Indicates where in the full content the partial content available should
+     * be applied.
+     */
+    private volatile Range range;
+
+    /**
      * The expected size. Dynamic representations can have any size, but
      * sometimes we can know in advance the expected size. If this expected size
      * is specified by the user, it has a higher priority than any size that can
      * be guessed by the representation (like a file size).
      */
     private volatile long size;
-
-    /**
-     * Indicates where in the full content the partial content available should
-     * be applied.
-     */
-    private volatile Range range;
 
     /**
      * Default constructor.
@@ -196,6 +197,88 @@ public abstract class Representation extends RepresentationInfo {
         this.range = null;
         this.size = UNKNOWN_SIZE;
         this.expirationDate = null;
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param mediaType
+     *            The media type.
+     * @param modificationDate
+     *            The modification date.
+     */
+    public Representation(MediaType mediaType, Date modificationDate) {
+        this(mediaType, modificationDate, null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param mediaType
+     *            The media type.
+     * @param modificationDate
+     *            The modification date.
+     * @param tag
+     *            The tag.
+     */
+    public Representation(MediaType mediaType, Date modificationDate, Tag tag) {
+        super(mediaType, modificationDate, tag);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param mediaType
+     *            The media type.
+     * @param tag
+     *            The tag.
+     */
+    public Representation(MediaType mediaType, Tag tag) {
+        this(mediaType, null, tag);
+    }
+
+    /**
+     * Constructor from a variant.
+     * 
+     * @param variant
+     *            The variant to copy.
+     * @param modificationDate
+     *            The modification date.
+     */
+    public Representation(Variant variant, Date modificationDate) {
+        this(variant, modificationDate, null);
+    }
+
+    /**
+     * Constructor from a variant.
+     * 
+     * @param variant
+     *            The variant to copy.
+     * @param modificationDate
+     *            The modification date.
+     * @param tag
+     *            The tag.
+     */
+    public Representation(Variant variant, Date modificationDate, Tag tag) {
+        setCharacterSet(variant.getCharacterSet());
+        setEncodings(variant.getEncodings());
+        setIdentifier(variant.getIdentifier());
+        setLanguages(variant.getLanguages());
+        setMediaType(variant.getMediaType());
+        setModificationDate(modificationDate);
+        setTag(tag);
+    }
+
+    /**
+     * Constructor from a variant.
+     * 
+     * @param variant
+     *            The variant to copy.
+     * @param tag
+     *            The tag.
+     */
+    public Representation(Variant variant, Tag tag) {
+        this(variant, null, tag);
     }
 
     /**
