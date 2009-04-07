@@ -451,8 +451,7 @@ public class Finder extends Restlet {
                     targetResource.handle();
                 }
 
-                // TODO Happens too early.
-                // targetResource.release();
+                targetResource.release();
             }
         }
     }

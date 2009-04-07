@@ -99,7 +99,7 @@ public abstract class UniformResource {
      * Set-up method that can be overridden in order to initialize the state of
      * the resource. By default it does nothing.
      * 
-     * @see #release()
+     * @see #init(Context, Request, Response)
      */
     protected void doInit() throws ResourceException {
     }
@@ -582,8 +582,6 @@ public abstract class UniformResource {
                 getResponse().setStatus(e.getStatus());
             }
         }
-        getRequest().release();
-        getResponse().release();
     }
 
 }
