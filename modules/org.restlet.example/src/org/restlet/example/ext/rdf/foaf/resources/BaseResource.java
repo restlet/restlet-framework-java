@@ -32,16 +32,13 @@ package org.restlet.example.ext.rdf.foaf.resources;
 
 import java.util.Map;
 
-import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.example.ext.rdf.foaf.Application;
 import org.restlet.example.ext.rdf.foaf.objects.ObjectsFacade;
 import org.restlet.ext.freemarker.TemplateRepresentation;
 import org.restlet.representation.Representation;
-import org.restlet.resource.Resource;
+import org.restlet.resource.ServerResource;
 
 import freemarker.template.Configuration;
 
@@ -49,12 +46,7 @@ import freemarker.template.Configuration;
  * Base resource class that supports common behaviours or attributes shared by
  * all resources.
  */
-public class BaseResource extends Resource {
-
-    public BaseResource(Context context, Request request, Response response) {
-        super(context, request, response);
-        setModifiable(true);
-    }
+public class BaseResource extends ServerResource {
 
     /**
      * Returns the reference of a resource according to its id and the reference

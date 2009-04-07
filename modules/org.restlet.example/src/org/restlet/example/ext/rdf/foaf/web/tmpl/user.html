@@ -18,7 +18,7 @@
 			</tr>
 <#if user.image??>
 			<tr>
-				<td colspan="2"><img src="${user.image}" /></td>
+				<td colspan="2"><img src="${user.image}" alt="${user.firstName} ${user.lastName}" /></td>
 			</tr>
 </#if>
 		</table>
@@ -40,7 +40,7 @@
 	  <tr>
 	    <td><a href="${resourceRef}/contacts/${contact.id}" >${contact.nickname}</a></td>
 <#if contact.image??>
-	    <td><a href="${resourceRef}/contacts/${contact.id}" ><img src="${contact.image}" height="30" /></a></td>
+	    <td><a href="${resourceRef}/contacts/${contact.id}" ><img src="${contact.image}" height="30" alt="${contact.nickname}" /></a></td>
 <#else>
 	    <td>&nbsp;</td>
 </#if>

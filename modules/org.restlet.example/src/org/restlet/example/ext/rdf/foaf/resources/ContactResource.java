@@ -33,87 +33,59 @@ package org.restlet.example.ext.rdf.foaf.resources;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.restlet.Context;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
-import org.restlet.data.Reference;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.example.ext.rdf.foaf.objects.Contact;
 import org.restlet.example.ext.rdf.foaf.objects.User;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
+import org.restlet.resource.Delete;
+import org.restlet.resource.Get;
+import org.restlet.resource.Put;
 import org.restlet.resource.ResourceException;
 
 /**
  * Resource for a user's contact.
  */
-public class ContactResource extends UserResource {
-
-    /** The parent user. */
-    private User user;
+public class ContactResource extends BaseResource {
 
     /** The contact represented by this resource. */
     private Contact contact;
 
-    public ContactResource(Context context, Request request, Response response) {
-        super(context, request, response);
+    /** The parent user. */
+    private User user;
+
+    @Override
+    public void doInit() {
 
         // Get user thanks to its ID taken from the resource's URI.
-        final String userId = Reference.decode((String) request.getAttributes()
-                .get("userId"));
+        final String userId = (String) getRequestAttributes().get("userId");
         this.user = getObjectsFacade().getUserById(userId);
 
         if (user != null) {
             // Get the contact and its parent mailbox thanks to their IDs taken
             // from the resource's URI.
-            final String contactId = (String) request.getAttributes().get(
+            final String contactId = (String) getRequestAttributes().get(
                     "contactId");
             this.contact = getObjectsFacade().getContactById(contactId);
         }
-        getVariants().add(new Variant(MediaType.TEXT_HTML));
-    }
-
-    @Override
-    public boolean allowDelete() {
-        return true;
-    }
-
-    @Override
-    public boolean allowPut() {
-        return true;
     }
 
     /**
      * Remove this resource.
      */
-    @Override
-    public void removeRepresentations() throws ResourceException {
+    @Delete
+    public void removeContact() throws ResourceException {
         getObjectsFacade().deleteContact(this.user, this.contact);
         getResponse().redirectSeeOther(
                 getRequest().getResourceRef().getParentRef());
     }
 
     /**
-     * Generate the HTML representation of this resource.
-     */
-    @Override
-    public Representation represent(Variant variant) throws ResourceException {
-        final Map<String, Object> dataModel = new TreeMap<String, Object>();
-        dataModel.put("user", this.user);
-        dataModel.put("contact", this.contact);
-        dataModel.put("resourceRef", getRequest().getResourceRef());
-        dataModel.put("rootRef", getRequest().getRootRef());
-
-        return getTemplateRepresentation("contact.html", dataModel,
-                MediaType.TEXT_HTML);
-    }
-
-    /**
      * Update the underlying contact according to the given representation.
      */
-    @Override
-    public void storeRepresentation(Representation entity)
+    @Put
+    public void storeContact(Representation entity)
             throws ResourceException {
         final Form form = new Form(entity);
         this.contact.setFirstName(form.getFirstValue("firstName"));
@@ -123,6 +95,21 @@ public class ContactResource extends UserResource {
 
         getObjectsFacade().updateContact(this.user, this.contact);
         getResponse().redirectSeeOther(getRequest().getResourceRef());
+    }
+
+    /**
+     * Generate the HTML representation of this resource.
+     */
+    @Get
+    public Representation toHtml(Variant variant) throws ResourceException {
+        final Map<String, Object> dataModel = new TreeMap<String, Object>();
+        dataModel.put("user", this.user);
+        dataModel.put("contact", this.contact);
+        dataModel.put("resourceRef", getRequest().getResourceRef());
+        dataModel.put("rootRef", getRequest().getRootRef());
+
+        return getTemplateRepresentation("contact.html", dataModel,
+                MediaType.TEXT_HTML);
     }
 
 }

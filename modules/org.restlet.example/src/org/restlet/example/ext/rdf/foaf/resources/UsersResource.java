@@ -34,15 +34,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.restlet.Context;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.example.ext.rdf.foaf.objects.ObjectsException;
 import org.restlet.example.ext.rdf.foaf.objects.User;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
+import org.restlet.resource.Get;
+import org.restlet.resource.Post;
 import org.restlet.resource.ResourceException;
 
 /**
@@ -53,19 +52,16 @@ public class UsersResource extends BaseResource {
     /** The list of application's account. */
     private List<User> users;
 
-    public UsersResource(Context context, Request request, Response response) {
-        super(context, request, response);
-
+    @Override
+    protected void doInit() throws ResourceException {
         this.users = getObjectsFacade().getUsers();
-        getVariants().add(new Variant(MediaType.TEXT_HTML));
     }
 
     /**
      * Accept the representation of a new user, and create it.
      */
-    @Override
-    public void acceptRepresentation(Representation entity)
-            throws ResourceException {
+    @Post
+    public void acceptUser(Representation entity) throws ResourceException {
         final Form form = new Form(entity);
 
         User user = new User();
@@ -96,8 +92,8 @@ public class UsersResource extends BaseResource {
     /**
      * Generate the HTML representation of this resource.
      */
-    @Override
-    public Representation represent(Variant variant) throws ResourceException {
+    @Get
+    public Representation toHtml(Variant variant) throws ResourceException {
         final Map<String, Object> dataModel = new TreeMap<String, Object>();
         dataModel.put("users", this.users);
         dataModel.put("resourceRef", getRequest().getResourceRef());

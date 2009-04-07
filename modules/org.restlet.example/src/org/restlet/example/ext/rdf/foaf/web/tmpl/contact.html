@@ -1,6 +1,6 @@
 <#include "/header.ftl"/>
 <#global content>
-<div id="user">User ${user.firstName} ${user.lastName}</div>
+<div id="user" style="margin-bottom: 20px;">User ${user.firstName} ${user.lastName}</div>
 
 <div>
 	<h4>Update my contact.</h4>
@@ -24,7 +24,7 @@
 			</tr>
 <#if contact.image??>
 			<tr>
-				<td colspan="2"><img src="${contact.image}" /></td>
+				<td colspan="2"><img src="${contact.image}" alt="${contact.nickname}" /></td>
 			</tr>
 </#if>
 		</table>

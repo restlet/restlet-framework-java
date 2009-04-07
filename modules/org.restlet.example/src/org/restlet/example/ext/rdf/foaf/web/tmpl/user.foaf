@@ -1,18 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"  xmlns:foaf="http://xmlns.com/foaf/0.1/">
-<foaf:Person rdf:nodeID="me">
-   <foaf:name>${user.lastName}</foaf:name>
+<foaf:Person rdf:about="${resourceRef}">
+   <foaf:name>${user.firstName} ${user.lastName}</foaf:name>
+   <foaf:firstName>${user.firstName}</foaf:firstName>
    <foaf:givenname>${user.firstName}</foaf:givenname>
+   <foaf:family_name>${user.lastName}</foaf:family_name>
    <foaf:image>${user.image}</foaf:image>
    <foaf:homepage rdf:resource="${resourceRef}"/>
 <#if contacts??>
 	<#list contacts as contact>
    <foaf:knows>
-      <foaf:Person>
-         <foaf:homepage rdf:resource="${contact.id}"/>
+      <foaf:Person rdf:about="${resourceRef}/contacts/${contact.id}">
+         <foaf:homepage rdf:resource="${resourceRef}/contacts/${contact.id}"/>
          <foaf:nickname>${contact.nickname}</foaf:nickname>
-         <foaf:name>${user.lastName}</foaf:name>
-         <foaf:givenname>${user.firstName}</foaf:givenname>
+         <foaf:name>${contact.firstName} ${contact.lastName}</foaf:name>
+         <foaf:givenname>${contact.firstName}</foaf:givenname>
+         <foaf:firstName>${contact.firstName}</foaf:firstName>
+         <foaf:family_name>${contact.lastName}</foaf:family_name>
          <foaf:img>${contact.image}</foaf:img>
       </foaf:Person>
    </foaf:knows>

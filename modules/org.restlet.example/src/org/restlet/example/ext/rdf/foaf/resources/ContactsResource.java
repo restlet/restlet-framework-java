@@ -34,16 +34,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.restlet.Context;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
-import org.restlet.data.Reference;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.example.ext.rdf.foaf.objects.Contact;
 import org.restlet.example.ext.rdf.foaf.objects.User;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
+import org.restlet.resource.Get;
+import org.restlet.resource.Post;
 import org.restlet.resource.ResourceException;
 
 /**
@@ -51,32 +49,17 @@ import org.restlet.resource.ResourceException;
  */
 public class ContactsResource extends BaseResource {
 
-    /** The parent user. */
-    private User user;
-
     /** The list of contacts. */
     private List<Contact> contacts;
 
-    public ContactsResource(Context context, Request request, Response response) {
-        super(context, request, response);
-
-        // Get user thanks to its ID taken from the resource's URI.
-        final String userId = Reference.decode((String) request.getAttributes()
-                .get("userId"));
-        this.user = getObjectsFacade().getUserById(userId);
-
-        if (user != null) {
-            this.contacts = this.user.getContacts();
-        }
-        getVariants().add(new Variant(MediaType.TEXT_HTML));
-    }
+    /** The parent user. */
+    private User user;
 
     /**
      * Accept the representation of a new contact, and create it.
      */
-    @Override
-    public void acceptRepresentation(Representation entity)
-            throws ResourceException {
+    @Post
+    public void acceptContact(Representation entity) throws ResourceException {
         final Form form = new Form(entity);
         Contact contact = new Contact();
         contact.setFirstName(form.getFirstValue("firstName"));
@@ -91,15 +74,20 @@ public class ContactsResource extends BaseResource {
     }
 
     @Override
-    public boolean allowPost() {
-        return true;
+    protected void doInit() throws ResourceException {
+        // Get user thanks to its ID taken from the resource's URI.
+        final String userId = (String) getRequestAttributes().get("userId");
+        this.user = getObjectsFacade().getUserById(userId);
+        if (user != null) {
+            this.contacts = this.user.getContacts();
+        }
     }
 
     /**
      * Generate the HTML representation of this resource.
      */
-    @Override
-    public Representation represent(Variant variant) throws ResourceException {
+    @Get
+    public Representation toHtml(Variant variant) throws ResourceException {
         final Map<String, Object> dataModel = new TreeMap<String, Object>();
         dataModel.put("user", this.user);
         dataModel.put("contacts", this.contacts);

@@ -9,7 +9,7 @@
    <body>
       <div id="container">
          <div id="header">
-            <div id="quickSummary"><acronym title="FOAF">FOAF</acronym> sample application.</div>
+            <div id="quickSummary"><img src="${rootRef}/images/foaf.png" alt="foaf icon" />&nbsp;<acronym title="FOAF">FOAF</acronym> sample application.</div>
          </div>
          <div id="content">
             ${content}

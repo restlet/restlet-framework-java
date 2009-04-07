@@ -13,7 +13,7 @@
 		<tr>
 			<td><a href="<@concatUris parentUri=resourceRef relativeUri=contact.id />">${contact.nickname}</a></td>
 <#if contact.image??>
-	        <td><a href="<@concatUris parentUri=resourceRef relativeUri=contact.id />"><img src="${contact.image}" height="30" /></a></td>
+	        <td><a href="<@concatUris parentUri=resourceRef relativeUri=contact.id />"><img src="${contact.image}" height="30" alt="${contact.nickname}" /></a></td>
 <#else>
 	        <td>&nbsp;</td>
 </#if>
