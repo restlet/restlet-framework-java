@@ -49,14 +49,14 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
+import org.restlet.engine.util.Base64;
+import org.restlet.engine.util.RangeUtils;
+import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.ReadableRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.service.ConnectorService;
 import org.restlet.util.Series;
-
-import org.restlet.engine.util.Base64;
-import org.restlet.engine.util.RangeUtils;
 
 /**
  * Low-level HTTP client call.
@@ -81,8 +81,7 @@ public abstract class HttpClientCall extends HttpCall {
     public static Representation copyResponseEntityHeaders(
             Iterable<Parameter> responseHeaders, Representation representation)
             throws NumberFormatException {
-        Representation result = (representation == null) ? Representation
-                .createEmpty() : representation;
+        Representation result = (representation == null) ? new EmptyRepresentation() : representation;
         boolean entityHeaderFound = false;
 
         for (final Parameter header : responseHeaders) {

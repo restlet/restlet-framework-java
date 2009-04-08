@@ -78,52 +78,6 @@ import org.restlet.engine.util.DateUtils;
  */
 public abstract class Representation extends RepresentationInfo {
     /**
-     * Empty representation with no content.
-     */
-    private static class EmptyRepresentation extends Representation {
-
-        /**
-         * Constructor.
-         */
-        public EmptyRepresentation() {
-            setAvailable(false);
-            setTransient(true);
-            setSize(0);
-        }
-
-        @Override
-        public ReadableByteChannel getChannel() throws IOException {
-            return null;
-        }
-
-        @Override
-        public Reader getReader() throws IOException {
-            return null;
-        }
-
-        @Override
-        public InputStream getStream() throws IOException {
-            return null;
-        }
-
-        @Override
-        public void write(OutputStream outputStream) throws IOException {
-            // Do nothing
-        }
-
-        @Override
-        public void write(WritableByteChannel writableChannel)
-                throws IOException {
-            // Do nothing
-        }
-
-        @Override
-        public void write(Writer writer) throws IOException {
-            // Do nothing
-        }
-    }
-
-    /**
      * Indicates that the size of the representation can't be known in advance.
      */
     public static final long UNKNOWN_SIZE = -1L;
@@ -132,7 +86,9 @@ public abstract class Representation extends RepresentationInfo {
      * Returns a new empty representation with no content.
      * 
      * @return A new empty representation.
+     * @deprecated Use {@link EmptyRepresentation} instead.
      */
+    @Deprecated
     public static Representation createEmpty() {
         return new EmptyRepresentation();
     }

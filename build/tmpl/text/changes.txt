@@ -51,6 +51,8 @@ Changes log
         - Added a "form" extension mapping in MetadataService for the
           media type "application/www-form-urlencoded". 
           Suggested by Tal Liron.
+        - The class EmptyRepresentation is now public and the static 
+          method Representation#createEmpty() has been deprecated.
     - Miscellaneous
         - Component XML configuration has been moved into an Engine 
           ComponentXmlParser class.

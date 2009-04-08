@@ -39,7 +39,7 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.representation.Representation;
+import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.StringRepresentation;
 
 /**
@@ -83,7 +83,7 @@ public class ZipClientTestCase extends RestletTestCase {
         response.getEntity().release();
 
         // Put a directory
-        response = fc.put(fzd, Representation.createEmpty());
+        response = fc.put(fzd, new EmptyRepresentation());
         assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
 
         response = fc.get(fzd);
@@ -99,7 +99,7 @@ public class ZipClientTestCase extends RestletTestCase {
         assertFalse(response.getStatus().equals(Status.SUCCESS_OK));
 
         // Try to replace file by directory
-        response = fc.put(fzr2 + "/", Representation.createEmpty());
+        response = fc.put(fzr2 + "/", new EmptyRepresentation());
         assertFalse(response.getStatus().equals(Status.SUCCESS_OK));
 
     }

@@ -105,6 +105,7 @@ import org.restlet.ext.jaxrs.internal.wrappers.provider.ExtensionBackwardMapping
 import org.restlet.ext.jaxrs.internal.wrappers.provider.JaxRsProviders;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyWriter;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyWriterSubSet;
+import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.routing.Router;
@@ -820,7 +821,7 @@ public class JaxRsRestlet extends Restlet {
             repr = new JaxRsOutputRepresentation(entity, genericReturnType,
                     respMediaType, methodAnnotations, mbw, httpResponseHeaders);
         } else { // entity == null
-            repr = Representation.createEmpty();
+            repr = new EmptyRepresentation();
             repr.setMediaType(determineMediaType(jaxRsResponseMediaType,
                     resourceMethod, entityClass, genericReturnType));
         }
