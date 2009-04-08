@@ -24,6 +24,8 @@ Changes log
           non null.
         - Fixed issues with conditional method in ServerResource.
           Reported by Tal Liron and David Fogel.
+        - Fixed issues with ServerResource used in OSGi environments.
+          Reported by David Fogel and fixed by Tim Peierls.  
     - Enhancements
         - Servlet's UserPrincipal is now transferred into Restlet's
           ClientInfo#subject property. Suggested by Paul Davis.

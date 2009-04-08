@@ -634,8 +634,8 @@ public class ServerResource extends UniformResource {
      */
     private List<AnnotationInfo> getAnnotations() {
         if (isAnnotated() && !isIntrospected()) {
-            this.annotations = AnnotationUtils.getAnnotationDescriptors(
-                    getContext(), getClass());
+            this.annotations = AnnotationUtils
+                    .getAnnotationDescriptors(getClass());
             setIntrospected(true);
         }
 
