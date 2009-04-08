@@ -66,10 +66,10 @@ import com.threecrickets.scripturian.ScriptContextController;
  * {@link Representation#getLanguages()} and generating the appropriate
  * text.</li> </ul>
  * <p>
- * Note that this container environment is very limited. The include tag of
- * {@link EmbeddedScript} will not work here, nor is any caching of the script
- * done by default. For a more complete container environment for scripted
- * textual representations, see {@link ScriptedTextResource}.
+ * Note that this container environment is very limited. The include and in-flow
+ * tags of {@link EmbeddedScript} will not work here, nor is any caching of the
+ * script done by default. For a more complete container environment for
+ * scripted textual representations, see {@link ScriptedTextResource}.
  * <p>
  * You can optionally use
  * {@link #setScriptContextController(ScriptContextController)} to add your own
@@ -146,7 +146,7 @@ public class ScriptedTextRepresentation extends WriterRepresentation {
             ScriptEngineManager scriptEngineManager) throws ScriptException {
         super(mediaType);
         this.embeddedScript = new EmbeddedScript(text, scriptEngineManager,
-                defaultScriptEngineName, allowCompilation);
+                defaultScriptEngineName, null, allowCompilation);
     }
 
     /**

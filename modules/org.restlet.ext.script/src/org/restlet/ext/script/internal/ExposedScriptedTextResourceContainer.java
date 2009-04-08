@@ -287,8 +287,11 @@ public class ExposedScriptedTextResourceContainer {
             script = new EmbeddedScript(text, this.resource
                     .getScriptEngineManager(), this.resource
                     .getDefaultScriptEngineName(), this.resource
-                    .isAllowCompilation());
-            scriptDescriptor.setScript(script);
+                    .getScriptSource(), this.resource.isAllowCompilation());
+            EmbeddedScript existing = scriptDescriptor.setScript(script);
+            if (existing != null) {
+                script = existing;
+            }
         }
 
         // Special handling for trivial scripts
