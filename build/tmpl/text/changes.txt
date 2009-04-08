@@ -22,6 +22,8 @@ Changes log
         - Fixed conversion issues with edge cases.
         - MediaType#isCompatible() now requires the other mediatype to be
           non null.
+        - Fixed issues with conditional method in ServerResource.
+          Reported by Tal Liron and David Fogel.
     - Enhancements
         - Servlet's UserPrincipal is now transferred into Restlet's
           ClientInfo#subject property. Suggested by Paul Davis.

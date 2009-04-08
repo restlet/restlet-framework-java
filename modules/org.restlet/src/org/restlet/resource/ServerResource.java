@@ -203,52 +203,60 @@ public class ServerResource extends UniformResource {
     protected Representation doConditionalHandle() throws ResourceException {
         Representation result = null;
 
-        if (!isExists() && getConditions().hasSome()
-                && getConditions().getMatch().contains(Tag.ALL)) {
-            setStatus(Status.CLIENT_ERROR_PRECONDITION_FAILED,
-                    "A non existing resource can't match any tag.");
-        } else {
-            RepresentationInfo resultInfo = null;
-
-            if (isNegotiated()) {
-                resultInfo = doGetInfo(getPreferredVariant(Method.GET));
+        if (getConditions().hasSome()) {
+            if (!isExists() && getConditions().getMatch().contains(Tag.ALL)) {
+                setStatus(Status.CLIENT_ERROR_PRECONDITION_FAILED,
+                        "A non existing resource can't match any tag.");
             } else {
-                resultInfo = doGetInfo();
-            }
+                RepresentationInfo resultInfo = null;
 
-            if (resultInfo == null) {
-                if ((getStatus() == null)
-                        || (getStatus().isSuccess() && !Status.SUCCESS_NO_CONTENT
-                                .equals(getStatus()))) {
-                    setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+                if (isNegotiated()) {
+                    resultInfo = doGetInfo(getPreferredVariant(Method.GET));
                 } else {
-                    // Keep the current status as the developer might prefer a
-                    // special status like 'method not authorized'.
+                    resultInfo = doGetInfo();
                 }
-            } else if (getRequest().getConditions().hasSome()) {
-                Status status = getConditions().getStatus(getMethod(),
-                        resultInfo);
 
-                if (status != null) {
-                    setStatus(status);
-                }
-            }
-
-            if ((getStatus() != null) && getStatus().isSuccess()) {
-                // Conditions where passed successfully.
-                // Continue the normal processing
-                // TODO Why testing "resultInfo instance of Representation"?
-                if ((Method.GET.equals(getRequest().getMethod()) || Method.HEAD
-                        .equals(getRequest().getMethod()))
-                        && resultInfo instanceof Representation) {
-                    result = (Representation) resultInfo;
-                } else {
-                    if (isNegotiated()) {
-                        result = doNegotiatedHandle();
+                if (resultInfo == null) {
+                    if ((getStatus() == null)
+                            || (getStatus().isSuccess() && !Status.SUCCESS_NO_CONTENT
+                                    .equals(getStatus()))) {
+                        setStatus(Status.CLIENT_ERROR_NOT_FOUND);
                     } else {
-                        result = doHandle();
+                        // Keep the current status as the developer might prefer
+                        // a
+                        // special status like 'method not authorized'.
+                    }
+                } else {
+                    Status status = getConditions().getStatus(getMethod(),
+                            resultInfo);
+
+                    if (status != null) {
+                        setStatus(status);
                     }
                 }
+
+                if ((getStatus() != null) && getStatus().isSuccess()) {
+                    // Conditions where passed successfully.
+                    // Continue the normal processing
+                    // TODO Why testing "resultInfo instance of Representation"?
+                    if ((Method.GET.equals(getMethod()) || Method.HEAD
+                            .equals(getMethod()))
+                            && resultInfo instanceof Representation) {
+                        result = (Representation) resultInfo;
+                    } else {
+                        if (isNegotiated()) {
+                            result = doNegotiatedHandle();
+                        } else {
+                            result = doHandle();
+                        }
+                    }
+                }
+            }
+        } else {
+            if (isNegotiated()) {
+                result = doNegotiatedHandle();
+            } else {
+                result = doHandle();
             }
         }
 
@@ -323,9 +331,9 @@ public class ServerResource extends UniformResource {
                 if (method.equals(Method.GET)) {
                     result = get();
                 } else if (method.equals(Method.POST)) {
-                    result = post(getRequest().getEntity());
+                    result = post(getRequestEntity());
                 } else if (method.equals(Method.PUT)) {
-                    result = put(getRequest().getEntity());
+                    result = put(getRequestEntity());
                 } else if (method.equals(Method.DELETE)) {
                     result = delete();
                 } else if (method.equals(Method.HEAD)) {
@@ -360,11 +368,10 @@ public class ServerResource extends UniformResource {
                 parameters = new ArrayList<Object>();
 
                 for (Class<?> parameterType : parameterTypes) {
-                    if (getRequest().getEntity() != null) {
+                    if (getRequestEntity() != null) {
                         try {
-                            parameters.add(cs.toObject(
-                                    getRequest().getEntity(), parameterType,
-                                    this));
+                            parameters.add(cs.toObject(getRequestEntity(),
+                                    parameterType, this));
                         } catch (IOException e) {
                             e.printStackTrace();
                             parameters.add(null);
@@ -423,8 +430,8 @@ public class ServerResource extends UniformResource {
                         if (Variant.class.equals(param)) {
                             parameters.add(variant);
                         } else {
-                            parameters.add(cs.toObject(
-                                    getRequest().getEntity(), param, this));
+                            parameters.add(cs.toObject(getRequestEntity(),
+                                    param, this));
                         }
                     } catch (Throwable e) {
                         e.printStackTrace();
@@ -442,7 +449,7 @@ public class ServerResource extends UniformResource {
                 // TODO This is a shortcut in case the resource does not
                 // precise the media-type of the representation. This should be
                 // enhanced, maybe with a media type "unknown" for the
-                // negociated variant.
+                // negotiated variant.
                 if (resultObject instanceof Representation) {
                     result = (Representation) resultObject;
                 } else {
@@ -483,9 +490,9 @@ public class ServerResource extends UniformResource {
             if (method.equals(Method.GET)) {
                 result = get(variant);
             } else if (method.equals(Method.POST)) {
-                result = post(getRequest().getEntity(), variant);
+                result = post(getRequestEntity(), variant);
             } else if (method.equals(Method.PUT)) {
-                result = put(getRequest().getEntity(), variant);
+                result = put(getRequestEntity(), variant);
             } else if (method.equals(Method.DELETE)) {
                 result = delete(variant);
             } else if (method.equals(Method.HEAD)) {

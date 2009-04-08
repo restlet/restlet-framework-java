@@ -136,8 +136,10 @@ public final class Conditions {
      *         response otherwise.
      */
     public Status getStatus(Method method, RepresentationInfo representationInfo) {
-        return getStatus(method, representationInfo != null, representationInfo
-                .getTag(), representationInfo.getModificationDate());
+        return getStatus(method, representationInfo != null,
+                (representationInfo == null) ? null : representationInfo
+                        .getTag(), (representationInfo == null) ? null
+                        : representationInfo.getModificationDate());
     }
 
     /**
