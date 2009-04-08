@@ -27,7 +27,7 @@ begin
   dbms_java.grant_permission( UPPER('$sch'), 'SYS:java.lang.RuntimePermission', 'accessDeclaredMembers', '' )
   dbms_java.grant_permission( 'ANONYMOUS', 'SYS:java.lang.RuntimePermission', 'getClassLoader', '' );
   dbms_java.grant_permission( 'ANONYMOUS', 'SYS:java.util.logging.LoggingPermission', 'control', '' );
-  dbms_java.grant_permission( 'ANONYMOUS', 'SYS:java.lang.RuntimePermission', 'accessDeclaredMembers', '' )
+  dbms_java.grant_permission( 'ANONYMOUS', 'SYS:java.lang.RuntimePermission', 'accessDeclaredMembers', '' );
   -- required for remote debugging
   -- uncomment this if you need remote debugging
   -- dbms_java.grant_permission( UPPER('$sch'), 'SYS:java.net.SocketPermission','localhost:4000', 'connect,resolve' );
