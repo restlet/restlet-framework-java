@@ -393,8 +393,9 @@ public class Finder extends Restlet {
                         "No target class was defined for this finder: "
                                 + toString());
             } else {
-                if (Handler.class
-                        .isAssignableFrom((Class<? extends Handler>) getTargetClass())) {
+                if ((getTargetClass() == null)
+                        | Handler.class
+                                .isAssignableFrom((Class<? extends Handler>) getTargetClass())) {
                     final Handler targetHandler = findTarget(request, response);
 
                     if (!response.getStatus().equals(Status.SUCCESS_OK)) {
