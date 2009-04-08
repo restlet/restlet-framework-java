@@ -32,7 +32,9 @@ package org.restlet.ext.xdb;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+
 import java.security.AccessControlException;
+
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.Driver;
@@ -41,7 +43,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
-import java.util.ArrayList;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -50,13 +51,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.restlet.Application;
 import org.restlet.Client;
-import org.restlet.Component;
 import org.restlet.Context;
 import org.restlet.Server;
-import org.restlet.data.Protocol;
 import org.restlet.engine.Engine;
 import org.restlet.engine.http.HttpServerCall;
-import org.restlet.engine.http.HttpServerHelper;
 import org.restlet.ext.servlet.ServerServlet;
 
 
@@ -65,7 +63,7 @@ import org.restlet.ext.servlet.ServerServlet;
  * href="/documentation/1.1/faq#02">Developper FAQ #2</a> for details on how to
  * integrate a Restlet application into a Servlet container.<br/> Here is a
  * sample configuration for your Restlet webapp:
- * 
+ *
  * <pre>
  * &lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt;
  * &lt;!DOCTYPE web-app PUBLIC
@@ -73,8 +71,8 @@ import org.restlet.ext.servlet.ServerServlet;
  *       &quot;http://java.sun.com/dtd/web-app_2_3.dtd&quot;&gt;
  * &lt;web-app&gt;
  *         &lt;display-name&gt;Restlet adapter&lt;/display-name&gt;
- * 
- * 
+ *
+ *
  *       &lt;!-- Restlet adapter --&gt;
  *       &lt;servlet&gt;
  *        &lt;servlet-name&gt;XDBServerServlet&lt;/servlet-name&gt;
@@ -91,7 +89,7 @@ import org.restlet.ext.servlet.ServerServlet;
  *            &lt;description&gt;REST Application&lt;/description&gt;
  *          &lt;/init-param&gt;
  *       &lt;/servlet&gt;
- * 
+ *
  *       &lt;!-- Catch all requests --&gt;
  *       &lt;servlet-mapping&gt;
  *         &lt;servlet-name&gt;XDBServerServlet&lt;/servlet-name&gt;
@@ -99,18 +97,19 @@ import org.restlet.ext.servlet.ServerServlet;
  *       &lt;/servlet-mapping&gt;
  * &lt;/web-app&gt;
  * </pre>
- * 
+ *
  * The enumeration of initParameters of your Servlet will be copied to the
  * "context.parameters" property of your application. This way, you can pass
  * additional initialization parameters to your Restlet application, and share
  * them with existing Servlets.
- * 
+ *
  * @see <a href="http://java.sun.com/j2ee/">J2EE home page</a>
  * @author Marcelo F. Ochoa (mochoa@ieee.org)
  */
 public class XdbServerServlet extends ServerServlet {
     /** Serial version identifier. */
     private static final long serialVersionUID = 1L;
+
 
     /**
      * Closes JDBC resources
@@ -221,31 +220,6 @@ public class XdbServerServlet extends ServerServlet {
     }
 
     @Override
-    protected HttpServerHelper createServer(HttpServletRequest request) {
-        HttpServerHelper result = null;
-        final Component component = getComponent();
-        final Application application = getApplication();
-
-        if ((component != null) && (application != null)) {
-            // First, let's create a pseudo server
-            final Server server = new Server(component.getContext()
-                    .createChildContext(), new ArrayList<Protocol>(),
-                    this.localAddress, this.localPort, component);
-            server.getProtocols().add(Protocol.HTTP);
-            result = new HttpServerHelper(server);
-
-            // Attach the application, do not use getServletContext here because
-            // XMLDB always return null
-            final String uriPattern = request.getServletPath();
-            log("[Noelios Restlet Engine] - Attaching application: "
-                    + application + " to URI: " + uriPattern);
-            component.getDefaultHost().attach(uriPattern, application);
-        }
-
-        return result;
-    }
-
-    @Override
     protected Client createWarClient(Context appCtx, ServletConfig config) {
         return new XdbServletWarClient(appCtx, config, this.conn);
     }
@@ -348,6 +322,8 @@ public class XdbServerServlet extends ServerServlet {
             preparedstatement.execute();
 
             this.localAddress = preparedstatement.getString(1);
+            if (this.localAddress == null)
+              this.localAddress = "127.0.0.1";
             this.localPort = preparedstatement.getInt(2);
             endPoint = preparedstatement.getInt(3);
 
@@ -378,7 +354,10 @@ public class XdbServerServlet extends ServerServlet {
         }
 
         try {
-            String bootstrapClassName = "RESTLET:org.restlet.ext.xdb.XdbServerServlet";
+            String bootstrapClassName = 
+              (System.getProperty("java.vm.name").equals("JServer VM")) ? 
+                    "RESTLET:org.restlet.ext.xdb.XdbServerServlet" : 
+                    "org.restlet.ext.xdb.XdbServerServlet";
             Engine.setUserClassLoader(this.loadClass(bootstrapClassName).getClassLoader());
             Application app = getApplication();
             if ((app != null) && (app.isStopped())) {
@@ -398,5 +377,20 @@ public class XdbServerServlet extends ServerServlet {
             throw new ServletException("Error loading Restlet application",
                                        cne);
         }
+    }
+
+    @Override
+    protected String getContextPath(HttpServletRequest request) {
+      return "";
+    }
+
+    @Override
+    protected String getLocalAddr(HttpServletRequest request) {
+      return this.localAddress;
+    }
+
+    @Override
+    protected int getLocalPort(HttpServletRequest request) {
+      return this.localPort;
     }
 }
