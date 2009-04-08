@@ -695,6 +695,13 @@ public class ScriptedResource extends ServerResource {
             if (this.scriptEngineManager == null) {
                 this.scriptEngineManager = new ScriptEngineManager();
             }
+            ScriptEngineManager existing = (ScriptEngineManager) attributes
+                    .putIfAbsent(
+                            "org.restlet.ext.script.ScriptedResource.scriptEngineManager",
+                            this.scriptEngineManager);
+            if (existing != null) {
+                this.scriptEngineManager = existing;
+            }
         }
 
         return this.scriptEngineManager;

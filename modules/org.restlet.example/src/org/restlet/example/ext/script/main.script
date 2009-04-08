@@ -21,6 +21,7 @@ script.container.defaultEngineName = 'rhino-nonjdk';
 
 importClass(
 	java.io.File,
+	javax.script.ScriptEngineManager,
 	org.restlet.Application,
 	org.restlet.Component,
 	org.restlet.resource.Directory,
@@ -102,9 +103,11 @@ application.context.logger = applicationLoggerName;
 //
 
 var attributes = application.context.attributes;
+var scriptEngineManager = new ScriptEngineManager();
 
 // ScriptedResource
 
+attributes.put('org.restlet.ext.script.ScriptedResource.scriptEngineManager', scriptEngineManager);
 attributes.put('org.restlet.ext.script.ScriptedResource.defaultScriptEngineName', script.container.defaultEngineName);
 attributes.put('org.restlet.ext.script.ScriptedResource.extension', resourceExtension);
 attributes.put('org.restlet.ext.script.ScriptedResource.defaultName', resourceDefaultName);
@@ -114,6 +117,7 @@ attributes.put('org.restlet.ext.script.ScriptedResource.sourceViewable', resourc
 
 // ScriptedTextResource
 
+attributes.put('org.restlet.ext.script.ScriptedTextResource.scriptEngineManager', scriptEngineManager);
 attributes.put('org.restlet.ext.script.ScriptedTextResource.defaultScriptEngineName', script.container.defaultEngineName);
 attributes.put('org.restlet.ext.script.ScriptedTextResource.defaultName', scriptedWebDefaultScript);
 attributes.put('org.restlet.ext.script.ScriptedTextResource.scriptSource',
