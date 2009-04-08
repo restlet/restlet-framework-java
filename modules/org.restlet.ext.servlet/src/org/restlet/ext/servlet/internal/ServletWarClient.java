@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.servlet;
+package org.restlet.ext.servlet.internal;
 
 import java.util.List;
 
@@ -38,7 +38,6 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.engine.ClientHelper;
-
 
 /**
  * Connector acting as a WAR client for a Servlet Application. It internally

@@ -62,7 +62,7 @@ import org.restlet.util.Series;
  * Call that is used by the XDB Servlet HTTP connector. This is a downgrade
  * version to Servlet 2.2 of ServletCall class.
  * 
- * @see org.restlet.ext.servlet.ServletCall
+ * @see org.restlet.ext.servlet.internal.ServletCall
  * @author Marcelo F. Ochoa (mochoa@ieee.org)
  */
 public class XdbServletCall extends HttpServerCall {

@@ -48,7 +48,7 @@ import org.restlet.data.Reference;
 import org.restlet.engine.http.HttpRequest;
 import org.restlet.engine.http.HttpResponse;
 import org.restlet.engine.http.HttpServerConverter;
-import org.restlet.ext.servlet.ServletLogger;
+import org.restlet.ext.servlet.internal.ServletLogger;
 
 
 /**

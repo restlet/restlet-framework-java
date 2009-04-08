@@ -206,7 +206,7 @@ public class Guard extends Filter {
 
     /**
      * Indicates if the call is properly authenticated. By default, this
-     * delegates credential checking to checkSecret(). Note that the
+     * delegates credentials checking to checkSecret(). Note that the
      * {@link ChallengeResponse#setAuthenticated(boolean)} and
      * {@link ClientInfo#setAuthenticated(boolean)} methods are always called
      * after authentication.
@@ -396,8 +396,8 @@ public class Guard extends Filter {
 
     /**
      * Rejects the call due to a failed authentication or authorization. This
-     * can be overriden to change the defaut behavior, for example to display an
-     * error page. By default, if authentication is required, the challenge
+     * can be overridden to change the default behavior, for example to display
+     * an error page. By default, if authentication is required, the challenge
      * method is invoked, otherwise the call status is set to
      * CLIENT_ERROR_FORBIDDEN.
      * 

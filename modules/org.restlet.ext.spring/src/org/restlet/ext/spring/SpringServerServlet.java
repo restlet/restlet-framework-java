@@ -37,7 +37,7 @@ import org.restlet.Component;
 import org.restlet.Context;
 import org.restlet.engine.component.ChildContext;
 import org.restlet.ext.servlet.ServerServlet;
-import org.restlet.ext.servlet.ServletContextAdapter;
+import org.restlet.ext.servlet.internal.ServletContextAdapter;
 import org.springframework.beans.BeansException;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;

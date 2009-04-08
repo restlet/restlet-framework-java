@@ -52,6 +52,8 @@ import org.restlet.engine.Engine;
 import org.restlet.engine.component.ComponentContext;
 import org.restlet.engine.http.HttpServerCall;
 import org.restlet.engine.http.HttpServerHelper;
+import org.restlet.ext.servlet.internal.ServletCall;
+import org.restlet.ext.servlet.internal.ServletWarClient;
 import org.restlet.routing.Route;
 import org.restlet.routing.VirtualHost;
 
@@ -173,7 +175,13 @@ import org.restlet.routing.VirtualHost;
  * equivalent to setting the value "true" for the "org.restlet.autoWire"
  * parameter as described above. In modes 1 or 2, if you want to manually
  * control the URI wiring, you can disable the auto-wiring by setting the
- * property to "false".
+ * property to "false".<br>
+ * <br>
+ * Also, a WAR client connector is automatically attached to the parent Restlet
+ * component. It lets you access to resources inside your WAR using the uniform
+ * interface. Here is an example of WAR URI that can be resolved by this client:
+ * "war:///WEB-INF/web.xml". In order to use it, just call the
+ * {@link Context#getClientDispatcher()} in your application.
  * 
  * @see <a href="http://java.sun.com/j2ee/">J2EE home page</a>
  * @author Jerome Louvel

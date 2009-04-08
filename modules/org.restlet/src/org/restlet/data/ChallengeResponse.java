@@ -301,10 +301,10 @@ public final class ChallengeResponse {
     }
 
     /**
-     * Sets the credential components.
+     * Sets the credentials components.
      * 
      * @param credentialComponents
-     *            The credential components.
+     *            The credentials components.
      */
     public void setCredentialComponents(Series<Parameter> credentialComponents) {
         this.parameters = credentialComponents;

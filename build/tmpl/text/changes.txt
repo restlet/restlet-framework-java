@@ -58,6 +58,10 @@ Changes log
           Suggested by Tal Liron.
         - The class EmptyRepresentation is now public and the static 
           method Representation#createEmpty() has been deprecated.
+        - Moved several implementation classes of the Servlet extension
+          into an "org.restlet.ext.servlet.internal" package to hide
+          them from the public Javadocs as they should rarely be used
+          directly by end users.
     - Miscellaneous
         - Component XML configuration has been moved into an Engine 
           ComponentXmlParser class.

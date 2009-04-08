@@ -80,7 +80,7 @@ public class AuthenticatorUtils {
 
     /**
      * Indicates if the request is properly authenticated. By default, this
-     * delegates credential checking to checkSecret().
+     * delegates credentials checking to checkSecret().
      * 
      * @param request
      *            The request to authenticate.

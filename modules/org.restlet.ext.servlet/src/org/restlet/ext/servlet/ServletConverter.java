@@ -44,6 +44,8 @@ import org.restlet.data.Reference;
 import org.restlet.engine.http.HttpRequest;
 import org.restlet.engine.http.HttpResponse;
 import org.restlet.engine.http.HttpServerConverter;
+import org.restlet.ext.servlet.internal.ServletCall;
+import org.restlet.ext.servlet.internal.ServletLogger;
 
 /**
  * HTTP converter from Servlet calls to Restlet calls. This class can be used in
