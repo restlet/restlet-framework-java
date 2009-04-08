@@ -51,6 +51,7 @@ public class EngineTestSuite extends TestSuite {
 
     /** Constructor. */
     public EngineTestSuite() {
+        addTestSuite(AlphaNumericComparatorTestCase.class);
         addTestSuite(AuthenticationTestCase.class);
         addTestSuite(Base64TestCase.class);
         addTestSuite(ByteUtilsTestCase.class);
