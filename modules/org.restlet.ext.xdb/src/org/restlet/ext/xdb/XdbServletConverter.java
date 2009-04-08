@@ -136,6 +136,8 @@ public class XdbServletConverter extends HttpServerConverter {
             preparedstatement.registerOutParameter(3, Types.INTEGER);
             preparedstatement.execute();
             this.localAddress = preparedstatement.getString(1);
+            if (this.localAddress == null)
+              this.localAddress = "127.0.0.1";
             this.localPort = preparedstatement.getInt(2);
             endPoint = preparedstatement.getInt(3);
             getLogger().info(
