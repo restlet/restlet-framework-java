@@ -261,7 +261,7 @@ public class TunnelFilter extends Filter {
                         .getMethodParameter());
 
                 Method tunnelledMethod = Method.valueOf(methodName);
-                // The OPTIONS method can be tunnelled via GET requests.
+                // The OPTIONS method can be tunneled via GET requests.
                 if (tunnelledMethod != null
                         && (Method.POST.equals(method) || Method.OPTIONS
                                 .equals(tunnelledMethod))) {

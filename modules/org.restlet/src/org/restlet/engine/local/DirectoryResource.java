@@ -120,7 +120,7 @@ public class DirectoryResource extends Resource {
     /** Indicates if the target resource is a directory with an index. */
     private boolean indexTarget;
 
-    /** The original target URI, in cas of extensions tunneling. */
+    /** The original target URI, in case of extensions tunneling. */
     private Reference originalRef;
 
     /** The resource path relative to the directory URI. */
@@ -173,7 +173,7 @@ public class DirectoryResource extends Resource {
         setModifiable(this.directory.isModifiable());
         setNegotiateContent(this.directory.isNegotiateContent());
 
-        // Restore the original URI in case the call has been tunnelled.
+        // Restore the original URI in case the call has been tunneled.
         if ((getApplication() != null)
                 && getApplication().getTunnelService().isExtensionsTunnel()) {
             this.originalRef = request.getOriginalRef();

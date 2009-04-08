@@ -95,7 +95,6 @@ public class JaxRsApplication extends org.restlet.Application {
      */
     public JaxRsApplication(Context context) {
         super(context);
-        getTunnelService().setExtensionsTunnel(false);
         this.jaxRsRestlet = new JaxRsRestlet(context, getMetadataService());
     }
 
@@ -214,9 +213,9 @@ public class JaxRsApplication extends org.restlet.Application {
     }
 
     /**
-     * Sets the objects to check the authentication. The {@link UniformGuard} checks
-     * the username and password (e.g.), the {@link RoleChecker} manages the
-     * role management for the JAX-RS extension.
+     * Sets the objects to check the authentication. The {@link UniformGuard}
+     * checks the username and password (e.g.), the {@link RoleChecker} manages
+     * the role management for the JAX-RS extension.
      * 
      * @param guard
      *            the Guard to use.
@@ -262,7 +261,8 @@ public class JaxRsApplication extends org.restlet.Application {
      * Set the Guard from the org.restlet.security package. This should be
      * called before the root Restlet is created.
      * <p>
-     * This replaced the guard set via {@link #setGuard(org.restlet.security.Guard)}.
+     * This replaced the guard set via
+     * {@link #setGuard(org.restlet.security.Guard)}.
      * 
      * @param guard
      *            the Guard to use.
