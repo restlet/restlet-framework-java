@@ -929,7 +929,8 @@ public final class MediaType extends Metadata {
      * @see #includes(MediaType)
      */
     public boolean isCompatible(MediaType otherMediaType) {
-        return includes(otherMediaType) || otherMediaType.includes(this);
+        return (otherMediaType != null)
+                && (includes(otherMediaType) || otherMediaType.includes(this));
     }
 
     /**

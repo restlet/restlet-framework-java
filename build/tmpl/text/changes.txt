@@ -19,6 +19,9 @@ Changes log
         - Fixed potential issue in Engine classloading logic which used
           Class.class instead of Engine.class to get the class's 
           classloader. Reported by David Fogel.
+        - Fixed conversion issues with edge cases.
+        - MediaType#isCompatible() now requires the other mediatype to be
+          non null.
     - Enhancements
         - Servlet's UserPrincipal is now transferred into Restlet's
           ClientInfo#subject property. Suggested by Paul Davis.
