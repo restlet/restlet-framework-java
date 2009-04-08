@@ -41,6 +41,8 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
+import java.util.Map;
+
 /**
  * Restlet {@link Router} which behaves like Spring's
  * {@link org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping}. It
@@ -84,6 +86,9 @@ public class SpringBeanRouter extends Router implements
 
     /** If beans should be searched for higher up in the BeanFactory hierarchy */
     private volatile boolean findInAncestors = true;
+
+    /** Supplemental explicit mappings */
+    private Map<String, String> attachments;
 
     /**
      * Creates an instance of {@link SpringBeanFinder}. This can be overriden if
@@ -130,7 +135,14 @@ public class SpringBeanRouter extends Router implements
         for (final String name : names) {
             final String uri = resolveUri(name, factory);
             if (uri != null) {
-                attach(uri, createFinder(bf, name));
+                if (this.attachments == null || !this.attachments.containsKey(uri)) {
+                    attach(uri, createFinder(bf, name));
+                }
+            }
+        }
+        if (this.attachments != null) {
+            for (Map.Entry<String, String> attachment : this.attachments.entrySet()) {
+                attach(attachment.getKey(), createFinder(bf, attachment.getValue()));
             }
         }
     }
@@ -179,5 +191,17 @@ public class SpringBeanRouter extends Router implements
      */
     public void setFindInAncestors(boolean findInAncestors) {
         this.findInAncestors = findInAncestors;
+    }
+
+    /**
+     * Sets an explicit mapping of URI templates to bean IDs to use
+     * in addition to the usual bean name mapping behavior.  If a URI template
+     * appears in both this mapping and as a bean name, the bean it is mapped
+     * to here is the one that will be used.
+     *
+     * @see SpringRouter
+     */
+    public void setAttachments(Map<String, String> attachments) {
+        this.attachments = attachments;
     }
 }

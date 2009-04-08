@@ -31,6 +31,9 @@
 package org.restlet.test.ext.spring;
 
 import org.restlet.Restlet;
+import org.restlet.data.Method;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 import org.restlet.ext.spring.SpringBeanFinder;
 import org.restlet.ext.spring.SpringBeanRouter;
 import org.restlet.resource.Resource;
@@ -41,9 +44,10 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 
+import java.util.Collections;
 import java.util.HashSet;
-import java.util.Set;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Rhett Sutphin
@@ -57,7 +61,7 @@ public class SpringBeanRouterTestCase extends RestletTestCase {
     private SpringBeanRouter router;
 
     private void assertFinderForBean(String expectedBeanName, Restlet restlet) {
-        assertTrue("Restlet is not a bean finder restlet",
+        assertTrue("Restlet is not a bean finder restlet: " + restlet.getClass().getName(),
                 restlet instanceof SpringBeanFinder);
         final SpringBeanFinder actualFinder = (SpringBeanFinder) restlet;
         assertEquals("Finder does not point to correct bean", expectedBeanName,
@@ -90,6 +94,11 @@ public class SpringBeanRouterTestCase extends RestletTestCase {
         }
     }
 
+    private RouteList actualRoutes() {
+        this.router.postProcessBeanFactory(this.factory);
+        return this.router.getRoutes();
+    }
+
     private Set<String> routeUris(List<Route> routes) {
         final Set<String> uris = new HashSet<String>();
         for (final Route actualRoute : routes) {
@@ -119,27 +128,13 @@ public class SpringBeanRouterTestCase extends RestletTestCase {
     public void testRoutesPointToFindersForBeans() throws Exception {
         final RouteList actualRoutes = actualRoutes();
         assertEquals("Wrong number of routes", 2, actualRoutes.size());
-        Route oreRoute = null, fishRoute = null;
-        for (final Route actualRoute : actualRoutes) {
-            if (actualRoute.getTemplate().getPattern().equals(FISH_URI)) {
-                fishRoute = actualRoute;
-            }
-            if (actualRoute.getTemplate().getPattern().equals(ORE_URI)) {
-                oreRoute = actualRoute;
-            }
-        }
+        Route oreRoute = matchRouteFor(ORE_URI);
+        Route fishRoute = matchRouteFor(FISH_URI);
         assertNotNull("ore route not present: " + actualRoutes, oreRoute);
         assertNotNull("fish route not present: " + actualRoutes, fishRoute);
 
         assertFinderForBean("ore", oreRoute.getNext());
         assertFinderForBean("fish", fishRoute.getNext());
-    }
-
-    private RouteList actualRoutes() {
-        this.router.postProcessBeanFactory(this.factory);
-
-        final RouteList actualRoutes = this.router.getRoutes();
-        return actualRoutes;
     }
 
     public void testRoutingSkipsResourcesWithoutAppropriateAliases()
@@ -152,5 +147,36 @@ public class SpringBeanRouterTestCase extends RestletTestCase {
         final RouteList actualRoutes = actualRoutes();
         assertEquals("Timber resource should have been skipped", 2,
                 actualRoutes.size());
+    }
+
+    public void testRoutingIncludesSpringRouterStyleExplicitlyMappedBeans() throws Exception {
+        final BeanDefinition bd = new RootBeanDefinition(Resource.class);
+        bd.setScope(BeanDefinition.SCOPE_PROTOTYPE);
+        this.factory.registerBeanDefinition("timber", bd);
+        this.factory.registerAlias("timber", "no-slash");
+
+        String expectedTemplate = "/renewable/timber/{farm_type}";
+        router.setAttachments(Collections.singletonMap(expectedTemplate, "timber"));
+        final RouteList actualRoutes = actualRoutes();
+
+        assertEquals("Wrong number of routes", 3, actualRoutes.size());
+        Route timberRoute = matchRouteFor(expectedTemplate);
+        assertNotNull("Missing timber route: " + actualRoutes, timberRoute);
+        assertFinderForBean("timber", timberRoute.getNext());
+    }
+
+    public void testExplicitAttachmentsTrumpBeanNames() throws Exception {
+        this.router.setAttachments(Collections.singletonMap(ORE_URI, "fish"));
+        RouteList actualRoutes = actualRoutes();
+        assertEquals("Wrong number of routes", 2, actualRoutes.size());
+
+        Route oreRoute = matchRouteFor(ORE_URI);
+        assertNotNull("No route for " + ORE_URI, oreRoute);
+        assertFinderForBean("fish", oreRoute.getNext());
+    }
+
+    private Route matchRouteFor(String uri) {
+        Request req = new Request(Method.GET, uri);
+        return (Route) router.getNext(req, new Response(req));
     }
 }
