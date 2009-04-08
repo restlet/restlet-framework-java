@@ -592,6 +592,13 @@ public class ScriptedTextResource extends ServerResource {
         return get(entity);
     }
 
+    @Override
+    public Representation post(Representation entity, Variant variant)
+            throws ResourceException {
+        // Handle the same was as get(variant) -- we are ignoring the variant
+        return get(entity);
+    }
+
     /**
      * @param errorWriter
      *            The error writer
