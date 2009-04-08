@@ -7,6 +7,8 @@ Changes log
     - Bugs fixed
        - Fixed bug in Directory AlphaNumComparator. Reported and fixed
         by Rob Heittman.
+       - Fixed potential NPE with Reference#getMatrix. Reported by Tal 
+         Liron.
 
 - 1.1.4 (2009-04-06)
     - Bugs fixed
