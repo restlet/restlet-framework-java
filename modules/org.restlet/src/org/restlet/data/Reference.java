@@ -1192,10 +1192,12 @@ public class Reference {
      */
     public String getMatrix() {
         final String lastSegment = getLastSegment();
-        final int matrixIndex = lastSegment.indexOf(';');
+        if (lastSegment != null) {
+            final int matrixIndex = lastSegment.indexOf(';');
 
-        if (matrixIndex != -1) {
-            return lastSegment.substring(matrixIndex + 1);
+            if (matrixIndex != -1) {
+                return lastSegment.substring(matrixIndex + 1);
+            }
         }
 
         // No matrix found
