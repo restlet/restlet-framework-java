@@ -53,7 +53,7 @@ function setState(value) {
 // This function is called when the resource is initialized. We will use it to set
 // general characteristics for the resource.
 
-function initializeResource() {
+function handleInit() {
 	// The order in which we add the media types or variants is their order of
 	// preference. Note that clients often include a wildcard (such as "*/*") in the
 	// "Accept" attribute of their request header, specifying that any media type
@@ -79,7 +79,7 @@ function initializeResource() {
 // Additionally, you can use script.container.variant to interrogate the client's provided
 // list of supported languages and encoding.
 
-function represent() {
+function handleGet() {
 	var r;
 	var stateLock = getStateLock();
 	var state = getState();
@@ -114,7 +114,7 @@ function represent() {
 // you must explicitly return a null if you do not want to return a representation
 // to the client.
 
-function acceptRepresentation() {
+function handlePost() {
 	// Note that we are using the JSON library to parse the entity. While
 	// a simple eval() would also work, JSON.parse() is much safer.
 	// Note, too, that we are using String() to translate the Java string
@@ -136,7 +136,7 @@ function acceptRepresentation() {
 		stateLock.writeLock().unlock();
 	}
 	
-	return represent();
+	return handleGet();
 }
 
 // This function is called for the PUT verb, which is expected to behave as a
@@ -151,13 +151,13 @@ function acceptRepresentation() {
 // you must explicitly return a null if you do not want to return a representation
 // to the client.
 
-function storeRepresentation() {
+function handlePut() {
 	// See comment in acceptRepresentation()
 
 	var update = JSON.parse(String(script.container.entity.text));
 	setState(update);
 	
-	return represent();
+	return handleGet();
 }
 
 // This function is called for the DELETE verb, which is expected to behave as a
@@ -167,7 +167,7 @@ function storeRepresentation() {
 // it doesn't make sense to return a representation, and any returned value will
 // ignored. Still, it's a good idea to return null to avoid any passing of value.
 
-function removeRepresentations() {
+function handleDelete() {
 
 	setState({});
 	

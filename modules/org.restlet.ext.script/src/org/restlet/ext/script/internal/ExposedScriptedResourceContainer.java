@@ -332,7 +332,7 @@ public class ExposedScriptedResourceContainer {
                     .getScriptEngineManager(), this.resource
                     .getDefaultScriptEngineName(), this.resource
                     .getScriptSource(), this.resource.isAllowCompilation());
-            scriptDescriptor.setScript(script);
+            scriptDescriptor.setScriptIfAbsent(script);
         }
 
         script.run(this.resource.getWriter(), this.resource.getErrorWriter(),
@@ -364,7 +364,8 @@ public class ExposedScriptedResourceContainer {
                         .getScriptEngineManager(), this.resource
                         .getDefaultScriptEngineName(), this.resource
                         .getScriptSource(), this.resource.isAllowCompilation());
-                EmbeddedScript existing = scriptDescriptor.setScript(script);
+                EmbeddedScript existing = scriptDescriptor
+                        .setScriptIfAbsent(script);
                 if (existing != null) {
                     script = existing;
                 }

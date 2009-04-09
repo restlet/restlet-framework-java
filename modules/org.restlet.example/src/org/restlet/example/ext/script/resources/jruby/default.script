@@ -54,7 +54,7 @@ $state_lock = get_state_lock()
 # This method is called when the resource is initialized. We will use it to set
 # general characteristics for the resource.
 	
-def initialize_resource
+def handle_init
 	# The order in which we add the media types or variants is their order of
 	# preference. Note that clients often include a wildcard (such as "*/*") in the
 	# "Accept" attribute of their request header, specifying that any media type
@@ -77,7 +77,7 @@ end
 # Additionally, you can use $script.container.variant to interrogate the client's provided
 # list of supported languages and encoding.
 
-def represent
+def handle_get
 	r = nil
 	state_lock = get_state_lock()
 	state = get_state()
@@ -111,7 +111,7 @@ end
 # you must explicitly return a None if you do not want to return a representation
 # to the client.
 
-def accept_representation
+def handle_post
 	update = JSONObject.new $script.container.entity.text
 	state_lock = get_state_lock()
 	state = get_state()
@@ -126,7 +126,7 @@ def accept_representation
 		state_lock.write_lock.unlock
 	end
 	
-	return represent
+	return handle_get
 end
 
 # This method is called for the PUT verb, which is expected to behave as a
@@ -141,7 +141,7 @@ end
 # you must explicitly return a nill if you do not want to return a representation
 # to the client.
 
-def store_representation
+def handle_put
 	update = JSONObject.new $script.container.entity.text
 
 	state = {}	
@@ -151,7 +151,7 @@ def store_representation
 	
 	set_state state
 	
-	return represent
+	return handle_get
 end
 
 # This method is called for the DELETE verb, which is expected to behave as a
@@ -161,7 +161,7 @@ end
 # it doesn't make sense to return a representation, and any returned value will
 # ignored. Still, it's a good idea to return nil to avoid any passing of value.
 
-def remove_representations
+def handle_delete
 
 	set_state({})
 
@@ -171,10 +171,10 @@ end
 # For our methods to be invocable from the outside as entry points, we must store them
 # as closures in global variables named for the entry points.
 
-$initializeResource = method :initialize_resource
-$represent = method :represent
-$acceptRepresentation = method :accept_representation
-$storeRepresentation = method :store_representation
-$removeRepresentations = method :remove_representations 
+$handleInit = method :handle_init
+$handleGet = method :handle_get
+$handlePost = method :handle_post
+$handlePut = method :handle_put
+$handleDelete = method :handle_delete 
 
 %>

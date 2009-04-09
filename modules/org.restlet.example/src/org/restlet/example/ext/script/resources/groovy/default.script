@@ -47,7 +47,7 @@ setState = { value ->
 // This closure is called when the resource is initialized. We will use it to set
 // general characteristics for the resource.
 
-initializeResource = {
+handleInit = {
 	// The order in which we add the media types or variants is their order of
 	// preference. Note that clients often include a wildcard (such as "*/*") in the
 	// "Accept" attribute of their request header, specifying that any media type
@@ -70,7 +70,7 @@ initializeResource = {
 // Additionally, you can use script.container.variant to interrogate the client's provided
 // list of supported languages and encoding.
 
-represent = {
+handleGet = {
 	def r
 	def stateLock = getStateLock()
 	def state = getState()
@@ -104,7 +104,7 @@ represent = {
 // you must explicitly return a null if you do not want to return a representation
 // to the client.
 
-acceptRepresentation = {
+handlePost = {
 	// Note that we are using the JSON library to parse the entity. While
 	// a simple eval() would also work, the JSONObject constructor is much safer.
 	
@@ -123,7 +123,7 @@ acceptRepresentation = {
 		stateLock.writeLock().unlock()
 	}
 	
-	return represent()
+	return handleGet()
 }
 
 // This closure is called for the PUT verb, which is expected to behave as a
@@ -138,7 +138,7 @@ acceptRepresentation = {
 // you must explicitly return a null if you do not want to return a representation
 // to the client.
 
-storeRepresentation = {
+handlePut = {
 	// See comment in acceptRepresentation()
 
 	def entity = new JSONObject(script.container.entity.text)
@@ -150,7 +150,7 @@ storeRepresentation = {
 	
 	setState(state)
 	
-	return represent()
+	return handleGet()
 }
 
 // This closure is called for the DELETE verb, which is expected to behave as a
@@ -160,7 +160,7 @@ storeRepresentation = {
 // it doesn't make sense to return a representation, and any returned value will
 // ignored. Still, it's a good idea to return null to avoid any passing of value.
 
-removeRepresentations = {
+handleDelete = {
 
 	setState([:])
 

@@ -52,7 +52,7 @@ def setState(value):
 # This function is called when the resource is initialized. We will use it to set
 # general characteristics for the resource.
 
-def initializeResource():
+def handleInit():
 	global script
 
 	# The order in which we add the media types or variants is their order of
@@ -79,7 +79,7 @@ def initializeResource():
 # Additionally, you can use script.container.variant to interrogate the client's provided
 # list of supported languages and encoding.
 
-def represent():
+def handleGet():
 	global script
 
 	r = None
@@ -112,7 +112,7 @@ def represent():
 # you must explicitly return a None if you do not want to return a representation
 # to the client.
 
-def acceptRepresentation():
+def handlePost():
 	global script
 
 	# Note that we are using the minjson library to parse the entity. While
@@ -130,7 +130,7 @@ def acceptRepresentation():
 	finally:
 		stateLock.writeLock().unlock()
 
-	return represent()
+	return handleGet()
 
 # This function is called for the PUT verb, which is expected to behave as a
 # logical "create" of the resource's state.
@@ -144,7 +144,7 @@ def acceptRepresentation():
 # you must explicitly return a None if you do not want to return a representation
 # to the client.
 
-def storeRepresentation():
+def handlePut():
 	global script
 
 	# See comment in acceptRepresentation()
@@ -152,7 +152,7 @@ def storeRepresentation():
 	update = json.read(script.container.entity.text)
 	setState(update)
 
-	return represent()
+	return handleGet()
 
 # This function is called for the DELETE verb, which is expected to behave as a
 # logical "delete" of the resource's state.
@@ -161,7 +161,7 @@ def storeRepresentation():
 # it doesn't make sense to return a representation, and any returned value will
 # ignored. Still, it's a good idea to return None to avoid any passing of value.
 
-def removeRepresentations():
+def handleDelete():
 	setState({})
 
 	return None

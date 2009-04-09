@@ -298,6 +298,12 @@ public class ScriptedTextResource extends ServerResource {
     }
 
     @Override
+    public Representation get() throws ResourceException {
+        // TODO: is this really what we want to do here?
+        return get(null);
+    }
+
+    @Override
     public Representation get(Variant variant) throws ResourceException {
         Request request = getRequest();
         String name = ScriptUtils.getRelativePart(request, getDefaultName());
@@ -595,8 +601,8 @@ public class ScriptedTextResource extends ServerResource {
     @Override
     public Representation post(Representation entity, Variant variant)
             throws ResourceException {
-        // Handle the same was as get(variant) -- we are ignoring the variant
-        return get(entity);
+        // Handle the same was as post(entity) -- we are ignoring the variant
+        return post(entity);
     }
 
     /**

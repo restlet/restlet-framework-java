@@ -44,7 +44,6 @@ import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.ext.script.internal.ExposedScriptedResourceContainer;
 import org.restlet.ext.script.internal.ScriptUtils;
@@ -65,10 +64,9 @@ import com.threecrickets.scripturian.ScriptSource;
  * closures, or whatever other technique the scripting engine uses to make entry
  * point available to Java. They entry points are:
  * <ul>
- * <li><code>initializeResource()</code>: This function is called when the
- * resource is initialized. We will use it set general characteristics for the
- * resource.</li>
- * <li><code>represent()</code>: This function is called for the GET verb, which
+ * <li><code>handleInit()</code>: This function is called when the resource is
+ * initialized. We will use it set general characteristics for the resource.</li>
+ * <li><code>handleGet()</code>: This function is called for the GET verb, which
  * is expected to behave as a logical "read" of the resource's state. The
  * expectation is that it return one representation, out of possibly many, of
  * the resource's state. Returned values can be of any explicit sub-class of
@@ -79,39 +77,36 @@ import com.threecrickets.scripturian.ScriptSource;
  * <code>container.characterSet</code>, and <code>container.language</code>.
  * Additionally, you can use <code>container.variant</code> to interrogate the
  * client's provided list of supported languages and encoding.</li>
- * <li><code>acceptRepresentation()</code>: This function is called for the POST
- * verb, which is expected to behave as a logical "update" of the resource's
- * state. The expectation is that container.entity represents an update to the
- * state, that will affect future calls to <code>represent()</code>. As such, it
- * may be possible to accept logically partial representations of the state. You
- * may optionally return a representation, in the same way as
- * <code>represent()</code>. Because many scripting languages functions return
+ * <li><code>handlePost()</code>: This function is called for the POST verb,
+ * which is expected to behave as a logical "update" of the resource's state.
+ * The expectation is that container.entity represents an update to the state,
+ * that will affect future calls to <code>handleGet()</code>. As such, it may be
+ * possible to accept logically partial representations of the state. You may
+ * optionally return a representation, in the same way as
+ * <code>handleGet()</code>. Because many scripting languages functions return
  * the last statement's value by default, you must explicitly return a null if
  * you do not want to return a representation to the client.</li>
- * <li><code>storeRepresentation()</code>: This function is called for the PUT
- * verb, which is expected to behave as a logical "create" of the resource's
- * state. The expectation is that container.entity represents an entirely new
- * state, that will affect future calls to <code>represent()</code>. Unlike
- * <code>acceptRepresentation()</code>, it is expected that the representation
- * be logically complete. You may optionally return a representation, in the
- * same way as <code>represent()</code>. Because JavaScript functions return the
- * last statement's value by default, you must explicitly return a null if you
- * do not want to return a representation to the client.</li>
- * <li><code>removeRepresentations()</code>: This function is called for the
- * DELETE verb, which is expected to behave as a logical "delete" of the
- * resource's state. The expectation is that subsequent calls to
- * <code>represent()</code> will fail. As such, it doesn't make sense to return
- * a representation, and any returned value will ignored. Still, it's a good
- * idea to return null to avoid any passing of value.</li>
+ * <li><code>handlePut()</code>: This function is called for the PUT verb, which
+ * is expected to behave as a logical "create" of the resource's state. The
+ * expectation is that container.entity represents an entirely new state, that
+ * will affect future calls to <code>handleGet()</code>. Unlike
+ * <code>handlePost()</code>, it is expected that the representation be
+ * logically complete. You may optionally return a representation, in the same
+ * way as <code>handleGet()</code>. Because JavaScript functions return the last
+ * statement's value by default, you must explicitly return a null if you do not
+ * want to return a representation to the client.</li>
+ * <li><code>handleDelete()</code>: This function is called for the DELETE verb,
+ * which is expected to behave as a logical "delete" of the resource's state.
+ * The expectation is that subsequent calls to <code>handleGet()</code> will
+ * fail. As such, it doesn't make sense to return a representation, and any
+ * returned value will ignored. Still, it's a good idea to return null to avoid
+ * any passing of value.</li>
  * </ul>
  * <p>
  * Names of these entry point can be configured via attributes in the
- * application's {@link Context}. See
- * {@link #getInitializeResourceEntryPointName()},
- * {@link #getRepresentEntryPointName()},
- * {@link #getAcceptRepresentationEntryPointName()},
- * {@link #getStoreRepresentationEntryPointName()} and
- * {@link #getRemoveRepresentationsEntryPointName()}.
+ * application's {@link Context}. See {@link #getEntryPointNameForInit()},
+ * {@link #getEntryPointNameForGet()}, {@link #getEntryPointNameForPost()},
+ * {@link #getEntryPointNameForPut()} and {@link #getEntryPointNameForDelete()}.
  * <p>
  * Before using this resource, make sure to configure a valid source in the
  * application's {@link Context}; see {@link #getScriptSource()}. This source is
@@ -148,23 +143,22 @@ import com.threecrickets.scripturian.ScriptSource;
  * <ul>
  * <li><code>script.container.entity</code>: The {@link Representation} of an
  * entity provided with this request. Available only in
- * <code>acceptRepresentation()</code> and <code>storeRepresentation()</code>.
- * Note that <code>script.container.variant</code> is identical to
+ * <code>handlePost()</code> and <code>handlePut()</code>. Note that
+ * <code>script.container.variant</code> is identical to
  * <code>script.container.entity</code> when available.</li>
  * <li><code>script.container.resource</code>: The instance of this resource.
  * Acts as a "this" reference for the script. For example, during a call to
- * <code>initializeResource()</code>, this can be used to change the
- * characteristics of the resource. Otherwise, you can use it to access the
- * request and response.</li>
+ * <code>handleInit()</code>, this can be used to change the characteristics of
+ * the resource. Otherwise, you can use it to access the request and response.</li>
  * <li><code>script.container.source</code>: The source used for the script; see
  * {@link #getScriptSource()}.</li>
  * <li><code>script.container.variant</code>: The {@link Variant} of this
  * request. Useful for interrogating the client's preferences. This is available
- * only in <code>represent()</code>, <code>acceptRepresentation()</code> and
- * <code>storeRepresentation()</code>.</li>
+ * only in <code>handleGet()</code>, <code>handlePost()</code> and
+ * <code>handlePut()</code>.</li>
  * <li><code>script.container.variants</code>: A map of possible variants or
  * media types supported by this resource. You should initialize this during a
- * call to <code>initializeResource()</code>. Values for the map can be
+ * call to <code>handleInit()</code>. Values for the map can be
  * {@link MediaType} constants, explicit {@link Variant} instances (in which
  * case these variants will be returned immediately for their media type without
  * calling the entry point), or a {@link List} containing both media types and
@@ -174,20 +168,17 @@ import com.threecrickets.scripturian.ScriptSource;
  * Modifiable attributes:
  * <ul>
  * <li><code>script.container.mediaType</code>: The {@link MediaType} that will
- * be used if you return an arbitrary type for <code>represent()</code>,
- * <code>acceptRepresentation()</code> and <code>storeRepresentation()</code>.
- * Defaults to what the client requested (in
- * <code>script.container.variant</code>).</li>
+ * be used if you return an arbitrary type for <code>handleGet()</code>,
+ * <code>handlePost()</code> and <code>handlePut()</code>. Defaults to what the
+ * client requested (in <code>script.container.variant</code>).</li>
  * <li><code>script.container.characterSet</code>: The {@link CharacterSet} that
- * will be used if you return an arbitrary type for <code>represent()</code>,
- * <code>acceptRepresentation()</code> and <code>storeRepresentation()</code>.
- * Defaults to what the client requested (in
- * <code>script.container.variant</code>), or to the value of
- * {@link #getDefaultCharacterSet()} if the client did not specify it.</li>
+ * will be used if you return an arbitrary type for <code>handleGet()</code>,
+ * <code>handlePost()</code> and <code>handlePut()</code>. Defaults to what the
+ * client requested (in <code>script.container.variant</code>), or to the value
+ * of {@link #getDefaultCharacterSet()} if the client did not specify it.</li>
  * <li><code>script.container.language</code>: The {@link Language} that will be
- * used if you return an arbitrary type for <code>represent()</code>,
- * <code>acceptRepresentation()</code> and <code>storeRepresentation()</code>.
- * Defaults to null.</li>
+ * used if you return an arbitrary type for <code>handleGet()</code>,
+ * <code>handlePost()</code> and <code>handlePut()</code>. Defaults to null.</li>
  * </ul>
  * <p>
  * In addition to the above, a {@link ScriptContextController} can be set to add
@@ -196,10 +187,6 @@ import com.threecrickets.scripturian.ScriptSource;
  * <p>
  * Summary of settings configured via the application's {@link Context}:
  * <ul>
- * <li>
- * <code>org.restlet.ext.script.ScriptedResource.acceptRepresentationEntryPointName:</code>
- * {@link String}, defaults to "acceptRepresentation". See
- * {@link #getAcceptRepresentationEntryPointName()}.</li>
  * <li>
  * <code>org.restlet.ext.script.ScriptedResource.allowCompilation:</code>
  * {@link Boolean}, defaults to true. See {@link #isAllowCompilation()}.</li>
@@ -211,25 +198,30 @@ import com.threecrickets.scripturian.ScriptSource;
  * <li>
  * <code>org.restlet.ext.script.ScriptedResource.defaultScriptEngineName:</code>
  * {@link String}, defaults to "js". See {@link #getDefaultScriptEngineName()}.</li>
+ * <li>
+ * <code>org.restlet.ext.script.ScriptedResource.entryPointNameForDelete:</code>
+ * {@link String}, defaults to "handleDelete". See
+ * {@link #getEntryPointNameForDelete()}.</li>
+ * <li>
+ * <code>org.restlet.ext.script.ScriptedResource.entryPointNameForGet:</code>
+ * {@link String}, defaults to "handleGet". See
+ * {@link #getEntryPointNameForGet()}.</li>
+ * <li>
+ * <code>org.restlet.ext.script.ScriptedResource.entryPointNameForInit:</code>
+ * {@link String}, defaults to "handleInit". See
+ * {@link #getEntryPointNameForInit()}.</li>
+ * <li>
+ * <code>org.restlet.ext.script.ScriptedResource.entryPointNameForPost:</code>
+ * {@link String}, defaults to "handlePost". See
+ * {@link #getEntryPointNameForPost()}.</li>
+ * <li>
+ * <code>org.restlet.ext.script.ScriptedResource.entryPointNameForPut:</code>
+ * {@link String}, defaults to "handlePut". See
+ * {@link #getEntryPointNameForPut()}.</li>
  * <li><code>org.restlet.ext.script.ScriptedResource.errorWriter:</code>
  * {@link Writer}, defaults to standard error. See {@link #getErrorWriter()}.</li>
  * <li><code>org.restlet.ext.script.ScriptedResource.extension:</code>
  * {@link String}, defaults to "script". See {@link #getExtension()}.</li>
- * <li>
- * <code>org.restlet.ext.script.ScriptedResource.initializeResourceEntryPointName:</code>
- * {@link String}, defaults to "initializeResource". See
- * {@link #getInitializeResourceEntryPointName()}.</li>
- * <li>
- * <code>org.restlet.ext.script.ScriptedResource.removeRepresentationsEntryPointName:</code>
- * {@link String}, defaults to "removeRepresentations". See
- * {@link #getRemoveRepresentationsEntryPointName()}.</li>
- * <li>
- * <code>org.restlet.ext.script.ScriptedResource.representEntryPointName:</code>
- * {@link String}, defaults to "represent". See
- * {@link #getRepresentEntryPointName()}.</li>
- * <li>
- * <code>org.restlet.ext.script.ScriptedResource.sourceViewable:</code>
- * {@link Boolean}, defaults to false. See {@link #isSourceViewable()}.</li>
  * <li>
  * <code>org.restlet.ext.script.ScriptedResource.scriptContextController:</code>
  * {@link ScriptContextController}. See {@link #getScriptContextController()}.</li>
@@ -241,9 +233,8 @@ import com.threecrickets.scripturian.ScriptSource;
  * <code>org.restlet.ext.script.ScriptedResource.scriptSource:</code>
  * {@link ScriptSource}. <b>Required.</b> See {@link #getScriptSource()}.</li>
  * <li>
- * <code>org.restlet.ext.script.ScriptedResource.storeRepresentationEntryPointName:</code>
- * {@link String}, defaults to "storeRepresentation". See
- * {@link #getStoreRepresentationEntryPointName()}.</li>
+ * <code>org.restlet.ext.script.ScriptedResource.sourceViewable:</code>
+ * {@link Boolean}, defaults to false. See {@link #isSourceViewable()}.</li>
  * <li>
  * <code>org.restlet.ext.script.ScriptedResource.writer:</code> {@link Writer},
  * defaults to standard output. See {@link #getWriter()}.</li>
@@ -300,33 +291,29 @@ public class ScriptedResource extends ServerResource {
     private ScriptContextController scriptContextController;
 
     /**
-     * The name of the <code>initializeResource()</code> entry point in the
-     * script.
+     * The name of the <code>handleInit()</code> entry point in the script.
      */
-    private String initializeResourceEntryPointName;
+    private String entryPointNameForInit;
 
     /**
-     * The name of the <code>represent()</code> entry point in the script.
+     * The name of the <code>handleGet()</code> entry point in the script.
      */
-    private String representEntryPointName;
+    private String entryPointNameForGet;
 
     /**
-     * The name of the <code>acceptRepresentation()</code> entry point in the
-     * script.
+     * The name of the <code>handlePost()</code> entry point in the script.
      */
-    private String acceptRepresentationEntryPointName;
+    private String entryPointNameForPost;
 
     /**
-     * The name of the <code>storeRepresentation()</code> entry point in the
-     * script.
+     * The name of the <code>handlePut()</code> entry point in the script.
      */
-    private String storeRepresentationEntryPointName;
+    private String entryPointNameForPut;
 
     /**
-     * The name of the <code>removeRepresentations()</code> entry point in the
-     * script.
+     * The name of the <code>handleDelete()</code> entry point in the script.
      */
-    private String removeRepresentationsEntryPointName;
+    private String entryPointNameForDelete;
 
     /**
      * This is so we can see the source code for scripts by adding
@@ -355,54 +342,65 @@ public class ScriptedResource extends ServerResource {
     private Writer errorWriter = new OutputStreamWriter(System.err);
 
     /**
-     * Delegates to the <code>removeRepresentations()</code> entry point in the
-     * script.
+     * Delegates to the <code>handleDelete()</code> entry point in the script.
      * 
      * @param variant
      *            The variant of the response entity
      * @return The optional result entity
      * @throws ResourceException
-     * @see #getRemoveRepresentationsEntryPointName()
-     * @see Resource#removeRepresentations()
+     * @see #getEntryPointNameForDelete()
+     * @see Resource#handleDelete()
      */
     @Override
     public Representation delete(Variant variant) throws ResourceException {
         ExposedScriptedResourceContainer container = new ExposedScriptedResourceContainer(
                 this, getVariants(), variant);
 
-        container.invoke(getRemoveRepresentationsEntryPointName());
+        container.invoke(getEntryPointNameForDelete());
 
         return null;
     }
 
     /**
-     * Initializes the resource, and delegates to the
-     * <code>initializeResource()</code> entry point in the script.
+     * Initializes the resource, and delegates to the <code>handleInit()</code>
+     * entry point in the script.
      * 
-     * @see #getInitializeResourceEntryPointName()
-     * @see org.restlet.resource.Resource#Resource(Context, Request, Response)
+     * @see #getEntryPointNameForInit()
      */
     @Override
     protected void doInit() throws ResourceException {
         setAnnotated(false);
         ExposedScriptedResourceContainer container = new ExposedScriptedResourceContainer(
                 this, getVariants());
+
         try {
-            container.invoke(getInitializeResourceEntryPointName());
+            container.invoke(getEntryPointNameForInit());
         } catch (ResourceException e) {
             e.printStackTrace();
         }
     }
 
     /**
-     * Delegates to the <code>represent()</code> entry point in the script.
+     * Delegates to the <code>handleGet()</code> entry point in the script.
+     * 
+     * @return The optional result entity
+     * @throws ResourceException
+     * @see #getEntryPointNameForGet()
+     */
+    @Override
+    public Representation get() throws ResourceException {
+        // TODO: is this really what we want to do here?
+        return get(null);
+    }
+
+    /**
+     * Delegates to the <code>handleGet()</code> entry point in the script.
      * 
      * @param variant
      *            The variant of the response entity
      * @return The optional result entity
      * @throws ResourceException
-     * @see #getRepresentEntryPointName()
-     * @see Resource#represent(Variant)
+     * @see #getEntryPointNameForGet()
      */
     @Override
     public Representation get(Variant variant) throws ResourceException {
@@ -423,7 +421,7 @@ public class ScriptedResource extends ServerResource {
                 throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, e);
             }
         } else {
-            Object r = container.invoke(getRepresentEntryPointName());
+            Object r = container.invoke(getEntryPointNameForGet());
             if (r == null) {
                 return null;
             }
@@ -435,30 +433,6 @@ public class ScriptedResource extends ServerResource {
                         .getCharacterSet());
             }
         }
-    }
-
-    /**
-     * The name of the <code>acceptRepresentation()</code> entry point in the
-     * script. Defaults to "acceptRepresentation".
-     * <p>
-     * This setting can be configured by setting an attribute named
-     * <code>org.restlet.ext.script.ScriptedResource.acceptRepresentationEntryPointName</code>
-     * in the application's {@link Context}.
-     * 
-     * @return The name of the <code>acceptRepresentation()</code> entry point
-     */
-    public String getAcceptRepresentationEntryPointName() {
-        if (this.acceptRepresentationEntryPointName == null) {
-            ConcurrentMap<String, Object> attributes = getContext()
-                    .getAttributes();
-            this.acceptRepresentationEntryPointName = (String) attributes
-                    .get("org.restlet.ext.script.ScriptedResource.acceptRepresentationEntryPointName");
-            if (this.acceptRepresentationEntryPointName == null) {
-                this.acceptRepresentationEntryPointName = "acceptRepresentation";
-            }
-        }
-
-        return this.acceptRepresentationEntryPointName;
     }
 
     /**
@@ -536,6 +510,126 @@ public class ScriptedResource extends ServerResource {
     }
 
     /**
+     * The name of the <code>handleDelete()</code> entry point in the script.
+     * Defaults to "handleDelete".
+     * <p>
+     * This setting can be configured by setting an attribute named
+     * <code>org.restlet.ext.script.ScriptedResource.entryPointNameForDelete</code>
+     * in the application's {@link Context}.
+     * 
+     * @return The name of the <code>handleDelete()</code> entry point
+     */
+    public String getEntryPointNameForDelete() {
+        if (this.entryPointNameForDelete == null) {
+            ConcurrentMap<String, Object> attributes = getContext()
+                    .getAttributes();
+            this.entryPointNameForDelete = (String) attributes
+                    .get("org.restlet.ext.script.ScriptedResource.entryPointNameForDelete");
+            if (this.entryPointNameForDelete == null) {
+                this.entryPointNameForDelete = "handleDelete";
+            }
+        }
+
+        return this.entryPointNameForDelete;
+    }
+
+    /**
+     * The name of the <code>handleGet()</code> entry point in the script.
+     * Defaults to "handleGet".
+     * <p>
+     * This setting can be configured by setting an attribute named
+     * <code>org.restlet.ext.script.ScriptedResource.entryPointNameForGet</code>
+     * in the application's {@link Context}.
+     * 
+     * @return The name of the <code>handleGet()</code> entry point
+     */
+    public String getEntryPointNameForGet() {
+        if (this.entryPointNameForGet == null) {
+            ConcurrentMap<String, Object> attributes = getContext()
+                    .getAttributes();
+            this.entryPointNameForGet = (String) attributes
+                    .get("org.restlet.ext.script.ScriptedResource.entryPointNameForGet");
+            if (this.entryPointNameForGet == null) {
+                this.entryPointNameForGet = "handleGet";
+            }
+        }
+
+        return this.entryPointNameForGet;
+    }
+
+    /**
+     * The name of the <code>handleInit()</code> entry point in the script.
+     * Defaults to "handleInit".
+     * <p>
+     * This setting can be configured by setting an attribute named
+     * <code>org.restlet.ext.script.ScriptedResource.entryPointNameForInit</code>
+     * in the application's {@link Context}.
+     * 
+     * @return The name of the <code>handleInit()</code> entry point
+     */
+    public String getEntryPointNameForInit() {
+        if (this.entryPointNameForInit == null) {
+            ConcurrentMap<String, Object> attributes = getContext()
+                    .getAttributes();
+            this.entryPointNameForInit = (String) attributes
+                    .get("org.restlet.ext.script.ScriptedResource.entryPointNameForInit");
+            if (this.entryPointNameForInit == null) {
+                this.entryPointNameForInit = "handleInit";
+            }
+        }
+
+        return this.entryPointNameForInit;
+    }
+
+    /**
+     * The name of the <code>handlePost()</code> entry point in the script.
+     * Defaults to "handlePost".
+     * <p>
+     * This setting can be configured by setting an attribute named
+     * <code>org.restlet.ext.script.ScriptedResource.entryPointNameForPost</code>
+     * in the application's {@link Context}.
+     * 
+     * @return The name of the <code>handlePost()</code> entry point
+     */
+    public String getEntryPointNameForPost() {
+        if (this.entryPointNameForPost == null) {
+            ConcurrentMap<String, Object> attributes = getContext()
+                    .getAttributes();
+            this.entryPointNameForPost = (String) attributes
+                    .get("org.restlet.ext.script.ScriptedResource.entryPointNameForPost");
+            if (this.entryPointNameForPost == null) {
+                this.entryPointNameForPost = "handlePost";
+            }
+        }
+
+        return this.entryPointNameForPost;
+    }
+
+    /**
+     * The name of the <code>handlePut()</code> entry point in the script.
+     * Defaults to "handlePut".
+     * <p>
+     * This setting can be configured by setting an attribute named
+     * <code>org.restlet.ext.script.ScriptedResource.entryPointNameForPut</code>
+     * in the application's {@link Context}.
+     * 
+     * @return The name of the <code>handlePut()</code> entry point
+     */
+    public String getEntryPointNameForPut() {
+        if (this.entryPointNameForPut == null) {
+            ConcurrentMap<String, Object> attributes = getContext()
+                    .getAttributes();
+            this.entryPointNameForPut = (String) attributes
+                    .get("org.restlet.ext.script.ScriptedResource.entryPointNameForPut");
+            if (this.entryPointNameForPut == null) {
+                this.entryPointNameForPut = "handlePut";
+            }
+        }
+
+        return this.entryPointNameForPut;
+    }
+
+    /**
      * Same as {@link #getWriter()}, for standard error. Defaults to standard
      * error.
      * <p>
@@ -581,78 +675,6 @@ public class ScriptedResource extends ServerResource {
         }
 
         return this.extension;
-    }
-
-    /**
-     * The name of the <code>initializeResource()</code> entry point in the
-     * script. Defaults to "initialize".
-     * <p>
-     * This setting can be configured by setting an attribute named
-     * <code>org.restlet.ext.script.ScriptedResource.initializeResourceEntryPointName</code>
-     * in the application's {@link Context}.
-     * 
-     * @return The name of the <code>initializeResource()</code> entry point
-     */
-    public String getInitializeResourceEntryPointName() {
-        if (this.initializeResourceEntryPointName == null) {
-            ConcurrentMap<String, Object> attributes = getContext()
-                    .getAttributes();
-            this.initializeResourceEntryPointName = (String) attributes
-                    .get("org.restlet.ext.script.ScriptedResource.initializeResourceEntryPointName");
-            if (this.initializeResourceEntryPointName == null) {
-                this.initializeResourceEntryPointName = "initializeResource";
-            }
-        }
-
-        return this.initializeResourceEntryPointName;
-    }
-
-    /**
-     * The name of the <code>removeRepresentations()</code> entry point in the
-     * script. Defaults to "removeRepresentations".
-     * <p>
-     * This setting can be configured by setting an attribute named
-     * <code>org.restlet.ext.script.ScriptedResource.removeRepresentationsEntryPointName</code>
-     * in the application's {@link Context}.
-     * 
-     * @return The name of the <code>removeRepresentations()</code> entry point
-     */
-    public String getRemoveRepresentationsEntryPointName() {
-        if (this.removeRepresentationsEntryPointName == null) {
-            ConcurrentMap<String, Object> attributes = getContext()
-                    .getAttributes();
-            this.removeRepresentationsEntryPointName = (String) attributes
-                    .get("org.restlet.ext.script.ScriptedResource.removeRepresentationsEntryPointName");
-            if (this.removeRepresentationsEntryPointName == null) {
-                this.removeRepresentationsEntryPointName = "removeRepresentations";
-            }
-        }
-
-        return this.removeRepresentationsEntryPointName;
-    }
-
-    /**
-     * The name of the <code>represent()</code> entry point in the script.
-     * Defaults to "represent".
-     * <p>
-     * This setting can be configured by setting an attribute named
-     * <code>org.restlet.ext.script.ScriptedResource.representEntryPointName</code>
-     * in the application's {@link Context}.
-     * 
-     * @return The name of the <code>represent()</code> entry point
-     */
-    public String getRepresentEntryPointName() {
-        if (this.representEntryPointName == null) {
-            ConcurrentMap<String, Object> attributes = getContext()
-                    .getAttributes();
-            this.representEntryPointName = (String) attributes
-                    .get("org.restlet.ext.script.ScriptedResource.representEntryPointName");
-            if (this.representEntryPointName == null) {
-                this.representEntryPointName = "represent";
-            }
-        }
-
-        return this.representEntryPointName;
     }
 
     /**
@@ -734,30 +756,6 @@ public class ScriptedResource extends ServerResource {
     }
 
     /**
-     * The name of the <code>storeRepresentation()</code> entry point in the
-     * script. Defaults to "storeRepresentation".
-     * <p>
-     * This setting can be configured by setting an attribute named
-     * <code>org.restlet.ext.script.ScriptedResource.storeRepresentationEntryPointName</code>
-     * in the application's {@link Context}.
-     * 
-     * @return The name of the <code>storeRepresentation()</code> entry point
-     */
-    public String getStoreRepresentationEntryPointName() {
-        if (this.storeRepresentationEntryPointName == null) {
-            ConcurrentMap<String, Object> attributes = getContext()
-                    .getAttributes();
-            this.storeRepresentationEntryPointName = (String) attributes
-                    .get("org.restlet.ext.script.ScriptedResource.storeRepresentationEntryPointName");
-            if (this.storeRepresentationEntryPointName == null) {
-                this.storeRepresentationEntryPointName = "storeRepresentation";
-            }
-        }
-
-        return this.storeRepresentationEntryPointName;
-    }
-
-    /**
      * The {@link Writer} used by the {@link EmbeddedScript}. Defaults to
      * standard output.
      * <p>
@@ -831,8 +829,22 @@ public class ScriptedResource extends ServerResource {
     }
 
     /**
-     * Delegates to the <code>acceptRepresentation()</code> entry point in the
-     * script.
+     * Delegates to the <code>handlePost()</code> entry point in the script.
+     * 
+     * @param entity
+     *            The posted entity
+     * @return The optional result entity
+     * @throws ResourceException
+     * @see #getEntryPointNameForPost()
+     */
+    @Override
+    public Representation post(Representation entity) throws ResourceException {
+        // TODO: is this really what we want to do here?
+        return post(entity, null);
+    }
+
+    /**
+     * Delegates to the <code>handlePost()</code> entry point in the script.
      * 
      * @param entity
      *            The posted entity
@@ -840,8 +852,7 @@ public class ScriptedResource extends ServerResource {
      *            The variant of the response entity
      * @return The optional result entity
      * @throws ResourceException
-     * @see #getAcceptRepresentationEntryPointName()
-     * @see Resource#acceptRepresentation(Representation)
+     * @see #getEntryPointNameForPost()
      */
     @Override
     public Representation post(Representation entity, Variant variant)
@@ -849,7 +860,7 @@ public class ScriptedResource extends ServerResource {
         ExposedScriptedResourceContainer container = new ExposedScriptedResourceContainer(
                 this, getVariants(), entity, variant);
 
-        Object r = container.invoke(getAcceptRepresentationEntryPointName());
+        Object r = container.invoke(getEntryPointNameForPost());
         if (r != null) {
             if (r instanceof Representation) {
                 return (Representation) r;
@@ -864,8 +875,22 @@ public class ScriptedResource extends ServerResource {
     }
 
     /**
-     * Delegates to the <code>storeRepresentation()</code> entry point in the
-     * script.
+     * Delegates to the <code>handlePut()</code> entry point in the script.
+     * 
+     * @param entity
+     *            The posted entity
+     * @return The optional result entity
+     * @throws ResourceException
+     * @see #getEntryPointNameForPut()
+     */
+    @Override
+    public Representation put(Representation entity) throws ResourceException {
+        // TODO: is this really what we want to do here?
+        return put(entity, null);
+    }
+
+    /**
+     * Delegates to the <code>handlePut()</code> entry point in the script.
      * 
      * @param entity
      *            The posted entity
@@ -873,8 +898,7 @@ public class ScriptedResource extends ServerResource {
      *            The variant of the response entity
      * @return The optional result entity
      * @throws ResourceException
-     * @see #getStoreRepresentationEntryPointName()
-     * @see Resource#storeRepresentation(Representation)
+     * @see #getEntryPointNameForPut()
      */
     @Override
     public Representation put(Representation entity, Variant variant)
@@ -882,7 +906,7 @@ public class ScriptedResource extends ServerResource {
         ExposedScriptedResourceContainer container = new ExposedScriptedResourceContainer(
                 this, getVariants(), entity, variant);
 
-        Object r = container.invoke(getStoreRepresentationEntryPointName());
+        Object r = container.invoke(getEntryPointNameForPut());
         if (r != null) {
             if (r instanceof Representation) {
                 return (Representation) r;
