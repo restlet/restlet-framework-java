@@ -16,7 +16,7 @@ Internally, you may wants scripts to include each other. Using Scripturian's inc
 that scripts can include each other no matter how the scripts are actually stored.
 </p>
 <p>
-Second, because Scripturian allows you to mix scripting languages, it would be possible to include scripts that any language.
+Second, because Scripturian allows you to mix scripting languages, it would be possible to include scripts in any language.
 As to why you might want to do this, see the question below.
 </p>
 
