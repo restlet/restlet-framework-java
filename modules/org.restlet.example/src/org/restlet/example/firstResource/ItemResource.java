@@ -10,6 +10,7 @@ import org.restlet.representation.Representation;
 import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
 import org.restlet.resource.Put;
+import org.restlet.resource.ResourceException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -22,7 +23,7 @@ public class ItemResource extends BaseResource {
     String itemName;
 
     @Override
-    public void doInit() {
+    protected void doInit() throws ResourceException {
         // Get the "itemName" attribute value taken from the URI template
         // /items/{itemName}.
         this.itemName = (String) getRequest().getAttributes().get("itemName");
@@ -37,7 +38,7 @@ public class ItemResource extends BaseResource {
      * Handle DELETE requests.
      */
     @Delete
-    public Representation removeItem() {
+    public void removeItem() {
         if (item != null) {
             // Remove the item from the list.
             getItems().remove(item.getName());
@@ -45,7 +46,6 @@ public class ItemResource extends BaseResource {
 
         // Tells the client that the request has been successfully fulfilled.
         setStatus(Status.SUCCESS_NO_CONTENT);
-        return null;
     }
 
     /**
@@ -54,10 +54,7 @@ public class ItemResource extends BaseResource {
      * @throws IOException
      */
     @Put
-    public Representation storeItem(Representation entity) throws IOException {
-        // Tells if the item is to be created of not.
-        boolean creation = (item == null);
-
+    public void storeItem(Representation entity) throws IOException {
         // The PUT request updates or creates the resource.
         if (item == null) {
             item = new Item(itemName);
@@ -67,16 +64,11 @@ public class ItemResource extends BaseResource {
         Form form = new Form(entity);
         item.setDescription(form.getFirstValue("description"));
 
-        // Update the item in the list.
-        getItems().put(item.getName(), item);
-
-        if (creation) {
+        if (getItems().putIfAbsent(item.getName(), item) == null) {
             setStatus(Status.SUCCESS_CREATED);
         } else {
             setStatus(Status.SUCCESS_OK);
         }
-
-        return null;
     }
 
     @Get("xml")
