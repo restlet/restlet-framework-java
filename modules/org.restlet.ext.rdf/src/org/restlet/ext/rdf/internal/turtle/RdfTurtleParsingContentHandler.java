@@ -90,6 +90,7 @@ public class RdfTurtleParsingContentHandler extends
         Object currentObject = null;
         int nbTokens = 0;
         boolean swapSubjectObject = false;
+
         for (int i = 0; i < lexicalUnits.size(); i++) {
             LexicalUnit lexicalUnit = lexicalUnits.get(i);
 
@@ -108,13 +109,6 @@ public class RdfTurtleParsingContentHandler extends
                     swapSubjectObject = true;
                 } else if ("has".equalsIgnoreCase(lexicalUnit.getValue())) {
                     nbTokens--;
-                } else if ("=".equalsIgnoreCase(lexicalUnit.getValue())) {
-                    currentPredicate = RdfConstants.PREDICATE_SAME;
-                } else if ("=>".equalsIgnoreCase(lexicalUnit.getValue())) {
-                    currentPredicate = RdfConstants.PREDICATE_IMPLIES;
-                } else if ("<=".equalsIgnoreCase(lexicalUnit.getValue())) {
-                    swapSubjectObject = true;
-                    currentPredicate = RdfConstants.PREDICATE_IMPLIES;
                 } else if ("a".equalsIgnoreCase(lexicalUnit.getValue())) {
                     currentPredicate = RdfConstants.PREDICATE_TYPE;
                 } else if ("!".equalsIgnoreCase(lexicalUnit.getValue())) {
@@ -191,6 +185,7 @@ public class RdfTurtleParsingContentHandler extends
      *            The given character to check.
      * @return true if the given character is a delimiter.
      */
+    @Override
     protected boolean isDelimiter(int c) {
         return isWhiteSpace(c) || c == '^' || c == '!' || c == '=' || c == '<'
                 || c == '"' || c == '[' || c == ']' || c == '(' || c == ')'
@@ -267,6 +262,7 @@ public class RdfTurtleParsingContentHandler extends
      * 
      * @throws IOException
      */
+    @Override
     public void parse() throws IOException {
         // Init the reading.
         step();
@@ -289,39 +285,45 @@ public class RdfTurtleParsingContentHandler extends
         } while (!isEndOfFile(getChar()));
     }
 
-    protected void parseBlankNode(BlankNodeToken bn) throws IOException {
+    /**
+     * Parse the given blank node.
+     * 
+     * @param blankNode
+     *            The blank node to parse.
+     * @throws IOException
+     */
+    protected void parseBlankNode(BlankNodeToken blankNode) throws IOException {
         step();
         do {
             consumeWhiteSpaces();
             switch (getChar()) {
             case '(':
-                bn.getLexicalUnits().add(new ListToken(this, this.context));
+                blankNode.getLexicalUnits().add(
+                        new ListToken(this, this.context));
                 break;
             case '<':
-                if (step() == '=') {
-                    bn.getLexicalUnits().add(new Token("<="));
-                    step();
-                    discard();
-                } else {
-                    stepBack();
-                    bn.getLexicalUnits().add(new UriToken(this, this.context));
-                }
+                stepBack();
+                blankNode.getLexicalUnits().add(
+                        new UriToken(this, this.context));
                 break;
             case '_':
-                bn.getLexicalUnits().add(new BlankNodeToken(this.parseToken()));
+                blankNode.getLexicalUnits().add(
+                        new BlankNodeToken(this.parseToken()));
                 break;
             case '"':
-                bn.getLexicalUnits().add(new StringToken(this, this.context));
+                blankNode.getLexicalUnits().add(
+                        new StringToken(this, this.context));
                 break;
             case '[':
-                bn.getLexicalUnits()
-                        .add(new BlankNodeToken(this, this.context));
+                blankNode.getLexicalUnits().add(
+                        new BlankNodeToken(this, this.context));
                 break;
             case ']':
                 break;
             default:
                 if (!isEndOfFile(getChar())) {
-                    bn.getLexicalUnits().add(new Token(this, this.context));
+                    blankNode.getLexicalUnits().add(
+                            new Token(this, this.context));
                 }
 
                 break;
@@ -383,32 +385,45 @@ public class RdfTurtleParsingContentHandler extends
         }
     }
 
-    protected void parseList(ListToken l) throws IOException {
+    /**
+     * Parse the given list token.
+     * 
+     * @param listToken
+     *            The list token to parse.
+     * @throws IOException
+     */
+    protected void parseList(ListToken listToken) throws IOException {
         step();
         do {
             consumeWhiteSpaces();
             switch (getChar()) {
             case '(':
-                l.getLexicalUnits().add(new ListToken(this, this.context));
+                listToken.getLexicalUnits().add(
+                        new ListToken(this, this.context));
                 break;
             case '<':
                 stepBack();
-                l.getLexicalUnits().add(new UriToken(this, this.context));
+                listToken.getLexicalUnits().add(
+                        new UriToken(this, this.context));
                 break;
             case '_':
-                l.getLexicalUnits().add(new BlankNodeToken(parseToken()));
+                listToken.getLexicalUnits().add(
+                        new BlankNodeToken(parseToken()));
                 break;
             case '"':
-                l.getLexicalUnits().add(new StringToken(this, this.context));
+                listToken.getLexicalUnits().add(
+                        new StringToken(this, this.context));
                 break;
             case '[':
-                l.getLexicalUnits().add(new BlankNodeToken(this, this.context));
+                listToken.getLexicalUnits().add(
+                        new BlankNodeToken(this, this.context));
                 break;
             case ')':
                 break;
             default:
                 if (!isEndOfFile(getChar())) {
-                    l.getLexicalUnits().add(new Token(this, this.context));
+                    listToken.getLexicalUnits().add(
+                            new Token(this, this.context));
                 }
                 break;
             }
@@ -435,14 +450,8 @@ public class RdfTurtleParsingContentHandler extends
                 lexicalUnits.add(new ListToken(this, context));
                 break;
             case '<':
-                if (step() == '=') {
-                    lexicalUnits.add(new Token("<="));
-                    step();
-                    discard();
-                } else {
-                    stepBack();
-                    lexicalUnits.add(new UriToken(this, context));
-                }
+                stepBack();
+                lexicalUnits.add(new UriToken(this, context));
                 break;
             case '_':
                 lexicalUnits.add(new BlankNodeToken(parseToken()));
@@ -462,16 +471,6 @@ public class RdfTurtleParsingContentHandler extends
                 lexicalUnits.add(new Token("^"));
                 step();
                 discard();
-                break;
-            case '=':
-                if (step() == '>') {
-                    lexicalUnits.add(new Token("=>"));
-                    step();
-                    discard();
-                } else {
-                    lexicalUnits.add(new Token("="));
-                    discard();
-                }
                 break;
             case '@':
                 // Remove the leading '@' character.
@@ -504,14 +503,21 @@ public class RdfTurtleParsingContentHandler extends
         generateLinks(lexicalUnits);
     }
 
-    protected void parseString(StringToken u) throws IOException {
+    /**
+     * Parse the given String token.
+     * 
+     * @param stringToken
+     *            The String token to parse.
+     * @throws IOException
+     */
+    protected void parseString(StringToken stringToken) throws IOException {
         // Answer the question : is it multi lines or not?
         // That is to say, is it delimited by 3 quotes or not?
         int c1 = step();
         int c2 = step();
 
         if ((c1 == c2) && (c1 == '"')) {
-            u.setMultiLines(true);
+            stringToken.setMultiLines(true);
             step();
             discard();
             int[] tab = new int[3];
@@ -526,7 +532,7 @@ public class RdfTurtleParsingContentHandler extends
                 if (cpt == 3) {
                     // End of the string reached.
                     stepBack(2);
-                    u.setValue(getCurrentToken());
+                    stringToken.setValue(getCurrentToken());
                     step(3);
                     discard();
                     break;
@@ -534,14 +540,14 @@ public class RdfTurtleParsingContentHandler extends
                 c = step();
             }
         } else {
-            u.setMultiLines(false);
+            stringToken.setMultiLines(false);
             stepBack(1);
             discard();
             int c = getChar();
             while (!isEndOfFile(c) && (c != '"')) {
                 c = step();
             }
-            u.setValue(getCurrentToken());
+            stringToken.setValue(getCurrentToken());
             step();
             discard();
         }
@@ -549,11 +555,11 @@ public class RdfTurtleParsingContentHandler extends
         // Parse the type and language of literals
         int c = getChar();
         if (c == '@') {
-            u.setLanguage(parseToken());
+            stringToken.setLanguage(parseToken());
         } else if (c == '^') {
             c = step();
             if (c == '^') {
-                u.setType(parseToken());
+                stringToken.setType(parseToken());
             } else {
                 stepBack();
             }
@@ -561,16 +567,30 @@ public class RdfTurtleParsingContentHandler extends
 
     }
 
-    protected void parseToken(Token t) throws IOException {
+    /**
+     * Parses the given token.
+     * 
+     * @param token
+     *            The token to parse.
+     * @throws IOException
+     */
+    protected void parseToken(Token token) throws IOException {
         int c;
         do {
             c = step();
         } while (!isEndOfFile(c) && !isDelimiter(c));
-        t.setValue(getCurrentToken());
+        token.setValue(getCurrentToken());
 
     }
 
-    protected void parseUri(UriToken u) throws IOException {
-        u.setValue(parseUri());
+    /**
+     * Parses the given URI token.
+     * 
+     * @param token
+     *            The URI token to parse.
+     * @throws IOException
+     */
+    protected void parseUri(UriToken uriToken) throws IOException {
+        uriToken.setValue(parseUri());
     }
 }

@@ -127,7 +127,7 @@ public class RdfXmlWritingContentHandler extends GraphHandler {
      */
     private void discoverNamespaces(Reference reference, XmlWriter xmlWriter) {
         if (!LinkReference.isBlank(reference)) {
-            xmlWriter.forceNSDecl(getNamespace(reference));
+            xmlWriter.forceNSDecl(getNamespace(reference.getTargetRef()));
         }
     }
 

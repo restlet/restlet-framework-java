@@ -33,6 +33,7 @@ package org.restlet.ext.rdf;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.restlet.data.MediaType;
 import org.restlet.ext.rdf.internal.xml.RdfXmlParsingContentHandler;
 import org.restlet.ext.rdf.internal.xml.RdfXmlWritingContentHandler;
 import org.restlet.representation.Representation;
@@ -55,6 +56,7 @@ public class RdfXmlRepresentation extends RdfRepresentation {
      */
     public RdfXmlRepresentation(Graph linkSet) {
         super(linkSet);
+        this.setMediaType(MediaType.APPLICATION_RDF_XML);
     }
 
     /**

@@ -33,6 +33,7 @@ package org.restlet.ext.rdf;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.restlet.data.MediaType;
 import org.restlet.ext.rdf.internal.turtle.RdfTurtleParsingContentHandler;
 import org.restlet.ext.rdf.internal.turtle.RdfTurtleWritingContentHandler;
 import org.restlet.representation.Representation;
@@ -53,6 +54,7 @@ public class RdfTurtleRepresentation extends RdfRepresentation {
      */
     public RdfTurtleRepresentation(Graph linkSet) {
         super(linkSet);
+        this.setMediaType(MediaType.APPLICATION_RDF_TURTLE);
     }
 
     /**
