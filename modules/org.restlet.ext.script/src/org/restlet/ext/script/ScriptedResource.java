@@ -344,6 +344,20 @@ public class ScriptedResource extends ServerResource {
     /**
      * Delegates to the <code>handleDelete()</code> entry point in the script.
      * 
+     * @return The optional result entity
+     * @throws ResourceException
+     * @see #getEntryPointNameForDelete()
+     * @see Resource#handleDelete()
+     */
+    @Override
+    public Representation delete() throws ResourceException {
+        // TODO: is this really what we want to do here?
+        return delete(null);
+    }
+
+    /**
+     * Delegates to the <code>handleDelete()</code> entry point in the script.
+     * 
      * @param variant
      *            The variant of the response entity
      * @return The optional result entity
