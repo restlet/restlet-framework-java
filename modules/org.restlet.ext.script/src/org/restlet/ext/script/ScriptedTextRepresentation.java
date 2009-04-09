@@ -57,14 +57,14 @@ import com.threecrickets.scripturian.ScriptContextController;
  * <p>
  * A special container environment is created for scripts, with some useful
  * services. It is available to the script as a global variable named
- * <code>script.container<code>. The following read-only
- * attributes are available:
+ * <code>script.container</code>. The following read-only attributes are
+ * available:
  * <ul>
  * <li><code>script.container.representation</code>: Access to the
  * representation itself. This can be useful for generating text according to
  * set characteristics. For example, calling
- * {@link Representation#getLanguages()} and generating the appropriate
- * text.</li> </ul>
+ * {@link Representation#getLanguages()} and generating the appropriate text.</li>
+ * </ul>
  * <p>
  * Note that this container environment is very limited. The include and in-flow
  * tags of {@link EmbeddedScript} will not work here, nor is any caching of the
