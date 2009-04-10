@@ -73,6 +73,8 @@ Changes log
           ComponentXmlParser class.
         - Added unit test case for the Alphanum algorithm. 
           Contributed by Davide Angelocola.
+        - ServerResource now rethrows exceptions from annotated methods.
+          Reported by Tal Liron.
  
 - 1.2 Milestone 2 (2009-04-01)
     - Breaking changes

@@ -355,8 +355,10 @@ public class ServerResource extends UniformResource {
      * @param annotationInfo
      *            The annotation descriptor.
      * @return The response entity.
+     * @throws ResourceException
      */
-    private Representation doHandle(AnnotationInfo annotationInfo) {
+    private Representation doHandle(AnnotationInfo annotationInfo)
+            throws ResourceException {
         Representation result = null;
         ConverterService cs = getConverterService();
         Class<?>[] parameterTypes = annotationInfo.getJavaParameterTypes();
@@ -389,11 +391,11 @@ public class ServerResource extends UniformResource {
                 resultObject = annotationInfo.getJavaMethod().invoke(this);
             }
         } catch (IllegalArgumentException e) {
-            e.printStackTrace();
+            throw new ResourceException(e);
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            throw new ResourceException(e);
         } catch (InvocationTargetException e) {
-            e.printStackTrace();
+            throw new ResourceException(e);
         }
 
         if (resultObject != null) {
@@ -413,9 +415,10 @@ public class ServerResource extends UniformResource {
      *            The response variant expected.
      * @return The response entity.
      * @throws ResourceException
+     * @throws ResourceException
      */
     private Representation doHandle(AnnotationInfo annotationInfo,
-            Variant variant) {
+            Variant variant) throws ResourceException {
         Representation result = null;
         ConverterService cs = getConverterService();
         Object resultObject = null;
@@ -458,11 +461,11 @@ public class ServerResource extends UniformResource {
 
             }
         } catch (IllegalArgumentException e) {
-            e.printStackTrace();
+            throw new ResourceException(e);
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            throw new ResourceException(e);
         } catch (InvocationTargetException e) {
-            e.printStackTrace();
+            throw new ResourceException(e);
         }
 
         return result;
