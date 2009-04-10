@@ -47,8 +47,8 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 
-import com.threecrickets.scripturian.EmbeddedScript;
-import com.threecrickets.scripturian.EmbeddedScriptContext;
+import com.threecrickets.scripturian.CompositeScript;
+import com.threecrickets.scripturian.CompositeScriptContext;
 import com.threecrickets.scripturian.ScriptContextController;
 import com.threecrickets.scripturian.ScriptSource;
 
@@ -102,9 +102,9 @@ public class ExposedScriptedResourceContainer {
     private Language language;
 
     /**
-     * The embedded script context.
+     * The composite script context.
      */
-    private final EmbeddedScriptContext embeddedScriptContext;
+    private final CompositeScriptContext compositeScriptContext;
 
     /**
      * Constructs a container with no variant or entity, plain text media type,
@@ -123,7 +123,7 @@ public class ExposedScriptedResourceContainer {
         this.entity = null;
         this.mediaType = MediaType.TEXT_PLAIN;
         this.characterSet = resource.getDefaultCharacterSet();
-        this.embeddedScriptContext = new EmbeddedScriptContext(resource
+        this.compositeScriptContext = new CompositeScriptContext(resource
                 .getScriptEngineManager());
     }
 
@@ -152,7 +152,7 @@ public class ExposedScriptedResourceContainer {
         if (this.characterSet == null) {
             this.characterSet = resource.getDefaultCharacterSet();
         }
-        this.embeddedScriptContext = new EmbeddedScriptContext(resource
+        this.compositeScriptContext = new CompositeScriptContext(resource
                 .getScriptEngineManager());
     }
 
@@ -179,7 +179,7 @@ public class ExposedScriptedResourceContainer {
         if (this.characterSet == null) {
             this.characterSet = resource.getDefaultCharacterSet();
         }
-        this.embeddedScriptContext = new EmbeddedScriptContext(resource
+        this.compositeScriptContext = new CompositeScriptContext(resource
                 .getScriptEngineManager());
     }
 
@@ -253,7 +253,7 @@ public class ExposedScriptedResourceContainer {
      * 
      * @return The script source
      */
-    public ScriptSource<EmbeddedScript> getSource() {
+    public ScriptSource<CompositeScript> getSource() {
         return this.resource.getScriptSource();
     }
 
@@ -294,7 +294,7 @@ public class ExposedScriptedResourceContainer {
      * modules, etc., could be shared. It is important to note that how this
      * works varies a lot per scripting platform. For example, in JRuby, every
      * script is run in its own scope, so that sharing would have to be done
-     * explicitly in the global scope. See the included embedded Ruby script
+     * explicitly in the global scope. See the included Ruby composite script
      * example for a discussion of various ways to do this.
      * 
      * @param name
@@ -307,7 +307,7 @@ public class ExposedScriptedResourceContainer {
     }
 
     /**
-     * As {@link #include(String)}, except that the script is not embedded. As
+     * As {@link #include(String)}, except that the script is not composite. As
      * such, you must explicitly specify the name of the scripting engine that
      * should evaluate it.
      * 
@@ -321,18 +321,18 @@ public class ExposedScriptedResourceContainer {
      */
     public void include(String name, String scriptEngineName)
             throws IOException, ScriptException {
-        ScriptSource.ScriptDescriptor<EmbeddedScript> scriptDescriptor = this.resource
+        ScriptSource.ScriptDescriptor<CompositeScript> scriptDescriptor = this.resource
                 .getScriptSource().getScriptDescriptor(name);
 
-        EmbeddedScript script = scriptDescriptor.getScript();
+        CompositeScript script = scriptDescriptor.getScript();
         if (script == null) {
             String text = scriptDescriptor.getText();
             if (scriptEngineName != null) {
-                text = EmbeddedScript.DEFAULT_DELIMITER1_START
+                text = CompositeScript.DEFAULT_DELIMITER1_START
                         + scriptEngineName + " " + text
-                        + EmbeddedScript.DEFAULT_DELIMITER1_END;
+                        + CompositeScript.DEFAULT_DELIMITER1_END;
             }
-            script = new EmbeddedScript(text, this.resource
+            script = new CompositeScript(text, this.resource
                     .getScriptEngineManager(), this.resource
                     .getDefaultScriptEngineName(), this.resource
                     .getScriptSource(), this.resource.isAllowCompilation());
@@ -340,41 +340,41 @@ public class ExposedScriptedResourceContainer {
         }
 
         script.run(false, this.resource.getWriter(), this.resource
-                .getErrorWriter(), true, this.embeddedScriptContext, this,
+                .getErrorWriter(), true, this.compositeScriptContext, this,
                 this.resource.getScriptContextController());
     }
 
     /**
-     * Invokes an entry point in the embedded script.
+     * Invokes an entry point in the composite script.
      * 
      * @param entryPointName
      *            Name of entry point
      * @return Result of invocation
      * @throws ResourceException
-     * @see {@link EmbeddedScript#invoke(String, Object, ScriptContextController)}
+     * @see {@link CompositeScript#invoke(String, Object, ScriptContextController)}
      */
     public Object invoke(String entryPointName) throws ResourceException {
         String name = ScriptUtils.getRelativePart(this.resource.getRequest(),
                 this.resource.getDefaultName());
 
         try {
-            ScriptSource.ScriptDescriptor<EmbeddedScript> scriptDescriptor = this.resource
+            ScriptSource.ScriptDescriptor<CompositeScript> scriptDescriptor = this.resource
                     .getScriptSource().getScriptDescriptor(name);
 
-            EmbeddedScript script = scriptDescriptor.getScript();
+            CompositeScript script = scriptDescriptor.getScript();
             if (script == null) {
                 String text = scriptDescriptor.getText();
-                script = new EmbeddedScript(text, this.resource
+                script = new CompositeScript(text, this.resource
                         .getScriptEngineManager(), this.resource
                         .getDefaultScriptEngineName(), this.resource
                         .getScriptSource(), this.resource.isAllowCompilation());
-                EmbeddedScript existing = scriptDescriptor
+                CompositeScript existing = scriptDescriptor
                         .setScriptIfAbsent(script);
                 if (existing != null) {
                     script = existing;
                 }
                 script.run(false, this.resource.getWriter(), this.resource
-                        .getErrorWriter(), true, this.embeddedScriptContext,
+                        .getErrorWriter(), true, this.compositeScriptContext,
                         this, this.resource.getScriptContextController());
             }
 

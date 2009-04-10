@@ -2,7 +2,7 @@
 
 <h2>Supported Scripting Language: Python</h2>
 <p>
-Python presents a unique challenge as an embedded script, due to its reliance on significant whitespace. However, because HTML is loose with
+Python presents a unique challenge in a scriptlet environment, due to its reliance on significant whitespace. However, because HTML is loose with
 whitespace, it's possible to force the whole file to adhere to Python's scheme. In fact, as many Python enthusiasts would argue, forcing your code
 to adhere to Python's whitespace requirements can go a long way towards making it more readable and manageable.
 </p><p>
@@ -21,7 +21,7 @@ at the <a href="https://scripting.dev.java.net/">Java scripting project</a>. (Th
 See the <a href="requirements.page">requirement notes</a> if you are using Java 5.
 </p><p>
 <i>Important!</i> At this time (version 2.3), Jepp cannot be used for creating REST resources, due to its very limited implementation of the
-Java scripting standard. It is OK for embedded scripts, though. Also note that Jepp requires Java 5, and will not work on Java 5.
+Java scripting standard. It is OK for scriptlets, though. Also note that Jepp requires Java 5, and will not work on Java 5.
 </p>
 
 <%& exampleBasePath + 'footer.fragment' %>

@@ -3,13 +3,13 @@
 <h2>Supported Scripting Language: PHP</h2>
 <p>
 PHP is, of course, ubiquitous. It's a simple language with the most mature libraries of any web scripting language, and programmers are available with years
-of experience. It's also designed from the ground up as an embedded scripting language for the web.
+of experience. It's also designed from the ground up as an scripting language for the web.
 </p><p>
 However, some of PHP's benefits and libraries will not be immediately usable under Restlet. PHP's built-in web scripting features, such as $_SESSION and $_COOKIE,
 won't work. You'll need to use the Restlet versions instead, and some libraries may expect PHP's built-in features. (It may be possible to write a transition library -- any volunteers?) 
 </p><p>
 Note that Scripturian
-replaces PHP's script embedding scheme with its own. Usage and performance should be identical, but Scripturian's scheme is more powerful than PHP's,
+replaces PHP's scriptlet scheme with its own. Usage and performance should be identical, but Scripturian's scheme is more powerful than PHP's,
 because it allows for mixing languages in one file.
 </p>
 
@@ -18,7 +18,7 @@ because it allows for mixing languages in one file.
 PHP5 is implemented by Caucho's <a href="http://quercus.caucho.com/">Quercus</a>.
 </p><p>
 <i>Important!</i> At this time (version 3.2.1), Quercus cannot be used for creating REST resources, due to its very limited implementation of the
-Java scripting standard. It is OK for embedded scripts, though. 
+Java scripting standard. It is OK for scriptlets, though. 
 </p>
 
 <%& exampleBasePath + 'footer.fragment' %>

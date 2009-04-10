@@ -54,15 +54,15 @@ import org.restlet.resource.Resource;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 
-import com.threecrickets.scripturian.EmbeddedScript;
+import com.threecrickets.scripturian.CompositeScript;
 import com.threecrickets.scripturian.ScriptContextController;
 import com.threecrickets.scripturian.ScriptSource;
 
 /**
- * A Restlet resource which delegates functionality to an {@link EmbeddedScript}
- * with well-defined entry points. The entry points must be global functions, or
- * closures, or whatever other technique the scripting engine uses to make entry
- * point available to Java. They entry points are:
+ * A Restlet resource which delegates functionality to an
+ * {@link CompositeScript} with well-defined entry points. The entry points must
+ * be global functions, or closures, or whatever other technique the scripting
+ * engine uses to make entry point available to Java. They entry points are:
  * <ul>
  * <li><code>handleInit()</code>: This function is called when the resource is
  * initialized. We will use it set general characteristics for the resource.</li>
@@ -112,7 +112,7 @@ import com.threecrickets.scripturian.ScriptSource;
  * application's {@link Context}; see {@link #getScriptSource()}. This source is
  * accessible from the script itself, via <code>script.container.source</code>.
  * <p>
- * Note that the embedded script's output is sent to the system's standard
+ * Note that the composite script's output is sent to the system's standard
  * output. Most likely, you will not want to output anything from the script.
  * However, this redirection is provided as a convenience, which may be useful
  * for certain debugging situations.
@@ -120,7 +120,7 @@ import com.threecrickets.scripturian.ScriptSource;
  * A special container environment is created for scripts, with some useful
  * services. It is available to the script as a global variable named
  * <code>script.container</code>. For some other global variables available to
- * scripts, see {@link EmbeddedScript}.
+ * scripts, see {@link CompositeScript}.
  * <p>
  * Operations:
  * <ul>
@@ -133,10 +133,10 @@ import com.threecrickets.scripturian.ScriptSource;
  * methods, functions, modules, etc., could be shared. It is important to note
  * that how this works varies a lot per scripting platform. For example, in
  * JRuby, every script is run in its own scope, so that sharing would have to be
- * done explicitly in the global scope. See the included embedded Ruby script
+ * done explicitly in the global scope. See the included Ruby composite script
  * example for a discussion of various ways to do this.</li>
  * <li><code>script.container.include(name, engineName)</code>: As the above,
- * except that the script is not embedded. As such, you must explicitly specify
+ * except that the script is not composite. As such, you must explicitly specify
  * the name of the scripting engine that should evaluate it.</li>
  * </ul>
  * Read-only attributes:
@@ -182,7 +182,7 @@ import com.threecrickets.scripturian.ScriptSource;
  * </ul>
  * <p>
  * In addition to the above, a {@link ScriptContextController} can be set to add
- * your own global variables to each embedded script. See
+ * your own global variables to each composite script. See
  * {@link #getScriptContextController()}.
  * <p>
  * Summary of settings configured via the application's {@link Context}:
@@ -241,7 +241,7 @@ import com.threecrickets.scripturian.ScriptSource;
  * </ul>
  * 
  * @author Tal Liron
- * @see EmbeddedScript
+ * @see CompositeScript
  * @see ScriptedTextResource
  */
 public class ScriptedResource extends ServerResource {
@@ -260,7 +260,7 @@ public class ScriptedResource extends ServerResource {
     /**
      * The {@link ScriptSource} used to fetch scripts.
      */
-    private ScriptSource<EmbeddedScript> scriptSource;
+    private ScriptSource<CompositeScript> scriptSource;
 
     /**
      * Files with this extension can have the extension omitted from the URL,
@@ -332,7 +332,7 @@ public class ScriptedResource extends ServerResource {
     private static final String TRUE = "true";
 
     /**
-     * The {@link Writer} used by the {@link EmbeddedScript}.
+     * The {@link Writer} used by the {@link CompositeScript}.
      */
     private Writer writer = new OutputStreamWriter(System.out);
 
@@ -754,11 +754,11 @@ public class ScriptedResource extends ServerResource {
      * @return The script source
      */
     @SuppressWarnings("unchecked")
-    public ScriptSource<EmbeddedScript> getScriptSource() {
+    public ScriptSource<CompositeScript> getScriptSource() {
         if (this.scriptSource == null) {
             ConcurrentMap<String, Object> attributes = getContext()
                     .getAttributes();
-            this.scriptSource = (ScriptSource<EmbeddedScript>) attributes
+            this.scriptSource = (ScriptSource<CompositeScript>) attributes
                     .get("org.restlet.ext.script.ScriptedResource.scriptSource");
             if (this.scriptSource == null) {
                 throw new RuntimeException(
@@ -770,7 +770,7 @@ public class ScriptedResource extends ServerResource {
     }
 
     /**
-     * The {@link Writer} used by the {@link EmbeddedScript}. Defaults to
+     * The {@link Writer} used by the {@link CompositeScript}. Defaults to
      * standard output.
      * <p>
      * This setting can be configured by setting an attribute named

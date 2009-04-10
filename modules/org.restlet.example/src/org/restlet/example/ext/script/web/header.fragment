@@ -21,7 +21,7 @@
 						<li><span class="heading">Demos</span>
 							<ul>
 								<li><a href="demos-rest.page">REST Resources</a></li>
-								<li><a href="demos-embedded.page">Embedded Scripting</a></li>
+								<li><a href="demos-embedded.page">Embedded Scriptlets</a></li>
 							</ul>
 						</li>
 						<li><span class="heading">Supported Languages</span>

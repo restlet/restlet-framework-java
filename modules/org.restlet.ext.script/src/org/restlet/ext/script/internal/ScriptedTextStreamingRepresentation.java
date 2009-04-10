@@ -40,8 +40,8 @@ import org.restlet.data.Language;
 import org.restlet.ext.script.ScriptedTextResource;
 import org.restlet.representation.WriterRepresentation;
 
-import com.threecrickets.scripturian.EmbeddedScript;
-import com.threecrickets.scripturian.EmbeddedScriptContext;
+import com.threecrickets.scripturian.CompositeScript;
+import com.threecrickets.scripturian.CompositeScriptContext;
 import com.threecrickets.scripturian.ScriptContextController;
 
 /**
@@ -63,9 +63,9 @@ class ScriptedTextStreamingRepresentation extends WriterRepresentation {
     private final ExposedScriptedTextResourceContainer container;
 
     /**
-     * The embedded script instance.
+     * The composite script instance.
      */
-    private final EmbeddedScript script;
+    private final CompositeScript script;
 
     /**
      * The script context controller.
@@ -73,9 +73,9 @@ class ScriptedTextStreamingRepresentation extends WriterRepresentation {
     private final ScriptContextController scriptContextController;
 
     /**
-     * The embedded script context.
+     * The composite script context.
      */
-    private final EmbeddedScriptContext embeddedScriptContext;
+    private final CompositeScriptContext compositeScriptContext;
 
     /**
      * Whether to flush the writers after every line.
@@ -89,26 +89,26 @@ class ScriptedTextStreamingRepresentation extends WriterRepresentation {
      *            The resource
      * @param container
      *            The container
-     * @param embeddedScriptContext
-     *            The embedded script context
+     * @param compositeScriptContext
+     *            The composite script context
      * @param scriptContextController
      *            The script context controller
      * @param script
-     *            The embedded script instance
+     *            The composite script instance
      * @param flushLines
      *            Whether to flush the writers after every line
      */
     public ScriptedTextStreamingRepresentation(ScriptedTextResource resource,
             ExposedScriptedTextResourceContainer container,
-            EmbeddedScriptContext embeddedScriptContext,
+            CompositeScriptContext compositeScriptContext,
             ScriptContextController scriptContextController,
-            EmbeddedScript script, boolean flushLines) {
+            CompositeScript script, boolean flushLines) {
         // Note that we are setting representation characteristics
         // before we actually run the script
         super(container.getMediaType());
         this.resource = resource;
         this.container = container;
-        this.embeddedScriptContext = embeddedScriptContext;
+        this.compositeScriptContext = compositeScriptContext;
         this.scriptContextController = scriptContextController;
         this.flushLines = flushLines;
         setCharacterSet(container.getCharacterSet());
@@ -126,7 +126,7 @@ class ScriptedTextStreamingRepresentation extends WriterRepresentation {
         this.resource.setWriter(writer);
         try {
             this.script.run(false, writer, this.resource.getErrorWriter(),
-                    this.flushLines, this.embeddedScriptContext,
+                    this.flushLines, this.compositeScriptContext,
                     this.container, this.scriptContextController);
         } catch (ScriptException e) {
             IOException ioe = new IOException("Script exception");

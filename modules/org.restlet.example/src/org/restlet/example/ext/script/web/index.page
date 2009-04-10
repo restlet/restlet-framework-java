@@ -5,14 +5,15 @@
 This library can make it very easy to integrate scripting into your Java-based product:
 </p>
 
-<h4>1. Embedded Scripts</h4>
+<h4>1. Composite Scripts</h4>
 <p>
-It provides <a href="http://www.threecrickets.com/scripturian/static/javadoc/index.html?com/threecrickets/scripturian/EmbeddedScript.html">embedded script</a> support for scripting languages,
+It provides <a href="http://www.threecrickets.com/scripturian/static/javadoc/index.html?com/threecrickets/scripturian/CompositeScript.html">composite script</a> support for scripting languages,
 allowing you to mix plain text and embedded "scriptlets," in the style of PHP, JSP and ASP. At the minimum this can serve as a powerful
 templating solution for generating text and textual formats (such as HTML and XML), but at the maximum it's a powerful platform for building complex
 applications using dynamic scripting languages. For example, a blogging or content management application can use it to give users complete control over
 theming/skinning, or it can be used to generate the entire HTML-based user interface. Couple this with scripting languages running on the client-side
-(JavaScript in Browsers, or ActiveScript in Flash) and you can create very rich user interfaces entirely in script.
+(JavaScript in Browsers, or ActiveScript in Flash) and you can create very rich user interfaces entirely in script. Scripturian has powerful facilities for
+mixing scriptlets in multiple languages in a single composite script.
 </p>
 
 <h4>2. Automatic Configuration of Scripting Engines</h4>

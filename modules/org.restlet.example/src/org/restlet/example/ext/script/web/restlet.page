@@ -36,7 +36,7 @@ do good things for all!
 <h3>Features</h3>
 <p>
 In addition to making it very easy to make REST resources (see <a href="demos-rest.page">demos</a>), 
-Restlet's script extension allows embedding script within HTML pages, similarly to PHP, JSP and ASP (see <a href="demos-embedded.page">embedded script demos</a>),
+Restlet's script extension allows embedding scriptlets within HTML pages, similarly to PHP, JSP and ASP (see <a href="demos-embedded.page">scriptlet demos</a>),
 with support for high-performance streaming and caching of results (see <a href="performance.page">performance notes</a>).
 </p><p>
 You can see your changes happen on-the-fly without any compilation: Scripturian picks up your

@@ -1,6 +1,6 @@
 <html>
 <head>
-	<title>Embedded Java Test</title>
+	<title>Java Scriptlets Demo</title>
 </head>
 <body>
 <%java

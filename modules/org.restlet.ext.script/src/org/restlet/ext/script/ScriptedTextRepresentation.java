@@ -43,15 +43,15 @@ import org.restlet.ext.script.internal.ExposedScriptedTextRepresentationContaine
 import org.restlet.representation.Representation;
 import org.restlet.representation.WriterRepresentation;
 
-import com.threecrickets.scripturian.EmbeddedScript;
-import com.threecrickets.scripturian.EmbeddedScriptContext;
+import com.threecrickets.scripturian.CompositeScript;
+import com.threecrickets.scripturian.CompositeScriptContext;
 import com.threecrickets.scripturian.ScriptContextController;
 
 /**
- * A textual representation of a string with embedded scriptlets. The script is
- * run only when the representation is actually written.
+ * A textual representation of a plain text stream with embedded scriptlets. The
+ * scriptlets are run only when the representation is actually written.
  * <p>
- * Internally wraps a Scripturian {@link EmbeddedScript} instance.
+ * Internally wraps a Scripturian {@link CompositeScript} instance.
  * <p>
  * A special container environment is created for scripts, with some useful
  * services. It is available to the script as a global variable named
@@ -65,7 +65,7 @@ import com.threecrickets.scripturian.ScriptContextController;
  * </ul>
  * <p>
  * Note that this container environment is very limited. The include and in-flow
- * tags of {@link EmbeddedScript} will not work here, nor is any caching of the
+ * tags of {@link CompositeScript} will not work here, nor is any caching of the
  * script done by default. For a more complete container environment for
  * scripted textual representations, see {@link ScriptedTextResource}.
  * <p>
@@ -74,14 +74,14 @@ import com.threecrickets.scripturian.ScriptContextController;
  * global variables to the script.
  * 
  * @author Tal Liron
- * @see EmbeddedScript
+ * @see CompositeScript
  * @see ScriptedTextResource
  */
 public class ScriptedTextRepresentation extends WriterRepresentation {
     /**
-     * The wrapped embedded script instance.
+     * The wrapped composite script instance.
      */
-    private final EmbeddedScript embeddedScript;
+    private final CompositeScript compositeScript;
 
     /**
      * The error writer. Note that we currently do nothing with whatever the
@@ -95,46 +95,46 @@ public class ScriptedTextRepresentation extends WriterRepresentation {
     private ScriptContextController scriptContextController;
 
     /**
-     * Construct an instance to wrap an existing embedded script instance.
+     * Construct an instance to wrap an existing composite script instance.
      * 
      * @param mediaType
      *            The media type
      * @param characterSet
      *            The character set
-     * @param embeddedScript
-     *            The embedded script instance
+     * @param compositeScript
+     *            The composite script instance
      */
     public ScriptedTextRepresentation(MediaType mediaType,
-            CharacterSet characterSet, EmbeddedScript embeddedScript) {
+            CharacterSet characterSet, CompositeScript compositeScript) {
         super(mediaType);
         setCharacterSet(characterSet);
-        this.embeddedScript = embeddedScript;
+        this.compositeScript = compositeScript;
     }
 
     /**
      * Construct an instance based on a string, which involves both parsing and
-     * optional compilation of the script. See {@link EmbeddedScript} for rules
-     * on embedding scripts.
+     * optional compilation of the script. See {@link CompositeScript} for rules
+     * on scriptlets.
      * <p>
      * Note that, depending on the script engines used, this can be slow and
-     * resource-intensive. Also note that trivial cases, with no embedded script
-     * segments, will not use any script engine and thus be processed very
-     * effectively by this class.
+     * resource-intensive. Also note that trivial cases, when we have no
+     * embedded scriptlets, we will not use any script engine and thus the text
+     * will be processed very effectively by this class.
      * <p>
-     * After construction, you can access the internal embedded script instance
-     * via {@link #getEmbeddedScript()}.
+     * After construction, you can access the internal composite script instance
+     * via {@link #getCompositeScript()}.
      * 
      * @param mediaType
      *            The media type
      * @param text
-     *            The embedded script text
+     *            The composite script text
      * @param defaultScriptEngineName
      *            The default script engine name to be used if none is specified
      * @param allowCompilation
      *            Whether or not compilation is attempted for script engines
      *            that support it (this is usually undesirable, but you mat want
-     *            this is you will be re-using the embedded script accessed via
-     *            {@link #getEmbeddedScript()})
+     *            this if you will be re-using the composite script accessed via
+     *            {@link #getCompositeScript()})
      * @param scriptEngineManager
      *            The script engine manager
      * @throws ScriptException
@@ -143,22 +143,22 @@ public class ScriptedTextRepresentation extends WriterRepresentation {
             String defaultScriptEngineName, boolean allowCompilation,
             ScriptEngineManager scriptEngineManager) throws ScriptException {
         super(mediaType);
-        this.embeddedScript = new EmbeddedScript(text, scriptEngineManager,
+        this.compositeScript = new CompositeScript(text, scriptEngineManager,
                 defaultScriptEngineName, null, allowCompilation);
     }
 
     /**
-     * Access the wrapped embedded script instance.
+     * Access the wrapped composite script instance.
      * 
-     * @return The wrapped embedded script instance
+     * @return The wrapped composite script instance
      */
-    public EmbeddedScript getEmbeddedScript() {
-        return this.embeddedScript;
+    public CompositeScript getCompositeScript() {
+        return this.compositeScript;
     }
 
     /**
      * The optional script context controller to be used when the
-     * {@link EmbeddedScript} instance is run during {@link #write(Writer)}.
+     * {@link CompositeScript} instance is run during {@link #write(Writer)}.
      * 
      * @return The script context controller or null if none used
      */
@@ -179,8 +179,8 @@ public class ScriptedTextRepresentation extends WriterRepresentation {
     @Override
     public void write(Writer writer) throws IOException {
         try {
-            this.embeddedScript.run(false, writer, this.errorWriter, false,
-                    new EmbeddedScriptContext(this.embeddedScript
+            this.compositeScript.run(false, writer, this.errorWriter, false,
+                    new CompositeScriptContext(this.compositeScript
                             .getScriptEngineManager()),
                     new ExposedScriptedTextRepresentationContainer(this),
                     getScriptContextController());

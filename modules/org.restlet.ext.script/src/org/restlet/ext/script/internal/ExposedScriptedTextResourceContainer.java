@@ -48,8 +48,8 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
 
-import com.threecrickets.scripturian.EmbeddedScript;
-import com.threecrickets.scripturian.EmbeddedScriptContext;
+import com.threecrickets.scripturian.CompositeScript;
+import com.threecrickets.scripturian.CompositeScriptContext;
 import com.threecrickets.scripturian.ScriptSource;
 
 /**
@@ -110,9 +110,9 @@ public class ExposedScriptedTextResourceContainer {
     private StringBuffer buffer;
 
     /**
-     * The embedded script context.
+     * The composite script context.
      */
-    private final EmbeddedScriptContext embeddedScriptContext;
+    private final CompositeScriptContext compositeScriptContext;
 
     /**
      * Constructs a container with media type and character set according to the
@@ -136,7 +136,7 @@ public class ExposedScriptedTextResourceContainer {
         if (this.characterSet == null) {
             this.characterSet = resource.getDefaultCharacterSet();
         }
-        this.embeddedScriptContext = new EmbeddedScriptContext(resource
+        this.compositeScriptContext = new CompositeScriptContext(resource
                 .getScriptEngineManager());
     }
 
@@ -215,7 +215,7 @@ public class ExposedScriptedTextResourceContainer {
      * 
      * @return The script source
      */
-    public ScriptSource<EmbeddedScript> getSource() {
+    public ScriptSource<CompositeScript> getSource() {
         return this.resource.getScriptSource();
     }
 
@@ -239,7 +239,7 @@ public class ExposedScriptedTextResourceContainer {
      * modules, etc., could be shared. It is important to note that how this
      * works varies a lot per scripting platform. For example, in JRuby, every
      * script is run in its own scope, so that sharing would have to be done
-     * explicitly in the global scope. See the included embedded Ruby script
+     * explicitly in the global scope. See the included Ruby composite script
      * example for a discussion of various ways to do this.
      * 
      * @param name
@@ -254,7 +254,7 @@ public class ExposedScriptedTextResourceContainer {
     }
 
     /**
-     * As {@link #include(String)}, except that the script is not embedded. As
+     * As {@link #include(String)}, except that the script is not composite. As
      * such, you must explicitly specify the name of the scripting engine that
      * should evaluate it.
      * 
@@ -273,23 +273,23 @@ public class ExposedScriptedTextResourceContainer {
         Writer writer = this.resource.getWriter();
 
         // Get script descriptor
-        ScriptSource.ScriptDescriptor<EmbeddedScript> scriptDescriptor = this.resource
+        ScriptSource.ScriptDescriptor<CompositeScript> scriptDescriptor = this.resource
                 .getScriptSource().getScriptDescriptor(name);
 
-        EmbeddedScript script = scriptDescriptor.getScript();
+        CompositeScript script = scriptDescriptor.getScript();
         if (script == null) {
             // Create script from descriptor
             String text = scriptDescriptor.getText();
             if (scriptEngineName != null) {
-                text = EmbeddedScript.DEFAULT_DELIMITER1_START
+                text = CompositeScript.DEFAULT_DELIMITER1_START
                         + scriptEngineName + " " + text
-                        + EmbeddedScript.DEFAULT_DELIMITER1_END;
+                        + CompositeScript.DEFAULT_DELIMITER1_END;
             }
-            script = new EmbeddedScript(text, this.resource
+            script = new CompositeScript(text, this.resource
                     .getScriptEngineManager(), this.resource
                     .getDefaultScriptEngineName(), this.resource
                     .getScriptSource(), this.resource.isAllowCompilation());
-            EmbeddedScript existing = scriptDescriptor
+            CompositeScript existing = scriptDescriptor
                     .setScriptIfAbsent(script);
             if (existing != null) {
                 script = existing;
@@ -325,7 +325,7 @@ public class ExposedScriptedTextResourceContainer {
             // Do not allow caching in streaming mode
             if (script.run(!isStreaming, writer,
                     this.resource.getErrorWriter(), false,
-                    this.embeddedScriptContext, this, this.resource
+                    this.compositeScriptContext, this, this.resource
                             .getScriptContextController())) {
 
                 // Did the script ask us to start streaming?
@@ -334,7 +334,7 @@ public class ExposedScriptedTextResourceContainer {
 
                     // Note that this will cause the script to run again!
                     return new ScriptedTextStreamingRepresentation(
-                            this.resource, this, this.embeddedScriptContext,
+                            this.resource, this, this.compositeScriptContext,
                             this.resource.getScriptContextController(), script,
                             this.flushLines);
                 }
@@ -381,7 +381,7 @@ public class ExposedScriptedTextResourceContainer {
 
                 // Note that this will cause the script to run again!
                 return new ScriptedTextStreamingRepresentation(this.resource,
-                        this, this.embeddedScriptContext, this.resource
+                        this, this.compositeScriptContext, this.resource
                                 .getScriptContextController(), script,
                         this.flushLines);
 

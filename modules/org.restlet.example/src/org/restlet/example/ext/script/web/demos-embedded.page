@@ -1,9 +1,9 @@
 <% script.cacheDuration = 5000; var exampleBasePath = script.meta.get('exampleBasePath'); %><%& exampleBasePath + 'header.fragment' %>
 
-<h2>Demos of HTML with Embedded Scripts</h2>
+<h2>Demos of HTML with Embedded Scriptlets</h2>
 <p>
 These demos all do pretty much the same thing, except that each uses a different scripting engine. They're here to show you that the engines
-are installed correctly on your system, and as examples of how to write embedded scripts for each platform. Note that at the top of each
+are installed correctly on your system, and as examples of how to write scriptlets for each engine. Note that at the top of each
 page you will see a timestamp -- this is used to test caching mode, during which the timestamp should stay constant for 5 seconds, no matter
 how many times you refresh the page. See <a href="performance.page">performance notes</a> for an explanation of the difference between caching and streaming mode.
 </p>

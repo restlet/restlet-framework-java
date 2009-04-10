@@ -3,7 +3,7 @@
 <h2>Supported Scripting Language: Ruby</h2>
 <p>
 And then there's Ruby, a relatively new language that can do most of what <a href="python.page">Python</a> can do and more. Unlike Python, it has a very loose and forgiving
-syntax, which is perfect for embedding. It can work with many styles of code, and as such it would be relatively easy to transition to Ruby from
+syntax, which is perfect for scriptlets. It can work with many styles of code, and as such it would be relatively easy to transition to Ruby from
 any of the above languages.
 </p><p>
 Ruby has some excellent libraries, and may be very productive for developing large applications.

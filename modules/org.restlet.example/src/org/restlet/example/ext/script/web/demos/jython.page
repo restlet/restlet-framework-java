@@ -1,6 +1,6 @@
 <html>
 <head>
-	<title>Embedded Python (Jython) Demo</title>
+	<title>Python (Jython) Scriptlets Demo</title>
 	<link rel="stylesheet" type="text/css" href="../static/example.css" />
 </head>
 <body>
