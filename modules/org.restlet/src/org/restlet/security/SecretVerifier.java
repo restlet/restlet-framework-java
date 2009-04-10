@@ -80,8 +80,10 @@ public abstract class SecretVerifier extends Verifier {
 
             if (verify(identifier, inputSecret)) {
                 // Add a principal for this identifier
-                request.getClientInfo().getSubject().getPrincipals().add(
-                        createUserPrincipal(identifier));
+                if (request.getClientInfo().getSubject() != null) {
+                    request.getClientInfo().getSubject().getPrincipals().add(
+                            createUserPrincipal(identifier));
+                }
             } else {
                 result = RESULT_INVALID;
             }

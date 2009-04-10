@@ -228,7 +228,10 @@ public class HttpRequest extends Request {
                     HttpConstants.HEADER_USER_AGENT));
             result.setAddress(getHttpCall().getClientAddress());
             result.setPort(getHttpCall().getClientPort());
-            result.setSubject(getHttpCall().getSubject());
+
+            if (getHttpCall().getSubject() != null) {
+                result.setSubject(getHttpCall().getSubject());
+            }
 
             if (this.context != null) {
                 // Special handling for the non standard but common

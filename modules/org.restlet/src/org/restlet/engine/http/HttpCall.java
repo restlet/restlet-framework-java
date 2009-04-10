@@ -154,6 +154,7 @@ public abstract class HttpCall {
         this.serverAddress = null;
         this.serverPort = -1;
         this.statusCode = 200;
+        this.subject = null;
         this.version = null;
     }
 

@@ -27,7 +27,8 @@ Changes log
         - Fixed issues with ServerResource used in OSGi environments.
           Reported by David Fogel and fixed by Tim Peierls.
         - Fixed NPE with SpringFinder. Reported by Eric Hough.
-    - Enhancements
+        - Fixed potential NPE. Contribution from Remi Dewitte.
+     - Enhancements
         - Servlet's UserPrincipal is now transferred into Restlet's
           ClientInfo#subject property. Suggested by Paul Davis.
         - Updated Media type RDF N3 from "text/rdf+n3" to "text/n3". 
