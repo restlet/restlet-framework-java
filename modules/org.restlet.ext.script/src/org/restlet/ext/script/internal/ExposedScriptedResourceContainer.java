@@ -34,10 +34,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
-import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
 import org.restlet.data.CharacterSet;
@@ -51,6 +48,7 @@ import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 
 import com.threecrickets.scripturian.EmbeddedScript;
+import com.threecrickets.scripturian.EmbeddedScriptContext;
 import com.threecrickets.scripturian.ScriptContextController;
 import com.threecrickets.scripturian.ScriptSource;
 
@@ -104,9 +102,9 @@ public class ExposedScriptedResourceContainer {
     private Language language;
 
     /**
-     * A cache of script engines used by {@link EmbeddedScript}.
+     * The embedded script context.
      */
-    private final ConcurrentMap<String, ScriptEngine> scriptEngines = new ConcurrentHashMap<String, ScriptEngine>();
+    private final EmbeddedScriptContext embeddedScriptContext;
 
     /**
      * Constructs a container with no variant or entity, plain text media type,
@@ -125,6 +123,8 @@ public class ExposedScriptedResourceContainer {
         this.entity = null;
         this.mediaType = MediaType.TEXT_PLAIN;
         this.characterSet = resource.getDefaultCharacterSet();
+        this.embeddedScriptContext = new EmbeddedScriptContext(resource
+                .getScriptEngineManager());
     }
 
     /**
@@ -152,6 +152,8 @@ public class ExposedScriptedResourceContainer {
         if (this.characterSet == null) {
             this.characterSet = resource.getDefaultCharacterSet();
         }
+        this.embeddedScriptContext = new EmbeddedScriptContext(resource
+                .getScriptEngineManager());
     }
 
     /**
@@ -177,6 +179,8 @@ public class ExposedScriptedResourceContainer {
         if (this.characterSet == null) {
             this.characterSet = resource.getDefaultCharacterSet();
         }
+        this.embeddedScriptContext = new EmbeddedScriptContext(resource
+                .getScriptEngineManager());
     }
 
     /**
@@ -335,9 +339,9 @@ public class ExposedScriptedResourceContainer {
             scriptDescriptor.setScriptIfAbsent(script);
         }
 
-        script.run(this.resource.getWriter(), this.resource.getErrorWriter(),
-                true, this.scriptEngines, this, this.resource
-                        .getScriptContextController(), false);
+        script.run(false, this.resource.getWriter(), this.resource
+                .getErrorWriter(), true, this.embeddedScriptContext, this,
+                this.resource.getScriptContextController());
     }
 
     /**
@@ -369,9 +373,9 @@ public class ExposedScriptedResourceContainer {
                 if (existing != null) {
                     script = existing;
                 }
-                script.run(this.resource.getWriter(), this.resource
-                        .getErrorWriter(), true, this.scriptEngines, this,
-                        this.resource.getScriptContextController(), false);
+                script.run(false, this.resource.getWriter(), this.resource
+                        .getErrorWriter(), true, this.embeddedScriptContext,
+                        this, this.resource.getScriptContextController());
             }
 
             return script.invoke(entryPointName, this, this.resource

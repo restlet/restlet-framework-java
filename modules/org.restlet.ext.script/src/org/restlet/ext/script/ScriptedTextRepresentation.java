@@ -33,10 +33,7 @@ package org.restlet.ext.script;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
-import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
@@ -47,6 +44,7 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.WriterRepresentation;
 
 import com.threecrickets.scripturian.EmbeddedScript;
+import com.threecrickets.scripturian.EmbeddedScriptContext;
 import com.threecrickets.scripturian.ScriptContextController;
 
 /**
@@ -181,11 +179,11 @@ public class ScriptedTextRepresentation extends WriterRepresentation {
     @Override
     public void write(Writer writer) throws IOException {
         try {
-            ConcurrentMap<String, ScriptEngine> scriptEngines = new ConcurrentHashMap<String, ScriptEngine>();
-            this.embeddedScript.run(writer, this.errorWriter, false,
-                    scriptEngines,
+            this.embeddedScript.run(false, writer, this.errorWriter, false,
+                    new EmbeddedScriptContext(this.embeddedScript
+                            .getScriptEngineManager()),
                     new ExposedScriptedTextRepresentationContainer(this),
-                    getScriptContextController(), false);
+                    getScriptContextController());
         } catch (ScriptException e) {
             IOException ioe = new IOException("Script exception");
             ioe.initCause(e);

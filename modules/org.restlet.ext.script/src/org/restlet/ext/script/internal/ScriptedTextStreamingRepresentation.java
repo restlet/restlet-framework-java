@@ -33,9 +33,7 @@ package org.restlet.ext.script.internal;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Arrays;
-import java.util.concurrent.ConcurrentMap;
 
-import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
 import org.restlet.data.Language;
@@ -43,6 +41,7 @@ import org.restlet.ext.script.ScriptedTextResource;
 import org.restlet.representation.WriterRepresentation;
 
 import com.threecrickets.scripturian.EmbeddedScript;
+import com.threecrickets.scripturian.EmbeddedScriptContext;
 import com.threecrickets.scripturian.ScriptContextController;
 
 /**
@@ -74,9 +73,9 @@ class ScriptedTextStreamingRepresentation extends WriterRepresentation {
     private final ScriptContextController scriptContextController;
 
     /**
-     * A cache of script contexts used by {@link EmbeddedScript}.
+     * The embedded script context.
      */
-    private final ConcurrentMap<String, ScriptEngine> scriptEngines;
+    private final EmbeddedScriptContext embeddedScriptContext;
 
     /**
      * Whether to flush the writers after every line.
@@ -90,8 +89,8 @@ class ScriptedTextStreamingRepresentation extends WriterRepresentation {
      *            The resource
      * @param container
      *            The container
-     * @param scriptEngines
-     *            A cache of script engines used by {@link EmbeddedScript}.
+     * @param embeddedScriptContext
+     *            The embedded script context
      * @param scriptContextController
      *            The script context controller
      * @param script
@@ -101,7 +100,7 @@ class ScriptedTextStreamingRepresentation extends WriterRepresentation {
      */
     public ScriptedTextStreamingRepresentation(ScriptedTextResource resource,
             ExposedScriptedTextResourceContainer container,
-            ConcurrentMap<String, ScriptEngine> scriptEngines,
+            EmbeddedScriptContext embeddedScriptContext,
             ScriptContextController scriptContextController,
             EmbeddedScript script, boolean flushLines) {
         // Note that we are setting representation characteristics
@@ -109,7 +108,7 @@ class ScriptedTextStreamingRepresentation extends WriterRepresentation {
         super(container.getMediaType());
         this.resource = resource;
         this.container = container;
-        this.scriptEngines = scriptEngines;
+        this.embeddedScriptContext = embeddedScriptContext;
         this.scriptContextController = scriptContextController;
         this.flushLines = flushLines;
         setCharacterSet(container.getCharacterSet());
@@ -126,9 +125,9 @@ class ScriptedTextStreamingRepresentation extends WriterRepresentation {
         this.container.isStreaming = true;
         this.resource.setWriter(writer);
         try {
-            this.script.run(writer, this.resource.getErrorWriter(),
-                    this.flushLines, this.scriptEngines, this.container,
-                    this.scriptContextController, false);
+            this.script.run(false, writer, this.resource.getErrorWriter(),
+                    this.flushLines, this.embeddedScriptContext,
+                    this.container, this.scriptContextController);
         } catch (ScriptException e) {
             IOException ioe = new IOException("Script exception");
             ioe.initCause(e);

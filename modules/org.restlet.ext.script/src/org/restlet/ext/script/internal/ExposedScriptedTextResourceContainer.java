@@ -34,10 +34,8 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
 import org.restlet.data.CharacterSet;
@@ -51,6 +49,7 @@ import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
 
 import com.threecrickets.scripturian.EmbeddedScript;
+import com.threecrickets.scripturian.EmbeddedScriptContext;
 import com.threecrickets.scripturian.ScriptSource;
 
 /**
@@ -111,9 +110,9 @@ public class ExposedScriptedTextResourceContainer {
     private StringBuffer buffer;
 
     /**
-     * A cache of script engines used by {@link EmbeddedScript}.
+     * The embedded script context.
      */
-    private final ConcurrentMap<String, ScriptEngine> scriptEngines = new ConcurrentHashMap<String, ScriptEngine>();
+    private final EmbeddedScriptContext embeddedScriptContext;
 
     /**
      * Constructs a container with media type and character set according to the
@@ -137,6 +136,8 @@ public class ExposedScriptedTextResourceContainer {
         if (this.characterSet == null) {
             this.characterSet = resource.getDefaultCharacterSet();
         }
+        this.embeddedScriptContext = new EmbeddedScriptContext(resource
+                .getScriptEngineManager());
     }
 
     /**
@@ -322,9 +323,10 @@ public class ExposedScriptedTextResourceContainer {
 
         try {
             // Do not allow caching in streaming mode
-            if (script.run(writer, this.resource.getErrorWriter(), false,
-                    this.scriptEngines, this, this.resource
-                            .getScriptContextController(), !isStreaming)) {
+            if (script.run(!isStreaming, writer,
+                    this.resource.getErrorWriter(), false,
+                    this.embeddedScriptContext, this, this.resource
+                            .getScriptContextController())) {
 
                 // Did the script ask us to start streaming?
                 if (this.startStreaming) {
@@ -332,7 +334,7 @@ public class ExposedScriptedTextResourceContainer {
 
                     // Note that this will cause the script to run again!
                     return new ScriptedTextStreamingRepresentation(
-                            this.resource, this, this.scriptEngines,
+                            this.resource, this, this.embeddedScriptContext,
                             this.resource.getScriptContextController(), script,
                             this.flushLines);
                 }
@@ -379,7 +381,7 @@ public class ExposedScriptedTextResourceContainer {
 
                 // Note that this will cause the script to run again!
                 return new ScriptedTextStreamingRepresentation(this.resource,
-                        this, this.scriptEngines, this.resource
+                        this, this.embeddedScriptContext, this.resource
                                 .getScriptContextController(), script,
                         this.flushLines);
 
