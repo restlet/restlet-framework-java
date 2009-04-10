@@ -108,20 +108,34 @@ public abstract class Authenticator extends Filter {
         int result = CONTINUE;
         boolean success = authenticate(request, response);
 
-        if (success && (getEnroler() != null)) {
-            getEnroler().enrole(request.getClientInfo().getSubject());
-        }
-
-        if (!isOptional()) {
-            if (!success)
-                result = STOP;
-
+        if (success) {
+            // Update the challenge response accordingly
             if (request.getChallengeResponse() != null) {
-                // Update the challenge response accordingly
                 request.getChallengeResponse().setAuthenticated(success);
             }
 
-            request.getClientInfo().setAuthenticated(success);
+            // Update the client info accordingly
+            if (request.getClientInfo() != null) {
+                request.getClientInfo().setAuthenticated(success);
+            }
+
+            // Add the roles for the authenticated subject
+            if (getEnroler() != null) {
+                getEnroler().enrole(request.getClientInfo().getSubject());
+            }
+        } else if (!isOptional()) {
+            // Update the challenge response accordingly
+            if (request.getChallengeResponse() != null) {
+                request.getChallengeResponse().setAuthenticated(success);
+            }
+
+            // Update the client info accordingly
+            if (request.getClientInfo() != null) {
+                request.getClientInfo().setAuthenticated(success);
+            }
+
+            // Stop the filtering chain
+            result = STOP;
         }
 
         return result;
