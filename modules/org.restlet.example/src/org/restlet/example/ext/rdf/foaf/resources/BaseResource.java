@@ -35,8 +35,13 @@ import java.util.Map;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.example.ext.rdf.foaf.Application;
+import org.restlet.example.ext.rdf.foaf.objects.Contact;
 import org.restlet.example.ext.rdf.foaf.objects.ObjectsFacade;
+import org.restlet.example.ext.rdf.foaf.objects.User;
 import org.restlet.ext.freemarker.TemplateRepresentation;
+import org.restlet.ext.rdf.Graph;
+import org.restlet.ext.rdf.Literal;
+import org.restlet.ext.rdf.RdfXmlRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ServerResource;
 
@@ -47,6 +52,99 @@ import freemarker.template.Configuration;
  * all resources.
  */
 public class BaseResource extends ServerResource {
+
+    static final String RDF_SYNTAX_NS = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+
+    static final String FOAF_NS = "http://xmlns.com/foaf/0.1/";
+
+    /**
+     * Returns the FOAF representation of a user.
+     * 
+     * @param user
+     *            The user.
+     * @param userRef
+     *            Its URI.
+     * @return The FOAF representation of a user.
+     */
+    protected Representation getFoafRepresentation(User user, Reference userRef) {
+        Graph graph = new Graph();
+        addFoaf(graph, user, userRef);
+        return new RdfXmlRepresentation(graph);
+    }
+
+    /**
+     * Returns the FOAF representation of a contact.
+     * 
+     * @param contact
+     *            The contact.
+     * @param contactRef
+     *            Its URI.
+     * @return The FOAF representation of a contact.
+     */
+    protected Representation getFoafRepresentation(Contact contact,
+            Reference contactRef) {
+        Graph graph = new Graph();
+        addFoaf(graph, contact, contactRef);
+        return new RdfXmlRepresentation(graph);
+    }
+
+    /**
+     * Completes the given set of links with the links due to the contact.
+     * 
+     * @param graph
+     *            The graph to complete.
+     * @param contact
+     *            The contact.
+     * @param contactRef
+     *            Its URI.
+     */
+    private void addFoaf(Graph graph, Contact contact, Reference contactRef) {
+        addFoaf(graph, (User) contact, contactRef);
+        addFoafProperty(graph, contactRef, "nickname", contact.getNickname());
+    }
+
+    /**
+     * Completes the given set of links with the links due to the user.
+     * 
+     * @param graph
+     *            The graph to complete.
+     * @param user
+     *            The user.
+     * @param contactRef
+     *            Its URI.
+     */
+    private void addFoaf(Graph graph, User user, Reference userRef) {
+        addLink(graph, userRef, RDF_SYNTAX_NS + "type", FOAF_NS + "Person");
+        addFoafProperty(graph, userRef, "name", user.getFirstName() + " "
+                + user.getLastName());
+        addFoafProperty(graph, userRef, "givenname", user.getFirstName());
+        addFoafProperty(graph, userRef, "firstName", user.getFirstName());
+        addFoafProperty(graph, userRef, "family_name", user.getLastName());
+        addFoafProperty(graph, userRef, "img", user.getImage());
+        addLink(graph, userRef, FOAF_NS + "homepage", userRef);
+
+        for (Contact contact : user.getContacts()) {
+            Reference contactRef = new Reference(userRef + "/contacts/"
+                    + contact.getId());
+            addFoaf(graph, contact, contactRef);
+        }
+    }
+
+    private void addFoafProperty(Graph graph, Reference subject,
+            String predicate, String object) {
+        graph.add(subject, new Reference(FOAF_NS + predicate), new Literal(
+                object));
+    }
+
+    private void addLink(Graph graph, Reference subject, String predicate,
+            Reference object) {
+        graph.add(subject, new Reference(predicate), object);
+    }
+
+    private void addLink(Graph graph, Reference subject, String predicate,
+            String object) {
+        graph.add(subject, new Reference(predicate), new Reference(object));
+    }
 
     /**
      * Returns the reference of a resource according to its id and the reference
@@ -78,6 +176,16 @@ public class BaseResource extends ServerResource {
     }
 
     /**
+     * Gives access to the Objects layer.
+     * 
+     * @return a facade.
+     */
+    protected ObjectsFacade getObjectsFacade() {
+        final Application application = (Application) getApplication();
+        return application.getObjectsFacade();
+    }
+
+    /**
      * Returns a templated representation dedicated to HTML content.
      * 
      * @param templateName
@@ -93,15 +201,5 @@ public class BaseResource extends ServerResource {
         // The template representation is based on Freemarker.
         return new TemplateRepresentation(templateName, getFmcConfiguration(),
                 dataModel, mediaType);
-    }
-
-    /**
-     * Gives access to the Objects layer.
-     * 
-     * @return a facade.
-     */
-    protected ObjectsFacade getObjectsFacade() {
-        final Application application = (Application) getApplication();
-        return application.getObjectsFacade();
     }
 }

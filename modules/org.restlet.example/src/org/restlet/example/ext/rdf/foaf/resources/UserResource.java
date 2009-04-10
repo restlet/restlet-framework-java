@@ -36,12 +36,8 @@ import java.util.TreeMap;
 
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
-import org.restlet.data.Reference;
 import org.restlet.example.ext.rdf.foaf.objects.Contact;
 import org.restlet.example.ext.rdf.foaf.objects.User;
-import org.restlet.ext.rdf.Graph;
-import org.restlet.ext.rdf.Literal;
-import org.restlet.ext.rdf.RdfXmlRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
@@ -94,63 +90,11 @@ public class UserResource extends BaseResource {
     }
 
     /**
-     * Generate the FOAF representation of this resource.
+     * Generates the FOAF representation of this resource.
      */
-    @Get("foaf")
+    @Get("rdf")
     public Representation toFoaf() throws ResourceException {
-        final Map<String, Object> dataModel = new TreeMap<String, Object>();
-        dataModel.put("user", this.user);
-        dataModel.put("contacts", this.contacts);
-        dataModel.put("resourceRef", getRequest().getResourceRef());
-        dataModel.put("rootRef", getRequest().getRootRef());
-
-        Reference RDF_SYNTAX = new Reference(
-                "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
-        Reference foaf = new Reference("http://xmlns.com/foaf/0.1/");
-        Graph graph = new Graph();
-        Reference userRef = new Reference(getRequest().getResourceRef()
-                .toString()
-                + ".foaf");
-        graph.add(userRef, new Reference(RDF_SYNTAX, "type"), new Reference(
-                foaf, "Person"));
-        graph.add(userRef, new Reference(foaf, "name"), new Literal(user
-                .getFirstName()
-                + " " + user.getLastName()));
-        graph.add(userRef, new Reference(foaf, "givenname"), new Literal(user
-                .getFirstName()));
-        graph.add(userRef, new Reference(foaf, "firstName"), new Literal(user
-                .getFirstName()));
-        graph.add(userRef, new Reference(foaf, "family_name"), new Literal(user
-                .getLastName()));
-        graph.add(userRef, new Reference(foaf, "img"), new Literal(user
-                .getImage()));
-        graph.add(userRef, new Reference(foaf, "homepage"), getRequest()
-                .getResourceRef());
-
-        for (Contact contact : this.user.getContacts()) {
-            Reference contactRef = new Reference(getRequest().getResourceRef()
-                    .toString()
-                    + "contacts/" + contact.getId() + ".foaf");
-            graph.add(userRef, new Reference(foaf, "knows"), contactRef);
-            graph.add(contactRef, new Reference(RDF_SYNTAX, "type"),
-                    new Reference(foaf, "Person"));
-            graph.add(contactRef, new Reference(foaf, "name"), new Literal(
-                    contact.getFirstName() + " " + contact.getLastName()));
-            graph.add(contactRef, new Reference(foaf, "givenname"),
-                    new Literal(contact.getFirstName()));
-            graph.add(contactRef, new Reference(foaf, "firstName"),
-                    new Literal(contact.getFirstName()));
-            graph.add(contactRef, new Reference(foaf, "family_name"),
-                    new Literal(contact.getLastName()));
-            graph.add(contactRef, new Reference(foaf, "nickname"), new Literal(
-                    contact.getNickname()));
-            graph.add(contactRef, new Reference(foaf, "img"), new Literal(
-                    contact.getImage()));
-        }
-
-        // return getTemplateRepresentation("user.foaf", dataModel,
-        // MediaType.APPLICATION_RDF_XML);
-        return new RdfXmlRepresentation(graph);
+        return getFoafRepresentation(this.user, getRequest().getResourceRef());
     }
 
     /**

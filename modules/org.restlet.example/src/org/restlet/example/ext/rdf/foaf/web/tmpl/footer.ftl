@@ -5,6 +5,7 @@
       <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
       <title>${title}</title>
       <link rel="stylesheet" type="text/css" href='${rootRef}/stylesheets/main.css' title="Main CSS stylesheet" />
+      ${foafAlternate}
    </head>
    <body>
       <div id="container">

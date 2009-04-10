@@ -134,8 +134,8 @@ public class Application extends org.restlet.Application {
             e.printStackTrace();
         }
 
-        getMetadataService().addExtension("foaf",
-                MediaType.APPLICATION_RDF_XML, true);
+        getMetadataService().addExtension("rdf", MediaType.APPLICATION_RDF_XML,
+                true);
         getTunnelService().setExtensionsTunnel(true);
     }
 
