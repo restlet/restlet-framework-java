@@ -395,7 +395,7 @@ public class ServerResource extends UniformResource {
         } catch (IllegalAccessException e) {
             throw new ResourceException(e);
         } catch (InvocationTargetException e) {
-            throw new ResourceException(e);
+            throw new ResourceException(e.getTargetException());
         }
 
         if (resultObject != null) {
@@ -465,7 +465,7 @@ public class ServerResource extends UniformResource {
         } catch (IllegalAccessException e) {
             throw new ResourceException(e);
         } catch (InvocationTargetException e) {
-            throw new ResourceException(e);
+            throw new ResourceException(e.getTargetException());
         }
 
         return result;
