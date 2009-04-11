@@ -39,6 +39,8 @@ Changes log
           expressed in N-Triples notation.
         - Added support of the parsing and writing of RDF documents 
           expressed in Turtle notation.
+        - Added an initial port of Restlet to the new Google App Engine.
+          Suggested by Didier Girard.
     - API changes
         - RepresentationInfo is now concrete and has more constructors.
           Suggested by Lars Heuer.

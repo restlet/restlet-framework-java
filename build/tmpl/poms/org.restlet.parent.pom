@@ -63,6 +63,7 @@
 	<modules>
 		<module>org.restlet</module>
 		<module>org.restlet.example</module>
+		<module>org.restlet.gae</module>
 		<module>org.restlet.gwt</module>
 		<module>org.restlet.test</module>
 
