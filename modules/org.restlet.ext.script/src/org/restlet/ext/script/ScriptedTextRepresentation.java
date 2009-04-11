@@ -108,17 +108,16 @@ public class ScriptedTextRepresentation extends WriterRepresentation {
      *            The character set
      * @param compositeScript
      *            The composite script instance
-     * @param scriptEngineManager
-     *            The script engine manager
+     * @param compositeScriptContext
+     *            The composite script context
      */
     public ScriptedTextRepresentation(MediaType mediaType,
             CharacterSet characterSet, CompositeScript compositeScript,
-            ScriptEngineManager scriptEngineManager) {
+            CompositeScriptContext compositeScriptContext) {
         super(mediaType);
         setCharacterSet(characterSet);
         this.compositeScript = compositeScript;
-        this.compositeScriptContext = new CompositeScriptContext(
-                scriptEngineManager);
+        this.compositeScriptContext = compositeScriptContext;
     }
 
     /**
@@ -130,16 +129,17 @@ public class ScriptedTextRepresentation extends WriterRepresentation {
      *            The character set
      * @param compositeScript
      *            The composite script instance
-     * @param compositeScriptContext
-     *            The composite script context
+     * @param scriptEngineManager
+     *            The script engine manager
      */
     public ScriptedTextRepresentation(MediaType mediaType,
             CharacterSet characterSet, CompositeScript compositeScript,
-            CompositeScriptContext compositeScriptContext) {
+            ScriptEngineManager scriptEngineManager) {
         super(mediaType);
         setCharacterSet(characterSet);
         this.compositeScript = compositeScript;
-        this.compositeScriptContext = compositeScriptContext;
+        this.compositeScriptContext = new CompositeScriptContext(
+                scriptEngineManager);
     }
 
     /**
