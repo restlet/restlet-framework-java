@@ -92,7 +92,8 @@ public abstract class HttpClientHelper extends ClientHelper {
     public HttpClientConverter getConverter() throws Exception {
         if (this.converter == null) {
             final String converterClass = getHelpedParameters().getFirstValue(
-                    "converter", "org.restlet.engine.http.HttpClientConverter");
+                    "converter",
+                    "org.restlet.gae.engine.http.HttpClientConverter");
             this.converter = (HttpClientConverter) Class
                     .forName(converterClass).getConstructor(Context.class)
                     .newInstance(getContext());

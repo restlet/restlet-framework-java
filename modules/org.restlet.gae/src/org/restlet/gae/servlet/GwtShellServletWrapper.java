@@ -58,7 +58,7 @@ import org.restlet.gae.engine.Engine;
  * parameters for component and application initialization described in the
  * ServerServlet Javadocs.
  * 
- * @see org.restlet.ext.servlet.ServerServlet
+ * @see org.restlet.gae.servlet.ServerServlet
  * @author Rob Heittman (rob.heittman@solertium.com)
  */
 public class GwtShellServletWrapper extends ServerServlet {

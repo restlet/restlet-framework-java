@@ -8,15 +8,21 @@
 		<version>1.2-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>org.restlet.gwt</artifactId>
-	<name>Restlet GWT module</name>
-	<description>Port of Restlet to Google Web Toolkit.</description>
+	<artifactId>org.restlet.gae</artifactId>
+	<name>Restlet GAE module</name>
+	<description>Port of Restlet to Google App Engine.</description>
 
 	<dependencies>
 		<dependency>
-			<groupId>com.google.gwt</groupId>
-			<artifactId>gwt-user</artifactId>
-			<version>${lib-gwt-version}</version>
+			<groupId>javax.mail</groupId>
+			<artifactId>mail</artifactId>
+			<version>${lib-javamail-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>${lib-servlet-version}</version>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 </project>

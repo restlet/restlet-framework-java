@@ -208,6 +208,8 @@
 	<path id="mod-core-gae-path">
 		<path refid="mod-core-path" />
 		<pathelement path="${classes}/${mod-core-id}" />
+		<fileset dir="${lib}/${lib-servlet-id}" includes="*.jar" />
+		<fileset dir="${lib}/${lib-javamail-id}" includes="*.jar" />
 	</path>
 
 	<path id="mod-core-gwt-path">
@@ -1067,10 +1069,10 @@
 		<replace file="${mod}/${mod-core-id}/src/org/restlet/engine/Engine.java" token="@release-type@" value="${release-type}" />
 		<replace file="${mod}/${mod-core-id}/src/org/restlet/engine/Engine.java" token="@release-number@" value="${release-number}" />
 
-		<replace file="${mod}/${mod-core-gae-id}/src/org/restlet/gae/util/Engine.java" token="@major-number@" value="${major-number}" />
-		<replace file="${mod}/${mod-core-gae-id}/src/org/restlet/gae/util/Engine.java" token="@minor-number@" value="${minor-number}" />
-		<replace file="${mod}/${mod-core-gae-id}/src/org/restlet/gae/util/Engine.java" token="@release-type@" value="${release-type}" />
-		<replace file="${mod}/${mod-core-gae-id}/src/org/restlet/gae/util/Engine.java" token="@release-number@" value="${release-number}" />
+		<replace file="${mod}/${mod-core-gae-id}/src/org/restlet/gae/engine/Engine.java" token="@major-number@" value="${major-number}" />
+		<replace file="${mod}/${mod-core-gae-id}/src/org/restlet/gae/engine/Engine.java" token="@minor-number@" value="${minor-number}" />
+		<replace file="${mod}/${mod-core-gae-id}/src/org/restlet/gae/engine/Engine.java" token="@release-type@" value="${release-type}" />
+		<replace file="${mod}/${mod-core-gae-id}/src/org/restlet/gae/engine/Engine.java" token="@release-number@" value="${release-number}" />
 
 		<replace file="${mod}/${mod-core-gwt-id}/src/org/restlet/gwt/util/Engine.java" token="@major-number@" value="${major-number}" />
 		<replace file="${mod}/${mod-core-gwt-id}/src/org/restlet/gwt/util/Engine.java" token="@minor-number@" value="${minor-number}" />
