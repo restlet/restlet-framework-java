@@ -38,6 +38,7 @@
 	<property name="restlet-ext-connectors" value="Pluggable connectors" />
 	<property name="restlet-ext-integrations" value="Third-party integrations" />
 	<property name="restlet-engine" value="Restlet Engine" />
+	<property name="restlet-gae" value="Restlet-GAE" />
 	<property name="restlet-gwt" value="Restlet-GWT" />
 
 	<!-- Location properties -->
@@ -57,6 +58,7 @@
 	<property name="docs-api" value="${docs}/api" />
 	<property name="docs-engine" value="${docs}/engine" />
 	<property name="docs-ext" value="${docs}/ext" />
+	<property name="docs-gae" value="${docs}/gae" />
 	<property name="docs-gwt" value="${docs}/gwt" />
 	<property name="uml-reports" value="${temp}/uml-reports" />
 	<property name="uml-reports-api" value="${uml-reports}/api" />
@@ -201,6 +203,11 @@
 	<path id="mod-core-path">
 		<pathelement path="${classes}/org.restlet" />
 		<fileset dir="${lib}/${lib-osgi-id}" includes="*.jar" />
+	</path>
+
+	<path id="mod-core-gae-path">
+		<path refid="mod-core-path" />
+		<pathelement path="${classes}/${mod-core-id}" />
 	</path>
 
 	<path id="mod-core-gwt-path">
@@ -449,6 +456,10 @@
 		<pathelement path="${classes}/${mod-core-test-id}" />
 		<pathelement path="${classes}/${mod-core-example-id}" />
 
+		<path refid="mod-core-gae-path" />
+		<pathelement path="${classes}/${mod-core-gae-id}" />
+		<pathelement path="${mod}/${mod-core-gae-id}/src" />
+
 		<path refid="mod-core-gwt-path" />
 		<pathelement path="${classes}/${mod-core-gwt-id}" />
 		<pathelement path="${mod}/${mod-core-gwt-id}/src" />
@@ -541,6 +552,7 @@
 		<pathelement path="${classes}/${mod-fileupload-id}" />
 		<pathelement path="${classes}/${mod-freemarker-id}" />
 		<pathelement path="${classes}/${mod-grizzly-id}" />
+		<pathelement path="${classes}/${mod-core-gae-id}" />
 		<pathelement path="${classes}/${mod-core-gwt-id}" />
 		<pathelement path="${classes}/${mod-gwt-id}" />
 		<pathelement path="${classes}/${mod-httpclient-id}" />
@@ -566,6 +578,7 @@
 		<path refid="mod-fileupload-path" />
 		<path refid="mod-freemarker-path" />
 		<path refid="mod-grizzly-path" />
+		<path refid="mod-core-gae-path" />
 		<path refid="mod-core-gwt-path" />
 		<path refid="mod-gwt-path" />
 		<path refid="mod-httpclient-path" />
@@ -964,6 +977,7 @@
 		<!-- Generate the Maven POM files -->
 		<mkdir dir="${temp}/poms" />
 		<pomModule name="core" />
+		<pomModule name="core-gae" />
 		<pomModule name="core-gwt" />
 		<pomModule name="core-example" />
 		<pomModule name="core-test" />
@@ -1033,10 +1047,12 @@
 		<copy file="${tmpl}/javadocs/overview-api.tmpl" tofile="${temp}/javadocs/overview-api.html" overwrite="true" />
 		<copy file="${tmpl}/javadocs/overview-engine.tmpl" tofile="${temp}/javadocs/overview-engine.html" overwrite="true" />
 		<copy file="${tmpl}/javadocs/overview-ext.tmpl" tofile="${temp}/javadocs/overview-ext.html" overwrite="true" />
+		<copy file="${tmpl}/javadocs/overview-gae.tmpl" tofile="${temp}/javadocs/overview-gae.html" overwrite="true" />
 		<copy file="${tmpl}/javadocs/overview-gwt.tmpl" tofile="${temp}/javadocs/overview-gwt.html" overwrite="true" />
 		<replace file="${temp}/javadocs/overview-api.html" token="@version-minor@" value="${version-minor}" />
 		<replace file="${temp}/javadocs/overview-engine.html" token="@version-minor@" value="${version-minor}" />
 		<replace file="${temp}/javadocs/overview-ext.html" token="@version-minor@" value="${version-minor}" />
+		<replace file="${temp}/javadocs/overview-gae.html" token="@version-minor@" value="${version-minor}" />
 		<replace file="${temp}/javadocs/overview-gwt.html" token="@version-minor@" value="${version-minor}" />
 	</target>
 
@@ -1051,12 +1067,18 @@
 		<replace file="${mod}/${mod-core-id}/src/org/restlet/engine/Engine.java" token="@release-type@" value="${release-type}" />
 		<replace file="${mod}/${mod-core-id}/src/org/restlet/engine/Engine.java" token="@release-number@" value="${release-number}" />
 
+		<replace file="${mod}/${mod-core-gae-id}/src/org/restlet/gae/util/Engine.java" token="@major-number@" value="${major-number}" />
+		<replace file="${mod}/${mod-core-gae-id}/src/org/restlet/gae/util/Engine.java" token="@minor-number@" value="${minor-number}" />
+		<replace file="${mod}/${mod-core-gae-id}/src/org/restlet/gae/util/Engine.java" token="@release-type@" value="${release-type}" />
+		<replace file="${mod}/${mod-core-gae-id}/src/org/restlet/gae/util/Engine.java" token="@release-number@" value="${release-number}" />
+
 		<replace file="${mod}/${mod-core-gwt-id}/src/org/restlet/gwt/util/Engine.java" token="@major-number@" value="${major-number}" />
 		<replace file="${mod}/${mod-core-gwt-id}/src/org/restlet/gwt/util/Engine.java" token="@minor-number@" value="${minor-number}" />
 		<replace file="${mod}/${mod-core-gwt-id}/src/org/restlet/gwt/util/Engine.java" token="@release-type@" value="${release-type}" />
 		<replace file="${mod}/${mod-core-gwt-id}/src/org/restlet/gwt/util/Engine.java" token="@release-number@" value="${release-number}" />
 
 		<compileModule name="core" />
+		<compileModule name="core-gae" />
 		<compileModule name="core-gwt" />
 		<compileModule name="atom" />
 		<compileModule name="fileupload" />
@@ -1147,6 +1169,7 @@
 			<fileset dir="${docs-api}" excludes="**/.svn" />
 			<fileset dir="${docs-engine}" excludes="**/.svn" />
 			<fileset dir="${docs-ext}" excludes="**/.svn" />
+			<fileset dir="${docs-gae}" excludes="**/.svn" />
 			<fileset dir="${docs-gwt}" excludes="**/.svn" />
 		</delete>
 
@@ -1189,7 +1212,6 @@
 				<pathelement path="${mod}/${mod-fileupload-id}/src/" />
 				<pathelement path="${mod}/${mod-freemarker-id}/src/" />
 				<pathelement path="${mod}/${mod-grizzly-id}/src/" />
-				<pathelement path="${mod}/${mod-core-gwt-id}/src/" />
 				<pathelement path="${mod}/${mod-gwt-id}/src/" />
 				<pathelement path="${mod}/${mod-httpclient-id}/src/" />
 				<pathelement path="${mod}/${mod-javamail-id}/src/" />
@@ -1282,6 +1304,22 @@
 			<link href="http://www.threecrickets.com/scripturian/static/javadoc/" />
 		</javadoc>
 
+		<javadoc packagenames="org.restlet.gae.*" excludepackagenames="${exclude-packages},*org.restlet.gae.engine.*" destdir="${docs-gae}" classpathref="path-all" author="true" version="true" use="true" windowtitle="Restlet-GAE module ${version-full}" doctitle="Restlet-GAE module ${version-full}" overview="${temp}/javadocs/overview-gae.html" stylesheetfile="${tmpl}/javadocs/stylesheet.css" verbose="${verbose}">
+			<sourcepath>
+				<pathelement path="${mod}/${mod-core-gae-id}/src/" />
+			</sourcepath>
+
+			<bottom>
+				<![CDATA[<i>Copyright &#169; 2005-2009 <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
+			</bottom>
+
+			<group title="${restlet-gae}">
+				<package name="org.restlet.gae*" />
+			</group>
+
+			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
+		</javadoc>
+
 		<javadoc packagenames="org.restlet.gwt.*" excludepackagenames="${exclude-packages},*org.restlet.gwt.engine.*" destdir="${docs-gwt}" classpathref="path-all" author="true" version="true" use="true" windowtitle="Restlet-GWT module ${version-full}" doctitle="Restlet-GWT module ${version-full}" overview="${temp}/javadocs/overview-gwt.html" stylesheetfile="${tmpl}/javadocs/stylesheet.css" verbose="${verbose}">
 			<sourcepath>
 				<pathelement path="${mod}/${mod-core-gwt-id}/src/" />
@@ -1369,6 +1407,7 @@
 		<mkdir dir="${temp}/findbugs" />
 		<findbugsModule name="core" />
 		<findbugsModule name="core-example" />
+		<findbugsModule name="core-gae" />
 		<findbugsModule name="core-gwt" />
 		<findbugsModule name="atom" />
 		<findbugsModule name="fileupload" />
@@ -1405,6 +1444,7 @@
 		<mkdir dir="${temp}/checkstyle" />
 		<checkstyleModule name="core" />
 		<checkstyleModule name="core-example" />
+		<checkstyleModule name="core-gae" />
 		<checkstyleModule name="core-gwt" />
 		<checkstyleModule name="atom" />
 		<checkstyleModule name="fileupload" />
@@ -1472,6 +1512,9 @@
 				</copy>
 				<copy todir="${dist-classic}/docs/engine">
 					<fileset dir="${docs-engine}" />
+				</copy>
+				<copy todir="${dist-classic}/docs/gae">
+					<fileset dir="${docs-gae}" />
 				</copy>
 				<copy todir="${dist-classic}/docs/gwt">
 					<fileset dir="${docs-gwt}" />
@@ -1543,6 +1586,7 @@
 		<!-- Package modules -->
 		<stageModule name="core" />
 		<stageModule name="core-example" />
+		<stageModule name="core-gae" />
 		<stageModule name="core-gwt" includeSource="true" />
 		<stageModule name="atom" />
 		<stageModule name="fileupload" />
@@ -1606,6 +1650,7 @@
 		<delete dir="${dist-maven2}" verbose="false" quiet="true" includeEmptyDirs="true" />
 		<maven2Module name="core" />
 		<maven2Module name="core-example" />
+		<maven2Module name="core-gae" />
 		<maven2Module name="core-gwt" />
 		<maven2Module name="atom" />
 		<maven2Module name="fileupload" />
