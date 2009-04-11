@@ -20,19 +20,19 @@ Second, because Scripturian allows you to mix scripting languages, it would be p
 As to why you might want to do this, see the question below.
 </p>
 
-<h3>Why does Scripturian support mixing different languages in the same script?</h3>
+<h3>Why does Scripturian support mixing scriptlets in different languages in the same script?</h3>
 <p>
 Scripting languages differ widely in performance, capabilities, and security considerations. For example, let's say you
 are using a very scalable and flexible templating language, but it does not support higher-level programming, which you need.
 On the other, a higher-level language would do a poor job at the kind of templating work you need.
-With Scripturian, you are able to have one section in the templating language, and others in, say, Ruby. Scripturian lets
-you cleanly get the benefits of both in the same file.
+With Scripturian, you are able to have one scriptlet in the templating language, and others in, say, Ruby. Scripturian lets
+you cleanly get the benefits of both in the same composite script.
 </p>
 
-<h3>What is the "in-flow" tag used for?</h3>
+<h3>What are "in-flow" scriptlets for?</h3>
 <p>
-This tag is only useful in scripts including multiple languages, in which case it lets you insert one language "into the flow"
-of the other. Consider this example:
+These scriptlets are only useful in composite scripts which contain scriptlets in different languages, in which case the "in-flow" tag
+lets you insert one scriptlet "into the flow" of the other. Consider this example:
 </p>
 <pre>
 &lt;%js if(isDebug) { %&gt;
@@ -41,15 +41,15 @@ The debug information is: &lt;%:python dumpDebugInfo(); %&gt;
 </pre>
 <p>
 We are using JavaScript to do our main coding. However, we would like to use a facility in Python to dump our actual debug
-information. Without using the in-flow tag for the Python section, we would be getting a JavaScript syntax error. Why?
-Because Scripturian separates segments according to scripting languages. Without the in-flow tag, it would attempt to run the first
-JavaScript segment, then the Python segment, and finally the last JavaScript segment. However, both JavaScript segments in this
+information. Without using the in-flow tag for the Python scriptlet, we would be getting a JavaScript syntax error. Why?
+Because Scripturian normally separates scriptlets according to scripting languages. Without the in-flow tag, it would attempt to run the first
+JavaScript scriptlet, then the Python scriptlet, and finally the last JavaScript scriptlet. However, both JavaScript segments in this
 case are incomplete and un-runnable. The in-flow tag solves this by keeping us in the flow of JavaScript, so that we are
-dealing with a single JavaScript segment.
+dealing with a single JavaScript scriptlet.
 </p>
 <p>
-How is this possible? Behind the scenes, Scripturian uses its include facility to handle in-flow tags. In this case the Python
-section is extracted into an in-memory script file. The above would then be equivalent to:
+How is this possible? Behind the scenes, Scripturian uses its include facility to handle in-flow scriptlets. In this case the Python
+scriptlet is extracted into an in-memory script file. The above would then be equivalent to:
 <pre>
 &lt;%js if(isDebug) { %&gt;
 The debug information is: &lt;%& 'dump.fragment' %&gt;
@@ -61,7 +61,9 @@ The debug information is: &lt;%& 'dump.fragment' %&gt;
 </pre>
 <p>
 The in-flow tag saves you from creating separate files for such uses. Note that the entire separation process occurs only during
-parsing, and is generally very fast. All script segments will be compiled for maximum performance if you request it.
+parsing, and is generally very fast. All scriptlets will be compiled for maximum performance if you request it.
+Also note that parsing automatically detects cases in which you are using an "in-flow" scriptlet in the same language,
+and optimizes by treating the in-flow scriptlet as a regular scriptlet.
 </p>
 
 <%& exampleBasePath + 'footer.fragment' %>
