@@ -72,6 +72,8 @@ Changes log
           directly by end users.
         - Renamed ServerResource#exists property to "existing".
           Suggested by Lars Heuer.
+        - Filter#setNext() now accepts ServerResource subclasses.
+          Suggested by Lars Heuer.
     - Miscellaneous
         - Component XML configuration has been moved into an Engine 
           ComponentXmlParser class.

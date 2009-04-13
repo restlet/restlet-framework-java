@@ -41,8 +41,6 @@ import org.restlet.data.Response;
 import org.restlet.engine.Engine;
 import org.restlet.engine.Helper;
 import org.restlet.resource.Finder;
-import org.restlet.resource.Resource;
-import org.restlet.resource.ServerResource;
 
 /**
  * Connector acting as a generic server. It internally uses one of the available
@@ -233,8 +231,7 @@ public class Server extends Connector {
      * @param targetClass
      *            The target server resource.
      */
-    public Server(Protocol protocol, int port,
-            Class<? extends ServerResource> targetClass) {
+    public Server(Protocol protocol, int port, Class<?> targetClass) {
         this(null, protocol, port,
                 new Finder(Context.getCurrent(), targetClass));
     }
@@ -386,14 +383,14 @@ public class Server extends Connector {
     }
 
     /**
-     * Sets the target Restlet as a Finder for a given Resource class. When the
-     * call is delegated to the Finder instance, a new instance of the Resource
+     * Sets the target Restlet as a Finder for a given resource class. When the
+     * call is delegated to the Finder instance, a new instance of the resource
      * class will be created and will actually handle the request.
      * 
      * @param targetClass
-     *            The target Resource class to attach.
+     *            The target resource class to attach.
      */
-    public void setNext(Class<? extends Resource> targetClass) {
+    public void setNext(Class<?> targetClass) {
         setTarget(new Finder(getContext(), targetClass));
     }
 

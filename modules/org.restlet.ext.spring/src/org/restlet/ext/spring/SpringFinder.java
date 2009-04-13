@@ -96,7 +96,7 @@ public class SpringFinder extends Finder {
      * @param targetClass
      *            The target resource class.
      */
-    public SpringFinder(Context context, Class<? extends Resource> targetClass) {
+    public SpringFinder(Context context, Class<?> targetClass) {
         super(context, targetClass);
     }
 
