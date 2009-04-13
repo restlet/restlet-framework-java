@@ -1069,10 +1069,10 @@
 		<replace file="${mod}/${mod-core-id}/src/org/restlet/engine/Engine.java" token="@release-type@" value="${release-type}" />
 		<replace file="${mod}/${mod-core-id}/src/org/restlet/engine/Engine.java" token="@release-number@" value="${release-number}" />
 
-		<replace file="${mod}/${mod-core-gae-id}/src/org/restlet/gae/engine/Engine.java" token="@major-number@" value="${major-number}" />
-		<replace file="${mod}/${mod-core-gae-id}/src/org/restlet/gae/engine/Engine.java" token="@minor-number@" value="${minor-number}" />
-		<replace file="${mod}/${mod-core-gae-id}/src/org/restlet/gae/engine/Engine.java" token="@release-type@" value="${release-type}" />
-		<replace file="${mod}/${mod-core-gae-id}/src/org/restlet/gae/engine/Engine.java" token="@release-number@" value="${release-number}" />
+		<replace file="${mod}/${mod-core-gae-id}/src/org/restlet/engine/Engine.java" token="@major-number@" value="${major-number}" />
+		<replace file="${mod}/${mod-core-gae-id}/src/org/restlet/engine/Engine.java" token="@minor-number@" value="${minor-number}" />
+		<replace file="${mod}/${mod-core-gae-id}/src/org/restlet/engine/Engine.java" token="@release-type@" value="${release-type}" />
+		<replace file="${mod}/${mod-core-gae-id}/src/org/restlet/engine/Engine.java" token="@release-number@" value="${release-number}" />
 
 		<replace file="${mod}/${mod-core-gwt-id}/src/org/restlet/gwt/util/Engine.java" token="@major-number@" value="${major-number}" />
 		<replace file="${mod}/${mod-core-gwt-id}/src/org/restlet/gwt/util/Engine.java" token="@minor-number@" value="${minor-number}" />
@@ -1306,7 +1306,7 @@
 			<link href="http://www.threecrickets.com/scripturian/static/javadoc/" />
 		</javadoc>
 
-		<javadoc packagenames="org.restlet.gae.*" excludepackagenames="${exclude-packages},*org.restlet.gae.engine.*" destdir="${docs-gae}" classpathref="path-all" author="true" version="true" use="true" windowtitle="Restlet-GAE module ${version-full}" doctitle="Restlet-GAE module ${version-full}" overview="${temp}/javadocs/overview-gae.html" stylesheetfile="${tmpl}/javadocs/stylesheet.css" verbose="${verbose}">
+		<javadoc packagenames="org.restlet.*" excludepackagenames="${exclude-packages},*org.restlet.engine.*" destdir="${docs-gae}" classpathref="path-all" author="true" version="true" use="true" windowtitle="Restlet-GAE module ${version-full}" doctitle="Restlet-GAE module ${version-full}" overview="${temp}/javadocs/overview-gae.html" stylesheetfile="${tmpl}/javadocs/stylesheet.css" verbose="${verbose}">
 			<sourcepath>
 				<pathelement path="${mod}/${mod-core-gae-id}/src/" />
 			</sourcepath>
@@ -1316,7 +1316,7 @@
 			</bottom>
 
 			<group title="${restlet-gae}">
-				<package name="org.restlet.gae*" />
+				<package name="org.restlet*" />
 			</group>
 
 			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
