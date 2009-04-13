@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<project name="Restlet Script Extension Example" default="deploy">
+<project name="Restlet Script Extension Example" default="build">
 
 	<!--<property name="root" value="../../../../../../.." />
 	<property name="lib" value="${trunk}/lib" />-->
@@ -30,6 +30,9 @@
 	</target>
 
 	<target name="lib-scripting" description="Fetch scripting libraries">
+		<copy tofile="jar/scripting/jython.jar" flatten="true">
+			<file file="${lib-jython}/org.python.jar" />
+		</copy>
 		<copy todir="jar/scripting/" flatten="true">
 			<file file="${lib-jsr223}/javax.script.jar" />
 			<file file="${lib-rhino}/org.mozilla.rhino.jar" />
@@ -37,7 +40,6 @@
 			<file file="${lib-quercus}/com.caucho.quercus.jar" />
 			<file file="${lib-quercus}/com.caucho.resin.util.jar" />
 			<file file="${lib-servlet}/javax.servlet.jar" />
-			<file file="${lib-jython}/org.python.jar" />
 			<file file="${lib-jython}/com.sun.script.jython.jar" />
 			<file file="${lib-jruby}/org.jruby.jar" />
 			<file file="${lib-jruby}/com.sun.script.jruby.jar" />
@@ -51,10 +53,18 @@
 	<target name="libraries" depends="lib-restlet, lib-scripting" description="Fetch all libraries" />
 
 	<target name="package" depends="libraries" description="Zip">
-		<zip destfile="./scripted-restlet-distribution.zip" basedir="." includes="*.txt, run.*, main.script, conf/, resources/, web/, jar/" />
+		<zip destfile="scripted-restlet-distribution.zip" basedir="." includes="*.txt, run.*, main.script, conf/, resources/, web/, jar/" excludes="jar/scripting/cachedir/, resources/jython/*.class" />
 	</target>
 
-	<target name="deploy" depends="package" description="Create distribution">
+	<target name="build" depends="package" description="Build distribution">
+	</target>
+
+	<target name="clean" description="Clean">
+		<delete dir="jar" />
+		<delete file="scripted-restlet-distribution.zip" />
+	</target>
+
+	<target name="rebuild" depends="clean, build" description="Clean and build distribution">
 	</target>
 
 </project>
