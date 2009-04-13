@@ -35,19 +35,6 @@ importClass(
 	com.threecrickets.scripturian.file.ScriptFileSource);
 
 //
-// Logging
-//
-
-java.util.logging.LogManager.logManager.reset();
-try {
-org.slf4j.bridge.SLF4JBridgeHandler.install();
-} catch(x) {}
-
-try {
-org.apache.log4j.PropertyConfigurator.configure('conf/log4j.conf');
-} catch(x) {}
-
-//
 // Component and Server
 //
 

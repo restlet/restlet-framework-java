@@ -1,85 +1,60 @@
 <?xml version="1.0"?>
 
-<project name="Restlet Script Extension Example">
+<project name="Restlet Script Extension Example" default="deploy">
 
-	<property name="root" value="../../../../../../.." />
-	<property name="lib" value="${root}/lib" />
-	<property name="bin" value="${root}/bin" />
-	<property name="wrapper-lib" value="${lib}/org.tanukisoftware.wrapper_3.2" />
-	<property name="scripturian-lib" value="${lib}/com.threecrickets.scripturian_1.0" />
-	<property name="json-lib" value="${lib}/org.json_2.0" />
-	<property name="commons-logging-lib" value="${lib}/org.apache.commons.logging_1.1" />
-	<property name="jsr223-lib" value="${lib}/jaxax.script_1.0" />
-	<property name="rhino-lib" value="${lib}/org.mozilla.rhino_1.7" />
-	<property name="quercus-lib" value="${lib}/com.caucho.quercus_3.2" />
-	<property name="jython-lib" value="${lib}/org.python_2.2" />
-	<property name="jruby-lib" value="${lib}/org.jruby_1.2" />
-	<property name="groovy-lib" value="${lib}/org.codehaus.groovy_1.6" />
+	<!--<property name="root" value="../../../../../../.." />
+	<property name="lib" value="${trunk}/lib" />-->
 
-	<target name="wrapper" description="Fetch Wrapper libraries">
-		<copy todir="jar/" flatten="true">
-			<file file="${wrapper-lib}/wrapper.jar" />
-		</copy>
-	</target>
+	<property name="trunk" value="../../../../../../../.." />
+	<property name="lib" value="${trunk}/libraries" />
+	<property name="lib-dist" value="${trunk}/build/dist/classic/restlet-1.2snapshot/lib" />
 
-	<target name="wrapper-linux" description="Fetch Wrapper libraries for Linux">
-		<copy todir="." flatten="true">
-			<file file="${bin}/linux/wrapper" />
-		</copy>
-	</target>
+	<property name="lib-scripturian" value="${lib}/com.threecrickets.scripturian_1.0" />
+	<property name="lib-json" value="${lib}/org.json_2.0" />
+	<property name="lib-jsr223" value="${lib}/jaxax.script_1.0" />
+	<property name="lib-rhino" value="${lib}/org.mozilla.rhino_1.7" />
+	<property name="lib-quercus" value="${lib}/com.caucho.quercus_3.2" />
+	<property name="lib-servlet" value="${lib}/javax.servlet_2.5" />
+	<property name="lib-jython" value="${lib}/org.python_2.2" />
+	<property name="lib-jruby" value="${lib}/org.jruby_1.2" />
+	<property name="lib-groovy" value="${lib}/org.codehaus.groovy_1.6" />
 
-	<target name="wrapper-windows" description="Fetch Wrapper libraries for Windows">
-		<copy todir="." flatten="true">
-			<file file="${bin}/win/wrapper.exe" />
-		</copy>
-	</target>
-
-	<target name="wrapper-linux-x86-64bit" depends="wrapper-linux" description="Fetch Wrapper binaries for Linux x86 64bit">
-		<copy todir="bin/" flatten="true">
-			<file file="${wrapper-lib}/libwrapper-linux-x86-64.so" />
-		</copy>
-	</target>
-
-	<target name="wrapper-linux-x86-32bit" depends="wrapper-linux" description="Fetch Wrapper binaries for Linux x86 32bit">
-		<copy todir="bin/" flatten="true">
-			<file file="${wrapper-lib}/libwrapper-linux-x86-32.so" />
-		</copy>
-	</target>
-
-	<target name="wrapper-windows-x86-32bit" depends="wrapper-windows" description="Fetch Wrapper binaries for Windows x86 32bit">
-		<copy todir="bin/" flatten="true">
-			<file file="${wrapper-lib}/wrapper-windows-x86-32.dll" />
-		</copy>
-	</target>
-
-	<target name="restlet" description="Fetch Restlet libraries">
+	<target name="lib-restlet" description="Fetch Restlet libraries">
 		<copy todir="jar/restlet/" flatten="true">
-			<file file="${lib}/org.restlet.jar" />
-			<file file="${lib}/org.restlet.ext.script.jar" />
-			<file file="${scripturian-lib}/com.threecrickets.scripturian.jar" />
-			<file file="${lib}/org.restlet.ext.json.jar" />
-			<file file="${json-lib}/org.json.jar" />
+			<file file="${lib-dist}/org.restlet.jar" />
+			<file file="${lib-dist}/org.restlet.ext.script.jar" />
+			<file file="${lib-scripturian}/com.threecrickets.scripturian.jar" />
+			<file file="${lib-dist}/org.restlet.ext.json.jar" />
+			<file file="${lib-json}/org.json.jar" />
 		</copy>
 	</target>
 
-	<target name="logging" description="Fetch logging libraries">
-		<copy todir="jar/logging/" flatten="true">
-			<file file="${commons-logging-lib}/org.apache.commons.logging.jar" />
-		</copy>
-	</target>
-
-	<target name="scripting" description="Fetch scripting libraries">
+	<target name="lib-scripting" description="Fetch scripting libraries">
 		<copy todir="jar/scripting/" flatten="true">
-			<file file="${jsr223-lib}/javax.script.jar" />
-			<file file="${rhino-lib}/org.mozilla.rhino.jar" />
-			<file file="${quercus-lib}/com.caucho.quercus.jar" />
-			<file file="${jython-lib}/org.python.jar" />
-			<file file="${jruby-lib}/org.jruby.jar" />
-			<file file="${groovy-lib}/org.codehaus.groovy.jar" />
+			<file file="${lib-jsr223}/javax.script.jar" />
+			<file file="${lib-rhino}/org.mozilla.rhino.jar" />
+			<file file="${lib-rhino}/com.sun.phobos.script.jar" />
+			<file file="${lib-quercus}/com.caucho.quercus.jar" />
+			<file file="${lib-quercus}/com.caucho.resin.util.jar" />
+			<file file="${lib-servlet}/javax.servlet.jar" />
+			<file file="${lib-jython}/org.python.jar" />
+			<file file="${lib-jython}/com.sun.script.jython.jar" />
+			<file file="${lib-jruby}/org.jruby.jar" />
+			<file file="${lib-jruby}/com.sun.script.jruby.jar" />
+			<file file="${lib-groovy}/org.codehaus.groovy.jar" />
+		</copy>
+		<copy todir="jar/scripting/Lib">
+			<fileset dir="${lib-jython}/Lib/" />
 		</copy>
 	</target>
 
-	<target name="libraries" depends="wrapper, restlet, logging, scripting" description="Fetch all libraries">
+	<target name="libraries" depends="lib-restlet, lib-scripting" description="Fetch all libraries" />
+
+	<target name="package" depends="libraries" description="Zip">
+		<zip destfile="./scripted-restlet-distribution.zip" basedir="." includes="*.txt, run.*, main.script, conf/, resources/, web/, jar/" />
+	</target>
+
+	<target name="deploy" depends="package" description="Create distribution">
 	</target>
 
 </project>
