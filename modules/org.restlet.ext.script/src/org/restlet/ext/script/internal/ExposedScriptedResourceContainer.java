@@ -336,7 +336,11 @@ public class ExposedScriptedResourceContainer {
                     .getScriptEngineManager(), this.resource
                     .getDefaultScriptEngineName(), this.resource
                     .getScriptSource(), this.resource.isAllowCompilation());
-            scriptDescriptor.setScriptIfAbsent(script);
+            CompositeScript existing = scriptDescriptor
+                    .setScriptIfAbsent(script);
+            if (existing != null) {
+                script = existing;
+            }
         }
 
         script.run(false, this.resource.getWriter(), this.resource
@@ -372,10 +376,12 @@ public class ExposedScriptedResourceContainer {
                         .setScriptIfAbsent(script);
                 if (existing != null) {
                     script = existing;
+                } else {
+                    script.run(false, this.resource.getWriter(), this.resource
+                            .getErrorWriter(), true,
+                            this.compositeScriptContext, this, this.resource
+                                    .getScriptContextController());
                 }
-                script.run(false, this.resource.getWriter(), this.resource
-                        .getErrorWriter(), true, this.compositeScriptContext,
-                        this, this.resource.getScriptContextController());
             }
 
             return script.invoke(entryPointName, this, this.resource
