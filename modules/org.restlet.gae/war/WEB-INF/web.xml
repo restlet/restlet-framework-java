@@ -17,7 +17,7 @@
 	<servlet>
 		<servlet-name>RestletServlet</servlet-name>
 		<servlet-class>
-			org.restlet.gae.servlet.ServerServlet  
+			org.restlet.util.ServerServlet  
        </servlet-class>
 	</servlet>
 
