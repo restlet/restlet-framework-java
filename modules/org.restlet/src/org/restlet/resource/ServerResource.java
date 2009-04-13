@@ -93,7 +93,7 @@ public class ServerResource extends UniformResource {
     private boolean conditional;
 
     /** Indicates if the identified resource exists. */
-    private boolean exists;
+    private boolean existing;
 
     /** Indicates if the annotations where extracted. */
     private boolean introspected;
@@ -112,7 +112,7 @@ public class ServerResource extends UniformResource {
         this.annotated = true;
         this.annotations = null;
         this.conditional = true;
-        this.exists = true;
+        this.existing = true;
         this.introspected = false;
         this.negotiated = true;
         this.variants = null;
@@ -204,7 +204,7 @@ public class ServerResource extends UniformResource {
         Representation result = null;
 
         if (getConditions().hasSome()) {
-            if (!isExists() && getConditions().getMatch().contains(Tag.ALL)) {
+            if (!isExisting() && getConditions().getMatch().contains(Tag.ALL)) {
                 setStatus(Status.CLIENT_ERROR_PRECONDITION_FAILED,
                         "A non existing resource can't match any tag.");
             } else {
@@ -991,8 +991,8 @@ public class ServerResource extends UniformResource {
      * 
      * @return True if the identified resource exists.
      */
-    public boolean isExists() {
-        return exists;
+    public boolean isExisting() {
+        return existing;
     }
 
     /**
@@ -1221,8 +1221,8 @@ public class ServerResource extends UniformResource {
      * @param exists
      *            Indicates if the identified resource exists.
      */
-    public void setExists(boolean exists) {
-        this.exists = exists;
+    public void setExisting(boolean exists) {
+        this.existing = exists;
     }
 
     /**

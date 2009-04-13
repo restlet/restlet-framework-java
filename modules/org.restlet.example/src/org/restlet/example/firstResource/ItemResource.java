@@ -31,7 +31,7 @@ public class ItemResource extends BaseResource {
         // Get the item directly from the "persistence layer".
         this.item = getItems().get(itemName);
 
-        setExists(this.item != null);
+        setExisting(this.item != null);
     }
 
     /**

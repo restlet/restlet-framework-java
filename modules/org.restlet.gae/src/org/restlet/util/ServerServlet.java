@@ -138,7 +138,7 @@ import org.restlet.routing.VirtualHost;
  *         &lt;!-- Restlet adapter (Mandatory) --&gt;
  *         &lt;servlet&gt;
  *                 &lt;servlet-name&gt;ServerServlet&lt;/servlet-name&gt;
- *                 &lt;servlet-class&gt;org.restlet.gae.servlet.ServerServlet&lt;/servlet-class&gt;
+ *                 &lt;servlet-class&gt;org.restlet.util.ServerServlet&lt;/servlet-class&gt;
  *         &lt;/servlet&gt;
  * 
  *         &lt;!-- Catch all requests (Mandatory) --&gt;
