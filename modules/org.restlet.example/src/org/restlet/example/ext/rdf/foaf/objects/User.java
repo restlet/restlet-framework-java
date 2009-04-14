@@ -49,7 +49,7 @@ public class User extends BaseObject {
 
     /** Last name of the user. */
     private String lastName;
-
+    
     public User() {
         super();
     }

@@ -27,6 +27,10 @@
 				<td colspan="2"><img src="${contact.image}" alt="${contact.nickname}" /></td>
 			</tr>
 </#if>
+			<tr>
+				<td>Foaf Uri:</td>
+				<td><input type="text" name="foafUri" value="${contact.foafUri!""}" size="40" /></td>
+			</tr>
 		</table>
 		<p>
 		<input type="submit" name="updateContact" title="Submit modifications to the contact" value="Update" onclick="this.form.action='${resourceRef}?method=put'" />

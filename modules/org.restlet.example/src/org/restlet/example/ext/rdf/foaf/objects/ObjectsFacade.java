@@ -54,7 +54,7 @@ public class ObjectsFacade {
      *            the parent user.
      * @param contact
      *            new Contact object to be added.
-     * @return the contact object completed with its identfiant.
+     * @return the contact object completed with its identifiant.
      */
     public Contact createContact(User user, Contact contact) {
         contact = this.dataFacade.createContact(contact);

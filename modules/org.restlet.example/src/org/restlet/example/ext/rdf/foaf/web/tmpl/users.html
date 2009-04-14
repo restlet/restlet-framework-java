@@ -8,7 +8,7 @@
 		</tr>
 	<#list users as user> 
 		<tr>
-			<td><a href="<@concatUris parentUri=resourceRef relativeUri=user.id!"" />">${user.firstName} ${user.lastName}</a></td>
+			<td><a href="<@concatUris parentUri=resourceRef relativeUri=user.id!"" />">${user.firstName!"-"} ${user.lastName!"-"}</a></td>
 		</tr>
 	</#list>
 	</table>
@@ -22,15 +22,15 @@
 		<table>
 			<tr>
 				<td>First name:</td>
-				<td><input type="text" name="firstName" value="${firstName!""}" /></td>
+				<td><input type="text" name="firstName" /></td>
 			</tr>
 			<tr>
 				<td>Last name:</td>
-				<td><input type="text" name="lastName" value="${lastName!""}" /></td>
+				<td><input type="text" name="lastName" /></td>
 			</tr>
 			<tr>
 				<td>Image:</td>
-				<td><input type="text" name="image" value="${image!""}" /></td>
+				<td><input type="text" name="image" /></td>
 			</tr>
 		</table>
 		<p><input type="submit" name="createUser" title="Create a new User" value="Create" /></p>

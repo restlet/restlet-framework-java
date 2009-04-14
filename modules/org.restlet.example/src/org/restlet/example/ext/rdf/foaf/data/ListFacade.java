@@ -46,7 +46,7 @@ public class ListFacade extends DataFacade {
         for (User user : users.values()) {
             for (Contact contact : user.getContacts()) {
                 if (contactId.equals(contact.getId())) {
-                    result= contact;
+                    result = contact;
                     break;
                 }
             }

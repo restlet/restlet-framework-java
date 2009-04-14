@@ -68,7 +68,7 @@ public class ContactResource extends BaseResource {
                     "contactId");
             this.contact = getObjectsFacade().getContactById(contactId);
         }
-        setExists(this.contact != null);
+        setExisting(this.contact != null);
     }
 
     /**
@@ -91,6 +91,7 @@ public class ContactResource extends BaseResource {
         this.contact.setLastName(form.getFirstValue("lastName"));
         this.contact.setImage(form.getFirstValue("image"));
         this.contact.setNickname(form.getFirstValue("nickname"));
+        this.contact.setFoafUri(form.getFirstValue("foafUri"));
 
         getObjectsFacade().updateContact(this.user, this.contact);
         getResponse().redirectSeeOther(getRequest().getResourceRef());

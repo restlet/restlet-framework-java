@@ -64,7 +64,7 @@ public class UserResource extends BaseResource {
         if (this.user != null) {
             this.contacts = this.user.getContacts();
         } else {
-            setExists(false);
+            setExisting(false);
         }
     }
 
@@ -87,6 +87,7 @@ public class UserResource extends BaseResource {
         this.user.setFirstName(form.getFirstValue("firstName"));
         this.user.setLastName(form.getFirstValue("lastName"));
         this.user.setImage(form.getFirstValue("image"));
+
         getObjectsFacade().updateUser(this.user);
         getResponse().redirectSeeOther(getRequest().getResourceRef());
     }

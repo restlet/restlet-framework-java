@@ -66,8 +66,9 @@ public class ContactsResource extends BaseResource {
         contact.setLastName(form.getFirstValue("lastName"));
         contact.setImage(form.getFirstValue("image"));
         contact.setNickname(form.getFirstValue("nickname"));
-        contact = getObjectsFacade().createContact(this.user, contact);
+        contact.setFoafUri(form.getFirstValue("foafUri"));
 
+        contact = getObjectsFacade().createContact(this.user, contact);
         getResponse().redirectSeeOther(
                 getChildReference(getRequest().getResourceRef(), contact
                         .getId()));
@@ -81,7 +82,7 @@ public class ContactsResource extends BaseResource {
         if (user != null) {
             this.contacts = this.user.getContacts();
         } else {
-            setExists(false);
+            setExisting(false);
         }
     }
 

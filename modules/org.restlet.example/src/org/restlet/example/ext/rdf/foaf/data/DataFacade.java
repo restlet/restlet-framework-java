@@ -36,8 +36,7 @@ import org.restlet.example.ext.rdf.foaf.objects.Contact;
 import org.restlet.example.ext.rdf.foaf.objects.User;
 
 /**
- * Simple factory that generates Data Access Objects dedicated to the Db4o
- * database.
+ * Simple factory that generates Data Access Objects.
  */
 public abstract class DataFacade {
 
