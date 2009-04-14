@@ -68,6 +68,7 @@ public class ContactResource extends BaseResource {
                     "contactId");
             this.contact = getObjectsFacade().getContactById(contactId);
         }
+        setExists(this.contact != null);
     }
 
     /**

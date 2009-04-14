@@ -80,6 +80,8 @@ public class ContactsResource extends BaseResource {
         this.user = getObjectsFacade().getUserById(userId);
         if (user != null) {
             this.contacts = this.user.getContacts();
+        } else {
+            setExists(false);
         }
     }
 

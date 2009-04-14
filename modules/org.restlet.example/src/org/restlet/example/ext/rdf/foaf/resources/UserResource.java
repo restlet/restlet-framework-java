@@ -63,6 +63,8 @@ public class UserResource extends BaseResource {
 
         if (this.user != null) {
             this.contacts = this.user.getContacts();
+        } else {
+            setExists(false);
         }
     }
 

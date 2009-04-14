@@ -126,6 +126,7 @@ public class BaseResource extends ServerResource {
         for (Contact contact : user.getContacts()) {
             Reference contactRef = new Reference(userRef + "/contacts/"
                     + contact.getId());
+            addLink(graph, userRef, FOAF_NS + "knows", contactRef);
             addFoaf(graph, contact, contactRef);
         }
     }
