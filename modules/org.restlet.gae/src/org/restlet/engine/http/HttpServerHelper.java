@@ -103,7 +103,7 @@ public class HttpServerHelper extends ServerHelper {
             try {
                 final String converterClass = getHelpedParameters()
                         .getFirstValue("converter",
-                                "org.restlet.gae.engine.http.HttpServerConverter");
+                                "org.restlet.engine.http.HttpServerConverter");
                 this.converter = (HttpServerConverter) Engine.loadClass(
                         converterClass).getConstructor(Context.class)
                         .newInstance(getContext());
