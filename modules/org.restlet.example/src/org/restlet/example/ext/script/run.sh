@@ -21,8 +21,8 @@ jar/scripting/org.jruby.jar:\
 jar/scripting/com.sun.script.jruby.jar:\
 jar/scripting/org.codehaus.groovy.jar:\
 jar/scripting/org.apache.velocity.jar:\
+jar/scripting/org.apache.velocity-dep.jar:\
 jar/scripting/com.sun.script.velocity.jar:\
-jar/scripting/org.apache.commons.lang.jar:\
-jar/scripting/org.apache.commons.collections.jar
+jar/scripting/org.apache.log4j.jar
 
-"$java" -cp "$jars" -Dpython.path=jar/scripting/ $main
+"$java" -cp "$jars" $main

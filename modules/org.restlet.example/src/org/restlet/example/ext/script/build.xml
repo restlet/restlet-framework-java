@@ -53,10 +53,11 @@
 
 			<file file="${lib-groovy}/org.codehaus.groovy.jar" />
 
-			<file file="${lib-velocity}/org.apache.velocity.jar" />
 			<file file="${lib-velocity}/com.sun.script.velocity.jar" />
+			<!-- We need 1.6
+			<file file="${lib-velocity}/org.apache.velocity.jar" />
 			<file file="${lib-commons-lang}/org.apache.commons.lang.jar" />
-			<file file="${lib-commons-collections}/org.apache.commons.collections.jar" />
+			<file file="${lib-commons-collections}/org.apache.commons.collections.jar" />-->
 		</copy>
 		<copy todir="jar/scripting/Lib">
 			<fileset dir="${lib-jython}/Lib/" />
