@@ -99,6 +99,14 @@ public class HttpAwsS3Helper extends AuthenticatorHelper {
      */
     private static String getCanonicalizedResourceName(Reference resourceRef) {
         final StringBuilder sb = new StringBuilder();
+
+        String hostName = resourceRef.getHostDomain();
+        if (hostName.endsWith(".s3.amazonaws.com")) {
+            // The bucket name needs to be extracted
+            String bucketName = hostName.substring(0, hostName.length() - 17);
+            sb.append("/" + bucketName);
+        }
+
         sb.append(resourceRef.getPath());
 
         final Form query = resourceRef.getQueryAsForm();
@@ -106,6 +114,8 @@ public class HttpAwsS3Helper extends AuthenticatorHelper {
             sb.append("?acl");
         } else if (query.getFirst("torrent", true) != null) {
             sb.append("?torrent");
+        } else if (query.getFirst("location", true) != null) {
+            sb.append("?location");
         }
 
         return sb.toString();
@@ -162,8 +172,10 @@ public class HttpAwsS3Helper extends AuthenticatorHelper {
             final String jvmVendor = System.getProperty("java.vm.vendor");
             if ((jvmVendor != null)
                     && (jvmVendor.toLowerCase()).startsWith("sun")) {
-                final int majorVersionNumber = SystemUtils.getJavaMajorVersion();
-                final int minorVersionNumber = SystemUtils.getJavaMinorVersion();
+                final int majorVersionNumber = SystemUtils
+                        .getJavaMajorVersion();
+                final int minorVersionNumber = SystemUtils
+                        .getJavaMinorVersion();
 
                 if (majorVersionNumber == 1) {
                     if (minorVersionNumber < 5) {
@@ -197,8 +209,8 @@ public class HttpAwsS3Helper extends AuthenticatorHelper {
 
         // Append the AWS credentials
         sb.append(challenge.getIdentifier()).append(':').append(
-                Base64.encode(DigestUtils.toHMac(rest.toString(), 
-                		ByteUtils.toByteArray(challenge.getSecret())), false));
+                Base64.encode(DigestUtils.toHMac(rest.toString(), ByteUtils
+                        .toByteArray(challenge.getSecret())), false));
 
     }
 
