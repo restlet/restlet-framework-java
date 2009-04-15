@@ -9,9 +9,6 @@ Couple it with Restlet's JSON extension, and you're on solid ground for rapid de
 </p><p>
 Though not as feature-rich as <a href="python.page">Python</a> or <a href="ruby.page">Ruby</a>, JavaScript is still
 very powerful, and can support object-orientation, namespaces and other paradigms. Many libraries exist to help you with this.
-</p><p> 
-See <a href="http://helma.org/">Helma</a> and <a href="https://phobos.dev.java.net">Phobos</a> for other examples of platforms based on server-side JavaScript.
-<p>
 </p>
 
 <h3>Implementation</h3>
