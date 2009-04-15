@@ -38,60 +38,18 @@ import org.restlet.data.Encoding;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
+import org.restlet.engine.util.MetadataExtension;
 
 /**
  * Application service providing access to metadata and their associated
- * extension names.
+ * extension names. The list of default mappings is documented in the
+ * {@link #addCommonExtensions()} method.<br>
+ * <br>
+ * Internally, the mappings are stored as a list of "extension, metadata" pairs.
  * 
  * @author Jerome Louvel
  */
 public class MetadataService extends Service {
-    /**
-     * Associates an extension name and a metadata.
-     * 
-     * @author Alex Milowski (alexml@milowski.org)
-     * @author Thierry Boileau
-     */
-    private class MetadataExtension {
-        /** The mapped metadata. */
-        private final Metadata metadata;
-
-        /** The name of the extension. */
-        private final String name;
-
-        /**
-         * Constructor.
-         * 
-         * @param name
-         *            The extension name.
-         * @param metadata
-         *            The metadata.
-         */
-        public MetadataExtension(String name, Metadata metadata) {
-            this.name = name;
-            this.metadata = metadata;
-        }
-
-        /**
-         * Returns the metadata.
-         * 
-         * @return the metadata.
-         */
-        public Metadata getMetadata() {
-            return this.metadata;
-        }
-
-        /**
-         * Returns the extension name.
-         * 
-         * @return The extension name.
-         */
-        public String getName() {
-            return this.name;
-        }
-
-    }
-
     /** The default encoding for local representations. */
     private volatile Encoding defaultEncoding;
 
