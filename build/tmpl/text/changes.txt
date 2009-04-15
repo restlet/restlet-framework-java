@@ -5,8 +5,10 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Bugs fixed
-       - Fixed bug in Directory AlphaNumComparator. Reported and fixed
-        by Rob Heittman.
+       - Fixed bug in Directory AlphaNumComparator. 
+         Reported and fixed by Rob Heittman.
+       - Fixed bug in S3 authentication algorithm when bucket name was
+         specified in the host name. Reported by Matt J. Watson.
        - Fixed potential NPE with Reference#getMatrix. Reported by Tal 
          Liron.
 

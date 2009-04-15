@@ -96,6 +96,14 @@ public class HttpAmazonS3Helper extends AuthenticationHelper {
      */
     private static String getCanonicalizedResourceName(Reference resourceRef) {
         final StringBuilder sb = new StringBuilder();
+
+        String hostName = resourceRef.getHostDomain();
+        if (hostName.endsWith(".s3.amazonaws.com")) {
+            // The bucket name needs to be extracted
+            String bucketName = hostName.substring(0, hostName.length() - 17);
+            sb.append("/" + bucketName);
+        }
+
         sb.append(resourceRef.getPath());
 
         final Form query = resourceRef.getQueryAsForm();
@@ -103,6 +111,8 @@ public class HttpAmazonS3Helper extends AuthenticationHelper {
             sb.append("?acl");
         } else if (query.getFirst("torrent", true) != null) {
             sb.append("?torrent");
+        } else if (query.getFirst("location", true) != null) {
+            sb.append("?location");
         }
 
         return sb.toString();
