@@ -56,9 +56,9 @@ include $my_module
 def print_factory factory
 %>
 <p>
-	Engine: <%= factory.engine_name %> version <%= factory.engine_version %><br />
-	Language: <%= factory.language_name %> version <%= factory.language_version %><br />
-	Names: 
+	<i>Engine:</i> <%= factory.engine_name %> version <%= factory.engine_version %><br />
+	<i>Language:</i> <%= factory.language_name %> version <%= factory.language_version %><br />
+	<i>Names:</i> 
 <%
 	names = factory.names.to_array
 	for i in 0 .. names.length - 1

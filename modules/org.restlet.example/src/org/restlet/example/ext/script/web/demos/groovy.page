@@ -50,9 +50,9 @@ print 'This page was dynamically generated at ' + System.currentTimeMillis()
 def printFactory = { factory ->
 %>
 <p>
-	Engine: <%= factory.engineName %> version <%= factory.engineVersion %><br />
-	Language: <%= factory.languageName %> version <%= factory.languageVersion %><br />
-	Names: 
+	<i>Engine:</i> <%= factory.engineName %> version <%= factory.engineVersion %><br />
+	<i>Language:</i> <%= factory.languageName %> version <%= factory.languageVersion %><br />
+	<i>Names:</i> 
 <%
 	names = factory.names.toArray()
 	for(i in 0 .. names.length - 1) {

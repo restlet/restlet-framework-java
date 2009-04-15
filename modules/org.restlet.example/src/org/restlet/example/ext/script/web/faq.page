@@ -36,19 +36,24 @@ lets you insert one scriptlet "into the flow" of the other. Consider this exampl
 </p>
 <pre>
 &lt;%js if(isDebug) { %&gt;
-The debug information is: &lt;%:python dumpDebugInfo(); %&gt;
+The debug information is:
+&lt;%:velocity
+#foreach($line in $log)
+	$line.date: $line.message
+#end
+%&gt;
 &lt;% } %&gt;
 </pre>
 <p>
-We are using JavaScript to do our main coding. However, we would like to use a facility in Python to dump our actual debug
-information. Without using the in-flow tag for the Python scriptlet, we would be getting a JavaScript syntax error. Why?
+We are using JavaScript to do our main coding. However, we would like to use a facility in Velocity to dump our actual debug
+information. Without using the in-flow tag for the Velocity scriptlet, we would be getting a JavaScript syntax error. Why?
 Because Scripturian normally separates scriptlets according to scripting languages. Without the in-flow tag, it would attempt to run the first
-JavaScript scriptlet, then the Python scriptlet, and finally the last JavaScript scriptlet. However, both JavaScript segments in this
+JavaScript scriptlet, then the Velocity scriptlet, and finally the last JavaScript scriptlet. However, both JavaScript segments in this
 case are incomplete and un-runnable. The in-flow tag solves this by keeping us in the flow of JavaScript, so that we are
 dealing with a single JavaScript scriptlet.
 </p>
 <p>
-How is this possible? Behind the scenes, Scripturian uses its include facility to handle in-flow scriptlets. In this case the Python
+How is this possible? Behind the scenes, Scripturian uses its include facility to handle in-flow scriptlets. In this case the Velocity
 scriptlet is extracted into an in-memory script file. The above would then be equivalent to:
 <pre>
 &lt;%js if(isDebug) { %&gt;
@@ -57,7 +62,11 @@ The debug information is: &lt;%& 'dump.fragment' %&gt;
 </pre>
 <p>Where the 'dump.fragment' file is:</p>
 <pre>
-&lt;%python dumpDebugInfo(); %&gt;
+&lt;%:velocity
+#foreach($line in $log)
+	$line.date: $line.message
+#end
+%&gt;
 </pre>
 <p>
 The in-flow tag saves you from creating separate files for such uses. Note that the entire separation process occurs only during

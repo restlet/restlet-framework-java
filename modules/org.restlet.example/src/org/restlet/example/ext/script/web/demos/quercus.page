@@ -49,9 +49,9 @@ print 'This page was dynamically generated at ' . System::currentTimeMillis();
 function printFactory($factory) {
 ?>
 <p>
-	Engine: <?= $factory->engineName ?> version <?= $factory->engineVersion ?><br />
-	Language: <?= $factory->languageName ?> version <?= $factory->languageVersion ?><br />
-	Names: 
+	<i>Engine:</i> <?= $factory->engineName ?> version <?= $factory->engineVersion ?><br />
+	<i>Language:</i> <?= $factory->languageName ?> version <?= $factory->languageVersion ?><br />
+	<i>Names:</i> 
 <?
 	$names = $factory->names->toArray();
 	for($i = 0; $i < count($names); $i++) {

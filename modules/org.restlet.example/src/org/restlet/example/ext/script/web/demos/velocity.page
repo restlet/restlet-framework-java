@@ -1,0 +1,87 @@
+<html>
+<head>
+	<title>Velocity Scriptlets Demo</title>
+	<link rel="stylesheet" type="text/css" href="../static/example.css" />
+</head>
+<body>
+<table width="100%"><tr valign="top"><td>
+<%velocity
+
+##
+## Accessing the request
+##
+
+#set($form = $script.container.request.resourceRef.queryAsForm)
+
+##
+## Stream this script
+##
+
+#if($form.getFirstValue('stream') == 'true')
+	#if($script.container.stream())
+		#stop
+	#end
+#end
+
+#set($script.cacheDuration=5000)
+
+##
+## Calling Java
+##
+
+%><%rhino-nonjdk
+
+// Velocity is a templating language, not a full-blown scripting language. As such, it's missing some
+// features we need! In this case, we want to call a static method. So, we'll just use this JavaScript
+// scriptlet to fill in the gaps.
+
+context.setAttribute('currentTimeMillis', String(java.lang.System.currentTimeMillis()), javax.script.ScriptContext.GLOBAL_SCOPE);
+%><%velocity
+
+This page was dynamically generated at $currentTimeMillis
+
+##
+## Including a script
+##
+## This is identical to:
+##
+##   $script.container.include('path')
+##
+
+%><%& "$script.meta.get('exampleBasePath')demos/velocity.fragment" %><%
+
+##
+## An example of a macro
+##
+
+#macro(printFactory $factory)
+	<p>
+	<i>Engine:</i> $factory.engineName version $factory.engineVersion <br />
+	<i>Language:</i> $factory.languageName version $factory.languageVersion <br />
+	<i>Names:</i> 
+	#set($size = $factory.names.size())
+	#foreach($name in $factory.names)
+		$name#if($velocityCount < $size),#end
+	#end
+#end
+
+<h3>Script engine used:</h3>
+#printFactory($script.engine.factory)
+<h3>Available script engines:</h3>
+#foreach($factory in $script.engineManager.engineFactories)
+	#printFactory($factory)
+#end
+</td><td>
+<h3>The "id" attribute in the URL query is:</h3>
+<p>$form.getFirstValue('id')</p>
+<h3>A few tests:</h3>
+#foreach($i in [0..9])
+	A multiple of three:
+	#printTriple($i)
+	<br />
+#end
+
+%>
+</td></tr></table>
+</body>
+<html>

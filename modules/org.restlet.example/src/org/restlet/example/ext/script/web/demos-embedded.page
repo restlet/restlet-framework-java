@@ -48,6 +48,14 @@ Source code: <a href="demos/jruby.page?source=true">main</a>, <a href="demos/jru
 <a href="demos/groovy.page?id=hello">caching mode</a><br />
 <a href="demos/groovy.page?id=hello&stream=true">streaming mode</a><br />
 Source code: <a href="demos/groovy.page?source=true">main</a>, <a href="demos/groovy.fragment?source=true">included</a>
+
 </p>
+<h3>Velocity</h3>
+<p>
+<a href="demos/velocity.page?id=hello">caching mode</a><br />
+<a href="demos/velocity.page?id=hello&stream=true">streaming mode</a><br />
+Source code: <a href="demos/velocity.page?source=true">main</a>, <a href="demos/velocity.fragment?source=true">included</a>
+</p>
+
 
 <%& exampleBasePath + 'footer.fragment' %>

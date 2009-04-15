@@ -53,9 +53,9 @@ sys.stdout.write('This page was dynamically generated at ' + str(System.currentT
 
 def printFactory(factory):
 	%><p>
-	Engine: <%= factory.getEngineName() %> version <%= factory.getEngineVersion() %><br />
-	Language: <%= factory.getLanguageName() %> version <%= factory.getLanguageVersion() %><br />
-	Names: <%
+	<i>Engine:</i> <%= factory.getEngineName() %> version <%= factory.getEngineVersion() %><br />
+	<i>Language:</i> <%= factory.getLanguageName() %> version <%= factory.getLanguageVersion() %><br />
+	<i>Names:</i> <%
 	names = factory.getNames().toArray()
 	for i in range(len(names)):
 		sys.stdout.write(str(names[i]))

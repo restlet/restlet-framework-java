@@ -1,0 +1,8 @@
+<%velocity
+
+#macro(printTriple $i)
+	#set($i = $i * 3)
+	$i
+#end
+
+%>

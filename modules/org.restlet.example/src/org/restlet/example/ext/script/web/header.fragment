@@ -31,6 +31,7 @@
 								<li><a href="python.page">Python</a></li>
 								<li><a href="ruby.page">Ruby</a></li>
 								<li><a href="groovy.page">Groovy</a></li>
+								<li><a href="velocity.page">Velocity</a></li>
 								<li><a href="other.page">Other...</a></li>
 							</ul>
 						</li>

@@ -1,0 +1,23 @@
+<% script.cacheDuration = 5000; var exampleBasePath = script.meta.get('exampleBasePath'); %><%& exampleBasePath + 'header.fragment' %>
+
+<h2>Supported Scripting Language: Velocity</h2>
+<p>
+Velocity is not a scripting language, and offers only a few programming constructs. It's designed, instead, to be
+a fast templating language, which is what it does best. If you need performance, it's probably better to use
+Velocity than the other, fuller scripting languages.
+</p><p>
+But, with Scripturian, there's no great penalty for the choice. It's very easy to mix in other languages when you need them. The <a href="demos/velocity.page?source=true">source code</a>
+for the Velocity demo shows how easy it is to fill in the gaps with JavaScript.
+</p><p>
+Not only that, but you can insert Velocity scriptlets in the flow the other scripting languages, via Scripturian's
+"in-flow" tag. See the <a href="faq.page">FAQ</a> for more information.
+</p>
+
+<h3>Implementation</h3>
+<p>
+Get Velocity <a href="http://velocity.apache.org/">here</a>. Note that you also need a small library for
+<a href="http://java.sun.com/developer/technicalArticles/J2SE/Desktop/scripting/">Java scripting standard (JSR-223)</a>, which is available 
+at the <a href="https://scripting.dev.java.net/">Java scripting project</a>. 
+</p>
+
+<%& exampleBasePath + 'footer.fragment' %>
