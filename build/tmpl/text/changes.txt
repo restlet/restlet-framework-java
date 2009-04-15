@@ -41,6 +41,8 @@ Changes log
           expressed in Turtle notation.
         - Added an initial port of Restlet to the new Google App Engine.
           Suggested by Didier Girard.
+        - Added a ContextTemplateLoader to FreeMarker extension to load
+          template based on the client dispatcher and a base URI.
     - API changes
         - RepresentationInfo is now concrete and has more constructors.
           Suggested by Lars Heuer.

@@ -49,8 +49,14 @@ import org.restlet.representation.Representation;
  */
 public class RepresentationResourceLoader extends ResourceLoader {
 
+    /** The cache of template representations. */
     private static final Map<String, Representation> store = new ConcurrentHashMap<String, Representation>();
 
+    /**
+     * Returns the cache of template representations.
+     * 
+     * @return The cache of template representations.
+     */
     public static Map<String, Representation> getStore() {
         return store;
     }
@@ -59,7 +65,7 @@ public class RepresentationResourceLoader extends ResourceLoader {
     private final Representation defaultRepresentation;
 
     /**
-     * Constructeur.
+     * Constructor.
      * 
      * @param defaultRepresentation
      *            The default representation to use.
