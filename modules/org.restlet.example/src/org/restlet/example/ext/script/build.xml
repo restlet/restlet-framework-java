@@ -18,6 +18,7 @@
 	<property name="lib-jython" value="${lib}/org.python_2.2" />
 	<property name="lib-jruby" value="${lib}/org.jruby_1.2" />
 	<property name="lib-groovy" value="${lib}/org.codehaus.groovy_1.6" />
+	<property name="lib-velocity" value="${lib}/org.apache.velocity_1.5" />
 
 	<target name="lib-restlet" description="Fetch Restlet libraries">
 		<copy todir="jar/restlet/" flatten="true">
@@ -44,6 +45,8 @@
 			<file file="${lib-jruby}/org.jruby.jar" />
 			<file file="${lib-jruby}/com.sun.script.jruby.jar" />
 			<file file="${lib-groovy}/org.codehaus.groovy.jar" />
+			<file file="${lib-velocity}/org.apache.velocity.jar" />
+			<file file="${lib-velocity}/com.sun.script.velocity.jar" />
 		</copy>
 		<copy todir="jar/scripting/Lib">
 			<fileset dir="${lib-jython}/Lib/" />

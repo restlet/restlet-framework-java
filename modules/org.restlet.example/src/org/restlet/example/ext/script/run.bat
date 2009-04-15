@@ -17,6 +17,8 @@ jar/scripting/jython.jar;^
 jar/scripting/com.sun.script.jython.jar;^
 jar/scripting/org.jruby.jar;^
 jar/scripting/com.sun.script.jruby.jar;^
-jar/scripting/org.codehaus.groovy.jar
+jar/scripting/org.codehaus.groovy.jar;^
+jar/scripting/org.apache.velocity.jar;^
+jar/scripting/com.sun.script.velocity.jar
 
 %java% -cp %jars% %main%
