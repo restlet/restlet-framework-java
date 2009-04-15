@@ -30,12 +30,14 @@
 
 package org.restlet.ext.spring;
 
+import org.restlet.Restlet;
 import org.restlet.resource.Finder;
 import org.restlet.resource.Resource;
 import org.restlet.routing.Router;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
+import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
@@ -46,10 +48,10 @@ import java.util.Map;
 /**
  * Restlet {@link Router} which behaves like Spring's
  * {@link org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping}. It
- * takes every bean of type {@link Resource} defined in a particular context and
- * examines its aliases (generally speaking, its name and id). If one of the
- * aliases begins with a forward slash, the resource will be attached to that
- * URL.
+ * takes every bean of type {@link Resource} or {@link Restlet} defined in a
+ * particular context and examines its aliases (generally speaking, its name
+ * and id). If one of the aliases begins with a forward slash, the resource will
+ * be attached to that URI.
  * <p>
  * Example:
  * 
@@ -64,12 +66,18 @@ import java.util.Map;
  *    &lt;/bean&gt;
  * 
  *    &lt;bean name=&quot;/studies/{study-identifier}/template&quot; id=&quot;templateResource&quot; autowire=&quot;byName&quot; scope=&quot;prototype&quot; class=&quot;edu.northwestern.myapp.TemplateResource&quot; /&gt;
+ *
+ *    &lt;!-- Singleton bean for a restlet --&gt;
+ *    &lt;bean name=&quot;/studies/{study-identifier}/files&quot; id=&quot;filesResource&quot; autowire=&quot;byName&quot; class=&quot;edu.northwestern.myapp.MyDirectory&quot; /&gt;
  * &lt;/beans&gt;
  * </pre>
  * 
- * This will route two resources: <code>"/studies"</code> and
- * <code>"/studies/{study-identifier}/template"</code> to the corresponding
- * Resource subclass.
+ * This will route two resources and one restlet: <code>"/studies"</code>,
+ * <code>"/studies/{study-identifier}/template"</code>, and
+ * <code>"/studies/{study-identifier}/files"</code> to the corresponding beans.
+ * N.b.: Resources must be scoped prototype, since a new instance must be
+ * created for each request.  Restlets may be singletons (this class
+ * will only ever load one instance for each).
  * 
  * Concurrency note: instances of this class or its subclasses can be invoked by
  * several threads at the same time and therefore must be thread-safe. You
@@ -98,6 +106,7 @@ public class SpringBeanRouter extends Router implements
      *            The Spring bean factory.
      * @param beanName
      *            The bean name.
+     * @see #attachResource
      */
     protected Finder createFinder(BeanFactory beanFactory, String beanName) {
         return new SpringBeanFinder(beanFactory, beanName);
@@ -117,49 +126,87 @@ public class SpringBeanRouter extends Router implements
     }
 
     /**
-     * Modify the application context by looking up the name of all beans of
-     * type Resource, calling the
-     * {@link #resolveUri(String, ConfigurableListableBeanFactory)} method for
-     * each of them. If an URI is found, a finder is created for the bean name
-     * using the {@link #createFinder(BeanFactory, String)} method.
+     * Attaches all Resource and Restlet beans found in the surrounding
+     * bean factory for which {@link #resolveUri} finds a usable URI.
+     * Also attaches everything explicitly routed in the attachments
+     * property.
+     *
+     * @see #setAttachments 
      */
     public void postProcessBeanFactory(ConfigurableListableBeanFactory factory)
             throws BeansException {
-        String[] names = isFindInAncestors() ? BeanFactoryUtils
-                .beanNamesForTypeIncludingAncestors(factory, Resource.class,
-                        true, true) : factory.getBeanNamesForType(
-                Resource.class, true, true);
 
-        BeanFactory bf = this.applicationContext == null ? factory
+        ListableBeanFactory source = this.applicationContext == null
+                ? factory
                 : this.applicationContext;
-        for (final String name : names) {
-            final String uri = resolveUri(name, factory);
-            if (uri != null) {
-                if (this.attachments == null || !this.attachments.containsKey(uri)) {
-                    attach(uri, createFinder(bf, name));
+        attachAllResources(source);
+        attachAllRestlets(source);
+        if (getAttachments() != null) {
+            for (Map.Entry<String, String> attachment : getAttachments().entrySet()) {
+                String uri = attachment.getKey();
+                String beanName = attachment.getValue();
+                Class beanType = source.getType(beanName);
+                if (Resource.class.isAssignableFrom(beanType)) {
+                    attachResource(uri, beanName, source);
+                } else if (Restlet.class.isAssignableFrom(beanType)) {
+                    attachRestlet(uri, beanName, source);
+                } else {
+                    throw new IllegalStateException(beanName +
+                        " is not routable.  It must be either a Resource or a Restlet.");
                 }
-            }
-        }
-        if (this.attachments != null) {
-            for (Map.Entry<String, String> attachment : this.attachments.entrySet()) {
-                attach(attachment.getKey(), createFinder(bf, attachment.getValue()));
             }
         }
     }
 
+    private void attachAllResources(ListableBeanFactory source) {
+        for (final String name : beanNamesForType(source, Resource.class)) {
+            final String uri = resolveUri(name, source);
+            if (uri != null) attachResource(uri, name, source);
+        }
+    }
+
     /**
-     * Uses this first alias for this bean that starts with '/'. This mimics the
+     * Attaches the named resource bean at the given URI, creating a finder for
+     * it via {@link #createFinder(BeanFactory, String)}.
+     */
+    protected void attachResource(String uri, String beanName, BeanFactory source) {
+        attach(uri, createFinder(source, beanName));
+    }
+
+    private void attachAllRestlets(ListableBeanFactory source) {
+        for (final String name : beanNamesForType(source, Restlet.class)) {
+            final String uri = resolveUri(name, source);
+            if (uri != null) attachRestlet(uri, name, source);
+        }
+    }
+
+    /**
+     * Attaches the named restlet bean directly at the given URI.
+     */
+    protected void attachRestlet(String uri, String name, BeanFactory source) {
+        attach(uri, (Restlet) source.getBean(name));
+    }
+
+    private String[] beanNamesForType(ListableBeanFactory factory, Class<?> beanClass) {
+        return isFindInAncestors()
+            ? BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
+                factory, beanClass, true, true)
+            : factory.getBeanNamesForType(beanClass, true, true);
+    }
+
+    /**
+     * Uses this first alias for this bean that starts with '/' and is not
+     * mapped in the explicit attachments to another bean. This mimics the
      * behavior of
-     * {@link org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping}
-     * .
+     * {@link org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping}.
      */
     protected String resolveUri(String resourceName,
-            ConfigurableListableBeanFactory factory) {
-        if (isUri(resourceName)) {
+            ListableBeanFactory factory) {
+        if (isAvailableUri(resourceName)) {
             return resourceName;
         }
         for (final String alias : factory.getAliases(resourceName)) {
-            if (isUri(alias)) {
+            if (isAvailableUri(alias)) {
                 return alias;
             }
         }
@@ -167,8 +214,9 @@ public class SpringBeanRouter extends Router implements
         return null;
     }
 
-    private boolean isUri(String name) {
-        return name.startsWith("/");
+    private boolean isAvailableUri(String name) {
+        return name.startsWith("/")
+            && (getAttachments() == null || !getAttachments().containsKey(name));
     }
 
     /**
@@ -203,5 +251,9 @@ public class SpringBeanRouter extends Router implements
      */
     public void setAttachments(Map<String, String> attachments) {
         this.attachments = attachments;
+    }
+
+    protected Map<String, String> getAttachments() {
+        return this.attachments;
     }
 }

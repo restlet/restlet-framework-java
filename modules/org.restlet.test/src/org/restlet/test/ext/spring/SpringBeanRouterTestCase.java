@@ -31,13 +31,16 @@
 package org.restlet.test.ext.spring;
 
 import org.restlet.Restlet;
+import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.ext.spring.SpringBeanFinder;
 import org.restlet.ext.spring.SpringBeanRouter;
 import org.restlet.resource.Resource;
+import org.restlet.routing.Filter;
 import org.restlet.routing.Route;
+import org.restlet.security.Guard;
 import org.restlet.test.RestletTestCase;
 import org.restlet.util.RouteList;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -77,25 +80,30 @@ public class SpringBeanRouterTestCase extends RestletTestCase {
 
         registerResourceBeanDefinition("ore", ORE_URI);
         registerResourceBeanDefinition("fish", FISH_URI);
-
-        BeanDefinition bd = new RootBeanDefinition(String.class);
-        bd.setScope(BeanDefinition.SCOPE_SINGLETON);
-        this.factory.registerBeanDefinition("someOtherBean", bd);
+        registerBeanDefinition("someOtherBean", null, String.class, null);
 
         this.router = new SpringBeanRouter();
     }
 
     private void registerResourceBeanDefinition(String id, String alias) {
-        BeanDefinition bd = new RootBeanDefinition(Resource.class);
-        bd.setScope(BeanDefinition.SCOPE_PROTOTYPE);
+        registerBeanDefinition(id, alias, Resource.class, BeanDefinition.SCOPE_PROTOTYPE);
+    }
+
+    private void registerBeanDefinition(String id, String alias, Class<?> beanClass, String scope) {
+        BeanDefinition bd = new RootBeanDefinition(beanClass);
+        bd.setScope(scope == null ? BeanDefinition.SCOPE_SINGLETON : scope);
         this.factory.registerBeanDefinition(id, bd);
         if (alias != null) {
             this.factory.registerAlias(id, alias);
         }
     }
 
-    private RouteList actualRoutes() {
+    private void doPostProcess() {
         this.router.postProcessBeanFactory(this.factory);
+    }
+
+    private RouteList actualRoutes() {
+        doPostProcess();
         return this.router.getRoutes();
     }
 
@@ -175,8 +183,85 @@ public class SpringBeanRouterTestCase extends RestletTestCase {
         assertFinderForBean("fish", oreRoute.getNext());
     }
 
+    public void testRoutingIncludesResourceSubclasses() throws Exception {
+        String expected = "/renewable/timber/{id}";
+        registerBeanDefinition("timber", expected,
+            TestResource.class, BeanDefinition.SCOPE_PROTOTYPE);
+
+        doPostProcess();
+        Route timberRoute = matchRouteFor("/renewable/timber/sycamore");
+        assertNotNull("No route for timber", timberRoute);
+        assertFinderForBean("timber", timberRoute.getNext());
+    }
+
+    public void testRoutingIncludesGuards() throws Exception {
+        String expected = "/protected/timber";
+        registerBeanDefinition("timber", expected, TestGuard.class, null);
+        doPostProcess();
+
+        Route guardRoute = matchRouteFor(expected);
+        assertNotNull("No route for guard", guardRoute);
+        assertTrue("Route is not for guard",
+            guardRoute.getNext() instanceof TestGuard);
+    }
+
+    public void testRoutingIncludesFilters() throws Exception {
+        String expected = "/filtered/timber";
+        registerBeanDefinition("timber", expected, TestFilter.class, null);
+        doPostProcess();
+
+        Route filterRoute = matchRouteFor(expected);
+        assertNotNull("No route for filter", filterRoute);
+        assertTrue("Route is not for filter",
+            filterRoute.getNext() instanceof Filter);
+    }
+
+    public void testRoutingIncludesOtherRestlets() throws Exception {
+        String expected = "/singleton";
+        registerBeanDefinition("timber", expected, TestRestlet.class, null);
+        doPostProcess();
+
+        Route restletRoute = matchRouteFor(expected);
+        assertNotNull("No route for restlet", restletRoute);
+        assertTrue("Route is not for restlet",
+            restletRoute.getNext() instanceof TestRestlet);
+    }
+
+    public void testExplicitAttachmentsMayBeRestlets() throws Exception {
+        String expected = "/protected/timber";
+        this.router.setAttachments(Collections.singletonMap(expected, "timber"));
+        registerBeanDefinition("timber", null, TestGuard.class, null);
+
+        doPostProcess();
+        Route timberRoute = matchRouteFor(expected);
+        assertNotNull("No route for " + expected, timberRoute);
+        assertTrue("Route is not for correct restlet",
+            timberRoute.getNext() instanceof TestGuard);
+    }
+
+    public void testExplicitRoutingForNonResourceNonRestletBeansFails() throws Exception {
+        this.router.setAttachments(Collections.singletonMap("/fail", "someOtherBean"));
+        try {
+            doPostProcess();
+            fail("Exception not thrown");
+        } catch (IllegalStateException ise) {
+            assertEquals(
+                "someOtherBean is not routable.  It must be either a Resource or a Restlet.",
+                ise.getMessage());
+        }
+    }
+
     private Route matchRouteFor(String uri) {
         Request req = new Request(Method.GET, uri);
         return (Route) router.getNext(req, new Response(req));
     }
+
+    private static class TestResource extends Resource { }
+    private static class TestRestlet extends Restlet { }
+    private static class TestGuard extends Guard {
+        private TestGuard() throws IllegalArgumentException {
+            super(null, ChallengeScheme.HTTP_BASIC, "Test");
+        }
+    }
+    private static class TestFilter extends Filter { }
 }
