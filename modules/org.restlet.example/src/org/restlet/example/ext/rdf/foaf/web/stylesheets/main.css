@@ -31,8 +31,9 @@ select {padding:1px;}
 
 /* menu */
 #menu {float:left;width:150px; text-align:center ; border-right: 1px solid black; font:100% "Trebuchet MS", "Lucida Sans", Arial, Helvetica, sans-serif; }
-#menu h3, #menu li {clear:left; width:150px; height:40px; overflow:hidden}
+#menu h3, #menu li {clear:left; width:150px; height:30px; overflow:hidden}
 #menu li {list-style:none; color:#885c2f}
+#menu img {height: 20px}
 
 #menu a {display:block; color: #3465a4;background:transparent}
 #menu a:link, #menu a:visited {color:#292f33; text-decoration:none; border-bottom:1px solid #292f33}

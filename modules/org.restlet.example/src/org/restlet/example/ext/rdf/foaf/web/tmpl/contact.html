@@ -1,7 +1,5 @@
 <#include "/header.ftl"/>
 <#global content>
-<div id="user" style="margin-bottom: 20px;">User ${user.firstName} ${user.lastName}</div>
-
 <div>
 	<h4>Update my contact.</h4>
 	<form action="${resourceRef}?method=put" method="post" accept-charset="UTF-8">
@@ -52,6 +50,9 @@
    </div>
    <div>
       <h3><a href="${rootRef}/users/${user.id}/contacts">Contacts</a></h3>
+      <ul>
+	    <li><a href="${resourceRef}/contacts/${contact.id}" >${contact.nickname} <#if contact.image??><img src="${contact.image}" alt="${contact.nickname}" /></#if></a></li>
+      </ul>
    </div>
 </#global>
 <#include "/footer.ftl"/>

@@ -23,40 +23,29 @@
 </#if>
 		</table>
 		<p>
-		<input type="submit" name="updateUser" title="Submit modifications to the user" value="Update" onclick="this.form.action='${resourceRef}?method=put'" />
-		<input type="button" name="deleteUser" title="Delete the user" value="Delete" onclick="this.form.action='${resourceRef}?method=delete';this.form.submit();" />
-</p>
+		   <input type="submit" name="updateUser" title="Submit modifications to the user" value="Update" onclick="this.form.action='${resourceRef}?method=put'" />
+           <input type="button" name="deleteUser" title="Delete the user" value="Delete" onclick="this.form.action='${resourceRef}?method=delete';this.form.submit();" />
+        </p>
 	</form>
-</div>
-
-<div>
-	<h4>List of user's contacts</h4>
-	<table>
-	  <tr>
-	    <th colspan="2">Name</th>
-	  </tr>
-<#if contacts??>
-	<#list contacts as contact>
-	  <tr>
-	    <td><a href="${resourceRef}/contacts/${contact.id}" >${contact.nickname}</a></td>
-<#if contact.image??>
-	    <td><a href="${resourceRef}/contacts/${contact.id}" ><img src="${contact.image}" height="30" alt="${contact.nickname}" /></a></td>
-<#else>
-	    <td>&nbsp;</td>
-</#if>
-	  </tr>
-	</#list>
-</#if>
-	</table>
 </div>
 </#global>
 
 <#global menu>
    <div>
       <h3 class="menu"><a href="${rootRef}/users">Users</a></h3>
+      <ul>
+         <li><a href="${rootRef}/users/${user.id}">${user.firstName} ${user.lastName}</a></li>
+      </ul>
    </div>
    <div>
       <h3 class="menu"><a href="${resourceRef}/contacts">Contacts</a></h3>
+<#if contacts??>
+      <ul>
+	<#list contacts as contact>
+	    <li><a href="${resourceRef}/contacts/${contact.id}" >${contact.nickname} <#if contact.image??><img src="${contact.image}" height="30" alt="${contact.nickname}" /></#if></a></li>
+	</#list>
+     </ul>
+</#if>
    </div>
 </#global>
 

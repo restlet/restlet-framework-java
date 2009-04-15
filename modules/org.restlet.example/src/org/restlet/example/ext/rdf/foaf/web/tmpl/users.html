@@ -1,19 +1,6 @@
 <#include "/header.ftl"/>
 <#global content>
-<div style="width:200px; float: left">
-	<h4>List of users.</h4>
-	<table>
-		<tr>
-			<th>User</th>
-		</tr>
-	<#list users as user> 
-		<tr>
-			<td><a href="<@concatUris parentUri=resourceRef relativeUri=user.id!"" />">${user.firstName!"-"} ${user.lastName!"-"}</a></td>
-		</tr>
-	</#list>
-	</table>
-</div>
-<div style="width:300px; float: right">
+<div style="width:440px;">
 	<h4>Create a new user.</h4>
     <form action="${resourceRef}" method="post" accept-charset="UTF-8">
 		<#if errorMessage??>
@@ -30,7 +17,7 @@
 			</tr>
 			<tr>
 				<td>Image:</td>
-				<td><input type="text" name="image" /></td>
+				<td><input type="text" name="image" size="40" /></td>
 			</tr>
 		</table>
 		<p><input type="submit" name="createUser" title="Create a new User" value="Create" /></p>
@@ -41,6 +28,11 @@
 <#global menu>
    <div>
       <h3 class="menu"><a href="${rootRef}/users">Users</a></h3>
+      <ul>
+	<#list users as user> 
+         <li><a href="<@concatUris parentUri=resourceRef relativeUri=user.id!"" />">${user.firstName!"-"} ${user.lastName!"-"}</a></li>
+	</#list>
+      </ul>
    </div>
 </#global>
 <#include "/footer.ftl"/>
