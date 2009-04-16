@@ -82,6 +82,9 @@ Changes log
           Suggested by Lars Heuer.
         - Filter#setNext() now accepts ServerResource subclasses.
           Suggested by Lars Heuer.
+        - Added Method#safe and idempotent properties.
+        - Added ClientResource#followRedirects property and the related
+          implementation code.
     - Miscellaneous
         - Component XML configuration has been moved into an Engine 
           ComponentXmlParser class.

@@ -36,15 +36,15 @@ package org.restlet.data;
  * @author Jerome Louvel
  */
 public final class Method extends Metadata implements Comparable<Method> {
-    private static final String BASE_HTTP = "http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html";
-
-    private static final String BASE_WEBDAV = "http://www.webdav.org/specs/rfc2518.html";
-
     /**
      * Pseudo-method use to match all methods.
      */
     public static final Method ALL = new Method("*",
             "Pseudo-method use to match all methods.");
+
+    private static final String BASE_HTTP = "http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html";
+
+    private static final String BASE_WEBDAV = "http://www.webdav.org/specs/rfc2518.html";
 
     /**
      * Used with a proxy that can dynamically switch to being a tunnel.
@@ -55,7 +55,7 @@ public final class Method extends Metadata implements Comparable<Method> {
      */
     public static final Method CONNECT = new Method("CONNECT",
             "Used with a proxy that can dynamically switch to being a tunnel",
-            BASE_HTTP + "#sec9.9");
+            BASE_HTTP + "#sec9.9", false, false);
 
     /**
      * Creates a duplicate of the source resource, identified by the
@@ -69,7 +69,7 @@ public final class Method extends Metadata implements Comparable<Method> {
     public static final Method COPY = new Method(
             "COPY",
             "Creates a duplicate of the source resource, identified by the Request-URI, in the destination resource, identified by the URI in the Destination header",
-            BASE_WEBDAV + "#METHOD_COPY");
+            BASE_WEBDAV + "#METHOD_COPY", false, true);
 
     /**
      * Requests that the origin server deletes the resource identified by the
@@ -82,7 +82,7 @@ public final class Method extends Metadata implements Comparable<Method> {
     public static final Method DELETE = new Method(
             "DELETE",
             "Requests that the origin server deletes the resource identified by the request URI",
-            BASE_HTTP + "#sec9.7");
+            BASE_HTTP + "#sec9.7", false, true);
 
     /**
      * Retrieves whatever information (in the form of an entity) that is
@@ -95,7 +95,7 @@ public final class Method extends Metadata implements Comparable<Method> {
     public static final Method GET = new Method(
             "GET",
             "Retrieves whatever information (in the form of an entity) that is identified by the request URI",
-            BASE_HTTP + "#sec9.3");
+            BASE_HTTP + "#sec9.3", true, true);
 
     /**
      * Identical to GET except that the server must not return a message body in
@@ -108,7 +108,7 @@ public final class Method extends Metadata implements Comparable<Method> {
     public static final Method HEAD = new Method(
             "HEAD",
             "Identical to GET except that the server must not return a message body in the response",
-            BASE_HTTP + "#sec9.4");
+            BASE_HTTP + "#sec9.4", true, true);
 
     /**
      * Used to take out a lock of any access type on the resource identified by
@@ -120,7 +120,7 @@ public final class Method extends Metadata implements Comparable<Method> {
      */
     public static final Method LOCK = new Method("LOCK",
             "Used to take out a lock of any access type (WebDAV)", BASE_WEBDAV
-                    + "#METHOD_LOCK");
+                    + "#METHOD_LOCK", true, false);
 
     /**
      * MKCOL creates a new collection resource at the location specified by the
@@ -132,7 +132,7 @@ public final class Method extends Metadata implements Comparable<Method> {
      */
     public static final Method MKCOL = new Method("MKCOL",
             "Used to create a new collection (WebDAV)", BASE_WEBDAV
-                    + "#METHOD_MKCOL");
+                    + "#METHOD_MKCOL", false, true);
 
     /**
      * Logical equivalent of a copy, followed by consistency maintenance
@@ -146,7 +146,7 @@ public final class Method extends Metadata implements Comparable<Method> {
     public static final Method MOVE = new Method(
             "MOVE",
             "Logical equivalent of a copy, followed by consistency maintenance processing, followed by a delete of the source (WebDAV)",
-            BASE_WEBDAV + "#METHOD_MOVE");
+            BASE_WEBDAV + "#METHOD_MOVE", false, false);
 
     /**
      * Requests for information about the communication options available on the
@@ -159,7 +159,7 @@ public final class Method extends Metadata implements Comparable<Method> {
     public static final Method OPTIONS = new Method(
             "OPTIONS",
             "Requests for information about the communication options available on the request/response chain identified by the URI",
-            BASE_HTTP + "#sec9.2");
+            BASE_HTTP + "#sec9.2", true, true);
 
     /**
      * Requests that the origin server accepts the entity enclosed in the
@@ -173,7 +173,7 @@ public final class Method extends Metadata implements Comparable<Method> {
     public static final Method POST = new Method(
             "POST",
             "Requests that the origin server accepts the entity enclosed in the request as a new subordinate of the resource identified by the request URI",
-            BASE_HTTP + "#sec9.5");
+            BASE_HTTP + "#sec9.5", false, false);
 
     /**
      * Retrieves properties defined on the resource identified by the request
@@ -186,7 +186,7 @@ public final class Method extends Metadata implements Comparable<Method> {
     public static final Method PROPFIND = new Method(
             "PROPFIND",
             "Retrieves properties defined on the resource identified by the request URI",
-            BASE_WEBDAV + "#METHOD_PROPFIND");
+            BASE_WEBDAV + "#METHOD_PROPFIND", true, true);
 
     /**
      * Processes instructions specified in the request body to set and/or remove
@@ -199,7 +199,7 @@ public final class Method extends Metadata implements Comparable<Method> {
     public static final Method PROPPATCH = new Method(
             "PROPPATCH",
             "Processes instructions specified in the request body to set and/or remove properties defined on the resource identified by the request URI",
-            BASE_WEBDAV + "#METHOD_PROPPATCH");
+            BASE_WEBDAV + "#METHOD_PROPPATCH", false, true);
 
     /**
      * Requests that the enclosed entity be stored under the supplied request
@@ -212,7 +212,7 @@ public final class Method extends Metadata implements Comparable<Method> {
     public static final Method PUT = new Method(
             "PUT",
             "Requests that the enclosed entity be stored under the supplied request URI",
-            BASE_HTTP + "#sec9.6");
+            BASE_HTTP + "#sec9.6", false, true);
 
     /**
      * Used to invoke a remote, application-layer loop-back of the request
@@ -225,7 +225,7 @@ public final class Method extends Metadata implements Comparable<Method> {
     public static final Method TRACE = new Method(
             "TRACE",
             "Used to invoke a remote, application-layer loop-back of the request message",
-            BASE_HTTP + "#sec9.8");
+            BASE_HTTP + "#sec9.8", true, true);
 
     /**
      * Removes the lock identified by the lock token from the request URI, and
@@ -238,7 +238,7 @@ public final class Method extends Metadata implements Comparable<Method> {
     public static final Method UNLOCK = new Method(
             "UNLOCK",
             "Removes the lock identified by the lock token from the request URI, and all other resources included in the lock",
-            BASE_WEBDAV + "#METHOD_UNLOCK");
+            BASE_WEBDAV + "#METHOD_UNLOCK", true, false);
 
     /**
      * Returns the method associated to a given method name. If an existing
@@ -290,22 +290,34 @@ public final class Method extends Metadata implements Comparable<Method> {
         return result;
     }
 
+    /**
+     * Indicates if the side-effects of several requests is the same as a single
+     * request.
+     */
+    private boolean idempotent;
+
+    /**
+     * Indicates if it should have the significance of taking an action other
+     * than retrieval.
+     */
+    private final boolean safe;
+
     /** The URI of the specification describing the method. */
     private volatile String uri;
 
     /**
-     * Constructor.
+     * Constructor for unsafe and non idempotent methods.
      * 
      * @param name
      *            The technical name of the method.
      * @see org.restlet.data.Method#valueOf(String)
      */
     public Method(final String name) {
-        this(name, null, null);
+        this(name, null);
     }
 
     /**
-     * Constructor.
+     * Constructor for unsafe and non idempotent methods.
      * 
      * @param name
      *            The technical name of the method.
@@ -313,8 +325,23 @@ public final class Method extends Metadata implements Comparable<Method> {
      *            The description.
      * @see org.restlet.data.Method#valueOf(String)
      */
-    public Method(final String name, final String description) {
-        this(name, description, null);
+    public Method(String name, String description) {
+        this(name, description, null, false, false);
+    }
+
+    /**
+     * Constructor for unsafe and non idempotent methods.
+     * 
+     * @param name
+     *            The technical name.
+     * @param description
+     *            The description.
+     * @param uri
+     *            The URI of the specification describing the method.
+     * @see org.restlet.data.Method#valueOf(String)
+     */
+    public Method(String name, String description, String uri) {
+        this(name, description, uri, false, false);
     }
 
     /**
@@ -326,11 +353,33 @@ public final class Method extends Metadata implements Comparable<Method> {
      *            The description.
      * @param uri
      *            The URI of the specification describing the method.
+     * @param safe
+     *            Indicates if the method is safe.
+     * @param idempotent
+     *            Indicates if the method is idempotent.
      * @see org.restlet.data.Method#valueOf(String)
      */
-    public Method(final String name, final String description, final String uri) {
+    public Method(String name, String description, String uri, boolean safe,
+            boolean idempotent) {
         super(name, description);
         this.uri = uri;
+        this.safe = safe;
+        this.idempotent = idempotent;
+    }
+
+    /**
+     * Compares this method to another. Based on the method name.
+     * 
+     * @param o
+     *            The other method.
+     */
+    public int compareTo(Method o) {
+        if (o != null) {
+            return this.getName().compareTo(o.getName());
+        } else {
+            return 1;
+        }
+
     }
 
     /** {@inheritDoc} */
@@ -356,6 +405,26 @@ public final class Method extends Metadata implements Comparable<Method> {
     }
 
     /**
+     * Indicates if the side-effects of several requests is the same as a single
+     * request.
+     * 
+     * @return True if the method is idempotent.
+     */
+    public boolean isIdempotent() {
+        return idempotent;
+    }
+
+    /**
+     * Indicates if it should have the significance of taking an action other
+     * than retrieval.
+     * 
+     * @return True if the method is safe.
+     */
+    public boolean isSafe() {
+        return safe;
+    }
+
+    /**
      * Sets the URI of the specification describing the method.
      * 
      * @param uri
@@ -367,14 +436,5 @@ public final class Method extends Metadata implements Comparable<Method> {
     @Deprecated
     public void setUri(String uri) {
         this.uri = uri;
-    }
-
-    public int compareTo(Method o) {
-        if (o != null) {
-            return this.getName().compareTo(o.getName());
-        } else {
-            return 1;
-        }
-
     }
 }

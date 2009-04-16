@@ -32,6 +32,7 @@ package org.restlet.resource;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.Client;
@@ -68,6 +69,9 @@ import org.restlet.util.Series;
  */
 public class ClientResource extends UniformResource {
 
+    /** Indicates if redirections are followed. */
+    private volatile boolean followRedirects;
+
     /** The next Restlet. */
     private volatile Uniform next;
 
@@ -93,6 +97,7 @@ public class ClientResource extends UniformResource {
             this.next = context.getClientDispatcher();
         }
 
+        this.followRedirects = true;
         init(context, request, response);
     }
 
@@ -147,6 +152,7 @@ public class ClientResource extends UniformResource {
      *            The handled response.
      */
     public ClientResource(Context context, Request request, Response response) {
+        this.followRedirects = true;
         init(context, request, response);
     }
 
@@ -229,7 +235,7 @@ public class ClientResource extends UniformResource {
      *            The handled response.
      */
     public ClientResource(Request request, Response response) {
-        init(Context.getCurrent(), request, response);
+        this(Context.getCurrent(), request, response);
     }
 
     /**
@@ -356,7 +362,7 @@ public class ClientResource extends UniformResource {
         }
 
         if (hasNext()) {
-            getNext().handle(getRequest(), getResponse());
+            handle(getRequest(), getResponse(), null);
             result = getResponse().getEntity();
         } else {
             getLogger()
@@ -365,6 +371,49 @@ public class ClientResource extends UniformResource {
         }
 
         return result;
+    }
+
+    /**
+     * Handle the call and follow redirection for safe methods.
+     * 
+     * @param request
+     *            The request to send.
+     * @param response
+     *            The response to update.
+     * @param references
+     *            The references that caused a redirection to prevent infinite
+     *            loops.
+     */
+    private void handle(Request request, Response response,
+            List<Reference> references) {
+        // Actually handle the call
+        getNext().handle(request, response);
+
+        // Check for redirections
+        if (request.getMethod().isSafe()
+                && response.getStatus().isRedirection()) {
+            Reference newTargetRef = response.getLocationRef();
+
+            if ((references != null) && references.contains(newTargetRef)) {
+                getLogger().warning(
+                        "Infinite redirection loop detected with URI: "
+                                + newTargetRef);
+            } else if (!request.isEntityAvailable()) {
+                getLogger()
+                        .warning(
+                                "Unable to follow the redirection because the request entity isn't available anymore.");
+            } else {
+                if (references == null) {
+                    references = new ArrayList<Reference>();
+                }
+
+                // Add to the list of redirection reference
+                // to prevent infinite loops
+                references.add(request.getResourceRef());
+                request.setResourceRef(newTargetRef);
+                handle(request, response, references);
+            }
+        }
     }
 
     /**
@@ -435,6 +484,15 @@ public class ClientResource extends UniformResource {
     }
 
     /**
+     * Indicates if redirections are followed.
+     * 
+     * @return True if redirections are followed.
+     */
+    public boolean isFollowRedirects() {
+        return followRedirects;
+    }
+
+    /**
      * Describes the resource using content negotiation to select the best
      * variant based on the client preferences.<br>
      * <br>
@@ -481,25 +539,7 @@ public class ClientResource extends UniformResource {
     }
 
     /**
-     * Posts a representation to the resource at the target URI reference.<br>
-     * <br>
-     * If a success status is not returned, then a resource exception is thrown.
-     * 
-     * @param entity
-     *            The posted entity.
-     * @return The optional result entity.
-     * @throws ResourceException
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.5">HTTP
-     *      POST method</a>
-     */
-    public Representation post(Representation entity) throws ResourceException {
-        setMethod(Method.POST);
-        getRequest().setEntity(entity);
-        return handle();
-    }
-
-    /**
+     * TODO
      * 
      * @param entity
      * @return
@@ -527,6 +567,25 @@ public class ClientResource extends UniformResource {
         }
 
         return result;
+    }
+
+    /**
+     * Posts a representation to the resource at the target URI reference.<br>
+     * <br>
+     * If a success status is not returned, then a resource exception is thrown.
+     * 
+     * @param entity
+     *            The posted entity.
+     * @return The optional result entity.
+     * @throws ResourceException
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.5">HTTP
+     *      POST method</a>
+     */
+    public Representation post(Representation entity) throws ResourceException {
+        setMethod(Method.POST);
+        getRequest().setEntity(entity);
+        return handle();
     }
 
     /**
@@ -593,6 +652,16 @@ public class ClientResource extends UniformResource {
      */
     public void setCookies(Series<Cookie> cookies) {
         getRequest().setCookies(cookies);
+    }
+
+    /**
+     * Indicates if redirections are followed.
+     * 
+     * @param followRedirects
+     *            True if redirections are followed.
+     */
+    public void setFollowRedirects(boolean followRedirects) {
+        this.followRedirects = followRedirects;
     }
 
     /**
