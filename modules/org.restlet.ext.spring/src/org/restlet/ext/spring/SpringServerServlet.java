@@ -35,13 +35,10 @@ import java.util.Enumeration;
 import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Context;
-import org.restlet.engine.component.ChildContext;
 import org.restlet.ext.servlet.ServerServlet;
-import org.restlet.ext.servlet.internal.ServletContextAdapter;
 import org.springframework.beans.BeansException;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-
 
 /**
  * Spring specific ServerServlet adapter. This class is similar to the
@@ -91,10 +88,8 @@ public class SpringServerServlet extends ServerServlet {
 
         if (application != null) {
             // Set the context based on the Servlet's context
-            application.setContext(new ChildContext(new ServletContextAdapter(
-                    this, parentContext)));
-            final ChildContext applicationContext = (ChildContext) application
-                    .getContext();
+            application.setContext(parentContext.createChildContext());
+            Context applicationContext = application.getContext();
 
             // Copy all the servlet parameters into the context
             String initParam;

@@ -30,6 +30,8 @@ Changes log
         - Fixed potential NPE. Contribution from Remi Dewitte.
         - Fixed issue with the Authenticator class. 
           Reported by Remi Dewitte.
+        - SpringServerServlet now don't directly instantiate a 
+          ServletContextAdapter. Reported by Mikhail Spirydonau.          
      - Enhancements
         - Servlet's UserPrincipal is now transferred into Restlet's
           ClientInfo#subject property. Suggested by Paul Davis.

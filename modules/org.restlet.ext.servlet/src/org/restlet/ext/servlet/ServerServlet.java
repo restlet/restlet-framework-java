@@ -701,7 +701,7 @@ public class ServerServlet extends HttpServlet {
         if (result == null) {
             synchronized (ServerServlet.class) {
                 if (result == null) {
-                    // In case a component is explicitely defined, it cannot be
+                    // In case a component is explicitly defined, it cannot be
                     // completed.
                     if (isDefaultComponent()) {
                         // Find the attribute name to use to store the
