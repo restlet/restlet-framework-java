@@ -32,7 +32,9 @@ Changes log
           Reported by Remi Dewitte.
         - SpringServerServlet now don't directly instantiate a 
           ServletContextAdapter. Reported by Mikhail Spirydonau.          
-     - Enhancements
+        - Fixed Maven build issue with resource files. 
+          Contributed by Remi Dewitte.
+    - Enhancements
         - Servlet's UserPrincipal is now transferred into Restlet's
           ClientInfo#subject property. Suggested by Paul Davis.
         - Updated Media type RDF N3 from "text/rdf+n3" to "text/n3". 

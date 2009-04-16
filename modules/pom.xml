@@ -156,6 +156,21 @@
 
 	<build>
 		<sourceDirectory>${basedir}/src</sourceDirectory>
+		<resources>
+			<resource>
+				<filtering>false</filtering>
+				<directory>${basedir}/src</directory>
+				<includes>
+					<include>**/*</include>
+				</includes>
+				<excludes>
+					<exclude>**/*.java</exclude>
+					<exclude>**/package.html</exclude>
+				</excludes>
+			</resource>
+		</resources>
+
+
 
 		<plugins>
 			<plugin>
