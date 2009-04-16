@@ -20,6 +20,13 @@ public class AnnotationUtils {
     private static final ConcurrentMap<Class<? extends UniformResource>, List<AnnotationInfo>> cache = new ConcurrentHashMap<Class<? extends UniformResource>, List<AnnotationInfo>>();
 
     /**
+     * Clears the annotation descriptors cache.
+     */
+    public static void clearCache() {
+        cache.clear();
+    }
+
+    /**
      * Computes the annotation descriptors for the given class.
      * 
      * @param resourceClass
