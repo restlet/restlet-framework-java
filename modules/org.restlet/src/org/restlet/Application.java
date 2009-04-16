@@ -38,6 +38,7 @@ import org.restlet.data.Response;
 import org.restlet.engine.Engine;
 import org.restlet.engine.Helper;
 import org.restlet.engine.application.ApplicationHelper;
+import org.restlet.engine.util.AnnotationUtils;
 import org.restlet.security.Role;
 import org.restlet.service.ConnectorService;
 import org.restlet.service.ConverterService;
@@ -602,6 +603,9 @@ public class Application extends Restlet {
             if (getHelper() != null) {
                 getHelper().stop();
             }
+
+            // Clear the annotations cache
+            AnnotationUtils.clearCache();
 
             super.stop();
         }
