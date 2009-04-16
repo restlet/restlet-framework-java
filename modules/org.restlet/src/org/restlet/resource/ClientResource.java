@@ -777,6 +777,19 @@ public class ClientResource extends UniformResource {
     }
 
     /**
+     * Sets the target resource reference using a Reference. Note that the
+     * Reference can be either absolute or relative to the context's base
+     * reference.
+     * 
+     * @param resourceRef
+     *            The resource Reference.
+     * @see Request#setResourceRef(Reference)
+     */
+    public void setResourceRef(Reference resourceRef) {
+        getRequest().setResourceRef(resourceRef);
+    }
+
+    /**
      * Sets the target resource reference using an URI string. Note that the URI
      * can be either absolute or relative to the context's base reference.
      * 
