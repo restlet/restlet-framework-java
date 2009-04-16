@@ -37,7 +37,7 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.engine.Engine;
-import org.restlet.engine.Helper;
+import org.restlet.engine.RestletHelper;
 
 /**
  * Connector acting as a generic client. It internally uses one of the available
@@ -57,7 +57,7 @@ public class Client extends Connector {
     private volatile int connectTimeout = 0;
 
     /** The helper provided by the implementation. */
-    private final Helper<Client> helper;
+    private final RestletHelper<Client> helper;
 
     /**
      * Constructor.
@@ -152,7 +152,7 @@ public class Client extends Connector {
      * 
      * @return The helper provided by the implementation.
      */
-    private Helper<Client> getHelper() {
+    private RestletHelper<Client> getHelper() {
         return this.helper;
     }
 

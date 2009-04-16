@@ -41,7 +41,7 @@ import org.restlet.data.Protocol;
  * 
  * @author Jerome Louvel
  */
-public abstract class ConnectorHelper<T extends Connector> extends Helper<T> {
+public abstract class ConnectorHelper<T extends Connector> extends RestletHelper<T> {
     /** The protocols simultaneously supported. */
     private final List<Protocol> protocols;
 

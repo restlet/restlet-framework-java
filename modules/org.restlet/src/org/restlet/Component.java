@@ -41,7 +41,7 @@ import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.engine.Engine;
-import org.restlet.engine.Helper;
+import org.restlet.engine.RestletHelper;
 import org.restlet.engine.component.ComponentHelper;
 import org.restlet.engine.component.ComponentXmlParser;
 import org.restlet.representation.FileRepresentation;
@@ -143,7 +143,7 @@ public class Component extends Restlet {
     private volatile VirtualHost defaultHost;
 
     /** The helper provided by the implementation. */
-    private volatile Helper<Component> helper;
+    private volatile RestletHelper<Component> helper;
 
     /** The modifiable list of virtual hosts. */
     private final List<VirtualHost> hosts;
@@ -311,7 +311,7 @@ public class Component extends Restlet {
      * 
      * @return The helper provided by the implementation.
      */
-    private Helper<Component> getHelper() {
+    private RestletHelper<Component> getHelper() {
         return this.helper;
     }
 

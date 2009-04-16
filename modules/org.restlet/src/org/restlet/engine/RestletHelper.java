@@ -48,7 +48,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
-public abstract class Helper<T extends Restlet> {
+public abstract class RestletHelper<T extends Restlet> {
 
     /**
      * The map of attributes exchanged between the API and the Engine via this
@@ -67,7 +67,7 @@ public abstract class Helper<T extends Restlet> {
      * @param helped
      *            The helped Restlet.
      */
-    public Helper(T helped) {
+    public RestletHelper(T helped) {
         this.attributes = new ConcurrentHashMap<String, Object>();
         this.helped = helped;
     }

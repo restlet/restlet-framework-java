@@ -39,7 +39,7 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.engine.Engine;
-import org.restlet.engine.Helper;
+import org.restlet.engine.RestletHelper;
 import org.restlet.resource.Finder;
 
 /**
@@ -57,7 +57,7 @@ public class Server extends Connector {
     private volatile String address;
 
     /** The helper provided by the implementation. */
-    private final Helper<Server> helper;
+    private final RestletHelper<Server> helper;
 
     /** The listening port if specified. */
     private volatile int port;
@@ -322,7 +322,7 @@ public class Server extends Connector {
      * 
      * @return The internal server.
      */
-    private Helper<Server> getHelper() {
+    private RestletHelper<Server> getHelper() {
         return this.helper;
     }
 

@@ -36,7 +36,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.engine.Engine;
-import org.restlet.engine.Helper;
+import org.restlet.engine.RestletHelper;
 import org.restlet.engine.application.ApplicationHelper;
 import org.restlet.engine.util.AnnotationUtils;
 import org.restlet.security.Role;
@@ -121,7 +121,7 @@ public class Application extends Restlet {
     private volatile String description;
 
     /** The helper provided by the implementation. */
-    private volatile Helper<Application> helper;
+    private volatile RestletHelper<Application> helper;
 
     /** The local service. */
     private volatile MetadataService metadataService;
@@ -272,7 +272,7 @@ public class Application extends Restlet {
      * 
      * @return The helper provided by the implementation.
      */
-    private Helper<Application> getHelper() {
+    private RestletHelper<Application> getHelper() {
         return this.helper;
     }
 

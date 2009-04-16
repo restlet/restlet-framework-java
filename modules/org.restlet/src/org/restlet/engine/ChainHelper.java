@@ -45,7 +45,7 @@ import org.restlet.service.LogService;
  * 
  * @author Jerome Louvel
  */
-public abstract class ChainHelper<T extends Restlet> extends Helper<T> {
+public abstract class ChainHelper<T extends Restlet> extends RestletHelper<T> {
     /** The first Restlet. */
     private volatile Restlet first;
 

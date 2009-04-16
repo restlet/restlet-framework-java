@@ -39,7 +39,7 @@ import java.util.logging.Level;
 
 import org.restlet.Context;
 
-import org.restlet.engine.Helper;
+import org.restlet.engine.RestletHelper;
 import org.restlet.engine.security.SslContextFactory;
 
 /**
@@ -127,7 +127,7 @@ public class HttpsUtils {
      *            The helper to use.
      * @return The list of disabled cipher suites.
      */
-    public static String[] getDisabledCipherSuites(Helper<?> helper) {
+    public static String[] getDisabledCipherSuites(RestletHelper<?> helper) {
         List<String> disabledCipherSuites = new ArrayList<String>();
         String[] disabledCipherSuitesParams = helper.getHelpedParameters()
                 .getValuesArray("disabledCipherSuites");
@@ -148,7 +148,7 @@ public class HttpsUtils {
      *            The helper to use.
      * @return The list of enabled cipher suites.
      */
-    public static String[] getEnabledCipherSuites(Helper<?> helper) {
+    public static String[] getEnabledCipherSuites(RestletHelper<?> helper) {
         List<String> enabledCipherSuites = new ArrayList<String>();
         String[] enabledCipherSuitesParams = helper.getHelpedParameters()
                 .getValuesArray("enabledCipherSuites");
@@ -172,7 +172,7 @@ public class HttpsUtils {
      * 
      * @return The SSL context factory.
      */
-    public static SslContextFactory getSslContextFactory(Helper<?> helper) {
+    public static SslContextFactory getSslContextFactory(RestletHelper<?> helper) {
         SslContextFactory result = (SslContextFactory) ((helper.getContext() == null) ? null
                 : helper.getContext().getAttributes().get("sslContextFactory"));
 
