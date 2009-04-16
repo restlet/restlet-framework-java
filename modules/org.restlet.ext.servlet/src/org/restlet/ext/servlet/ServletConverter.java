@@ -43,7 +43,7 @@ import org.restlet.Restlet;
 import org.restlet.data.Reference;
 import org.restlet.engine.http.HttpRequest;
 import org.restlet.engine.http.HttpResponse;
-import org.restlet.engine.http.HttpServerConverter;
+import org.restlet.engine.http.HttpServerAdapter;
 import org.restlet.ext.servlet.internal.ServletCall;
 import org.restlet.ext.servlet.internal.ServletLogger;
 
@@ -60,184 +60,186 @@ import org.restlet.ext.servlet.internal.ServletLogger;
  * 
  * <pre>
  * public class TestServlet extends HttpServlet {
- * 	private ServletConverter converter;
+ *     private ServletConverter converter;
  * 
- * 	public void init() throws ServletException {
- * 		super.init();
- * 		this.converter = new ServletConverter(getServletContext());
+ *     public void init() throws ServletException {
+ *         super.init();
+ *         this.converter = new ServletConverter(getServletContext());
  * 
- * 		Restlet trace = new Restlet(this.converter.getContext()) {
- * 			public void handle(Request req, Response res) {
- * 				getLogger().info(&quot;Hello World&quot;);
- * 				res.setEntity(&quot;Hello World!&quot;, MediaType.TEXT_PLAIN);
- * 			}
- * 		};
+ *         Restlet trace = new Restlet(this.converter.getContext()) {
+ *             public void handle(Request req, Response res) {
+ *                 getLogger().info(&quot;Hello World&quot;);
+ *                 res.setEntity(&quot;Hello World!&quot;, MediaType.TEXT_PLAIN);
+ *             }
+ *         };
  * 
- * 		this.converter.setTarget(trace);
- * 	}
+ *         this.converter.setTarget(trace);
+ *     }
  * 
- * 	protected void service(HttpServletRequest req, HttpServletResponse res)
- * 			throws ServletException, IOException {
- * 		this.converter.service(req, res);
- * 	}
+ *     protected void service(HttpServletRequest req, HttpServletResponse res)
+ *             throws ServletException, IOException {
+ *         this.converter.service(req, res);
+ *     }
  * }
  * </pre>
  * 
  * @author Jerome Louvel
+ * @deprecated Use {@link ServletAdapter} instead.
  */
-public class ServletConverter extends HttpServerConverter {
-	/** The target Restlet. */
-	private volatile Restlet target;
+@Deprecated
+public class ServletConverter extends HttpServerAdapter {
+    /** The target Restlet. */
+    private volatile Restlet target;
 
-	/**
-	 * Constructor. Remember to manually set the "target" property before
-	 * invoking the service() method.
-	 * 
-	 * @param context
-	 *            The Servlet context.
-	 */
-	public ServletConverter(ServletContext context) {
-		this(context, null);
-	}
+    /**
+     * Constructor. Remember to manually set the "target" property before
+     * invoking the service() method.
+     * 
+     * @param context
+     *            The Servlet context.
+     */
+    public ServletConverter(ServletContext context) {
+        this(context, null);
+    }
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param context
-	 *            The Servlet context.
-	 * @param target
-	 *            The target Restlet.
-	 */
-	public ServletConverter(ServletContext context, Restlet target) {
-		super(new Context(new ServletLogger(context)));
-		this.target = target;
-	}
+    /**
+     * Constructor.
+     * 
+     * @param context
+     *            The Servlet context.
+     * @param target
+     *            The target Restlet.
+     */
+    public ServletConverter(ServletContext context, Restlet target) {
+        super(new Context(new ServletLogger(context)));
+        this.target = target;
+    }
 
-	/**
-	 * Returns the base reference of new Restlet requests.
-	 * 
-	 * @param request
-	 *            The Servlet request.
-	 * @return The base reference of new Restlet requests.
-	 */
-	public Reference getBaseRef(HttpServletRequest request) {
-		Reference result = null;
-		final String basePath = request.getContextPath()
-				+ request.getServletPath();
-		final String baseUri = request.getRequestURL().toString();
-		// Path starts at first slash after scheme://
-		final int pathStart = baseUri.indexOf("/",
-				request.getScheme().length() + 3);
-		if (basePath.length() == 0) {
-			// basePath is empty in case the webapp is mounted on root context
-			if (pathStart != -1) {
-				result = new Reference(baseUri.substring(0, pathStart));
-			} else {
-				result = new Reference(baseUri);
-			}
-		} else {
-			if (pathStart != -1) {
-				final int baseIndex = baseUri.indexOf(basePath, pathStart);
-				if (baseIndex != -1) {
-					result = new Reference(baseUri.substring(0, baseIndex
-							+ basePath.length()));
-				}
-			}
-		}
+    /**
+     * Returns the base reference of new Restlet requests.
+     * 
+     * @param request
+     *            The Servlet request.
+     * @return The base reference of new Restlet requests.
+     */
+    public Reference getBaseRef(HttpServletRequest request) {
+        Reference result = null;
+        final String basePath = request.getContextPath()
+                + request.getServletPath();
+        final String baseUri = request.getRequestURL().toString();
+        // Path starts at first slash after scheme://
+        final int pathStart = baseUri.indexOf("/",
+                request.getScheme().length() + 3);
+        if (basePath.length() == 0) {
+            // basePath is empty in case the webapp is mounted on root context
+            if (pathStart != -1) {
+                result = new Reference(baseUri.substring(0, pathStart));
+            } else {
+                result = new Reference(baseUri);
+            }
+        } else {
+            if (pathStart != -1) {
+                final int baseIndex = baseUri.indexOf(basePath, pathStart);
+                if (baseIndex != -1) {
+                    result = new Reference(baseUri.substring(0, baseIndex
+                            + basePath.length()));
+                }
+            }
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	/**
-	 * Returns the root reference of new Restlet requests. By default it returns
-	 * the result of getBaseRef().
-	 * 
-	 * @param request
-	 *            The Servlet request.
-	 * @return The root reference of new Restlet requests.
-	 */
-	public Reference getRootRef(HttpServletRequest request) {
-		return getBaseRef(request);
-	}
+    /**
+     * Returns the root reference of new Restlet requests. By default it returns
+     * the result of getBaseRef().
+     * 
+     * @param request
+     *            The Servlet request.
+     * @return The root reference of new Restlet requests.
+     */
+    public Reference getRootRef(HttpServletRequest request) {
+        return getBaseRef(request);
+    }
 
-	/**
-	 * Returns the target Restlet.
-	 * 
-	 * @return The target Restlet.
-	 */
-	public Restlet getTarget() {
-		return this.target;
-	}
+    /**
+     * Returns the target Restlet.
+     * 
+     * @return The target Restlet.
+     */
+    public Restlet getTarget() {
+        return this.target;
+    }
 
-	/**
-	 * Services a HTTP Servlet request as a Restlet request handled by the
-	 * "target" Restlet.
-	 * 
-	 * @param request
-	 *            The HTTP Servlet request.
-	 * @param response
-	 *            The HTTP Servlet response.
-	 */
-	public void service(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		if (getTarget() != null) {
-			// Set the current context
-			Context.setCurrent(getContext());
+    /**
+     * Services a HTTP Servlet request as a Restlet request handled by the
+     * "target" Restlet.
+     * 
+     * @param request
+     *            The HTTP Servlet request.
+     * @param response
+     *            The HTTP Servlet response.
+     */
+    public void service(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        if (getTarget() != null) {
+            // Set the current context
+            Context.setCurrent(getContext());
 
-			// Convert the Servlet call to a Restlet call
-			final ServletCall servletCall = new ServletCall(request
-					.getLocalAddr(), request.getLocalPort(), request, response);
-			final HttpRequest httpRequest = toRequest(servletCall);
-			final HttpResponse httpResponse = new HttpResponse(servletCall,
-					httpRequest);
+            // Convert the Servlet call to a Restlet call
+            final ServletCall servletCall = new ServletCall(request
+                    .getLocalAddr(), request.getLocalPort(), request, response);
+            final HttpRequest httpRequest = toRequest(servletCall);
+            final HttpResponse httpResponse = new HttpResponse(servletCall,
+                    httpRequest);
 
-			// Adjust the relative reference
-			httpRequest.getResourceRef().setBaseRef(getBaseRef(request));
+            // Adjust the relative reference
+            httpRequest.getResourceRef().setBaseRef(getBaseRef(request));
 
-			// Adjust the root reference
-			httpRequest.setRootRef(getRootRef(request));
+            // Adjust the root reference
+            httpRequest.setRootRef(getRootRef(request));
 
-			// Handle the request and commit the response
-			getTarget().handle(httpRequest, httpResponse);
-			commit(httpResponse);
-		} else {
-			getLogger().warning("Unable to find the Restlet target");
-		}
-	}
+            // Handle the request and commit the response
+            getTarget().handle(httpRequest, httpResponse);
+            commit(httpResponse);
+        } else {
+            getLogger().warning("Unable to find the Restlet target");
+        }
+    }
 
-	/**
-	 * Sets the target Restlet.
-	 * 
-	 * @param target
-	 *            The target Restlet.
-	 */
-	public void setTarget(Restlet target) {
-		this.target = target;
-	}
+    /**
+     * Sets the target Restlet.
+     * 
+     * @param target
+     *            The target Restlet.
+     */
+    public void setTarget(Restlet target) {
+        this.target = target;
+    }
 
-	/**
-	 * Converts a low-level Servlet call into a high-level Restlet request. In
-	 * addition to the parent HttpServerConverter class, it also copies the
-	 * Servlet's request attributes into the Restlet's request attributes map.
-	 * 
-	 * @param servletCall
-	 *            The low-level Servlet call.
-	 * @return A new high-level uniform request.
-	 */
-	@SuppressWarnings("unchecked")
-	public HttpRequest toRequest(ServletCall servletCall) {
-		final HttpRequest result = super.toRequest(servletCall);
+    /**
+     * Converts a low-level Servlet call into a high-level Restlet request. In
+     * addition to the parent HttpServerConverter class, it also copies the
+     * Servlet's request attributes into the Restlet's request attributes map.
+     * 
+     * @param servletCall
+     *            The low-level Servlet call.
+     * @return A new high-level uniform request.
+     */
+    @SuppressWarnings("unchecked")
+    public HttpRequest toRequest(ServletCall servletCall) {
+        final HttpRequest result = super.toRequest(servletCall);
 
-		// Copy all Servlet's request attributes
-		String attributeName;
-		for (final Enumeration<String> namesEnum = servletCall.getRequest()
-				.getAttributeNames(); namesEnum.hasMoreElements();) {
-			attributeName = namesEnum.nextElement();
-			result.getAttributes().put(attributeName,
-					servletCall.getRequest().getAttribute(attributeName));
-		}
+        // Copy all Servlet's request attributes
+        String attributeName;
+        for (final Enumeration<String> namesEnum = servletCall.getRequest()
+                .getAttributeNames(); namesEnum.hasMoreElements();) {
+            attributeName = namesEnum.nextElement();
+            result.getAttributes().put(attributeName,
+                    servletCall.getRequest().getAttribute(attributeName));
+        }
 
-		return result;
-	}
+        return result;
+    }
 
 }

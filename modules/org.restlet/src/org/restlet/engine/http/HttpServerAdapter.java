@@ -59,7 +59,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
-public class HttpServerConverter extends HttpConverter {
+public class HttpServerAdapter extends HttpAdapter {
     /**
      * Copies the entity headers from the {@link Representation} to the
      * {@link Series}.
@@ -267,7 +267,7 @@ public class HttpServerConverter extends HttpConverter {
      * @param context
      *            The client context.
      */
-    public HttpServerConverter(Context context) {
+    public HttpServerAdapter(Context context) {
         super(context);
     }
 

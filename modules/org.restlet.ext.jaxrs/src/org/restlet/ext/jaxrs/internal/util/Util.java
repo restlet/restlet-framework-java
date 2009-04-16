@@ -78,8 +78,8 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.engine.http.ContentType;
 import org.restlet.engine.http.HttpClientCall;
-import org.restlet.engine.http.HttpClientConverter;
-import org.restlet.engine.http.HttpServerConverter;
+import org.restlet.engine.http.HttpClientAdapter;
+import org.restlet.engine.http.HttpServerAdapter;
 import org.restlet.engine.http.HttpUtils;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.ext.jaxrs.internal.core.UnmodifiableMultivaluedMap;
@@ -306,7 +306,7 @@ public class Util {
             restletResponse.setEntity(new EmptyRepresentation());
         }
 
-        HttpClientConverter.copyResponseTransportHeaders(headers,
+        HttpClientAdapter.copyResponseTransportHeaders(headers,
                 restletResponse);
         HttpClientCall.copyResponseEntityHeaders(headers, restletResponse
                 .getEntity());
@@ -324,8 +324,8 @@ public class Util {
      */
     public static Series<Parameter> copyResponseHeaders(Response restletResponse) {
         final Series<Parameter> headers = new Form();
-        HttpServerConverter.addResponseHeaders(restletResponse, headers);
-        HttpServerConverter.addEntityHeaders(restletResponse.getEntity(),
+        HttpServerAdapter.addResponseHeaders(restletResponse, headers);
+        HttpServerAdapter.addEntityHeaders(restletResponse.getEntity(),
                 headers);
         return headers;
     }

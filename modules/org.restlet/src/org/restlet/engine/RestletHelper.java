@@ -48,7 +48,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
-public abstract class RestletHelper<T extends Restlet> {
+public abstract class RestletHelper<T extends Restlet> extends Helper {
 
     /**
      * The map of attributes exchanged between the API and the Engine via this

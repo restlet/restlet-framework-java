@@ -61,7 +61,7 @@ import org.restlet.engine.ServerHelper;
  * <tr>
  * <td>converter</td>
  * <td>String</td>
- * <td>org.restlet.engine.http.HttpServerConverter</td>
+ * <td>org.restlet.engine.http.HttpServerAdapter</td>
  * <td>Class name of the converter of low-level HTTP calls into high level
  * requests and responses.</td>
  * </tr>
@@ -71,7 +71,7 @@ import org.restlet.engine.ServerHelper;
  */
 public class HttpServerHelper extends ServerHelper {
     /** The converter from HTTP calls to uniform calls. */
-    private volatile HttpServerConverter converter;
+    private volatile HttpServerAdapter converter;
 
     /**
      * Default constructor. Note that many methods assume that a non-null server
@@ -98,13 +98,13 @@ public class HttpServerHelper extends ServerHelper {
      * 
      * @return the converter from HTTP calls to uniform calls.
      */
-    public HttpServerConverter getConverter() {
+    public HttpServerAdapter getConverter() {
         if (this.converter == null) {
             try {
                 final String converterClass = getHelpedParameters()
                         .getFirstValue("converter",
-                                "org.restlet.engine.http.HttpServerConverter");
-                this.converter = (HttpServerConverter) Engine.loadClass(
+                                "org.restlet.engine.http.HttpServerAdapter");
+                this.converter = (HttpServerAdapter) Engine.loadClass(
                         converterClass).getConstructor(Context.class)
                         .newInstance(getContext());
             } catch (IllegalArgumentException e) {
@@ -163,7 +163,7 @@ public class HttpServerHelper extends ServerHelper {
      * @param converter
      *            The converter to set.
      */
-    public void setConverter(HttpServerConverter converter) {
+    public void setConverter(HttpServerAdapter converter) {
         this.converter = converter;
     }
 }

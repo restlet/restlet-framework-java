@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.restlet.engine.Helper;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.UniformResource;
@@ -43,7 +44,7 @@ import org.restlet.resource.UniformResource;
  * 
  * @author Jerome Louvel
  */
-public abstract class ConverterHelper {
+public abstract class ConverterHelper extends Helper {
 
     /**
      * Adds an object class to the given list. Creates a new list if necessary.

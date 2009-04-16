@@ -28,41 +28,13 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.converter;
-
-import java.util.List;
-
-import org.restlet.representation.Representation;
-import org.restlet.representation.Variant;
-import org.restlet.resource.UniformResource;
+package org.restlet.engine;
 
 /**
- * Converter between the DOM API and Representation classes.
+ * Abstract marker class parent of all engine helpers.
  * 
  * @author Jerome Louvel
  */
-public class RepresentationConverter extends ConverterHelper {
-
-    @Override
-    public List<Class<?>> getObjectClasses(Variant variant) {
-        return null;
-    }
-
-    @Override
-    public List<Variant> getVariants(Class<?> objectClass) {
-        return null;
-    }
-
-    @Override
-    public <T> T toObject(Representation representation, Class<T> targetClass,
-            UniformResource resource) {
-        return null;
-    }
-
-    @Override
-    public Representation toRepresentation(Object object,
-            Variant targetVariant, UniformResource resource) {
-        return null;
-    }
+public abstract class Helper {
 
 }

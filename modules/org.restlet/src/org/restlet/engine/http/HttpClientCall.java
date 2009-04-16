@@ -76,7 +76,7 @@ public abstract class HttpClientCall extends HttpCall {
      *         if no representation has been provided and the response has not
      *         sent any entity header.
      * @throws NumberFormatException
-     * @see HttpClientConverter#copyResponseTransportHeaders(Iterable, Response)
+     * @see HttpClientAdapter#copyResponseTransportHeaders(Iterable, Response)
      */
     public static Representation copyResponseEntityHeaders(
             Iterable<Parameter> responseHeaders, Representation representation)

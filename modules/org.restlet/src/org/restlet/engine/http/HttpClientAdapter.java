@@ -60,7 +60,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
-public class HttpClientConverter extends HttpConverter {
+public class HttpClientAdapter extends HttpAdapter {
     /**
      * Copies headers into a response.
      * 
@@ -150,7 +150,7 @@ public class HttpClientConverter extends HttpConverter {
      * @param context
      *            The context to use.
      */
-    public HttpClientConverter(Context context) {
+    public HttpClientAdapter(Context context) {
         super(context);
     }
 

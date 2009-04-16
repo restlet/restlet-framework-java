@@ -52,7 +52,7 @@ import org.restlet.engine.ClientHelper;
  * <tr>
  * <td>converter</td>
  * <td>String</td>
- * <td>org.restlet.engine.http.HttpClientConverter</td>
+ * <td>org.restlet.engine.http.HttpClientAdapter</td>
  * <td>Class name of the converter of low-level HTTP calls into high level
  * requests and responses.</td>
  * </tr>
@@ -62,7 +62,7 @@ import org.restlet.engine.ClientHelper;
  */
 public abstract class HttpClientHelper extends ClientHelper {
     /** The converter from uniform calls to HTTP calls. */
-    private volatile HttpClientConverter converter;
+    private volatile HttpClientAdapter converter;
 
     /**
      * Constructor.
@@ -89,13 +89,12 @@ public abstract class HttpClientHelper extends ClientHelper {
      * 
      * @return the converter from uniform calls to HTTP calls.
      */
-    public HttpClientConverter getConverter() throws Exception {
+    public HttpClientAdapter getConverter() throws Exception {
         if (this.converter == null) {
             final String converterClass = getHelpedParameters().getFirstValue(
-                    "converter", "org.restlet.engine.http.HttpClientConverter");
-            this.converter = (HttpClientConverter) Class
-                    .forName(converterClass).getConstructor(Context.class)
-                    .newInstance(getContext());
+                    "converter", "org.restlet.engine.http.HttpClientAdapter");
+            this.converter = (HttpClientAdapter) Class.forName(converterClass)
+                    .getConstructor(Context.class).newInstance(getContext());
         }
 
         return this.converter;
@@ -120,7 +119,7 @@ public abstract class HttpClientHelper extends ClientHelper {
      * @param converter
      *            The converter to set.
      */
-    public void setConverter(HttpClientConverter converter) {
+    public void setConverter(HttpClientAdapter converter) {
         this.converter = converter;
     }
 }

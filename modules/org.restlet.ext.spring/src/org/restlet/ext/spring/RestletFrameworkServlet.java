@@ -39,10 +39,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Restlet;
-import org.restlet.ext.servlet.ServletConverter;
+import org.restlet.ext.servlet.ServletAdapter;
 import org.springframework.beans.BeansException;
 import org.springframework.web.servlet.FrameworkServlet;
-
 
 /**
  * A Servlet which provides an automatic Restlet integration with an existing
@@ -97,16 +96,53 @@ public class RestletFrameworkServlet extends FrameworkServlet {
 
     private static final long serialVersionUID = 1L;
 
-    /** The converter of Servlet calls into Restlet equivalents. */
-    private volatile ServletConverter converter;
+    /** The adapter of Servlet calls into Restlet equivalents. */
+    private volatile ServletAdapter adapter;
 
     /** The bean name of the target Restlet. */
     private volatile String targetRestletBeanName;
 
+    /**
+     * Creates the Restlet {@link Context} to use if the target application does
+     * not already have a context associated, or if the target restlet is not an
+     * {@link Application} at all.
+     * <p>
+     * Uses a simple {@link Context} by default.
+     * 
+     * @return A new instance of {@link Context}
+     */
+    protected Context createContext() {
+        return new Context();
+    }
+
     @Override
     protected void doService(HttpServletRequest request,
             HttpServletResponse response) throws ServletException, IOException {
-        getConverter().service(request, response);
+        getAdapter().service(request, response);
+    }
+
+    /**
+     * Provides access to the {@link ServletAdapter} used to handle requests.
+     * Exposed so that subclasses may do additional configuration, if necessary,
+     * by overriding {@link #initFrameworkServlet()}.
+     * 
+     * @return The adapter of Servlet calls into Restlet equivalents.
+     */
+    protected ServletAdapter getAdapter() {
+        return this.adapter;
+    }
+
+    /**
+     * Provides access to the {@link ServletConverter} used to handle requests.
+     * Exposed so that subclasses may do additional configuration, if necessary,
+     * by overriding {@link #initFrameworkServlet()}.
+     * 
+     * @return The converter of Servlet calls into Restlet equivalents.
+     * @deprecated Use {@link #getAdapter()} instead.
+     */
+    @Deprecated
+    protected ServletAdapter getConverter() {
+        return this.adapter;
     }
 
     /**
@@ -129,22 +165,11 @@ public class RestletFrameworkServlet extends FrameworkServlet {
                 : this.targetRestletBeanName;
     }
 
-    /**
-     * Provides access to the {@link ServletConverter} used to handle requests.
-     * Exposed so that subclasses may do additional configuration, if necessary,
-     * by overriding {@link #initFrameworkServlet()}.
-     * 
-     * @return The converter of Servlet calls into Restlet equivalents.
-     */
-    protected ServletConverter getConverter() {
-        return this.converter;
-    }
-
     @Override
     protected void initFrameworkServlet() throws ServletException,
             BeansException {
         super.initFrameworkServlet();
-        this.converter = new ServletConverter(getServletContext());
+        this.adapter = new ServletAdapter(getServletContext());
 
         org.restlet.Application application;
         if (getTargetRestlet() instanceof Application) {
@@ -156,20 +181,7 @@ public class RestletFrameworkServlet extends FrameworkServlet {
         if (application.getContext() == null) {
             application.setContext(createContext());
         }
-        this.converter.setTarget(application);
-    }
-
-    /**
-     * Creates the Restlet {@link Context} to use if the target application does
-     * not already have a context associated, or if the target restlet is not an
-     * {@link Application} at all.
-     * <p>
-     * Uses a simple {@link Context} by default.
-     * 
-     * @return A new instance of {@link Context}
-     */
-    protected Context createContext() {
-        return new Context();
+        this.adapter.setTarget(application);
     }
 
     /**

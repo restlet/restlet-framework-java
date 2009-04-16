@@ -41,7 +41,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
-public class HttpConverter {
+public class HttpAdapter {
     /** The context. */
     private volatile Context context;
 
@@ -51,7 +51,7 @@ public class HttpConverter {
      * @param context
      *            The context to use.
      */
-    public HttpConverter(Context context) {
+    public HttpAdapter(Context context) {
         this.context = context;
     }
 
