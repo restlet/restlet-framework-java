@@ -103,7 +103,7 @@
 		<module>org.restlet.example</module>
 		<module>org.restlet.gae</module>
 		<module>org.restlet.gwt</module>
-		<module>org.restlet.test</module>
+		<!--<module>org.restlet.test</module>-->
 
 		<module>org.restlet.ext.atom</module>
 		<module>org.restlet.ext.fileupload</module>
