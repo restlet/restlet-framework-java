@@ -30,6 +30,7 @@
 
 package org.restlet.resource;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 
@@ -50,6 +51,7 @@ import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.representation.Representation;
+import org.restlet.service.ConverterService;
 import org.restlet.util.Series;
 
 /**
@@ -495,6 +497,36 @@ public class ClientResource extends UniformResource {
         setMethod(Method.POST);
         getRequest().setEntity(entity);
         return handle();
+    }
+
+    /**
+     * 
+     * @param entity
+     * @return
+     * @throws ResourceException
+     */
+    public Object post(Object entity) throws ResourceException {
+        Object result = null;
+        ConverterService cs = null;
+
+        if (getApplication() != null) {
+            cs = getApplication().getConverterService();
+        } else {
+            cs = new ConverterService();
+        }
+
+        Representation requestEntity = cs.toRepresentation(entity);
+        Representation responseEntity = post(requestEntity);
+
+        if (responseEntity != null) {
+            try {
+                result = cs.toObject(responseEntity);
+            } catch (IOException e) {
+                throw new ResourceException(e);
+            }
+        }
+
+        return result;
     }
 
     /**
