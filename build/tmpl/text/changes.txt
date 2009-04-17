@@ -11,7 +11,9 @@ Changes log
          specified in the host name. Reported by Matt J. Watson.
        - Fixed potential NPE with Reference#getMatrix. Reported by Tal 
          Liron.
-
+       - Fixed matching of Firefox2 for Windows agent name. Reported by
+         Peter Childs.
+         
 - 1.1.4 (2009-04-06)
     - Bugs fixed
        - Fixed issue in JettyHandler mixing HTTP and HTTPS requests.
