@@ -223,8 +223,7 @@ public class ServerResource extends UniformResource {
                         setStatus(Status.CLIENT_ERROR_NOT_FOUND);
                     } else {
                         // Keep the current status as the developer might prefer
-                        // a
-                        // special status like 'method not authorized'.
+                        // a special status like 'method not authorized'.
                     }
                 } else {
                     Status status = getConditions().getStatus(getMethod(),
