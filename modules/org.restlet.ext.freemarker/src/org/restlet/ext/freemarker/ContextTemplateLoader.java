@@ -32,6 +32,7 @@ package org.restlet.ext.freemarker;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.util.Date;
 
 import org.restlet.Context;
 import org.restlet.data.Reference;
@@ -131,8 +132,9 @@ public class ContextTemplateLoader implements TemplateLoader {
      * @return The modification time.
      */
     public long getLastModified(Object templateSource) {
-        return ((Representation) templateSource).getModificationDate()
-                .getTime();
+        Date lastModified = ((Representation) templateSource)
+                .getModificationDate();
+        return (lastModified == null) ? -1L : lastModified.getTime();
     }
 
     /**
