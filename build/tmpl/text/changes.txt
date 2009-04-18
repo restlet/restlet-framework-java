@@ -92,6 +92,8 @@ Changes log
           Contributed by Davide Angelocola.
         - ServerResource now rethrows exceptions from annotated methods.
           Reported by Tal Liron.
+        - Removed the Script extension and Scripturian libraries that 
+          will now be managed outside the Restlet project by Tal Liron.
  
 - 1.2 Milestone 2 (2009-04-01)
     - Breaking changes

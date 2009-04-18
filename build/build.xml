@@ -364,13 +364,6 @@
 		<fileset dir="${lib}/${lib-jdom-id}" includes="*.jar" />
 	</path>
 
-	<path id="mod-script-path">
-		<path refid="mod-core-path" />
-		<pathelement path="${classes}/${mod-core-id}" />
-		<fileset dir="${lib}/${lib-scripturian-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-script-id}" includes="*.jar" />
-	</path>
-
 	<path id="mod-shell-path">
 		<path refid="mod-core-path" />
 		<pathelement path="${classes}/${mod-core-id}" />
@@ -598,7 +591,6 @@
 		<path refid="mod-oauth-path" />
 		<path refid="mod-rdf-path" />
 		<path refid="mod-rome-path" />
-		<path refid="mod-script-path" />
 		<path refid="mod-servlet-path" />
 		<path refid="mod-simple-path" />
 		<path refid="mod-spring-path" />
@@ -1003,7 +995,6 @@
 		<pomModule name="net" />
 		<pomModule name="oauth" />
 		<!-- disabled for now <pomModule name="rome" /> -->
-		<pomModule name="script" />
 		<pomModule name="servlet" />
 		<!-- disabled for now  <pomModule name="shell" /> -->
 		<pomModule name="simple" />
@@ -1029,7 +1020,6 @@
 		<pomLibrary name="db4o"/>
 		<pomLibrary name="db4o-nativequery" />
 		<pomLibrary name="bloat" />
-		<pomLibrary name="scripturian" />
 		
 		<!-- Generate the NSIS files -->
 		<copy file="${tmpl}/nsis/common.nsh" todir="${temp}" overwrite="true" />
@@ -1109,7 +1099,6 @@
 		<compileModule name="gwt" />
 
 		<compileModule name="rome" />
-		<compileModule name="script" />
 		<compileModule name="shell" />
 		<compileModule name="simple" />
 
@@ -1154,7 +1143,6 @@
 		<backportModule name="oauth" failonwarning="@{backport-failonwarning}" />
 		<backportModule name="rdf" failonwarning="@{backport-failonwarning}" />
 		<backportModule name="rome" failonwarning="@{backport-failonwarning}" />
-		<backportModule name="script" failonwarning="@{backport-failonwarning}" />
 		<backportModule name="servlet" failonwarning="@{backport-failonwarning}" />
 		<backportModule name="shell" failonwarning="@{backport-failonwarning}" />
 		<backportModule name="simple" failonwarning="@{backport-failonwarning}" />
@@ -1230,7 +1218,6 @@
 				<pathelement path="${mod}/${mod-oauth-id}/src/" />
 				<pathelement path="${mod}/${mod-rdf-id}/src/" />
 				<!-- disabled for now <pathelement path="${mod}/${mod-rome-id}/src/" /> -->
-				<pathelement path="${mod}/${mod-script-id}/src/" />
 				<pathelement path="${mod}/${mod-servlet-id}/src/" />
 				<!-- disabled for now <pathelement path="${mod}/${mod-shell-id}/src/" /> -->
 				<pathelement path="${mod}/${mod-simple-id}/src/" />
@@ -1274,7 +1261,6 @@
 				<package name="org.restlet.ext.freemarker*" />
 				<package name="org.restlet.ext.jaxb*" />
 				<package name="org.restlet.ext.jibx*" />
-				<package name="org.restlet.ext.script*" />
 				<package name="org.restlet.ext.velocity*" />
 			</group>
 
@@ -1303,7 +1289,6 @@
 			<link href="http://www.restlet.org/documentation/${version-minor}/api/" packagelistLoc="${docs-api}" offline="true" />
 			<link href="http://www.restlet.org/documentation/${version-minor}/engine/" packagelistLoc="${docs-engine}" offline="true" />
 			<link href="http://www.simpleframework.org/doc/javadoc/" />
-			<link href="http://www.threecrickets.com/scripturian/static/javadoc/" />
 		</javadoc>
 
 		<javadoc packagenames="org.restlet.*" excludepackagenames="${exclude-packages},*org.restlet.engine.*" destdir="${docs-gae}" classpathref="path-all" author="true" version="true" use="true" windowtitle="Restlet-GAE module ${version-full}" doctitle="Restlet-GAE module ${version-full}" overview="${temp}/javadocs/overview-gae.html" stylesheetfile="${tmpl}/javadocs/stylesheet.css" verbose="${verbose}">
@@ -1431,7 +1416,6 @@
 		<findbugsModule name="oauth" />
 		<findbugsModule name="rdf" />
 		<findbugsModule name="rome" />
-		<findbugsModule name="script" />
 		<findbugsModule name="servlet" />
 		<findbugsModule name="shell" />
 		<findbugsModule name="simple" />
@@ -1468,7 +1452,6 @@
 		<checkstyleModule name="oauth" />
 		<checkstyleModule name="rdf" />
 		<checkstyleModule name="rome" />
-		<checkstyleModule name="script" />
 		<checkstyleModule name="servlet" />
 		<checkstyleModule name="shell" />
 		<checkstyleModule name="simple" />
@@ -1574,7 +1557,6 @@
 		<stageLibrary name="pool" />
 		<stageLibrary name="rhino" />
 		<!-- disabled for now  <stageLibrary name="rome" /> -->
-		<stageLibrary name="scripturian" />
 		<stageLibrary name="servlet" />
 		<stageLibrary name="simple" />
 		<stageLibrary name="solr" />
@@ -1610,7 +1592,6 @@
 		<stageModule name="oauth" />
 		<stageModule name="rdf" />
 		<!-- disabled for now  <stageModule name="rome" /> -->
-		<stageModule name="script" />
 		<stageModule name="servlet" />
 		<!-- disabled for now <stageModule name="shell" /> -->
 		<stageModule name="simple" />
@@ -1672,7 +1653,6 @@
 		<maven2Module name="oauth" />
 		<maven2Module name="rdf" />
 		<!-- disabled for now <maven2Module name="rome" /> -->
-		<maven2Module name="script" />
 		<maven2Module name="servlet" />
 		<!-- disabled for now <maven2Module name="shell" /> -->
 		<maven2Module name="simple" />
@@ -1682,7 +1662,6 @@
 		<maven2Module name="xdb" />
 		<maven2Module name="wadl" />
 
-		<maven2Library name="scripturian" />
 		<maven2Library name="simple" />
 		<maven2Library name="jaxrs" />
 		<!-- disabled for now <maven2Library name="jdom" /> -->
