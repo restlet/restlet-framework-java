@@ -1,6 +1,0 @@
-<%python
-
-def printTriple(value):
-	sys.stdout.write(str(value*3))
-
-%>

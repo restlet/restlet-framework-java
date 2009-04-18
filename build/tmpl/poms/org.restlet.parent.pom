@@ -65,7 +65,7 @@
 		<module>org.restlet.example</module>
 		<module>org.restlet.gae</module>
 		<module>org.restlet.gwt</module>
-		<module>org.restlet.test</module>
+		<!-- <module>org.restlet.test</module> -->
 
 		<module>org.restlet.ext.atom</module>
 		<module>org.restlet.ext.fileupload</module>
@@ -118,6 +118,19 @@
 
 	<build>
 		<sourceDirectory><#noparse>${basedir}/src</#noparse></sourceDirectory>
+		<resources>
+			<resource>
+				<filtering>false</filtering>
+				<directory>${basedir}/src</directory>
+				<includes>
+					<include>**/*</include>
+				</includes>
+				<excludes>
+					<exclude>**/*.java</exclude>
+					<exclude>**/package.html</exclude>
+				</excludes>
+			</resource>
+		</resources>
 
 		<plugins>
 			<plugin>
