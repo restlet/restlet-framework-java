@@ -63,7 +63,7 @@ import org.restlet.util.Series;
  * lower-level {@link Client} class instead.<br>
  * <br>
  * Note: The current implementation isn't complete and doesn't support the full
- * syntax. This is work in progress and should only be used for experimentation.
+ * syntax. This is work in progress and should only be used for experimentation. 
  * 
  * @author Jerome Louvel
  */
