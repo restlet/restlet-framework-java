@@ -91,9 +91,10 @@ public abstract class WriterRepresentation extends CharacterRepresentation {
     public void write(OutputStream outputStream) throws IOException {
         Writer writer = null;
         if (getCharacterSet() != null) {
-            new OutputStreamWriter(outputStream, getCharacterSet().getName());
+            writer = new OutputStreamWriter(outputStream, getCharacterSet()
+                    .getName());
         } else {
-            new OutputStreamWriter(outputStream);
+            writer = new OutputStreamWriter(outputStream);
         }
 
         write(writer);
