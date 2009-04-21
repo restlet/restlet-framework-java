@@ -58,11 +58,10 @@ import org.restlet.util.WrapperRepresentation;
  * which may require specific attention for transient representations.
  * 
  * @see Representation#isTransient().
- * @deprecated See {@link DigesterRepresentation} instead.
+ * 
  * @author Jerome Louvel
  */
-@Deprecated
-public abstract class DigestRepresentation extends WrapperRepresentation {
+public class DigesterRepresentation extends WrapperRepresentation {
     /** The digest algorithm. */
     private final String algorithm;
 
@@ -78,7 +77,7 @@ public abstract class DigestRepresentation extends WrapperRepresentation {
      *            The wrapped representation.
      * @throws NoSuchAlgorithmException
      */
-    public DigestRepresentation(Representation wrappedRepresentation)
+    public DigesterRepresentation(Representation wrappedRepresentation)
             throws NoSuchAlgorithmException {
         this(wrappedRepresentation, Digest.ALGORITHM_MD5);
     }
@@ -89,10 +88,10 @@ public abstract class DigestRepresentation extends WrapperRepresentation {
      * @param wrappedRepresentation
      *            The wrapped representation.
      * @param algorithm
-     *            The digest algorithm
+     *            The digest algorithm.
      * @throws NoSuchAlgorithmException
      */
-    public DigestRepresentation(Representation wrappedRepresentation,
+    public DigesterRepresentation(Representation wrappedRepresentation,
             String algorithm) throws NoSuchAlgorithmException {
         super(wrappedRepresentation);
         this.algorithm = algorithm;

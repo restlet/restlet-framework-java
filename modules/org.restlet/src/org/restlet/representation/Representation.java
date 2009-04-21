@@ -395,8 +395,8 @@ public abstract class Representation extends RepresentationInfo {
      * @return A Digester representation that wraps the current representation.
      * @throws NoSuchAlgorithmException
      */
-    public Digester getDigester() throws NoSuchAlgorithmException {
-        return new Digester(this);
+    public DigesterRepresentation getDigester() throws NoSuchAlgorithmException {
+        return new DigesterRepresentation(this);
     }
 
     /**
@@ -409,9 +409,9 @@ public abstract class Representation extends RepresentationInfo {
      * @return A Digester representation that wraps the current representation.
      * @throws NoSuchAlgorithmException
      */
-    public Digester getDigester(String algorithm)
+    public DigesterRepresentation getDigester(String algorithm)
             throws NoSuchAlgorithmException {
-        return new Digester(this, algorithm);
+        return new DigesterRepresentation(this, algorithm);
     }
 
     /**
