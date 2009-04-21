@@ -92,7 +92,7 @@ public class AtomConverter extends ConverterHelper {
     }
 
     @Override
-    public List<Variant> getVariants(Class<?> objectClass) {
+    public List<Variant> getVariants(Class<?> objectClass, Variant targetVariant) {
         List<Variant> result = null;
 
         if (Feed.class.isAssignableFrom(objectClass)) {
