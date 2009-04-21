@@ -87,30 +87,50 @@ public class DefaultConverter extends ConverterHelper {
     }
 
     @Override
-    public List<Variant> getVariants(Class<?> objectClass) {
+    public List<Variant> getVariants(Class<?> objectClass, Variant targetVariant) {
         List<Variant> result = null;
 
         if (String.class.isAssignableFrom(objectClass)
                 || StringRepresentation.class.isAssignableFrom(objectClass)) {
-            result = addVariant(result, new Variant(MediaType.TEXT_PLAIN));
+            if (targetVariant != null) {
+                result = addVariant(result, targetVariant);
+            } else {
+                result = addVariant(result, new Variant(MediaType.TEXT_PLAIN));
+            }
         } else if (Document.class.isAssignableFrom(objectClass)
                 || DomRepresentation.class.isAssignableFrom(objectClass)) {
             result = addVariant(result, new Variant(MediaType.APPLICATION_XML));
             result = addVariant(result, new Variant(MediaType.TEXT_XML));
         } else if (File.class.isAssignableFrom(objectClass)
                 || FileRepresentation.class.isAssignableFrom(objectClass)) {
-            result = addVariant(result, new Variant(
-                    MediaType.APPLICATION_OCTET_STREAM));
+            if (targetVariant != null) {
+                result = addVariant(result, targetVariant);
+            } else {
+                result = addVariant(result, new Variant(
+                        MediaType.APPLICATION_OCTET_STREAM));
+            }
         } else if (InputStream.class.isAssignableFrom(objectClass)
                 || InputRepresentation.class.isAssignableFrom(objectClass)) {
-            result = addVariant(result, new Variant(
-                    MediaType.APPLICATION_OCTET_STREAM));
+            if (targetVariant != null) {
+                result = addVariant(result, targetVariant);
+            } else {
+                result = addVariant(result, new Variant(
+                        MediaType.APPLICATION_OCTET_STREAM));
+            }
         } else if (Reader.class.isAssignableFrom(objectClass)
                 || ReaderRepresentation.class.isAssignableFrom(objectClass)) {
-            result = addVariant(result, new Variant(MediaType.TEXT_PLAIN));
+            if (targetVariant != null) {
+                result = addVariant(result, targetVariant);
+            } else {
+                result = addVariant(result, new Variant(MediaType.TEXT_PLAIN));
+            }
         } else if (Representation.class.isAssignableFrom(objectClass)) {
-            result = addVariant(result, new Variant(
-                    MediaType.APPLICATION_OCTET_STREAM));
+            if (targetVariant != null) {
+                result = addVariant(result, targetVariant);
+            } else {
+                result = addVariant(result, new Variant(
+                        MediaType.APPLICATION_OCTET_STREAM));
+            }
         } else if (SaxRepresentation.class.isAssignableFrom(objectClass)) {
             result = addVariant(result, new Variant(MediaType.APPLICATION_XML));
             result = addVariant(result, new Variant(MediaType.TEXT_XML));
@@ -193,7 +213,8 @@ public class DefaultConverter extends ConverterHelper {
         Representation result = null;
 
         if (object instanceof String) {
-            result = new StringRepresentation((String) object);
+            result = new StringRepresentation((String) object,
+                    targetVariant == null ? null : targetVariant.getMediaType());
         } else if (object instanceof Document) {
             result = new DomRepresentation(targetVariant == null ? null
                     : targetVariant.getMediaType(), (Document) object);

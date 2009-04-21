@@ -99,9 +99,12 @@ public abstract class ConverterHelper extends Helper {
      * 
      * @param sourceClass
      *            The source object class.
+     * @param targetVariant
+     *            The expected representation metadata.
      * @return The list of variants that can be converted.
      */
-    public abstract List<Variant> getVariants(Class<?> sourceClass);
+    public abstract List<Variant> getVariants(Class<?> sourceClass,
+            Variant targetVariant);
 
     /**
      * Converts a Representation into a regular Java object.
