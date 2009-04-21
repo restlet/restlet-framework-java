@@ -388,6 +388,33 @@ public abstract class Representation extends RepresentationInfo {
     }
 
     /**
+     * Return a Digester representation that wraps the current representation
+     * and helps computing its digest value. By default, the instance relies on
+     * the {@link Digest#ALGORITHM_MD5} digest algorithm.
+     * 
+     * @return A Digester representation that wraps the current representation.
+     * @throws NoSuchAlgorithmException
+     */
+    public Digester getDigester() throws NoSuchAlgorithmException {
+        return new Digester(this);
+    }
+
+    /**
+     * Return a Digester representation that wraps the current representation
+     * and helps computing its digest value according to the given algorithm.
+     * 
+     * @param algorithm
+     *            The digest algorithm
+     * 
+     * @return A Digester representation that wraps the current representation.
+     * @throws NoSuchAlgorithmException
+     */
+    public Digester getDigester(String algorithm)
+            throws NoSuchAlgorithmException {
+        return new Digester(this, algorithm);
+    }
+
+    /**
      * Returns the suggested download file name for this representation. This is
      * mainly used to suggest to the client a local name for a downloaded
      * representation. Note that in order for this property to be sent from

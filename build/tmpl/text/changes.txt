@@ -85,6 +85,9 @@ Changes log
         - Added Method#safe and idempotent properties.
         - Added ClientResource#followRedirects property and the related
           implementation code.
+        - Deprecated the abstract DigestRepresentation class, replaced 
+          by Digester. Added a getDigester method on the Representation 
+          class. 
     - Miscellaneous
         - Component XML configuration has been moved into an Engine 
           ComponentXmlParser class.
