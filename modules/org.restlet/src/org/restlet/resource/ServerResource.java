@@ -1132,6 +1132,90 @@ public class ServerResource extends UniformResource {
     }
 
     /**
+     * Permanently redirects the client to a target URI. The client is expected
+     * to reuse the same method for the new request.
+     * 
+     * @param targetRef
+     *            The target URI reference.
+     */
+    public void redirectPermanent(Reference targetRef) {
+        getResponse().redirectPermanent(targetRef);
+    }
+
+    /**
+     * Permanently redirects the client to a target URI. The client is expected
+     * to reuse the same method for the new request.<br>
+     * <br>
+     * If you pass a relative target URI, it will be resolved with the current
+     * base reference of the request's resource reference (see
+     * {@link Request#getResourceRef()} and {@link Reference#getBaseRef()}.
+     * 
+     * @param targetUri
+     *            The target URI.
+     */
+    public void redirectPermanent(String targetUri) {
+        getResponse().redirectPermanent(targetUri);
+    }
+
+    /**
+     * Redirects the client to a different URI that SHOULD be retrieved using a
+     * GET method on that resource. This method exists primarily to allow the
+     * output of a POST-activated script to redirect the user agent to a
+     * selected resource. The new URI is not a substitute reference for the
+     * originally requested resource.
+     * 
+     * @param targetRef
+     *            The target reference.
+     */
+    public void redirectSeeOther(Reference targetRef) {
+        getResponse().redirectSeeOther(targetRef);
+    }
+
+    /**
+     * Redirects the client to a different URI that SHOULD be retrieved using a
+     * GET method on that resource. This method exists primarily to allow the
+     * output of a POST-activated script to redirect the user agent to a
+     * selected resource. The new URI is not a substitute reference for the
+     * originally requested resource.<br>
+     * <br>
+     * If you pass a relative target URI, it will be resolved with the current
+     * base reference of the request's resource reference (see
+     * {@link Request#getResourceRef()} and {@link Reference#getBaseRef()}.
+     * 
+     * @param targetUri
+     *            The target URI.
+     */
+    public void redirectSeeOther(String targetUri) {
+        getResponse().redirectSeeOther(targetUri);
+    }
+
+    /**
+     * Temporarily redirects the client to a target URI. The client is expected
+     * to reuse the same method for the new request.
+     * 
+     * @param targetRef
+     *            The target reference.
+     */
+    public void redirectTemporary(Reference targetRef) {
+        getResponse().redirectTemporary(targetRef);
+    }
+
+    /**
+     * Temporarily redirects the client to a target URI. The client is expected
+     * to reuse the same method for the new request.<br>
+     * <br>
+     * If you pass a relative target URI, it will be resolved with the current
+     * base reference of the request's resource reference (see
+     * {@link Request#getResourceRef()} and {@link Reference#getBaseRef()}.
+     * 
+     * @param targetUri
+     *            The target URI.
+     */
+    public void redirectTemporary(String targetUri) {
+        getResponse().redirectTemporary(targetUri);
+    }
+
+    /**
      * Sets the set of methods allowed on the requested resource. The set
      * instance set must be thread-safe (use {@link CopyOnWriteArraySet} for
      * example.
