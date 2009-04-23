@@ -177,7 +177,8 @@ public abstract class Representation extends RepresentationInfo {
      * @param tag
      *            The tag.
      */
-    public Representation(MediaType mediaType, Date modificationDate, Tag tag) {
+    public Representation(MediaType mediaType, Date modificationDate,
+            Tag tag) {
         super(mediaType, modificationDate, tag);
     }
 
@@ -248,9 +249,12 @@ public abstract class Representation extends RepresentationInfo {
      * {@link #isTransient}
      * 
      * @return True if both digests are not null and equals.
+     * @deprecated Use {@link Representation#getDigester()} instead.
      */
+    @Deprecated
     public boolean checkDigest() {
-        return (getDigest() != null && checkDigest(getDigest().getAlgorithm()));
+        return (getDigest() != null && checkDigest(getDigest()
+                .getAlgorithm()));
     }
 
     /**
@@ -268,7 +272,9 @@ public abstract class Representation extends RepresentationInfo {
      *            The algorithm used to compute the digest to compare with. See
      *            constant values in {@link Digest}.
      * @return True if both digests are not null and equals.
+     * @deprecated Use {@link Representation#getDigester()} instead.
      */
+    @Deprecated
     public boolean checkDigest(String algorithm) {
         Digest digest = getDigest();
         if (digest != null) {
@@ -291,22 +297,33 @@ public abstract class Representation extends RepresentationInfo {
      *            The algorithm used to compute the digest. See constant values
      *            in {@link Digest}.
      * @return The computed digest or null if the digest cannot be computed.
+     * @deprecated Use {@link Representation#getDigester()} instead.
      */
+    @Deprecated
     public Digest computeDigest(String algorithm) {
         Digest result = null;
 
         if (isAvailable()) {
             try {
                 MessageDigest md = MessageDigest.getInstance(algorithm);
-                DigestInputStream dis = new DigestInputStream(getStream(), md);
+                DigestInputStream dis = new DigestInputStream(getStream(),
+                        md);
                 ByteUtils.exhaust(dis);
                 result = new Digest(algorithm, md.digest());
             } catch (NoSuchAlgorithmException e) {
-                Context.getCurrentLogger().log(Level.WARNING,
-                        "Unable to check the digest of the representation.", e);
+                Context
+                        .getCurrentLogger()
+                        .log(
+                                Level.WARNING,
+                                "Unable to check the digest of the representation.",
+                                e);
             } catch (IOException e) {
-                Context.getCurrentLogger().log(Level.WARNING,
-                        "Unable to check the digest of the representation.", e);
+                Context
+                        .getCurrentLogger()
+                        .log(
+                                Level.WARNING,
+                                "Unable to check the digest of the representation.",
+                                e);
             }
         }
 
@@ -395,7 +412,8 @@ public abstract class Representation extends RepresentationInfo {
      * @return A Digester representation that wraps the current representation.
      * @throws NoSuchAlgorithmException
      */
-    public DigesterRepresentation getDigester() throws NoSuchAlgorithmException {
+    public DigesterRepresentation getDigester()
+            throws NoSuchAlgorithmException {
         return new DigesterRepresentation(this);
     }
 
@@ -647,7 +665,8 @@ public abstract class Representation extends RepresentationInfo {
      *            The output stream.
      * @throws IOException
      */
-    public abstract void write(OutputStream outputStream) throws IOException;
+    public abstract void write(OutputStream outputStream)
+            throws IOException;
 
     /**
      * Writes the representation to a byte channel. This method is ensured to
