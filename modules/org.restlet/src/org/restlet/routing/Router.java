@@ -30,17 +30,12 @@
 
 package org.restlet.routing;
 
-import java.lang.reflect.Constructor;
-import java.util.logging.Level;
-
 import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Finder;
-import org.restlet.resource.Resource;
-import org.restlet.resource.ServerResource;
 import org.restlet.util.RouteList;
 import org.restlet.util.Template;
 
@@ -264,32 +259,7 @@ public class Router extends Restlet {
      * @return The new finder instance.
      */
     public Finder createFinder(Class<?> targetClass) {
-        Finder result = null;
-
-        if (Resource.class.isAssignableFrom(targetClass)
-                || ServerResource.class.isAssignableFrom(targetClass)) {
-            if (getFinderClass() != null) {
-                try {
-                    final Constructor<? extends Finder> constructor = getFinderClass()
-                            .getConstructor(Context.class, Class.class);
-
-                    if (constructor != null) {
-                        result = constructor.newInstance(getContext(),
-                                targetClass);
-                    }
-                } catch (Exception e) {
-                    getLogger().log(Level.WARNING,
-                            "Exception while instantiating the finder.", e);
-                }
-            }
-        } else {
-            getLogger()
-                    .log(
-                            Level.WARNING,
-                            "Cannot create a Finder for the given target class, since it is neither a subclass of Resource nor a subclass of ServerResource.");
-        }
-
-        return result;
+        return Finder.createFinder(targetClass, getFinderClass(), getContext(), getLogger());
     }
 
     /**

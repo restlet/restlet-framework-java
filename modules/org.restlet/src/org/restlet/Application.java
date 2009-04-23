@@ -39,6 +39,7 @@ import org.restlet.engine.Engine;
 import org.restlet.engine.RestletHelper;
 import org.restlet.engine.application.ApplicationHelper;
 import org.restlet.engine.util.AnnotationUtils;
+import org.restlet.resource.Finder;
 import org.restlet.security.Role;
 import org.restlet.service.ConnectorService;
 import org.restlet.service.ConverterService;
@@ -119,6 +120,9 @@ public class Application extends Restlet {
 
     /** The description. */
     private volatile String description;
+
+    /** Finder class to instantiate. */
+    private volatile Class<? extends Finder> finderClass;
 
     /** The helper provided by the implementation. */
     private volatile RestletHelper<Application> helper;
@@ -265,6 +269,15 @@ public class Application extends Restlet {
      */
     public String getDescription() {
         return this.description;
+    }
+
+    /**
+     * Returns the finder class to instantiate.
+     * 
+     * @return the finder class to instantiate.
+     */
+    public Class<? extends Finder> getFinderClass() {
+        return finderClass;
     }
 
     /**
@@ -423,6 +436,16 @@ public class Application extends Restlet {
     }
 
     /**
+     * Sets the finder class to instantiate.
+     * 
+     * @param finderClass
+     *            The finder class to instantiate.
+     */
+    public void setFinderClass(Class<? extends Finder> finderClass) {
+        this.finderClass = finderClass;
+    }
+
+    /**
      * Sets the metadata service.
      * 
      * @param metadataService
@@ -474,6 +497,17 @@ public class Application extends Restlet {
         if (roles != null) {
             this.roles.addAll(roles);
         }
+    }
+
+    /**
+     * Sets the root Resource class.
+     * 
+     * @param rootClass
+     *            The root Resource class.
+     */
+    public synchronized void setRoot(Class<?> rootClass) {
+        this.root = Finder.createFinder(rootClass, getFinderClass(),
+                getContext(), getLogger());
     }
 
     /**
