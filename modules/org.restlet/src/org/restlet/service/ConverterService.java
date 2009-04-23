@@ -105,15 +105,17 @@ public class ConverterService extends Service {
      * 
      * @param sourceClass
      *            The source class.
+     * @param targetVariant
+     *            The expected representation metadata.
      * @return The list of variants that can be converted.
      */
-    public List<Variant> getVariants(Class<?> sourceClass) {
+    public List<Variant> getVariants(Class<?> sourceClass, Variant targetVariant) {
         List<Variant> result = null;
         List<Variant> helperVariants = null;
 
         for (ConverterHelper ch : Engine.getInstance()
                 .getRegisteredConverters()) {
-            helperVariants = ch.getVariants(sourceClass);
+            helperVariants = ch.getVariants(sourceClass, targetVariant);
 
             if (helperVariants != null) {
                 if (result == null) {

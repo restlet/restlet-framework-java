@@ -418,8 +418,8 @@ public class Request extends Message {
      */
     @Override
     public boolean isEntityAvailable() {
-        if (getMethod().equals(Method.GET) || getMethod().equals(Method.HEAD)
-                || getMethod().equals(Method.DELETE)) {
+        if (Method.GET.equals(getMethod()) || Method.HEAD.equals(getMethod())
+                || Method.DELETE.equals(getMethod())) {
             return false;
         }
 

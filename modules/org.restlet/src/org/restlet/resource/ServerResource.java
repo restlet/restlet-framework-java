@@ -664,31 +664,38 @@ public class ServerResource extends UniformResource {
 
         // Add annotation-based variants in priority
         if (isAnnotated() && hasAnnotations()) {
+            MetadataService ms = (getApplication() == null) ? null
+                    : getApplication().getMetadataService();
+            if (ms == null) {
+                ms = new MetadataService();
+            }
+
             ConverterService cs = getConverterService();
             List<Variant> annoVariants = null;
 
             for (AnnotationInfo annotationInfo : annotations) {
                 if (method.equals(annotationInfo.getRestletMethod())) {
                     if (annotationInfo.getValue() != null) {
-                        MetadataService ms = getApplication()
-                                .getMetadataService();
-
-                        if (ms == null) {
-                            ms = new MetadataService();
-                        }
                         Metadata metadata = ms.getMetadata(annotationInfo
                                 .getValue());
 
                         if (metadata instanceof MediaType) {
-                            if (result == null) {
-                                result = new ArrayList<Variant>();
+                            annoVariants = cs.getVariants(annotationInfo
+                                    .getJavaReturnType(), new Variant(
+                                    (MediaType) metadata));
+                            if (annoVariants != null) {
+                                if (result == null) {
+                                    result = new ArrayList<Variant>();
+                                }
+                                for (Variant v : annoVariants) {
+                                    result.add(new VariantInfo(v,
+                                            annotationInfo));
+                                }
                             }
-                            result.add(new VariantInfo((MediaType) metadata,
-                                    annotationInfo));
                         }
                     } else {
                         annoVariants = cs.getVariants(annotationInfo
-                                .getJavaReturnType());
+                                .getJavaReturnType(), null);
                         if (annoVariants != null) {
                             if (result == null) {
                                 result = new ArrayList<Variant>();
