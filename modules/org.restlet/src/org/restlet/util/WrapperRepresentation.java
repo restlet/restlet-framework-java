@@ -54,7 +54,8 @@ import org.restlet.representation.Representation;
  * Representation wrapper. Useful for application developer who need to enrich
  * the representation with application related properties and behavior.
  * 
- * @see <a href="http://c2.com/cgi/wiki?DecoratorPattern">The decorator (aka wrapper) pattern</a>
+ * @see <a href="http://c2.com/cgi/wiki?DecoratorPattern">The decorator (aka
+ *      wrapper) pattern</a>
  * @author Jerome Louvel
  */
 public class WrapperRepresentation extends Representation {
@@ -72,16 +73,19 @@ public class WrapperRepresentation extends Representation {
     }
 
     @Override
+    @Deprecated
     public boolean checkDigest() {
-return getWrappedRepresentation().checkDigest();
+        return getWrappedRepresentation().checkDigest();
     }
 
     @Override
+    @Deprecated
     public boolean checkDigest(String algorithm) {
         return getWrappedRepresentation().checkDigest(algorithm);
     }
 
     @Override
+    @Deprecated
     public Digest computeDigest(String algorithm) {
         return getWrappedRepresentation().computeDigest(algorithm);
     }
@@ -291,7 +295,8 @@ return getWrappedRepresentation().checkDigest();
     }
 
     @Override
-    public void write(WritableByteChannel writableChannel) throws IOException {
+    public void write(WritableByteChannel writableChannel)
+            throws IOException {
         getWrappedRepresentation().write(writableChannel);
     }
 

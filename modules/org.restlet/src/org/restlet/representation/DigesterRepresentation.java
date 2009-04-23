@@ -117,6 +117,7 @@ public class DigesterRepresentation extends WrapperRepresentation {
      * computed value and does not require to exhaust entirely the
      * representation's stream.
      */
+    @SuppressWarnings("deprecation")
     @Override
     public boolean checkDigest(String algorithm) {
         if (this.algorithm != null && this.algorithm.equals(algorithm)) {
@@ -127,12 +128,24 @@ public class DigesterRepresentation extends WrapperRepresentation {
     }
 
     /**
+     * Compute the representation digest according to MD5 algorithm.<br>
+     * If case this algorithm is the same than the one provided at
+     * instantiation, the computation operation is made with the current stored
+     * computed value and does not require to exhaust entirely the
+     * representation's stream.
+     */
+    public Digest computeDigest() {
+        return computeDigest(Digest.ALGORITHM_MD5);
+    }
+
+    /**
      * {@inheritDoc} <br>
      * If case the given algorithm is the same than the one provided at
      * instantiation, the computation operation is made with the current stored
      * computed value and does not require to exhaust entirely the
      * representation's stream.
      */
+    @SuppressWarnings("deprecation")
     @Override
     public Digest computeDigest(String algorithm) {
         if (this.algorithm != null && this.algorithm.equals(algorithm)) {
@@ -172,8 +185,8 @@ public class DigesterRepresentation extends WrapperRepresentation {
      */
     @Override
     public InputStream getStream() throws IOException {
-        return new DigestInputStream(getWrappedRepresentation().getStream(),
-                this.computedDigest);
+        return new DigestInputStream(getWrappedRepresentation()
+                .getStream(), this.computedDigest);
     }
 
     /**
@@ -190,7 +203,8 @@ public class DigesterRepresentation extends WrapperRepresentation {
     }
 
     @Override
-    public void write(WritableByteChannel writableChannel) throws IOException {
+    public void write(WritableByteChannel writableChannel)
+            throws IOException {
         write(ByteUtils.getStream(writableChannel));
     }
 
