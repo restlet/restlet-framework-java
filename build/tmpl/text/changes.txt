@@ -91,7 +91,9 @@ Changes log
           implementation code.
         - Deprecated the abstract DigestRepresentation class, replaced 
           by Digester. Added a getDigester method on the Representation 
-          class. 
+          class.
+        - Deprecated Representation#checkDigest and 
+          Representation#computeDigest methods.
     - Miscellaneous
         - Component XML configuration has been moved into an Engine 
           ComponentXmlParser class.
