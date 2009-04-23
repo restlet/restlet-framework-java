@@ -395,7 +395,8 @@ public class ClientResource extends UniformResource {
 
         // Check for redirections
         if (request.getMethod().isSafe()
-                && response.getStatus().isRedirection()) {
+                && response.getStatus().isRedirection()
+                && response.getLocationRef() != null) {
             Reference newTargetRef = response.getLocationRef();
 
             if ((references != null) && references.contains(newTargetRef)) {
