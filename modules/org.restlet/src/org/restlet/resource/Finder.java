@@ -505,15 +505,13 @@ public class Finder extends Restlet {
 
                     if (!response.getStatus().equals(Status.SUCCESS_OK)) {
                         // Probably during the instantiation of the target
-                        // server
-                        // resource, or earlier the status was changed from the
-                        // default one. Don't go further.
+                        // server resource, or earlier the status was changed
+                        // from the default one. Don't go further.
                     } else if (targetResource == null) {
                         // If the current status is a success but we couldn't
-                        // find
-                        // the target handler for the request's resource URI,
-                        // then
-                        // we set the response status to 404 (Not Found).
+                        // find the target handler for the request's resource
+                        // URI, then we set the response status to 404 (Not
+                        // Found).
                         response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
                     } else {
                         targetResource.handle();
