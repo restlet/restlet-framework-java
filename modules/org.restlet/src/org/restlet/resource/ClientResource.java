@@ -40,6 +40,7 @@ import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.Uniform;
 import org.restlet.data.ChallengeResponse;
+import org.restlet.data.ChallengeScheme;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
 import org.restlet.data.Cookie;
@@ -85,7 +86,8 @@ public class ClientResource extends UniformResource {
      * @param reference
      *            The target reference.
      */
-    public ClientResource(Context context, Method method, Reference reference) {
+    public ClientResource(Context context, Method method,
+            Reference reference) {
         Request request = new Request(method, reference);
         Response response = new Response(request);
 
@@ -151,7 +153,8 @@ public class ClientResource extends UniformResource {
      * @param response
      *            The handled response.
      */
-    public ClientResource(Context context, Request request, Response response) {
+    public ClientResource(Context context, Request request,
+            Response response) {
         this.followRedirects = true;
         init(context, request, response);
     }
@@ -316,7 +319,8 @@ public class ClientResource extends UniformResource {
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.3">HTTP
      *      GET method</a>
      */
-    public Representation get(MediaType mediaType) throws ResourceException {
+    public Representation get(MediaType mediaType)
+            throws ResourceException {
         // Save the current client info
         ClientInfo currentClientInfo = getClientInfo();
 
@@ -468,7 +472,8 @@ public class ClientResource extends UniformResource {
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.4">HTTP
      *      HEAD method</a>
      */
-    public Representation head(MediaType mediaType) throws ResourceException {
+    public Representation head(MediaType mediaType)
+            throws ResourceException {
         // Save the current client info
         ClientInfo currentClientInfo = getClientInfo();
 
@@ -523,7 +528,8 @@ public class ClientResource extends UniformResource {
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.2">HTTP
      *      OPTIONS method</a>
      */
-    public Representation options(MediaType mediaType) throws ResourceException {
+    public Representation options(MediaType mediaType)
+            throws ResourceException {
         // Save the current client info
         ClientInfo currentClientInfo = getClientInfo();
 
@@ -583,7 +589,8 @@ public class ClientResource extends UniformResource {
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.5">HTTP
      *      POST method</a>
      */
-    public Representation post(Representation entity) throws ResourceException {
+    public Representation post(Representation entity)
+            throws ResourceException {
         setMethod(Method.POST);
         getRequest().setEntity(entity);
         return handle();
@@ -620,6 +627,23 @@ public class ClientResource extends UniformResource {
      */
     public void setChallengeResponse(ChallengeResponse challengeResponse) {
         getRequest().setChallengeResponse(challengeResponse);
+    }
+
+    /**
+     * Sets the authentication response sent by a client to an origin server
+     * given a scheme, identifier and secret.
+     * 
+     * @param scheme
+     *            The challenge scheme.
+     * @param identifier
+     *            The user identifier, such as a login name or an access key.
+     * @param secret
+     *            The user secret, such as a password or a secret key.
+     */
+    public void setChallengeResponse(ChallengeScheme scheme,
+            final String identifier, String secret) {
+        setChallengeResponse(new ChallengeResponse(scheme, identifier,
+                secret));
     }
 
     /**
