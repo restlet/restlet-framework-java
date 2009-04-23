@@ -117,7 +117,8 @@
 	</licenses>
 
 	<build>
-		<sourceDirectory><#noparse>${basedir}/src</#noparse></sourceDirectory>
+<#noparse>
+		<sourceDirectory>${basedir}/src</sourceDirectory>
 		<resources>
 			<resource>
 				<filtering>false</filtering>
@@ -131,7 +132,7 @@
 				</excludes>
 			</resource>
 		</resources>
-
+</#noparse>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
