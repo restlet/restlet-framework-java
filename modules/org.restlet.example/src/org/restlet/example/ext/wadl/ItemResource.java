@@ -61,7 +61,7 @@ public class ItemResource extends BaseResource {
 
     @Override
     public Representation describe() {
-        setTitle("Item " + this.itemName);
+        setTitle("Representation a single item");
         return super.describe();
     }
 
