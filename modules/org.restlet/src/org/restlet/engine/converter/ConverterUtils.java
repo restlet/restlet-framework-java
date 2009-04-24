@@ -104,7 +104,7 @@ public class ConverterUtils {
             if (classes != null) {
                 if (targetClass != null) {
                     for (Class<?> clazz : classes) {
-                        if (targetClass.isAssignableFrom(clazz)) {
+                        if (clazz.isAssignableFrom(targetClass)) {
                             return ch;
                         }
                     }

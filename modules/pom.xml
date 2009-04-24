@@ -84,7 +84,6 @@
 		<lib-retroweaver-version>1.2</lib-retroweaver-version>
 		<lib-rhino-version>1.7R1</lib-rhino-version>
 		<lib-rome-version>1.0</lib-rome-version>
-		<lib-scripturian-version>1.0.0.rc3</lib-scripturian-version>
 		<lib-script-version>1.0</lib-script-version>
 		<lib-servlet-version>2.5</lib-servlet-version>
 		<lib-simple-version>4.1.10</lib-simple-version>
@@ -96,6 +95,7 @@
 		<lib-velocity-version>1.5</lib-velocity-version>
 		<lib-wrapper-version>3.2.3</lib-wrapper-version>
 		<lib-xdb-version>11.1</lib-xdb-version>
+		<lib-xstream-version>1.3.1</lib-xstream-version>
 	</properties>
 
 	<modules>
@@ -103,7 +103,7 @@
 		<module>org.restlet.example</module>
 		<module>org.restlet.gae</module>
 		<module>org.restlet.gwt</module>
-		<!--<module>org.restlet.test</module>-->
+		<!-- <module>org.restlet.test</module> -->
 
 		<module>org.restlet.ext.atom</module>
 		<module>org.restlet.ext.fileupload</module>
@@ -169,9 +169,6 @@
 				</excludes>
 			</resource>
 		</resources>
-
-
-
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

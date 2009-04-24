@@ -53,6 +53,7 @@ import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.representation.Representation;
+import org.restlet.representation.Variant;
 import org.restlet.service.ConverterService;
 import org.restlet.util.Series;
 
@@ -86,8 +87,7 @@ public class ClientResource extends UniformResource {
      * @param reference
      *            The target reference.
      */
-    public ClientResource(Context context, Method method,
-            Reference reference) {
+    public ClientResource(Context context, Method method, Reference reference) {
         Request request = new Request(method, reference);
         Response response = new Response(request);
 
@@ -153,8 +153,7 @@ public class ClientResource extends UniformResource {
      * @param response
      *            The handled response.
      */
-    public ClientResource(Context context, Request request,
-            Response response) {
+    public ClientResource(Context context, Request request, Response response) {
         this.followRedirects = true;
         init(context, request, response);
     }
@@ -303,6 +302,54 @@ public class ClientResource extends UniformResource {
     }
 
     /**
+     * Represents the resource in the given object class.<br>
+     * <br>
+     * Note that the client preferences will be automatically adjusted, but only
+     * for this request. If you want to change them once for all, you can use
+     * the {@link #getClientInfo()} method.<br>
+     * <br>
+     * If a success status is not returned, then a resource exception is thrown.
+     * 
+     * @param <T>
+     *            The expected type for the response entity.
+     * @param responseClass
+     *            The expected class for the response entity object.
+     * @return The response entity object.
+     * @throws ResourceException
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.3">HTTP
+     *      GET method</a>
+     */
+    public <T> T get(Class<T> responseClass) throws ResourceException {
+        T result = null;
+
+        // Save the current client info
+        ClientInfo currentClientInfo = getClientInfo();
+
+        // Create a fresh one for this request
+        ClientInfo newClientInfo = new ClientInfo();
+        ConverterService cs = getConverterService();
+        List<Variant> variants = cs.getVariants(responseClass, null);
+
+        for (Variant variant : variants) {
+            newClientInfo.getAcceptedMediaTypes().add(
+                    new Preference<MediaType>(variant.getMediaType()));
+        }
+        setClientInfo(newClientInfo);
+
+        try {
+            result = cs.toObject(get(), responseClass, this);
+        } catch (IOException e) {
+            throw new ResourceException(e);
+        } finally {
+            // Restore the current client info
+            setClientInfo(currentClientInfo);
+        }
+
+        return result;
+    }
+
+    /**
      * Represents the resource using a given media type.<br>
      * <br>
      * Note that the client preferences will be automatically adjusted, but only
@@ -319,8 +366,9 @@ public class ClientResource extends UniformResource {
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.3">HTTP
      *      GET method</a>
      */
-    public Representation get(MediaType mediaType)
-            throws ResourceException {
+    public Representation get(MediaType mediaType) throws ResourceException {
+        Representation result = null;
+
         // Save the current client info
         ClientInfo currentClientInfo = getClientInfo();
 
@@ -329,11 +377,32 @@ public class ClientResource extends UniformResource {
         newClientInfo.getAcceptedMediaTypes().add(
                 new Preference<MediaType>(mediaType));
         setClientInfo(newClientInfo);
-        Representation result = get();
 
-        // Restore the current client info
-        setClientInfo(currentClientInfo);
+        try {
+            result = get();
+        } finally {
+            // Restore the current client info
+            setClientInfo(currentClientInfo);
+        }
+
         return result;
+    }
+
+    /**
+     * Returns the converter service. Creates one if necessary.
+     * 
+     * @return The converter service.
+     */
+    private ConverterService getConverterService() {
+        ConverterService cs = null;
+
+        if (getApplication() != null) {
+            cs = getApplication().getConverterService();
+        } else {
+            cs = new ConverterService();
+        }
+
+        return cs;
     }
 
     /**
@@ -473,8 +542,7 @@ public class ClientResource extends UniformResource {
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.4">HTTP
      *      HEAD method</a>
      */
-    public Representation head(MediaType mediaType)
-            throws ResourceException {
+    public Representation head(MediaType mediaType) throws ResourceException {
         // Save the current client info
         ClientInfo currentClientInfo = getClientInfo();
 
@@ -529,8 +597,7 @@ public class ClientResource extends UniformResource {
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.2">HTTP
      *      OPTIONS method</a>
      */
-    public Representation options(MediaType mediaType)
-            throws ResourceException {
+    public Representation options(MediaType mediaType) throws ResourceException {
         // Save the current client info
         ClientInfo currentClientInfo = getClientInfo();
 
@@ -547,28 +614,27 @@ public class ClientResource extends UniformResource {
     }
 
     /**
-     * TODO
+     * Posts an object entity. Automatically serializes the object using the
+     * {@link ConverterService}.
      * 
      * @param entity
-     * @return
+     *            The object entity to post.
+     * @param resultClass
+     *            The class of the response entity.
+     * @return The response object entity.
      * @throws ResourceException
      */
-    public Object post(Object entity) throws ResourceException {
-        Object result = null;
-        ConverterService cs = null;
-
-        if (getApplication() != null) {
-            cs = getApplication().getConverterService();
-        } else {
-            cs = new ConverterService();
-        }
+    public <T> T post(Object entity, Class<T> resultClass)
+            throws ResourceException {
+        T result = null;
+        ConverterService cs = getConverterService();
 
         Representation requestEntity = cs.toRepresentation(entity);
         Representation responseEntity = post(requestEntity);
 
         if (responseEntity != null) {
             try {
-                result = cs.toObject(responseEntity);
+                result = cs.toObject(responseEntity, resultClass, this);
             } catch (IOException e) {
                 throw new ResourceException(e);
             }
@@ -590,8 +656,7 @@ public class ClientResource extends UniformResource {
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.5">HTTP
      *      POST method</a>
      */
-    public Representation post(Representation entity)
-            throws ResourceException {
+    public Representation post(Representation entity) throws ResourceException {
         setMethod(Method.POST);
         getRequest().setEntity(entity);
         return handle();
@@ -643,8 +708,7 @@ public class ClientResource extends UniformResource {
      */
     public void setChallengeResponse(ChallengeScheme scheme,
             final String identifier, String secret) {
-        setChallengeResponse(new ChallengeResponse(scheme, identifier,
-                secret));
+        setChallengeResponse(new ChallengeResponse(scheme, identifier, secret));
     }
 
     /**

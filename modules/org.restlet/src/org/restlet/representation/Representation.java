@@ -177,8 +177,7 @@ public abstract class Representation extends RepresentationInfo {
      * @param tag
      *            The tag.
      */
-    public Representation(MediaType mediaType, Date modificationDate,
-            Tag tag) {
+    public Representation(MediaType mediaType, Date modificationDate, Tag tag) {
         super(mediaType, modificationDate, tag);
     }
 
@@ -253,8 +252,7 @@ public abstract class Representation extends RepresentationInfo {
      */
     @Deprecated
     public boolean checkDigest() {
-        return (getDigest() != null && checkDigest(getDigest()
-                .getAlgorithm()));
+        return (getDigest() != null && checkDigest(getDigest().getAlgorithm()));
     }
 
     /**
@@ -306,24 +304,15 @@ public abstract class Representation extends RepresentationInfo {
         if (isAvailable()) {
             try {
                 MessageDigest md = MessageDigest.getInstance(algorithm);
-                DigestInputStream dis = new DigestInputStream(getStream(),
-                        md);
+                DigestInputStream dis = new DigestInputStream(getStream(), md);
                 ByteUtils.exhaust(dis);
                 result = new Digest(algorithm, md.digest());
             } catch (NoSuchAlgorithmException e) {
-                Context
-                        .getCurrentLogger()
-                        .log(
-                                Level.WARNING,
-                                "Unable to check the digest of the representation.",
-                                e);
+                Context.getCurrentLogger().log(Level.WARNING,
+                        "Unable to check the digest of the representation.", e);
             } catch (IOException e) {
-                Context
-                        .getCurrentLogger()
-                        .log(
-                                Level.WARNING,
-                                "Unable to check the digest of the representation.",
-                                e);
+                Context.getCurrentLogger().log(Level.WARNING,
+                        "Unable to check the digest of the representation.", e);
             }
         }
 
@@ -410,11 +399,18 @@ public abstract class Representation extends RepresentationInfo {
      * the {@link Digest#ALGORITHM_MD5} digest algorithm.
      * 
      * @return A Digester representation that wraps the current representation.
-     * @throws NoSuchAlgorithmException
      */
-    public DigesterRepresentation getDigester()
-            throws NoSuchAlgorithmException {
-        return new DigesterRepresentation(this);
+    public DigesterRepresentation getDigester() {
+        DigesterRepresentation result = null;
+
+        try {
+            result = new DigesterRepresentation(this);
+        } catch (NoSuchAlgorithmException e) {
+            Context.getCurrentLogger().log(Level.WARNING,
+                    "Unable to get the digester representation", e);
+        }
+
+        return result;
     }
 
     /**
@@ -425,11 +421,18 @@ public abstract class Representation extends RepresentationInfo {
      *            The digest algorithm
      * 
      * @return A Digester representation that wraps the current representation.
-     * @throws NoSuchAlgorithmException
      */
-    public DigesterRepresentation getDigester(String algorithm)
-            throws NoSuchAlgorithmException {
-        return new DigesterRepresentation(this, algorithm);
+    public DigesterRepresentation getDigester(String algorithm) {
+        DigesterRepresentation result = null;
+
+        try {
+            result = new DigesterRepresentation(this, algorithm);
+        } catch (NoSuchAlgorithmException e) {
+            Context.getCurrentLogger().log(Level.WARNING,
+                    "Unable to get the digester representation", e);
+        }
+
+        return result;
     }
 
     /**
@@ -665,8 +668,7 @@ public abstract class Representation extends RepresentationInfo {
      *            The output stream.
      * @throws IOException
      */
-    public abstract void write(OutputStream outputStream)
-            throws IOException;
+    public abstract void write(OutputStream outputStream) throws IOException;
 
     /**
      * Writes the representation to a byte channel. This method is ensured to

@@ -393,6 +393,12 @@
 		<pathelement path="${classes}/${mod-servlet-id}" />
 	</path>
 
+	<path id="mod-xstream-path">
+		<path refid="mod-core-path" />
+		<pathelement path="${classes}/${mod-core-id}" />
+		<fileset dir="${lib}/${lib-xstream-id}" includes="*.jar" />
+	</path>
+
 	<path id="mod-core-example-path">
 		<path refid="mod-core-path" />
 		<path refid="mod-atom-path" />
@@ -403,6 +409,7 @@
 		<path refid="mod-json-path" />
 		<path refid="mod-rdf-path" />
 		<path refid="mod-velocity-path" />
+		<path refid="mod-xstream-path" />
 		<pathelement path="${mod}/${mod-jaxrs-id}/src" />
 		<pathelement path="${classes}/${mod-core-id}" />
 		<pathelement path="${classes}/${mod-atom-id}" />
@@ -413,6 +420,7 @@
 		<pathelement path="${classes}/${mod-json-id}" />
 		<pathelement path="${classes}/${mod-rdf-id}" />
 		<pathelement path="${classes}/${mod-velocity-id}" />
+		<pathelement path="${classes}/${mod-xstream-id}" />
 		<fileset dir="${lib}/${lib-bloat-id}" includes="*.jar" />
 		<fileset dir="${lib}/${lib-collections-id}" includes="*.jar" />
 		<fileset dir="${lib}/${lib-db4o-id}" includes="*.jar" />
@@ -511,6 +519,10 @@
 		<pathelement path="${classes}/${mod-wadl-id}" />
 		<pathelement path="${mod}/${mod-wadl-id}/src" />
 
+		<path refid="mod-xstream-path" />
+		<pathelement path="${classes}/${mod-xstream-id}" />
+		<pathelement path="${mod}/${mod-xstream-id}/src" />
+
 		<fileset dir="${lib}/${lib-collections-id}" includes="*.jar" />
 		<fileset dir="${lib}/${lib-junit-id}" includes="*.jar" />
 		<fileset dir="${lib}/${lib-lang-id}" includes="*.jar" />
@@ -548,6 +560,7 @@
 		<pathelement path="${classes}/${mod-velocity-id}" />
 		<pathelement path="${classes}/${mod-wadl-id}" />
 		<pathelement path="${classes}/${mod-xdb-id}" />
+		<pathelement path="${classes}/${mod-xstream-id}" />
 		<path refid="mod-fileupload-path" />
 		<path refid="mod-freemarker-path" />
 		<path refid="mod-grizzly-path" />
@@ -574,6 +587,7 @@
 		<path refid="mod-velocity-path" />
 		<path refid="mod-wadl-path" />
 		<path refid="mod-xdb-path" />
+		<path refid="mod-xstream-path" />
 	</path>
 
 	<path id="path-none" />
@@ -976,6 +990,7 @@
 		<pomModule name="velocity" />
 		<pomModule name="wadl" />
 		<pomModule name="xdb" />
+		<pomModule name="xstream" />
 
 		<!-- Generate the parent POM -->
 		<fmpp sourcefile="${tmpl}/poms/${parent-maven-artifactId}.pom" outputfile="${temp}/poms/${parent-maven-artifactId}.pom" dataroot="${basedir}" >
@@ -1082,6 +1097,8 @@
 		<!-- depends on servlet -->
 		<compileModule name="xdb" />
 
+		<compileModule name="xstream" />
+
 		<!-- depends on many things -->
 		<compileModule name="core-example" />
 		<compileModule name="core-test" />
@@ -1118,6 +1135,7 @@
 		<backportModule name="velocity" failonwarning="@{backport-failonwarning}" />
 		<backportModule name="wadl" failonwarning="@{backport-failonwarning}" />
 		<backportModule name="xdb" failonwarning="@{backport-failonwarning}" />
+		<backportModule name="xstream" failonwarning="@{backport-failonwarning}" />
 	</target>
 
 	<!-- JAVADOC target -->
@@ -1190,6 +1208,7 @@
 				<pathelement path="${mod}/${mod-velocity-id}/src/" />
 				<pathelement path="${mod}/${mod-wadl-id}/src/" />
 				<pathelement path="${mod}/${mod-xdb-id}/src/" />
+				<pathelement path="${mod}/${mod-xstream-id}/src/" />
 			</sourcepath>
 
 			<bottom>
@@ -1226,6 +1245,7 @@
 				<package name="org.restlet.ext.jaxb*" />
 				<package name="org.restlet.ext.jibx*" />
 				<package name="org.restlet.ext.velocity*" />
+				<package name="org.restlet.ext.xstream*" />
 			</group>
 
 			<link href="http://freemarker.sourceforge.net/docs/api/" />
@@ -1234,6 +1254,7 @@
 			<link href="http://jakarta.apache.org/commons/fileupload/apidocs/" />
 			<link href="http://jakarta.apache.org/commons/httpclient/apidocs/" />
 			<link href="http://jakarta.apache.org/velocity/docs/api/" />
+			<link href="http://xstream.codehaus.org/javadoc/" />
 			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
 			<link href="http://java.sun.com/javaee/5/docs/api/" />
 			<!-- Note: The link to Java 6 is a fall-back for the javax.script package, which otherwise is not documented for Java 5.
@@ -1385,6 +1406,7 @@
 		<findbugsModule name="velocity" />
 		<findbugsModule name="wadl" />
 		<findbugsModule name="xdb" />
+		<findbugsModule name="xstream" />
 	</target>
 
 	<target name="verify-checkstyle" if="do-checkstyle" description="Check the style of the code.">
@@ -1418,6 +1440,7 @@
 		<checkstyleModule name="velocity" />
 		<checkstyleModule name="wadl" />
 		<checkstyleModule name="xdb" />
+		<checkstyleModule name="xstream" />
 	</target>
 
 	<!-- Integrate target -->
@@ -1521,6 +1544,7 @@
 		<stageLibrary name="tika" />
 		<stageLibrary name="velocity" />
 		<stageLibrary name="wrapper" />
+		<stageLibrary name="xstream" />
 		<stageLibrary name="bloat" />
 
 		<!-- Package modules -->
@@ -1553,6 +1577,7 @@
 		<stageModule name="velocity" />
 		<stageModule name="wadl" />
 		<stageModule name="xdb" />
+		<stageModule name="xstream" />
 
 		<!-- Copy the POM files -->
 		<!-- 
@@ -1611,8 +1636,9 @@
 		<maven2Module name="spring" />
 		<maven2Module name="ssl" />
 		<maven2Module name="velocity" />
-		<maven2Module name="xdb" />
 		<maven2Module name="wadl" />
+		<maven2Module name="xdb" />
+		<maven2Module name="xstream" />
 
 		<maven2Library name="simple" />
 		<maven2Library name="jaxrs" />

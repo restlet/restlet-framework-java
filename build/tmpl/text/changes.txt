@@ -53,6 +53,10 @@ Changes log
           Suggested by Didier Girard.
         - Added a ContextTemplateLoader to FreeMarker extension to load
           template based on the client dispatcher and a base URI.
+        - Added new extension based on XStream library to automatically
+          convert Java objects to/from XML and JSON.
+        - Added converter helper to the "org.restlet.ext.json" extension.
+          Useful for the ConverterService.          
     - API changes
         - RepresentationInfo is now concrete and has more constructors.
           Suggested by Lars Heuer.
