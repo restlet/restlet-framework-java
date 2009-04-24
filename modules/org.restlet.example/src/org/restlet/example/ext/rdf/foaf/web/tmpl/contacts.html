@@ -41,11 +41,11 @@
       </ul>
    </div>
    <div>
-      <h3 class="menu"><a href="${resourceRef}/contacts">Contacts</a></h3>
+      <h3 class="menu"><a href="${resourceRef}">Contacts</a></h3>
 <#if contacts??>
       <ul>
 	<#list contacts as contact>
-	    <li><a href="${resourceRef}/contacts/${contact.id}" >${contact.nickname} <#if contact.image??><img src="${contact.image}" alt="${contact.nickname}" /></#if></a></li>
+	    <li><a href="${resourceRef}/${contact.id}" >${contact.nickname} <#if contact.image??><img src="${contact.image}" alt="${contact.nickname}" /></#if></a></li>
 	</#list>
      </ul>
 </#if>

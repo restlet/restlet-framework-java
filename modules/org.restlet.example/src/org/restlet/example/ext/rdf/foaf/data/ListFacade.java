@@ -1,32 +1,31 @@
 package org.restlet.example.ext.rdf.foaf.data;
 
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import org.restlet.example.ext.rdf.foaf.objects.Contact;
 import org.restlet.example.ext.rdf.foaf.objects.User;
 
 public class ListFacade extends DataFacade {
 
-    private Map<String, User> users;
+    private ConcurrentMap<String, User> users;
 
     public ListFacade() {
         super();
-        this.users = new HashMap<String, User>();
+        this.users = new ConcurrentHashMap<String, User>();
     }
 
     @Override
-    public Contact createContact(Contact contact) {
-        contact.setId(Long.toString(new Date().getTime()));
+    public Contact createContact(User user, Contact contact) {
+        contact.setId(Integer.toString(user.getContacts().size() + 1));
         return contact;
     }
 
     @Override
     public User createUser(User user) {
-        user.setId(Long.toString(new Date().getTime()));
+        user.setId(Integer.toString(users.size() + 1));
         users.put(user.getId(), user);
         return user;
     }

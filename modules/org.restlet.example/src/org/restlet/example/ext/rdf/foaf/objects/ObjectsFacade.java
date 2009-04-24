@@ -57,7 +57,7 @@ public class ObjectsFacade {
      * @return the contact object completed with its identifiant.
      */
     public Contact createContact(User user, Contact contact) {
-        contact = this.dataFacade.createContact(contact);
+        contact = this.dataFacade.createContact(user, contact);
         user.getContacts().add(contact);
         this.dataFacade.updateUser(user);
 

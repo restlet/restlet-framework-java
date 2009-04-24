@@ -43,11 +43,13 @@ public abstract class DataFacade {
     /**
      * Add a new Contact object in the database.
      * 
+     * @param user
+     *            parent user object.
      * @param contact
      *            new Contact object to be added.
      * @return the contact object completed with its identifiant.
      */
-    public abstract Contact createContact(Contact contact);
+    public abstract Contact createContact(User user,Contact contact);
 
     /**
      * 
