@@ -4,8 +4,12 @@ import java.io.IOException;
 
 import org.restlet.Client;
 import org.restlet.data.Form;
+import org.restlet.data.MediaType;
+import org.restlet.data.Method;
+import org.restlet.data.Preference;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
+import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.resource.Representation;
 
@@ -32,6 +36,14 @@ public class FirstResourceClient {
 
         // Displays the WADL documentation of the "item1" resource
         client.options(itemUri).getEntity().write(System.out);
+
+        // Displays the HTML documentation of the "item1" resource
+        // Make sure to have a proper transformation engine (it has been tested
+        // successfully with xalan 1.2.7)
+        Request request = new Request(Method.OPTIONS, itemUri);
+        request.getClientInfo().getAcceptedMediaTypes().add(
+                new Preference<MediaType>(MediaType.TEXT_HTML));
+        client.handle(request).getEntity().write(System.out);
     }
 
     /**
