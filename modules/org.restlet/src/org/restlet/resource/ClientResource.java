@@ -619,10 +619,31 @@ public class ClientResource extends UniformResource {
      * 
      * @param entity
      *            The object entity to post.
+     * @return The optional result entity.
+     * @throws ResourceException
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.5">HTTP
+     *      POST method</a>
+     */
+    public Representation post(Object entity) throws ResourceException {
+        ConverterService cs = getConverterService();
+        Representation requestEntity = cs.toRepresentation(entity);
+        return post(requestEntity);
+    }
+
+    /**
+     * Posts an object entity. Automatically serializes the object using the
+     * {@link ConverterService}.
+     * 
+     * @param entity
+     *            The object entity to post.
      * @param resultClass
      *            The class of the response entity.
      * @return The response object entity.
      * @throws ResourceException
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.5">HTTP
+     *      POST method</a>
      */
     public <T> T post(Object entity, Class<T> resultClass)
             throws ResourceException {
@@ -644,9 +665,8 @@ public class ClientResource extends UniformResource {
     }
 
     /**
-     * Posts a representation to the resource at the target URI reference.<br>
-     * <br>
-     * If a success status is not returned, then a resource exception is thrown.
+     * Posts a representation. If a success status is not returned, then a
+     * resource exception is thrown.
      * 
      * @param entity
      *            The posted entity.
@@ -660,6 +680,57 @@ public class ClientResource extends UniformResource {
         setMethod(Method.POST);
         getRequest().setEntity(entity);
         return handle();
+    }
+
+    /**
+     * Puts an object entity. Automatically serializes the object using the
+     * {@link ConverterService}.
+     * 
+     * @param entity
+     *            The object entity to put.
+     * @return The optional result entity.
+     * @throws ResourceException
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6">HTTP
+     *      PUT method</a>
+     */
+    public Representation put(Object entity) throws ResourceException {
+        ConverterService cs = getConverterService();
+        Representation requestEntity = cs.toRepresentation(entity);
+        return put(requestEntity);
+    }
+
+    /**
+     * Puts an object entity. Automatically serializes the object using the
+     * {@link ConverterService}.
+     * 
+     * @param entity
+     *            The object entity to put.
+     * @param resultClass
+     *            The class of the response entity.
+     * @return The response object entity.
+     * @throws ResourceException
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6">HTTP
+     *      PUT method</a>
+     */
+    public <T> T put(Object entity, Class<T> resultClass)
+            throws ResourceException {
+        T result = null;
+        ConverterService cs = getConverterService();
+
+        Representation requestEntity = cs.toRepresentation(entity);
+        Representation responseEntity = put(requestEntity);
+
+        if (responseEntity != null) {
+            try {
+                result = cs.toObject(responseEntity, resultClass, this);
+            } catch (IOException e) {
+                throw new ResourceException(e);
+            }
+        }
+
+        return result;
     }
 
     /**

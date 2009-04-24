@@ -4,13 +4,23 @@ Bundle-Name: Restlet Extension - XStream
 Bundle-SymbolicName: org.restlet.ext.xstream
 Bundle-Version: 1.2
 Bundle-Vendor: Noelios Technologies
-Export-Package: org.restlet.ext.xstream
+Export-Package: org.restlet.ext.xstream;uses:="org.restlet.data,com.thoughtworks.xstream,org.restlet.representation"
 Import-Package: 
  com.thoughtworks.xstream,
+ com.thoughtworks.xstream.io,
  com.thoughtworks.xstream.io.json,
  com.thoughtworks.xstream.io.xml,
+ javax.xml.stream,
+ javax.xml.stream.events,
+ javax.xml.stream.util,
+ org.codehaus.jettison,
+ org.codehaus.jettison.badgerfish,
+ org.codehaus.jettison.json,
+ org.codehaus.jettison.mapped,
+ org.codehaus.jettison.util,
  org.restlet,
  org.restlet.data,
+ org.restlet.engine,
  org.restlet.engine.converter,
  org.restlet.representation,
  org.restlet.resource,

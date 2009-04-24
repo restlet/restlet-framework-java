@@ -396,6 +396,7 @@
 	<path id="mod-xstream-path">
 		<path refid="mod-core-path" />
 		<pathelement path="${classes}/${mod-core-id}" />
+		<fileset dir="${lib}/${lib-jettison-id}" includes="*.jar" />
 		<fileset dir="${lib}/${lib-xstream-id}" includes="*.jar" />
 	</path>
 
@@ -1523,6 +1524,7 @@
 		<stageLibrary name="jaxrs" />
 		<!-- disabled for now  <stageLibrary name="jdom" /> -->
 		<stageLibrary name="activation" />
+		<stageLibrary name="jettison" />
 		<stageLibrary name="jetty" />
 		<stageLibrary name="jibx" />
 		<!-- disabled for now  <stageLibrary name="jline" /> -->

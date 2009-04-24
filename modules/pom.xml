@@ -64,6 +64,7 @@
 		<lib-jaxb-ri-version>2.1.10</lib-jaxb-ri-version>
 		<lib-jaxrs-version>1.0</lib-jaxrs-version>
 		<lib-jdom-version>1.1</lib-jdom-version>
+		<lib-jettison-version>1.1</lib-jettison-version>
 		<lib-jetty-version>6.1.15</lib-jetty-version>
 		<lib-jibx-version>1.1.5</lib-jibx-version>
 		<lib-jline-version>0.9.94</lib-jline-version>

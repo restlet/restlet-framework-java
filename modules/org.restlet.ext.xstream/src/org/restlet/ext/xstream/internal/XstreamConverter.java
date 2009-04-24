@@ -41,6 +41,8 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.UniformResource;
 
+import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
+
 /**
  * Converter between the XML/JSON and Representation classes based on XStream.
  * 
@@ -88,6 +90,8 @@ public class XstreamConverter extends ConverterHelper {
 
         if (VARIANT_JSON.isCompatible(representation)) {
             xstreamRepresentation = new XstreamRepresentation<T>(representation);
+            xstreamRepresentation
+                    .setJsonDriverClass(JettisonMappedXmlDriver.class);
             result = xstreamRepresentation.getObject();
         } else if (VARIANT_XML.isCompatible(representation)) {
             xstreamRepresentation = new XstreamRepresentation<T>(representation);
@@ -100,7 +104,13 @@ public class XstreamConverter extends ConverterHelper {
     @Override
     public Representation toRepresentation(Object object,
             Variant targetVariant, UniformResource resource) {
-        return new XstreamRepresentation<Object>(targetVariant.getMediaType(),
-                object);
+        if (targetVariant == null) {
+            targetVariant = new Variant(MediaType.APPLICATION_JSON);
+        }
+
+        XstreamRepresentation<Object> xstreamRepresentation = new XstreamRepresentation<Object>(
+                targetVariant.getMediaType(), object);
+        xstreamRepresentation.setJsonDriverClass(JettisonMappedXmlDriver.class);
+        return xstreamRepresentation;
     }
 }
