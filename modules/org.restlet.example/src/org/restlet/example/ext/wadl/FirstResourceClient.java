@@ -4,10 +4,8 @@ import java.io.IOException;
 
 import org.restlet.Client;
 import org.restlet.data.Form;
-import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
-import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.resource.Representation;
 
@@ -22,12 +20,10 @@ public class FirstResourceClient {
         Client client = new Client(Protocol.HTTP);
 
         // Displays the WADL documentation of the application
-        Request request = new Request(Method.OPTIONS, appUri);
-        client.handle(request).getEntity().write(System.out);
+        client.options(appUri).getEntity().write(System.out);
 
         // Displays the WADL documentation of the "items" resource
-        request.setResourceRef(itemsUri);
-        client.handle(request).getEntity().write(System.out);
+        client.options(itemsUri).getEntity().write(System.out);
 
         // Create a new item
         Item item = new Item("item1", "this is an item.");
@@ -35,8 +31,7 @@ public class FirstResourceClient {
                 itemsUri);
 
         // Displays the WADL documentation of the "item1" resource
-        request.setResourceRef(itemUri);
-        client.handle(request).getEntity().write(System.out);
+        client.options(itemUri).getEntity().write(System.out);
     }
 
     /**
