@@ -138,7 +138,7 @@ public class Template {
             // Expressions to create character classes
             final String ALL = ".";
             final String ALPHA = "a-zA-Z";
-            final String DIGIT = "0-9";
+            final String DIGIT = "\\d";
             final String ALPHA_DIGIT = ALPHA + DIGIT;
             final String HEXA = DIGIT + "ABCDEFabcdef";
             final String URI_UNRESERVED = ALPHA_DIGIT + "\\-\\.\\_\\~";
