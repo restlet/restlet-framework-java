@@ -86,13 +86,7 @@ public class ReaderInputStream extends InputStream {
 
     @Override
     public int available() throws IOException {
-        int result = this.pipedInputStream.available();
-
-        if (result == 0) {
-            result = this.reader.ready() ? 1 : 0;
-        }
-
-        return result;
+        return this.pipedInputStream.available();
     }
 
     @Override
@@ -107,15 +101,13 @@ public class ReaderInputStream extends InputStream {
         int result = -1;
 
         if (this.pipedInputStream.available() == 0) {
-            if (this.reader.ready()) {
-                int character = this.reader.read();
+            int character = this.reader.read();
 
-                if (character != -1) {
-                    this.outputStreamWriter.write(character);
-                    this.outputStreamWriter.flush();
-                    this.pipedOutputStream.flush();
-                    result = this.pipedInputStream.read();
-                }
+            if (character != -1) {
+                this.outputStreamWriter.write(character);
+                this.outputStreamWriter.flush();
+                this.pipedOutputStream.flush();
+                result = this.pipedInputStream.read();
             }
         } else {
             result = this.pipedInputStream.read();
