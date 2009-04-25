@@ -17,6 +17,8 @@ Changes log
        - Fixed innacurate warnings in logs for 304 (Not modified) 
          statuses with empty response entities. 
          Reported by Nicholas Brown.
+       - Fixed bug in ReaderRepresentation causing some issues while
+         writing itself. Reported by Nicolas Rinaudo. 
     - Misc
        - The Template implementation now uses "\\d" as a regex for the
          Variable.TYPE_DIGIT constant.

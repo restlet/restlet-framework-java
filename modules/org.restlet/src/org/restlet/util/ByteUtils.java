@@ -388,8 +388,8 @@ public final class ByteUtils {
      */
     private static class ReaderInputStream extends InputStream {
         /**
-         * Writer to an output stream that converts characters according to a given
-         * character set.
+         * Writer to an output stream that converts characters according to a
+         * given character set.
          */
         private final OutputStreamWriter outputStreamWriter;
 
@@ -414,7 +414,8 @@ public final class ByteUtils {
             this.reader = (reader instanceof BufferedReader) ? (BufferedReader) reader
                     : new BufferedReader(reader);
             this.pipedInputStream = new PipedInputStream();
-            this.pipedOutputStream = new PipedOutputStream(this.pipedInputStream);
+            this.pipedOutputStream = new PipedOutputStream(
+                    this.pipedInputStream);
 
             if (characterSet != null) {
                 this.outputStreamWriter = new OutputStreamWriter(
@@ -427,13 +428,7 @@ public final class ByteUtils {
 
         @Override
         public int available() throws IOException {
-            int result = this.pipedInputStream.available();
-
-            if (result == 0) {
-                result = this.reader.ready() ? 1 : 0;
-            }
-
-            return result;
+            return this.pipedInputStream.available();
         }
 
         @Override
@@ -448,15 +443,13 @@ public final class ByteUtils {
             int result = -1;
 
             if (this.pipedInputStream.available() == 0) {
-                if (this.reader.ready()) {
-                    int character = this.reader.read();
+                int character = this.reader.read();
 
-                    if (character != -1) {
-                        this.outputStreamWriter.write(character);
-                        this.outputStreamWriter.flush();
-                        this.pipedOutputStream.flush();
-                        result = this.pipedInputStream.read();
-                    }
+                if (character != -1) {
+                    this.outputStreamWriter.write(character);
+                    this.outputStreamWriter.flush();
+                    this.pipedOutputStream.flush();
+                    result = this.pipedInputStream.read();
                 }
             } else {
                 result = this.pipedInputStream.read();
@@ -909,7 +902,9 @@ public final class ByteUtils {
     /**
      * Converts a reader to a string.
      * 
-     * @see <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/io/InputStreamReader.html">InputStreamReader class</a>
+     * @see <a
+     *      href="http://java.sun.com/j2se/1.5.0/docs/api/java/io/InputStreamReader.html">InputStreamReader
+     *      class</a>
      * @param reader
      *            The characters reader.
      * @return The converted string.
