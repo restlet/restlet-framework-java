@@ -35,11 +35,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
+import java.security.Principal;
 import java.security.cert.Certificate;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Level;
 
 import javax.security.auth.Subject;
@@ -341,8 +344,12 @@ public class ServletCall extends HttpServerCall {
         Subject result = null;
 
         if (getRequest().getUserPrincipal() != null) {
-            result = new Subject();
-            result.getPrincipals().add(getRequest().getUserPrincipal());
+            Set<Principal> principals = new CopyOnWriteArraySet<Principal>();
+            Set<Object> pubCredentials = new CopyOnWriteArraySet<Object>();
+            Set<Object> privCredentials = new CopyOnWriteArraySet<Object>();
+            principals.add(getRequest().getUserPrincipal());
+            result = new Subject(false, principals, pubCredentials,
+                    privCredentials);
         }
 
         return result;
