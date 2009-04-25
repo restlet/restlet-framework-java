@@ -343,7 +343,7 @@ public class HttpServerAdapter extends HttpAdapter {
             } else if ((response.getRequest().getMethod() != null)
                     && response.getRequest().getMethod().equals(Method.GET)
                     && response.getStatus().equals(Status.SUCCESS_OK)
-                    && (response.getEntity() == null)) {
+                    && (!response.isEntityAvailable())) {
                 addEntityHeaders(response);
 
                 getLogger()
@@ -355,7 +355,7 @@ public class HttpServerAdapter extends HttpAdapter {
             } else if (response.getStatus().equals(Status.SUCCESS_NO_CONTENT)) {
                 addEntityHeaders(response);
 
-                if (response.getEntity() != null) {
+                if (response.isEntityAvailable()) {
                     getLogger()
                             .fine(
                                     "Responses with a 204 (No content) status generally don't have an entity. Only adding entity headers for resource \""
@@ -365,7 +365,7 @@ public class HttpServerAdapter extends HttpAdapter {
                 }
             } else if (response.getStatus()
                     .equals(Status.SUCCESS_RESET_CONTENT)) {
-                if (response.getEntity() != null) {
+                if (response.isEntityAvailable()) {
                     getLogger()
                             .warning(
                                     "Responses with a 205 (Reset content) status can't have an entity. Ignoring the entity for resource \""
@@ -377,7 +377,7 @@ public class HttpServerAdapter extends HttpAdapter {
                     Status.REDIRECTION_NOT_MODIFIED)) {
                 addEntityHeaders(response);
 
-                if (response.getEntity() != null) {
+                if (response.isEntityAvailable()) {
                     getLogger()
                             .warning(
                                     "Responses with a 304 (Not modified) status can't have an entity. Only adding entity headers for resource \""
@@ -386,7 +386,7 @@ public class HttpServerAdapter extends HttpAdapter {
                     response.setEntity(null);
                 }
             } else if (response.getStatus().isInformational()) {
-                if (response.getEntity() != null) {
+                if (response.isEntityAvailable()) {
                     getLogger()
                             .warning(
                                     "Responses with an informational (1xx) status can't have an entity. Ignoring the entity for resource \""
