@@ -34,5 +34,6 @@ Export-Package: com.google.gwt.animation.client;uses:="com.google.gwt.user.clien
    com.google.gwt.user.client.rpc,
    com.google.gwt.i18n.client",
  com.google.gwt.user.server.rpc;uses:="javax.servlet,javax.servlet.http",
+ com.google.gwt.user.server.rpc.impl,
  com.google.gwt.xml.client
 Bundle-RequiredExecutionEnvironment: J2SE-1.5

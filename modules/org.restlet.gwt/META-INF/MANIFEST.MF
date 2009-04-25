@@ -26,8 +26,10 @@ Export-Package: org.restlet.gwt;uses:="org.restlet.gwt.data,org.restlet.gwt.reso
    org.xml.sax.helpers,
    org.restlet.gwt.data,
    org.restlet.gwt.resource"
-Import-Package: com.google.gwt.http.client,
+Import-Package: com.google.gwt.core.client,
+ com.google.gwt.http.client,
  com.google.gwt.i18n.client,
  com.google.gwt.json.client,
+ com.google.gwt.user.client.rpc,
  com.google.gwt.xml.client
 Bundle-RequiredExecutionEnvironment: J2SE-1.5

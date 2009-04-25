@@ -56,7 +56,11 @@ Changes log
         - Added new extension based on XStream library to automatically
           convert Java objects to/from XML and JSON.
         - Added converter helper to the "org.restlet.ext.json" extension.
-          Useful for the ConverterService.          
+          Useful for the ConverterService.
+        - Added ObjectRepresentation classes to both the Restlet/GWT
+          edition and to the server-side GWT extension. This class can
+          (de-)serialize POJOs using the JSON-based encoding used by
+          GWT-RPC.
     - API changes
         - RepresentationInfo is now concrete and has more constructors.
           Suggested by Lars Heuer.
