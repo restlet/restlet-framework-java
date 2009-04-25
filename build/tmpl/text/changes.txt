@@ -14,6 +14,9 @@ Changes log
        - Fixed matching of Firefox2 for Windows agent name. Reported by
          Peter Childs.
        - Fixed jSSLutils Maven group ID. Reported by John Wismar.
+       - Fixed innacurate warnings in logs for 304 (Not modified) 
+         statuses with empty response entities. 
+         Reported by Nicholas Brown.
     - Misc
        - The Template implementation now uses "\\d" as a regex for the
          Variable.TYPE_DIGIT constant.
