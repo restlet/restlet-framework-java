@@ -90,8 +90,7 @@ public class Finder extends Restlet {
      * @return The new finder instance.
      */
     public static Finder createFinder(Class<?> targetClass,
-            Class<? extends Finder> finderClass, Context context,
-            Logger logger) {
+            Class<? extends Finder> finderClass, Context context, Logger logger) {
         Finder result = null;
         if (Resource.class.isAssignableFrom(targetClass)
                 || ServerResource.class.isAssignableFrom(targetClass)) {
@@ -101,16 +100,12 @@ public class Finder extends Restlet {
                             .getConstructor(Context.class, Class.class);
 
                     if (constructor != null) {
-                        result = constructor.newInstance(context,
-                                targetClass);
+                        result = constructor.newInstance(context, targetClass);
                     }
                 } catch (Exception e) {
                     if (logger != null) {
-                        logger
-                                .log(
-                                        Level.WARNING,
-                                        "Exception while instantiating the finder.",
-                                        e);
+                        logger.log(Level.WARNING,
+                                "Exception while instantiating the finder.", e);
                     }
                 }
             } else {
@@ -210,9 +205,8 @@ public class Finder extends Restlet {
      *            The response to update.
      * @return The created handler or null.
      */
-    public ServerResource create(
-            Class<? extends ServerResource> targetClass, Request request,
-            Response response) {
+    public ServerResource create(Class<? extends ServerResource> targetClass,
+            Request request, Response response) {
         ServerResource result = null;
 
         if (targetClass != null) {
@@ -271,10 +265,10 @@ public class Finder extends Restlet {
                 try {
                     // Invoke the constructor with Context, Request and Response
                     // parameters
-                    constructor = targetClass.getConstructor(
-                            Context.class, Request.class, Response.class);
-                    result = (Handler) constructor.newInstance(
-                            getContext(), request, response);
+                    constructor = targetClass.getConstructor(Context.class,
+                            Request.class, Response.class);
+                    result = (Handler) constructor.newInstance(getContext(),
+                            request, response);
                 } catch (NoSuchMethodException nsme) {
                     // Invoke the default constructor then the init(Context,
                     // Request, Response) method.
@@ -297,11 +291,8 @@ public class Finder extends Restlet {
                                     e);
                 }
             } catch (Exception e) {
-                getLogger()
-                        .log(
-                                Level.WARNING,
-                                "Exception while instantiating the target handler.",
-                                e);
+                getLogger().log(Level.WARNING,
+                        "Exception while instantiating the target handler.", e);
             }
         }
 
@@ -389,8 +380,8 @@ public class Finder extends Restlet {
      *            The method to match.
      * @return The method matching the given prefix and method name.
      */
-    private java.lang.reflect.Method getMethod(String prefix,
-            Method method, Object target, Class<?>... classes) {
+    private java.lang.reflect.Method getMethod(String prefix, Method method,
+            Object target, Class<?>... classes) {
         java.lang.reflect.Method result = null;
         final StringBuilder sb = new StringBuilder();
         final String methodName = method.getName().toLowerCase();
@@ -406,13 +397,13 @@ public class Finder extends Restlet {
         } catch (SecurityException e) {
             getLogger().log(
                     Level.WARNING,
-                    "Couldn't access the " + prefix + " method for \""
-                            + method + "\"", e);
+                    "Couldn't access the " + prefix + " method for \"" + method
+                            + "\"", e);
         } catch (NoSuchMethodException e) {
             getLogger().log(
                     Level.INFO,
-                    "Couldn't find the " + prefix + " method for \""
-                            + method + "\"", e);
+                    "Couldn't find the " + prefix + " method for \"" + method
+                            + "\"", e);
         }
 
         return result;
@@ -450,8 +441,7 @@ public class Finder extends Restlet {
                 if ((getTargetClass() == null)
                         | Handler.class
                                 .isAssignableFrom((Class<? extends Handler>) getTargetClass())) {
-                    final Handler targetHandler = findTarget(request,
-                            response);
+                    final Handler targetHandler = findTarget(request, response);
 
                     if (!response.getStatus().equals(Status.SUCCESS_OK)) {
                         // Probably during the instantiation of the target
@@ -463,8 +453,7 @@ public class Finder extends Restlet {
                         final Method method = request.getMethod();
 
                         if (method == null) {
-                            response.setStatus(
-                                    Status.CLIENT_ERROR_BAD_REQUEST,
+                            response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST,
                                     "No method specified");
                         } else {
                             if (!allow(method, targetHandler)) {
@@ -501,23 +490,27 @@ public class Finder extends Restlet {
                 } else {
                     final ServerResource targetResource = find(request,
                             response);
-                    targetResource.init(getContext(), request, response);
 
-                    if (!response.getStatus().equals(Status.SUCCESS_OK)) {
-                        // Probably during the instantiation of the target
-                        // server resource, or earlier the status was changed
-                        // from the default one. Don't go further.
-                    } else if (targetResource == null) {
+                    if (targetResource == null) {
                         // If the current status is a success but we couldn't
                         // find the target handler for the request's resource
                         // URI, then we set the response status to 404 (Not
                         // Found).
                         response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
                     } else {
-                        targetResource.handle();
-                    }
+                        targetResource.init(getContext(), request, response);
 
-                    targetResource.release();
+                        if (response.getStatus().equals(Status.SUCCESS_OK)) {
+                            targetResource.handle();
+                        } else {
+                            // Probably during the instantiation of the target
+                            // server resource, or earlier the status was
+                            // changed
+                            // from the default one. Don't go further.
+                        }
+
+                        targetResource.release();
+                    }
                 }
             }
         }
@@ -544,8 +537,8 @@ public class Finder extends Restlet {
             } catch (Exception e) {
                 getLogger().log(
                         Level.WARNING,
-                        "Couldn't invoke the handle method for \""
-                                + method + "\"", e);
+                        "Couldn't invoke the handle method for \"" + method
+                                + "\"", e);
             }
         }
 
