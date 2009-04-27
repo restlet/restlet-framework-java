@@ -63,6 +63,10 @@ Changes log
           edition and to the server-side GWT extension. This class can
           (de-)serialize POJOs using the JSON-based encoding used by
           GWT-RPC.
+        - Added content-length header (with 0 value), in case the 
+          entity is not available when posting or putting since MS 
+          Azure requires this header for any request. Reported by 
+          Ronny Kwon.
     - API changes
         - RepresentationInfo is now concrete and has more constructors.
           Suggested by Lars Heuer.

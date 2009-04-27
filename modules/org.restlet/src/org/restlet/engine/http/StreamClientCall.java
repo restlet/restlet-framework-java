@@ -45,6 +45,7 @@ import java.util.logging.Logger;
 import javax.net.SocketFactory;
 import javax.net.ssl.SSLSocket;
 
+import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
@@ -372,6 +373,20 @@ public class StreamClientCall extends HttpClientCall {
                 // Write the request headers
                 for (final Parameter header : getRequestHeaders()) {
                     HttpUtils.writeHeader(header, getRequestHeadStream());
+                }
+
+                // TODO may be replaced by an attribute on the Method class
+                // telling that a method requires an entity.
+                // Actually, since such classes are used in the context of
+                // clients and servers, there could be two attributes
+                if ((request.getEntity() == null
+                        || !request.isEntityAvailable() || request.getEntity()
+                        .getSize() == 0)
+                        && (Method.POST.equals(request.getMethod()) || Method.PUT
+                                .equals(request.getMethod()))) {
+                    HttpUtils.writeHeader(new Parameter(
+                            HttpConstants.HEADER_CONTENT_LENGTH, "0"),
+                            getRequestHeadStream());
                 }
 
                 // Write the end of the headers section
