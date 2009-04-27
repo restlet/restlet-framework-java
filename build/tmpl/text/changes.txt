@@ -18,7 +18,9 @@ Changes log
          statuses with empty response entities. 
          Reported by Nicholas Brown.
        - Fixed bug in ReaderRepresentation causing some issues while
-         writing itself. Reported by Nicolas Rinaudo. 
+         writing itself. Reported by Nicolas Rinaudo.
+       - Fixed bug regarding the resolution of relative URI used in 
+         IncludeInfo. Reported by Jerome Bernard.
     - Misc
        - The Template implementation now uses "\\d" as a regex for the
          Variable.TYPE_DIGIT constant.
