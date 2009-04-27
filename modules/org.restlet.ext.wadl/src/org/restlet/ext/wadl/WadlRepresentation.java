@@ -963,7 +963,8 @@ public class WadlRepresentation extends SaxRepresentation {
                 final InputRepresentation xslRep = new InputRepresentation(
                         wadlHtmlXsltUrl.openStream(),
                         MediaType.APPLICATION_W3C_XSLT);
-                representation = new TransformRepresentation(this, xslRep);
+                representation = new TransformRepresentation(Context
+                        .getCurrent(), this, xslRep);
                 representation.setMediaType(MediaType.TEXT_HTML);
             } catch (IOException e) {
                 Context.getCurrent().getLogger().log(Level.WARNING,
