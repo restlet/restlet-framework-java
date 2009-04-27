@@ -86,8 +86,13 @@ public abstract class WriterRepresentation extends CharacterRepresentation {
 
     @Override
     public void write(OutputStream outputStream) throws IOException {
-        Writer writer = new OutputStreamWriter(outputStream, getCharacterSet()
-                .getName());
+        Writer writer = null;
+        if (getCharacterSet() != null) {
+            writer = new OutputStreamWriter(outputStream, getCharacterSet()
+                    .getName());
+        } else {
+            writer = new OutputStreamWriter(outputStream);
+        }
         write(writer);
         writer.flush();
     }
