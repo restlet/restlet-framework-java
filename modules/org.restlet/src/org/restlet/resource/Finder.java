@@ -89,6 +89,7 @@ public class Finder extends Restlet {
      *            The logger.
      * @return The new finder instance.
      */
+    @SuppressWarnings("deprecation")
     public static Finder createFinder(Class<?> targetClass,
             Class<? extends Finder> finderClass, Context context, Logger logger) {
         Finder result = null;
@@ -163,6 +164,7 @@ public class Finder extends Restlet {
      *            The target handler.
      * @return True if a method is allowed on a target handler.
      */
+    @SuppressWarnings("deprecation")
     private boolean allow(Method method, Handler target) {
         boolean result = false;
 
@@ -254,7 +256,9 @@ public class Finder extends Restlet {
      * @param response
      *            The response to update.
      * @return The created handler or null.
+     * @deprecated Use {@link #create(Request, Response)} instead.
      */
+    @Deprecated
     protected Handler createTarget(Class<? extends Handler> targetClass,
             Request request, Response response) {
         Handler result = null;
@@ -310,7 +314,9 @@ public class Finder extends Restlet {
      * @param response
      *            The response to update.
      * @return The created handler or null.
+     * @deprecated Use {@link #create(Request, Response)} instead.
      */
+    @Deprecated
     @SuppressWarnings("unchecked")
     protected Handler createTarget(Request request, Response response) {
         return createTarget((Class<? extends Handler>) getTargetClass(),
@@ -340,7 +346,9 @@ public class Finder extends Restlet {
      * @param response
      *            The response to update.
      * @return The target handler if available or null.
+     * @deprecated Use {@link #find(Request, Response)} instead.
      */
+    @Deprecated
     public Handler findTarget(Request request, Response response) {
         return createTarget(request, response);
     }
@@ -354,6 +362,7 @@ public class Finder extends Restlet {
      *            The target handler.
      * @return The allow method matching the given method name.
      */
+    @SuppressWarnings("deprecation")
     private java.lang.reflect.Method getAllowMethod(Method method,
             Handler target) {
         return getMethod("allow", method, target);
@@ -366,6 +375,7 @@ public class Finder extends Restlet {
      *            The method to match.
      * @return The handle method matching the given method name.
      */
+    @SuppressWarnings("deprecation")
     private java.lang.reflect.Method getHandleMethod(Handler target,
             Method method) {
         return getMethod("handle", method, target);
@@ -427,7 +437,7 @@ public class Finder extends Restlet {
      * @param response
      *            The response to update.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( { "unchecked", "deprecation" })
     @Override
     public void handle(Request request, Response response) {
         super.handle(request, response);

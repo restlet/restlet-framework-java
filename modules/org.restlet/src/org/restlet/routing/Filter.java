@@ -36,7 +36,6 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Finder;
-import org.restlet.resource.Handler;
 import org.restlet.resource.ServerResource;
 
 /**
@@ -231,10 +230,10 @@ public abstract class Filter extends Restlet {
     }
 
     /**
-     * Sets the next Restlet as a Finder for a given {@link Handler} or
-     * {@link ServerResource} class. When the call is delegated to the Finder
-     * instance, a new instance of the resource class will be created and will
-     * actually handle the request.
+     * Sets the next Restlet as a Finder for a given
+     * {@link org.restlet.resource.Handler} or {@link ServerResource} class.
+     * When the call is delegated to the Finder instance, a new instance of the
+     * resource class will be created and will actually handle the request.
      * 
      * @param targetClass
      *            The target resource class to attach.

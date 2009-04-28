@@ -97,7 +97,9 @@ import org.restlet.util.Series;
  * @author Jerome Louvel
  * @author Thierry Boileau
  * @author Konstantin Laufer (laufer@cs.luc.edu)
+ * @deprecated Use the new {@link ServerResource} class instead.
  */
+@Deprecated
 public class Resource extends Handler {
 
     /** Indicates if the resource is actually available. */

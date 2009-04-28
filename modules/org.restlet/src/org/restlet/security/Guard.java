@@ -89,7 +89,9 @@ import org.restlet.util.Resolver;
  *      href="http://www.restlet.org/documentation/1.1/tutorial#part09">Tutorial:
  *      Guarding access to sensitive resources</a>
  * @author Jerome Louvel
+ * @deprecated Use the {@link ChallengeGuard} class instead.
  */
+@Deprecated
 public class Guard extends Filter {
 
     /** Indicates that an authentication response is considered invalid. */
@@ -217,7 +219,6 @@ public class Guard extends Filter {
      *         were found and 1 otherwise.
      * @see #checkSecret(Request, String, char[])
      */
-    @SuppressWarnings("deprecation")
     public int authenticate(Request request) {
         // Delegate processing to the Engine
         return AuthenticatorUtils.authenticate(request, this);
@@ -247,7 +248,6 @@ public class Guard extends Filter {
      * @param stale
      *            Indicates if the new challenge is due to a stale response.
      */
-    @SuppressWarnings("deprecation")
     public void challenge(Response response, boolean stale) {
         // Delegate processing to the Engine
         AuthenticatorUtils.challenge(response, stale, this);

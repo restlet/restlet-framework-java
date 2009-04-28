@@ -50,7 +50,7 @@ import org.restlet.engine.Engine;
 import org.restlet.engine.util.DefaultSaxHandler;
 import org.restlet.representation.DomRepresentation;
 import org.restlet.representation.Representation;
-import org.restlet.resource.Resource;
+import org.restlet.resource.ServerResource;
 import org.restlet.routing.Route;
 import org.restlet.routing.Router;
 import org.restlet.routing.VirtualHost;
@@ -138,7 +138,7 @@ public class ComponentXmlParser {
      *            Is this route the default one?
      * @return the created route, or null.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( { "unchecked", "deprecation" })
     private Route attach(Router router, String targetClassName,
             String uriPattern, boolean defaultRoute) {
         Route route = null;
@@ -149,8 +149,17 @@ public class ComponentXmlParser {
 
                 // First, check if we have a Resource class that should be
                 // attached directly to the router.
-                if (Resource.class.isAssignableFrom(targetClass)) {
-                    final Class<? extends Resource> resourceClass = (Class<? extends Resource>) targetClass;
+                if (org.restlet.resource.Resource.class
+                        .isAssignableFrom(targetClass)) {
+                    final Class<? extends org.restlet.resource.Resource> resourceClass = (Class<? extends org.restlet.resource.Resource>) targetClass;
+
+                    if ((uriPattern != null) && !defaultRoute) {
+                        route = router.attach(uriPattern, resourceClass);
+                    } else {
+                        route = router.attachDefault(resourceClass);
+                    }
+                } else if (ServerResource.class.isAssignableFrom(targetClass)) {
+                    final Class<? extends ServerResource> resourceClass = (Class<? extends ServerResource>) targetClass;
 
                     if ((uriPattern != null) && !defaultRoute) {
                         route = router.attach(uriPattern, resourceClass);

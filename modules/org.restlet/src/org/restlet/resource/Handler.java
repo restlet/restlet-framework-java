@@ -79,7 +79,9 @@ import org.restlet.util.Template;
  * 
  * @see org.restlet.resource.Finder
  * @author Jerome Louvel
+ * @deprecated Use the new {@link ServerResource} class instead.
  */
+@Deprecated
 public abstract class Handler {
 
     /**

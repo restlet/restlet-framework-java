@@ -46,7 +46,6 @@ import org.restlet.engine.Engine;
 import org.restlet.engine.http.UserAgentUtils;
 import org.restlet.engine.util.ConnegUtils;
 import org.restlet.representation.Variant;
-import org.restlet.resource.Resource;
 import org.restlet.security.Role;
 import org.restlet.security.RolePrincipal;
 import org.restlet.util.Template;
@@ -529,8 +528,10 @@ public final class ClientInfo {
      * @see <a
      *      href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache
      *      content negotiation algorithm</a>
+     * @deprecated Used {@link #getPreferredVariant(List, Language)} instead.
      */
-    public Variant getPreferredVariant(Resource resource,
+    @Deprecated
+    public Variant getPreferredVariant(org.restlet.resource.Resource resource,
             Language defaultLanguage) {
         return getPreferredVariant(resource.getVariants(), defaultLanguage);
     }

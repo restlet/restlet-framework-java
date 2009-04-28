@@ -108,6 +108,9 @@ Changes log
           class.
         - Deprecated Representation#checkDigest and 
           Representation#computeDigest methods.
+        - XML component configuration now supports new ServerResource 
+          subclasses.
+        - Deprecated the Resource and Guard classes.
     - Miscellaneous
         - Component XML configuration has been moved into an Engine 
           ComponentXmlParser class.

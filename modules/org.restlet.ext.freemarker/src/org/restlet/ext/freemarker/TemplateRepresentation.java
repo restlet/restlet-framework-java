@@ -338,20 +338,27 @@ public class TemplateRepresentation extends OutputRepresentation {
     public void write(OutputStream outputStream) throws IOException {
         Writer tmplWriter = null;
 
-        try {
-            if (getCharacterSet() != null) {
-                tmplWriter = new BufferedWriter(new OutputStreamWriter(
-                        outputStream, getCharacterSet().getName()));
-            } else {
-                tmplWriter = new BufferedWriter(new OutputStreamWriter(
-                        outputStream, this.template.getEncoding()));
-            }
+        if (this.template != null) {
+            try {
+                if (getCharacterSet() != null) {
+                    tmplWriter = new BufferedWriter(new OutputStreamWriter(
+                            outputStream, getCharacterSet().getName()));
+                } else {
+                    tmplWriter = new BufferedWriter(new OutputStreamWriter(
+                            outputStream, this.template.getEncoding()));
+                }
 
-            this.template.process(getDataModel(), tmplWriter);
-            tmplWriter.flush();
-        } catch (TemplateException te) {
-            throw new IOException("Template processing error "
-                    + te.getMessage());
+                this.template.process(getDataModel(), tmplWriter);
+                tmplWriter.flush();
+            } catch (TemplateException te) {
+                throw new IOException("Template processing error "
+                        + te.getMessage());
+            }
+        } else {
+            Context
+                    .getCurrentLogger()
+                    .warning(
+                            "Unable to write the template representation. No template found.");
         }
     }
 
