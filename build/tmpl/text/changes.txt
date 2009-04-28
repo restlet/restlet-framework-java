@@ -21,6 +21,8 @@ Changes log
          writing itself. Reported by Nicolas Rinaudo.
        - Fixed bug regarding the resolution of relative URI used in 
          IncludeInfo. Reported by Jerome Bernard.
+       - Fixed potential NPE in FreeMarker's TemplateRepresentation.
+         Reported by Matt J. Watson.
     - Misc
        - The Template implementation now uses "\\d" as a regex for the
          Variable.TYPE_DIGIT constant.
