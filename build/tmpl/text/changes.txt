@@ -117,6 +117,8 @@ Changes log
         - XML component configuration now supports new ServerResource 
           subclasses.
         - Deprecated the Resource and Guard classes.
+        - Added toObject() and toRepresentation() methods on 
+          ClientResource.
     - Miscellaneous
         - Component XML configuration has been moved into an Engine 
           ComponentXmlParser class.

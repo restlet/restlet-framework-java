@@ -626,9 +626,7 @@ public class ClientResource extends UniformResource {
      *      POST method</a>
      */
     public Representation post(Object entity) throws ResourceException {
-        ConverterService cs = getConverterService();
-        Representation requestEntity = cs.toRepresentation(entity);
-        return post(requestEntity);
+        return post(toRepresentation(entity));
     }
 
     /**
@@ -647,21 +645,7 @@ public class ClientResource extends UniformResource {
      */
     public <T> T post(Object entity, Class<T> resultClass)
             throws ResourceException {
-        T result = null;
-        ConverterService cs = getConverterService();
-
-        Representation requestEntity = cs.toRepresentation(entity);
-        Representation responseEntity = post(requestEntity);
-
-        if (responseEntity != null) {
-            try {
-                result = cs.toObject(responseEntity, resultClass, this);
-            } catch (IOException e) {
-                throw new ResourceException(e);
-            }
-        }
-
-        return result;
+        return toObject(post(toRepresentation(entity)), resultClass);
     }
 
     /**
@@ -695,18 +679,7 @@ public class ClientResource extends UniformResource {
      *      PUT method</a>
      */
     public Representation put(Object entity) throws ResourceException {
-        Representation requestEntity = null;
-        ConverterService cs = getConverterService();
-
-        if (getClientInfo().getAcceptedMediaTypes().size() > 0) {
-            Variant targetVariant = new Variant(getClientInfo()
-                    .getAcceptedMediaTypes().get(0).getMetadata());
-            requestEntity = cs.toRepresentation(entity, targetVariant, null);
-        } else {
-            requestEntity = cs.toRepresentation(entity);
-        }
-
-        return put(requestEntity);
+        return put(toRepresentation(entity));
     }
 
     /**
@@ -725,21 +698,7 @@ public class ClientResource extends UniformResource {
      */
     public <T> T put(Object entity, Class<T> resultClass)
             throws ResourceException {
-        T result = null;
-        ConverterService cs = getConverterService();
-
-        Representation requestEntity = cs.toRepresentation(entity);
-        Representation responseEntity = put(requestEntity);
-
-        if (responseEntity != null) {
-            try {
-                result = cs.toObject(responseEntity, resultClass, this);
-            } catch (IOException e) {
-                throw new ResourceException(e);
-            }
-        }
-
-        return result;
+        return toObject(put(toRepresentation(entity)), resultClass);
     }
 
     /**
@@ -969,6 +928,57 @@ public class ClientResource extends UniformResource {
      */
     public void setResourceRef(String resourceUri) {
         getRequest().setResourceRef(resourceUri);
+    }
+
+    /**
+     * Converts a representation into a Java object. Leverages the
+     * {@link ConverterService}.
+     * 
+     * @param <T>
+     *            The expected class of the Java object.
+     * @param sourceRepresentation
+     *            The source representation to convert.
+     * @param targetClass
+     *            The target class of the Java object.
+     * @return The converted Java object.
+     * @throws ResourceException
+     */
+    protected <T> T toObject(Representation sourceRepresentation,
+            Class<T> targetClass) throws ResourceException {
+        T result = null;
+
+        if (sourceRepresentation != null) {
+            try {
+                ConverterService cs = getConverterService();
+                result = cs.toObject(sourceRepresentation, targetClass, this);
+            } catch (IOException e) {
+                throw new ResourceException(e);
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Converts an object into a representation based on client preferences.
+     * 
+     * @param object
+     *            The object to convert.
+     * @return The wrapper representation.
+     */
+    protected Representation toRepresentation(Object object) {
+        Representation result = null;
+        ConverterService cs = getConverterService();
+
+        if (getClientInfo().getAcceptedMediaTypes().size() > 0) {
+            Variant targetVariant = new Variant(getClientInfo()
+                    .getAcceptedMediaTypes().get(0).getMetadata());
+            result = cs.toRepresentation(object, targetVariant, null);
+        } else {
+            result = cs.toRepresentation(object);
+        }
+
+        return result;
     }
 
 }
