@@ -31,9 +31,9 @@
 package org.restlet.engine.security;
 
 import java.util.Date;
+import java.util.Iterator;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.Map.Entry;
 
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
@@ -82,9 +82,11 @@ public class HttpAwsS3Helper extends AuthenticatorHelper {
 
         // Concatenate all AMZ headers
         final StringBuilder sb = new StringBuilder();
-        for (final Entry<String, String> entry : amzHeaders.entrySet()) {
-            sb.append(entry.getKey()).append(':').append(entry.getValue())
-                    .append("\n");
+
+        for (Iterator<String> iterator = amzHeaders.keySet().iterator(); iterator
+                .hasNext();) {
+            String key = iterator.next();
+            sb.append(key).append(':').append(amzHeaders.get(key)).append("\n");
         }
 
         return sb.toString();
