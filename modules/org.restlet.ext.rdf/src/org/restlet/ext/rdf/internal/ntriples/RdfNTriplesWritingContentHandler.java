@@ -155,8 +155,8 @@ public class RdfNTriplesWritingContentHandler extends GraphHandler {
                         .warning(
                                 "Cannot write the representation of a statement due to the fact that the subject is not a Reference.");
             }
+            this.bw.write(".\n");
         }
-        this.bw.write(".\n");
     }
 
     /**
