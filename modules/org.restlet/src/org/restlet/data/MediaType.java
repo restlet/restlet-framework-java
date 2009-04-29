@@ -378,7 +378,7 @@ public final class MediaType extends Metadata {
             "application/x-xsd+xml", "W3C XML Schema document");
 
     public static final MediaType APPLICATION_W3C_XSLT = register(
-            "application/xsd+xml", "W3C XSLT Stylesheet");
+            "application/xslt+xml", "W3C XSLT Stylesheet");
 
     public static final MediaType APPLICATION_WADL = register(
             "application/vnd.sun.wadl+xml",
