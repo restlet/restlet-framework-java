@@ -23,6 +23,9 @@ Changes log
          IncludeInfo. Reported by Jerome Bernard.
        - Fixed potential NPE in FreeMarker's TemplateRepresentation.
          Reported by Matt J. Watson.
+       - Fixed MediaType.APPLICATION_W3C_XSLT value to 
+         application/xslt+xml (was application/xsd+xml).
+         Reported by Jean-Yves Cronier.
     - Misc
        - The Template implementation now uses "\\d" as a regex for the
          Variable.TYPE_DIGIT constant.
