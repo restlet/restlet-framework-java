@@ -34,6 +34,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.io.Serializable;
 import java.nio.channels.ReadableByteChannel;
 import java.util.List;
 
@@ -42,6 +43,7 @@ import org.restlet.representation.DomRepresentation;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.FileRepresentation;
 import org.restlet.representation.InputRepresentation;
+import org.restlet.representation.ObjectRepresentation;
 import org.restlet.representation.ReaderRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.SaxRepresentation;
@@ -57,6 +59,30 @@ import org.w3c.dom.Document;
  * @author Jerome Louvel
  */
 public class DefaultConverter extends ConverterHelper {
+
+    /** Octet stream variant. */
+    private static final Variant VARIANT_OBJECT = new Variant(
+            MediaType.APPLICATION_JAVA_OBJECT);
+
+    /** Octet stream variant. */
+    private static final Variant VARIANT_OBJECT_XML = new Variant(
+            MediaType.APPLICATION_JAVA_OBJECT_XML);
+
+    /** Octet stream variant. */
+    private static final Variant VARIANT_OCTETS = new Variant(
+            MediaType.APPLICATION_OCTET_STREAM);
+
+    /** Plain text variant. */
+    private static final Variant VARIANT_TEXT = new Variant(
+            MediaType.TEXT_PLAIN);
+
+    /** XML application variant. */
+    private static final Variant VARIANT_XML_APP = new Variant(
+            MediaType.APPLICATION_XML);
+
+    /** XML text variant. */
+    private static final Variant VARIANT_XML_TEXT = new Variant(
+            MediaType.TEXT_XML);
 
     @Override
     public List<Class<?>> getObjectClasses(Variant variant) {
@@ -79,8 +105,10 @@ public class DefaultConverter extends ConverterHelper {
                     || MediaType.APPLICATION_XHTML.equals(mediaType)) {
                 result = addObjectClass(result, Document.class);
                 result = addObjectClass(result, XmlRepresentation.class);
+            } else if (MediaType.APPLICATION_JAVA_OBJECT.equals(mediaType)
+                    || MediaType.APPLICATION_JAVA_OBJECT_XML.equals(mediaType)) {
+                result = addObjectClass(result, Object.class);
             }
-
         }
 
         return result;
@@ -95,45 +123,47 @@ public class DefaultConverter extends ConverterHelper {
             if (targetVariant != null) {
                 result = addVariant(result, targetVariant);
             } else {
-                result = addVariant(result, new Variant(MediaType.TEXT_PLAIN));
+                result = addVariant(result, VARIANT_TEXT);
             }
         } else if (Document.class.isAssignableFrom(objectClass)
                 || DomRepresentation.class.isAssignableFrom(objectClass)) {
-            result = addVariant(result, new Variant(MediaType.APPLICATION_XML));
-            result = addVariant(result, new Variant(MediaType.TEXT_XML));
+            result = addVariant(result, VARIANT_XML_APP);
+            result = addVariant(result, VARIANT_XML_TEXT);
         } else if (File.class.isAssignableFrom(objectClass)
                 || FileRepresentation.class.isAssignableFrom(objectClass)) {
             if (targetVariant != null) {
                 result = addVariant(result, targetVariant);
             } else {
-                result = addVariant(result, new Variant(
-                        MediaType.APPLICATION_OCTET_STREAM));
+                result = addVariant(result, VARIANT_OCTETS);
             }
         } else if (InputStream.class.isAssignableFrom(objectClass)
                 || InputRepresentation.class.isAssignableFrom(objectClass)) {
             if (targetVariant != null) {
                 result = addVariant(result, targetVariant);
             } else {
-                result = addVariant(result, new Variant(
-                        MediaType.APPLICATION_OCTET_STREAM));
+                result = addVariant(result, VARIANT_OCTETS);
             }
         } else if (Reader.class.isAssignableFrom(objectClass)
                 || ReaderRepresentation.class.isAssignableFrom(objectClass)) {
             if (targetVariant != null) {
                 result = addVariant(result, targetVariant);
             } else {
-                result = addVariant(result, new Variant(MediaType.TEXT_PLAIN));
+                result = addVariant(result, VARIANT_TEXT);
             }
         } else if (Representation.class.isAssignableFrom(objectClass)) {
             if (targetVariant != null) {
                 result = addVariant(result, targetVariant);
             } else {
-                result = addVariant(result, new Variant(
-                        MediaType.APPLICATION_OCTET_STREAM));
+                result = addVariant(result, VARIANT_OCTETS);
             }
         } else if (SaxRepresentation.class.isAssignableFrom(objectClass)) {
-            result = addVariant(result, new Variant(MediaType.APPLICATION_XML));
-            result = addVariant(result, new Variant(MediaType.TEXT_XML));
+            result = addVariant(result, VARIANT_XML_APP);
+            result = addVariant(result, VARIANT_XML_TEXT);
+        }
+
+        if (Serializable.class.isAssignableFrom(objectClass)) {
+            result = addVariant(result, VARIANT_OBJECT);
+            result = addVariant(result, VARIANT_OBJECT_XML);
         }
 
         return result;
@@ -185,6 +215,15 @@ public class DefaultConverter extends ConverterHelper {
                     } else if (SaxRepresentation.class
                             .isAssignableFrom(targetClass)) {
                         result = new SaxRepresentation(representation);
+                    } else if (Serializable.class.isAssignableFrom(targetClass)) {
+                        try {
+                            result = new ObjectRepresentation(representation)
+                                    .getObject();
+                        } catch (Exception e) {
+                            IOException ioe = new IOException(
+                                    "Unable to create the Object representation");
+                            ioe.initCause(e);
+                        }
                     }
                 }
             }
@@ -229,6 +268,10 @@ public class DefaultConverter extends ConverterHelper {
                     targetVariant == null ? null : targetVariant.getMediaType());
         } else if (object instanceof Representation) {
             result = (Representation) object;
+        } else if (object instanceof Serializable) {
+            result = new ObjectRepresentation<Serializable>(
+                    (Serializable) object, targetVariant == null ? null
+                            : targetVariant.getMediaType());
         }
 
         if ((result != null) && (targetVariant != null)) {

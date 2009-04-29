@@ -31,7 +31,6 @@
 package org.restlet.ext.atom.internal;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.data.MediaType;
@@ -64,28 +63,10 @@ public class AtomConverter extends ConverterHelper {
 
         if (variant != null) {
             if (VARIANT_ATOM.isCompatible(variant)) {
-                if (result == null) {
-                    result = new ArrayList<Class<?>>();
-                }
-
-                result.add(Feed.class);
+                result = addObjectClass(result, Feed.class);
+            } else if (VARIANT_ATOMPUB_SERVICE.isCompatible(variant)) {
+                result = addObjectClass(result, Service.class);
             }
-
-            if (VARIANT_ATOMPUB_SERVICE.isCompatible(variant)) {
-                if (result == null) {
-                    result = new ArrayList<Class<?>>();
-                }
-
-                result.add(Service.class);
-            }
-
-            // if (VARIANT_ATOMPUB_CATEGORY.isCompatible(variant)) {
-            // if (result == null) {
-            // result = new ArrayList<Class<?>>();
-            // }
-            //
-            // result.add(Category.class);
-            // }
         }
 
         return result;
@@ -96,23 +77,9 @@ public class AtomConverter extends ConverterHelper {
         List<Variant> result = null;
 
         if (Feed.class.isAssignableFrom(objectClass)) {
-            if (result == null) {
-                result = new ArrayList<Variant>();
-            }
-
-            result.add(VARIANT_ATOM);
+            result = addVariant(result, VARIANT_ATOM);
         } else if (Service.class.isAssignableFrom(objectClass)) {
-            if (result == null) {
-                result = new ArrayList<Variant>();
-            }
-
-            result.add(VARIANT_ATOMPUB_SERVICE);
-            // } else if (Category.class.isAssignableFrom(objectClass)) {
-            // if (result == null) {
-            // result = new ArrayList<Variant>();
-            // }
-            //
-            // result.add(VARIANT_ATOMPUB_CATEGORY);
+            result = addVariant(result, VARIANT_ATOMPUB_SERVICE);
         }
 
         return result;
@@ -131,14 +98,6 @@ public class AtomConverter extends ConverterHelper {
 
             // if (VARIANT_ATOMPUB_SERVICE.isCompatible(representation)) {
             // result = (T) new Service(representation);
-            // }
-
-            // if (VARIANT_ATOMPUB_CATEGORY.isCompatible(representation)) {
-            // if (result == null) {
-            // result = new ArrayList<Class<?>>();
-            // }
-            //
-            // result.add(Category.class);
             // }
         }
 

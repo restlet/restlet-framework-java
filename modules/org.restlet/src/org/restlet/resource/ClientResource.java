@@ -695,8 +695,17 @@ public class ClientResource extends UniformResource {
      *      PUT method</a>
      */
     public Representation put(Object entity) throws ResourceException {
+        Representation requestEntity = null;
         ConverterService cs = getConverterService();
-        Representation requestEntity = cs.toRepresentation(entity);
+
+        if (getClientInfo().getAcceptedMediaTypes().size() > 0) {
+            Variant targetVariant = new Variant(getClientInfo()
+                    .getAcceptedMediaTypes().get(0).getMetadata());
+            requestEntity = cs.toRepresentation(entity, targetVariant, null);
+        } else {
+            requestEntity = cs.toRepresentation(entity);
+        }
+
         return put(requestEntity);
     }
 

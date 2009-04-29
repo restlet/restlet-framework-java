@@ -111,6 +111,10 @@ public final class MediaType extends Metadata {
     public static final MediaType APPLICATION_JAVA_OBJECT = register(
             "application/x-java-serialized-object", "Java serialized object");
 
+    public static final MediaType APPLICATION_JAVA_OBJECT_XML = register(
+            "application/x-java-serialized-object+xml",
+            "Java XML serialized object");
+
     public static final MediaType APPLICATION_JAVASCRIPT = register(
             "application/x-javascript", "Javascript document");
 

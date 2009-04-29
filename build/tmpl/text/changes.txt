@@ -67,6 +67,12 @@ Changes log
           entity is not available when posting or putting since MS 
           Azure requires this header for any request. Reported by 
           Ronny Kwon.
+        - Improved implementation of converter plugins (default/internal,
+          Atom extension and GWT server-side extension).
+        - Added MediaType#APPLICATION_JAVA_OBJECT_XML constant.
+        - Added support for automatic conversion between serializable
+          JavaBeans and Representations using either binary Java Object
+          Serialization or JavaBeans XML encoding.  
     - API changes
         - RepresentationInfo is now concrete and has more constructors.
           Suggested by Lars Heuer.

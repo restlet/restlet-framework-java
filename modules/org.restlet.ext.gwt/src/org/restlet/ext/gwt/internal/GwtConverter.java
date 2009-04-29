@@ -32,7 +32,6 @@ package org.restlet.ext.gwt.internal;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.data.MediaType;
@@ -49,6 +48,7 @@ import org.restlet.resource.UniformResource;
  */
 public class GwtConverter extends ConverterHelper {
 
+    /** JSON variant. */
     private static final Variant VARIANT_JSON = new Variant(
             MediaType.APPLICATION_JSON);
 
@@ -58,11 +58,7 @@ public class GwtConverter extends ConverterHelper {
 
         if (variant != null) {
             if (VARIANT_JSON.isCompatible(variant)) {
-                if (result == null) {
-                    result = new ArrayList<Class<?>>();
-                }
-
-                result.add(Object.class);
+                result = addObjectClass(result, Object.class);
             }
         }
 
@@ -71,9 +67,7 @@ public class GwtConverter extends ConverterHelper {
 
     @Override
     public List<Variant> getVariants(Class<?> objectClass, Variant targetVariant) {
-        List<Variant> result = new ArrayList<Variant>();
-        result.add(VARIANT_JSON);
-        return result;
+        return addVariant(null, VARIANT_JSON);
     }
 
     @SuppressWarnings("unchecked")

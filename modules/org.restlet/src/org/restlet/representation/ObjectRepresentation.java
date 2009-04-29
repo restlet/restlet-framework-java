@@ -30,6 +30,8 @@
 
 package org.restlet.representation;
 
+import java.beans.XMLDecoder;
+import java.beans.XMLEncoder;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -66,27 +68,56 @@ public class ObjectRepresentation<T extends Serializable> extends
             throws IOException, ClassNotFoundException,
             IllegalArgumentException {
         super(MediaType.APPLICATION_JAVA_OBJECT);
+
         if (serializedRepresentation.getMediaType().equals(
                 MediaType.APPLICATION_JAVA_OBJECT)) {
-            final ObjectInputStream ois = new ObjectInputStream(
+            setMediaType(MediaType.APPLICATION_JAVA_OBJECT);
+            ObjectInputStream ois = new ObjectInputStream(
                     serializedRepresentation.getStream());
             this.object = (T) ois.readObject();
             ois.close();
+        } else if (serializedRepresentation.getMediaType().equals(
+                MediaType.APPLICATION_JAVA_OBJECT_XML)) {
+            setMediaType(MediaType.APPLICATION_JAVA_OBJECT_XML);
+            XMLDecoder decoder = new XMLDecoder(serializedRepresentation
+                    .getStream());
+            this.object = (T) decoder.readObject();
+            decoder.close();
         } else {
             throw new IllegalArgumentException(
                     "The serialized representation must have this media type: "
-                            + MediaType.APPLICATION_JAVA_OBJECT.toString());
+                            + MediaType.APPLICATION_JAVA_OBJECT.toString()
+                            + " or this one: "
+                            + MediaType.APPLICATION_JAVA_OBJECT_XML.toString());
         }
     }
 
     /**
-     * Constructor
+     * Constructor for the {@link MediaType#APPLICATION_JAVA_OBJECT} type.
      * 
      * @param object
      *            The serializable object.
      */
     public ObjectRepresentation(T object) {
         super(MediaType.APPLICATION_JAVA_OBJECT);
+        this.object = object;
+    }
+
+    /**
+     * Constructor for either the {@link MediaType#APPLICATION_JAVA_OBJECT} type
+     * or the {@link MediaType#APPLICATION_XML} type. In the first case, the
+     * Java Object Serialization mechanism is used, based on
+     * {@link ObjectOutputStream}. In the latter case, the JavaBeans XML
+     * serialization is used, based on {@link XMLEncoder}.
+     * 
+     * @param object
+     *            The serializable object.
+     * @param mediaType
+     *            The media type.
+     */
+    public ObjectRepresentation(T object, MediaType mediaType) {
+        super((mediaType == null) ? MediaType.APPLICATION_JAVA_OBJECT
+                : mediaType);
         this.object = object;
     }
 
@@ -121,9 +152,16 @@ public class ObjectRepresentation<T extends Serializable> extends
 
     @Override
     public void write(OutputStream outputStream) throws IOException {
-        final ObjectOutputStream oos = new ObjectOutputStream(outputStream);
-        oos.writeObject(getObject());
-        oos.close();
+        if (MediaType.APPLICATION_JAVA_OBJECT.isCompatible(getMediaType())) {
+            ObjectOutputStream oos = new ObjectOutputStream(outputStream);
+            oos.writeObject(getObject());
+            oos.flush();
+        } else if (MediaType.APPLICATION_JAVA_OBJECT_XML
+                .isCompatible(getMediaType())) {
+            XMLEncoder encoder = new XMLEncoder(outputStream);
+            encoder.writeObject(getObject());
+            encoder.flush();
+        }
     }
 
 }
