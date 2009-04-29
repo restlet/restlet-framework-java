@@ -31,9 +31,9 @@
 package org.restlet.engine.security;
 
 import java.util.Date;
+import java.util.Iterator;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.Map.Entry;
 
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
@@ -86,9 +86,11 @@ public class HttpMsSharedKeyHelper extends AuthenticatorHelper {
 
         // Concatenate all Azure headers
         final StringBuilder sb = new StringBuilder();
-        for (final Entry<String, String> entry : azureHeaders.entrySet()) {
-            sb.append(entry.getKey()).append(':').append(entry.getValue())
-                    .append("\n");
+        for (Iterator<String> iterator = azureHeaders.keySet().iterator(); iterator
+                .hasNext();) {
+            String key = iterator.next();
+            sb.append(key).append(':').append(azureHeaders.get(key)).append(
+                    "\n");
         }
 
         return sb.toString();
