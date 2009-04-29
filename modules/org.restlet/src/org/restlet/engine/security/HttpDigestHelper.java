@@ -30,8 +30,6 @@
 
 package org.restlet.engine.security;
 
-import javax.security.auth.login.CredentialException;
-
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
@@ -66,9 +64,8 @@ public class HttpDigestHelper extends AuthenticatorHelper {
     private static String getHashedSecret(String identifier, Guard guard) {
         char[] result = guard.getSecretResolver().resolve(identifier);
         if (result != null) {
-            return DigestUtils.toMd5(
-                    identifier + ":" + guard.getRealm() + ":"
-                            + new String(result));
+            return DigestUtils.toMd5(identifier + ":" + guard.getRealm() + ":"
+                    + new String(result));
         } else {
             // The given identifier is not known
             return null;
@@ -88,12 +85,12 @@ public class HttpDigestHelper extends AuthenticatorHelper {
      *            nonce lifespace in milliseconds
      * @return true if the nonce was generated less than lifespanMS milliseconds
      *         ago, false otherwise
-     * @throws CredentialException
+     * @throws Exception
      *             if the nonce does not match the specified secretKey, or if it
      *             can't be parsed
      */
     private static boolean isNonceValid(String nonce, String secretKey,
-            long lifespanMS) throws CredentialException {
+            long lifespanMS) throws Exception {
         try {
             final String decodedNonce = new String(Base64.decode(nonce));
             final long nonceTimeMS = Long.parseLong(decodedNonce.substring(0,
@@ -104,9 +101,9 @@ public class HttpDigestHelper extends AuthenticatorHelper {
                 return lifespanMS > (System.currentTimeMillis() - nonceTimeMS);
             }
         } catch (Exception e) {
-            throw new CredentialException("error parsing nonce: " + e);
+            throw new Exception("error parsing nonce: " + e);
         }
-        throw new CredentialException("nonce does not match secretKey");
+        throw new Exception("nonce does not match secretKey");
     }
 
     /**
@@ -134,7 +131,7 @@ public class HttpDigestHelper extends AuthenticatorHelper {
                 // stale=true
                 return Guard.AUTHENTICATION_STALE;
             }
-        } catch (CredentialException ce) {
+        } catch (Exception ce) {
             // Invalid nonce, probably doesn't match serverKey
             return Guard.AUTHENTICATION_INVALID;
         }
@@ -152,8 +149,8 @@ public class HttpDigestHelper extends AuthenticatorHelper {
             if (uri.equals(requestUri)) {
                 final String a1 = getHashedSecret(username, guard);
                 if (a1 != null) {
-                    final String a2 = DigestUtils.toMd5(
-                            request.getMethod() + ":" + requestUri);
+                    final String a2 = DigestUtils.toMd5(request.getMethod()
+                            + ":" + requestUri);
 
                     final StringBuffer expectedResponse = new StringBuffer(a1)
                             .append(':').append(nonce);
@@ -163,8 +160,8 @@ public class HttpDigestHelper extends AuthenticatorHelper {
                     }
                     expectedResponse.append(':').append(a2);
 
-                    if (response.equals(DigestUtils.toMd5(
-                            expectedResponse.toString()))) {
+                    if (response.equals(DigestUtils.toMd5(expectedResponse
+                            .toString()))) {
                         return Guard.AUTHENTICATION_VALID;
                     }
                 }
