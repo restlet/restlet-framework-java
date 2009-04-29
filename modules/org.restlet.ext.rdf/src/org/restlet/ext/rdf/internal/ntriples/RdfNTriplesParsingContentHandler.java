@@ -311,16 +311,14 @@ public class RdfNTriplesParsingContentHandler extends GraphHandler {
             consumeWhiteSpaces();
             switch (getChar()) {
             case '<':
-                stepBack();
                 lexicalUnits.add(new Reference(parseUri()));
                 break;
             case '_':
                 lexicalUnits.add(LinkReference.createBlank(parseToken()));
                 break;
             case '"':
-                stepBack(1);
+                int c = step();
                 discard();
-                int c = getChar();
                 while (!isEndOfFile(c) && (c != '"')) {
                     c = step();
                 }
@@ -339,12 +337,15 @@ public class RdfNTriplesParsingContentHandler extends GraphHandler {
                 && getChar() != '}');
 
         // Generate the links
-        if (object != null) {
-            link(lexicalUnits.get(0), lexicalUnits.get(1), new Literal(object));
-        } else {
-            link(lexicalUnits.get(0), lexicalUnits.get(1), lexicalUnits.get(2));
+        if (!lexicalUnits.isEmpty()) {
+            if (object != null) {
+                link(lexicalUnits.get(0), lexicalUnits.get(1), new Literal(
+                        object));
+            } else {
+                link(lexicalUnits.get(0), lexicalUnits.get(1), lexicalUnits
+                        .get(2));
+            }
         }
-
     }
 
     /**
