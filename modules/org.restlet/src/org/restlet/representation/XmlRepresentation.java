@@ -37,7 +37,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.logging.Level;
 
 import javax.xml.XMLConstants;
@@ -375,10 +374,15 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
      */
     public String getPrefix(String namespaceURI) {
         String result = null;
+        boolean found = false;
 
-        for (final Entry<String, String> entry : getNamespaces().entrySet()) {
-            if ((result == null) && entry.getValue().equals(namespaceURI)) {
-                result = entry.getKey();
+        for (Iterator<String> iterator = getNamespaces().keySet().iterator(); iterator
+                .hasNext()
+                && !found;) {
+            String key = iterator.next();
+            if (getNamespaces().get(key).equals(namespaceURI)) {
+                found = true;
+                result = key;
             }
         }
 
@@ -392,9 +396,11 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
     public Iterator<String> getPrefixes(String namespaceURI) {
         final List<String> result = new ArrayList<String>();
 
-        for (final Entry<String, String> entry : getNamespaces().entrySet()) {
-            if (entry.getValue().equals(namespaceURI)) {
-                result.add(entry.getKey());
+        for (Iterator<String> iterator = getNamespaces().keySet().iterator(); iterator
+                .hasNext();) {
+            String key = iterator.next();
+            if (getNamespaces().get(key).equals(namespaceURI)) {
+                result.add(key);
             }
         }
 
