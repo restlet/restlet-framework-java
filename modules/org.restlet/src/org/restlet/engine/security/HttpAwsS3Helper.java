@@ -82,7 +82,6 @@ public class HttpAwsS3Helper extends AuthenticatorHelper {
 
         // Concatenate all AMZ headers
         final StringBuilder sb = new StringBuilder();
-
         for (Iterator<String> iterator = amzHeaders.keySet().iterator(); iterator
                 .hasNext();) {
             String key = iterator.next();
