@@ -120,7 +120,7 @@ public class ObjectRepresentation<T extends Serializable> extends
     public void write(OutputStream outputStream) throws IOException {
         final ObjectOutputStream oos = new ObjectOutputStream(outputStream);
         oos.writeObject(getObject());
-        oos.close();
+        oos.flush();
     }
 
 }
