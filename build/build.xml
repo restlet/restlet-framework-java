@@ -40,7 +40,7 @@
 	<property name="restlet-engine" value="Restlet Engine" />
 	<property name="restlet-gae" value="Restlet-GAE" />
 	<property name="restlet-gwt" value="Restlet-GWT" />
-
+	<property name="restlet-android" value="Restlet-Android" />
 	<!-- Location properties -->
 	<property name="dist-base" value="dist" />
 	<property name="dist-path" value="restlet-${version-compact}" />
@@ -60,6 +60,7 @@
 	<property name="docs-ext" value="${docs}/ext" />
 	<property name="docs-gae" value="${docs}/gae" />
 	<property name="docs-gwt" value="${docs}/gwt" />
+	<property name="docs-android" value="${docs}/android" />
 	<property name="uml-reports" value="${temp}/uml-reports" />
 	<property name="uml-reports-api" value="${uml-reports}/api" />
 	<property name="images" value="images" />
@@ -216,6 +217,11 @@
 		<path refid="mod-core-path" />
 		<pathelement path="${classes}/${mod-core-id}" />
 		<fileset dir="${lib}/${lib-gwt-id}" includes="*.jar" />
+	</path>
+
+	<path id="mod-core-android-path">
+		<path refid="mod-core-path" />
+		<pathelement path="${classes}/${mod-core-id}" />
 	</path>
 
 	<path id="mod-atom-path">
@@ -536,12 +542,12 @@
 
 	<path id="path-all">
 		<pathelement path="${classes}/${mod-core-id}" />
-		<pathelement path="${classes}/${mod-core-id}" />
 		<pathelement path="${classes}/${mod-fileupload-id}" />
 		<pathelement path="${classes}/${mod-freemarker-id}" />
 		<pathelement path="${classes}/${mod-grizzly-id}" />
 		<pathelement path="${classes}/${mod-core-gae-id}" />
 		<pathelement path="${classes}/${mod-core-gwt-id}" />
+		<pathelement path="${classes}/${mod-core-android-id}" />
 		<pathelement path="${classes}/${mod-gwt-id}" />
 		<pathelement path="${classes}/${mod-httpclient-id}" />
 		<pathelement path="${classes}/${mod-javamail-id}" />
@@ -567,6 +573,7 @@
 		<path refid="mod-grizzly-path" />
 		<path refid="mod-core-gae-path" />
 		<path refid="mod-core-gwt-path" />
+		<path refid="mod-core-android-path" />
 		<path refid="mod-gwt-path" />
 		<path refid="mod-httpclient-path" />
 		<path refid="mod-javamail-path" />
@@ -966,6 +973,7 @@
 		<pomModule name="core-gwt" />
 		<pomModule name="core-example" />
 		<pomModule name="core-test" />
+		<pomModule name="core-android" />
 		<pomModule name="atom" />
 		<pomModule name="fileupload" />
 		<pomModule name="freemarker" />
@@ -1030,11 +1038,13 @@
 		<copy file="${tmpl}/javadocs/overview-ext.tmpl" tofile="${temp}/javadocs/overview-ext.html" overwrite="true" />
 		<copy file="${tmpl}/javadocs/overview-gae.tmpl" tofile="${temp}/javadocs/overview-gae.html" overwrite="true" />
 		<copy file="${tmpl}/javadocs/overview-gwt.tmpl" tofile="${temp}/javadocs/overview-gwt.html" overwrite="true" />
+		<copy file="${tmpl}/javadocs/overview-android.tmpl" tofile="${temp}/javadocs/overview-android.html" overwrite="true" />
 		<replace file="${temp}/javadocs/overview-api.html" token="@version-minor@" value="${version-minor}" />
 		<replace file="${temp}/javadocs/overview-engine.html" token="@version-minor@" value="${version-minor}" />
 		<replace file="${temp}/javadocs/overview-ext.html" token="@version-minor@" value="${version-minor}" />
 		<replace file="${temp}/javadocs/overview-gae.html" token="@version-minor@" value="${version-minor}" />
 		<replace file="${temp}/javadocs/overview-gwt.html" token="@version-minor@" value="${version-minor}" />
+		<replace file="${temp}/javadocs/overview-android.html" token="@version-minor@" value="${version-minor}" />
 	</target>
 
 	<!-- COMPILE target -->
@@ -1058,9 +1068,15 @@
 		<replace file="${mod}/${mod-core-gwt-id}/src/org/restlet/gwt/util/Engine.java" token="@release-type@" value="${release-type}" />
 		<replace file="${mod}/${mod-core-gwt-id}/src/org/restlet/gwt/util/Engine.java" token="@release-number@" value="${release-number}" />
 
+		<replace file="${mod}/${mod-core-android-id}/src/org/restlet/engine/Engine.java" token="@major-number@" value="${major-number}" />
+		<replace file="${mod}/${mod-core-android-id}/src/org/restlet/engine/Engine.java" token="@minor-number@" value="${minor-number}" />
+		<replace file="${mod}/${mod-core-android-id}/src/org/restlet/engine/Engine.java" token="@release-type@" value="${release-type}" />
+		<replace file="${mod}/${mod-core-android-id}/src/org/restlet/engine/Engine.java" token="@release-number@" value="${release-number}" />
+
 		<compileModule name="core" />
 		<compileModule name="core-gae" />
 		<compileModule name="core-gwt" />
+		<compileModule name="core-android" />
 		<compileModule name="atom" />
 		<compileModule name="fileupload" />
 		<compileModule name="freemarker" />
@@ -1110,6 +1126,7 @@
 		<backportModule name="core" failonwarning="@{backport-failonwarning}" />
 		<backportModule name="core-example" failonwarning="@{backport-failonwarning}" />
 		<backportModule name="core-gwt" failonwarning="@{backport-failonwarning}" />
+		<backportModule name="core-android" failonwarning="@{backport-failonwarning}" />
 		<backportModule name="core-test" failonwarning="@{backport-failonwarning}" />
 		<backportModule name="atom" failonwarning="@{backport-failonwarning}" />
 		<backportModule name="fileupload" failonwarning="@{backport-failonwarning}" />
@@ -1147,6 +1164,7 @@
 			<fileset dir="${docs-ext}" excludes="**/.svn" />
 			<fileset dir="${docs-gae}" excludes="**/.svn" />
 			<fileset dir="${docs-gwt}" excludes="**/.svn" />
+			<fileset dir="${docs-android}" excludes="**/.svn" />
 		</delete>
 
 		<javadoc packagenames="org.restlet.*" excludepackagenames="${exclude-packages}, org.restlet.engine.*" destdir="${docs-api}" classpathref="path-all" author="true" version="true" use="true" windowtitle="Restlet API ${version-full}" doctitle="Restlet API ${version-full}" overview="${temp}/javadocs/overview-api.html" stylesheetfile="${tmpl}/javadocs/stylesheet.css" verbose="${verbose}">
@@ -1309,6 +1327,23 @@
 			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
 			<link href="http://google-web-toolkit.googlecode.com/svn/javadoc/1.5/" />
 		</javadoc>
+
+		<javadoc packagenames="org.restlet.*" excludepackagenames="${exclude-packages},*org.restlet.engine.*" destdir="${docs-android}" classpathref="path-all" author="true" version="true" use="true" windowtitle="Restlet-Android module ${version-full}" doctitle="Restlet-Android module ${version-full}" overview="${temp}/javadocs/overview-android.html" stylesheetfile="${tmpl}/javadocs/stylesheet.css" verbose="${verbose}">
+			<sourcepath>
+				<pathelement path="${mod}/${mod-core-android-id}/src/" />
+			</sourcepath>
+
+			<bottom>
+				<![CDATA[<i>Copyright &#169; 2005-2009 <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
+			</bottom>
+
+			<group title="${restlet-android}">
+				<package name="org.restlet*" />
+			</group>
+
+			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
+		</javadoc>
+
 	</target>
 
 	<!-- umlgraph target -->
@@ -1382,6 +1417,7 @@
 		<findbugsModule name="core-example" />
 		<findbugsModule name="core-gae" />
 		<findbugsModule name="core-gwt" />
+		<findbugsModule name="core-android" />
 		<findbugsModule name="atom" />
 		<findbugsModule name="fileupload" />
 		<findbugsModule name="freemarker" />
@@ -1416,6 +1452,7 @@
 		<checkstyleModule name="core-example" />
 		<checkstyleModule name="core-gae" />
 		<checkstyleModule name="core-gwt" />
+		<checkstyleModule name="core-android" />
 		<checkstyleModule name="atom" />
 		<checkstyleModule name="fileupload" />
 		<checkstyleModule name="freemarker" />
@@ -1486,6 +1523,9 @@
 				<copy todir="${dist-classic}/docs/gwt">
 					<fileset dir="${docs-gwt}" />
 				</copy>
+				<copy todir="${dist-classic}/docs/android">
+					<fileset dir="${docs-android}" />
+				</copy>
 			</then>
 		</if>
 
@@ -1554,6 +1594,7 @@
 		<stageModule name="core-example" />
 		<stageModule name="core-gae" />
 		<stageModule name="core-gwt" includeSource="true" />
+		<stageModule name="core-android" includeSource="true" />
 		<stageModule name="atom" />
 		<stageModule name="fileupload" />
 		<stageModule name="freemarker" />
@@ -1615,6 +1656,7 @@
 		<maven2Module name="core-example" />
 		<maven2Module name="core-gae" />
 		<maven2Module name="core-gwt" />
+		<maven2Module name="core-android" />
 		<maven2Module name="atom" />
 		<maven2Module name="fileupload" />
 		<maven2Module name="freemarker" />
