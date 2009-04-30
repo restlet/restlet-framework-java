@@ -1594,7 +1594,7 @@
 		<stageModule name="core-example" />
 		<stageModule name="core-gae" />
 		<stageModule name="core-gwt" includeSource="true" />
-		<stageModule name="core-android" includeSource="true" />
+		<stageModule name="core-android" />
 		<stageModule name="atom" />
 		<stageModule name="fileupload" />
 		<stageModule name="freemarker" />
