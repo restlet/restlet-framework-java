@@ -51,7 +51,7 @@ import org.restlet.representation.DomRepresentation;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.SaxRepresentation;
-import org.restlet.representation.TransformRepresentation;
+import org.restlet.ext.xslt.TransformRepresentation;
 import org.restlet.util.XmlWriter;
 import org.w3c.dom.Attr;
 import org.w3c.dom.CDATASection;

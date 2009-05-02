@@ -399,6 +399,11 @@
 		<pathelement path="${classes}/${mod-servlet-id}" />
 	</path>
 
+	<path id="mod-xslt-path">
+		<path refid="mod-core-path" />
+		<pathelement path="${classes}/${mod-core-id}" />
+	</path>
+
 	<path id="mod-xstream-path">
 		<path refid="mod-core-path" />
 		<pathelement path="${classes}/${mod-core-id}" />
@@ -526,6 +531,10 @@
 		<pathelement path="${classes}/${mod-wadl-id}" />
 		<pathelement path="${mod}/${mod-wadl-id}/src" />
 
+		<path refid="mod-xslt-path" />
+		<pathelement path="${classes}/${mod-xslt-id}" />
+		<pathelement path="${mod}/${mod-xslt-id}/src" />
+
 		<path refid="mod-xstream-path" />
 		<pathelement path="${classes}/${mod-xstream-id}" />
 		<pathelement path="${mod}/${mod-xstream-id}/src" />
@@ -567,6 +576,7 @@
 		<pathelement path="${classes}/${mod-velocity-id}" />
 		<pathelement path="${classes}/${mod-wadl-id}" />
 		<pathelement path="${classes}/${mod-xdb-id}" />
+		<pathelement path="${classes}/${mod-xslt-id}" />
 		<pathelement path="${classes}/${mod-xstream-id}" />
 		<path refid="mod-fileupload-path" />
 		<path refid="mod-freemarker-path" />
@@ -595,6 +605,7 @@
 		<path refid="mod-velocity-path" />
 		<path refid="mod-wadl-path" />
 		<path refid="mod-xdb-path" />
+		<path refid="mod-xslt-path" />
 		<path refid="mod-xstream-path" />
 	</path>
 
@@ -999,6 +1010,7 @@
 		<pomModule name="velocity" />
 		<pomModule name="wadl" />
 		<pomModule name="xdb" />
+		<pomModule name="xslt" />
 		<pomModule name="xstream" />
 
 		<!-- Generate the parent POM -->
@@ -1114,6 +1126,7 @@
 		<!-- depends on servlet -->
 		<compileModule name="xdb" />
 
+		<compileModule name="xslt" />
 		<compileModule name="xstream" />
 
 		<!-- depends on many things -->
@@ -1153,6 +1166,7 @@
 		<backportModule name="velocity" failonwarning="@{backport-failonwarning}" />
 		<backportModule name="wadl" failonwarning="@{backport-failonwarning}" />
 		<backportModule name="xdb" failonwarning="@{backport-failonwarning}" />
+		<backportModule name="xslt" failonwarning="@{backport-failonwarning}" />
 		<backportModule name="xstream" failonwarning="@{backport-failonwarning}" />
 	</target>
 
@@ -1227,6 +1241,7 @@
 				<pathelement path="${mod}/${mod-velocity-id}/src/" />
 				<pathelement path="${mod}/${mod-wadl-id}/src/" />
 				<pathelement path="${mod}/${mod-xdb-id}/src/" />
+				<pathelement path="${mod}/${mod-xslt-id}/src/" />
 				<pathelement path="${mod}/${mod-xstream-id}/src/" />
 			</sourcepath>
 
@@ -1242,6 +1257,7 @@
 				<package name="org.restlet.ext.rdf*" />
 				<package name="org.restlet.ext.ssl*" />
 				<package name="org.restlet.ext.wadl*" />
+				<package name="org.restlet.ext.xslt*" />
 			</group>
 			<group title="${restlet-ext-connectors}">
 				<package name="org.restlet.ext.grizzly*" />
@@ -1443,6 +1459,7 @@
 		<findbugsModule name="velocity" />
 		<findbugsModule name="wadl" />
 		<findbugsModule name="xdb" />
+		<findbugsModule name="xslt" />
 		<findbugsModule name="xstream" />
 	</target>
 
@@ -1478,6 +1495,7 @@
 		<checkstyleModule name="velocity" />
 		<checkstyleModule name="wadl" />
 		<checkstyleModule name="xdb" />
+		<checkstyleModule name="xslt" />
 		<checkstyleModule name="xstream" />
 	</target>
 
@@ -1620,6 +1638,7 @@
 		<stageModule name="velocity" />
 		<stageModule name="wadl" />
 		<stageModule name="xdb" />
+		<stageModule name="xslt" />
 		<stageModule name="xstream" />
 
 		<!-- Copy the POM files -->
@@ -1682,6 +1701,7 @@
 		<maven2Module name="velocity" />
 		<maven2Module name="wadl" />
 		<maven2Module name="xdb" />
+		<maven2Module name="xslt" />
 		<maven2Module name="xstream" />
 
 		<maven2Library name="simple" />
