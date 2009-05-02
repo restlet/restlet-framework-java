@@ -250,8 +250,7 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
         DocumentBuilder result = null;
 
         try {
-            final DocumentBuilderFactory dbf = DocumentBuilderFactory
-                    .newInstance();
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             dbf.setNamespaceAware(isNamespaceAware());
             dbf.setValidating(isValidating());
             dbf.setXIncludeAware(isXIncludeAware());

@@ -36,6 +36,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
@@ -48,7 +51,6 @@ import org.restlet.data.Reference;
 import org.restlet.data.Response;
 import org.restlet.engine.Engine;
 import org.restlet.engine.util.DefaultSaxHandler;
-import org.restlet.ext.xml.DomRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Route;
@@ -451,29 +453,32 @@ public class ComponentXmlParser {
     public void parse() {
         try {
             // Parse and validate the XML configuration
-            DomRepresentation dom = new DomRepresentation(getXmlConfiguration());
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            dbf.setNamespaceAware(true);
+            dbf.setValidating(true);
+            dbf.setXIncludeAware(true);
+
             DefaultSaxHandler handler = new DefaultSaxHandler();
-            dom.setErrorHandler(handler);
-            dom.setEntityResolver(handler);
-            dom.setNamespaceAware(true);
-            dom.setValidating(true);
-            dom.setXIncludeAware(true);
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            db.setErrorHandler(handler);
+            db.setEntityResolver(handler);
 
-            try {
-                Client client = new Client(Protocol.CLAP);
-                Representation xsd = client.get(
-                        "clap://class/org/restlet/Component.xsd").getEntity();
-                dom.setSchema(xsd);
-            } catch (Exception x) {
-                Context
-                        .getCurrentLogger()
-                        .log(
-                                Level.CONFIG,
-                                "Unable to acquire a compiled instance of Component.xsd "
-                                        + "to check the given restlet.xml. Ignore and continue");
-            }
+//            try {
+//                Client client = new Client(Protocol.CLAP);
+//                Representation xsd = client.get(
+//                        "clap://class/org/restlet/Component.xsd").getEntity();
+//                db.dom.setSchema(xsd);
+//            } catch (Exception x) {
+//                Context
+//                        .getCurrentLogger()
+//                        .log(
+//                                Level.CONFIG,
+//                                "Unable to acquire a compiled instance of Component.xsd "
+//                                        + "to check the given restlet.xml. Ignore and continue");
+//            }
 
-            final Document document = dom.getDocument();
+            final Document document = db.parse(getXmlConfiguration()
+                    .getStream());
 
             // Check root node
             if ("component".equals(document.getFirstChild().getNodeName())) {

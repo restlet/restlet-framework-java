@@ -8,8 +8,9 @@ Changes log
         - Deprecated ServletConverter and added an equivalent 
           ServletAdapter class to prevent confusion with the 
           ConverterService reintroduced in Restlet 1.2. 
-        - Moved Transformer and TransformRepresentation classes to a 
-          new "org.restlet.ext.xslt" package.
+        - Moved all XML, DOM, SAX and XSLT related classes from the core 
+          Restlet API to a new "org.restlet.ext.xml" package. This was
+          need to keep a uniform API with the new Android port.
     - Bugs fixed
         - Fixed bug with a ServerResource when an annotated method does 
           not return a value.

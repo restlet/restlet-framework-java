@@ -39,9 +39,6 @@ import java.nio.channels.ReadableByteChannel;
 import java.util.List;
 
 import org.restlet.data.MediaType;
-import org.restlet.ext.xslt.DomRepresentation;
-import org.restlet.ext.xslt.SaxRepresentation;
-import org.restlet.ext.xslt.XmlRepresentation;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.FileRepresentation;
 import org.restlet.representation.InputRepresentation;
@@ -51,7 +48,6 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.UniformResource;
-import org.w3c.dom.Document;
 
 /**
  * Converter for the built-in Representation classes.
@@ -76,14 +72,6 @@ public class DefaultConverter extends ConverterHelper {
     private static final Variant VARIANT_TEXT = new Variant(
             MediaType.TEXT_PLAIN);
 
-    /** XML application variant. */
-    private static final Variant VARIANT_XML_APP = new Variant(
-            MediaType.APPLICATION_XML);
-
-    /** XML text variant. */
-    private static final Variant VARIANT_XML_TEXT = new Variant(
-            MediaType.TEXT_XML);
-
     @Override
     public List<Class<?>> getObjectClasses(Variant variant) {
         List<Class<?>> result = null;
@@ -96,16 +84,7 @@ public class DefaultConverter extends ConverterHelper {
         if (variant.getMediaType() != null) {
             MediaType mediaType = variant.getMediaType();
 
-            if (MediaType.APPLICATION_ALL_XML.equals(mediaType)
-                    || MediaType.TEXT_XML.equals(mediaType)
-                    || MediaType.APPLICATION_ATOMPUB_SERVICE.equals(mediaType)
-                    || MediaType.APPLICATION_ATOM.equals(mediaType)
-                    || MediaType.APPLICATION_RDF_XML.equals(mediaType)
-                    || MediaType.APPLICATION_WADL.equals(mediaType)
-                    || MediaType.APPLICATION_XHTML.equals(mediaType)) {
-                result = addObjectClass(result, Document.class);
-                result = addObjectClass(result, XmlRepresentation.class);
-            } else if (MediaType.APPLICATION_JAVA_OBJECT.equals(mediaType)
+            if (MediaType.APPLICATION_JAVA_OBJECT.equals(mediaType)
                     || MediaType.APPLICATION_JAVA_OBJECT_XML.equals(mediaType)) {
                 result = addObjectClass(result, Object.class);
             }
@@ -125,10 +104,6 @@ public class DefaultConverter extends ConverterHelper {
             } else {
                 result = addVariant(result, VARIANT_TEXT);
             }
-        } else if (Document.class.isAssignableFrom(objectClass)
-                || DomRepresentation.class.isAssignableFrom(objectClass)) {
-            result = addVariant(result, VARIANT_XML_APP);
-            result = addVariant(result, VARIANT_XML_TEXT);
         } else if (File.class.isAssignableFrom(objectClass)
                 || FileRepresentation.class.isAssignableFrom(objectClass)) {
             if (targetVariant != null) {
@@ -156,9 +131,6 @@ public class DefaultConverter extends ConverterHelper {
             } else {
                 result = addVariant(result, VARIANT_OCTETS);
             }
-        } else if (SaxRepresentation.class.isAssignableFrom(objectClass)) {
-            result = addVariant(result, VARIANT_XML_APP);
-            result = addVariant(result, VARIANT_XML_TEXT);
         }
 
         if (Serializable.class.isAssignableFrom(objectClass)) {
@@ -189,12 +161,6 @@ public class DefaultConverter extends ConverterHelper {
                     } else if (EmptyRepresentation.class
                             .isAssignableFrom(targetClass)) {
                         result = null;
-                    } else if (Document.class.isAssignableFrom(targetClass)) {
-                        result = new DomRepresentation(representation)
-                                .getDocument();
-                    } else if (DomRepresentation.class
-                            .isAssignableFrom(targetClass)) {
-                        result = new DomRepresentation(representation);
                     } else if (File.class.isAssignableFrom(targetClass)) {
                         if (representation instanceof FileRepresentation) {
                             result = ((FileRepresentation) representation)
@@ -212,9 +178,6 @@ public class DefaultConverter extends ConverterHelper {
                             .isAssignableFrom(targetClass)) {
                         result = new ReaderRepresentation(representation
                                 .getReader());
-                    } else if (SaxRepresentation.class
-                            .isAssignableFrom(targetClass)) {
-                        result = new SaxRepresentation(representation);
                     } else if (Serializable.class.isAssignableFrom(targetClass)) {
                         try {
                             result = new ObjectRepresentation(representation)
@@ -254,9 +217,6 @@ public class DefaultConverter extends ConverterHelper {
         if (object instanceof String) {
             result = new StringRepresentation((String) object,
                     targetVariant == null ? null : targetVariant.getMediaType());
-        } else if (object instanceof Document) {
-            result = new DomRepresentation(targetVariant == null ? null
-                    : targetVariant.getMediaType(), (Document) object);
         } else if (object instanceof File) {
             result = new FileRepresentation((File) object,
                     targetVariant == null ? null : targetVariant.getMediaType());
