@@ -46,7 +46,9 @@ public final class Status extends Metadata {
      * The request could not be understood by the server due to malformed
      * syntax.
      * 
-     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.1">HTTP RFC - 10.4.1 400 Bad Request</a>
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.1">HTTP
+     *      RFC - 10.4.1 400 Bad Request</a>
      */
     public static final Status CLIENT_ERROR_BAD_REQUEST = new Status(400);
 
@@ -54,16 +56,20 @@ public final class Status extends Metadata {
      * The request could not be completed due to a conflict with the current
      * state of the resource (as experienced in a version control system).
      * 
-     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.10">HTTP RFC - 10.4.10 409 Conflict</a>
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.10">HTTP
+     *      RFC - 10.4.10 409 Conflict</a>
      */
     public static final Status CLIENT_ERROR_CONFLICT = new Status(409);
 
     /**
-     * The user agent expects some behaviour of the server (given in an Expect
+     * The user agent expects some behavior of the server (given in an Expect
      * request-header field), but this expectation could not be met by this
      * server.
      * 
-     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.18">HTTP RFC - 10.4.18 417 Expectation Failed</a>
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.18">HTTP
+     *      RFC - 10.4.18 417 Expectation Failed</a>
      */
     public static final Status CLIENT_ERROR_EXPECTATION_FAILED = new Status(417);
 
@@ -72,7 +78,8 @@ public final class Status extends Metadata {
      * resource because the requested action depended on another action and that
      * action failed.
      * 
-     * @see <a href="http://www.webdav.org/specs/rfc2518.html#STATUS_424">WEBDAV RFC - 10.5 424 Failed Dependency</a>
+     * @see <a href="http://www.webdav.org/specs/rfc2518.html#STATUS_424">WEBDAV
+     *      RFC - 10.5 424 Failed Dependency</a>
      */
     public static final Status CLIENT_ERROR_FAILED_DEPENDENCY = new Status(424);
 
@@ -80,7 +87,9 @@ public final class Status extends Metadata {
      * The server understood the request, but is refusing to fulfill it as it
      * could be explained in the entity.
      * 
-     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.4">HTTP RFC - 10.4.4 403 Forbidden</a>
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.4">HTTP
+     *      RFC - 10.4.4 403 Forbidden</a>
      */
     public static final Status CLIENT_ERROR_FORBIDDEN = new Status(403);
 
@@ -88,7 +97,9 @@ public final class Status extends Metadata {
      * The requested resource is no longer available at the server and no
      * forwarding address is known.
      * 
-     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.11">HTTP RFC - 10.4.11 410 Gone</a>
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.11">HTTP
+     *      RFC - 10.4.11 410 Gone</a>
      */
     public static final Status CLIENT_ERROR_GONE = new Status(410);
 
@@ -96,7 +107,9 @@ public final class Status extends Metadata {
      * The server refuses to accept the request without a defined
      * Content-Length.
      * 
-     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.12">HTTP RFC - 10.4.12 411 Length Required</a>
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.12">HTTP
+     *      RFC - 10.4.12 411 Length Required</a>
      */
     public static final Status CLIENT_ERROR_LENGTH_REQUIRED = new Status(411);
 
@@ -104,7 +117,8 @@ public final class Status extends Metadata {
      * The source or destination resource of a method is locked (or temporarily
      * involved in another process).
      * 
-     * @see <a href="http://www.webdav.org/specs/rfc2518.html#STATUS_423">WEBDAV RFC - 10.4 423 Locked</a>
+     * @see <a href="http://www.webdav.org/specs/rfc2518.html#STATUS_423">WEBDAV
+     *      RFC - 10.4 423 Locked</a>
      */
     public static final Status CLIENT_ERROR_LOCKED = new Status(423);
 
@@ -112,7 +126,9 @@ public final class Status extends Metadata {
      * The method specified in the Request-Line is not allowed for the resource
      * identified by the Request-URI.
      * 
-     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.6">HTTP RFC - 10.4.6 405 Method Not Allowed</a>
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.6">HTTP
+     *      RFC - 10.4.6 405 Method Not Allowed</a>
      */
     public static final Status CLIENT_ERROR_METHOD_NOT_ALLOWED = new Status(405);
 
@@ -121,7 +137,9 @@ public final class Status extends Metadata {
      * response entities whose content characteristics do not match the user's
      * requirements (in Accept* headers).
      * 
-     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.7">HTTP RFC - 10.4.7 406 Not Acceptable</a>
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.7">HTTP
+     *      RFC - 10.4.7 406 Not Acceptable</a>
      */
     public static final Status CLIENT_ERROR_NOT_ACCEPTABLE = new Status(406);
 
@@ -130,14 +148,18 @@ public final class Status extends Metadata {
      * does not wish to reveal exactly why the request has been refused, or no
      * other response is applicable.
      * 
-     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.5">HTTP RFC - 10.4.5 404 Not Found</a>
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.5">HTTP
+     *      RFC - 10.4.5 404 Not Found</a>
      */
     public static final Status CLIENT_ERROR_NOT_FOUND = new Status(404);
 
     /**
      * This code is reserved for future use.
      * 
-     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.3">HTTP RFC - 10.4.3 402 Payment Required</a>
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.3">HTTP
+     *      RFC - 10.4.3 402 Payment Required</a>
      */
     public static final Status CLIENT_ERROR_PAYMENT_REQUIRED = new Status(402);
 
@@ -145,7 +167,9 @@ public final class Status extends Metadata {
      * Sent by the server when the user agent asks the server to carry out a
      * request under certain conditions that are not met.
      * 
-     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.13">HTTP RFC - 10.4.13 412 Precondition Failed</a>
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.13">HTTP
+     *      RFC - 10.4.13 412 Precondition Failed</a>
      */
     public static final Status CLIENT_ERROR_PRECONDITION_FAILED = new Status(
             412);
@@ -154,7 +178,9 @@ public final class Status extends Metadata {
      * This code is similar to 401 (Unauthorized), but indicates that the client
      * must first authenticate itself with the proxy.
      * 
-     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.8">HTTP RFC - 10.4.8 407 Proxy Authentication Required</a>
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.8">HTTP
+     *      RFC - 10.4.8 407 Proxy Authentication Required</a>
      */
     public static final Status CLIENT_ERROR_PROXY_AUTHENTIFICATION_REQUIRED = new Status(
             407);
@@ -163,7 +189,9 @@ public final class Status extends Metadata {
      * The server is refusing to process a request because the request entity is
      * larger than the server is willing or able to process.
      * 
-     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.14">HTTP RFC - 10.4.14 413 Request Entity Too Large</a>
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.14">HTTP
+     *      RFC - 10.4.14 413 Request Entity Too Large</a>
      */
     public static final Status CLIENT_ERROR_REQUEST_ENTITY_TOO_LARGE = new Status(
             413);
@@ -173,7 +201,9 @@ public final class Status extends Metadata {
      * sent a request (or never sent the blank line that signals the end of the
      * request).
      * 
-     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.9">HTTP RFC - 10.4.9 408 Request Timeout</a>
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.9">HTTP
+     *      RFC - 10.4.9 408 Request Timeout</a>
      */
     public static final Status CLIENT_ERROR_REQUEST_TIMEOUT = new Status(408);
 
@@ -181,7 +211,9 @@ public final class Status extends Metadata {
      * The server is refusing to service the request because the Request-URI is
      * longer than the server is willing to interpret.
      * 
-     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.15">HTTP RFC - 10.4.15 414 Request-URI Too Long</a>
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.15">HTTP
+     *      RFC - 10.4.15 414 Request-URI Too Long</a>
      */
     public static final Status CLIENT_ERROR_REQUEST_URI_TOO_LONG = new Status(
             414);
@@ -190,7 +222,9 @@ public final class Status extends Metadata {
      * The request includes a Range request-header field and the selected
      * resource is too small for any of the byte-ranges to apply.
      * 
-     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.17">HTTP RFC - 10.4.17 416 Requested Range Not Satisfiable</a>
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.17">HTTP
+     *      RFC - 10.4.17 416 Requested Range Not Satisfiable</a>
      */
     public static final Status CLIENT_ERROR_REQUESTED_RANGE_NOT_SATISFIABLE = new Status(
             416);
@@ -198,7 +232,9 @@ public final class Status extends Metadata {
     /**
      * The request requires user authentication.
      * 
-     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.2">HTTP RFC - 10.4.2 401 Unauthorized</a>
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.2">HTTP
+     *      RFC - 10.4.2 401 Unauthorized</a>
      */
     public static final Status CLIENT_ERROR_UNAUTHORIZED = new Status(401);
 
@@ -207,7 +243,8 @@ public final class Status extends Metadata {
      * request entity (syntactically correct) but was unable to process the
      * contained instructions.
      * 
-     * @see <a href="http://www.webdav.org/specs/rfc2518.html#STATUS_422">WEBDAV RFC - 10.3 422 Unprocessable Entity</a>
+     * @see <a href="http://www.webdav.org/specs/rfc2518.html#STATUS_422">WEBDAV
+     *      RFC - 10.3 422 Unprocessable Entity</a>
      */
     public static final Status CLIENT_ERROR_UNPROCESSABLE_ENTITY = new Status(
             422);
@@ -217,7 +254,9 @@ public final class Status extends Metadata {
      * request is in a format not supported by the requested resource for the
      * requested method.
      * 
-     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.16">HTTP RFC - 10.4.16 415 Unsupported Media Type</a>
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.16">HTTP
+     *      RFC - 10.4.16 415 Unsupported Media Type</a>
      */
     public static final Status CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE = new Status(
             415);
@@ -245,7 +284,9 @@ public final class Status extends Metadata {
      * used to inform the client that the initial part of the request has been
      * received and has not yet been rejected or completed by the server.
      * 
-     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.1.1">HTTP RFC - 10.1.1 100 Continue</a>
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.1.1">HTTP
+     *      RFC - 10.1.1 100 Continue</a>
      */
     public static final Status INFO_CONTINUE = new Status(100);
 
@@ -255,7 +296,8 @@ public final class Status extends Metadata {
      * server has a reasonable expectation that the request will take
      * significant time to complete.
      * 
-     * @see <a href="http://www.webdav.org/specs/rfc2518.html#STATUS_102">WEBDAV RFC - 10.1 102 Processing</a>
+     * @see <a href="http://www.webdav.org/specs/rfc2518.html#STATUS_102">WEBDAV
+     *      RFC - 10.1 102 Processing</a>
      */
     public static final Status INFO_PROCESSING = new Status(102);
 
@@ -264,7 +306,9 @@ public final class Status extends Metadata {
      * request, via the Upgrade message header field, for a change in the
      * application protocol being used on this connection.
      * 
-     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.1.2">HTTP RFC - 10.1.1 101 Switching Protocols</a>
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.1.2">HTTP
+     *      RFC - 10.1.1 101 Switching Protocols</a>
      */
     public static final Status INFO_SWITCHING_PROTOCOL = new Status(101);
 
@@ -273,7 +317,9 @@ public final class Status extends Metadata {
      * should not be used for future requests by the client (use status codes
      * 303 or 307 instead since this status has been manifestly misused).
      * 
-     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.3.3">HTTP RFC - 10.3.3 302 Found</a>
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.3.3">HTTP
+     *      RFC - 10.3.3 302 Found</a>
      */
     public static final Status REDIRECTION_FOUND = new Status(302);
 
@@ -282,7 +328,9 @@ public final class Status extends Metadata {
      * representations of the requested resource, each representation having its
      * own specific location provided in the response entity.
      * 
-     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.3.1">HTTP RFC - 10.3.1 300 Multiple Choices</a>
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.3.1">HTTP
+     *      RFC - 10.3.1 300 Multiple Choices</a>
      */
     public static final Status REDIRECTION_MULTIPLE_CHOICES = new Status(300);
 
@@ -290,7 +338,9 @@ public final class Status extends Metadata {
      * Status code sent by the server in response to a conditional GET request
      * in case the document has not been modified.
      * 
-     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.3.5">HTTP RFC - 10.3.5 304 Not Modified</a>
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.3.5">HTTP
+     *      RFC - 10.3.5 304 Not Modified</a>
      */
     public static final Status REDIRECTION_NOT_MODIFIED = new Status(304);
 
@@ -298,7 +348,9 @@ public final class Status extends Metadata {
      * The requested resource has been assigned a new permanent URI and any
      * future references to this resource SHOULD use one of the returned URIs.
      * 
-     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.3.2">HTTP RFC - 10.3.2 301 Moved Permanently</a>
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.3.2">HTTP
+     *      RFC - 10.3.2 301 Moved Permanently</a>
      */
     public static final Status REDIRECTION_PERMANENT = new Status(301);
 
@@ -306,7 +358,9 @@ public final class Status extends Metadata {
      * The response to the request can be found under a different URI and SHOULD
      * be retrieved using a GET method on that resource.
      * 
-     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.3.4">HTTP RFC - 10.3.4 303 See Other</a>
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.3.4">HTTP
+     *      RFC - 10.3.4 303 See Other</a>
      */
     public static final Status REDIRECTION_SEE_OTHER = new Status(303);
 
@@ -314,7 +368,9 @@ public final class Status extends Metadata {
      * The requested resource resides temporarily under a different URI which
      * should not be used for future requests by the client.
      * 
-     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.3.8">HTTP RFC - 10.3.8 307 Temporary Redirect</a>
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.3.8">HTTP
+     *      RFC - 10.3.8 307 Temporary Redirect</a>
      */
     public static final Status REDIRECTION_TEMPORARY = new Status(307);
 
@@ -322,7 +378,9 @@ public final class Status extends Metadata {
      * The requested resource MUST be accessed through the proxy given by the
      * Location field.
      * 
-     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.3.6">HTTP RFC - 10.3.6 305 Use Proxy</a>
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.3.6">HTTP
+     *      RFC - 10.3.6 305 Use Proxy</a>
      */
     public static final Status REDIRECTION_USE_PROXY = new Status(305);
 
@@ -331,7 +389,9 @@ public final class Status extends Metadata {
      * response from the upstream server it accessed in attempting to fulfill
      * the request.
      * 
-     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.5.3">HTTP RFC - 10.5.3 502 Bad Gateway</a>
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.5.3">HTTP
+     *      RFC - 10.5.3 502 Bad Gateway</a>
      */
     public static final Status SERVER_ERROR_BAD_GATEWAY = new Status(502);
 
@@ -339,7 +399,9 @@ public final class Status extends Metadata {
      * The server, while acting as a gateway or proxy, could not connect to the
      * upstream server.
      * 
-     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.5.5">HTTP RFC - 10.5.5 504 Gateway Timeout</a>
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.5.5">HTTP
+     *      RFC - 10.5.5 504 Gateway Timeout</a>
      */
     public static final Status SERVER_ERROR_GATEWAY_TIMEOUT = new Status(504);
 
@@ -348,7 +410,8 @@ public final class Status extends Metadata {
      * because the server is unable to store the representation needed to
      * successfully complete the request.
      * 
-     * @see <a href="http://www.webdav.org/specs/rfc2518.html#STATUS_507">WEBDAV RFC - 10.6 507 Insufficient Storage</a>
+     * @see <a href="http://www.webdav.org/specs/rfc2518.html#STATUS_507">WEBDAV
+     *      RFC - 10.6 507 Insufficient Storage</a>
      */
     public static final Status SERVER_ERROR_INSUFFICIENT_STORAGE = new Status(
             507);
@@ -357,7 +420,9 @@ public final class Status extends Metadata {
      * The server encountered an unexpected condition which prevented it from
      * fulfilling the request.
      * 
-     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.5.1">HTTP RFC - 10.5.1 500 Internal Server Error</a>
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.5.1">HTTP
+     *      RFC - 10.5.1 500 Internal Server Error</a>
      */
     public static final Status SERVER_ERROR_INTERNAL = new Status(500);
 
@@ -365,7 +430,9 @@ public final class Status extends Metadata {
      * The server does not support the functionality required to fulfill the
      * request.
      * 
-     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.5.2">HTTP * RFC - 10.5.2 501 Not Implemented</a>
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.5.2">HTTP
+     *      RFC - 10.5.2 501 Not Implemented</a>
      */
     public static final Status SERVER_ERROR_NOT_IMPLEMENTED = new Status(501);
 
@@ -373,7 +440,9 @@ public final class Status extends Metadata {
      * The server is currently unable to handle the request due to a temporary
      * overloading or maintenance of the server.
      * 
-     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.5.4">HTTP RFC - 10.5.4 503 Service Unavailable</a>
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.5.4">HTTP
+     *      RFC - 10.5.4 503 Service Unavailable</a>
      */
     public static final Status SERVER_ERROR_SERVICE_UNAVAILABLE = new Status(
             503);
@@ -382,7 +451,9 @@ public final class Status extends Metadata {
      * The server does not support, or refuses to support, the HTTP protocol
      * version that was used in the request message.
      * 
-     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.5.6">HTTP RFC - 10.5.6 505 HTTP Version Not Supported</a>
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.5.6">HTTP
+     *      RFC - 10.5.6 505 HTTP Version Not Supported</a>
      */
     public static final Status SERVER_ERROR_VERSION_NOT_SUPPORTED = new Status(
             505);
@@ -391,7 +462,9 @@ public final class Status extends Metadata {
      * The request has been accepted for processing, but the processing has not
      * been completed.
      * 
-     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.3">HTTP RFC - 10.2.3 202 Accepted</a>
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.3">HTTP
+     *      RFC - 10.2.3 202 Accepted</a>
      */
     public static final Status SUCCESS_ACCEPTED = new Status(202);
 
@@ -399,7 +472,9 @@ public final class Status extends Metadata {
      * The request has been fulfilled and resulted in a new resource being
      * created.
      * 
-     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.2">HTTP RFC - 10.2.2 201 Created</a>
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.2">HTTP
+     *      RFC - 10.2.2 201 Created</a>
      */
     public static final Status SUCCESS_CREATED = new Status(201);
 
@@ -407,7 +482,8 @@ public final class Status extends Metadata {
      * This response is used to inform the client that the HTTP response entity
      * contains a set of status codes generated during the method invocation.
      * 
-     * @see <a href="http://www.webdav.org/specs/rfc2518.html#STATUS_207">WEBDAV RFC - 10.2 207 Multi-Status</a>
+     * @see <a href="http://www.webdav.org/specs/rfc2518.html#STATUS_207">WEBDAV
+     *      RFC - 10.2 207 Multi-Status</a>
      */
     public static final Status SUCCESS_MULTI_STATUS = new Status(207);
 
@@ -416,7 +492,9 @@ public final class Status extends Metadata {
      * entity-body (for example after a DELETE), and might want to return
      * updated metainformation.
      * 
-     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.5">HTTP RFC - 10.2.5 204 No Content</a>
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.5">HTTP
+     *      RFC - 10.2.5 204 No Content</a>
      */
     public static final Status SUCCESS_NO_CONTENT = new Status(204);
 
@@ -425,14 +503,18 @@ public final class Status extends Metadata {
      * entity-header do not come from the origin server, but is gathered from a
      * local or a third-party copy.
      * 
-     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.4">HTTP RFC - 10.2.4 203 Non-Authoritative Information</a>
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.4">HTTP
+     *      RFC - 10.2.4 203 Non-Authoritative Information</a>
      */
     public static final Status SUCCESS_NON_AUTHORITATIVE = new Status(203);
 
     /**
      * The request has succeeded.
      * 
-     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">HTTP RFC - 10.2.1 200 OK</a>
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">HTTP
+     *      RFC - 10.2.1 200 OK</a>
      */
     public static final Status SUCCESS_OK = new Status(200);
 
@@ -441,7 +523,9 @@ public final class Status extends Metadata {
      * assuming the request has included a Range header field indicating the
      * desired range.
      * 
-     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.7">HTTP RFC - 10.2.7 206 Partial Content</a>
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.7">HTTP
+     *      RFC - 10.2.7 206 Partial Content</a>
      */
     public static final Status SUCCESS_PARTIAL_CONTENT = new Status(206);
 
@@ -449,7 +533,9 @@ public final class Status extends Metadata {
      * The server has fulfilled the request and the user agent SHOULD reset the
      * document view which caused the request to be sent.
      * 
-     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.6">HTTP RFC - 10.2.6 205 Reset Content</a>
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.6">HTTP
+     *      RFC - 10.2.6 205 Reset Content</a>
      */
     public static final Status SUCCESS_RESET_CONTENT = new Status(205);
 
@@ -458,7 +544,9 @@ public final class Status extends Metadata {
      * characters such as CR and LF. an IllegalArgumentException is thrown in
      * this case.
      * 
-     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec6.html#sec6.1.1">Status Code and Reason Phrase</a>
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec6.html#sec6.1.1">Status
+     *      Code and Reason Phrase</a>
      * @param description
      *            the description to check
      * @return the description if it is correct.
