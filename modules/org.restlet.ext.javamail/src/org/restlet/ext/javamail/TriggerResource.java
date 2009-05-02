@@ -43,7 +43,7 @@ import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.representation.DomRepresentation;
+import org.restlet.ext.xml.DomRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Resource;
@@ -336,7 +336,8 @@ public class TriggerResource extends Resource {
 
         // 2 - Parse the list of mails
         if (response.isEntityAvailable()) {
-            final DomRepresentation rep = response.getEntityAsDom();
+            final DomRepresentation rep = new DomRepresentation(response
+                    .getEntity());
             for (final Node node : rep.getNodes("/emails/email/@href")) {
                 final String href = node.getNodeValue();
                 if (href.startsWith("/")) {

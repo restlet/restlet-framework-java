@@ -34,7 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.data.Response;
-import org.restlet.representation.DomRepresentation;
+import org.restlet.ext.xml.DomRepresentation;
 import org.w3c.dom.Node;
 
 /**
@@ -55,7 +55,8 @@ public class S3App extends S3Authorized {
 
         // Fetch a resource: an XML document with our list of buckets
         final Response response = authorizedGet(HOST);
-        final DomRepresentation document = response.getEntityAsDom();
+        final DomRepresentation document = new DomRepresentation(response
+                .getEntity());
 
         if (response.getStatus().isSuccess()) {
             // Use XPath to find the bucket names

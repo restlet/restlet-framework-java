@@ -45,9 +45,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.ServerInfo;
 import org.restlet.data.Status;
-import org.restlet.representation.DomRepresentation;
 import org.restlet.representation.Representation;
-import org.restlet.representation.SaxRepresentation;
 
 /**
  * Request wrapper. Useful for application developer who need to enrich the
@@ -176,36 +174,8 @@ public class WrapperResponse extends Response {
      * @return The entity as a DOM representation.
      */
     @Override
-    public DomRepresentation getEntityAsDom() {
-        return getWrappedResponse().getEntityAsDom();
-    }
-
-    /**
-     * Returns the entity as a DOM representation.<br>
-     * Note that this triggers the parsing of the entity into a reusable DOM
-     * document stored in memory.<br>
-     * This method and the related getEntity*() methods can only be invoked
-     * once.
-     * 
-     * @return The entity as a DOM representation.
-     */
-    @Override
     public Form getEntityAsForm() {
         return getWrappedResponse().getEntityAsForm();
-    }
-
-    /**
-     * Returns the entity as a SAX representation.<br>
-     * Note that this kind of representation can only be parsed once. If you
-     * evaluate an XPath expression, it can also only be done once. If you need
-     * to reuse the entity multiple times, consider using the getEntityAsDom()
-     * method instead.
-     * 
-     * @return The entity as a SAX representation.
-     */
-    @Override
-    public SaxRepresentation getEntityAsSax() {
-        return getWrappedResponse().getEntityAsSax();
     }
 
     /**

@@ -8,7 +8,7 @@ Export-Package: org.restlet.ext.wadl;uses:="org.restlet,org.restlet.resource,org
 Import-Package: org.restlet,
  org.restlet.data,
  org.restlet.engine,
- org.restlet.ext.xslt,
+ org.restlet.ext.xml,
  org.restlet.representation,
  org.restlet.resource,
  org.restlet.routing,

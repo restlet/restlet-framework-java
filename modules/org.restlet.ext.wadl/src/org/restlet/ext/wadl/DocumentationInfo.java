@@ -38,7 +38,7 @@ import java.util.logging.Level;
 import org.restlet.Context;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
-import org.restlet.representation.DomRepresentation;
+import org.restlet.ext.xml.DomRepresentation;
 import org.restlet.util.XmlWriter;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Comment;

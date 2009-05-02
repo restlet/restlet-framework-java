@@ -34,7 +34,7 @@ import org.restlet.Client;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Response;
-import org.restlet.representation.DomRepresentation;
+import org.restlet.ext.xml.DomRepresentation;
 import org.w3c.dom.Node;
 
 /**
@@ -53,7 +53,8 @@ public class Example2_1a {
             final String term = Reference.encode(args[0]);
             final String uri = BASE_URI + "?appid=restbook&query=" + term;
             final Response response = new Client(Protocol.HTTP).get(uri);
-            final DomRepresentation document = response.getEntityAsDom();
+            final DomRepresentation document = new DomRepresentation(response
+                    .getEntity());
 
             // Use XPath to find the interesting parts of the data structure
             final String expr = "/ResultSet/Result/Title";

@@ -37,7 +37,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.representation.DomRepresentation;
+import org.restlet.ext.xml.DomRepresentation;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
@@ -61,7 +61,8 @@ public class Example2_5 {
             // Fetch a resource: an XML document with your recent posts
             final Response response = new Client(Protocol.HTTPS)
                     .handle(request);
-            final DomRepresentation document = response.getEntityAsDom();
+            final DomRepresentation document = new DomRepresentation(response
+                    .getEntity());
 
             // Use XPath to find the interesting parts of the data structure
             for (final Node node : document.getNodes("/posts/post")) {

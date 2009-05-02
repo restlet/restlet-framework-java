@@ -45,8 +45,8 @@ import org.jibx.runtime.IMarshallingContext;
 import org.jibx.runtime.IUnmarshallingContext;
 import org.jibx.runtime.JiBXException;
 import org.restlet.data.MediaType;
+import org.restlet.ext.xml.XmlRepresentation;
 import org.restlet.representation.Representation;
-import org.restlet.representation.XmlRepresentation;
 import org.w3c.dom.Document;
 
 /**

@@ -38,8 +38,8 @@ import org.restlet.Component;
 import org.restlet.data.MediaType;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
-import org.restlet.ext.xslt.TransformRepresentation;
-import org.restlet.ext.xslt.Transformer;
+import org.restlet.ext.xml.TransformRepresentation;
+import org.restlet.ext.xml.Transformer;
 
 /**
  * Test case for the Transformer class.

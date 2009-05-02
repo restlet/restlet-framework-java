@@ -42,7 +42,7 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.representation.DomRepresentation;
+import org.restlet.ext.xml.DomRepresentation;
 import org.restlet.test.RestletTestCase;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -144,7 +144,8 @@ public class JavaMailTestCase extends RestletTestCase {
 
         // Try to get then delete the first message, if it exists.
         if (response.isEntityAvailable()) {
-            final DomRepresentation representation = response.getEntityAsDom();
+            final DomRepresentation representation = new DomRepresentation(
+                    response.getEntity());
             final NodeList nodes = representation.getNodes("/emails/email");
             if (nodes.getLength() > 0) {
                 final Node node = representation
@@ -177,7 +178,8 @@ public class JavaMailTestCase extends RestletTestCase {
         response.getEntity().write(System.out);
         System.out.println();
 
-        final DomRepresentation dom = response.getEntityAsDom();
+        final DomRepresentation dom = new DomRepresentation(response
+                .getEntity());
         for (final Node node : dom.getNodes("/emails/email")) {
             final NamedNodeMap attrs = node.getAttributes();
             final String href = attrs.getNamedItem("href").getNodeValue();

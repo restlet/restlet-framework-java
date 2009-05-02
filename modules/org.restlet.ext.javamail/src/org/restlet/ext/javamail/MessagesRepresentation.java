@@ -36,7 +36,7 @@ import javax.mail.Message;
 import javax.mail.MessagingException;
 
 import org.restlet.data.MediaType;
-import org.restlet.representation.DomRepresentation;
+import org.restlet.ext.xml.DomRepresentation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 

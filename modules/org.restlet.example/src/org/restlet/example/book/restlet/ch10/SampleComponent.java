@@ -38,8 +38,8 @@ import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.representation.DomRepresentation;
-import org.restlet.representation.SaxRepresentation;
+import org.restlet.ext.xml.DomRepresentation;
+import org.restlet.ext.xml.SaxRepresentation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.util.NodeSet;
 import org.w3c.dom.Node;
@@ -82,7 +82,8 @@ public class SampleComponent {
                 .get("http://localhost:8182/xmlApplication/xml/mail.xml");
         if (response.getStatus().isSuccess() && response.isEntityAvailable()) {
             // Get the entity as a DOM representation.
-            final DomRepresentation domRep = response.getEntityAsDom();
+            final DomRepresentation domRep = new DomRepresentation(response
+                    .getEntity());
             // Evaluate an XPath expression and get the list of nodes
             final NodeSet nodes = domRep.getNodes("/mail/recipients/to/text()");
             for (final Node node : nodes) {
@@ -103,7 +104,8 @@ public class SampleComponent {
 
         if (response.getStatus().isSuccess() && response.isEntityAvailable()) {
             // Get the entity as a SAX representation.
-            final SaxRepresentation saxRep = response.getEntityAsSax();
+            final SaxRepresentation saxRep = new SaxRepresentation(response
+                    .getEntity());
             // In-line simple content handler.
             final ContentHandler contentHandler = new DefaultHandler() {
                 @Override

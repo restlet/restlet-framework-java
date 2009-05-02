@@ -48,7 +48,7 @@ import org.restlet.data.Reference;
 import org.restlet.data.Response;
 import org.restlet.engine.Engine;
 import org.restlet.engine.util.DefaultSaxHandler;
-import org.restlet.representation.DomRepresentation;
+import org.restlet.ext.xml.DomRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Route;

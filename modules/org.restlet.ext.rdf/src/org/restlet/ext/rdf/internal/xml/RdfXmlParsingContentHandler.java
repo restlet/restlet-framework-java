@@ -36,8 +36,8 @@ import org.restlet.data.Reference;
 import org.restlet.ext.rdf.Graph;
 import org.restlet.ext.rdf.GraphHandler;
 import org.restlet.ext.rdf.Literal;
+import org.restlet.ext.xml.SaxRepresentation;
 import org.restlet.representation.Representation;
-import org.restlet.representation.SaxRepresentation;
 
 /**
  * Handler of RDF content according to the RDF/XML format.

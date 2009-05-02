@@ -39,17 +39,17 @@ import java.nio.channels.ReadableByteChannel;
 import java.util.List;
 
 import org.restlet.data.MediaType;
-import org.restlet.representation.DomRepresentation;
+import org.restlet.ext.xslt.DomRepresentation;
+import org.restlet.ext.xslt.SaxRepresentation;
+import org.restlet.ext.xslt.XmlRepresentation;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.FileRepresentation;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.ObjectRepresentation;
 import org.restlet.representation.ReaderRepresentation;
 import org.restlet.representation.Representation;
-import org.restlet.representation.SaxRepresentation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
-import org.restlet.representation.XmlRepresentation;
 import org.restlet.resource.UniformResource;
 import org.w3c.dom.Document;
 

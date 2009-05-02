@@ -48,7 +48,7 @@ import junit.framework.TestCase;
 import org.junit.Before;
 import org.restlet.data.MediaType;
 import org.restlet.engine.util.DefaultSaxHandler;
-import org.restlet.representation.DomRepresentation;
+import org.restlet.ext.xml.DomRepresentation;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;

@@ -35,7 +35,7 @@ import java.util.List;
 
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.representation.DomRepresentation;
+import org.restlet.ext.xml.DomRepresentation;
 import org.w3c.dom.Node;
 
 /**
@@ -102,7 +102,8 @@ public class S3Bucket extends S3Authorized {
 
         // Make the request and parse the document.
         final Response response = authorizedGet(uri.toString());
-        final DomRepresentation document = response.getEntityAsDom();
+        final DomRepresentation document = new DomRepresentation(response
+                .getEntity());
 
         // Update the truncated flag
         this.truncated = document.getNodes("//IsTruncated").get(0)

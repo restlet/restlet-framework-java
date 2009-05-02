@@ -40,8 +40,8 @@ import org.apache.tika.metadata.TikaMetadataKeys;
 import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.parser.Parser;
 import org.restlet.engine.util.DateUtils;
+import org.restlet.ext.xml.SaxRepresentation;
 import org.restlet.representation.Representation;
-import org.restlet.representation.SaxRepresentation;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 

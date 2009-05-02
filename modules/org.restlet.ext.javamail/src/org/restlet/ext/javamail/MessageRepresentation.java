@@ -42,14 +42,13 @@ import javax.mail.internet.MimeBodyPart;
 import org.restlet.data.MediaType;
 import org.restlet.engine.http.ContentType;
 import org.restlet.engine.util.DateUtils;
-import org.restlet.representation.DomRepresentation;
+import org.restlet.ext.xml.DomRepresentation;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
 
 /**
  * XML representation of a JavaMail message.

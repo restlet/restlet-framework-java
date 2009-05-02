@@ -55,7 +55,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
-import org.restlet.ext.xslt.TransformRepresentation;
+import org.restlet.ext.xml.TransformRepresentation;
 
 /**
  * ResolvingTransformerTestCase tests the resolving aspects of the

@@ -50,7 +50,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.engine.http.HttpConstants;
-import org.restlet.representation.DomRepresentation;
+import org.restlet.ext.xml.DomRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.Resource;
@@ -59,7 +59,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
 
 /**
  * This tests the ability of the connectors to handle chunked encoding.
@@ -189,7 +188,7 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
         try {
             assertEquals(r.getStatus().getDescription(), Status.SUCCESS_OK, r
                     .getStatus());
-            assertXML(r.getEntityAsDom());
+            assertXML(new DomRepresentation(r.getEntity()));
         } finally {
             r.release();
         }
@@ -206,7 +205,7 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
             }
             assertEquals(r.getStatus().getDescription(), Status.SUCCESS_OK, r
                     .getStatus());
-            assertXML(r.getEntityAsDom());
+            assertXML(new DomRepresentation(r.getEntity()));
         } finally {
             r.release();
         }
@@ -237,12 +236,13 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
 
     @Override
     public void testSimpleAndJdkNet() throws Exception {
-    	// TODO to be fixed
+        // TODO to be fixed
         // super.testSimpleAndJdkNet();
     }
+
     @Override
     public void testJettyAndApache() throws Exception {
-    	// TODO to be fixed
+        // TODO to be fixed
         // super.testJettyAndApache();
     }
 

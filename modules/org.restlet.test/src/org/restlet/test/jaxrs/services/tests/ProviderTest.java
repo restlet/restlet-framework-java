@@ -50,7 +50,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.ext.jaxrs.internal.provider.JaxbElementProvider;
-import org.restlet.representation.DomRepresentation;
+import org.restlet.ext.xml.DomRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.test.jaxrs.services.others.Person;
@@ -83,7 +83,8 @@ public class ProviderTest extends JaxRsTestCase {
     private void getAndCheckJaxb(String subPath) throws Exception {
         final Response response = get(subPath);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        final DomRepresentation entity = response.getEntityAsDom();
+        final DomRepresentation entity = new DomRepresentation(response
+                .getEntity());
         final Node xml = entity.getDocument().getFirstChild();
         System.out.println(subPath + ": " + entity.getText());
         assertEquals("person", xml.getNodeName());
@@ -141,7 +142,7 @@ public class ProviderTest extends JaxRsTestCase {
      * @param postEntity
      * @param postMediaType
      * @param responseMediaType
-     *                if null, it will not be testet
+     *            if null, it will not be testet
      * @throws IOException
      */
     private void postAndExceptGiven(String subPath, String postEntity,
@@ -244,7 +245,7 @@ public class ProviderTest extends JaxRsTestCase {
 
     /** @see ProviderTestService#jaxbPost(javax.xml.bind.JAXBElement) */
     public void testJaxbElementPost() throws Exception {
-        if(true) // LATER conversion to JAXBElement doesn't work
+        if (true) // LATER conversion to JAXBElement doesn't work
             return;
         postAndCheckXml("jaxbElement");
     }
@@ -255,7 +256,7 @@ public class ProviderTest extends JaxRsTestCase {
      * @see ProviderTestService#jaxbPostNamespace(javax.xml.bind.JAXBElement)
      */
     public void testJaxbElementPostRootElement() throws Exception {
-        if(true) // LATER conversion to JAXBElement doesn't work
+        if (true) // LATER conversion to JAXBElement doesn't work
             return;
         final Representation send = new DomRepresentation(
                 new StringRepresentation(
@@ -287,11 +288,15 @@ public class ProviderTest extends JaxRsTestCase {
             public Type[] getActualTypeArguments() {
                 return new Type[] { Person.class };
             }
+
             public Type getOwnerType() {
-                throw new UnsupportedOperationException("not implemented for this test");
+                throw new UnsupportedOperationException(
+                        "not implemented for this test");
             }
+
             public Type getRawType() {
-                throw new UnsupportedOperationException("not implemented for this test");
+                throw new UnsupportedOperationException(
+                        "not implemented for this test");
             }
         };
         JAXBElement je = jaxbElementProvider.readFrom(
@@ -345,7 +350,7 @@ public class ProviderTest extends JaxRsTestCase {
 
     public void testStringGet() throws Exception {
         getAndExpectAlphabet("String");
-        
+
         final Response response = get("String2");
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
