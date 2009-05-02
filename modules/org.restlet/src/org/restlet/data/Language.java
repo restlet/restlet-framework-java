@@ -37,7 +37,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * Language used in representations and preferences. A language tag is composed
  * of one or more parts: A primary language tag and a possibly empty series of
- * subtags. When formatted as a string, parts are separated by hyphens.
+ * sub-tags. When formatted as a string, parts are separated by hyphens.
  * 
  * @author Jerome Louvel
  */

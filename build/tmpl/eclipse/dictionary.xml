@@ -84,3 +84,5 @@ emails
 payload
 yahoo
 namespace
+multi
+decorator

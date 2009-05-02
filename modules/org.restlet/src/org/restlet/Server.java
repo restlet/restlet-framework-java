@@ -30,8 +30,6 @@
 
 package org.restlet;
 
-import java.net.InetSocketAddress;
-import java.net.ServerSocket;
 import java.util.Arrays;
 import java.util.List;
 
@@ -307,11 +305,11 @@ public class Server extends Connector {
 
     /**
      * Returns the actual ephemeral port used when the listening port is set to
-     * '0'. The default value is '-1' if no ephemeral port is known.
+     * '0'. The default value is '-1' if no ephemeral port is known. See
+     * InetSocketAddress#InetSocketAddress(int) and ServerSocket#getLocalPort()
+     * methods for details.
      * 
      * @return The actual ephemeral port used.
-     * @see InetSocketAddress#InetSocketAddress(int)
-     * @see ServerSocket#getLocalPort()
      */
     public int getEphemeralPort() {
         return (Integer) getHelper().getAttributes().get("ephemeralPort");
