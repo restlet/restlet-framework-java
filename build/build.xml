@@ -226,7 +226,9 @@
 
 	<path id="mod-atom-path">
 		<path refid="mod-core-path" />
+		<path refid="mod-xml-path" />
 		<pathelement path="${classes}/${mod-core-id}" />
+		<pathelement path="${classes}/${mod-xml-id}" />
 	</path>
 
 	<path id="mod-fileupload-path">
@@ -259,17 +261,33 @@
 
 	<path id="mod-javamail-path">
 		<path refid="mod-core-path" />
+		<path refid="mod-xml-path" />
 		<pathelement path="${classes}/${mod-core-id}" />
+		<pathelement path="${classes}/${mod-xml-id}" />
 		<fileset dir="${lib}/${lib-javamail-id}" includes="*.jar" />
 		<fileset dir="${lib}/${lib-activation-id}" includes="*.jar" />
+
 	</path>
 
 	<path id="mod-jaxb-path">
 		<path refid="mod-core-path" />
+		<path refid="mod-xml-path" />
 		<pathelement path="${classes}/${mod-core-id}" />
+		<pathelement path="${classes}/${mod-xml-id}" />
 		<fileset dir="${lib}/${lib-jaxb-api-id}" includes="*.jar" />
 		<fileset dir="${lib}/${lib-jaxb-ri-id}" includes="*.jar" />
 		<fileset dir="${lib}/${lib-stax-id}" includes="*.jar" />
+	</path>
+
+	<path id="mod-jaxrs-path">
+		<path refid="mod-core-path" />
+		<path refid="mod-javamail-path" />
+		<path refid="mod-jaxb-path" />
+		<path refid="mod-json-path" />
+		<pathelement path="${classes}/${mod-core-id}" />
+		<fileset dir="${lib}/${lib-jaxrs-id}" includes="*.jar" />
+		<fileset dir="${lib}/${lib-fileupload-id}" includes="*.jar" />
+		<fileset dir="${lib}/${lib-servlet-id}" includes="*.jar" />
 	</path>
 
 	<path id="mod-jdbc-path">
@@ -289,7 +307,9 @@
 
 	<path id="mod-jibx-path">
 		<path refid="mod-core-path" />
+		<path refid="mod-xml-path" />
 		<pathelement path="${classes}/${mod-core-id}" />
+		<pathelement path="${classes}/${mod-xml-id}" />
 		<fileset dir="${lib}/${lib-jibx-id}" includes="*.jar" />
 	</path>
 
@@ -299,20 +319,11 @@
 		<fileset dir="${lib}/${lib-json-id}" includes="*.jar" />
 	</path>
 
-	<path id="mod-jaxrs-path">
-		<path refid="mod-core-path" />
-		<path refid="mod-javamail-path" />
-		<path refid="mod-jaxb-path" />
-		<path refid="mod-json-path" />
-		<pathelement path="${classes}/${mod-core-id}" />
-		<fileset dir="${lib}/${lib-jaxrs-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-fileupload-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-servlet-id}" includes="*.jar" />
-	</path>
-
 	<path id="mod-lucene-path">
 		<path refid="mod-core-path" />
+		<path refid="mod-xml-path" />
 		<pathelement path="${classes}/${mod-core-id}" />
+		<pathelement path="${classes}/${mod-xml-id}" />
 		<fileset dir="${lib}/${lib-lucene-id}" includes="*.jar" />
 		<fileset dir="${lib}/${lib-solr-id}" includes="*.jar" />
 		<fileset dir="${lib}/${lib-tika-id}" includes="*.jar" />
@@ -332,7 +343,9 @@
 
 	<path id="mod-rdf-path">
 		<path refid="mod-core-path" />
+		<path refid="mod-xml-path" />
 		<pathelement path="${classes}/${mod-core-id}" />
+		<pathelement path="${classes}/${mod-xml-id}" />
 	</path>
 
 	<path id="mod-servlet-path">
@@ -389,7 +402,9 @@
 
 	<path id="mod-wadl-path">
 		<path refid="mod-core-path" />
+		<path refid="mod-xml-path" />
 		<pathelement path="${classes}/${mod-core-id}" />
+		<pathelement path="${classes}/${mod-xml-id}" />
 	</path>
 
 	<path id="mod-xdb-path">
@@ -399,7 +414,7 @@
 		<pathelement path="${classes}/${mod-servlet-id}" />
 	</path>
 
-	<path id="mod-xslt-path">
+	<path id="mod-xml-path">
 		<path refid="mod-core-path" />
 		<pathelement path="${classes}/${mod-core-id}" />
 	</path>
@@ -531,9 +546,9 @@
 		<pathelement path="${classes}/${mod-wadl-id}" />
 		<pathelement path="${mod}/${mod-wadl-id}/src" />
 
-		<path refid="mod-xslt-path" />
-		<pathelement path="${classes}/${mod-xslt-id}" />
-		<pathelement path="${mod}/${mod-xslt-id}/src" />
+		<path refid="mod-xml-path" />
+		<pathelement path="${classes}/${mod-xml-id}" />
+		<pathelement path="${mod}/${mod-xml-id}/src" />
 
 		<path refid="mod-xstream-path" />
 		<pathelement path="${classes}/${mod-xstream-id}" />
@@ -576,7 +591,7 @@
 		<pathelement path="${classes}/${mod-velocity-id}" />
 		<pathelement path="${classes}/${mod-wadl-id}" />
 		<pathelement path="${classes}/${mod-xdb-id}" />
-		<pathelement path="${classes}/${mod-xslt-id}" />
+		<pathelement path="${classes}/${mod-xml-id}" />
 		<pathelement path="${classes}/${mod-xstream-id}" />
 		<path refid="mod-fileupload-path" />
 		<path refid="mod-freemarker-path" />
@@ -605,7 +620,7 @@
 		<path refid="mod-velocity-path" />
 		<path refid="mod-wadl-path" />
 		<path refid="mod-xdb-path" />
-		<path refid="mod-xslt-path" />
+		<path refid="mod-xml-path" />
 		<path refid="mod-xstream-path" />
 	</path>
 
@@ -1010,7 +1025,7 @@
 		<pomModule name="velocity" />
 		<pomModule name="wadl" />
 		<pomModule name="xdb" />
-		<pomModule name="xslt" />
+		<pomModule name="xml" />
 		<pomModule name="xstream" />
 
 		<!-- Generate the parent POM -->
@@ -1089,6 +1104,8 @@
 		<compileModule name="core-gae" />
 		<compileModule name="core-gwt" />
 		<compileModule name="core-android" />
+
+		<compileModule name="xml" />
 		<compileModule name="atom" />
 		<compileModule name="fileupload" />
 		<compileModule name="freemarker" />
@@ -1126,7 +1143,6 @@
 		<!-- depends on servlet -->
 		<compileModule name="xdb" />
 
-		<compileModule name="xslt" />
 		<compileModule name="xstream" />
 
 		<!-- depends on many things -->
@@ -1166,7 +1182,7 @@
 		<backportModule name="velocity" failonwarning="@{backport-failonwarning}" />
 		<backportModule name="wadl" failonwarning="@{backport-failonwarning}" />
 		<backportModule name="xdb" failonwarning="@{backport-failonwarning}" />
-		<backportModule name="xslt" failonwarning="@{backport-failonwarning}" />
+		<backportModule name="xml" failonwarning="@{backport-failonwarning}" />
 		<backportModule name="xstream" failonwarning="@{backport-failonwarning}" />
 	</target>
 
@@ -1241,7 +1257,7 @@
 				<pathelement path="${mod}/${mod-velocity-id}/src/" />
 				<pathelement path="${mod}/${mod-wadl-id}/src/" />
 				<pathelement path="${mod}/${mod-xdb-id}/src/" />
-				<pathelement path="${mod}/${mod-xslt-id}/src/" />
+				<pathelement path="${mod}/${mod-xml-id}/src/" />
 				<pathelement path="${mod}/${mod-xstream-id}/src/" />
 			</sourcepath>
 
@@ -1257,7 +1273,7 @@
 				<package name="org.restlet.ext.rdf*" />
 				<package name="org.restlet.ext.ssl*" />
 				<package name="org.restlet.ext.wadl*" />
-				<package name="org.restlet.ext.xslt*" />
+				<package name="org.restlet.ext.xml*" />
 			</group>
 			<group title="${restlet-ext-connectors}">
 				<package name="org.restlet.ext.grizzly*" />
@@ -1459,7 +1475,7 @@
 		<findbugsModule name="velocity" />
 		<findbugsModule name="wadl" />
 		<findbugsModule name="xdb" />
-		<findbugsModule name="xslt" />
+		<findbugsModule name="xml" />
 		<findbugsModule name="xstream" />
 	</target>
 
@@ -1495,7 +1511,7 @@
 		<checkstyleModule name="velocity" />
 		<checkstyleModule name="wadl" />
 		<checkstyleModule name="xdb" />
-		<checkstyleModule name="xslt" />
+		<checkstyleModule name="xml" />
 		<checkstyleModule name="xstream" />
 	</target>
 
@@ -1638,7 +1654,6 @@
 		<stageModule name="velocity" />
 		<stageModule name="wadl" />
 		<stageModule name="xdb" />
-		<stageModule name="xslt" />
 		<stageModule name="xstream" />
 
 		<!-- Copy the POM files -->
@@ -1701,7 +1716,7 @@
 		<maven2Module name="velocity" />
 		<maven2Module name="wadl" />
 		<maven2Module name="xdb" />
-		<maven2Module name="xslt" />
+		<maven2Module name="xml" />
 		<maven2Module name="xstream" />
 
 		<maven2Library name="simple" />
