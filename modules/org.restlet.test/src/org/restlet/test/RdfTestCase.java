@@ -32,8 +32,8 @@ package org.restlet.test;
 
 import junit.framework.TestCase;
 
-import org.restlet.ext.rdf.Graph;
-import org.restlet.ext.rdf.RdfN3Representation;
+import org.restlet.data.MediaType;
+import org.restlet.ext.rdf.RdfRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 
@@ -74,11 +74,12 @@ public class RdfTestCase extends TestCase {
                         + ":x22!:x23!:x24. " + "[] :x25 :x26." + "[:x27 :x28]."
                         + "(:x29 :x30) :x31 :x32."
                         + " _:x33 <http://www.rdf.com> \"12\"^^type:int. "
-                        + " _:x33 <http://www.rdf.com> 12. ");
+                        + " _:x33 <http://www.rdf.com> 12. ",
+                MediaType.TEXT_RDF_N3);
 
         // File file = new File("/bnf.n3");
         // rep = new FileRepresentation(file.getPath(), MediaType.TEXT_PLAIN);
-        Representation n3Rep = new RdfN3Representation(rep, new Graph());
+        Representation n3Rep = new RdfRepresentation(rep);
         n3Rep.write(System.out);
     }
 }
