@@ -38,7 +38,7 @@ import java.util.Vector;
 
 /**
  * List wrapper. Modifiable list that delegates all methods to a wrapped list.
- * This allows an easy subclassing. By default, it wraps a thread-safe
+ * This allows an easy sub-classing. By default, it wraps a thread-safe
  * {@link Vector} instance.
  * 
  * @author Jerome Louvel
