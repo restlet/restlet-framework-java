@@ -44,8 +44,8 @@ import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.ext.atom.internal.ServiceContentReader;
 import org.restlet.ext.xml.SaxRepresentation;
+import org.restlet.ext.xml.XmlWriter;
 import org.restlet.representation.Representation;
-import org.restlet.util.XmlWriter;
 import org.xml.sax.SAXException;
 
 /**

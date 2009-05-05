@@ -36,8 +36,8 @@ import java.io.OutputStream;
 import org.restlet.data.MediaType;
 import org.restlet.ext.rdf.internal.xml.RdfXmlParsingContentHandler;
 import org.restlet.ext.rdf.internal.xml.RdfXmlWritingContentHandler;
+import org.restlet.ext.xml.XmlWriter;
 import org.restlet.representation.Representation;
-import org.restlet.util.XmlWriter;
 import org.xml.sax.SAXException;
 
 /**

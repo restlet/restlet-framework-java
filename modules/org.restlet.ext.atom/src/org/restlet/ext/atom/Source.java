@@ -38,7 +38,7 @@ import java.util.List;
 
 import org.restlet.data.Reference;
 import org.restlet.engine.util.DateUtils;
-import org.restlet.util.XmlWriter;
+import org.restlet.ext.xml.XmlWriter;
 import org.xml.sax.SAXException;
 
 /**

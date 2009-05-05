@@ -36,7 +36,7 @@ import static org.restlet.ext.atom.Service.APP_NAMESPACE;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.restlet.util.XmlWriter;
+import org.restlet.ext.xml.XmlWriter;
 import org.xml.sax.SAXException;
 
 /**

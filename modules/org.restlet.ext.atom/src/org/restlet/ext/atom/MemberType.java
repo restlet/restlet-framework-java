@@ -30,7 +30,7 @@
 
 package org.restlet.ext.atom;
 
-import org.restlet.util.XmlWriter;
+import org.restlet.ext.xml.XmlWriter;
 import org.xml.sax.SAXException;
 
 /**

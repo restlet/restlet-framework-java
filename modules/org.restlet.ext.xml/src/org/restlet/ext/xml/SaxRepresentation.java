@@ -47,7 +47,6 @@ import javax.xml.xpath.XPathFactory;
 
 import org.restlet.data.MediaType;
 import org.restlet.representation.Representation;
-import org.restlet.util.XmlWriter;
 import org.w3c.dom.Document;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
