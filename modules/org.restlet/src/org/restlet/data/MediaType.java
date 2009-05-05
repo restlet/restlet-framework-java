@@ -44,12 +44,6 @@ import org.restlet.util.Series;
  */
 public final class MediaType extends Metadata {
 
-    /**
-     * The known media types registered with {@link #register(String, String)},
-     * retrievable using {@link #valueOf(String)}.
-     */
-    private static Map<String, MediaType> types = null;
-
     public static final MediaType ALL = register("*/*", "All media");
 
     public static final MediaType APPLICATION_ALL = register("application/*",
@@ -504,6 +498,10 @@ public final class MediaType extends Metadata {
     public static final MediaType TEXT_RDF_N3 = register("text/n3",
             "N3 serialized Resource Description Framework document");
 
+    public static final MediaType TEXT_RDF_NTRIPLES = register(
+            "text/n-triples",
+            "N-Triples serialized Resource Description Framework document");
+
     public static final MediaType TEXT_TSV = register(
             "text/tab-separated-values", "Tab-separated Values");
 
@@ -519,6 +517,12 @@ public final class MediaType extends Metadata {
      * http://www.ietf.org/rfc/rfc1521.txt
      */
     private static final String TSPECIALS = "()<>@,;:/[]?=\\\"";
+
+    /**
+     * The known media types registered with {@link #register(String, String)},
+     * retrievable using {@link #valueOf(String)}.
+     */
+    private static Map<String, MediaType> types = null;
 
     public static final MediaType VIDEO_ALL = register("video/*", "All videos");
 
