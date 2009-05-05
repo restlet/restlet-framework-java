@@ -127,7 +127,7 @@ public class Context {
             } else {
                 org.restlet.Context.getCurrentLogger().warning(
                         "Error, this prefix " + prefix
-                                + "has not been declared!");
+                                + " has not been declared!");
                 result = null;
             }
         } else {

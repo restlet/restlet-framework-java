@@ -217,6 +217,7 @@ public class RdfRepresentation extends OutputRepresentation {
      */
     public Graph getGraph() throws IOException {
         if (this.graph == null) {
+            this.graph = new Graph();
             parse(createBuilder(this.graph));
         }
         return this.graph;
