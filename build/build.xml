@@ -1654,6 +1654,7 @@
 		<stageModule name="velocity" />
 		<stageModule name="wadl" />
 		<stageModule name="xdb" />
+		<stageModule name="xml" />
 		<stageModule name="xstream" />
 
 		<!-- Copy the POM files -->
