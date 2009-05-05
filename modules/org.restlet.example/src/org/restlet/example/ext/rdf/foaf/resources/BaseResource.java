@@ -41,7 +41,7 @@ import org.restlet.example.ext.rdf.foaf.objects.User;
 import org.restlet.ext.freemarker.TemplateRepresentation;
 import org.restlet.ext.rdf.Graph;
 import org.restlet.ext.rdf.Literal;
-import org.restlet.ext.rdf.RdfXmlRepresentation;
+import org.restlet.ext.rdf.RdfRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ServerResource;
 
@@ -69,7 +69,7 @@ public class BaseResource extends ServerResource {
     protected Representation getFoafRepresentation(User user, Reference userRef) {
         Graph graph = new Graph();
         addFoaf(graph, user, userRef);
-        return new RdfXmlRepresentation(graph);
+        return new RdfRepresentation(graph, MediaType.TEXT_XML);
     }
 
     /**
@@ -85,7 +85,7 @@ public class BaseResource extends ServerResource {
             Reference contactRef) {
         Graph graph = new Graph();
         addFoaf(graph, contact, contactRef);
-        return new RdfXmlRepresentation(graph);
+        return new RdfRepresentation(graph, MediaType.TEXT_XML);
     }
 
     /**
