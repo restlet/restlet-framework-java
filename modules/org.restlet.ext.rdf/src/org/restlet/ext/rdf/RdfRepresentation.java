@@ -132,21 +132,17 @@ public class RdfRepresentation extends OutputRepresentation {
      */
     public GraphHandler createWriter(MediaType mediaType,
             OutputStream outputStream) throws IOException {
-        if (MediaType.TEXT_RDF_N3.equals(rdfRepresentation.getMediaType())) {
+        if (MediaType.TEXT_RDF_N3.equals(getMediaType())) {
             return new RdfN3Writer(outputStream);
-        } else if (MediaType.TEXT_XML.equals(rdfRepresentation.getMediaType())) {
+        } else if (MediaType.TEXT_XML.equals(getMediaType())) {
             return new RdfXmlWriter(outputStream, getCharacterSet());
-        } else if (MediaType.APPLICATION_ALL_XML.includes(rdfRepresentation
-                .getMediaType())) {
+        } else if (MediaType.APPLICATION_ALL_XML.includes(getMediaType())) {
             return new RdfXmlWriter(outputStream, getCharacterSet());
-        } else if (MediaType.TEXT_PLAIN
-                .equals(rdfRepresentation.getMediaType())) {
+        } else if (MediaType.TEXT_PLAIN.equals(getMediaType())) {
             return new RdfNTriplesWriter(outputStream);
-        } else if (MediaType.TEXT_RDF_NTRIPLES.equals(rdfRepresentation
-                .getMediaType())) {
+        } else if (MediaType.TEXT_RDF_NTRIPLES.equals(getMediaType())) {
             return new RdfNTriplesWriter(outputStream);
-        } else if (MediaType.APPLICATION_RDF_TURTLE.equals(rdfRepresentation
-                .getMediaType())) {
+        } else if (MediaType.APPLICATION_RDF_TURTLE.equals(getMediaType())) {
             return new RdfTurtleWriter(outputStream);
         }
 
