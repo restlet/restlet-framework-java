@@ -50,7 +50,7 @@ public class FormulaToken extends LexicalUnit {
         return null;
     }
 
-    public FormulaToken(RdfN3ParsingContentHandler contentHandler,
+    public FormulaToken(RdfN3Reader contentHandler,
             Context context) throws IOException {
         super(contentHandler, context);
         this.parse();
@@ -58,6 +58,6 @@ public class FormulaToken extends LexicalUnit {
 
     @Override
     public void parse() throws IOException {
-        ((RdfN3ParsingContentHandler) getContentHandler()).parseFormula(this);
+        ((RdfN3Reader) getContentReader()).parseFormula(this);
     }
 }

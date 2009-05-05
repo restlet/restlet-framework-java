@@ -30,6 +30,8 @@
 
 package org.restlet.ext.rdf;
 
+import java.io.IOException;
+
 import org.restlet.data.Reference;
 
 /**
@@ -37,6 +39,49 @@ import org.restlet.data.Reference;
  * writing a representation of a RDF graph.
  */
 public abstract class GraphHandler {
+
+    /**
+     * Callback method used after the graph is parsed or written. Does nothing
+     * by default.
+     */
+    public void endGraph() throws IOException {
+
+    }
+
+    /**
+     * Callback method used at the end of a Namespace mapping. Does nothing by
+     * default.
+     * 
+     * @param prefix
+     *            The Namespace prefix.
+     */
+    public void endPrefixMapping(String prefix) {
+
+    }
+
+    /**
+     * Callback method used when a link is parsed or written.
+     * 
+     * @param source
+     *            The source or subject of the link.
+     * @param typeRef
+     *            The type reference of the link.
+     * @param target
+     *            The target or object of the link.
+     */
+    public abstract void link(Graph source, Reference typeRef, Literal target);
+
+    /**
+     * Callback method used when a link is parsed or written.
+     * 
+     * @param source
+     *            The source or subject of the link.
+     * @param typeRef
+     *            The type reference of the link.
+     * @param target
+     *            The target or object of the link.
+     */
+    public abstract void link(Graph source, Reference typeRef, Reference target);
 
     /**
      * Callback method used when a link is parsed or written.
@@ -65,27 +110,24 @@ public abstract class GraphHandler {
             Reference target);
 
     /**
-     * Callback method used when a link is parsed or written.
-     * 
-     * @param source
-     *            The source or subject of the link.
-     * @param typeRef
-     *            The type reference of the link.
-     * @param target
-     *            The target or object of the link.
+     * Callback method used before the graph is parsed or written. Does nothing
+     * by default.
      */
-    public abstract void link(Graph source, Reference typeRef, Reference target);
+    public void startGraph() throws IOException {
+
+    }
 
     /**
-     * Callback method used when a link is parsed or written.
+     * Callback method used at the start of a Namespace mapping. Does nothing by
+     * default.
      * 
-     * @param source
-     *            The source or subject of the link.
-     * @param typeRef
-     *            The type reference of the link.
-     * @param target
-     *            The target or object of the link.
+     * @param prefix
+     *            The Namespace prefix being declared.
+     * @param reference
+     *            The Namespace URI mapped to the prefix.
      */
-    public abstract void link(Graph source, Reference typeRef, Literal target);
+    public void startPrefixMapping(String prefix, Reference reference) {
+
+    }
 
 }

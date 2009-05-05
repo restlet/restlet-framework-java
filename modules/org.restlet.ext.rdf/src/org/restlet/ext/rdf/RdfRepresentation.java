@@ -33,7 +33,17 @@ package org.restlet.ext.rdf;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.restlet.Context;
 import org.restlet.data.MediaType;
+import org.restlet.data.Reference;
+import org.restlet.ext.rdf.internal.n3.RdfN3Reader;
+import org.restlet.ext.rdf.internal.n3.RdfN3Writer;
+import org.restlet.ext.rdf.internal.ntriples.RdfNTriplesReader;
+import org.restlet.ext.rdf.internal.ntriples.RdfNTriplesWriter;
+import org.restlet.ext.rdf.internal.turtle.RdfTurtleReader;
+import org.restlet.ext.rdf.internal.turtle.RdfTurtleWriter;
+import org.restlet.ext.rdf.internal.xml.RdfXmlReader;
+import org.restlet.ext.rdf.internal.xml.RdfXmlWriter;
 import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
 
@@ -43,20 +53,42 @@ import org.restlet.representation.Representation;
  * 
  * @author Jerome Louvel
  */
-public abstract class RdfRepresentation extends OutputRepresentation {
+public class RdfRepresentation extends OutputRepresentation {
 
     /** The inner graph of links. */
     private Graph graph;
+
+    /** The inner RDF representation. */
+    private Representation rdfRepresentation;
+
+    /**
+     * Constructor.
+     */
+    public RdfRepresentation() {
+        super(MediaType.TEXT_XML);
+    }
 
     /**
      * Constructor with argument.
      * 
      * @param linkSet
-     *            The graph of link.
+     *            The graph of links.
+     * @param mediaType
+     *            The representation's mediaType.
      */
-    public RdfRepresentation(Graph linkSet) {
-        super(null);
+    public RdfRepresentation(Graph linkSet, MediaType mediaType) {
+        super(mediaType);
         this.graph = linkSet;
+    }
+
+    /**
+     * Constructor with argument.
+     * 
+     * @param mediaType
+     *            The representation's mediaType.
+     */
+    public RdfRepresentation(MediaType mediaType) {
+        super(mediaType);
     }
 
     /**
@@ -68,33 +100,157 @@ public abstract class RdfRepresentation extends OutputRepresentation {
      *            The link set to update.
      * @throws IOException
      */
-    public RdfRepresentation(Representation rdfRepresentation, Graph linkSet)
+    public RdfRepresentation(Representation rdfRepresentation)
             throws IOException {
-        this(linkSet);
+        super(rdfRepresentation.getMediaType());
+        this.rdfRepresentation = rdfRepresentation;
+    }
+
+    /**
+     * Returns an instance of a graph handler used when parsing the inner RDF
+     * representation.
+     * 
+     * @param mediaType
+     *            The given media type of the parsed RDF representation.
+     * @return An instance of a graph handler used when parsing the inner RDF
+     *         representation.
+     */
+    public GraphHandler createBuilder(Graph graph) {
+        return new GraphBuilder(this.graph);
+    }
+
+    /**
+     * Returns an instance of a graph handler used when writing the inner set of
+     * links.
+     * 
+     * @param mediaType
+     *            The given media type of the parsed RDF representation.
+     * 
+     * @return An instance of a graph handler used when writing the inner set of
+     *         links.
+     * @throws IOException
+     */
+    public GraphHandler createWriter(MediaType mediaType,
+            OutputStream outputStream) throws IOException {
         if (MediaType.TEXT_RDF_N3.equals(rdfRepresentation.getMediaType())) {
-            new RdfN3Representation(rdfRepresentation, linkSet);
+            return new RdfN3Writer(outputStream);
         } else if (MediaType.TEXT_XML.equals(rdfRepresentation.getMediaType())) {
-            new RdfXmlRepresentation(rdfRepresentation, linkSet);
+            return new RdfXmlWriter(outputStream, getCharacterSet());
         } else if (MediaType.APPLICATION_ALL_XML.includes(rdfRepresentation
                 .getMediaType())) {
-            new RdfXmlRepresentation(rdfRepresentation, linkSet);
+            return new RdfXmlWriter(outputStream, getCharacterSet());
         } else if (MediaType.TEXT_PLAIN
                 .equals(rdfRepresentation.getMediaType())) {
-            new RdfNTriplesRepresentation(rdfRepresentation, linkSet);
+            return new RdfNTriplesWriter(outputStream);
+        } else if (MediaType.TEXT_RDF_NTRIPLES.equals(rdfRepresentation
+                .getMediaType())) {
+            return new RdfNTriplesWriter(outputStream);
         } else if (MediaType.APPLICATION_RDF_TURTLE.equals(rdfRepresentation
                 .getMediaType())) {
-            new RdfTurtleRepresentation(rdfRepresentation, linkSet);
+            return new RdfTurtleWriter(outputStream);
         }
-        // Parsing for other media types goes here.
+
+        // Writing for other media types goes here.
+        return null;
+    }
+
+    /**
+     * Updates the list of known namespaces for the given graph of links.
+     * 
+     * @param linkset
+     *            The given graph of links.
+     * @param GraphHandler
+     *            the graph handler.
+     */
+    private void discoverNamespaces(Graph linkset, GraphHandler graphHandler) {
+        for (Link link : linkset) {
+            discoverNamespaces(link, graphHandler);
+        }
+    }
+
+    /**
+     * Updates the list of known namespaces of the XML writer for the given
+     * link.
+     * 
+     * @param link
+     *            The given link.
+     * @param GraphHandler
+     *            the graph handler.
+     */
+    private void discoverNamespaces(Link link, GraphHandler graphHandler) {
+        // The subject of the link is not discovered, it is generated as the
+        // value of an "about" attribute.
+        if (link.hasLinkSource()) {
+            discoverNamespaces(link.getSourceAsLink(), graphHandler);
+        } else if (link.hasGraphSource()) {
+            discoverNamespaces(link.getSourceAsGraph(), graphHandler);
+        }
+        discoverNamespaces(link.getTypeRef(), graphHandler);
+        if (link.hasLinkTarget()) {
+            discoverNamespaces(link.getTargetAsLink(), graphHandler);
+        } else if (link.hasGraphSource()) {
+            discoverNamespaces(link.getSourceAsGraph(), graphHandler);
+        }
+    }
+
+    /**
+     * Updates the list of known namespaces of the XML writer for the given
+     * reference.
+     * 
+     * @param reference
+     *            The given reference.
+     * @param xmlWriter
+     *            the XML writer.
+     */
+    private void discoverNamespaces(Reference reference,
+            GraphHandler graphHandler) {
+        if (!LinkReference.isBlank(reference)) {
+            graphHandler.startPrefixMapping(null, reference);
+        }
     }
 
     /**
      * Returns the graph of links.
      * 
      * @return The graph of links.
+     * @throws IOException
      */
-    public Graph getGraph() {
-        return graph;
+    public Graph getGraph() throws IOException {
+        if (this.graph == null) {
+            parse(createBuilder(this.graph));
+        }
+        return this.graph;
+    }
+
+    /**
+     * Parses the inner RDF representation. The given graph handler is invoked
+     * each time a link is detected.
+     * 
+     * @param graphHandler
+     * @throws IOException
+     */
+    public void parse(GraphHandler graphHandler) throws IOException {
+        if (rdfRepresentation != null) {
+            if (MediaType.TEXT_RDF_N3.equals(rdfRepresentation.getMediaType())) {
+                new RdfN3Reader(rdfRepresentation, graphHandler).parse();
+            } else if (MediaType.TEXT_XML.equals(rdfRepresentation
+                    .getMediaType())) {
+                new RdfXmlReader(rdfRepresentation, graphHandler).parse();
+            } else if (MediaType.APPLICATION_ALL_XML.includes(rdfRepresentation
+                    .getMediaType())) {
+                new RdfXmlReader(rdfRepresentation, graphHandler).parse();
+            } else if (MediaType.TEXT_PLAIN.equals(rdfRepresentation
+                    .getMediaType())) {
+                new RdfNTriplesReader(rdfRepresentation, graphHandler).parse();
+            } else if (MediaType.TEXT_RDF_NTRIPLES.equals(rdfRepresentation
+                    .getMediaType())) {
+                new RdfNTriplesReader(rdfRepresentation, graphHandler).parse();
+            } else if (MediaType.APPLICATION_RDF_TURTLE
+                    .equals(rdfRepresentation.getMediaType())) {
+                new RdfTurtleReader(rdfRepresentation, graphHandler).parse();
+            }
+            // Parsing for other media types goes here.
+        }
     }
 
     /**
@@ -107,19 +263,62 @@ public abstract class RdfRepresentation extends OutputRepresentation {
         this.graph = linkSet;
     }
 
+    /**
+     * Writes the
+     * 
+     * @param graphHandler
+     * @throws IOException
+     */
+    public void write(GraphHandler graphHandler) throws IOException {
+        if (graph != null) {
+            discoverNamespaces(graph, graphHandler);
+            graphHandler.startGraph();
+            for (Link link : graph) {
+                if (link.hasReferenceSource()) {
+                    if (link.hasReferenceTarget()) {
+                        graphHandler.link(link.getSourceAsReference(), link
+                                .getTypeRef(), link.getTargetAsReference());
+                    } else if (link.hasLiteralTarget()) {
+                        graphHandler.link(link.getSourceAsReference(), link
+                                .getTypeRef(), link.getTargetAsLiteral());
+                    } else if (link.hasLinkTarget()) {
+                        Context
+                                .getCurrentLogger()
+                                .warning(
+                                        "Cannot write the representation of a statement due to the fact that the object is neither a Reference nor a literal.");
+                    } else {
+                        Context
+                                .getCurrentLogger()
+                                .warning(
+                                        "Cannot write the representation of a statement due to the fact that the object is neither a Reference nor a literal.");
+                    }
+                } else if (link.hasGraphSource()) {
+                    if (link.hasReferenceTarget()) {
+                        graphHandler.link(link.getSourceAsGraph(), link
+                                .getTypeRef(), link.getTargetAsReference());
+                    } else if (link.hasLiteralTarget()) {
+                        graphHandler.link(link.getSourceAsGraph(), link
+                                .getTypeRef(), link.getTargetAsLiteral());
+                    } else if (link.hasLinkTarget()) {
+                        Context
+                                .getCurrentLogger()
+                                .warning(
+                                        "Cannot write the representation of a statement due to the fact that the object is neither a Reference nor a literal.");
+                    } else {
+                        Context
+                                .getCurrentLogger()
+                                .warning(
+                                        "Cannot write the representation of a statement due to the fact that the object is neither a Reference nor a literal.");
+                    }
+                }
+            }
+            graphHandler.endGraph();
+        }
+    }
+
     @Override
     public void write(OutputStream outputStream) throws IOException {
-        if (MediaType.TEXT_RDF_N3.equals(getMediaType())) {
-            new RdfN3Representation(getGraph()).write(outputStream);
-        } else if (MediaType.TEXT_XML.equals(getMediaType())) {
-            new RdfXmlRepresentation(getGraph()).write(outputStream);
-        } else if (MediaType.APPLICATION_ALL_XML.includes(getMediaType())) {
-            new RdfXmlRepresentation(getGraph()).write(outputStream);
-        } else if (MediaType.TEXT_PLAIN.equals(getMediaType())) {
-            new RdfNTriplesRepresentation(getGraph()).write(outputStream);
-        } else if (MediaType.APPLICATION_RDF_TURTLE.equals(getMediaType())) {
-            new RdfTurtleRepresentation(getGraph()).write(outputStream);
-        }
-        // Writing for other media types goes here.
+        write(createWriter(getMediaType(), outputStream));
     }
+
 }

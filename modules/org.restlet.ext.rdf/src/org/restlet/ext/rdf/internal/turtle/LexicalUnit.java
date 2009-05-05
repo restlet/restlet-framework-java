@@ -40,7 +40,7 @@ import java.io.IOException;
 public abstract class LexicalUnit {
 
     /** The content handler of the current Turtle document. */
-    private RdfTurtleParsingContentHandler contentHandler;
+    private RdfTurtleReader contentReader;
 
     /** The context maintained during the parsing. */
     private Context context;
@@ -56,10 +56,10 @@ public abstract class LexicalUnit {
      * @param context
      *            The parsing context.
      */
-    public LexicalUnit(RdfTurtleParsingContentHandler contentHandler,
+    public LexicalUnit(RdfTurtleReader contentReader,
             Context context) {
         super();
-        this.contentHandler = contentHandler;
+        this.contentReader = contentReader;
         this.context = context;
     }
 
@@ -75,12 +75,12 @@ public abstract class LexicalUnit {
     }
 
     /**
-     * Returns the document's parent handler.
+     * Returns the document's reader.
      * 
-     * @return The document's parent handler.
+     * @return The document's reader.
      */
-    public RdfTurtleParsingContentHandler getContentHandler() {
-        return contentHandler;
+    public RdfTurtleReader getContentReader() {
+        return contentReader;
     }
 
     /**

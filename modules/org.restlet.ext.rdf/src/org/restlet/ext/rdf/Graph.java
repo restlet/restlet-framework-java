@@ -30,7 +30,6 @@
 
 package org.restlet.ext.rdf;
 
-import java.io.IOException;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.restlet.data.MediaType;
@@ -66,34 +65,6 @@ public class Graph extends CopyOnWriteArraySet<Link> {
      */
     public Graph(Link defaultLink) {
         this.defaultLink = defaultLink;
-    }
-
-    /**
-     * Constructor that parses a given RDF representation into a set of links.
-     * The following RDF media types are supported: RDF/XML, RDF/n3, RDF/Turtle
-     * and RDF/N-Triples.
-     * 
-     * NOT IMPLEMENTED YET
-     * 
-     * @param rdfRepresentation
-     *            The RDF representation to parse.
-     * @throws IOException
-     */
-    public Graph(Representation rdfRepresentation) throws IOException {
-        if (MediaType.TEXT_RDF_N3
-                .equals(rdfRepresentation.getMediaType(), true)) {
-            new RdfN3Representation(rdfRepresentation, this);
-        } else if (MediaType.APPLICATION_RDF_XML.equals(rdfRepresentation
-                .getMediaType(), true)) {
-            new RdfXmlRepresentation(rdfRepresentation, this);
-        } else if (MediaType.APPLICATION_RDF_TURTLE.equals(rdfRepresentation
-                .getMediaType(), true)) {
-            new RdfTurtleRepresentation(rdfRepresentation, this);
-        } else if (MediaType.TEXT_PLAIN.equals(
-                rdfRepresentation.getMediaType(), true)) {
-            new RdfNTriplesRepresentation(rdfRepresentation, this);
-        }
-
     }
 
     /**
@@ -187,7 +158,7 @@ public class Graph extends CopyOnWriteArraySet<Link> {
      * @return A representation in the RDF/n3 format.
      */
     public Representation getRdfN3Representation() {
-        return new RdfN3Representation(this);
+        return new RdfRepresentation(this, MediaType.TEXT_RDF_N3);
     }
 
     /**
@@ -196,7 +167,7 @@ public class Graph extends CopyOnWriteArraySet<Link> {
      * @return A representation in the RDF/N-Triples format.
      */
     public Representation getRdfNTriplesRepresentation() {
-        return new RdfNTriplesRepresentation(this);
+        return new RdfRepresentation(this, MediaType.TEXT_PLAIN);
     }
 
     /**
@@ -205,7 +176,7 @@ public class Graph extends CopyOnWriteArraySet<Link> {
      * @return A representation in the RDF/Turtle format.
      */
     public Representation getRdfTurtleRepresentation() {
-        return new RdfTurtleRepresentation(this);
+        return new RdfRepresentation(this, MediaType.APPLICATION_RDF_TURTLE);
     }
 
     /**
@@ -214,7 +185,7 @@ public class Graph extends CopyOnWriteArraySet<Link> {
      * @return A representation in the RDF/XML format.
      */
     public Representation getRdfXmlRepresentation() {
-        return new RdfXmlRepresentation(this);
+        return new RdfRepresentation(this, MediaType.TEXT_XML);
     }
 
     /**

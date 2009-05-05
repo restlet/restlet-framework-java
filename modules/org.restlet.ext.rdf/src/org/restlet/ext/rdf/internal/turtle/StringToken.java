@@ -75,7 +75,7 @@ public class StringToken extends LexicalUnit {
      * @param context
      *            The parsing context.
      */
-    public StringToken(RdfTurtleParsingContentHandler contentHandler,
+    public StringToken(RdfTurtleReader contentHandler,
             Context context) throws IOException {
         super(contentHandler, context);
         multiLines = false;
@@ -94,7 +94,7 @@ public class StringToken extends LexicalUnit {
 
     @Override
     public void parse() throws IOException {
-        getContentHandler().parseString(this);
+        getContentReader().parseString(this);
     }
 
     @Override

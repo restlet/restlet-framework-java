@@ -50,7 +50,7 @@ public class Token extends LexicalUnit {
      * @param context
      *            The parsing context.
      */
-    public Token(RdfTurtleParsingContentHandler contentHandler, Context context)
+    public Token(RdfTurtleReader contentHandler, Context context)
             throws IOException {
         super(contentHandler, context);
         this.parse();
@@ -68,7 +68,7 @@ public class Token extends LexicalUnit {
 
     @Override
     public void parse() throws IOException {
-        getContentHandler().parseToken(this);
+        getContentReader().parseToken(this);
     }
 
     @Override

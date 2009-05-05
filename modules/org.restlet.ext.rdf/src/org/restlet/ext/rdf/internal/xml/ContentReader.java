@@ -127,8 +127,8 @@ class ContentReader extends DefaultHandler {
      * @param representation
      *            The input representation.
      */
-    public ContentReader(GraphHandler graphHandler,
-            Representation representation) {
+    public ContentReader(Representation representation,
+            GraphHandler graphHandler) {
         super();
         this.graphHandler = graphHandler;
         this.base = new ScopedProperty<Reference>();

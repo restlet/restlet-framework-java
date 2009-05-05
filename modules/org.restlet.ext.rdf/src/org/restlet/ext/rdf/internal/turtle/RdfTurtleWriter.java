@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.rdf.internal.n3;
+package org.restlet.ext.rdf.internal.turtle;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -44,23 +44,19 @@ import org.restlet.ext.rdf.Link;
 import org.restlet.ext.rdf.LinkReference;
 import org.restlet.ext.rdf.Literal;
 import org.restlet.ext.rdf.internal.RdfConstants;
-import org.restlet.ext.rdf.internal.turtle.Context;
 
 /**
  * Handler of RDF content according to the N3 notation.
  * 
  * @author Thierry Boileau
  */
-public class RdfN3WritingContentHandler extends GraphHandler {
+public class RdfTurtleWriter extends GraphHandler {
 
     /** Buffered writer. */
     private BufferedWriter bw;
 
     /** The current context object. */
     private Context context;
-
-    /** The set of links to write. */
-    private Graph linkSet;
 
     /** The preceding predicate used for factorization matter. */
     private Reference precPredicate;
@@ -74,19 +70,15 @@ public class RdfN3WritingContentHandler extends GraphHandler {
     /**
      * Constructor.
      * 
-     * @param linkSet
-     *            The set of links to write to the output stream.
      * @param outputStream
      *            The output stream to write to.
      * @throws IOException
-     * @throws IOException
      */
-    public RdfN3WritingContentHandler(Graph linkSet, OutputStream outputStream)
-            throws IOException {
+    public RdfTurtleWriter(OutputStream outputStream) throws IOException {
         super();
         this.bw = new BufferedWriter(new OutputStreamWriter(outputStream));
         this.context = new Context();
-        this.linkSet = linkSet;
+
         Map<String, String> prefixes = context.getPrefixes();
         prefixes.put(RdfConstants.RDF_SCHEMA.toString(), "rdf");
         prefixes.put(RdfConstants.RDF_SYNTAX.toString(), "rdfs");
@@ -107,14 +99,26 @@ public class RdfN3WritingContentHandler extends GraphHandler {
     }
 
     @Override
+    public void endGraph() throws IOException {
+        if (writeExtraDot) {
+            this.bw.write(".\n");
+        }
+        this.bw.flush();
+    }
+
+    @Override
     public void link(Graph source, Reference typeRef, Literal target) {
         try {
+            this.writeExtraDot = false;
             this.bw.write("{");
             write(source);
             this.bw.write("} ");
             write(typeRef, this.context.getPrefixes());
             this.bw.write(" ");
             write(target);
+
+            this.precSource = null;
+            this.precPredicate = typeRef;
         } catch (IOException e) {
             org.restlet.Context.getCurrentLogger().warning(
                     "Cannot write the representation of a statement due to "
@@ -125,12 +129,16 @@ public class RdfN3WritingContentHandler extends GraphHandler {
     @Override
     public void link(Graph source, Reference typeRef, Reference target) {
         try {
+            this.writeExtraDot = false;
             this.bw.write("{");
             write(source);
             this.bw.write("} ");
             write(typeRef, this.context.getPrefixes());
             this.bw.write(" ");
             write(target, this.context.getPrefixes());
+
+            this.precSource = null;
+            this.precPredicate = typeRef;
         } catch (IOException e) {
             org.restlet.Context.getCurrentLogger().warning(
                     "Cannot write the representation of a statement due to "
@@ -150,12 +158,17 @@ public class RdfN3WritingContentHandler extends GraphHandler {
                     this.bw.write(" ");
                 }
             } else {
+                this.writeExtraDot = true;
+                this.bw.write(".\n");
                 write(source, this.context.getPrefixes());
                 this.bw.write(" ");
                 write(typeRef, this.context.getPrefixes());
                 this.bw.write(" ");
             }
             write(target);
+
+            this.precSource = source;
+            this.precPredicate = typeRef;
         } catch (IOException e) {
             org.restlet.Context.getCurrentLogger().warning(
                     "Cannot write the representation of a statement due to "
@@ -177,12 +190,16 @@ public class RdfN3WritingContentHandler extends GraphHandler {
                 }
             } else {
                 this.writeExtraDot = true;
+                this.bw.write(".\n");
                 write(source, this.context.getPrefixes());
                 this.bw.write(" ");
                 write(typeRef, this.context.getPrefixes());
                 this.bw.write(" ");
             }
             write(target, this.context.getPrefixes());
+
+            this.precSource = source;
+            this.precPredicate = typeRef;
         } catch (IOException e) {
             org.restlet.Context.getCurrentLogger().warning(
                     "Cannot write the representation of a statement due to "
@@ -190,16 +207,8 @@ public class RdfN3WritingContentHandler extends GraphHandler {
         }
     }
 
-    /**
-     * Writes the current graph of links.
-     * 
-     * @throws IOException
-     */
-    public void write() throws IOException {
-        if (this.linkSet != null) {
-            write(this.linkSet);
-            this.bw.flush();
-        }
+    @Override
+    public void startGraph() {
     }
 
     /**

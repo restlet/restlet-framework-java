@@ -28,56 +28,55 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.rdf;
+package org.restlet.ext.rdf.internal.xml;
 
 import java.io.IOException;
-import java.io.OutputStream;
 
-import org.restlet.data.MediaType;
-import org.restlet.ext.rdf.internal.ntriples.RdfNTriplesParsingContentHandler;
-import org.restlet.ext.rdf.internal.ntriples.RdfNTriplesWritingContentHandler;
+import org.restlet.ext.rdf.GraphHandler;
+import org.restlet.ext.rdf.internal.RdfReader;
+import org.restlet.ext.xml.SaxRepresentation;
 import org.restlet.representation.Representation;
 
 /**
- * Representation for RDF/N-Triples documents. It knows how to serialize and
- * deserialize a {@link Graph}.
+ * Handler of RDF content according to the RDF/XML format.
  * 
  * @author Thierry Boileau
  */
-public class RdfNTriplesRepresentation extends RdfRepresentation {
+public class RdfXmlReader extends RdfReader {
 
     /**
      * Constructor.
      * 
-     * @param linkSet
-     *            The given graph of links.
+     * @param rdfRepresentation
+     *            The representation to read.
+     * @param graphHandler
+     *            The graph handler invoked during the parsing.
+     * @throws IOException
      */
-    public RdfNTriplesRepresentation(Graph linkSet) {
-        super(linkSet);
-        this.setMediaType(MediaType.TEXT_PLAIN);
+    public RdfXmlReader(Representation rdfRepresentation,
+            GraphHandler graphHandler) {
+        super(rdfRepresentation, graphHandler);
     }
 
     /**
-     * Constructor. Parses the given representation into the given graph.
+     * Parses the current representation.
      * 
-     * @param rdfRepresentation
-     *            The RDF N-Triples representation to parse.
-     * @param linkSet
-     *            The graph to update.
      * @throws IOException
      */
-    public RdfNTriplesRepresentation(Representation rdfRepresentation,
-            Graph linkSet) throws IOException {
-        super(linkSet);
-        new RdfNTriplesParsingContentHandler(linkSet, rdfRepresentation)
-                .parse();
-    }
-
-    @Override
-    public void write(OutputStream outputStream) throws IOException {
-        if (getGraph() != null) {
-            new RdfNTriplesWritingContentHandler(getGraph(), outputStream).write();
+    public void parse() throws IOException {
+        SaxRepresentation saxRepresentation;
+        if (getRdfRepresentation() instanceof SaxRepresentation) {
+            saxRepresentation = (SaxRepresentation) getRdfRepresentation();
+        } else {
+            saxRepresentation = new SaxRepresentation(getRdfRepresentation());
+            // Transmit the identifier used as a base for the resolution of
+            // relative URIs.
+            saxRepresentation.setIdentifier(getRdfRepresentation()
+                    .getIdentifier());
         }
+
+        saxRepresentation.parse(new ContentReader(saxRepresentation,
+                getGraphHandler()));
     }
 
 }

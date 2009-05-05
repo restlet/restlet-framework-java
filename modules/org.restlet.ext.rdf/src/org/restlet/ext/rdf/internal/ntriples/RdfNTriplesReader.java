@@ -37,10 +37,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.data.Reference;
-import org.restlet.ext.rdf.Graph;
 import org.restlet.ext.rdf.GraphHandler;
 import org.restlet.ext.rdf.LinkReference;
 import org.restlet.ext.rdf.Literal;
+import org.restlet.ext.rdf.internal.RdfReader;
 import org.restlet.representation.Representation;
 
 /**
@@ -48,7 +48,7 @@ import org.restlet.representation.Representation;
  * 
  * @author Thierry Boileau
  */
-public class RdfNTriplesParsingContentHandler extends GraphHandler {
+public class RdfNTriplesReader extends RdfReader {
 
     /** Internal buffered reader. */
     private BufferedReader br;
@@ -62,12 +62,6 @@ public class RdfNTriplesParsingContentHandler extends GraphHandler {
     /** End of reading buffer marker. */
     public final int EOF = 0;
 
-    /** The set of links to update when parsing. */
-    private Graph linkSet;
-
-    /** The representation to read. */
-    private Representation rdfRepresentation;
-
     /**
      * Index that discovers the end of the current token and the beginning of
      * the futur one.
@@ -80,17 +74,15 @@ public class RdfNTriplesParsingContentHandler extends GraphHandler {
     /**
      * Constructor.
      * 
-     * @param linkSet
-     *            The set of links to update during the parsing.
      * @param rdfRepresentation
      *            The representation to read.
+     * @param graphHandler
+     *            The graph handler invoked during the parsing.
      * @throws IOException
      */
-    public RdfNTriplesParsingContentHandler(Graph linkSet,
-            Representation rdfRepresentation) throws IOException {
-        super();
-        this.linkSet = linkSet;
-        this.rdfRepresentation = rdfRepresentation;
+    public RdfNTriplesReader(Representation rdfRepresentation,
+            GraphHandler graphHandler) throws IOException {
+        super(rdfRepresentation, graphHandler);
 
         // Initialize the buffer in two parts
         this.buffer = new char[(BUFFER_SIZE + 1) * 2];
@@ -100,7 +92,7 @@ public class RdfNTriplesParsingContentHandler extends GraphHandler {
         this.startTokenIndex = 0;
 
         this.br = new BufferedReader(new InputStreamReader(
-                this.rdfRepresentation.getStream()));
+                getRdfRepresentation().getStream()));
     }
 
     /**
@@ -196,10 +188,6 @@ public class RdfNTriplesParsingContentHandler extends GraphHandler {
         return builder.toString();
     }
 
-    public Graph getLinkSet() {
-        return linkSet;
-    }
-
     /**
      * Returns true if the given character is alphanumeric.
      * 
@@ -238,33 +226,12 @@ public class RdfNTriplesParsingContentHandler extends GraphHandler {
         return c == ' ' || c == '\n' || c == '\r' || c == '\t';
     }
 
-    @Override
-    public void link(Graph source, Reference typeRef, Literal target) {
-        org.restlet.Context.getCurrentLogger().warning(
-                "Subjects as Graph are not supported in N-Triples.");
-    }
-
-    @Override
-    public void link(Graph source, Reference typeRef, Reference target) {
-        org.restlet.Context.getCurrentLogger().warning(
-                "Subjects as Graph are not supported in N-Triples.");
-    }
-
-    @Override
-    public void link(Reference source, Reference typeRef, Literal target) {
-        this.linkSet.add(source, typeRef, target);
-    }
-
-    @Override
-    public void link(Reference source, Reference typeRef, Reference target) {
-        this.linkSet.add(source, typeRef, target);
-    }
-
     /**
      * Parses the current representation.
      * 
      * @throws IOException
      */
+    @Override
     public void parse() throws IOException {
         // Init the reading.
         step();
@@ -339,11 +306,11 @@ public class RdfNTriplesParsingContentHandler extends GraphHandler {
         // Generate the links
         if (!lexicalUnits.isEmpty()) {
             if (object != null) {
-                link(lexicalUnits.get(0), lexicalUnits.get(1), new Literal(
-                        object));
+                getGraphHandler().link(lexicalUnits.get(0),
+                        lexicalUnits.get(1), new Literal(object));
             } else {
-                link(lexicalUnits.get(0), lexicalUnits.get(1), lexicalUnits
-                        .get(2));
+                getGraphHandler().link(lexicalUnits.get(0),
+                        lexicalUnits.get(1), lexicalUnits.get(2));
             }
         }
     }

@@ -58,8 +58,8 @@ public class ListToken extends LexicalUnit {
      * @param context
      *            The parsing context.
      */
-    public ListToken(RdfTurtleParsingContentHandler contentHandler,
-            Context context) throws IOException {
+    public ListToken(RdfTurtleReader contentHandler, Context context)
+            throws IOException {
         super(contentHandler, context);
         lexicalUnits = new ArrayList<LexicalUnit>();
         this.parse();
@@ -68,15 +68,15 @@ public class ListToken extends LexicalUnit {
     @Override
     public Object resolve() {
         Reference currentBlankNode = (Reference) new BlankNodeToken(
-                getContentHandler().newBlankNodeId()).resolve();
+                getContentReader().newBlankNodeId()).resolve();
         for (LexicalUnit lexicalUnit : lexicalUnits) {
             Object element = lexicalUnit.resolve();
 
             if (element instanceof Reference) {
-                getContentHandler().link(currentBlankNode,
+                getContentReader().link(currentBlankNode,
                         RdfConstants.LIST_FIRST, (Reference) element);
             } else if (element instanceof String) {
-                getContentHandler().link(currentBlankNode,
+                getContentReader().link(currentBlankNode,
                         RdfConstants.LIST_FIRST,
                         new Reference((String) element));
             } else {
@@ -87,13 +87,13 @@ public class ListToken extends LexicalUnit {
             }
 
             Reference restBlankNode = (Reference) new BlankNodeToken(
-                    getContentHandler().newBlankNodeId()).resolve();
+                    getContentReader().newBlankNodeId()).resolve();
 
-            getContentHandler().link(currentBlankNode, RdfConstants.LIST_REST,
+            getContentReader().link(currentBlankNode, RdfConstants.LIST_REST,
                     restBlankNode);
             currentBlankNode = restBlankNode;
         }
-        getContentHandler().link(currentBlankNode, RdfConstants.LIST_REST,
+        getContentReader().link(currentBlankNode, RdfConstants.LIST_REST,
                 RdfConstants.OBJECT_NIL);
 
         return currentBlankNode;
@@ -106,6 +106,6 @@ public class ListToken extends LexicalUnit {
 
     @Override
     public void parse() throws IOException {
-        getContentHandler().parseList(this);
+        getContentReader().parseList(this);
     }
 }

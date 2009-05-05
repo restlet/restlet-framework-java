@@ -65,7 +65,7 @@ public class BlankNodeToken extends LexicalUnit {
      *            The context used to resolved references.
      * @throws IOException
      */
-    public BlankNodeToken(RdfTurtleParsingContentHandler contentHandler,
+    public BlankNodeToken(RdfTurtleReader contentHandler,
             Context context) throws IOException {
         super(contentHandler, context);
         lexicalUnits = new ArrayList<LexicalUnit>();
@@ -87,15 +87,15 @@ public class BlankNodeToken extends LexicalUnit {
 
     @Override
     public void parse() throws IOException {
-        getContentHandler().parseBlankNode(this);
+        getContentReader().parseBlankNode(this);
     }
 
     @Override
     public Object resolve() {
         if (!this.resolved) {
             this.resolved = true;
-            if (getContentHandler() != null) {
-                getContentHandler().generateLinks(lexicalUnits);
+            if (getContentReader() != null) {
+                getContentReader().generateLinks(lexicalUnits);
             }
         }
 

@@ -40,7 +40,7 @@ import org.restlet.ext.rdf.Graph;
 import org.restlet.ext.rdf.GraphHandler;
 import org.restlet.ext.rdf.Literal;
 import org.restlet.ext.rdf.internal.RdfConstants;
-import org.restlet.ext.rdf.internal.ntriples.RdfNTriplesParsingContentHandler;
+import org.restlet.ext.rdf.internal.ntriples.RdfNTriplesReader;
 import org.restlet.representation.Representation;
 
 /**
@@ -48,8 +48,7 @@ import org.restlet.representation.Representation;
  * 
  * @author Thierry Boileau
  */
-public class RdfTurtleParsingContentHandler extends
-        RdfNTriplesParsingContentHandler {
+public class RdfTurtleReader extends RdfNTriplesReader {
 
     /** Increment used to identify inner blank nodes. */
     private int blankNodeId = 0;
@@ -60,15 +59,15 @@ public class RdfTurtleParsingContentHandler extends
     /**
      * Constructor.
      * 
-     * @param linkSet
-     *            The set of links to update during the parsing.
-     * @param rdfN3Representation
+     * @param rdfRepresentation
      *            The representation to read.
+     * @param graphHandler
+     *            The graph handler invoked during the parsing.
      * @throws IOException
      */
-    public RdfTurtleParsingContentHandler(Graph linkSet,
-            Representation rdfN3Representation) throws IOException {
-        super(linkSet, rdfN3Representation);
+    public RdfTurtleReader(Representation rdfN3Representation,
+            GraphHandler graphHandler) throws IOException {
+        super(rdfN3Representation, graphHandler);
         this.context = new Context();
         context.getKeywords().addAll(
                 Arrays.asList("a", "is", "of", "this", "has"));
@@ -192,16 +191,6 @@ public class RdfTurtleParsingContentHandler extends
                 || c == '.' || c == ';' || c == ',' || c == '@';
     }
 
-    @Override
-    public void link(Graph source, Reference typeRef, Literal target) {
-        getLinkSet().add(source, typeRef, target);
-    }
-
-    @Override
-    public void link(Graph source, Reference typeRef, Reference target) {
-        getLinkSet().add(source, typeRef, target);
-    }
-
     /**
      * Callback method used when a link is parsed or written.
      * 
@@ -212,12 +201,14 @@ public class RdfTurtleParsingContentHandler extends
      * @param target
      *            The target or object of the link.
      */
-    private void link(Object source, Reference typeRef, Object target) {
+    protected void link(Object source, Reference typeRef, Object target) {
         if (source instanceof Reference) {
             if (target instanceof Reference) {
-                link((Reference) source, typeRef, (Reference) target);
+                getGraphHandler().link((Reference) source, typeRef,
+                        (Reference) target);
             } else if (target instanceof Literal) {
-                link((Reference) source, typeRef, (Literal) target);
+                getGraphHandler().link((Reference) source, typeRef,
+                        (Literal) target);
             } else {
                 org.restlet.Context
                         .getCurrentLogger()
@@ -226,9 +217,11 @@ public class RdfTurtleParsingContentHandler extends
             }
         } else if (source instanceof Graph) {
             if (target instanceof Reference) {
-                link((Graph) source, typeRef, (Reference) target);
+                getGraphHandler().link((Graph) source, typeRef,
+                        (Reference) target);
             } else if (target instanceof Literal) {
-                link((Graph) source, typeRef, (Literal) target);
+                getGraphHandler().link((Graph) source, typeRef,
+                        (Literal) target);
             } else {
                 org.restlet.Context
                         .getCurrentLogger()
@@ -236,16 +229,6 @@ public class RdfTurtleParsingContentHandler extends
                                 "The RDF Turtle document contains an object which is neither a Reference nor a literal.");
             }
         }
-    }
-
-    @Override
-    public void link(Reference source, Reference typeRef, Literal target) {
-        super.link(source, typeRef, target);
-    }
-
-    @Override
-    public void link(Reference source, Reference typeRef, Reference target) {
-        super.link(source, typeRef, target);
     }
 
     /**

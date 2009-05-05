@@ -38,7 +38,6 @@ import java.io.OutputStreamWriter;
 import org.restlet.data.Reference;
 import org.restlet.ext.rdf.Graph;
 import org.restlet.ext.rdf.GraphHandler;
-import org.restlet.ext.rdf.Link;
 import org.restlet.ext.rdf.LinkReference;
 import org.restlet.ext.rdf.Literal;
 
@@ -47,29 +46,26 @@ import org.restlet.ext.rdf.Literal;
  * 
  * @author Thierry Boileau
  */
-public class RdfNTriplesWritingContentHandler extends GraphHandler {
+public class RdfNTriplesWriter extends GraphHandler {
 
     /** Buffered writer. */
     private BufferedWriter bw;
 
-    /** The graph of links to write. */
-    private Graph linkSet;
-
     /**
      * Constructor.
      * 
-     * @param linkSet
-     *            The set of links to write to the output stream.
      * @param outputStream
      *            The output stream to write to.
      * @throws IOException
-     * @throws IOException
      */
-    public RdfNTriplesWritingContentHandler(Graph linkSet,
-            OutputStream outputStream) throws IOException {
+    public RdfNTriplesWriter(OutputStream outputStream) throws IOException {
         super();
-        this.linkSet = linkSet;
         this.bw = new BufferedWriter(new OutputStreamWriter(outputStream));
+    }
+
+    @Override
+    public void endGraph() throws IOException {
+        this.bw.flush();
     }
 
     @Override
@@ -92,6 +88,7 @@ public class RdfNTriplesWritingContentHandler extends GraphHandler {
             write(typeRef);
             this.bw.write(" ");
             write(target);
+            this.bw.write(".\n");
         } catch (IOException e) {
             org.restlet.Context.getCurrentLogger().warning(
                     "Cannot write the representation of a statement due to: "
@@ -107,55 +104,11 @@ public class RdfNTriplesWritingContentHandler extends GraphHandler {
             write(typeRef);
             this.bw.write(" ");
             write(target);
+            this.bw.write(".\n");
         } catch (IOException e) {
             org.restlet.Context.getCurrentLogger().warning(
                     "Cannot write the representation of a statement due to: "
                             + e.getMessage());
-        }
-    }
-
-    /**
-     * Writes the current graph of links.
-     * 
-     * @throws IOException
-     */
-    public void write() throws IOException {
-        if (this.linkSet != null) {
-            write(this.linkSet);
-            this.bw.flush();
-        }
-    }
-
-    /**
-     * Write the representation of the given graph of links.
-     * 
-     * @param linkset
-     *            the given graph of links.
-     * @throws IOException
-     * @throws IOException
-     */
-    private void write(Graph linkset) throws IOException {
-        for (Link link : linkset) {
-            if (link.hasReferenceSource()) {
-                if (link.hasReferenceTarget()) {
-                    link(link.getSourceAsReference(), link.getTypeRef(), link
-                            .getTargetAsReference());
-                } else if (link.hasLiteralTarget()) {
-                    link(link.getSourceAsReference(), link.getTypeRef(), link
-                            .getTargetAsLiteral());
-                } else {
-                    org.restlet.Context
-                            .getCurrentLogger()
-                            .warning(
-                                    "Cannot write the representation of a statement due to the fact that the object is neither a Reference nor a literal.");
-                }
-            } else if (link.hasGraphSource()) {
-                org.restlet.Context
-                        .getCurrentLogger()
-                        .warning(
-                                "Cannot write the representation of a statement due to the fact that the subject is not a Reference.");
-            }
-            this.bw.write(".\n");
         }
     }
 

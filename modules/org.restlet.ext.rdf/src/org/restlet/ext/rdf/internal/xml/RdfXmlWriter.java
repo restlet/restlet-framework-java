@@ -31,11 +31,14 @@
 package org.restlet.ext.rdf.internal.xml;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 
+import org.restlet.Context;
+import org.restlet.data.CharacterSet;
 import org.restlet.data.Reference;
 import org.restlet.ext.rdf.Graph;
 import org.restlet.ext.rdf.GraphHandler;
-import org.restlet.ext.rdf.Link;
 import org.restlet.ext.rdf.LinkReference;
 import org.restlet.ext.rdf.Literal;
 import org.restlet.ext.rdf.internal.RdfConstants;
@@ -48,10 +51,7 @@ import org.xml.sax.helpers.AttributesImpl;
  * 
  * @author Thierry Boileau
  */
-public class RdfXmlWritingContentHandler extends GraphHandler {
-
-    /** The set of links to write. */
-    private Graph linkSet;
+public class RdfXmlWriter extends GraphHandler {
 
     /** URI of the RDF SYNTAX namespace. */
     private final String RDF_SYNTAX = RdfConstants.RDF_SYNTAX.toString(true,
@@ -67,68 +67,26 @@ public class RdfXmlWritingContentHandler extends GraphHandler {
      *            The set of links to write.
      * @param writer
      *            The XML writer.
-     * @throws IOException
-     * @throws SAXException
+     * @throws UnsupportedEncodingException
      */
-    public RdfXmlWritingContentHandler(Graph linkSet, XmlWriter writer) {
+    public RdfXmlWriter(OutputStream outputStream, CharacterSet characterSet)
+            throws UnsupportedEncodingException {
         super();
-        this.linkSet = linkSet;
-        this.writer = writer;
+        this.writer = new XmlWriter(outputStream,
+                (characterSet == null) ? CharacterSet.UTF_8.getName()
+                        : characterSet.getName());
     }
 
-    /**
-     * Updates the list of known namespaces of the XML writer for the given
-     * graph of links.
-     * 
-     * @param linkset
-     *            The given graph of links.
-     * @param xmlWriter
-     *            the XML writer.
-     */
-    private void discoverNamespaces(Graph linkset, XmlWriter xmlWriter) {
-        for (Link link : linkset) {
-            discoverNamespaces(link, xmlWriter);
+    @Override
+    public void endGraph() throws IOException {
+        try {
+            this.writer.endElement(RDF_SYNTAX, "RDF");
+            this.writer.endDocument();
+        } catch (SAXException e) {
+            Context.getCurrentLogger().warning(
+                    "Cannot write the end of the graph: " + e.getMessage());
         }
-    }
-
-    /**
-     * Updates the list of known namespaces of the XML writer for the given
-     * link.
-     * 
-     * @param link
-     *            The given link.
-     * @param xmlWriter
-     *            the XML writer.
-     */
-    private void discoverNamespaces(Link link, XmlWriter xmlWriter) {
-        // The subject of the link is not discovered, it is generated as the
-        // value of an "about" attribute.
-        if (link.hasLinkSource()) {
-            discoverNamespaces(link.getSourceAsLink(), xmlWriter);
-        } else if (link.hasGraphSource()) {
-            discoverNamespaces(link.getSourceAsGraph(), xmlWriter);
-        }
-        discoverNamespaces(link.getTypeRef(), xmlWriter);
-        if (link.hasLinkTarget()) {
-            discoverNamespaces(link.getTargetAsLink(), xmlWriter);
-        } else if (link.hasGraphSource()) {
-            discoverNamespaces(link.getSourceAsGraph(), xmlWriter);
-        }
-    }
-
-    /**
-     * Updates the list of known namespaces of the XML writer for the given
-     * reference.
-     * 
-     * @param reference
-     *            The given reference.
-     * @param xmlWriter
-     *            the XML writer.
-     */
-    private void discoverNamespaces(Reference reference, XmlWriter xmlWriter) {
-        if (!LinkReference.isBlank(reference)) {
-            xmlWriter.forceNSDecl(getNamespace(reference.getTargetRef()));
-        }
+        this.writer.flush();
     }
 
     /**
@@ -156,7 +114,8 @@ public class RdfXmlWritingContentHandler extends GraphHandler {
      * @param ref
      *            the given reference.
      * @return The prefix of the qualified name representing the given
-     *         reference.
+     *         reference. Context .getCurrentLogger() .warning(
+     *         "Cannot write the end of the graph" + e.getMessage());
      */
     private String getPrefix(Reference ref) {
         String result = null;
@@ -170,7 +129,7 @@ public class RdfXmlWritingContentHandler extends GraphHandler {
 
     @Override
     public void link(Graph source, Reference typeRef, Literal target) {
-        org.restlet.Context
+        Context
                 .getCurrentLogger()
                 .warning(
                         "Cannot write the representation of a statement due to the fact that the subject is not a Reference.");
@@ -178,7 +137,7 @@ public class RdfXmlWritingContentHandler extends GraphHandler {
 
     @Override
     public void link(Graph source, Reference typeRef, Reference target) {
-        org.restlet.Context
+        Context
                 .getCurrentLogger()
                 .warning(
                         "Cannot write the representation of a statement due to the fact that the subject is not a Reference.");
@@ -227,79 +186,34 @@ public class RdfXmlWritingContentHandler extends GraphHandler {
             this.writer.endElement(typeRefNs, typeRefPrefix);
             this.writer.endElement(RDF_SYNTAX, "Description");
         } catch (SAXException e) {
-            org.restlet.Context.getCurrentLogger().warning(
+            Context.getCurrentLogger().warning(
                     "Cannot write the representation of a statement due to: "
                             + e.getMessage());
         }
     }
 
-    /**
-     * Writes the current linkset.
-     * 
-     * @throws IOException
-     * @throws SAXException
-     */
-    public void write() throws IOException, SAXException {
-        if (this.linkSet != null) {
-            this.writer.setPrefix(RDF_SYNTAX, "rdf");
-            this.writer.setPrefix(RdfConstants.XML_SCHEMA.toString(true, true),
-                    "type");
-            // Discover the list of known namespaces
-            discoverNamespaces(this.linkSet, this.writer);
-
-            writer.setDataFormat(true);
-            writer.setIndentStep(3);
+    @Override
+    public void startGraph() throws IOException {
+        this.writer.setPrefix(RDF_SYNTAX, "rdf");
+        this.writer.setPrefix(RdfConstants.XML_SCHEMA.toString(true, true),
+                "type");
+        writer.setDataFormat(true);
+        writer.setIndentStep(3);
+        try {
             this.writer.startDocument();
             this.writer.startElement(RDF_SYNTAX, "RDF");
-
-            this.write(this.linkSet);
-            this.writer.endElement(RDF_SYNTAX, "RDF");
-            this.writer.endDocument();
-            this.writer.flush();
+        } catch (SAXException e) {
+            Context.getCurrentLogger().warning(
+                    "Cannot write the start of the graph: " + e.getMessage());
         }
     }
 
-    /**
-     * Write the representation of the given graph of links.
-     * 
-     * @param linkset
-     *            the given graph of links.
-     * @throws IOException
-     * @throws IOException
-     */
-    private void write(Graph linkset) throws IOException {
-        for (Link link : linkset) {
-            if (link.hasReferenceSource()) {
-                if (link.hasReferenceTarget()) {
-                    link(link.getSourceAsReference(), link.getTypeRef(), link
-                            .getTargetAsReference());
-                } else if (link.hasLiteralTarget()) {
-                    link(link.getSourceAsReference(), link.getTypeRef(), link
-                            .getTargetAsLiteral());
-                } else if (link.hasLinkTarget()) {
-                    // TODO Hande source as link.
-                } else {
-                    org.restlet.Context
-                            .getCurrentLogger()
-                            .warning(
-                                    "Cannot write the representation of a statement due to the fact that the object is neither a Reference nor a literal.");
-                }
-            } else if (link.hasGraphSource()) {
-                if (link.hasReferenceTarget()) {
-                    link(link.getSourceAsGraph(), link.getTypeRef(), link
-                            .getTargetAsReference());
-                } else if (link.hasLiteralTarget()) {
-                    link(link.getSourceAsGraph(), link.getTypeRef(), link
-                            .getTargetAsLiteral());
-                } else if (link.hasLinkTarget()) {
-                    // TODO Handle source as link.
-                } else {
-                    org.restlet.Context
-                            .getCurrentLogger()
-                            .warning(
-                                    "Cannot write the representation of a statement due to the fact that the object is neither a Reference nor a literal.");
-                }
-            }
+    @Override
+    public void startPrefixMapping(String prefix, Reference reference) {
+        if (prefix == null) {
+            writer.forceNSDecl(getNamespace(reference.getTargetRef()));
+        } else {
+            writer.forceNSDecl(getNamespace(reference.getTargetRef()), prefix);
         }
     }
 

@@ -36,13 +36,14 @@ import java.util.List;
 
 import org.restlet.data.Reference;
 import org.restlet.ext.rdf.Graph;
+import org.restlet.ext.rdf.GraphHandler;
 import org.restlet.ext.rdf.Literal;
 import org.restlet.ext.rdf.internal.RdfConstants;
 import org.restlet.ext.rdf.internal.turtle.BlankNodeToken;
 import org.restlet.ext.rdf.internal.turtle.Context;
 import org.restlet.ext.rdf.internal.turtle.LexicalUnit;
 import org.restlet.ext.rdf.internal.turtle.ListToken;
-import org.restlet.ext.rdf.internal.turtle.RdfTurtleParsingContentHandler;
+import org.restlet.ext.rdf.internal.turtle.RdfTurtleReader;
 import org.restlet.ext.rdf.internal.turtle.StringToken;
 import org.restlet.ext.rdf.internal.turtle.Token;
 import org.restlet.ext.rdf.internal.turtle.UriToken;
@@ -53,20 +54,20 @@ import org.restlet.representation.Representation;
  * 
  * @author Thierry Boileau
  */
-public class RdfN3ParsingContentHandler extends RdfTurtleParsingContentHandler {
+public class RdfN3Reader extends RdfTurtleReader {
 
     /**
      * Constructor.
      * 
-     * @param linkSet
-     *            The set of links to update during the parsing.
-     * @param rdfN3Representation
+     * @param rdfRepresentation
      *            The representation to read.
+     * @param graphHandler
+     *            The graph handler invoked during the parsing.
      * @throws IOException
      */
-    public RdfN3ParsingContentHandler(Graph linkSet,
-            Representation rdfN3Representation) throws IOException {
-        super(linkSet, rdfN3Representation);
+    public RdfN3Reader(Representation rdfN3Representation,
+            GraphHandler graphHandler) throws IOException {
+        super(rdfN3Representation, graphHandler);
     }
 
     @Override
@@ -169,16 +170,6 @@ public class RdfN3ParsingContentHandler extends RdfTurtleParsingContentHandler {
                 || c == '@';
     }
 
-    @Override
-    public void link(Graph source, Reference typeRef, Literal target) {
-        getLinkSet().add(source, typeRef, target);
-    }
-
-    @Override
-    public void link(Graph source, Reference typeRef, Reference target) {
-        getLinkSet().add(source, typeRef, target);
-    }
-
     /**
      * Callback method used when a link is parsed or written.
      * 
@@ -189,12 +180,15 @@ public class RdfN3ParsingContentHandler extends RdfTurtleParsingContentHandler {
      * @param target
      *            The target or object of the link.
      */
-    private void link(Object source, Reference typeRef, Object target) {
+    @Override
+    protected void link(Object source, Reference typeRef, Object target) {
         if (source instanceof Reference) {
             if (target instanceof Reference) {
-                link((Reference) source, typeRef, (Reference) target);
+                getGraphHandler().link((Reference) source, typeRef,
+                        (Reference) target);
             } else if (target instanceof Literal) {
-                link((Reference) source, typeRef, (Literal) target);
+                getGraphHandler().link((Reference) source, typeRef,
+                        (Literal) target);
             } else {
                 org.restlet.Context
                         .getCurrentLogger()
@@ -203,9 +197,11 @@ public class RdfN3ParsingContentHandler extends RdfTurtleParsingContentHandler {
             }
         } else if (source instanceof Graph) {
             if (target instanceof Reference) {
-                link((Graph) source, typeRef, (Reference) target);
+                getGraphHandler().link((Graph) source, typeRef,
+                        (Reference) target);
             } else if (target instanceof Literal) {
-                link((Graph) source, typeRef, (Literal) target);
+                getGraphHandler().link((Graph) source, typeRef,
+                        (Literal) target);
             } else {
                 org.restlet.Context
                         .getCurrentLogger()
@@ -213,16 +209,6 @@ public class RdfN3ParsingContentHandler extends RdfTurtleParsingContentHandler {
                                 "The N3 document contains an object which is neither a Reference nor a literal.");
             }
         }
-    }
-
-    @Override
-    public void link(Reference source, Reference typeRef, Literal target) {
-        super.link(source, typeRef, target);
-    }
-
-    @Override
-    public void link(Reference source, Reference typeRef, Reference target) {
-        super.link(source, typeRef, target);
     }
 
     @Override
