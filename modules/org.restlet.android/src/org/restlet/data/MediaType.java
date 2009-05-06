@@ -45,10 +45,20 @@ import org.restlet.util.Series;
 public final class MediaType extends Metadata {
 
     /**
-     * The known media types registered with {@link #register(String, String)},
-     * retrievable using {@link #valueOf(String)}.
+     * Illegal ASCII characters as defined in RFC 1521.<br>
+     * Keep the underscore for the ordering
+     * 
+     * @see http://www.ietf.org/rfc/rfc1521.txt
+     * 
      */
-    private static Map<String, MediaType> types = null;
+    private static final String _TSPECIALS = "()<>@,;:/[]?=\\\"";
+
+    /**
+     * The known media types registered with {@link #register(String, String)},
+     * retrievable using {@link #valueOf(String)}.<br>
+     * Keep the underscore for the ordering.
+     */
+    private static Map<String, MediaType> _types = null;
 
     public static final MediaType ALL = register("*/*", "All media");
 
@@ -110,6 +120,10 @@ public final class MediaType extends Metadata {
 
     public static final MediaType APPLICATION_JAVA_OBJECT = register(
             "application/x-java-serialized-object", "Java serialized object");
+
+    public static final MediaType APPLICATION_JAVA_OBJECT_XML = register(
+            "application/x-java-serialized-object+xml",
+            "Java XML serialized object");
 
     public static final MediaType APPLICATION_JAVASCRIPT = register(
             "application/x-javascript", "Javascript document");
@@ -500,6 +514,10 @@ public final class MediaType extends Metadata {
     public static final MediaType TEXT_RDF_N3 = register("text/n3",
             "N3 serialized Resource Description Framework document");
 
+    public static final MediaType TEXT_RDF_NTRIPLES = register(
+            "text/n-triples",
+            "N-Triples serialized Resource Description Framework document");
+
     public static final MediaType TEXT_TSV = register(
             "text/tab-separated-values", "Tab-separated Values");
 
@@ -509,12 +527,6 @@ public final class MediaType extends Metadata {
     public static final MediaType TEXT_VCARD = register("text/x-vcard", "vCard");
 
     public static final MediaType TEXT_XML = register("text/xml", "XML text");
-
-    /**
-     * Illegal ASCII characters as defined in RFC 1521.
-     * http://www.ietf.org/rfc/rfc1521.txt
-     */
-    private static final String TSPECIALS = "()<>@,;:/[]?=\\\"";
 
     public static final MediaType VIDEO_ALL = register("video/*", "All videos");
 
@@ -591,10 +603,10 @@ public final class MediaType extends Metadata {
      * @return the known media types map.
      */
     private static Map<String, MediaType> getTypes() {
-        if (types == null) {
-            types = new HashMap<String, MediaType>();
+        if (_types == null) {
+            _types = new HashMap<String, MediaType>();
         }
-        return types;
+        return _types;
     }
 
     /**
@@ -619,7 +631,7 @@ public final class MediaType extends Metadata {
         length = token.length();
         for (int i = 0; i < length; i++) {
             c = token.charAt(i);
-            if (c <= 32 || c >= 127 || TSPECIALS.indexOf(c) != -1)
+            if (c <= 32 || c >= 127 || _TSPECIALS.indexOf(c) != -1)
                 throw new IllegalArgumentException("Illegal token: " + token);
         }
 
