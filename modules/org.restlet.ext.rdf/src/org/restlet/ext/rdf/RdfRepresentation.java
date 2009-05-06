@@ -209,9 +209,9 @@ public class RdfRepresentation extends OutputRepresentation {
      * Returns the graph of links.
      * 
      * @return The graph of links.
-     * @throws IOException
+     * @throws Exception
      */
-    public Graph getGraph() throws IOException {
+    public Graph getGraph() throws Exception {
         if (this.graph == null) {
             this.graph = new Graph();
             parse(createBuilder(this.graph));
@@ -224,9 +224,10 @@ public class RdfRepresentation extends OutputRepresentation {
      * each time a link is detected.
      * 
      * @param graphHandler
-     * @throws IOException
+     *            The graph handler.
+     * @throws Exception
      */
-    public void parse(GraphHandler graphHandler) throws IOException {
+    public void parse(GraphHandler graphHandler) throws Exception {
         if (rdfRepresentation != null) {
             if (MediaType.TEXT_RDF_N3.equals(rdfRepresentation.getMediaType())) {
                 new RdfN3Reader(rdfRepresentation, graphHandler).parse();

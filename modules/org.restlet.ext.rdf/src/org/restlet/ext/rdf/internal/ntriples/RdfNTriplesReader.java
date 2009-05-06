@@ -232,7 +232,7 @@ public class RdfNTriplesReader extends RdfReader {
      * @throws IOException
      */
     @Override
-    public void parse() throws IOException {
+    public void parse() throws Exception {
         // Init the reading.
         step();
         do {
@@ -269,9 +269,9 @@ public class RdfNTriplesReader extends RdfReader {
      * 
      * @param context
      *            The current context.
-     * @throws IOException
+     * @throws Exception
      */
-    protected void parseStatement() throws IOException {
+    protected void parseStatement() throws Exception {
         List<Reference> lexicalUnits = new ArrayList<Reference>();
         String object = null;
         do {
@@ -298,7 +298,8 @@ public class RdfNTriplesReader extends RdfReader {
             case EOF:
                 break;
             default:
-                break;
+                throw new Exception(
+                        "Parsing error. This document does not seem to follow the N-Triples syntax.");
             }
         } while (!isEndOfFile(getChar()) && getChar() != '.'
                 && getChar() != '}');

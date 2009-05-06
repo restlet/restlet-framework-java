@@ -61,9 +61,9 @@ public class RdfXmlReader extends RdfReader {
     /**
      * Parses the current representation.
      * 
-     * @throws IOException
+     * @throws Exception
      */
-    public void parse() throws IOException {
+    public void parse() throws Exception {
         SaxRepresentation saxRepresentation;
         if (getRdfRepresentation() instanceof SaxRepresentation) {
             saxRepresentation = (SaxRepresentation) getRdfRepresentation();

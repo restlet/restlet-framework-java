@@ -52,8 +52,8 @@ public abstract class RdfReader {
     /**
      * Parses the content.
      * 
-     * @throws IOException
+     * @throws Exception
      */
-    public abstract void parse() throws IOException;
+    public abstract void parse() throws Exception;
 
 }
