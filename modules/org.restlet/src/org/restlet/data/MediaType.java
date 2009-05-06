@@ -45,17 +45,20 @@ import org.restlet.util.Series;
 public final class MediaType extends Metadata {
 
     /**
-     * Illegal ASCII characters as defined in RFC 1521.
-     * http://www.ietf.org/rfc/rfc1521.txt
+     * Illegal ASCII characters as defined in RFC 1521.<br>
+     * Keep the underscore for the ordering
+     * 
+     * @see http://www.ietf.org/rfc/rfc1521.txt
+     * 
      */
     private static final String _TSPECIALS = "()<>@,;:/[]?=\\\"";
 
     /**
      * The known media types registered with {@link #register(String, String)},
-     * retrievable using {@link #valueOf(String)}.
+     * retrievable using {@link #valueOf(String)}.<br>
+     * Keep the underscore for the ordering.
      */
     private static Map<String, MediaType> _types = null;
-
 
     public static final MediaType ALL = register("*/*", "All media");
 
