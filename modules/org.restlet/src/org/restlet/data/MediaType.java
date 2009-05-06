@@ -44,6 +44,19 @@ import org.restlet.util.Series;
  */
 public final class MediaType extends Metadata {
 
+    /**
+     * Illegal ASCII characters as defined in RFC 1521.
+     * http://www.ietf.org/rfc/rfc1521.txt
+     */
+    private static final String _TSPECIALS = "()<>@,;:/[]?=\\\"";
+
+    /**
+     * The known media types registered with {@link #register(String, String)},
+     * retrievable using {@link #valueOf(String)}.
+     */
+    private static Map<String, MediaType> _types = null;
+
+
     public static final MediaType ALL = register("*/*", "All media");
 
     public static final MediaType APPLICATION_ALL = register("application/*",
@@ -512,18 +525,6 @@ public final class MediaType extends Metadata {
 
     public static final MediaType TEXT_XML = register("text/xml", "XML text");
 
-    /**
-     * Illegal ASCII characters as defined in RFC 1521.
-     * http://www.ietf.org/rfc/rfc1521.txt
-     */
-    private static final String TSPECIALS = "()<>@,;:/[]?=\\\"";
-
-    /**
-     * The known media types registered with {@link #register(String, String)},
-     * retrievable using {@link #valueOf(String)}.
-     */
-    private static Map<String, MediaType> types = null;
-
     public static final MediaType VIDEO_ALL = register("video/*", "All videos");
 
     public static final MediaType VIDEO_AVI = register("video/x-msvideo",
@@ -599,10 +600,10 @@ public final class MediaType extends Metadata {
      * @return the known media types map.
      */
     private static Map<String, MediaType> getTypes() {
-        if (types == null) {
-            types = new HashMap<String, MediaType>();
+        if (_types == null) {
+            _types = new HashMap<String, MediaType>();
         }
-        return types;
+        return _types;
     }
 
     /**
@@ -627,7 +628,7 @@ public final class MediaType extends Metadata {
         length = token.length();
         for (int i = 0; i < length; i++) {
             c = token.charAt(i);
-            if (c <= 32 || c >= 127 || TSPECIALS.indexOf(c) != -1)
+            if (c <= 32 || c >= 127 || _TSPECIALS.indexOf(c) != -1)
                 throw new IllegalArgumentException("Illegal token: " + token);
         }
 
