@@ -48,8 +48,10 @@ import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
 
 /**
- * Base of all RDF representation classes. It knows how to serialize and
- * deserialize a {@link Graph}.
+ * This representation provides support for the Resource Description Framework
+ * (RDF) standard. It supports major RDF serialization formats (n3, Turtle,
+ * N-Triples and RDF/XML). It is able to serialize and deserialize a
+ * {@link Graph}.
  * 
  * @author Jerome Louvel
  */
