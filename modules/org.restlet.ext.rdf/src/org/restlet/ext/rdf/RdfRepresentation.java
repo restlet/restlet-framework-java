@@ -48,9 +48,9 @@ import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
 
 /**
- * This representation provides support for the Resource Description Framework
- * (RDF) standard. It supports major RDF serialization formats (n3, Turtle,
- * N-Triples and RDF/XML). It is able to serialize and deserialize a
+ * Generic RDF representation. Provides support for the Resource Description Framework
+ * (RDF) Semantic Web standard. It supports major RDF serialization formats (n3, Turtle,
+ * N-Triples and RDF/XML) and is able to both serialize and deserialize a
  * {@link Graph}.
  * 
  * @author Jerome Louvel
