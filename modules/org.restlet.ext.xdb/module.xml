@@ -1,0 +1,18 @@
+<module id="xdb">
+	<name>Restlet Extension - Oracle XML DB</name>
+	<description>
+		Integration within OracleJVM via the Oracle XML DB feature.
+	</description>
+
+	<dependencies>
+		<dependency type="lib">
+			<id>servlet</id>
+		</dependency>
+		<dependency type="module">
+			<id>core</id>
+		</dependency>
+		<dependency type="module">
+			<id>servlet</id>
+		</dependency>
+	</dependencies>
+</module>

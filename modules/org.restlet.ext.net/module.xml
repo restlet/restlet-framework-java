@@ -1,0 +1,12 @@
+<module id="net">
+	<name>Restlet Extension - Net</name>
+	<description>
+		Integration with java.net.HttpURLConnection class.
+	</description>
+
+	<dependencies>
+		<dependency type="module">
+			<id>core</id>
+		</dependency>
+	</dependencies>
+</module>

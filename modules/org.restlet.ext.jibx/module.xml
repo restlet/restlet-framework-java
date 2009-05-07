@@ -1,0 +1,15 @@
+<module id="jibx">
+	<name>Restlet Extension - JiBX</name>
+	<description>
+		Integration with JiBX.
+	</description>
+
+	<dependencies>
+		<dependency type="lib">
+			<id>jibx</id>
+		</dependency>
+		<dependency type="module">
+			<id>core</id>
+		</dependency>
+	</dependencies>
+</module>

@@ -1,0 +1,15 @@
+<module id="httpclient">
+	<name>Restlet Extension - Apache HTTP Client</name>
+	<description>
+		Integration with Apache Commons HTTP Client.
+	</description>
+
+	<dependencies>
+		<dependency type="lib">
+			<id>httpclient</id>
+		</dependency>
+		<dependency type="module">
+			<id>core</id>
+		</dependency>
+	</dependencies>
+</module>

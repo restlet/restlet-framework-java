@@ -1,0 +1,15 @@
+<module id="example">
+	<name>Restlet Extension - Jetty</name>
+	<description>
+		Integration with Jetty.
+	</description>
+
+	<dependencies>
+		<dependency type="lib">
+			<id>jetty</id>
+		</dependency>
+		<dependency type="module">
+			<id>core</id>
+		</dependency>
+	</dependencies>
+</module>

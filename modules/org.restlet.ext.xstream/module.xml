@@ -1,0 +1,18 @@
+<module id="xstream">
+	<name>Restlet Extension - XStream</name>
+	<description>
+		Integration with XStream.
+	</description>
+
+	<dependencies>
+		<dependency type="lib">
+			<id>xstream</id>
+		</dependency>
+		<dependency type="lib">
+			<id>jettison</id>
+		</dependency>
+		<dependency type="module">
+			<id>core</id>
+		</dependency>
+	</dependencies>
+</module>

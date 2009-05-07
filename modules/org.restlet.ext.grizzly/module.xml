@@ -1,0 +1,15 @@
+<module id="grizzly">
+	<name>Restlet Extension - Grizzly</name>
+	<description>
+		Integration with Grizzly NIO framework.
+	</description>
+
+	<dependencies>
+		<dependency type="lib">
+			<id>grizzly</id>
+		</dependency>
+		<dependency type="module">
+			<id>core</id>
+		</dependency>
+	</dependencies>
+</module>

@@ -1,0 +1,15 @@
+<module id="velocity">
+	<name>Restlet Extension - Velocity</name>
+	<description>
+		Integration with Apache Velocity.
+	</description>
+
+	<dependencies>
+		<dependency type="lib">
+			<id>velocity</id>
+		</dependency>
+		<dependency type="module">
+			<id>core</id>
+		</dependency>
+	</dependencies>
+</module>

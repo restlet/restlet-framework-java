@@ -1,0 +1,15 @@
+<module id="ssl">
+	<name>Restlet Extension - SSL support</name>
+	<description>
+		Utilities to configure SSL support.
+	</description>
+
+	<dependencies>
+		<dependency type="lib">
+			<id>jsslutils</id>
+		</dependency>
+		<dependency type="module">
+			<id>core</id>
+		</dependency>
+	</dependencies>
+</module>

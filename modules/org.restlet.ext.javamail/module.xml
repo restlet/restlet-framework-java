@@ -1,0 +1,18 @@
+<module id="javamail">
+	<name>Restlet Extension - JavaMail</name>
+	<description>
+		Integration with JavaMail.
+	</description>
+
+	<dependencies>
+		<dependency type="lib">
+			<id>activation</id>
+		</dependency>
+		<dependency type="lib">
+			<id>javamail</id>
+		</dependency>
+		<dependency type="module">
+			<id>core</id>
+		</dependency>
+	</dependencies>
+</module>

@@ -1,0 +1,15 @@
+<module id="jdbc">
+	<name>Restlet Extension - JDBC</name>
+	<description>
+		Integration with Java DataBase Connectivity (JDBC).
+	</description>
+
+	<dependencies>
+		<dependency type="lib">
+			<id>dbcp</id>
+		</dependency>
+		<dependency type="module">
+			<id>core</id>
+		</dependency>
+	</dependencies>
+</module>

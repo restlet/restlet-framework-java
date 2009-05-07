@@ -1,0 +1,15 @@
+<module id="simple">
+	<name>Restlet Extension - Simple</name>
+	<description>
+		Integration with Simple framework.
+	</description>
+
+	<dependencies>
+		<dependency type="lib">
+			<id>simple</id>
+		</dependency>
+		<dependency type="module">
+			<id>core</id>
+		</dependency>
+	</dependencies>
+</module>

@@ -1,0 +1,12 @@
+<module id="xml">
+	<name>Restlet Extension - XML</name>
+	<description>
+		Support for the XML documents.
+	</description>
+
+	<dependencies>
+		<dependency type="module">
+			<id>core</id>
+		</dependency>
+	</dependencies>
+</module>

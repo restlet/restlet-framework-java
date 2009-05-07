@@ -1,0 +1,18 @@
+<module id="jxta">
+	<name>Restlet Extension - JXTA</name>
+	<description>
+		Integration with JXTA framework.
+	</description>
+
+	<dependencies>
+		<dependency type="lib">
+			<id>servlet</id>
+		</dependency>
+		<dependency type="lib">
+			<id>jxta</id>
+		</dependency>
+		<dependency type="module">
+			<id>core</id>
+		</dependency>
+	</dependencies>
+</module>

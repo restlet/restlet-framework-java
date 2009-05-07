@@ -1,0 +1,15 @@
+<module id="json">
+	<name>Restlet Extension - JSON</name>
+	<description>
+		Support for JSON representations.
+	</description>
+
+	<dependencies>
+		<dependency type="lib">
+			<id>json</id>
+		</dependency>
+		<dependency type="module">
+			<id>core</id>
+		</dependency>
+	</dependencies>
+</module>

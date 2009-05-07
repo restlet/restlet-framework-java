@@ -1,0 +1,12 @@
+<module includes="gwt" id="core-gwt">
+	<name>Restlet API for GWT</name>
+	<description>
+		Port of Restlet to Google Web Toolkit.
+	</description>
+
+	<dependencies>
+		<dependency type="lib">
+			<id>gwt</id>
+		</dependency>
+	</dependencies>
+</module>

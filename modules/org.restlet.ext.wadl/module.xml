@@ -1,0 +1,12 @@
+<module id="wadl">
+	<name>Restlet Extension - WADL</name>
+	<description>
+		Support for the WADL specification.
+	</description>
+
+	<dependencies>
+		<dependency type="module">
+			<id>core</id>
+		</dependency>
+	</dependencies>
+</module>

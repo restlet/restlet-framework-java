@@ -1,0 +1,12 @@
+<module id="rdf">
+	<name>Restlet Extension - RDF</name>
+	<description>
+		Support for the RDF parsing and generation.
+	</description>
+
+	<dependencies>
+		<dependency type="module">
+			<id>core</id>
+		</dependency>
+	</dependencies>
+</module>

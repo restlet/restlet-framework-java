@@ -1,0 +1,15 @@
+<module id="jaxb">
+	<name>Restlet Extension - JAXB</name>
+	<description>
+		Integration with Java XML Binding.
+	</description>
+
+	<dependencies>
+		<dependency type="lib">
+			<id>jaxb-ri</id>
+		</dependency>
+		<dependency type="module">
+			<id>core</id>
+		</dependency>
+	</dependencies>
+</module>

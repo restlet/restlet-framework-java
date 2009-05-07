@@ -1,0 +1,66 @@
+<module includes="jse" id="test">
+	<name>Restlet Unit Tests</name>
+	<description>
+		All Restlet unit tests.
+	</description>
+
+	<dependencies>
+		<dependency type="lib">
+			<id>junit</id>
+		</dependency>
+		<dependency type="module">
+			<id>core</id>
+		</dependency>
+		<dependency type="module">
+			<id>atom</id>
+		</dependency>
+		<dependency type="module">
+			<id>freemarker</id>
+		</dependency>
+		<dependency type="module">
+			<id>grizzly</id>
+		</dependency>
+		<dependency type="module">
+			<id>core-gwt</id>
+		</dependency>
+		<dependency type="module">
+			<id>gwt</id>
+		</dependency>
+		<dependency type="module">
+			<id>httpclient</id>
+		</dependency>
+		<dependency type="module">
+			<id>jaxb</id>
+		</dependency>
+		<dependency type="module">
+			<id>jaxrs</id>
+		</dependency>
+		<dependency type="module">
+			<id>jetty</id>
+		</dependency>
+		<dependency type="module">
+			<id>lucene</id>
+		</dependency>
+		<dependency type="module">
+			<id>net</id>
+		</dependency>
+		<dependency type="module">
+			<id>rdf</id>
+		</dependency>
+		<dependency type="module">
+			<id>script</id>
+		</dependency>
+		<dependency type="module">
+			<id>simple</id>
+		</dependency>
+		<dependency type="module">
+			<id>spring</id>
+		</dependency>
+		<dependency type="module">
+			<id>velocity</id>
+		</dependency>
+		<dependency type="module">
+			<id>wadl</id>
+		</dependency>
+	</dependencies>
+</module>

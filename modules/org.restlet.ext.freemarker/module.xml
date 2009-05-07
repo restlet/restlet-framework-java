@@ -1,0 +1,15 @@
+<module id="freemarker">
+	<name>Restlet Extension - FreeMarker</name>
+	<description>
+		Integration with FreeMarker.
+	</description>
+
+	<dependencies>
+		<dependency type="lib">
+			<id>freemarker</id>
+		</dependency>
+		<dependency type="module">
+			<id>core</id>
+		</dependency>
+	</dependencies>
+</module>

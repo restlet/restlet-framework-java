@@ -1,0 +1,15 @@
+<module id="oauth">
+	<name>Restlet Extension - OAuth</name>
+	<description>
+		Support for OAuth HTTP authentication.
+	</description>
+
+	<dependencies>
+		<dependency type="lib">
+			<id>auth</id>
+		</dependency>
+		<dependency type="module">
+			<id>core</id>
+		</dependency>
+	</dependencies>
+</module>

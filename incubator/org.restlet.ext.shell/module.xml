@@ -1,0 +1,21 @@
+<module id="shell">
+	<name>Interactive shell for Restlet.</name>
+	<description>
+		Restlet Extension - Shell
+	</description>
+
+	<dependencies>
+		<dependency type="lib">
+			<id>cli</id>
+		</dependency>
+		<dependency type="lib">
+			<id>jline</id>
+		</dependency>
+		<dependency type="lib">
+			<id>rhino</id>
+		</dependency>
+		<dependency type="module">
+			<id>core</id>
+		</dependency>
+	</dependencies>
+</module>

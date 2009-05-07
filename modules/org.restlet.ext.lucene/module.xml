@@ -1,0 +1,18 @@
+<module id="lucene">
+	<name>Restlet Extension - Lucene</name>
+	<description>
+		Integration with Apache Lucene, Solr and Tika sub-projects.
+	</description>
+
+	<dependencies>
+		<dependency type="lib">
+			<id>solr</id>
+		</dependency>
+		<dependency type="lib">
+			<id>tika</id>
+		</dependency>
+		<dependency type="module">
+			<id>core</id>
+		</dependency>
+	</dependencies>
+</module>

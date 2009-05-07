@@ -1,0 +1,33 @@
+<module id="example">
+	<name>Restlet Extension - JAX-RS</name>
+	<description>
+		Implementation of JAX-RS (JSR-311)
+	</description>
+
+	<dependencies>
+		<dependency type="lib">
+			<id>jaxb-ri</id>
+		</dependency>
+		<dependency type="lib">
+			<id>fileupload</id>
+		</dependency>
+		<dependency type="lib">
+			<id>activation</id>
+		</dependency>
+		<dependency type="lib">
+			<id>javamail</id>
+		</dependency>
+		<dependency type="lib">
+			<id>servlet</id>
+		</dependency>
+		<dependency type="lib">
+			<id>jaxrs</id>
+		</dependency>
+		<dependency type="lib">
+			<id>json</id>
+		</dependency>
+		<dependency type="module">
+			<id>core</id>
+		</dependency>
+	</dependencies>
+</module>

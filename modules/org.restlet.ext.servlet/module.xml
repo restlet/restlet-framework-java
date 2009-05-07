@@ -1,0 +1,15 @@
+<module id="servlet">
+	<name>Restlet Extension - Servlet</name>
+	<description>
+		Integration with Servlet API.
+	</description>
+
+	<dependencies>
+		<dependency type="lib">
+			<id>servlet</id>
+		</dependency>
+		<dependency type="module">
+			<id>core</id>
+		</dependency>
+	</dependencies>
+</module>

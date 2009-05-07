@@ -1,0 +1,18 @@
+<module includes="gwt" id="gwt">
+	<name>Restlet Extension - GWT</name>
+	<description>
+		Server-side integration with GWT.
+	</description>
+
+	<dependencies>
+		<dependency type="lib">
+			<id>servlet</id>
+		</dependency>
+		<dependency type="module">
+			<id>core</id>
+		</dependency>
+		<dependency type="module">
+			<id>servlet</id>
+		</dependency>
+	</dependencies>
+</module>

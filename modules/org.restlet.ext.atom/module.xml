@@ -1,0 +1,13 @@
+<module id="atom">
+	<name>Restlet Extension - Atom</name>
+	<description>
+		Support for the Atom syndication and the AtomPub (Atom Publication
+		Protocol) standards in their 1.0 version.
+	</description>
+
+	<dependencies>
+		<dependency type="module">
+			<id>core</id>
+		</dependency>
+	</dependencies>
+</module>

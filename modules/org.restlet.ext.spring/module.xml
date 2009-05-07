@@ -1,0 +1,21 @@
+<module id="spring">
+	<name>Restlet Extension - Spring Framework</name>
+	<description>
+		Integration with Spring Framework.
+	</description>
+
+	<dependencies>
+		<dependency type="lib">
+			<id>servlet</id>
+		</dependency>
+		<dependency type="lib">
+			<id>spring</id>
+		</dependency>
+		<dependency type="module">
+			<id>core</id>
+		</dependency>
+		<dependency type="module">
+			<id>servlet</id>
+		</dependency>
+	</dependencies>
+</module>
