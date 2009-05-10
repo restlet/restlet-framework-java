@@ -77,9 +77,9 @@ public class AtomConverter extends ConverterHelper {
         List<Variant> result = null;
 
         if (Feed.class.isAssignableFrom(objectClass)) {
-            result = addVariant(result, VARIANT_ATOM);
+            result = addVariant(result, targetVariant, VARIANT_ATOM);
         } else if (Service.class.isAssignableFrom(objectClass)) {
-            result = addVariant(result, VARIANT_ATOMPUB_SERVICE);
+            result = addVariant(result, targetVariant, VARIANT_ATOMPUB_SERVICE);
         }
 
         return result;

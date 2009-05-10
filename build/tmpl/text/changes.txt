@@ -75,7 +75,8 @@ Changes log
         - Added MediaType#APPLICATION_JAVA_OBJECT_XML constant.
         - Added support for automatic conversion between serializable
           JavaBeans and Representations using either binary Java Object
-          Serialization or JavaBeans XML encoding.  
+          Serialization or JavaBeans XML encoding.
+        - Added conversion support for forms.  
     - API changes
         - RepresentationInfo is now concrete and has more constructors.
           Suggested by Lars Heuer.

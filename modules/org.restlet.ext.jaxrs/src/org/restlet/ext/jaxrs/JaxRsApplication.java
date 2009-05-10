@@ -252,7 +252,9 @@ public class JaxRsApplication extends org.restlet.Application {
      *            the Guard to use.
      * @see #setAuthentication(UniformGuard, RoleChecker)
      * @see #setGuard(org.restlet.security.UniformGuard)
+     * @deprecated Use the {@link #setGuard(UniformGuard)} method instead.
      */
+    @Deprecated
     public void setGuard(org.restlet.security.Guard guard) {
         this.guard = guard;
     }

@@ -67,7 +67,7 @@ public class GwtConverter extends ConverterHelper {
 
     @Override
     public List<Variant> getVariants(Class<?> objectClass, Variant targetVariant) {
-        return addVariant(null, VARIANT_JSON);
+        return addVariant(null, targetVariant, VARIANT_JSON);
     }
 
     @SuppressWarnings("unchecked")

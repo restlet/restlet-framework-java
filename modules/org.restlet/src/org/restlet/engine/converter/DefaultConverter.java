@@ -38,6 +38,7 @@ import java.io.Serializable;
 import java.nio.channels.ReadableByteChannel;
 import java.util.List;
 
+import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.FileRepresentation;
@@ -55,6 +56,10 @@ import org.restlet.resource.UniformResource;
  * @author Jerome Louvel
  */
 public class DefaultConverter extends ConverterHelper {
+
+    /** Web form variant. */
+    private static final Variant VARIANT_FORM = new Variant(
+            MediaType.APPLICATION_WWW_FORM);
 
     /** Octet stream variant. */
     private static final Variant VARIANT_OBJECT = new Variant(
@@ -87,6 +92,8 @@ public class DefaultConverter extends ConverterHelper {
             if (MediaType.APPLICATION_JAVA_OBJECT.equals(mediaType)
                     || MediaType.APPLICATION_JAVA_OBJECT_XML.equals(mediaType)) {
                 result = addObjectClass(result, Object.class);
+            } else if (MediaType.APPLICATION_WWW_FORM.equals(mediaType)) {
+                result = addObjectClass(result, Form.class);
             }
         }
 
@@ -99,43 +106,25 @@ public class DefaultConverter extends ConverterHelper {
 
         if (String.class.isAssignableFrom(objectClass)
                 || StringRepresentation.class.isAssignableFrom(objectClass)) {
-            if (targetVariant != null) {
-                result = addVariant(result, targetVariant);
-            } else {
-                result = addVariant(result, VARIANT_TEXT);
-            }
+            result = addVariant(result, targetVariant, VARIANT_TEXT);
         } else if (File.class.isAssignableFrom(objectClass)
                 || FileRepresentation.class.isAssignableFrom(objectClass)) {
-            if (targetVariant != null) {
-                result = addVariant(result, targetVariant);
-            } else {
-                result = addVariant(result, VARIANT_OCTETS);
-            }
+            result = addVariant(result, targetVariant, VARIANT_OCTETS);
         } else if (InputStream.class.isAssignableFrom(objectClass)
                 || InputRepresentation.class.isAssignableFrom(objectClass)) {
-            if (targetVariant != null) {
-                result = addVariant(result, targetVariant);
-            } else {
-                result = addVariant(result, VARIANT_OCTETS);
-            }
+            result = addVariant(result, targetVariant, VARIANT_OCTETS);
         } else if (Reader.class.isAssignableFrom(objectClass)
                 || ReaderRepresentation.class.isAssignableFrom(objectClass)) {
-            if (targetVariant != null) {
-                result = addVariant(result, targetVariant);
-            } else {
-                result = addVariant(result, VARIANT_TEXT);
-            }
+            result = addVariant(result, targetVariant, VARIANT_TEXT);
         } else if (Representation.class.isAssignableFrom(objectClass)) {
-            if (targetVariant != null) {
-                result = addVariant(result, targetVariant);
-            } else {
-                result = addVariant(result, VARIANT_OCTETS);
-            }
+            result = addVariant(result, targetVariant, VARIANT_OCTETS);
+        } else if (Form.class.isAssignableFrom(objectClass)) {
+            result = addVariant(result, targetVariant, VARIANT_FORM);
         }
 
         if (Serializable.class.isAssignableFrom(objectClass)) {
-            result = addVariant(result, VARIANT_OBJECT);
-            result = addVariant(result, VARIANT_OBJECT_XML);
+            result = addVariant(result, targetVariant, VARIANT_OBJECT);
+            result = addVariant(result, targetVariant, VARIANT_OBJECT_XML);
         }
 
         return result;
@@ -166,6 +155,8 @@ public class DefaultConverter extends ConverterHelper {
                             result = ((FileRepresentation) representation)
                                     .getFile();
                         }
+                    } else if (Form.class.isAssignableFrom(targetClass)) {
+                        result = new Form(representation);
                     } else if (InputStream.class.isAssignableFrom(targetClass)) {
                         result = representation.getStream();
                     } else if (InputRepresentation.class
@@ -220,6 +211,8 @@ public class DefaultConverter extends ConverterHelper {
         } else if (object instanceof File) {
             result = new FileRepresentation((File) object,
                     targetVariant == null ? null : targetVariant.getMediaType());
+        } else if (object instanceof Form) {
+            result = ((Form) object).getWebRepresentation();
         } else if (object instanceof InputStream) {
             result = new InputRepresentation((InputStream) object,
                     targetVariant == null ? null : targetVariant.getMediaType());

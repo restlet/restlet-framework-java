@@ -74,12 +74,18 @@ public abstract class ConverterHelper extends Helper {
      *            The variant to add.
      * @return The input variants list or a new one.
      */
-    protected List<Variant> addVariant(List<Variant> variants, Variant variant) {
+    protected List<Variant> addVariant(List<Variant> variants,
+            Variant userVariant, Variant defaultVariant) {
         if (variants == null) {
             variants = new ArrayList<Variant>();
         }
 
-        variants.add(variant);
+        if (userVariant != null) {
+            variants.add(userVariant);
+        } else {
+            variants.add(defaultVariant);
+        }
+
         return variants;
     }
 
