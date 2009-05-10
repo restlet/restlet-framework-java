@@ -38,7 +38,8 @@ import org.restlet.Restlet;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
 import org.restlet.resource.Directory;
-import org.restlet.security.Guard;
+import org.restlet.security.ChallengeGuard;
+import org.restlet.security.MapVerifier;
 
 /**
  * Guard access to a Restlet.
@@ -70,10 +71,14 @@ public class Part09a extends Application {
 
     @Override
     public Restlet createRoot() {
+        // Create a simple password verifier
+        MapVerifier verifier = new MapVerifier();
+        verifier.getSecrets().put("scott", "tiger".toCharArray());
+
         // Create a Guard
-        Guard guard = new Guard(getContext(), ChallengeScheme.HTTP_BASIC,
-                "Tutorial");
-        guard.getSecrets().put("scott", "tiger".toCharArray());
+        ChallengeGuard guard = new ChallengeGuard(getContext(),
+                ChallengeScheme.HTTP_BASIC, "Tutorial");
+        guard.getAuthenticator().setVerifier(verifier);
 
         // Create a Directory able to return a deep hierarchy of files
         Directory directory = new Directory(getContext(), ROOT_URI);

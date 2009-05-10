@@ -42,7 +42,8 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.resource.Directory;
 import org.restlet.routing.Router;
-import org.restlet.security.Guard;
+import org.restlet.security.ChallengeGuard;
+import org.restlet.security.MapVerifier;
 
 /**
  * Routers and hierarchical URIs
@@ -77,10 +78,15 @@ public class Part11 extends Application {
         // Create a root router
         Router router = new Router(getContext());
 
+        // Create a simple password verifier
+        MapVerifier verifier = new MapVerifier();
+        verifier.getSecrets().put("scott", "tiger".toCharArray());
+
+        // Create a Guard
         // Attach a guard to secure access to the directory
-        Guard guard = new Guard(getContext(), ChallengeScheme.HTTP_BASIC,
-                "Restlet tutorial");
-        guard.getSecrets().put("scott", "tiger".toCharArray());
+        ChallengeGuard guard = new ChallengeGuard(getContext(),
+                ChallengeScheme.HTTP_BASIC, "Tutorial");
+        guard.getAuthenticator().setVerifier(verifier);
         router.attach("/docs/", guard);
 
         // Create a directory able to expose a hierarchy of files
