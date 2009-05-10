@@ -7,7 +7,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import org.restlet.data.Method;
-import org.restlet.resource.UniformResource;
 
 /**
  * Utilities to manipulate Restlet annotations.
@@ -17,7 +16,7 @@ import org.restlet.resource.UniformResource;
 public class AnnotationUtils {
 
     /** Annotation info cache. */
-    private static final ConcurrentMap<Class<? extends UniformResource>, List<AnnotationInfo>> cache = new ConcurrentHashMap<Class<? extends UniformResource>, List<AnnotationInfo>>();
+    private static final ConcurrentMap<Class<?>, List<AnnotationInfo>> cache = new ConcurrentHashMap<Class<?>, List<AnnotationInfo>>();
 
     /**
      * Clears the annotation descriptors cache.
@@ -29,15 +28,20 @@ public class AnnotationUtils {
     /**
      * Computes the annotation descriptors for the given class.
      * 
-     * @param resourceClass
+     * @param clazz
      *            The class to introspect.
      * @return The annotation descriptors.
      */
-    private static List<AnnotationInfo> computeAnnotationDescriptors(
-            Class<? extends UniformResource> resourceClass) {
-        List<AnnotationInfo> result = new ArrayList<AnnotationInfo>();
+    private static List<AnnotationInfo> addAnnotationDescriptors(
+            List<AnnotationInfo> descriptors, Class<?> clazz) {
+        List<AnnotationInfo> result = descriptors;
 
-        for (java.lang.reflect.Method javaMethod : resourceClass.getMethods()) {
+        // Add the annotation descriptor
+        if (result == null) {
+            result = new ArrayList<AnnotationInfo>();
+        }
+
+        for (java.lang.reflect.Method javaMethod : clazz.getMethods()) {
             for (Annotation annotation : javaMethod.getAnnotations()) {
 
                 Annotation methodAnnotation = annotation.annotationType()
@@ -57,7 +61,6 @@ public class AnnotationUtils {
                         value = null;
                     }
 
-                    // Add the annotation descriptor
                     result.add(new AnnotationInfo(restletMethod, javaMethod,
                             value));
                 }
@@ -68,23 +71,73 @@ public class AnnotationUtils {
     }
 
     /**
+     * Returns the first annotation descriptor matching the given Java method.
+     * 
+     * @param annotations
+     *            The list of annotations.
+     * @param javaMethod
+     *            The method to match.
+     * @return The annotation descriptor.
+     */
+    public static AnnotationInfo getAnnotation(
+            List<AnnotationInfo> annotations,
+            java.lang.reflect.Method javaMethod) {
+        for (AnnotationInfo annotationInfo : annotations) {
+            if (annotationInfo.getJavaMethod().equals(javaMethod)) {
+                return annotationInfo;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns the first annotation descriptor matching the given Restlet
+     * method.
+     * 
+     * @param annotations
+     *            The list of annotations.
+     * @param restletMethod
+     *            The method to match.
+     * @return The annotation descriptor.
+     */
+    public static AnnotationInfo getAnnotation(
+            List<AnnotationInfo> annotations, Method restletMethod) {
+        for (AnnotationInfo annotationInfo : annotations) {
+            if (annotationInfo.getRestletMethod().equals(restletMethod)) {
+                return annotationInfo;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Returns the annotation descriptors for the given resource class.
      * 
-     * @param resourceClass
+     * @param clazz
      *            The resource class to introspect.
      * @return The list of annotation descriptors.
      */
-    public static List<AnnotationInfo> getAnnotationDescriptors(
-            Class<? extends UniformResource> resourceClass) {
-        List<AnnotationInfo> result = cache.get(resourceClass);
+    public static List<AnnotationInfo> getAnnotationDescriptors(Class<?> clazz) {
+        List<AnnotationInfo> result = cache.get(clazz);
 
         if (result == null) {
-            result = computeAnnotationDescriptors(resourceClass);
-            List<AnnotationInfo> prev = cache
-                    .putIfAbsent(resourceClass, result);
+            result = addAnnotationDescriptors(result, clazz);
+            List<AnnotationInfo> prev = cache.putIfAbsent(clazz, result);
 
-            if (prev != null)
+            if (prev != null) {
                 result = prev;
+            }
+
+            // Inspect the implemented interfaces for annotations
+            Class<?>[] interfaces = clazz.getInterfaces();
+
+            if (interfaces != null) {
+                for (Class<?> interfaceClass : interfaces) {
+                    result = addAnnotationDescriptors(result, interfaceClass);
+                }
+            }
         }
 
         return result;

@@ -628,13 +628,7 @@ public class ServerResource extends UniformResource {
      * @return The annotation descriptor.
      */
     private AnnotationInfo getAnnotation(Method method) {
-        for (AnnotationInfo annotationInfo : getAnnotations()) {
-            if (annotationInfo.getRestletMethod().equals(method)) {
-                return annotationInfo;
-            }
-        }
-
-        return null;
+        return AnnotationUtils.getAnnotation(getAnnotations(), method);
     }
 
     /**

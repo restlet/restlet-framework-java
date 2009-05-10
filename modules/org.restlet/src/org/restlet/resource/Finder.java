@@ -213,8 +213,7 @@ public class Finder extends Restlet {
 
         if (targetClass != null) {
             try {
-                // Invoke the constructor with Context, Request and Response
-                // parameters
+                // Invoke the default constructor
                 result = targetClass.newInstance();
             } catch (Exception e) {
                 getLogger()

@@ -77,6 +77,10 @@ Changes log
           JavaBeans and Representations using either binary Java Object
           Serialization or JavaBeans XML encoding.
         - Added conversion support for forms.  
+        - Interfaces implemented by server resource classes are now
+          introspected for annotations.
+        - Added ClientResource#create(...) method to create dynamic
+          proxy implementing a given interface. 
     - API changes
         - RepresentationInfo is now concrete and has more constructors.
           Suggested by Lars Heuer.
