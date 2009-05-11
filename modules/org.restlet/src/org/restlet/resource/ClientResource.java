@@ -81,54 +81,18 @@ public class ClientResource extends UniformResource {
      * into Restlet method calls.
      * 
      * @param <T>
+     * @param context
+     *            The context.
+     * @param reference
+     *            The target reference.
      * @param resourceInterface
      *            The annotated resource interface class to proxy.
      * @return The proxy instance.
      */
-    @SuppressWarnings("unchecked")
     public static <T> T create(Context context, Reference reference,
             Class<? extends T> resourceInterface) {
-        // Introspect the interface for Restlet annotations
-        final List<AnnotationInfo> annotations = AnnotationUtils
-                .getAnnotationDescriptors(resourceInterface);
-        final ClientResource clientResource = new ClientResource(context,
-                reference);
-
-        // Create the client resource proxy
-        InvocationHandler h = new InvocationHandler() {
-
-            public Object invoke(Object proxy, java.lang.reflect.Method method,
-                    Object[] args) throws Throwable {
-                Object result = null;
-                AnnotationInfo annotation = AnnotationUtils.getAnnotation(
-                        annotations, method);
-
-                if (annotation != null) {
-                    // The Java method was annotated
-                    clientResource.setMethod(annotation.getRestletMethod());
-
-                    if ((args != null) && args.length > 0) {
-                        Representation entity = clientResource
-                                .toRepresentation(args[0]);
-                        clientResource.getRequest().setEntity(entity);
-                    }
-
-                    clientResource.handle();
-
-                    if (annotation.getJavaReturnType() != null) {
-                        result = clientResource.toObject(clientResource
-                                .getResponseEntity(), annotation
-                                .getJavaReturnType());
-                    }
-                }
-
-                return result;
-            }
-
-        };
-
-        return (T) Proxy.newProxyInstance(Engine.getClassLoader(),
-                new Class<?>[] { resourceInterface }, h);
+        ClientResource clientResource = new ClientResource(context, reference);
+        return clientResource.wrap(resourceInterface);
     }
 
     /**
@@ -150,6 +114,8 @@ public class ClientResource extends UniformResource {
      * into Restlet method calls.
      * 
      * @param <T>
+     * @param uri
+     *            The target URI.
      * @param resourceInterface
      *            The annotated resource interface class to proxy.
      * @return The proxy instance.
@@ -1066,6 +1032,58 @@ public class ClientResource extends UniformResource {
         }
 
         return result;
+    }
+
+    /**
+     * Wraps the client resource to proxy calls to the given Java interface into
+     * Restlet method calls.
+     * 
+     * @param <T>
+     * @param resourceInterface
+     *            The annotated resource interface class to proxy.
+     * @return The proxy instance.
+     */
+    @SuppressWarnings("unchecked")
+    public <T> T wrap(Class<? extends T> resourceInterface) {
+        // Introspect the interface for Restlet annotations
+        final List<AnnotationInfo> annotations = AnnotationUtils
+                .getAnnotationDescriptors(resourceInterface);
+
+        // Create the client resource proxy
+        InvocationHandler h = new InvocationHandler() {
+
+            public Object invoke(Object proxy,
+                    java.lang.reflect.Method javaMethod, Object[] args)
+                    throws Throwable {
+                Object result = null;
+                AnnotationInfo annotation = AnnotationUtils.getAnnotation(
+                        annotations, javaMethod);
+
+                if (annotation != null) {
+                    // The Java method was annotated
+                    setMethod(annotation.getRestletMethod());
+
+                    if ((args != null) && args.length > 0) {
+                        Representation entity = toRepresentation(args[0]);
+                        getRequest().setEntity(entity);
+                    }
+
+                    handle();
+
+                    if (annotation.getJavaReturnType() != null) {
+                        result = toObject(getResponseEntity(), annotation
+                                .getJavaReturnType());
+                    }
+                }
+
+                return result;
+            }
+
+        };
+
+        // Instantiate our dynamic proxy
+        return (T) Proxy.newProxyInstance(Engine.getClassLoader(),
+                new Class<?>[] { resourceInterface }, h);
     }
 
 }

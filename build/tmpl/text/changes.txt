@@ -79,8 +79,8 @@ Changes log
         - Added conversion support for forms.  
         - Interfaces implemented by server resource classes are now
           introspected for annotations.
-        - Added ClientResource#create(...) method to create dynamic
-          proxy implementing a given interface. 
+        - Added ClientResource#create(...) and wrap() methods to create
+          dynamic proxies implementing a given interface. 
     - API changes
         - RepresentationInfo is now concrete and has more constructors.
           Suggested by Lars Heuer.
