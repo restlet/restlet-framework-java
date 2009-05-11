@@ -1,0 +1,10 @@
+<library id="pool">
+	<package name="org.apache.commons.pool" />
+	<version>1.3</version>
+	<homeUri>
+		http://commons.apache.org/pool/
+	</homeUri>
+	<downloadUri>
+		http://commons.apache.org/downloads/download_pool.cgi
+	</downloadUri>
+</library>

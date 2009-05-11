@@ -1,0 +1,11 @@
+<library id="spring">
+	<package name="org.springframework" />
+	<version>2.5</version>
+	<release>6</release>
+	<homeUri>
+		http://www.springframework.org/
+	</homeUri>
+	<downloadUri>
+		http://www.springframework.org/download
+	</downloadUri>
+</library>

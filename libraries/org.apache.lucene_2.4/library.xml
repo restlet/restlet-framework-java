@@ -1,0 +1,10 @@
+<library id="lucene">
+	<package name="org.apache.lucene" />
+	<version>2.4</version>
+	<homeUri>
+		http://lucene.apache.org/
+	</homeUri>
+	<downloadUri>
+		http://www.apache.org/dyn/closer.cgi/lucene/java/
+	</downloadUri>
+</library>

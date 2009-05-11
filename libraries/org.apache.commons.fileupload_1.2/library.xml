@@ -1,0 +1,10 @@
+<library id="fileupload">
+	<package name="org.apache.commons.fileupload" />
+	<version>1.2</version>
+	<homeUri>
+		http://commons.apache.org/fileupload/
+	</homeUri>
+	<downloadUri>
+		http://commons.apache.org/downloads/download_fileupload.cgi
+	</downloadUri>
+</library>

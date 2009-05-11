@@ -1,0 +1,10 @@
+<library id="jaxb-api">
+	<package name="javax.xml.bind" />
+	<version>2.1</version>
+	<homeUri>
+		https://jaxb.dev.java.net/
+	</homeUri>
+	<downloadUri>
+		https://jaxb.dev.java.net/servlets/ProjectDocumentList
+	</downloadUri>
+</library>

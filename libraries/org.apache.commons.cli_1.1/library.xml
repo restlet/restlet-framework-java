@@ -1,0 +1,10 @@
+<library id="cli">
+	<package name="org.apache.commons.cli" />
+	<version>1.1</version>
+	<homeUri>
+		http://commons.apache.org/cli/
+	</homeUri>
+	<downloadUri>
+		http://commons.apache.org/downloads/download_cli.cgi
+	</downloadUri>
+</library>

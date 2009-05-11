@@ -1,0 +1,11 @@
+<library id="mina">
+	<package name="org.apache.mina" />
+	<version>1.1</version>
+	<release>0</release>
+	<homeUri>
+		http://mina.apache.org/
+	</homeUri>
+	<downloadUri>
+		http://mina.apache.org/downloads.html
+	</downloadUri>
+</library>

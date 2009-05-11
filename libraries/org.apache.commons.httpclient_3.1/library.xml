@@ -1,0 +1,10 @@
+<library id="httpclient">
+	<package name="org.apache.commons.httpclient" />
+	<version>3.1</version>
+	<homeUri>
+		http://commons.apache.org/httpclient/
+	</homeUri>
+	<downloadUri>
+		http://commons.apache.org/downloads/download_httpclient.cgi
+	</downloadUri>
+</library>

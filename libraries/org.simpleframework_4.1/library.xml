@@ -1,0 +1,11 @@
+<library id="simple">
+	<package name="org.simpleframework" />
+	<version>4.1</version>
+	<release>10</release>
+	<homeUri>
+		http://simpleweb.sourceforge.net/
+	</homeUri>
+	<downloadUri>
+		http://www.simpleframework.org/download/
+	</downloadUri>
+</library>

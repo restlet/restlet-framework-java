@@ -1,0 +1,10 @@
+<library id="jxta">
+	<package name="net.jxta" />
+	<version>2.5</version>
+	<homeUri>
+		https://jxta.dev.java.net/
+	</homeUri>
+	<downloadUri>
+		http://download.java.net/jxta/
+	</downloadUri>
+</library>

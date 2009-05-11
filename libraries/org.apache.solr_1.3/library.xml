@@ -1,0 +1,11 @@
+<library id="solr">
+	<package name="org.apache.solr" />
+	<version>1.3</version>
+	<release>0</release>
+	<homeUri>
+		http://lucene.apache.org/solr/
+	</homeUri>
+	<downloadUri>
+		http://www.apache.org/dyn/closer.cgi/lucene/solr/
+	</downloadUri>
+</library>

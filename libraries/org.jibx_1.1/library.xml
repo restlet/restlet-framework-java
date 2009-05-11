@@ -1,0 +1,11 @@
+<library id="jibx">
+	<package name="org.jibx" />
+	<version>1.1</version>
+	<release>5</release>
+	<homeUri>
+		http://jibx.sourceforge.net/
+	</homeUri>
+	<downloadUri>
+		http://sourceforge.net/project/showfiles.php?group_id=69358
+	</downloadUri>
+</library>

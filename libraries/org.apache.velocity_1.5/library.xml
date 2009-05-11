@@ -1,0 +1,10 @@
+<library id="velocity">
+	<package name="org.apache.velocity" />
+	<version>1.5</version>
+	<homeUri>
+		http://velocity.apache.org/
+	</homeUri>
+	<downloadUri>
+		http://velocity.apache.org/download.cgi
+	</downloadUri>
+</library>

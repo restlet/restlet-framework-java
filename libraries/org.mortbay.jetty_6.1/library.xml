@@ -1,0 +1,11 @@
+<library id="jetty">
+	<package name="org.mortbay.jetty" />
+	<version>6.1</version>
+	<release>15</release>
+	<homeUri>
+		http://www.mortbay.org/jetty/
+	</homeUri>
+	<downloadUri>
+		http://docs.codehaus.org/display/JETTY/Downloading+Jetty
+	</downloadUri>
+</library>

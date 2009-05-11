@@ -1,0 +1,7 @@
+<library id="jaxrs">
+	<package name="javax.ws.rs" />
+	<version>1.0</version>
+	<downloadUri>
+		http://download.java.net/maven/2/javax/ws/rs/jsr311-api/
+	</downloadUri>
+</library>

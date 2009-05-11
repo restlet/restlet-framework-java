@@ -1,0 +1,10 @@
+<library id="tika">
+	<package name="org.apache.tika" />
+	<version>0.2</version>
+	<homeUri>
+		http://lucene.apache.org/tika/
+	</homeUri>
+	<downloadUri>
+		http://lucene.apache.org/tika/download.html
+	</downloadUri>
+</library>

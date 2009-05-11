@@ -1,0 +1,10 @@
+<library id="antlr">
+	<package name="org.antlr" />
+	<version>3.0</version>
+	<homeUri>
+		http://www.antlr.org/
+	</homeUri>
+	<downloadUri>
+		http://www.antlr.org/download.html 
+	</downloadUri>
+</library>

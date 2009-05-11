@@ -1,0 +1,10 @@
+<library id="bloat">
+	<package name="edu.purdue.cs.bloat" />
+	<version>1.0</version>
+	<homeUri>
+		http://www.cs.purdue.edu/homes/hosking/bloat/
+	</homeUri>
+	<downloadUri>
+		http://www.cs.purdue.edu/homes/hosking/bloat/
+	</downloadUri>
+</library>

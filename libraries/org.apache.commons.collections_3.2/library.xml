@@ -1,0 +1,10 @@
+<library id="collections">
+	<package name="org.apache.commons.collections" />
+	<version>3.2</version>
+	<homeUri>
+		http://commons.apache.org/collections/
+	</homeUri>
+	<downloadUri>
+		http://commons.apache.org/downloads/download_collections.cgi
+	</downloadUri>
+</library>

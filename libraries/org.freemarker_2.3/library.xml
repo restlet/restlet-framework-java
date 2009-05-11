@@ -1,0 +1,11 @@
+<library id="freemarker">
+	<package name="org.freemarker" />
+	<version>2.3</version>
+	<release>15</release>
+	<homeUri>
+		http://freemarker.org/
+	</homeUri>
+	<downloadUri>
+		http://freemarker.org/freemarkerdownload.html
+	</downloadUri>
+</library>
