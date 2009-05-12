@@ -1,6 +1,9 @@
 <library id="httpclient">
 	<package name="org.apache.commons.httpclient" />
 	<version>3.1</version>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
 	<homeUri>
 		http://commons.apache.org/httpclient/
 	</homeUri>

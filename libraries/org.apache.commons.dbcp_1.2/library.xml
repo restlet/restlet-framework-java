@@ -2,6 +2,9 @@
 	<package name="org.apache.commons.dbcp" />
 	<version>1.2</version>
 	<release>2</release>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
 	<homeUri>
 		http://commons.apache.org/dbcp/
 	</homeUri>

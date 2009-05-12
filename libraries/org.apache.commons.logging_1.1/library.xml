@@ -1,6 +1,9 @@
 <library id="logging">
 	<package name="org.apache.commons.logging" />
 	<version>1.1</version>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
 	<homeUri>
 		http://commons.apache.org/logging/
 	</homeUri>

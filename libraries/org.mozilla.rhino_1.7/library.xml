@@ -8,6 +8,9 @@
 	</package>
 	<version>1.7</version>
 	<release>0.rc1</release>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
 	<homeUri>
 		http://www.mozilla.org/rhino/
 	</homeUri>

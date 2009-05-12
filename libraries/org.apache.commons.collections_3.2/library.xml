@@ -1,6 +1,9 @@
 <library id="collections">
 	<package name="org.apache.commons.collections" />
 	<version>3.2</version>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
 	<homeUri>
 		http://commons.apache.org/collections/
 	</homeUri>

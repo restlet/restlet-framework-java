@@ -2,6 +2,10 @@
 	<package name="org.simpleframework" />
 	<version>4.1</version>
 	<release>10</release>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+	</distributions>
 	<homeUri>
 		http://simpleweb.sourceforge.net/
 	</homeUri>

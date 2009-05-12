@@ -1,6 +1,9 @@
 <library id="lang">
 	<package name="org.apache.commons.lang" />
 	<version>2.3</version>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
 	<homeUri>
 		http://commons.apache.org/lang/
 	</homeUri>

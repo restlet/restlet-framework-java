@@ -2,6 +2,9 @@
 	<package name="org.springframework" />
 	<version>2.5</version>
 	<release>6</release>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
 	<homeUri>
 		http://www.springframework.org/
 	</homeUri>

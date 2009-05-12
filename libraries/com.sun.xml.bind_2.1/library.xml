@@ -2,6 +2,9 @@
 	<package name="com.sun.xml.bind" />
 	<version>2.1</version>
 	<release>10</release>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
 	<homeUri>
 		https://jaxb.dev.java.net/
 	</homeUri>

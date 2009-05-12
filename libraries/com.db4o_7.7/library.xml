@@ -11,6 +11,10 @@
 	</package>
 	<version>7.7</version>
 	<release>67</release>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+	</distributions>
 	<homeUri>
 		http://www.db4o.com/
 	</homeUri>

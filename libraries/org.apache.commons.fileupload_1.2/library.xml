@@ -1,6 +1,9 @@
 <library id="fileupload">
 	<package name="org.apache.commons.fileupload" />
 	<version>1.2</version>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
 	<homeUri>
 		http://commons.apache.org/fileupload/
 	</homeUri>

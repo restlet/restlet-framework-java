@@ -1,6 +1,9 @@
 <library id="jettison">
 	<package name="org.codehaus.jettison" />
 	<version>1.1</version>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
 	<homeUri>
 		http://jettison.codehaus.org/
 	</homeUri>
