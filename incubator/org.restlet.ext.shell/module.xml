@@ -3,6 +3,10 @@
 	<description>
 		Restlet Extension - Shell
 	</description>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+	</distributions>
 
 	<dependencies>
 		<dependency type="lib">

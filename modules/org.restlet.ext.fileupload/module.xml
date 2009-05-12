@@ -1,8 +1,12 @@
-<module id="fileupload">
+<module id="fileupload" type="integration">
 	<name>Restlet Extension - FileUpload</name>
 	<description>
 		Integration with Apache FileUpload.
 	</description>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+	</distributions>
 
 	<dependencies>
 		<dependency type="lib">

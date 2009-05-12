@@ -3,6 +3,10 @@
 	<description>
 		All Restlet unit tests.
 	</description>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+	</distributions>
 
 	<dependencies>
 		<dependency type="lib">

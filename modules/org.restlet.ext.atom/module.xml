@@ -4,6 +4,10 @@
 		Support for the Atom syndication and the AtomPub (Atom Publication
 		Protocol) standards in their 1.0 version.
 	</description>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+	</distributions>
 
 	<dependencies>
 		<dependency type="module">

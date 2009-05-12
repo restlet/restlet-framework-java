@@ -1,8 +1,12 @@
-<module id="xstream">
+<module id="xstream" type="integration">
 	<name>Restlet Extension - XStream</name>
 	<description>
 		Integration with XStream.
 	</description>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+	</distributions>
 
 	<dependencies>
 		<dependency type="lib">

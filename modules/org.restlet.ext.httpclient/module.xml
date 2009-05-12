@@ -1,8 +1,12 @@
-<module id="httpclient">
+<module id="httpclient" type="connector">
 	<name>Restlet Extension - Apache HTTP Client</name>
 	<description>
 		Integration with Apache Commons HTTP Client.
 	</description>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+	</distributions>
 
 	<dependencies>
 		<dependency type="lib">

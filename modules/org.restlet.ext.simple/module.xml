@@ -1,8 +1,12 @@
-<module id="simple">
+<module id="simple" type="connector">
 	<name>Restlet Extension - Simple</name>
 	<description>
 		Integration with Simple framework.
 	</description>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+	</distributions>
 
 	<dependencies>
 		<dependency type="lib">

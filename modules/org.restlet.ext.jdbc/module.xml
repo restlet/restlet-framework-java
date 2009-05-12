@@ -1,8 +1,12 @@
-<module id="jdbc">
+<module id="jdbc" type="connector">
 	<name>Restlet Extension - JDBC</name>
 	<description>
 		Integration with Java DataBase Connectivity (JDBC).
 	</description>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+	</distributions>
 
 	<dependencies>
 		<dependency type="lib">

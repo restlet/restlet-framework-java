@@ -1,8 +1,12 @@
-<module id="jibx">
+<module id="jibx" type="integration">
 	<name>Restlet Extension - JiBX</name>
 	<description>
 		Integration with JiBX.
 	</description>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+	</distributions>
 
 	<dependencies>
 		<dependency type="lib">

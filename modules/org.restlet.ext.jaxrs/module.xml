@@ -3,6 +3,10 @@
 	<description>
 		Implementation of JAX-RS (JSR-311)
 	</description>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+	</distributions>
 
 	<dependencies>
 		<dependency type="lib">

@@ -3,6 +3,10 @@
 	<description>
 		Support for the WADL specification.
 	</description>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+	</distributions>
 
 	<dependencies>
 		<dependency type="module">

@@ -3,6 +3,10 @@
 	<description>
 		Restlet API is a Java framework for the REST architectural style.
 	</description>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+	</distributions>
 
 	<dependencies>
 		<dependency excludes="android">

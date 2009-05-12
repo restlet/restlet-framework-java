@@ -1,8 +1,12 @@
-<module id="freemarker">
+<module id="freemarker" type="integration">
 	<name>Restlet Extension - FreeMarker</name>
 	<description>
 		Integration with FreeMarker.
 	</description>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+	</distributions>
 
 	<dependencies>
 		<dependency type="lib">

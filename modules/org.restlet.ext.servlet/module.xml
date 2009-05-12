@@ -1,8 +1,12 @@
-<module id="servlet">
+<module id="servlet" type="integration">
 	<name>Restlet Extension - Servlet</name>
 	<description>
 		Integration with Servlet API.
 	</description>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+	</distributions>
 
 	<dependencies>
 		<dependency type="lib">

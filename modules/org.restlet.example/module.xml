@@ -1,8 +1,12 @@
-<module id="example">
+<module includes="jse" id="example">
 	<name>Restlet examples</name>
 	<description>
 		Various examples including those from the tutorial
 	</description>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+	</distributions>
 
 	<dependencies>
 		<dependency type="lib">

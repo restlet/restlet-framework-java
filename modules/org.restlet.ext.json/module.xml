@@ -3,6 +3,10 @@
 	<description>
 		Support for JSON representations.
 	</description>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+	</distributions>
 
 	<dependencies>
 		<dependency type="lib">

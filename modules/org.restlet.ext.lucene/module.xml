@@ -1,8 +1,12 @@
-<module id="lucene">
+<module id="lucene" type="integration">
 	<name>Restlet Extension - Lucene</name>
 	<description>
 		Integration with Apache Lucene, Solr and Tika sub-projects.
 	</description>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+	</distributions>
 
 	<dependencies>
 		<dependency type="lib">

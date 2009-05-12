@@ -3,6 +3,10 @@
 	<description>
 		Port of Restlet to Android SDK.
 	</description>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+	</distributions>
 
 	<osgi>
 		<export>org.restlet</export>

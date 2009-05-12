@@ -1,8 +1,12 @@
-<module id="xml">
+<module excludes="android" id="xml">
 	<name>Restlet Extension - XML</name>
 	<description>
 		Support for the XML documents.
 	</description>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+	</distributions>
 
 	<dependencies>
 		<dependency type="module">

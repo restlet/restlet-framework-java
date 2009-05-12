@@ -1,8 +1,12 @@
-<module id="example">
+<module id="example" type="connector">
 	<name>Restlet Extension - Jetty</name>
 	<description>
 		Integration with Jetty.
 	</description>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+	</distributions>
 
 	<dependencies>
 		<dependency type="lib">

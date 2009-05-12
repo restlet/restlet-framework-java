@@ -1,8 +1,12 @@
-<module id="spring">
+<module id="spring" type="integration">
 	<name>Restlet Extension - Spring Framework</name>
 	<description>
 		Integration with Spring Framework.
 	</description>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+	</distributions>
 
 	<dependencies>
 		<dependency type="lib">
