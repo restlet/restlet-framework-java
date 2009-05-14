@@ -81,6 +81,8 @@ Changes log
           introspected for annotations.
         - Added ClientResource#create(...) and wrap() methods to create
           dynamic proxies implementing a given interface. 
+        - Added Series#getValuesArray() with a flag to ignore case.
+          Suggested by Arjohn Kampman.
     - API changes
         - RepresentationInfo is now concrete and has more constructors.
           Suggested by Lars Heuer.
