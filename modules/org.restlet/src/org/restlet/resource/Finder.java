@@ -447,17 +447,14 @@ public class Finder extends Restlet {
                         "No target class was defined for this finder: "
                                 + toString());
             } else {
-                if ((getTargetClass() == null)
-                        | Handler.class
-                                .isAssignableFrom((Class<? extends Handler>) getTargetClass())) {
+                if (Handler.class
+                        .isAssignableFrom((Class<? extends Handler>) getTargetClass())) {
                     final Handler targetHandler = findTarget(request, response);
 
                     if (!response.getStatus().equals(Status.SUCCESS_OK)) {
                         // Probably during the instantiation of the target
-                        // handler,
-                        // or earlier the status was changed from the default
-                        // one.
-                        // Don't go further.
+                        // handler, or earlier the status was changed from the
+                        // default one. Don't go further.
                     } else {
                         final Method method = request.getMethod();
 
@@ -514,8 +511,7 @@ public class Finder extends Restlet {
                         } else {
                             // Probably during the instantiation of the target
                             // server resource, or earlier the status was
-                            // changed
-                            // from the default one. Don't go further.
+                            // changed from the default one. Don't go further.
                         }
 
                         targetResource.release();
