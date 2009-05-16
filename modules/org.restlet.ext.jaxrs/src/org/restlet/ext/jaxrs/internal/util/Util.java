@@ -77,8 +77,8 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.engine.http.ContentType;
-import org.restlet.engine.http.HttpClientCall;
 import org.restlet.engine.http.HttpClientAdapter;
+import org.restlet.engine.http.HttpClientCall;
 import org.restlet.engine.http.HttpServerAdapter;
 import org.restlet.engine.http.HttpUtils;
 import org.restlet.engine.util.DateUtils;
@@ -91,7 +91,6 @@ import org.restlet.ext.jaxrs.internal.exceptions.InjectException;
 import org.restlet.ext.jaxrs.internal.exceptions.JaxRsRuntimeException;
 import org.restlet.ext.jaxrs.internal.exceptions.MethodInvokeException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
-import org.restlet.ext.jaxrs.internal.provider.JaxbElementProvider;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
@@ -306,8 +305,8 @@ public class Util {
             restletResponse.setEntity(new EmptyRepresentation());
         }
 
-        HttpClientAdapter.copyResponseTransportHeaders(headers,
-                restletResponse);
+        HttpClientAdapter
+                .copyResponseTransportHeaders(headers, restletResponse);
         HttpClientCall.copyResponseEntityHeaders(headers, restletResponse
                 .getEntity());
     }
@@ -325,8 +324,8 @@ public class Util {
     public static Series<Parameter> copyResponseHeaders(Response restletResponse) {
         final Series<Parameter> headers = new Form();
         HttpServerAdapter.addResponseHeaders(restletResponse, headers);
-        HttpServerAdapter.addEntityHeaders(restletResponse.getEntity(),
-                headers);
+        HttpServerAdapter
+                .addEntityHeaders(restletResponse.getEntity(), headers);
         return headers;
     }
 
@@ -752,24 +751,29 @@ public class Util {
      */
     public static Class<?> getGenericClass(Class<?> clazz,
             Class<?> implInterface) {
+        if (clazz == null)
+            throw new IllegalArgumentException("The class must not be null");
+        if (implInterface == null)
+            throw new IllegalArgumentException(
+                    "The interface to b eimplemented must not be null");
         return getGenericClass(clazz, implInterface, null);
     }
 
     private static Class<?> getGenericClass(Class<?> clazz,
             Class<?> implInterface, Type[] gsatp) {
-        if (clazz.equals(JaxbElementProvider.class)) {
-            clazz.toString();
-        } else if (clazz.equals(MultivaluedMap.class)) {
-            clazz.toString();
-        }
         for (Type ifGenericType : clazz.getGenericInterfaces()) {
             if (!(ifGenericType instanceof ParameterizedType)) {
                 continue;
             }
             final ParameterizedType pt = (ParameterizedType) ifGenericType;
-            if (!pt.getRawType().equals(implInterface))
+            Type ptRawType = pt.getRawType();
+            if (ptRawType == null)
+                continue;
+            if (!ptRawType.equals(implInterface))
                 continue;
             final Type[] atps = pt.getActualTypeArguments();
+            if (atps == null || atps.length == 0)
+                continue;
             final Type atp = atps[0];
             if (atp instanceof Class) {
                 return (Class<?>) atp;
@@ -783,13 +787,18 @@ public class Util {
             if (atp instanceof TypeVariable<?>) {
                 TypeVariable<?> tv = (TypeVariable<?>) atp;
                 String name = tv.getName();
+                if (name == null)
+                    continue;
                 // clazz = AbstractProvider
                 // implInterface = MessageBodyReader
                 // name = "T"
                 // pt = MessageBodyReader<T>
                 for (int i = 0; i < atps.length; i++) {
                     TypeVariable<?> tv2 = (TypeVariable<?>) atps[i];
-                    if (tv2.getName().equals(name)) {
+                    String tv2Name = tv2.getName();
+                    if (tv2Name == null)
+                        continue;
+                    if (tv2Name.equals(name)) {
                         Type gsatpn = gsatp[i];
                         if (gsatpn instanceof Class) {
                             return (Class<?>) gsatpn;
@@ -836,7 +845,7 @@ public class Util {
     }
 
     /**
-     * Example: in List&lt;String&lt; -&gt; out: String.class
+     * Example: in List&lt;String&gt; -&gt; out: String.class
      * 
      * @param genericType
      * @return otherwise null
@@ -846,7 +855,10 @@ public class Util {
             return null;
         }
         final ParameterizedType pt = (ParameterizedType) genericType;
-        final Type atp = pt.getActualTypeArguments()[0];
+        Type[] actualTypeArguments = pt.getActualTypeArguments();
+        if(actualTypeArguments == null || actualTypeArguments.length == 0)
+            return null;
+        final Type atp = actualTypeArguments[0];
         if (atp instanceof Class) {
             return (Class<?>) atp;
         }
