@@ -137,9 +137,9 @@ public class ServerResource extends UniformResource {
      * 
      * @return The optional response entity.
      * @throws ResourceException
-     * @see <a *
+     * @see <a
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.7"
-     *      >HTTP * DELETE method< /a>
+     *      >HTTP DELETE method< /a>
      */
     protected Representation delete() throws ResourceException {
         setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
@@ -161,9 +161,10 @@ public class ServerResource extends UniformResource {
      *            The variant of the response entity.
      * @return The optional response entity.
      * @throws ResourceException
-     * @see <a *
+     * @see #getVariants(Method))
+     * @see <a
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.7"
-     *      >HTTP * DELETE method< /a>
+     *      >HTTP DELETE method</a>
      */
     protected Representation delete(Variant variant) throws ResourceException {
         setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
@@ -235,9 +236,12 @@ public class ServerResource extends UniformResource {
                 }
 
                 if ((getStatus() != null) && getStatus().isSuccess()) {
-                    // Conditions where passed successfully.
-                    // Continue the normal processing
-                    // TODO Why testing "resultInfo instance of Representation"?
+                    // Conditions were passed successfully, continue the normal
+                    // processing
+                    // If the representation info obtained to test the
+                    // conditions
+                    // is in fact a full representation, return it immediately
+                    // for optimization purpose
                     if ((Method.GET.equals(getMethod()) || Method.HEAD
                             .equals(getMethod()))
                             && resultInfo instanceof Representation) {
@@ -327,20 +331,24 @@ public class ServerResource extends UniformResource {
             if (annotationInfo != null) {
                 result = doHandle(annotationInfo);
             } else {
-                if (method.equals(Method.GET)) {
-                    result = get();
-                } else if (method.equals(Method.POST)) {
-                    result = post(getRequestEntity());
-                } else if (method.equals(Method.PUT)) {
+                if (method.equals(Method.PUT)) {
                     result = put(getRequestEntity());
-                } else if (method.equals(Method.DELETE)) {
-                    result = delete();
-                } else if (method.equals(Method.HEAD)) {
-                    result = head();
-                } else if (method.equals(Method.OPTIONS)) {
-                    result = options();
+                } else if (isExisting()) {
+                    if (method.equals(Method.GET)) {
+                        result = get();
+                    } else if (method.equals(Method.POST)) {
+                        result = post(getRequestEntity());
+                    } else if (method.equals(Method.DELETE)) {
+                        result = delete();
+                    } else if (method.equals(Method.HEAD)) {
+                        result = head();
+                    } else if (method.equals(Method.OPTIONS)) {
+                        result = options();
+                    } else {
+                        setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+                    }
                 } else {
-                    setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+                    setStatus(Status.CLIENT_ERROR_NOT_FOUND);
                 }
             }
         }
@@ -497,20 +505,36 @@ public class ServerResource extends UniformResource {
         if (method == null) {
             setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "No method specified");
         } else {
-            if (method.equals(Method.GET)) {
-                result = get(variant);
-            } else if (method.equals(Method.POST)) {
-                result = post(getRequestEntity(), variant);
-            } else if (method.equals(Method.PUT)) {
+            if (method.equals(Method.PUT)) {
                 result = put(getRequestEntity(), variant);
-            } else if (method.equals(Method.DELETE)) {
-                result = delete(variant);
-            } else if (method.equals(Method.HEAD)) {
-                result = head(variant);
-            } else if (method.equals(Method.OPTIONS)) {
-                result = options(variant);
+            } else if (isExisting()) {
+                if (method.equals(Method.GET)) {
+                    if (variant instanceof Representation) {
+                        result = (Representation) variant;
+                    } else {
+                        result = get(variant);
+                    }
+                } else if (method.equals(Method.POST)) {
+                    result = post(getRequestEntity(), variant);
+                } else if (method.equals(Method.DELETE)) {
+                    result = delete(variant);
+                } else if (method.equals(Method.HEAD)) {
+                    if (variant instanceof Representation) {
+                        result = (Representation) variant;
+                    } else {
+                        result = head(variant);
+                    }
+                } else if (method.equals(Method.OPTIONS)) {
+                    if (variant instanceof Representation) {
+                        result = (Representation) variant;
+                    } else {
+                        result = options(variant);
+                    }
+                } else {
+                    setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+                }
             } else {
-                setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+                setStatus(Status.CLIENT_ERROR_NOT_FOUND);
             }
         }
 
@@ -607,17 +631,12 @@ public class ServerResource extends UniformResource {
      * @param variant
      *            The variant whose full representation must be returned.
      * @return The resource's representation.
-     * @see #getVariants()
+     * @see #getVariants(Method))
      * @throws ResourceException
      */
     protected Representation get(Variant variant) throws ResourceException {
-        Representation result = null;
-
-        if (variant instanceof Representation) {
-            result = (Representation) variant;
-        }
-
-        return result;
+        setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+        return null;
     }
 
     /**
@@ -704,7 +723,6 @@ public class ServerResource extends UniformResource {
             }
         }
 
-        // TODO Could be enhanced.
         // Add variants strictly defined for the current method
         List<Variant> methodVariants = getVariants(getMethod());
         if (methodVariants != null) {
@@ -715,15 +733,6 @@ public class ServerResource extends UniformResource {
             result.addAll(methodVariants);
         }
 
-        // Add variants defined for all methods
-        methodVariants = getVariants(Method.ALL);
-        if (methodVariants != null) {
-            if (result == null) {
-                result = new ArrayList<Variant>();
-            }
-
-            result.addAll(methodVariants);
-        }
         return result;
     }
 
@@ -873,6 +882,18 @@ public class ServerResource extends UniformResource {
             }
         }
 
+        if (!Method.ALL.equals(method)) {
+            List<Variant> allVariants = getVariants(Method.ALL);
+
+            if (allVariants != null) {
+                if (result == null) {
+                    result = new ArrayList<Variant>();
+                }
+
+                result.addAll(allVariants);
+            }
+        }
+
         return result;
     }
 
@@ -961,7 +982,7 @@ public class ServerResource extends UniformResource {
      * @param variant
      *            The variant whose full representation must be returned.
      * @return The resource's representation.
-     * @see #getVariants()
+     * @see #getVariants(Method))
      * @throws ResourceException
      */
     protected Representation head(Variant variant) throws ResourceException {
@@ -1046,6 +1067,7 @@ public class ServerResource extends UniformResource {
      * @param variant
      *            The variant of the response entity.
      * @return The optional response entity.
+     * @see #getVariants(Method))
      */
     protected Representation options(Variant variant) throws ResourceException {
         setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
@@ -1061,9 +1083,10 @@ public class ServerResource extends UniformResource {
      *            The posted entity.
      * @return The optional response entity.
      * @throws ResourceException
-     * @see <a *
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.5"
-     *      >HTTP * POST method< /a>
+     * @see #getVariants(Method))
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.5">HTTP
+     *      POST method</a>
      */
     protected Representation post(Representation entity)
             throws ResourceException {
@@ -1101,9 +1124,9 @@ public class ServerResource extends UniformResource {
      *            The representation to store.
      * @return The optional result entity.
      * @throws ResourceException
-     * @see <a *
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6"
-     *      >HTTP * PUT method< /a>
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6">HTTP
+     *      PUT method</a>
      */
     protected Representation put(Representation representation)
             throws ResourceException {
@@ -1122,9 +1145,10 @@ public class ServerResource extends UniformResource {
      *            The variant of the response entity.
      * @return The optional result entity.
      * @throws ResourceException
-     * @see <a *
+     * @see #getVariants(Method))
+     * @see <a
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6"
-     *      >HTTP * PUT method< /a>
+     *      >HTTP PUT method</a>
      */
     protected Representation put(Representation representation, Variant variant)
             throws ResourceException {

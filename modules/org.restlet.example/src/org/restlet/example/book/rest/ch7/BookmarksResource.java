@@ -30,12 +30,10 @@
 
 package org.restlet.example.book.rest.ch7;
 
-import org.restlet.Context;
 import org.restlet.data.MediaType;
+import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.ReferenceList;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
@@ -47,40 +45,17 @@ import org.restlet.resource.ResourceException;
  */
 public class BookmarksResource extends UserResource {
 
-    /**
-     * Constructor.
-     * 
-     * @param context
-     *            The parent context.
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The response to return.
-     */
-    public BookmarksResource(Context context, Request request, Response response) {
-        super(context, request, response);
+    @Override
+    public void doInit() {
+        super.doInit();
         getVariants().clear();
         if (getUser() != null) {
-            getVariants().add(new Variant(MediaType.TEXT_HTML));
+            getVariants().put(Method.GET, MediaType.TEXT_HTML);
         }
     }
 
     @Override
-    public void handleGet() {
-        // Make sure that the Uri ends with a "/" without changing the query.
-        // This is helpful when exposing the list of relative references of the
-        // bookmarks.
-        final Reference ref = getRequest().getResourceRef();
-        if (!ref.getPath().endsWith("/")) {
-            ref.setPath(ref.getPath() + "/");
-            getResponse().redirectPermanent(ref);
-        } else {
-            super.handleGet();
-        }
-    }
-
-    @Override
-    public Representation represent(Variant variant) throws ResourceException {
+    public Representation get(Variant variant) throws ResourceException {
         Representation result = null;
 
         if (variant.getMediaType().equals(MediaType.TEXT_HTML)) {
@@ -96,6 +71,24 @@ public class BookmarksResource extends UserResource {
             }
 
             result = rl.getWebRepresentation();
+        }
+
+        return result;
+    }
+
+    @Override
+    public Representation handle() {
+        Representation result = null;
+
+        // Make sure that the URI ends with a "/" without changing the query.
+        // This is helpful when exposing the list of relative references of the
+        // bookmarks.
+        final Reference ref = getRequest().getResourceRef();
+        if (!ref.getPath().endsWith("/")) {
+            ref.setPath(ref.getPath() + "/");
+            redirectPermanent(ref);
+        } else {
+            result = super.handle();
         }
 
         return result;

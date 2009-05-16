@@ -35,32 +35,29 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.restlet.Context;
 import org.restlet.data.MediaType;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
+import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.restlet.ext.freemarker.TemplateRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
-import org.restlet.resource.Resource;
 import org.restlet.resource.ResourceException;
+import org.restlet.resource.ServerResource;
 
 /**
  *
  */
-public class FreemarkerResource extends Resource {
+public class FreemarkerResource extends ServerResource {
 
     // List of items
-    private final List<String> items;
+    private List<String> items;
 
-    public FreemarkerResource(Context context, Request request,
-            Response response) {
-        super(context, request, response);
+    @Override
+    public void doInit() {
         // This resource is able to generate one kind of representations, then
         // turn off content negotiation.
-        setNegotiateContent(false);
-        getVariants().add(new Variant(MediaType.TEXT_PLAIN));
+        setNegotiated(false);
+        getVariants().put(Method.GET, MediaType.TEXT_PLAIN);
 
         // Collect data
         this.items = new ArrayList<String>();
@@ -70,7 +67,7 @@ public class FreemarkerResource extends Resource {
     }
 
     @Override
-    public Representation represent(Variant variant) throws ResourceException {
+    public Representation get(Variant variant) throws ResourceException {
         Representation representation = null;
 
         try {

@@ -30,30 +30,28 @@
 
 package org.restlet.example.book.restlet.ch10;
 
-import org.restlet.Context;
 import org.restlet.data.MediaType;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
+import org.restlet.data.Method;
 import org.restlet.ext.xml.SaxRepresentation;
 import org.restlet.ext.xml.XmlWriter;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
-import org.restlet.resource.Resource;
 import org.restlet.resource.ResourceException;
+import org.restlet.resource.ServerResource;
 import org.xml.sax.SAXException;
 
 /**
  *
  */
-public class SaxResource extends Resource {
+public class SaxResource extends ServerResource {
 
-    public SaxResource(Context context, Request request, Response response) {
-        super(context, request, response);
-        getVariants().add(new Variant(MediaType.TEXT_XML));
+    @Override
+    public void doInit() {
+        getVariants().put(Method.GET, MediaType.TEXT_XML);
     }
 
     @Override
-    public Representation represent(Variant variant) throws ResourceException {
+    public Representation get(Variant variant) throws ResourceException {
         Representation rep = null;
 
         final XmlWriter w = new XmlWriter();

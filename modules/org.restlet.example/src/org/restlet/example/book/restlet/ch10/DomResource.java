@@ -33,30 +33,28 @@ package org.restlet.example.book.restlet.ch10;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.restlet.Context;
 import org.restlet.data.MediaType;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
+import org.restlet.data.Method;
 import org.restlet.ext.xml.DomRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
-import org.restlet.resource.Resource;
 import org.restlet.resource.ResourceException;
+import org.restlet.resource.ServerResource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
  *
  */
-public class DomResource extends Resource {
+public class DomResource extends ServerResource {
 
-    public DomResource(Context context, Request request, Response response) {
-        super(context, request, response);
-        getVariants().add(new Variant(MediaType.TEXT_XML));
+    @Override
+    public void doInit() {
+        getVariants().put(Method.GET, MediaType.TEXT_XML);
     }
 
     @Override
-    public Representation represent(Variant variant) throws ResourceException {
+    public Representation get(Variant variant) throws ResourceException {
         Representation rep = null;
 
         try {

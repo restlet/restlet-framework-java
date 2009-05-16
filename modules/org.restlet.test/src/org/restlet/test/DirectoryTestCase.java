@@ -108,7 +108,7 @@ public class DirectoryTestCase extends RestletTestCase {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         new DirectoryTestCase().testDirectory();
     }
 
@@ -187,76 +187,71 @@ public class DirectoryTestCase extends RestletTestCase {
         return response;
     }
 
-    public void testDirectory() {
-        try {
-            // Create a temporary directory for the tests
-            this.testDir = new File(System.getProperty("java.io.tmpdir"),
-                    "DirectoryTestCase/tests1" + new Date().getTime());
+    public void testDirectory() throws Exception {
+        // Create a temporary directory for the tests
+        this.testDir = new File(System.getProperty("java.io.tmpdir"),
+                "DirectoryTestCase/tests1" + new Date().getTime());
 
-            // Create a new Restlet component
-            final Component clientComponent = new Component();
-            clientComponent.getClients().add(Protocol.FILE);
+        // Create a new Restlet component
+        final Component clientComponent = new Component();
+        clientComponent.getClients().add(Protocol.FILE);
 
-            // Create an application
-            final MyApplication application = new MyApplication(this.testDir);
-            // Attach the application to the component and start it
-            clientComponent.getDefaultHost().attach("", application);
+        // Create an application
+        final MyApplication application = new MyApplication(this.testDir);
+        // Attach the application to the component and start it
+        clientComponent.getDefaultHost().attach("", application);
 
-            // Now, let's start the component!
-            clientComponent.start();
+        // Now, let's start the component!
+        clientComponent.start();
 
-            // Allow extensions tunneling
-            application.getTunnelService().setExtensionsTunnel(true);
-            deleteDir(this.testDir);
-            this.testDir = new File(System.getProperty("java.io.tmpdir"),
-                    "DirectoryTestCase/tests2" + new Date().getTime());
-            this.testDir.mkdirs();
-            application.setTestDirectory(testDir);
+        // Allow extensions tunneling
+        application.getTunnelService().setExtensionsTunnel(true);
+        deleteDir(this.testDir);
+        this.testDir = new File(System.getProperty("java.io.tmpdir"),
+                "DirectoryTestCase/tests2" + new Date().getTime());
+        this.testDir.mkdirs();
+        application.setTestDirectory(testDir);
 
-            // Test the directory Restlet with an index name
-            testDirectory(application, application.getDirectory(), "index");
-            deleteDir(this.testDir);
-            this.testDir = new File(System.getProperty("java.io.tmpdir"),
-                    "DirectoryTestCase/tests3" + new Date().getTime());
-            this.testDir.mkdirs();
-            application.setTestDirectory(testDir);
+        // Test the directory Restlet with an index name
+        testDirectory(application, application.getDirectory(), "index");
+        deleteDir(this.testDir);
+        this.testDir = new File(System.getProperty("java.io.tmpdir"),
+                "DirectoryTestCase/tests3" + new Date().getTime());
+        this.testDir.mkdirs();
+        application.setTestDirectory(testDir);
 
-            // Test the directory Restlet with no index name
-            testDirectory(application, application.getDirectory(), "");
+        // Test the directory Restlet with no index name
+        testDirectory(application, application.getDirectory(), "");
 
-            // Avoid extensions tunneling
-            application.getTunnelService().setExtensionsTunnel(false);
-            deleteDir(this.testDir);
-            this.testDir = new File(System.getProperty("java.io.tmpdir"),
-                    "DirectoryTestCase/tests4" + new Date().getTime());
-            this.testDir.mkdirs();
-            application.setTestDirectory(testDir);
+        // Avoid extensions tunneling
+        application.getTunnelService().setExtensionsTunnel(false);
+        deleteDir(this.testDir);
+        this.testDir = new File(System.getProperty("java.io.tmpdir"),
+                "DirectoryTestCase/tests4" + new Date().getTime());
+        this.testDir.mkdirs();
+        application.setTestDirectory(testDir);
 
-            // Test the directory Restlet with an index name
-            testDirectory(application, application.getDirectory(), "index");
-            deleteDir(this.testDir);
-            this.testDir = new File(System.getProperty("java.io.tmpdir"),
-                    "DirectoryTestCase/tests5" + new Date().getTime());
-            this.testDir.mkdirs();
-            application.setTestDirectory(testDir);
+        // Test the directory Restlet with an index name
+        testDirectory(application, application.getDirectory(), "index");
+        deleteDir(this.testDir);
+        this.testDir = new File(System.getProperty("java.io.tmpdir"),
+                "DirectoryTestCase/tests5" + new Date().getTime());
+        this.testDir.mkdirs();
+        application.setTestDirectory(testDir);
 
-            // Test the directory Restlet with no index name
-            testDirectory(application, application.getDirectory(), "");
-            deleteDir(this.testDir);
-            this.testDir = new File(System.getProperty("java.io.tmpdir"),
-                    "DirectoryTestCase/tests6" + new Date().getTime());
-            this.testDir.mkdirs();
-            application.setTestDirectory(testDir);
+        // Test the directory Restlet with no index name
+        testDirectory(application, application.getDirectory(), "");
+        deleteDir(this.testDir);
+        this.testDir = new File(System.getProperty("java.io.tmpdir"),
+                "DirectoryTestCase/tests6" + new Date().getTime());
+        this.testDir.mkdirs();
+        application.setTestDirectory(testDir);
 
-            // Test the access to the sub directories.
-            testDirectoryDeeplyAccessible(application, application
-                    .getDirectory());
+        // Test the access to the sub directories.
+        testDirectoryDeeplyAccessible(application, application.getDirectory());
 
-            // Now, let's stop the component!
-            clientComponent.stop();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        // Now, let's stop the component!
+        clientComponent.stop();
     }
 
     /**
@@ -396,7 +391,7 @@ public class DirectoryTestCase extends RestletTestCase {
         assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
 
         // Test 6c : delete a directory (without and with trailing slash)
-        // Distinct behaviours if an index has been defined or not
+        // Distinct behaviors if an index has been defined or not
         if (indexName.length() == 0) {
             response = handle(application, this.webSiteURL, testDirectoryUrl,
                     Method.DELETE, null, "6c-1");
@@ -421,20 +416,20 @@ public class DirectoryTestCase extends RestletTestCase {
             assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
         }
 
-        // Test 7a : put one representation of the base file (in french
+        // Test 7a : put one representation of the base file (in French
         // language)
         response = handle(application, this.webSiteURL, this.baseFileUrlFr,
                 Method.PUT, new StringRepresentation("message de test"), "7a");
         assertEquals(Status.SUCCESS_CREATED, response.getStatus());
 
-        // Test 7b : put another representation of the base file (in french
+        // Test 7b : put another representation of the base file (in French
         // language) but the extensions are mixed
         // and there is no content negotiation
         directory.setNegotiateContent(false);
         response = handle(application, this.webSiteURL, this.baseFileUrlFrBis,
                 Method.PUT, new StringRepresentation("message de test"), "7b-1");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        // The 2 resources in french must be present (the same actually)
+        // The 2 resources in French must be present (the same actually)
         response = handle(application, this.webSiteURL, this.baseFileUrlFr,
                 Method.HEAD, null, "7b-2");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
@@ -444,7 +439,7 @@ public class DirectoryTestCase extends RestletTestCase {
 
         // Test 7c : delete the file representation of the resources with no
         // content negotiation
-        // The 2 french resources are deleted (there were only one)
+        // The 2 French resources are deleted (there were only one)
         response = handle(application, this.webSiteURL, this.baseFileUrlFr,
                 Method.DELETE, null, "7c-1");
         assertEquals(Status.SUCCESS_NO_CONTENT, response.getStatus());
@@ -461,7 +456,7 @@ public class DirectoryTestCase extends RestletTestCase {
                 Method.DELETE, null, "7c-4");
         assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
 
-        // Test 7d : put another representation of the base file (in french
+        // Test 7d : put another representation of the base file (in French
         // language) but the extensions are mixed
         // and there is content negotiation
         directory.setNegotiateContent(true);
@@ -472,7 +467,7 @@ public class DirectoryTestCase extends RestletTestCase {
                 Method.PUT, new StringRepresentation("message de test Bis"),
                 "7d-2");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        // only one resource in french must be present
+        // only one resource in French must be present
         response = handle(application, this.webSiteURL, this.baseFileUrlFr,
                 Method.HEAD, null, "7d-3");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
@@ -510,7 +505,7 @@ public class DirectoryTestCase extends RestletTestCase {
             assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
         }
 
-        // Test 8 : must delete the english representation
+        // Test 8 : must delete the English representation
         response = handle(application, this.webSiteURL, this.baseFileUrl,
                 Method.DELETE, null, "8a");
         assertEquals(Status.SUCCESS_NO_CONTENT, response.getStatus());
@@ -548,7 +543,7 @@ public class DirectoryTestCase extends RestletTestCase {
                 this.percentEncodedFileUrl, Method.DELETE, null, "9d");
         assertEquals(Status.SUCCESS_NO_CONTENT, response.getStatus());
 
-        // Test 10a : Try to create a directory with an unkown hierarchy of
+        // Test 10a : Try to create a directory with an unknown hierarchy of
         // parent directories.
         response = handle(application, webSiteURL, testCreationDirectory,
                 Method.PUT, new StringRepresentation("useless entity"), "10a");
@@ -560,14 +555,14 @@ public class DirectoryTestCase extends RestletTestCase {
                 Method.PUT, new StringRepresentation("useless entity"), "10b");
         assertTrue(response.getStatus().equals(Status.SUCCESS_NO_CONTENT));
 
-        // Test 10c : Try to create a file with an unkown hierarchy of
+        // Test 10c : Try to create a file with an unknown hierarchy of
         // parent directories. The name and the metadata of the provided entity
         // don't match
         response = handle(application, webSiteURL, testCreationFile,
                 Method.PUT, new StringRepresentation("file entity"), "10c");
         assertTrue(response.getStatus().equals(Status.REDIRECTION_SEE_OTHER));
 
-        // Test 10d : Try to create a file with an unkown hierarchy of
+        // Test 10d : Try to create a file with an unknown hierarchy of
         // parent directories. The name and the metadata of the provided entity
         // match
         response = handle(application, webSiteURL, testCreationTextFile,

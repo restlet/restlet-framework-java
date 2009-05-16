@@ -50,6 +50,7 @@ import org.restlet.util.Series;
  * @author Jerome Louvel
  * @author Ray Waldin (ray@waldin.net)
  */
+@SuppressWarnings("deprecation")
 public class AuthenticatorUtils {
 
     /**

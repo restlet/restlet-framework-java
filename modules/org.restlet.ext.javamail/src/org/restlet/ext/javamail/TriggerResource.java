@@ -78,7 +78,7 @@ public class TriggerResource extends Resource {
     private String mailboxUri;
 
     /**
-     * The mail URI template, optionnaly relative to the mailbox URI. The
+     * The mail URI template, optionally relative to the mailbox URI. The
      * template should contain a variable "{mailId}" for the insertion of the
      * mail identifier in the proper location. The default value is "/{mailId}".
      */

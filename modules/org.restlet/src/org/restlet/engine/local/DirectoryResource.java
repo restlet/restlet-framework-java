@@ -31,6 +31,7 @@
 package org.restlet.engine.local;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -38,7 +39,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.logging.Level;
 
-import org.restlet.Context;
 import org.restlet.Uniform;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -51,8 +51,8 @@ import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.Directory;
-import org.restlet.resource.Resource;
 import org.restlet.resource.ResourceException;
+import org.restlet.resource.ServerResource;
 
 /**
  * Resource supported by a set of context representations (from file system,
@@ -66,7 +66,7 @@ import org.restlet.resource.ResourceException;
  * @author Jerome Louvel
  * @author Thierry Boileau
  */
-public class DirectoryResource extends Resource {
+public class DirectoryResource extends ServerResource {
 
     /**
      * Returns the set of extensions contained in a given directory entry name.
@@ -94,7 +94,7 @@ public class DirectoryResource extends Resource {
     private String baseName;
 
     /** The parent directory handler. */
-    private final Directory directory;
+    private Directory directory;
 
     /** If the resource is a directory, this contains its content. */
     private ReferenceList directoryContent;
@@ -132,6 +132,58 @@ public class DirectoryResource extends Resource {
     /** The unique representation of the target URI, if it exists. */
     private Reference uniqueReference;
 
+    @Override
+    public Representation delete() throws ResourceException {
+        if (this.directory.isModifiable()) {
+            if (this.directoryRedirection) {
+                if (this.originalRef != null) {
+                    redirectSeeOther(this.originalRef.getIdentifier() + "/");
+                } else {
+                    redirectSeeOther(getReference().getIdentifier() + "/");
+                }
+            } else {
+                final Request contextRequest = new Request(Method.DELETE,
+                        this.targetUri);
+                final Response contextResponse = new Response(contextRequest);
+
+                if (this.directoryTarget && !this.indexTarget) {
+                    contextRequest.setResourceRef(this.targetUri);
+                    getClientDispatcher().handle(contextRequest,
+                            contextResponse);
+                } else {
+                    // Check if there is only one representation
+
+                    // Try to get the unique representation of the resource
+                    final ReferenceList references = getVariantsReferences();
+                    if (!references.isEmpty()) {
+                        if (this.uniqueReference != null) {
+                            contextRequest.setResourceRef(this.uniqueReference);
+                            getClientDispatcher().handle(contextRequest,
+                                    contextResponse);
+                        } else {
+                            // We found variants, but not the right one
+                            contextResponse
+                                    .setStatus(new Status(
+                                            Status.CLIENT_ERROR_NOT_ACCEPTABLE,
+                                            "Unable to process properly the request. Several variants exist but none of them suits precisely. "));
+                        }
+                    } else {
+                        contextResponse
+                                .setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+                    }
+                }
+
+                setStatus(contextResponse.getStatus());
+            }
+        } else {
+            setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED,
+                    "The directory is not modifiable.");
+            updateAllowedMethods();
+        }
+
+        return null;
+    }
+
     /**
      * This constructor aims at answering the following questions:<br>
      * <ul>
@@ -152,215 +204,216 @@ public class DirectoryResource extends Resource {
      * <li>underlying helpers that do not support content negotiation cannot
      * support extensions tunneling</li>
      * </ul>
-     * 
-     * @param context
-     *            The parent context.
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The response to return.
-     * @throws IOException
      */
-    public DirectoryResource(Context context, Request request, Response response)
-            throws IOException {
-        super(context, request, response);
+    @Override
+    public void doInit() throws ResourceException {
+        try {
+            // Update the member variables
+            this.directory = (Directory) getRequestAttributes().get(
+                    "org.restlet.directory");
+            this.relativePart = getReference().getRemainingPart(false, false);
+            setNegotiated(this.directory.isNegotiateContent());
 
-        // Update the member variables
-        this.directory = (Directory) request.getAttributes().get(
-                "org.restlet.directory");
-        this.relativePart = request.getResourceRef().getRemainingPart(false,
-                false);
-        setModifiable(this.directory.isModifiable());
-        setNegotiateContent(this.directory.isNegotiateContent());
+            // Restore the original URI in case the call has been tunneled.
+            if ((getApplication() != null)
+                    && getApplication().getTunnelService().isExtensionsTunnel()) {
+                this.originalRef = getOriginalRef();
 
-        // Restore the original URI in case the call has been tunneled.
-        if ((getApplication() != null)
-                && getApplication().getTunnelService().isExtensionsTunnel()) {
-            this.originalRef = request.getOriginalRef();
-
-            if (this.originalRef != null) {
-                this.originalRef.setBaseRef(request.getResourceRef()
-                        .getBaseRef());
-                this.relativePart = this.originalRef.getRemainingPart();
-            }
-        }
-
-        if (this.relativePart.startsWith("/")) {
-            // We enforce the leading slash on the root URI
-            this.relativePart = this.relativePart.substring(1);
-        }
-
-        // The target URI does not take into account the query and fragment
-        // parts of the resource.
-        this.targetUri = new Reference(directory.getRootRef().toString()
-                + this.relativePart).normalize().toString(false, false);
-        if (!this.targetUri.startsWith(directory.getRootRef().toString())) {
-            // Prevent the client from accessing resources in upper directories
-            this.targetUri = directory.getRootRef().toString();
-        }
-
-        if (getClientDispatcher() == null) {
-            getLogger().warning(
-                    "No client dispatcher is available on the context. Can't get the target URI: "
-                            + this.targetUri);
-        } else {
-            // Try to detect the presence of a directory
-            Response contextResponse = getRepresentation(this.targetUri);
-            if (contextResponse.getEntity() != null) {
-                // As a convention, underlying client connectors return the
-                // directory listing with the media-type
-                // "MediaType.TEXT_URI_LIST" when handling directories
-                if (MediaType.TEXT_URI_LIST.equals(contextResponse.getEntity()
-                        .getMediaType())) {
-                    this.directoryTarget = true;
-                    this.fileTarget = false;
-                    this.directoryContent = new ReferenceList(contextResponse
-                            .getEntity());
-                    if (!request.getResourceRef().getIdentifier().endsWith("/")) {
-                        // All requests will be automatically redirected
-                        this.directoryRedirection = true;
-                    }
-
-                    if (!this.targetUri.endsWith("/")) {
-                        this.targetUri += "/";
-                        this.relativePart += "/";
-                    }
-
-                    // Append the index name
-                    if ((getDirectory().getIndexName() != null)
-                            && (getDirectory().getIndexName().length() > 0)) {
-                        this.directoryUri = this.targetUri;
-                        this.baseName = getDirectory().getIndexName();
-                        this.targetUri = this.directoryUri + this.baseName;
-                        this.indexTarget = true;
-                    } else {
-                        this.directoryUri = this.targetUri;
-                        this.baseName = null;
-                    }
-                } else {
-                    // Allows underlying helpers that do not support "content
-                    // negotiation" to return the targeted file.
-                    this.directoryTarget = false;
-                    this.fileTarget = true;
-                    this.fileContent = contextResponse.getEntity();
+                if (this.originalRef != null) {
+                    this.originalRef.setBaseRef(getReference().getBaseRef());
+                    this.relativePart = this.originalRef.getRemainingPart();
                 }
+            }
+
+            if (this.relativePart.startsWith("/")) {
+                // We enforce the leading slash on the root URI
+                this.relativePart = this.relativePart.substring(1);
+            }
+
+            // The target URI does not take into account the query and fragment
+            // parts of the resource.
+            this.targetUri = new Reference(directory.getRootRef().toString()
+                    + this.relativePart).normalize().toString(false, false);
+            if (!this.targetUri.startsWith(directory.getRootRef().toString())) {
+                // Prevent the client from accessing resources in upper
+                // directories
+                this.targetUri = directory.getRootRef().toString();
+            }
+
+            if (getClientDispatcher() == null) {
+                getLogger().warning(
+                        "No client dispatcher is available on the context. Can't get the target URI: "
+                                + this.targetUri);
             } else {
-                this.directoryTarget = false;
-                this.fileTarget = false;
-
-                // Let's try with the optional index, in case the underlying
-                // client connector does not handle directory listing.
-                if (this.targetUri.endsWith("/")) {
-                    // In this case, the trailing "/" shows that the URI must
-                    // point to a directory
-                    if ((getDirectory().getIndexName() != null)
-                            && (getDirectory().getIndexName().length() > 0)) {
-                        this.directoryUri = this.targetUri;
+                // Try to detect the presence of a directory
+                Response contextResponse = getRepresentation(this.targetUri);
+                if (contextResponse.getEntity() != null) {
+                    // As a convention, underlying client connectors return the
+                    // directory listing with the media-type
+                    // "MediaType.TEXT_URI_LIST" when handling directories
+                    if (MediaType.TEXT_URI_LIST.equals(contextResponse
+                            .getEntity().getMediaType())) {
                         this.directoryTarget = true;
-
-                        contextResponse = getRepresentation(this.directoryUri
-                                + getDirectory().getIndexName());
-                        if (contextResponse.getEntity() != null) {
-                            this.baseName = getDirectory().getIndexName();
-                            this.targetUri = this.directoryUri + this.baseName;
-                            this.directoryContent = new ReferenceList();
-                            this.directoryContent.add(new Reference(
-                                    this.targetUri));
-                            this.indexTarget = true;
-                        }
-                    }
-                } else {
-                    // Try to determine if this target URI with no trailing "/"
-                    // is a directory, in order to force the redirection.
-                    if ((getDirectory().getIndexName() != null)
-                            && (getDirectory().getIndexName().length() > 0)) {
-                        // Append the index name
-                        contextResponse = getRepresentation(this.targetUri
-                                + "/" + getDirectory().getIndexName());
-                        if (contextResponse.getEntity() != null) {
-                            this.directoryUri = this.targetUri + "/";
-                            this.baseName = getDirectory().getIndexName();
-                            this.targetUri = this.directoryUri + this.baseName;
-                            this.directoryTarget = true;
+                        this.fileTarget = false;
+                        this.directoryContent = new ReferenceList(
+                                contextResponse.getEntity());
+                        if (!getReference().getIdentifier().endsWith("/")) {
+                            // All requests will be automatically redirected
                             this.directoryRedirection = true;
-                            this.directoryContent = new ReferenceList();
-                            this.directoryContent.add(new Reference(
-                                    this.targetUri));
+                        }
+
+                        if (!this.targetUri.endsWith("/")) {
+                            this.targetUri += "/";
+                            this.relativePart += "/";
+                        }
+
+                        // Append the index name
+                        if ((getDirectory().getIndexName() != null)
+                                && (getDirectory().getIndexName().length() > 0)) {
+                            this.directoryUri = this.targetUri;
+                            this.baseName = getDirectory().getIndexName();
+                            this.targetUri = this.directoryUri + this.baseName;
                             this.indexTarget = true;
+                        } else {
+                            this.directoryUri = this.targetUri;
+                            this.baseName = null;
+                        }
+                    } else {
+                        // Allows underlying helpers that do not support
+                        // "content
+                        // negotiation" to return the targeted file.
+                        this.directoryTarget = false;
+                        this.fileTarget = true;
+                        this.fileContent = contextResponse.getEntity();
+                    }
+                } else {
+                    this.directoryTarget = false;
+                    this.fileTarget = false;
+
+                    // Let's try with the optional index, in case the underlying
+                    // client connector does not handle directory listing.
+                    if (this.targetUri.endsWith("/")) {
+                        // In this case, the trailing "/" shows that the URI
+                        // must
+                        // point to a directory
+                        if ((getDirectory().getIndexName() != null)
+                                && (getDirectory().getIndexName().length() > 0)) {
+                            this.directoryUri = this.targetUri;
+                            this.directoryTarget = true;
+
+                            contextResponse = getRepresentation(this.directoryUri
+                                    + getDirectory().getIndexName());
+                            if (contextResponse.getEntity() != null) {
+                                this.baseName = getDirectory().getIndexName();
+                                this.targetUri = this.directoryUri
+                                        + this.baseName;
+                                this.directoryContent = new ReferenceList();
+                                this.directoryContent.add(new Reference(
+                                        this.targetUri));
+                                this.indexTarget = true;
+                            }
+                        }
+                    } else {
+                        // Try to determine if this target URI with no trailing
+                        // "/"
+                        // is a directory, in order to force the redirection.
+                        if ((getDirectory().getIndexName() != null)
+                                && (getDirectory().getIndexName().length() > 0)) {
+                            // Append the index name
+                            contextResponse = getRepresentation(this.targetUri
+                                    + "/" + getDirectory().getIndexName());
+                            if (contextResponse.getEntity() != null) {
+                                this.directoryUri = this.targetUri + "/";
+                                this.baseName = getDirectory().getIndexName();
+                                this.targetUri = this.directoryUri
+                                        + this.baseName;
+                                this.directoryTarget = true;
+                                this.directoryRedirection = true;
+                                this.directoryContent = new ReferenceList();
+                                this.directoryContent.add(new Reference(
+                                        this.targetUri));
+                                this.indexTarget = true;
+                            }
                         }
                     }
                 }
-            }
 
-            // In case the request does not target a directory and the file has
-            // not been found, try with the tunneled URI.
-            if (isNegotiateContent() && !this.directoryTarget
-                    && !this.fileTarget && (this.originalRef != null)) {
-                this.relativePart = request.getResourceRef().getRemainingPart();
+                // In case the request does not target a directory and the file
+                // has
+                // not been found, try with the tunneled URI.
+                if (isNegotiated() && !this.directoryTarget && !this.fileTarget
+                        && (this.originalRef != null)) {
+                    this.relativePart = getReference().getRemainingPart();
 
-                // The target URI does not take into account the query and
-                // fragment parts of the resource.
-                this.targetUri = new Reference(directory.getRootRef()
-                        .toString()
-                        + this.relativePart).normalize().toString(false, false);
-                if (!this.targetUri.startsWith(directory.getRootRef()
-                        .toString())) {
-                    // Prevent the client from accessing resources in upper
-                    // directories
-                    this.targetUri = directory.getRootRef().toString();
-                }
-            }
-
-            // Try to get the directory content, in case the request does not
-            // target a directory
-            if (!this.directoryTarget) {
-                final int lastSlashIndex = this.targetUri.lastIndexOf('/');
-                if (lastSlashIndex == -1) {
-                    this.directoryUri = "";
-                    this.baseName = this.targetUri;
-                } else {
-                    this.directoryUri = this.targetUri.substring(0,
-                            lastSlashIndex + 1);
-                    this.baseName = this.targetUri
-                            .substring(lastSlashIndex + 1);
+                    // The target URI does not take into account the query and
+                    // fragment parts of the resource.
+                    this.targetUri = new Reference(directory.getRootRef()
+                            .toString()
+                            + this.relativePart).normalize().toString(false,
+                            false);
+                    if (!this.targetUri.startsWith(directory.getRootRef()
+                            .toString())) {
+                        // Prevent the client from accessing resources in upper
+                        // directories
+                        this.targetUri = directory.getRootRef().toString();
+                    }
                 }
 
-                contextResponse = getRepresentation(this.directoryUri);
-                if ((contextResponse.getEntity() != null)
-                        && MediaType.TEXT_URI_LIST.equals(contextResponse
-                                .getEntity().getMediaType())) {
-                    this.directoryContent = new ReferenceList(contextResponse
-                            .getEntity());
+                // Try to get the directory content, in case the request does
+                // not
+                // target a directory
+                if (!this.directoryTarget) {
+                    final int lastSlashIndex = this.targetUri.lastIndexOf('/');
+                    if (lastSlashIndex == -1) {
+                        this.directoryUri = "";
+                        this.baseName = this.targetUri;
+                    } else {
+                        this.directoryUri = this.targetUri.substring(0,
+                                lastSlashIndex + 1);
+                        this.baseName = this.targetUri
+                                .substring(lastSlashIndex + 1);
+                    }
+
+                    contextResponse = getRepresentation(this.directoryUri);
+                    if ((contextResponse.getEntity() != null)
+                            && MediaType.TEXT_URI_LIST.equals(contextResponse
+                                    .getEntity().getMediaType())) {
+                        this.directoryContent = new ReferenceList(
+                                contextResponse.getEntity());
+                    }
+                }
+
+                if (this.baseName != null) {
+                    // Remove the extensions from the base name
+                    final int firstDotIndex = this.baseName.indexOf('.');
+                    if (firstDotIndex != -1) {
+                        // Store the set of extensions
+                        this.baseExtensions = getExtensions(this.baseName);
+
+                        // Remove stored extensions from the base name
+                        this.baseName = this.baseName.substring(0,
+                                firstDotIndex);
+                    }
+
                 }
             }
-
-            if (this.baseName != null) {
-                // Remove the extensions from the base name
-                final int firstDotIndex = this.baseName.indexOf('.');
-                if (firstDotIndex != -1) {
-                    // Store the set of extensions
-                    this.baseExtensions = getExtensions(this.baseName);
-
-                    // Remove stored extensions from the base name
-                    this.baseName = this.baseName.substring(0, firstDotIndex);
-                }
-
-            }
+        } catch (IOException ioe) {
+            throw new ResourceException(ioe);
         }
 
         // Check if the resource exists or not.
-        final List<Variant> variants = getVariants();
+        final List<Variant> variants = getVariants(Method.GET);
         if ((variants == null) || (variants.isEmpty())) {
-            setAvailable(false);
+            setExisting(false);
         }
 
         // Check if the resource is located in a sub directory.
-        if (isAvailable() && !this.directory.isDeeplyAccessible()) {
+        if (isExisting() && !this.directory.isDeeplyAccessible()) {
             // Count the number of "/" character.
             int index = this.relativePart.indexOf("/");
             if (index != -1) {
                 index = this.relativePart.indexOf("/", index);
-                setAvailable((index == -1));
+                setExisting((index == -1));
             }
         }
 
@@ -489,110 +542,170 @@ public class DirectoryResource extends Resource {
         return this.targetUri;
     }
 
+    @Override
+    protected Representation get() throws ResourceException {
+        // Content negotiation has been disabled
+        // The variant that may need to meet the request conditions
+        Representation result = null;
+
+        final List<Variant> variants = getVariants(Method.GET);
+        if ((variants == null) || (variants.isEmpty())) {
+            // Resource not found
+            getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+        } else {
+            if (variants.size() == 1) {
+                result = (Representation) variants.get(0);
+            } else {
+                final ReferenceList variantRefs = new ReferenceList();
+
+                for (final Variant variant : variants) {
+                    if (variant.getIdentifier() != null) {
+                        variantRefs.add(variant.getIdentifier());
+                    } else {
+                        getLogger()
+                                .warning(
+                                        "A resource with multiple variants should provide an identifier for each variant when content negotiation is turned off");
+                    }
+                }
+
+                if (variantRefs.size() > 0) {
+                    // Return the list of variants
+                    setStatus(Status.REDIRECTION_MULTIPLE_CHOICES);
+                    result = variantRefs.getTextRepresentation();
+                } else {
+                    setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+                }
+            }
+        }
+
+        return result;
+    }
+
     /**
      * Returns the representation variants.
      * 
      * @return The representation variants.
      */
     @Override
-    public List<Variant> getVariants() {
-        final List<Variant> results = super.getVariants();
+    public List<Variant> getVariants(Method method) {
+        List<Variant> result = super.getVariants(method);
 
-        if (!results.isEmpty()) {
-            return results;
-        }
+        if ((Method.GET.equals(method) || Method.HEAD.equals(method))
+                && ((result == null) || result.isEmpty())) {
+            getLogger().info("Getting variants for : " + getTargetUri());
 
-        getLogger().info("Getting variants for : " + getTargetUri());
+            if ((this.directoryContent != null) && (getReference() != null)
+                    && (getReference().getBaseRef() != null)) {
 
-        if ((this.directoryContent != null)
-                && (getRequest().getResourceRef() != null)
-                && (getRequest().getResourceRef().getBaseRef() != null)) {
+                // Allows to sort the list of representations
+                final SortedSet<Representation> resultSet = new TreeSet<Representation>(
+                        getRepresentationsComparator());
 
-            // Allows to sort the list of representations
-            final SortedSet<Representation> resultSet = new TreeSet<Representation>(
-                    getRepresentationsComparator());
+                // Compute the base reference (from a call's client point of
+                // view)
+                String baseRef = getReference().getBaseRef().toString(false,
+                        false);
 
-            // Compute the base reference (from a call's client point of view)
-            String baseRef = getRequest().getResourceRef().getBaseRef()
-                    .toString(false, false);
+                if (!baseRef.endsWith("/")) {
+                    baseRef += "/";
+                }
 
-            if (!baseRef.endsWith("/")) {
-                baseRef += "/";
-            }
+                final int lastIndex = this.relativePart.lastIndexOf("/");
 
-            final int lastIndex = this.relativePart.lastIndexOf("/");
+                if (lastIndex != -1) {
+                    baseRef += this.relativePart.substring(0, lastIndex);
+                }
 
-            if (lastIndex != -1) {
-                baseRef += this.relativePart.substring(0, lastIndex);
-            }
+                final int rootLength = getDirectoryUri().length();
 
-            final int rootLength = getDirectoryUri().length();
+                if (this.baseName != null) {
+                    String filePath;
+                    for (final Reference ref : getVariantsReferences()) {
+                        // Add the new variant to the result list
+                        final Response contextResponse = getRepresentation(ref
+                                .toString());
+                        if (contextResponse.getStatus().isSuccess()
+                                && (contextResponse.getEntity() != null)) {
+                            filePath = ref.toString(false, false).substring(
+                                    rootLength);
+                            final Representation rep = contextResponse
+                                    .getEntity();
 
-            if (this.baseName != null) {
-                String filePath;
-                for (final Reference ref : getVariantsReferences()) {
-                    // Add the new variant to the result list
-                    final Response contextResponse = getRepresentation(ref
-                            .toString());
-                    if (contextResponse.getStatus().isSuccess()
-                            && (contextResponse.getEntity() != null)) {
-                        filePath = ref.toString(false, false).substring(
-                                rootLength);
-                        final Representation rep = contextResponse.getEntity();
-                        if (filePath.startsWith("/")) {
-                            rep.setIdentifier(baseRef + filePath);
-                        } else {
-                            rep.setIdentifier(baseRef + "/" + filePath);
+                            if (filePath.startsWith("/")) {
+                                rep.setIdentifier(baseRef + filePath);
+                            } else {
+                                rep.setIdentifier(baseRef + "/" + filePath);
+                            }
+
+                            resultSet.add(rep);
                         }
-                        resultSet.add(rep);
                     }
                 }
-            }
 
-            results.addAll(resultSet);
-
-            if (resultSet.isEmpty()) {
-                if (this.directoryTarget && getDirectory().isListingAllowed()) {
-                    final ReferenceList userList = new ReferenceList(
-                            this.directoryContent.size());
-                    // Set the list identifier
-                    userList.setIdentifier(baseRef);
-
-                    final SortedSet<Reference> sortedSet = new TreeSet<Reference>(
-                            getDirectory().getComparator());
-                    sortedSet.addAll(this.directoryContent);
-
-                    for (final Reference ref : sortedSet) {
-                        final String filePart = ref.toString(false, false)
-                                .substring(rootLength);
-                        final StringBuilder filePath = new StringBuilder();
-                        if ((!baseRef.endsWith("/"))
-                                && (!filePart.startsWith("/"))) {
-                            filePath.append('/');
-                        }
-                        filePath.append(filePart);
-                        userList.add(baseRef + filePath);
-                    }
-                    final List<Variant> list = getDirectory().getIndexVariants(
-                            userList);
-                    for (final Variant variant : list) {
-                        results.add(getDirectory().getIndexRepresentation(
-                                variant, userList));
+                if (!resultSet.isEmpty()) {
+                    if (result == null) {
+                        result = new ArrayList<Variant>();
                     }
 
+                    result.addAll(resultSet);
                 }
+
+                if (resultSet.isEmpty()) {
+                    if (this.directoryTarget
+                            && getDirectory().isListingAllowed()) {
+                        final ReferenceList userList = new ReferenceList(
+                                this.directoryContent.size());
+                        // Set the list identifier
+                        userList.setIdentifier(baseRef);
+
+                        final SortedSet<Reference> sortedSet = new TreeSet<Reference>(
+                                getDirectory().getComparator());
+                        sortedSet.addAll(this.directoryContent);
+
+                        for (final Reference ref : sortedSet) {
+                            final String filePart = ref.toString(false, false)
+                                    .substring(rootLength);
+                            final StringBuilder filePath = new StringBuilder();
+                            if ((!baseRef.endsWith("/"))
+                                    && (!filePart.startsWith("/"))) {
+                                filePath.append('/');
+                            }
+                            filePath.append(filePart);
+                            userList.add(baseRef + filePath);
+                        }
+                        final List<Variant> list = getDirectory()
+                                .getIndexVariants(userList);
+                        for (final Variant variant : list) {
+                            if (result == null) {
+                                result = new ArrayList<Variant>();
+                            }
+
+                            result.add(getDirectory().getIndexRepresentation(
+                                    variant, userList));
+                        }
+
+                    }
+                }
+            } else if (this.fileTarget && (this.fileContent != null)) {
+                // Sets the identifier of the target representation.
+                if (getOriginalRef() != null) {
+                    this.fileContent.setIdentifier(getRequest()
+                            .getOriginalRef());
+                } else {
+                    this.fileContent.setIdentifier(getReference());
+                }
+
+                if (result == null) {
+                    result = new ArrayList<Variant>();
+                }
+                result.add(this.fileContent);
             }
-        } else if (this.fileTarget && (this.fileContent != null)) {
-            // Sets the identifier of the target representation.
-            if (getRequest().getOriginalRef() != null) {
-                this.fileContent.setIdentifier(getRequest().getOriginalRef());
-            } else {
-                this.fileContent.setIdentifier(getRequest().getResourceRef());
-            }
-            results.add(this.fileContent);
+
+            // Update the list of variants
+            super.getVariants().put(Method.GET, result);
         }
 
-        return results;
+        return result;
     }
 
     /**
@@ -671,23 +784,25 @@ public class DirectoryResource extends Resource {
     }
 
     @Override
-    public void handleGet() {
+    public Representation handle() {
+        Representation result = null;
+
         if (this.directoryRedirection) {
             // If this request targets a directory and if the target URI does
             // not end with a trailing "/", the client is told to redirect to a
             // correct URI.
 
-            // Restore the cut extensions in case the call has been tunnelled.
+            // Restore the cut extensions in case the call has been tunneled.
             if (this.originalRef != null) {
-                getResponse().redirectPermanent(
-                        this.originalRef.getIdentifier() + "/");
+                redirectPermanent(this.originalRef.getIdentifier() + "/");
             } else {
-                getResponse().redirectPermanent(
-                        getRequest().getResourceRef().getIdentifier() + "/");
+                redirectPermanent(getReference().getIdentifier() + "/");
             }
         } else {
-            super.handleGet();
+            result = super.handle();
         }
+
+        return result;
     }
 
     /**
@@ -709,47 +824,35 @@ public class DirectoryResource extends Resource {
     }
 
     @Override
-    public void removeRepresentations() throws ResourceException {
-        if (this.directoryRedirection) {
-            if (this.originalRef != null) {
-                getResponse().redirectSeeOther(
-                        this.originalRef.getIdentifier() + "/");
+    public Representation put(Representation entity) throws ResourceException {
+        if (this.directory.isModifiable()) {
+            if (this.directoryRedirection) {
+                if (this.originalRef != null) {
+                    redirectSeeOther(this.originalRef.getIdentifier() + "/");
+                } else {
+                    redirectSeeOther(getReference().getIdentifier() + "/");
+                }
             } else {
-                getResponse().redirectSeeOther(
-                        getRequest().getResourceRef().getIdentifier() + "/");
-            }
-        } else {
-            final Request contextRequest = new Request(Method.DELETE,
-                    this.targetUri);
-            final Response contextResponse = new Response(contextRequest);
-
-            if (this.directoryTarget && !this.indexTarget) {
+                // Transfer of PUT calls is only allowed if the readOnly flag is
+                // not
+                // set.
+                final Request contextRequest = new Request(Method.PUT,
+                        this.targetUri);
+                // Add support of partial PUT calls.
+                contextRequest.getRanges().addAll(getRanges());
+                contextRequest.setEntity(entity);
+                final Response contextResponse = new Response(contextRequest);
                 contextRequest.setResourceRef(this.targetUri);
                 getClientDispatcher().handle(contextRequest, contextResponse);
-            } else {
-                // Check if there is only one representation
-
-                // Try to get the unique representation of the resource
-                final ReferenceList references = getVariantsReferences();
-                if (!references.isEmpty()) {
-                    if (this.uniqueReference != null) {
-                        contextRequest.setResourceRef(this.uniqueReference);
-                        getClientDispatcher().handle(contextRequest,
-                                contextResponse);
-                    } else {
-                        // We found variants, but not the right one
-                        contextResponse
-                                .setStatus(new Status(
-                                        Status.CLIENT_ERROR_NOT_ACCEPTABLE,
-                                        "Unable to process properly the request. Several variants exist but none of them suits precisely. "));
-                    }
-                } else {
-                    contextResponse.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
-                }
+                setStatus(contextResponse.getStatus());
             }
-
-            getResponse().setStatus(contextResponse.getStatus());
+        } else {
+            setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED,
+                    "The directory is not modifiable.");
+            updateAllowedMethods();
         }
+
+        return null;
     }
 
     /**
@@ -760,31 +863,5 @@ public class DirectoryResource extends Resource {
      */
     public void setTargetUri(String targetUri) {
         this.targetUri = targetUri;
-    }
-
-    @Override
-    public void storeRepresentation(Representation entity)
-            throws ResourceException {
-        if (this.directoryRedirection) {
-            if (this.originalRef != null) {
-                getResponse().redirectSeeOther(
-                        this.originalRef.getIdentifier() + "/");
-            } else {
-                getResponse().redirectSeeOther(
-                        getRequest().getResourceRef().getIdentifier() + "/");
-            }
-        } else {
-            // Transfer of PUT calls is only allowed if the readOnly flag is not
-            // set.
-            final Request contextRequest = new Request(Method.PUT,
-                    this.targetUri);
-            // Add support of partial PUT calls.
-            contextRequest.getRanges().addAll(getRequest().getRanges());
-            contextRequest.setEntity(entity);
-            final Response contextResponse = new Response(contextRequest);
-            contextRequest.setResourceRef(this.targetUri);
-            getClientDispatcher().handle(contextRequest, contextResponse);
-            getResponse().setStatus(contextResponse.getStatus());
-        }
     }
 }

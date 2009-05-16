@@ -49,6 +49,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
+@SuppressWarnings("deprecation")
 public abstract class AuthenticatorHelper extends Helper {
 
     /** The supported challenge scheme. */

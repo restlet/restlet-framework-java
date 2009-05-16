@@ -47,6 +47,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
+@SuppressWarnings("deprecation")
 public class HttpDigestHelper extends AuthenticatorHelper {
 
     /**
@@ -173,7 +174,6 @@ public class HttpDigestHelper extends AuthenticatorHelper {
         return Guard.AUTHENTICATION_MISSING;
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public void challenge(Response response, boolean stale, Guard guard) {
         super.challenge(response, stale, guard);

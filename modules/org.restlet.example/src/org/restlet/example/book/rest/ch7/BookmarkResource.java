@@ -32,11 +32,8 @@ package org.restlet.example.book.rest.ch7;
 
 import java.util.Date;
 
-import org.restlet.Context;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
@@ -54,28 +51,39 @@ public class BookmarkResource extends UserResource {
 
     private String uri;
 
-    /**
-     * Constructor.
-     * 
-     * @param context
-     *            The parent context.
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The response to return.
-     */
-    public BookmarkResource(Context context, Request request, Response response) {
-        super(context, request, response);
-        setModifiable(true);
+    @Override
+    public Representation delete() throws ResourceException {
+        if (isModifiable()) {
+            if ((this.bookmark != null) && (checkAuthorization() == 1)) {
+                // Delete the bookmark
+                getUser().getBookmarks().remove(this.bookmark);
+                getContainer().delete(this.bookmark);
+                getContainer().store(getUser());
+                getContainer().commit();
+                setStatus(Status.SUCCESS_OK);
+            } else {
+                // Intentionally hide the bookmark existence
+                setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+            }
+        } else {
+            return super.delete();
+        }
+
+        return null;
+    }
+
+    @Override
+    public void doInit() {
+        super.doInit();
 
         if (getUser() != null) {
-            this.uri = (String) request.getAttributes().get("URI");
+            this.uri = (String) getRequestAttributes().get("URI");
             this.bookmark = getUser().getBookmark(this.uri);
 
             if (this.bookmark != null) {
                 if ((checkAuthorization() != 1) && this.bookmark.isRestrict()) {
-                    // Intentionnally hide the bookmark existence
-                    getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+                    // Intentionally hide the bookmark existence
+                    setStatus(Status.CLIENT_ERROR_NOT_FOUND);
                 }
             } else {
                 // Bookmark not found, remove the variant added by the super
@@ -84,27 +92,12 @@ public class BookmarkResource extends UserResource {
             }
         } else {
             // User not found
-            getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+            setStatus(Status.CLIENT_ERROR_NOT_FOUND);
         }
     }
 
     @Override
-    public void removeRepresentations() throws ResourceException {
-        if ((this.bookmark != null) && (checkAuthorization() == 1)) {
-            // Delete the bookmark
-            getUser().getBookmarks().remove(this.bookmark);
-            getContainer().delete(this.bookmark);
-            getContainer().store(getUser());
-            getContainer().commit();
-            getResponse().setStatus(Status.SUCCESS_OK);
-        } else {
-            // Intentionnally hide the bookmark existence
-            getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
-        }
-    }
-
-    @Override
-    public Representation represent(Variant variant) throws ResourceException {
+    public Representation get(Variant variant) throws ResourceException {
         Representation result = null;
 
         if (variant.getMediaType().equals(MediaType.TEXT_PLAIN)) {
@@ -131,8 +124,7 @@ public class BookmarkResource extends UserResource {
     }
 
     @Override
-    public void storeRepresentation(Representation entity)
-            throws ResourceException {
+    public Representation put(Representation entity) throws ResourceException {
         if (checkAuthorization() == 1) {
             if (entity.getMediaType().equals(MediaType.APPLICATION_WWW_FORM,
                     true)) {
@@ -143,9 +135,9 @@ public class BookmarkResource extends UserResource {
                 if (this.bookmark == null) {
                     this.bookmark = new Bookmark(getUser(), this.uri);
                     getUser().getBookmarks().add(this.bookmark);
-                    getResponse().setStatus(Status.SUCCESS_CREATED);
+                    setStatus(Status.SUCCESS_CREATED);
                 } else {
-                    getResponse().setStatus(Status.SUCCESS_NO_CONTENT);
+                    setStatus(Status.SUCCESS_NO_CONTENT);
                 }
 
                 // Update the bookmark
@@ -163,9 +155,11 @@ public class BookmarkResource extends UserResource {
                 getContainer().commit();
             }
         } else {
-            // Intentionnally hide the bookmark existence
-            getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+            // Intentionally hide the bookmark existence
+            setStatus(Status.CLIENT_ERROR_NOT_FOUND);
         }
+
+        return null;
     }
 
 }

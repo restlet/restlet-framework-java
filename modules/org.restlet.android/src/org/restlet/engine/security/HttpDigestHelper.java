@@ -47,217 +47,217 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
+@SuppressWarnings("deprecation")
 public class HttpDigestHelper extends AuthenticatorHelper {
 
-	/**
-	 * Return the hashed secret.
-	 * 
-	 * @param identifier
-	 *            The user identifier to hash.
-	 * @param guard
-	 *            The associated guard to callback.
-	 * 
-	 * @return a hash of the username, realm, and password, specified as A1 in
-	 *         section 3.2.2.2 of RFC2617, or null if the identifier has no
-	 *         corresponding secret
-	 */
-	private static String getHashedSecret(String identifier, Guard guard) {
-		char[] result = guard.getSecretResolver().resolve(identifier);
-		if (result != null) {
-			return DigestUtils.toMd5(identifier + ":" + guard.getRealm() + ":"
-					+ new String(result));
-		} else {
-			// The given identifier is not known
-			return null;
-		}
-	}
+    /**
+     * Return the hashed secret.
+     * 
+     * @param identifier
+     *            The user identifier to hash.
+     * @param guard
+     *            The associated guard to callback.
+     * 
+     * @return a hash of the username, realm, and password, specified as A1 in
+     *         section 3.2.2.2 of RFC2617, or null if the identifier has no
+     *         corresponding secret
+     */
+    private static String getHashedSecret(String identifier, Guard guard) {
+        char[] result = guard.getSecretResolver().resolve(identifier);
+        if (result != null) {
+            return DigestUtils.toMd5(identifier + ":" + guard.getRealm() + ":"
+                    + new String(result));
+        } else {
+            // The given identifier is not known
+            return null;
+        }
+    }
 
-	/**
-	 * Checks whether the specified nonce is valid with respect to the specified
-	 * secretKey, and further confirms that the nonce was generated less than
-	 * lifespanMillis milliseconds ago
-	 * 
-	 * @param nonce
-	 * @param secretKey
-	 *            the same secret value that was inserted into the nonce when it
-	 *            was generated
-	 * @param lifespanMS
-	 *            nonce lifespace in milliseconds
-	 * @return true if the nonce was generated less than lifespanMS milliseconds
-	 *         ago, false otherwise
-	 * @throws Exception
-	 *             if the nonce does not match the specified secretKey, or if it
-	 *             can't be parsed
-	 */
-	private static boolean isNonceValid(String nonce, String secretKey,
-			long lifespanMS) throws Exception {
-		try {
-			final String decodedNonce = new String(Base64.decode(nonce));
-			final long nonceTimeMS = Long.parseLong(decodedNonce.substring(0,
-					decodedNonce.indexOf(':')));
-			if (decodedNonce.equals(nonceTimeMS + ":"
-					+ DigestUtils.toMd5(nonceTimeMS + ":" + secretKey))) {
-				// valid wrt secretKey, now check lifespan
-				return lifespanMS > (System.currentTimeMillis() - nonceTimeMS);
-			}
-		} catch (Exception e) {
-			throw new Exception("error parsing nonce: " + e);
-		}
-		throw new Exception("nonce does not match secretKey");
-	}
+    /**
+     * Checks whether the specified nonce is valid with respect to the specified
+     * secretKey, and further confirms that the nonce was generated less than
+     * lifespanMillis milliseconds ago
+     * 
+     * @param nonce
+     * @param secretKey
+     *            the same secret value that was inserted into the nonce when it
+     *            was generated
+     * @param lifespanMS
+     *            nonce lifespace in milliseconds
+     * @return true if the nonce was generated less than lifespanMS milliseconds
+     *         ago, false otherwise
+     * @throws Exception
+     *             if the nonce does not match the specified secretKey, or if it
+     *             can't be parsed
+     */
+    private static boolean isNonceValid(String nonce, String secretKey,
+            long lifespanMS) throws Exception {
+        try {
+            final String decodedNonce = new String(Base64.decode(nonce));
+            final long nonceTimeMS = Long.parseLong(decodedNonce.substring(0,
+                    decodedNonce.indexOf(':')));
+            if (decodedNonce.equals(nonceTimeMS + ":"
+                    + DigestUtils.toMd5(nonceTimeMS + ":" + secretKey))) {
+                // valid wrt secretKey, now check lifespan
+                return lifespanMS > (System.currentTimeMillis() - nonceTimeMS);
+            }
+        } catch (Exception e) {
+            throw new Exception("error parsing nonce: " + e);
+        }
+        throw new Exception("nonce does not match secretKey");
+    }
 
-	/**
-	 * Constructor.
-	 */
-	public HttpDigestHelper() {
-		super(ChallengeScheme.HTTP_DIGEST, true, true);
-	}
+    /**
+     * Constructor.
+     */
+    public HttpDigestHelper() {
+        super(ChallengeScheme.HTTP_DIGEST, true, true);
+    }
 
-	@Override
-	public int authenticate(ChallengeResponse cr, Request request, Guard guard) {
-		final Series<Parameter> credentials = cr.getParameters();
-		final String username = credentials.getFirstValue("username");
-		final String nonce = credentials.getFirstValue("nonce");
-		final String response = credentials.getFirstValue("response");
-		final String uri = credentials.getFirstValue("uri");
-		final String qop = credentials.getFirstValue("qop");
-		final String nc = credentials.getFirstValue("nc");
-		final String cnonce = credentials.getFirstValue("cnonce");
+    @Override
+    public int authenticate(ChallengeResponse cr, Request request, Guard guard) {
+        final Series<Parameter> credentials = cr.getParameters();
+        final String username = credentials.getFirstValue("username");
+        final String nonce = credentials.getFirstValue("nonce");
+        final String response = credentials.getFirstValue("response");
+        final String uri = credentials.getFirstValue("uri");
+        final String qop = credentials.getFirstValue("qop");
+        final String nc = credentials.getFirstValue("nc");
+        final String cnonce = credentials.getFirstValue("cnonce");
 
-		try {
-			if (!isNonceValid(nonce, guard.getServerKey(), guard
-					.getNonceLifespan())) {
-				// Nonce expired, send challenge request with
-				// stale=true
-				return Guard.AUTHENTICATION_STALE;
-			}
-		} catch (Exception ce) {
-			// Invalid nonce, probably doesn't match serverKey
-			return Guard.AUTHENTICATION_INVALID;
-		}
+        try {
+            if (!isNonceValid(nonce, guard.getServerKey(), guard
+                    .getNonceLifespan())) {
+                // Nonce expired, send challenge request with
+                // stale=true
+                return Guard.AUTHENTICATION_STALE;
+            }
+        } catch (Exception ce) {
+            // Invalid nonce, probably doesn't match serverKey
+            return Guard.AUTHENTICATION_INVALID;
+        }
 
-		if (!AuthenticatorUtils.anyNull(username, nonce, response, uri)) {
-			final Reference resourceRef = request.getResourceRef();
-			String requestUri = resourceRef.getPath();
-			if ((resourceRef.getQuery() != null) && (uri.indexOf('?') > -1)) {
-				// IE neglects to include the query string, so
-				// the workaround is to leave it off
-				// unless both the calculated uri and the
-				// specified uri contain a query string
-				requestUri += "?" + resourceRef.getQuery();
-			}
-			if (uri.equals(requestUri)) {
-				final String a1 = getHashedSecret(username, guard);
-				if (a1 != null) {
-					final String a2 = DigestUtils.toMd5(request.getMethod()
-							+ ":" + requestUri);
+        if (!AuthenticatorUtils.anyNull(username, nonce, response, uri)) {
+            final Reference resourceRef = request.getResourceRef();
+            String requestUri = resourceRef.getPath();
+            if ((resourceRef.getQuery() != null) && (uri.indexOf('?') > -1)) {
+                // IE neglects to include the query string, so
+                // the workaround is to leave it off
+                // unless both the calculated uri and the
+                // specified uri contain a query string
+                requestUri += "?" + resourceRef.getQuery();
+            }
+            if (uri.equals(requestUri)) {
+                final String a1 = getHashedSecret(username, guard);
+                if (a1 != null) {
+                    final String a2 = DigestUtils.toMd5(request.getMethod()
+                            + ":" + requestUri);
 
-					final StringBuffer expectedResponse = new StringBuffer(a1)
-							.append(':').append(nonce);
-					if (!AuthenticatorUtils.anyNull(qop, cnonce, nc)) {
-						expectedResponse.append(':').append(nc).append(':')
-								.append(cnonce).append(':').append(qop);
-					}
-					expectedResponse.append(':').append(a2);
+                    final StringBuffer expectedResponse = new StringBuffer(a1)
+                            .append(':').append(nonce);
+                    if (!AuthenticatorUtils.anyNull(qop, cnonce, nc)) {
+                        expectedResponse.append(':').append(nc).append(':')
+                                .append(cnonce).append(':').append(qop);
+                    }
+                    expectedResponse.append(':').append(a2);
 
-					if (response.equals(DigestUtils.toMd5(expectedResponse
-							.toString()))) {
-						return Guard.AUTHENTICATION_VALID;
-					}
-				}
-			}
+                    if (response.equals(DigestUtils.toMd5(expectedResponse
+                            .toString()))) {
+                        return Guard.AUTHENTICATION_VALID;
+                    }
+                }
+            }
 
-			return Guard.AUTHENTICATION_INVALID;
-		}
+            return Guard.AUTHENTICATION_INVALID;
+        }
 
-		return Guard.AUTHENTICATION_MISSING;
-	}
+        return Guard.AUTHENTICATION_MISSING;
+    }
 
-	@SuppressWarnings("deprecation")
-	@Override
-	public void challenge(Response response, boolean stale, Guard guard) {
-		super.challenge(response, stale, guard);
+    @Override
+    public void challenge(Response response, boolean stale, Guard guard) {
+        super.challenge(response, stale, guard);
 
-		if (stale) {
-			// Stale nonce, repeat auth request with fresh nonce
-			response.getAttributes().put("stale", "true");
-		}
+        if (stale) {
+            // Stale nonce, repeat auth request with fresh nonce
+            response.getAttributes().put("stale", "true");
+        }
 
-		// This is temporary, pending Guard re-factoring. We still assume
-		// there is only one challenge scheme, that of the Guard.
-		ChallengeRequest mainChallengeRequest = null;
-		for (final ChallengeRequest challengeRequest : response
-				.getChallengeRequests()) {
-			if (challengeRequest.getScheme().equals(guard.getScheme())) {
-				mainChallengeRequest = challengeRequest;
-				break;
-			}
-		}
-		final Series<Parameter> parameters = mainChallengeRequest
-				.getParameters();
-		final StringBuffer domain = new StringBuffer();
+        // This is temporary, pending Guard re-factoring. We still assume
+        // there is only one challenge scheme, that of the Guard.
+        ChallengeRequest mainChallengeRequest = null;
+        for (final ChallengeRequest challengeRequest : response
+                .getChallengeRequests()) {
+            if (challengeRequest.getScheme().equals(guard.getScheme())) {
+                mainChallengeRequest = challengeRequest;
+                break;
+            }
+        }
+        final Series<Parameter> parameters = mainChallengeRequest
+                .getParameters();
+        final StringBuffer domain = new StringBuffer();
 
-		for (final String baseUri : guard.getDomainUris()) {
-			domain.append(baseUri).append(' ');
-		}
+        for (final String baseUri : guard.getDomainUris()) {
+            domain.append(baseUri).append(' ');
+        }
 
-		if (domain.length() > 0) {
-			domain.delete(domain.length() - 1, domain.length());
-			parameters.add("domain", domain.toString());
-		}
+        if (domain.length() > 0) {
+            domain.delete(domain.length() - 1, domain.length());
+            parameters.add("domain", domain.toString());
+        }
 
-		parameters.add("nonce", DigestUtils.makeNonce(guard.getServerKey()));
+        parameters.add("nonce", DigestUtils.makeNonce(guard.getServerKey()));
 
-		if (response.getAttributes().containsKey("stale")) {
-			// indicate stale nonce was found in challenge response
-			parameters.add("stale", "true");
-		}
-	}
+        if (response.getAttributes().containsKey("stale")) {
+            // indicate stale nonce was found in challenge response
+            parameters.add("stale", "true");
+        }
+    }
 
-	@Override
-	public void formatCredentials(StringBuilder sb,
-			ChallengeResponse challenge, Request request,
-			Series<Parameter> httpHeaders) {
-		final Series<Parameter> params = challenge.getParameters();
+    @Override
+    public void formatCredentials(StringBuilder sb,
+            ChallengeResponse challenge, Request request,
+            Series<Parameter> httpHeaders) {
+        final Series<Parameter> params = challenge.getParameters();
 
-		for (final Parameter param : params) {
-			sb.append(param.getName()).append('=');
+        for (final Parameter param : params) {
+            sb.append(param.getName()).append('=');
 
-			if (param.getName().equals("qop")
-					|| param.getName().equals("algorithm")
-					|| param.getName().equals("nc")) {
-				// These values are left unquoted as per RC2617
-				sb.append(param.getValue()).append(",");
-			} else {
-				sb.append('"').append(param.getValue()).append('"').append(",");
-			}
-		}
+            if (param.getName().equals("qop")
+                    || param.getName().equals("algorithm")
+                    || param.getName().equals("nc")) {
+                // These values are left unquoted as per RC2617
+                sb.append(param.getValue()).append(",");
+            } else {
+                sb.append('"').append(param.getValue()).append('"').append(",");
+            }
+        }
 
-		if (!params.isEmpty()) {
-			sb.deleteCharAt(sb.length() - 1);
-		}
-	}
+        if (!params.isEmpty()) {
+            sb.deleteCharAt(sb.length() - 1);
+        }
+    }
 
-	@Override
-	public void formatParameters(StringBuilder sb,
-			Series<Parameter> parameters, ChallengeRequest request) {
-		sb.append(", domain=\"").append(parameters.getFirstValue("domain"))
-				.append('"');
-		sb.append(", qop=\"auth\"");
-		sb.append(", algorithm=MD5"); // leave this value unquoted as per
-		// RFC-2617
-		sb.append(", nonce=\"").append(parameters.getFirstValue("nonce"))
-				.append('"');
+    @Override
+    public void formatParameters(StringBuilder sb,
+            Series<Parameter> parameters, ChallengeRequest request) {
+        sb.append(", domain=\"").append(parameters.getFirstValue("domain"))
+                .append('"');
+        sb.append(", qop=\"auth\"");
+        sb.append(", algorithm=MD5"); // leave this value unquoted as per
+        // RFC-2617
+        sb.append(", nonce=\"").append(parameters.getFirstValue("nonce"))
+                .append('"');
 
-		if (parameters.getFirst("stale") != null) {
-			sb.append(", stale=\"true\"");
-		}
-	}
+        if (parameters.getFirst("stale") != null) {
+            sb.append(", stale=\"true\"");
+        }
+    }
 
-	@Override
-	public void parseResponse(ChallengeResponse cr, Request request) {
-		AuthenticatorUtils.parseParameters(cr.getCredentials(), cr
-				.getParameters());
-	}
+    @Override
+    public void parseResponse(ChallengeResponse cr, Request request) {
+        AuthenticatorUtils.parseParameters(cr.getCredentials(), cr
+                .getParameters());
+    }
 
 }
