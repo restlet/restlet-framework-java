@@ -521,7 +521,11 @@ public class HttpUtils {
         os.write(header.getName().getBytes());
         os.write(':');
         os.write(' ');
-        os.write(header.getValue().getBytes());
+
+        if (header.getValue() != null) {
+            os.write(header.getValue().getBytes());
+        }
+
         os.write(13); // CR
         os.write(10); // LF
     }
