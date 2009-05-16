@@ -150,11 +150,6 @@ public class ObjectRepresentation<T extends Serializable> extends
     public String getText() {
         if ((this.object != null) && (super.getText() == null)) {
             try {
-                // java.lang.reflect.Method rpcMethod = getClass().getMethod(
-                // "getObject", (Class[]) null);
-                // RPC.encodeResponseForSuccess(rpcMethod, object,
-                // getSerializationPolicy());
-
                 ServerSerializationStreamWriter objectWriter = new ServerSerializationStreamWriter(
                         getSerializationPolicy());
                 objectWriter.serializeValue(this.object, this.targetClass);
