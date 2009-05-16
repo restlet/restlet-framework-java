@@ -108,8 +108,13 @@ public class ObjectRepresentation<T extends Serializable> extends
                 ServerSerializationStreamReader objectReader = new ServerSerializationStreamReader(
                         Engine.getClassLoader(),
                         new SimpleSerializationPolicyProvider());
-                String encodedString = AbstractSerializationStream.SERIALIZATION_STREAM_VERSION
-                        + "|1|0|0|0|" + getText() + '|';
+                String encodedString = getText();
+
+                if (encodedString.indexOf('|') == -1) {
+                    encodedString = AbstractSerializationStream.SERIALIZATION_STREAM_VERSION
+                            + "|1|0|0|0|" + getText() + '|';
+                }
+
                 objectReader.prepareToRead(encodedString);
                 this.object = (T) objectReader
                         .deserializeValue(this.targetClass);

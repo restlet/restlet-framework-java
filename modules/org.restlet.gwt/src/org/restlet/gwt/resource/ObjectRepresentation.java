@@ -32,6 +32,8 @@ package org.restlet.gwt.resource;
 
 import java.io.Serializable;
 
+import org.restlet.gwt.data.MediaType;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.SerializationStreamFactory;
@@ -65,7 +67,7 @@ public class ObjectRepresentation<T extends Serializable> extends
      */
     public ObjectRepresentation(String serializedObject,
             Class<? extends RemoteService> rpcServiceClass) {
-        super(serializedObject);
+        super(serializedObject, MediaType.APPLICATION_JAVA_OBJECT_GWT);
         this.rpcServiceClass = rpcServiceClass;
         this.object = null;
     }
@@ -80,7 +82,7 @@ public class ObjectRepresentation<T extends Serializable> extends
      */
     public ObjectRepresentation(T object,
             Class<? extends RemoteService> rpcServiceClass) {
-        super(null);
+        super(null, MediaType.APPLICATION_JAVA_OBJECT_GWT);
         this.object = object;
         this.rpcServiceClass = rpcServiceClass;
     }
