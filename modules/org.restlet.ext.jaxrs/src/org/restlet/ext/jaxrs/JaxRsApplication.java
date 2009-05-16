@@ -82,7 +82,7 @@ public class JaxRsApplication extends org.restlet.Application {
      * @see #JaxRsApplication(Context)
      */
     public JaxRsApplication() {
-        this(null);
+        this((Context)null);
     }
 
     /**
@@ -96,6 +96,16 @@ public class JaxRsApplication extends org.restlet.Application {
     public JaxRsApplication(Context context) {
         super(context);
         this.jaxRsRestlet = new JaxRsRestlet(context, getMetadataService());
+    }
+
+    /**
+     * 
+     * @param appConfig
+     * @throws IllegalArgumentException
+     */
+    public JaxRsApplication(javax.ws.rs.core.Application appConfig)
+            throws IllegalArgumentException {
+        add(appConfig);
     }
 
     /**
@@ -210,6 +220,16 @@ public class JaxRsApplication extends org.restlet.Application {
      */
     public Collection<String> getRootUris() {
         return this.jaxRsRestlet.getRootUris();
+    }
+
+    /**
+     * Adds the given applications to the available applications.
+     * @param apps
+     */
+    public void setApplications(Collection<javax.ws.rs.core.Application> apps) {
+        for (Application app : apps) {
+            add(app);
+        }
     }
 
     /**
