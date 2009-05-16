@@ -28,9 +28,11 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.gwt.resource;
+package org.restlet.gwt.engine.util;
 
 import java.io.Serializable;
+
+import org.restlet.gwt.resource.StringRepresentation;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.SerializationStreamFactory;
@@ -90,11 +92,16 @@ public class ObjectRepresentation<T extends Serializable> extends
     public T getObject() {
         if ((this.object == null) && (getText() != null)) {
             try {
-                SerializationStreamFactory factory = GWT
-                        .create(this.targetClass);
-                SerializationStreamReader objectReader;
-                objectReader = factory.createStreamReader(getText());
-                this.object = (T) objectReader.readObject();
+                // Create the serialization stream factory
+                SerializationStreamFactory serializationFactory = (SerializationStreamFactory) GWT
+                        .create(targetClass);
+
+                // Create a stream reader
+                SerializationStreamReader streamReader = serializationFactory
+                        .createStreamReader(getText());
+
+                // Deserialize the instance
+                this.object = (T) streamReader.readObject();
             } catch (Exception e) {
                 this.object = null;
                 e.printStackTrace();

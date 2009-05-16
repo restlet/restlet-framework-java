@@ -31,5 +31,6 @@ Import-Package: com.google.gwt.core.client,
  com.google.gwt.i18n.client,
  com.google.gwt.json.client,
  com.google.gwt.user.client.rpc,
+ com.google.gwt.user.client.rpc.impl,
  com.google.gwt.xml.client
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
