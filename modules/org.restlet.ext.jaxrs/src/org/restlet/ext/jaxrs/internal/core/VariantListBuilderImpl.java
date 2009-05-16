@@ -55,7 +55,8 @@ public class VariantListBuilderImpl extends VariantListBuilder {
      * 
      * @param <T>
      * @param list
-     * @return
+     * @return an {@link Iterator} with at least one element (perhaps null).
+     *         never null.
      */
     private static <T> Iterator<T> createIterator(List<T> list) {
         if ((list == null) || list.isEmpty()) {
@@ -116,26 +117,25 @@ public class VariantListBuilderImpl extends VariantListBuilder {
                 || Util.isNotEmpty(this.mediaTypes)) {
             buildVariants();
         }
-        final List<Variant> variants = this.variants;
+        List<Variant> variants = this.variants;
         this.variants = null;
         return variants;
     }
 
     private void buildVariants() {
-        final Iterator<MediaType> mediaTypeIter = createIterator(this.mediaTypes);
-        final Iterator<Locale> languageIter = createIterator(this.languages);
-        final Iterator<String> encodingIter = createIterator(this.encodings);
+        Iterator<MediaType> mediaTypeIter = createIterator(this.mediaTypes);
         if (this.variants == null) {
             this.variants = new ArrayList<Variant>();
         }
         while (mediaTypeIter.hasNext()) {
-            final MediaType mediaType = mediaTypeIter.next();
+            MediaType mediaType = mediaTypeIter.next();
+            Iterator<Locale> languageIter = createIterator(this.languages);
             while (languageIter.hasNext()) {
-                final Locale language = languageIter.next();
+                Locale language = languageIter.next();
+                Iterator<String> encodingIter = createIterator(this.encodings);
                 while (encodingIter.hasNext()) {
-                    final String encoding = encodingIter.next();
-                    final Variant variant = new Variant(mediaType, language,
-                            encoding);
+                    String encoding = encodingIter.next();
+                    Variant variant = new Variant(mediaType, language, encoding);
                     this.variants.add(variant);
                 }
             }
@@ -158,7 +158,7 @@ public class VariantListBuilderImpl extends VariantListBuilder {
         if (this.encodings == null) {
             this.encodings = new ArrayList<String>();
         }
-        for (final String encoding : encodings) {
+        for (String encoding : encodings) {
             this.encodings.add(encoding);
         }
         return this;
@@ -177,7 +177,7 @@ public class VariantListBuilderImpl extends VariantListBuilder {
         if (this.languages == null) {
             this.languages = new ArrayList<Locale>();
         }
-        for (final Locale language : languages) {
+        for (Locale language : languages) {
             this.languages.add(language);
         }
         return this;
@@ -198,7 +198,7 @@ public class VariantListBuilderImpl extends VariantListBuilder {
         if (this.mediaTypes == null) {
             this.mediaTypes = new ArrayList<MediaType>();
         }
-        for (final MediaType mediaType : mediaTypes) {
+        for (MediaType mediaType : mediaTypes) {
             this.mediaTypes.add(mediaType);
         }
         return this;

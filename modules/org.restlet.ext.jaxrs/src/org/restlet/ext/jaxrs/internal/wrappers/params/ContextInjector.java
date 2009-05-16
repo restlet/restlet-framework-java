@@ -59,6 +59,7 @@ import org.restlet.ext.jaxrs.internal.exceptions.IllegalFieldTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.ImplementationException;
 import org.restlet.ext.jaxrs.internal.exceptions.InjectException;
+import org.restlet.ext.jaxrs.internal.todo.NotYetImplementedException;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.ext.jaxrs.internal.wrappers.params.ParameterList.AbstractParamGetter;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.ExtensionBackwardMapping;
@@ -266,7 +267,8 @@ public class ContextInjector {
 
         private final ThreadLocalizedExtendedUriInfo uriInfo;
 
-        ExtendedUriInfoInjector(InjectionAim aim, ThreadLocalizedContext tlContext) {
+        ExtendedUriInfoInjector(InjectionAim aim,
+                ThreadLocalizedContext tlContext) {
             this.aim = aim;
             this.uriInfo = new ThreadLocalizedExtendedUriInfo(tlContext);
         }
@@ -312,7 +314,7 @@ public class ContextInjector {
             return extensionBackwardMapping;
         }
         if (declaringClass.equals(PathSegment.class)) {
-            final String msg = "The use of PathSegment annotated with @Context is not standard.";
+            String msg = "The use of PathSegment annotated with @Context is not standard.";
             logger.config(msg);
             return new GetLastPathSegment(tlContext);
         }
@@ -324,6 +326,15 @@ public class ContextInjector {
         if (declaringClass.equals(UriInfo.class)) {
             throw new ImplementationException(
                     "You must not call the method ContextInjector.getInjectObject(.......) with class UriInfo");
+        }
+        String declaringClassName = declaringClass.getName();
+        // compare names to avoid ClassNotFoundExceptions, if the Servlet-API is
+        // not in the classpath
+        if (declaringClassName.equals("javax.servlet.http.HttpServletRequest")
+                || declaringClassName
+                        .equals("javax.servlet.http.HttpServletResponse")) {
+            throw new NotYetImplementedException(
+                    "The returnin of Servlet depending Context is not implemented for now.");
         }
         // NICE also allow injection of ClientInfo and Conditions. Proxies are
         // required, because the injected objects must be thread local.
@@ -349,7 +360,8 @@ public class ContextInjector {
             throws IllegalTypeException {
         if (declaringClass.equals(UriInfo.class)) {
             return new UriInfoInjector(aim, tlContext);
-        } if (declaringClass.equals(ExtendedUriInfo.class)) {
+        }
+        if (declaringClass.equals(ExtendedUriInfo.class)) {
             return new ExtendedUriInfoInjector(aim, tlContext);
         } else {
             return new EverSameInjector(aim, getInjectObject(declaringClass,
@@ -422,10 +434,10 @@ public class ContextInjector {
             try {
                 for (final Field field : jaxRsClass.getDeclaredFields()) {
                     if (field.isAnnotationPresent(Context.class)) {
-                        final InjectionAim aim = new FieldWrapper(field);
-                        final Class<?> declaringClass = field.getType();
-                        final Injector injector = getInjector(declaringClass,
-                                aim, tlContext, allProviders,
+                        InjectionAim aim = new FieldWrapper(field);
+                        Class<?> declaringClass = field.getType();
+                        Injector injector = getInjector(declaringClass, aim,
+                                tlContext, allProviders,
                                 extensionBackwardMapping);
                         this.injEverSameAims.add(injector);
                     }
@@ -439,9 +451,9 @@ public class ContextInjector {
             try {
                 for (final Method method : jaxRsClass.getDeclaredMethods()) {
                     if (isBeanSetter(method, Context.class)) {
-                        final BeanSetter aim = new BeanSetter(method);
-                        final Class<?> paramClass = method.getParameterTypes()[0];
-                        final Injector injector = getInjector(paramClass, aim,
+                        BeanSetter aim = new BeanSetter(method);
+                        Class<?> paramClass = method.getParameterTypes()[0];
+                        Injector injector = getInjector(paramClass, aim,
                                 tlContext, allProviders,
                                 extensionBackwardMapping);
                         this.injEverSameAims.add(injector);
