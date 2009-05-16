@@ -49,15 +49,15 @@ import org.restlet.resource.UniformResource;
 public class GwtConverter extends ConverterHelper {
 
     /** JSON variant. */
-    private static final Variant VARIANT_JSON = new Variant(
-            MediaType.APPLICATION_JSON);
+    private static final Variant VARIANT_GWT = new Variant(
+            MediaType.APPLICATION_JAVA_OBJECT_GWT);
 
     @Override
     public List<Class<?>> getObjectClasses(Variant variant) {
         List<Class<?>> result = null;
 
         if (variant != null) {
-            if (VARIANT_JSON.isCompatible(variant)) {
+            if (VARIANT_GWT.isCompatible(variant)) {
                 result = addObjectClass(result, Object.class);
             }
         }
@@ -67,7 +67,7 @@ public class GwtConverter extends ConverterHelper {
 
     @Override
     public List<Variant> getVariants(Class<?> objectClass, Variant targetVariant) {
-        return addVariant(null, targetVariant, VARIANT_JSON);
+        return addVariant(null, targetVariant, VARIANT_GWT);
     }
 
     @SuppressWarnings("unchecked")
@@ -77,7 +77,7 @@ public class GwtConverter extends ConverterHelper {
         Object result = null;
         ObjectRepresentation<?> objectRepresentation;
 
-        if (VARIANT_JSON.isCompatible(representation)) {
+        if (VARIANT_GWT.isCompatible(representation)) {
             objectRepresentation = new ObjectRepresentation(representation
                     .getText(), targetClass);
             result = objectRepresentation.getObject();
@@ -91,7 +91,7 @@ public class GwtConverter extends ConverterHelper {
     public Representation toRepresentation(Object object,
             Variant targetVariant, UniformResource resource) {
         if (targetVariant == null) {
-            targetVariant = new Variant(MediaType.APPLICATION_JSON);
+            targetVariant = new Variant(MediaType.APPLICATION_JAVA_OBJECT_GWT);
         }
 
         ObjectRepresentation objectRepresentation = new ObjectRepresentation(

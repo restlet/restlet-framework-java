@@ -34,21 +34,32 @@ import com.google.gwt.user.client.rpc.SerializationException;
 import com.google.gwt.user.server.rpc.SerializationPolicy;
 
 /**
- * Serialization policy that says 'Yes' all the time. For testing purpose only
- * for now.
+ * Serialization policy that allows the serialization of all the classes and
+ * fields.
  * 
  * @author Jerome Louvel
  */
 public class SimpleSerializationPolicy extends SerializationPolicy {
 
+    private static final SimpleSerializationPolicy instance = new SimpleSerializationPolicy();
+
+    /**
+     * Returns the common instance of this simple policy file.
+     * 
+     * @return The common instance of this simple policy file.
+     */
+    public static SerializationPolicy getInstance() {
+        return instance;
+    }
+
     @Override
     public boolean shouldDeserializeFields(Class<?> clazz) {
-        return true;
+        return (clazz != null);
     }
 
     @Override
     public boolean shouldSerializeFields(Class<?> clazz) {
-        return true;
+        return (clazz != null);
     }
 
     @Override

@@ -34,17 +34,21 @@ import com.google.gwt.user.server.rpc.SerializationPolicy;
 import com.google.gwt.user.server.rpc.SerializationPolicyProvider;
 
 /**
- * Serialization policy provider that creates a
- * {@link SimpleSerializationPolicy} instance all the time.
+ * Serialization policy provider that return the
+ * {@link SimpleSerializationPolicy} default instance all the time.
  * 
  * @author Jerome Louvel
  */
 public class SimpleSerializationPolicyProvider implements
         SerializationPolicyProvider {
 
+    /**
+     * Simple policy provider that always returns
+     * {@link SimpleSerializationPolicy#getInstance()}.
+     */
     public SerializationPolicy getSerializationPolicy(String moduleBaseURL,
             String serializationPolicyStrongName) {
-        return new SimpleSerializationPolicy();
+        return SimpleSerializationPolicy.getInstance();
     }
 
 }
