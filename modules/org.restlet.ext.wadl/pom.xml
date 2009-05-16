@@ -10,7 +10,7 @@
 
 	<artifactId>org.restlet.ext.wadl</artifactId>
 	<name>Restlet extension: WADL</name>
-	<description>Support for the WADL specification.</description>
+	<description>Support the WADL specification.</description>
 
 	<dependencies>
 		<dependency>

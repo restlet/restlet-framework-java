@@ -34,8 +34,6 @@ import java.io.Serializable;
 
 import org.restlet.gwt.data.MediaType;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.SerializationStreamFactory;
 import com.google.gwt.user.client.rpc.SerializationStreamReader;
 import com.google.gwt.user.client.rpc.SerializationStreamWriter;
@@ -54,21 +52,21 @@ public class ObjectRepresentation<T extends Serializable> extends
     /** The wrapped object. */
     private T object;
 
-    /** The target object class. */
-    private Class<? extends RemoteService> rpcServiceClass;
+    /** The serialization stream factory. */
+    private SerializationStreamFactory serializationStreamFactory;
 
     /**
      * Constructor for deserialization.
      * 
      * @param serializedObject
      *            The object serialization text.
-     * @param rpcServiceClass
-     *            The RPC service class to get the serializer from.
+     * @param serializationStreamFactory
+     *            The serialization stream factory.
      */
     public ObjectRepresentation(String serializedObject,
-            Class<? extends RemoteService> rpcServiceClass) {
+            SerializationStreamFactory serializationStreamFactory) {
         super(serializedObject, MediaType.APPLICATION_JAVA_OBJECT_GWT);
-        this.rpcServiceClass = rpcServiceClass;
+        this.serializationStreamFactory = serializationStreamFactory;
         this.object = null;
     }
 
@@ -77,14 +75,14 @@ public class ObjectRepresentation<T extends Serializable> extends
      * 
      * @param object
      *            The object to serialize.
-     * @param rpcServiceClass
-     *            The RPC service class to get the serializer from.
+     * @param serializationStreamFactory
+     *            The serialization stream factory.
      */
     public ObjectRepresentation(T object,
-            Class<? extends RemoteService> rpcServiceClass) {
+            SerializationStreamFactory serializationStreamFactory) {
         super(null, MediaType.APPLICATION_JAVA_OBJECT_GWT);
         this.object = object;
-        this.rpcServiceClass = rpcServiceClass;
+        this.serializationStreamFactory = serializationStreamFactory;
     }
 
     /**
@@ -117,9 +115,9 @@ public class ObjectRepresentation<T extends Serializable> extends
      * 
      * @return The serialization stream factory.
      */
-    private SerializationStreamFactory getSerializationStreamFactory() {
+    public SerializationStreamFactory getSerializationStreamFactory() {
         // Create the serialization stream factory
-        return (SerializationStreamFactory) GWT.create(rpcServiceClass);
+        return serializationStreamFactory;
     }
 
     @Override
@@ -150,6 +148,15 @@ public class ObjectRepresentation<T extends Serializable> extends
      */
     public void setObject(T object) {
         this.object = object;
+    }
+
+    /**
+     * Sets the serialization stream factory.
+     * @param serializationStreamFactory The serialization stream factory.
+     */
+    public void setSerializationStreamFactory(
+            SerializationStreamFactory serializationStreamFactory) {
+        this.serializationStreamFactory = serializationStreamFactory;
     }
 
 }
