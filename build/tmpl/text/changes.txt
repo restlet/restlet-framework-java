@@ -83,6 +83,8 @@ Changes log
           dynamic proxies implementing a given interface. 
         - Added Series#getValuesArray() with a flag to ignore case.
           Suggested by Arjohn Kampman.
+        - Added a port of Restlet core to Android 1.5 (mobile OS) and to
+          Google AppEngine 1.2.
     - API changes
         - RepresentationInfo is now concrete and has more constructors.
           Suggested by Lars Heuer.
