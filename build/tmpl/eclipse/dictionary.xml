@@ -86,3 +86,4 @@ yahoo
 namespace
 multi
 decorator
+serializer

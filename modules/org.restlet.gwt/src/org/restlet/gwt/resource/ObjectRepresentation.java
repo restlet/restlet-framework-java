@@ -28,13 +28,12 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.gwt.engine.util;
+package org.restlet.gwt.resource;
 
 import java.io.Serializable;
 
-import org.restlet.gwt.resource.StringRepresentation;
-
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.SerializationStreamFactory;
 import com.google.gwt.user.client.rpc.SerializationStreamReader;
 import com.google.gwt.user.client.rpc.SerializationStreamWriter;
@@ -54,19 +53,20 @@ public class ObjectRepresentation<T extends Serializable> extends
     private T object;
 
     /** The target object class. */
-    private Class<T> targetClass;
+    private Class<? extends RemoteService> rpcServiceClass;
 
     /**
      * Constructor for deserialization.
      * 
      * @param serializedObject
      *            The object serialization text.
-     * @param targetClass
-     *            The target object class.
+     * @param rpcServiceClass
+     *            The RPC service class to get the serializer from.
      */
-    public ObjectRepresentation(String serializedObject, Class<T> targetClass) {
+    public ObjectRepresentation(String serializedObject,
+            Class<? extends RemoteService> rpcServiceClass) {
         super(serializedObject);
-        this.targetClass = targetClass;
+        this.rpcServiceClass = rpcServiceClass;
         this.object = null;
     }
 
@@ -75,12 +75,14 @@ public class ObjectRepresentation<T extends Serializable> extends
      * 
      * @param object
      *            The object to serialize.
+     * @param rpcServiceClass
+     *            The RPC service class to get the serializer from.
      */
-    @SuppressWarnings("unchecked")
-    public ObjectRepresentation(T object) {
+    public ObjectRepresentation(T object,
+            Class<? extends RemoteService> rpcServiceClass) {
         super(null);
         this.object = object;
-        this.targetClass = (Class<T>) object.getClass();
+        this.rpcServiceClass = rpcServiceClass;
     }
 
     /**
@@ -92,15 +94,11 @@ public class ObjectRepresentation<T extends Serializable> extends
     public T getObject() {
         if ((this.object == null) && (getText() != null)) {
             try {
-                // Create the serialization stream factory
-                SerializationStreamFactory serializationFactory = (SerializationStreamFactory) GWT
-                        .create(targetClass);
-
                 // Create a stream reader
-                SerializationStreamReader streamReader = serializationFactory
+                SerializationStreamReader streamReader = getSerializationStreamFactory()
                         .createStreamReader(getText());
 
-                // Deserialize the instance
+                // Deserialize the object
                 this.object = (T) streamReader.readObject();
             } catch (Exception e) {
                 this.object = null;
@@ -112,14 +110,25 @@ public class ObjectRepresentation<T extends Serializable> extends
         return object;
     }
 
+    /**
+     * Returns the serialization stream factory.
+     * 
+     * @return The serialization stream factory.
+     */
+    private SerializationStreamFactory getSerializationStreamFactory() {
+        // Create the serialization stream factory
+        return (SerializationStreamFactory) GWT.create(rpcServiceClass);
+    }
+
     @Override
     public String getText() {
         if ((this.object != null) && (super.getText() == null)) {
             try {
-                SerializationStreamFactory factory = GWT
-                        .create(this.targetClass);
-                SerializationStreamWriter objectWriter;
-                objectWriter = factory.createStreamWriter();
+                // Create a stream writer
+                SerializationStreamWriter objectWriter = getSerializationStreamFactory()
+                        .createStreamWriter();
+
+                // Serialize the object
                 objectWriter.writeObject(this.object);
                 setText(objectWriter.toString());
             } catch (Exception e) {
