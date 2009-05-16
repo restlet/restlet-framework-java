@@ -34,6 +34,7 @@ import java.io.Serializable;
 
 import org.restlet.gwt.data.MediaType;
 
+import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.SerializationStreamFactory;
 import com.google.gwt.user.client.rpc.SerializationStreamReader;
 import com.google.gwt.user.client.rpc.SerializationStreamWriter;
@@ -54,6 +55,37 @@ public class ObjectRepresentation<T extends Serializable> extends
 
     /** The serialization stream factory. */
     private SerializationStreamFactory serializationStreamFactory;
+
+    /**
+     * Constructor for deserialization.
+     * 
+     * @param serializedObject
+     *            The object serialization text.
+     * @param remoteService
+     *            The remote service from which to obtain the serialization
+     *            stream factory.
+     */
+    public ObjectRepresentation(String serializedObject,
+            RemoteService remoteService) {
+        super(serializedObject, MediaType.APPLICATION_JAVA_OBJECT_GWT);
+        this.serializationStreamFactory = (SerializationStreamFactory) remoteService;
+        this.object = null;
+    }
+
+    /**
+     * Constructor for serialization.
+     * 
+     * @param object
+     *            The object to serialize.
+     * @param remoteService
+     *            The remote service from which to obtain the serialization
+     *            stream factory.
+     */
+    public ObjectRepresentation(T object, RemoteService remoteService) {
+        super(null, MediaType.APPLICATION_JAVA_OBJECT_GWT);
+        this.object = object;
+        this.serializationStreamFactory = (SerializationStreamFactory) remoteService;
+    }
 
     /**
      * Constructor for deserialization.
@@ -152,7 +184,9 @@ public class ObjectRepresentation<T extends Serializable> extends
 
     /**
      * Sets the serialization stream factory.
-     * @param serializationStreamFactory The serialization stream factory.
+     * 
+     * @param serializationStreamFactory
+     *            The serialization stream factory.
      */
     public void setSerializationStreamFactory(
             SerializationStreamFactory serializationStreamFactory) {
