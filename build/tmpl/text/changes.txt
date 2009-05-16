@@ -138,6 +138,7 @@ Changes log
           Reported by Tal Liron.
         - Removed the Script extension and Scripturian libraries that 
           will now be managed outside the Restlet project by Tal Liron.
+        - Updated GWT library to version 1.6.4.
  
 - 1.2 Milestone 2 (2009-04-01)
     - Breaking changes

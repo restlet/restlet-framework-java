@@ -32,10 +32,13 @@ package org.restlet.ext.gwt;
 
 import java.io.Serializable;
 
+import org.restlet.data.MediaType;
 import org.restlet.engine.Engine;
 import org.restlet.representation.StringRepresentation;
 
+import com.google.gwt.user.client.rpc.impl.AbstractSerializationStream;
 import com.google.gwt.user.server.rpc.SerializationPolicy;
+import com.google.gwt.user.server.rpc.SerializationPolicyProvider;
 import com.google.gwt.user.server.rpc.impl.ServerSerializationStreamReader;
 import com.google.gwt.user.server.rpc.impl.ServerSerializationStreamWriter;
 
@@ -56,6 +59,9 @@ public class ObjectRepresentation<T extends Serializable> extends
     /** The GWT-RPC serialization policy. */
     private SerializationPolicy serializationPolicy;
 
+    /** The GWT-RPC serialization policy provider. */
+    private SerializationPolicyProvider serializationPolicyProvider;
+
     /** The target object class. */
     private Class<T> targetClass;
 
@@ -68,10 +74,11 @@ public class ObjectRepresentation<T extends Serializable> extends
      *            The target object class.
      */
     public ObjectRepresentation(String serializedObject, Class<T> targetClass) {
-        super(serializedObject);
+        super(serializedObject, MediaType.APPLICATION_JAVA_OBJECT_GWT);
         this.targetClass = targetClass;
         this.object = null;
-        this.serializationPolicy = new SimpleSerializationPolicy();
+        this.serializationPolicy = SimpleSerializationPolicy.getInstance();
+        this.serializationPolicyProvider = new SimpleSerializationPolicyProvider();
     }
 
     /**
@@ -82,10 +89,11 @@ public class ObjectRepresentation<T extends Serializable> extends
      */
     @SuppressWarnings("unchecked")
     public ObjectRepresentation(T object) {
-        super(null);
+        super(null, MediaType.APPLICATION_JAVA_OBJECT_GWT);
         this.object = object;
         this.targetClass = (Class<T>) object.getClass();
-        this.serializationPolicy = new SimpleSerializationPolicy();
+        this.serializationPolicy = SimpleSerializationPolicy.getInstance();
+        this.serializationPolicyProvider = new SimpleSerializationPolicyProvider();
     }
 
     /**
@@ -100,7 +108,9 @@ public class ObjectRepresentation<T extends Serializable> extends
                 ServerSerializationStreamReader objectReader = new ServerSerializationStreamReader(
                         Engine.getClassLoader(),
                         new SimpleSerializationPolicyProvider());
-                objectReader.prepareToRead(getText());
+                String encodedString = AbstractSerializationStream.SERIALIZATION_STREAM_VERSION
+                        + "|1|0|0|0|" + getText() + '|';
+                objectReader.prepareToRead(encodedString);
                 this.object = (T) objectReader
                         .deserializeValue(this.targetClass);
             } catch (Exception e) {
@@ -122,10 +132,24 @@ public class ObjectRepresentation<T extends Serializable> extends
         return serializationPolicy;
     }
 
+    /**
+     * Returns the GWT-RPC serialization policy provider.
+     * 
+     * @return The GWT-RPC serialization policy provider.
+     */
+    public SerializationPolicyProvider getSerializationPolicyProvider() {
+        return serializationPolicyProvider;
+    }
+
     @Override
     public String getText() {
         if ((this.object != null) && (super.getText() == null)) {
             try {
+                // java.lang.reflect.Method rpcMethod = getClass().getMethod(
+                // "getObject", (Class[]) null);
+                // RPC.encodeResponseForSuccess(rpcMethod, object,
+                // getSerializationPolicy());
+
                 ServerSerializationStreamWriter objectWriter = new ServerSerializationStreamWriter(
                         getSerializationPolicy());
                 objectWriter.serializeValue(this.object, this.targetClass);
@@ -157,6 +181,17 @@ public class ObjectRepresentation<T extends Serializable> extends
      */
     public void setSerializationPolicy(SerializationPolicy serializationPolicy) {
         this.serializationPolicy = serializationPolicy;
+    }
+
+    /**
+     * Sets the GWT-RPC serialization policy provider.
+     * 
+     * @param serializationPolicyProvider
+     *            The GWT-RPC serialization policy provider.
+     */
+    public void setSerializationPolicyProvider(
+            SerializationPolicyProvider serializationPolicyProvider) {
+        this.serializationPolicyProvider = serializationPolicyProvider;
     }
 
 }

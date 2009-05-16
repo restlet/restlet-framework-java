@@ -1,7 +1,7 @@
 <library id="gwt">
 	<package name="com.google.gwt" />
-	<version>1.5</version>
-	<release>3</release>
+	<version>1.6</version>
+	<release>4</release>
 	<homeUri>
 		http://code.google.com/webtoolkit/
 	</homeUri>
