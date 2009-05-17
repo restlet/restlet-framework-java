@@ -30,6 +30,10 @@
 
 package org.restlet.service;
 
+import org.restlet.Context;
+import org.restlet.engine.application.RangeFilter;
+import org.restlet.routing.Filter;
+
 /**
  * Application service automatically exposes ranges of response entities. This
  * allows resources to not care of requested ranges and return full
@@ -56,6 +60,11 @@ public class RangeService extends Service {
      */
     public RangeService(boolean enabled) {
         super(enabled);
+    }
+
+    @Override
+    public Filter createInboundFilter(Context context) {
+        return new RangeFilter(context);
     }
 
 }

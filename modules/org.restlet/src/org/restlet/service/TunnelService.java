@@ -30,9 +30,12 @@
 
 package org.restlet.service;
 
+import org.restlet.Context;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Request;
+import org.restlet.engine.application.TunnelFilter;
 import org.restlet.engine.http.HttpConstants;
+import org.restlet.routing.Filter;
 
 /**
  * Application service tunneling request method or client preferences. The
@@ -305,6 +308,11 @@ public class TunnelService extends Service {
      */
     public boolean allowClient(ClientInfo client) {
         return true;
+    }
+
+    @Override
+    public Filter createInboundFilter(Context context) {
+        return new TunnelFilter(context);
     }
 
     /**

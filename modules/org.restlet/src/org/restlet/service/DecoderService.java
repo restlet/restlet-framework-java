@@ -30,6 +30,10 @@
 
 package org.restlet.service;
 
+import org.restlet.Context;
+import org.restlet.engine.application.Decoder;
+import org.restlet.routing.Filter;
+
 /**
  * Application service automatically decoding or uncompressing request entities.
  * 
@@ -52,6 +56,11 @@ public class DecoderService extends Service {
      */
     public DecoderService(boolean enabled) {
         super(enabled);
+    }
+
+    @Override
+    public Filter createInboundFilter(Context context) {
+        return new Decoder(context, true, false);
     }
 
 }

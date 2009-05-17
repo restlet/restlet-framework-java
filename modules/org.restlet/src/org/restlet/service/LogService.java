@@ -30,6 +30,10 @@
 
 package org.restlet.service;
 
+import org.restlet.Context;
+import org.restlet.engine.LogFilter;
+import org.restlet.routing.Filter;
+
 /**
  * Service providing access logging service. The implementation is fully based
  * on the standard logging mechanism introduced in JDK 1.4.<br>
@@ -95,6 +99,11 @@ public class LogService extends Service {
         this.loggerName = null;
         this.logFormat = null;
         this.identityCheck = false;
+    }
+
+    @Override
+    public Filter createInboundFilter(Context context) {
+        return new LogFilter(context, this);
     }
 
     /**

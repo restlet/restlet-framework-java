@@ -131,6 +131,11 @@ Changes log
         - Deprecated the Resource and Guard classes.
         - Added toObject() and toRepresentation() methods on 
           ClientResource.
+        - Refactored the services API. Added a "services" property
+          on Application to allow users to register new ones. Also,
+          add a createInboundFilter() and createOutboundFilter()
+          methods to automatically register them when starting the
+          application.
     - Miscellaneous
         - Component XML configuration has been moved into an Engine 
           ComponentXmlParser class.

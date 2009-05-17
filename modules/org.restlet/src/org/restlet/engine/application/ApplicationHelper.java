@@ -31,12 +31,11 @@
 package org.restlet.engine.application;
 
 import org.restlet.Application;
-import org.restlet.Context;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.engine.ChainHelper;
-import org.restlet.engine.StatusFilter;
 import org.restlet.routing.Filter;
+import org.restlet.service.Service;
 
 /**
  * Application implementation.
@@ -52,50 +51,6 @@ public class ApplicationHelper extends ChainHelper<Application> {
      */
     public ApplicationHelper(Application application) {
         super(application);
-    }
-
-    /**
-     * Creates a new decoder filter. Allows overriding.
-     * 
-     * @param application
-     *            The parent application.
-     * @return The new decoder filter.
-     */
-    protected Filter createDecoderFilter(Application application) {
-        return new Decoder(application.getContext(), true, false);
-    }
-
-    /**
-     * Creates a new status filter. Allows overriding.
-     * 
-     * @param application
-     *            The parent application.
-     * @return The new status filter.
-     */
-    protected Filter createStatusFilter(Application application) {
-        return new StatusFilter(getContext(), application.getStatusService());
-    }
-
-    /**
-     * Creates a new tunnel filter. Allows overriding.
-     * 
-     * @param context
-     *            The parent context.
-     * @return The new tunnel filter.
-     */
-    protected Filter createTunnelFilter(Context context) {
-        return new TunnelFilter(context);
-    }
-
-    /**
-     * Creates a new Range filter. Allows overriding.
-     * 
-     * @param context
-     *            The parent context.
-     * @return The new range filter.
-     */
-    protected Filter createRangeFilter(Context context) {
-        return new RangeFilter(context);
     }
 
     /**
@@ -119,24 +74,16 @@ public class ApplicationHelper extends ChainHelper<Application> {
     /** Start hook. */
     @Override
     public synchronized void start() throws Exception {
-        // Addition of tunnel filter
-        if (getHelped().getTunnelService().isEnabled()) {
-            addFilter(createTunnelFilter(getContext()));
-        }
+        Filter inboundFilter = null;
 
-        // Addition of status pages
-        if (getHelped().getStatusService().isEnabled()) {
-            addFilter(createStatusFilter(getHelped()));
-        }
+        for (Service service : getHelped().getServices()) {
+            if (service.isEnabled()) {
+                inboundFilter = service.createInboundFilter(getContext());
 
-        // Addition of decoder filter
-        if (getHelped().getDecoderService().isEnabled()) {
-            addFilter(createDecoderFilter(getHelped()));
-        }
-
-        // Addition of range filter
-        if (getHelped().getRangeService().isEnabled()) {
-            addFilter(createRangeFilter(getContext()));
+                if (inboundFilter != null) {
+                    addFilter(inboundFilter);
+                }
+            }
         }
 
         // Attach the Application's root Restlet

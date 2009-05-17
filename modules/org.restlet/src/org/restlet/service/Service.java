@@ -30,6 +30,9 @@
 
 package org.restlet.service;
 
+import org.restlet.Context;
+import org.restlet.routing.Filter;
+
 /**
  * Generic service associated to a component or an application. The life cycle
  * of a service is tightly related to the one of the associated component or
@@ -65,6 +68,38 @@ public abstract class Service {
     }
 
     /**
+     * Create the filter that should be invoked for incoming calls.
+     * 
+     * @param context
+     *            The current context.
+     * @return The new filter or null.
+     */
+    public Filter createInboundFilter(Context context) {
+        return null;
+    }
+
+    /**
+     * Create the filter that should be invoked for outgoing calls.
+     * 
+     * @param context
+     *            The current context.
+     * @return The new filter or null.
+     * @see Context#getClientDispatcher()
+     */
+    public Filter createOutboundFilter(Context context) {
+        return null;
+    }
+
+    /**
+     * Indicates if the service should be enabled.
+     * 
+     * @return True if the service should be enabled.
+     */
+    public boolean isEnabled() {
+        return this.enabled;
+    }
+
+    /**
      * Indicates if the Restlet is started.
      * 
      * @return True if the Restlet is started.
@@ -82,6 +117,16 @@ public abstract class Service {
         return !this.started;
     }
 
+    /**
+     * Indicates if the service should be enabled.
+     * 
+     * @param enabled
+     *            True if the service should be enabled.
+     */
+    public synchronized void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
     /** Starts the Restlet. */
     public synchronized void start() throws Exception {
         if (isEnabled()) {
@@ -94,25 +139,6 @@ public abstract class Service {
         if (isEnabled()) {
             this.started = false;
         }
-    }
-
-    /**
-     * Indicates if the service should be enabled.
-     * 
-     * @return True if the service should be enabled.
-     */
-    public boolean isEnabled() {
-        return this.enabled;
-    }
-
-    /**
-     * Indicates if the service should be enabled.
-     * 
-     * @param enabled
-     *            True if the service should be enabled.
-     */
-    public synchronized void setEnabled(boolean enabled) {
-        this.enabled = enabled;
     }
 
 }

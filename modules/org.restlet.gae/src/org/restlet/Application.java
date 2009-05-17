@@ -140,7 +140,7 @@ public class Application extends Restlet {
     private volatile RangeService rangeService;
 
     /** The modifiable list of roles. */
-    private List<Role> roles;
+    private final List<Role> roles;
 
     /** The root Restlet. */
     private volatile Restlet root;

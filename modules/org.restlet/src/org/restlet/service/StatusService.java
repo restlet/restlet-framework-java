@@ -30,11 +30,14 @@
 
 package org.restlet.service;
 
+import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.engine.StatusFilter;
 import org.restlet.representation.Representation;
+import org.restlet.routing.Filter;
 
 /**
  * Service to handle error statuses. If an exception is thrown within your
@@ -87,6 +90,11 @@ public class StatusService extends Service {
         this.contactEmail = null;
         this.homeRef = new Reference("/");
         this.overwrite = false;
+    }
+
+    @Override
+    public Filter createInboundFilter(Context context) {
+        return new StatusFilter(context, this);
     }
 
     /**

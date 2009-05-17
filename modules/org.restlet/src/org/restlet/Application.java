@@ -30,8 +30,10 @@
 
 package org.restlet;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Level;
 
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -46,6 +48,7 @@ import org.restlet.service.ConverterService;
 import org.restlet.service.DecoderService;
 import org.restlet.service.MetadataService;
 import org.restlet.service.RangeService;
+import org.restlet.service.Service;
 import org.restlet.service.StatusService;
 import org.restlet.service.TaskService;
 import org.restlet.service.TunnelService;
@@ -109,15 +112,6 @@ public class Application extends Restlet {
     /** The author(s). */
     private volatile String author;
 
-    /** The connector service. */
-    private volatile ConnectorService connectorService;
-
-    /** The converter service. */
-    private volatile ConverterService converterService;
-
-    /** The decoder service. */
-    private volatile DecoderService decoderService;
-
     /** The description. */
     private volatile String description;
 
@@ -127,17 +121,11 @@ public class Application extends Restlet {
     /** The helper provided by the implementation. */
     private volatile RestletHelper<Application> helper;
 
-    /** The local service. */
-    private volatile MetadataService metadataService;
-
     /** The display name. */
     private volatile String name;
 
     /** The owner(s). */
     private volatile String owner;
-
-    /** The range service. */
-    private volatile RangeService rangeService;
 
     /** The modifiable list of roles. */
     private List<Role> roles;
@@ -145,14 +133,8 @@ public class Application extends Restlet {
     /** The root Restlet. */
     private volatile Restlet root;
 
-    /** The status service. */
-    private volatile StatusService statusService;
-
-    /** The task service. */
-    private volatile TaskService taskService;
-
-    /** The tunnel service. */
-    private volatile TunnelService tunnelService;
+    /** The list of services. */
+    private final List<Service> services;
 
     /**
      * Constructor. Note this constructor is convenient because you don't have
@@ -185,16 +167,18 @@ public class Application extends Restlet {
         this.description = null;
         this.author = null;
         this.owner = null;
-        this.root = null;
-        this.connectorService = new ConnectorService();
-        this.converterService = new ConverterService();
-        this.decoderService = new DecoderService();
-        this.metadataService = new MetadataService();
-        this.rangeService = new RangeService();
         this.roles = new CopyOnWriteArrayList<Role>();
-        this.statusService = new StatusService();
-        this.taskService = new TaskService();
-        this.tunnelService = new TunnelService(true, true);
+        this.root = null;
+
+        this.services = new CopyOnWriteArrayList<Service>();
+        this.services.add(new TunnelService(true, true));
+        this.services.add(new StatusService());
+        this.services.add(new DecoderService());
+        this.services.add(new RangeService());
+        this.services.add(new ConnectorService());
+        this.services.add(new ConverterService());
+        this.services.add(new MetadataService());
+        this.services.add(new TaskService());
     }
 
     /**
@@ -241,7 +225,7 @@ public class Application extends Restlet {
      * @return The connector service.
      */
     public ConnectorService getConnectorService() {
-        return this.connectorService;
+        return getService(ConnectorService.class);
     }
 
     /**
@@ -250,7 +234,7 @@ public class Application extends Restlet {
      * @return The converter service.
      */
     public ConverterService getConverterService() {
-        return this.converterService;
+        return getService(ConverterService.class);
     }
 
     /**
@@ -259,7 +243,7 @@ public class Application extends Restlet {
      * @return The decoder service.
      */
     public DecoderService getDecoderService() {
-        return this.decoderService;
+        return getService(DecoderService.class);
     }
 
     /**
@@ -295,7 +279,7 @@ public class Application extends Restlet {
      * @return The metadata service.
      */
     public MetadataService getMetadataService() {
-        return this.metadataService;
+        return getService(MetadataService.class);
     }
 
     /**
@@ -322,7 +306,7 @@ public class Application extends Restlet {
      * @return The range service.
      */
     public RangeService getRangeService() {
-        return rangeService;
+        return getService(RangeService.class);
     }
 
     /**
@@ -349,12 +333,41 @@ public class Application extends Restlet {
     }
 
     /**
+     * Returns a service matching a given service class.
+     * 
+     * @param <T>
+     *            The service type.
+     * @param clazz
+     *            The service class to match.
+     * @return The matched service instance.
+     */
+    @SuppressWarnings("unchecked")
+    protected <T extends Service> T getService(Class<T> clazz) {
+        for (Service service : getServices()) {
+            if (clazz.isAssignableFrom(service.getClass())) {
+                return (T) service;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns the modifiable list of services.
+     * 
+     * @return The modifiable list of services.
+     */
+    public List<Service> getServices() {
+        return services;
+    }
+
+    /**
      * Returns the status service. The service is enabled by default.
      * 
      * @return The status service.
      */
     public StatusService getStatusService() {
-        return this.statusService;
+        return getService(StatusService.class);
     }
 
     /**
@@ -364,7 +377,7 @@ public class Application extends Restlet {
      * @return A task service.
      */
     public TaskService getTaskService() {
-        return this.taskService;
+        return getService(TaskService.class);
     }
 
     /**
@@ -373,7 +386,7 @@ public class Application extends Restlet {
      * @return The tunnel service.
      */
     public TunnelService getTunnelService() {
-        return this.tunnelService;
+        return getService(TunnelService.class);
     }
 
     @Override
@@ -402,7 +415,7 @@ public class Application extends Restlet {
      *            The connector service.
      */
     public void setConnectorService(ConnectorService connectorService) {
-        this.connectorService = connectorService;
+        setService(connectorService);
     }
 
     /**
@@ -412,7 +425,7 @@ public class Application extends Restlet {
      *            The converter service.
      */
     public void setConverterService(ConverterService converterService) {
-        this.converterService = converterService;
+        setService(converterService);
     }
 
     /**
@@ -422,7 +435,7 @@ public class Application extends Restlet {
      *            The decoder service.
      */
     public void setDecoderService(DecoderService decoderService) {
-        this.decoderService = decoderService;
+        setService(decoderService);
     }
 
     /**
@@ -452,7 +465,7 @@ public class Application extends Restlet {
      *            The metadata service.
      */
     public void setMetadataService(MetadataService metadataService) {
-        this.metadataService = metadataService;
+        setService(metadataService);
     }
 
     /**
@@ -482,7 +495,7 @@ public class Application extends Restlet {
      *            The range service.
      */
     public void setRangeService(RangeService rangeService) {
-        this.rangeService = rangeService;
+        setService(rangeService);
     }
 
     /**
@@ -521,13 +534,63 @@ public class Application extends Restlet {
     }
 
     /**
+     * Replaces or adds a service. The replacement is based on the service
+     * class.
+     * 
+     * @param newService
+     *            The new service to set.
+     */
+    protected synchronized void setService(Service newService) {
+        List<Service> services = new ArrayList<Service>();
+        Service service;
+        boolean replaced = false;
+
+        for (int i = 0; !replaced && (i < services.size()); i++) {
+            service = services.get(i);
+
+            if ((service != null)
+                    && service.getClass().isAssignableFrom(
+                            newService.getClass())) {
+                try {
+                    service.stop();
+                } catch (Exception e) {
+                    getLogger().log(Level.WARNING,
+                            "Unable to stop service replaced", e);
+                }
+
+                services.set(i, newService);
+                replaced = true;
+            }
+        }
+
+        if (!replaced) {
+            services.add(newService);
+        }
+
+        setServices(services);
+    }
+
+    /**
+     * Sets the modifiable list of services.
+     * 
+     * @return The modifiable list of services.
+     */
+    public synchronized void setServices(List<Service> services) {
+        this.services.clear();
+
+        if (services != null) {
+            this.services.addAll(services);
+        }
+    }
+
+    /**
      * Sets the status service.
      * 
      * @param statusService
      *            The status service.
      */
     public void setStatusService(StatusService statusService) {
-        this.statusService = statusService;
+        setService(statusService);
     }
 
     /**
@@ -537,7 +600,7 @@ public class Application extends Restlet {
      *            The task service.
      */
     public void setTaskService(TaskService taskService) {
-        this.taskService = taskService;
+        setService(taskService);
     }
 
     /**
@@ -547,7 +610,7 @@ public class Application extends Restlet {
      *            The tunnel service.
      */
     public void setTunnelService(TunnelService tunnelService) {
-        this.tunnelService = tunnelService;
+        setService(tunnelService);
     }
 
     /**
@@ -562,36 +625,8 @@ public class Application extends Restlet {
                 getHelper().start();
             }
 
-            if (getConnectorService() != null) {
-                getConnectorService().start();
-            }
-
-            if (getConverterService() != null) {
-                getConverterService().start();
-            }
-
-            if (getDecoderService() != null) {
-                getDecoderService().start();
-            }
-
-            if (getMetadataService() != null) {
-                getMetadataService().start();
-            }
-
-            if (getRangeService() != null) {
-                getRangeService().start();
-            }
-
-            if (getStatusService() != null) {
-                getStatusService().start();
-            }
-
-            if (getTaskService() != null) {
-                getTaskService().start();
-            }
-
-            if (getTunnelService() != null) {
-                getTunnelService().start();
+            for (Service service : getServices()) {
+                service.start();
             }
         }
     }
@@ -602,36 +637,8 @@ public class Application extends Restlet {
     @Override
     public synchronized void stop() throws Exception {
         if (isStarted()) {
-            if (getConnectorService() != null) {
-                getConnectorService().stop();
-            }
-
-            if (getConverterService() != null) {
-                getConverterService().stop();
-            }
-
-            if (getDecoderService() != null) {
-                getDecoderService().stop();
-            }
-
-            if (getMetadataService() != null) {
-                getMetadataService().stop();
-            }
-
-            if (getRangeService() != null) {
-                getRangeService().stop();
-            }
-
-            if (getStatusService() != null) {
-                getStatusService().stop();
-            }
-
-            if (getTaskService() != null) {
-                getTaskService().stop();
-            }
-
-            if (getTunnelService() != null) {
-                getTunnelService().stop();
+            for (Service service : getServices()) {
+                service.stop();
             }
 
             if (getHelper() != null) {

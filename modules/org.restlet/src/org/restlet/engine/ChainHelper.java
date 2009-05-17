@@ -32,13 +32,11 @@ package org.restlet.engine;
 
 import java.util.logging.Level;
 
-import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.routing.Filter;
-import org.restlet.service.LogService;
 
 /**
  * Chain helper serving as base class for Application and Component helpers.
@@ -85,19 +83,6 @@ public abstract class ChainHelper<T extends Restlet> extends RestletHelper<T> {
     public void clear() {
         setFirst(null);
         setNext(null);
-    }
-
-    /**
-     * Creates a new log filter. Allows overriding.
-     * 
-     * @param context
-     *            The context.
-     * @param logService
-     *            The log service descriptor.
-     * @return The new log filter.
-     */
-    protected Filter createLogFilter(Context context, LogService logService) {
-        return new LogFilter(context, logService);
     }
 
     /**
