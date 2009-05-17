@@ -398,10 +398,24 @@ public class ServletCall extends HttpServerCall {
             // otherwise some containers (ex: Tomcat 5.0) immediately send
             // the response if a "Content-Length: 0" header is found.
             Parameter header;
+            Parameter contentLengthHeader = null;
+
             for (final Iterator<Parameter> iter = getResponseHeaders()
                     .iterator(); iter.hasNext();) {
                 header = iter.next();
-                getResponse().addHeader(header.getName(), header.getValue());
+
+                if (header.getName()
+                        .equals(HttpConstants.HEADER_CONTENT_LENGTH)) {
+                    contentLengthHeader = header;
+                } else {
+                    getResponse()
+                            .addHeader(header.getName(), header.getValue());
+                }
+            }
+
+            if (contentLengthHeader != null) {
+                getResponse().addHeader(contentLengthHeader.getName(),
+                        contentLengthHeader.getValue());
             }
 
             super.sendResponse(response);
