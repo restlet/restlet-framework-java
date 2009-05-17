@@ -90,21 +90,19 @@ public abstract class Handler {
      * @param method
      *            The method to invoke, potentially in a protected class
      * @return The equivalent method in a public ancestor class.
+     * @throws NoSuchMethodException
      * @see <a
      *      href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4071957">Bug
      *      #4071957</a>
      */
     private static java.lang.reflect.Method getAncestorMethod(
-            java.lang.reflect.Method method) {
+            java.lang.reflect.Method method) throws NoSuchMethodException {
         while (!java.lang.reflect.Modifier.isPublic(method.getDeclaringClass()
                 .getModifiers())) {
-            try {
-                method = method.getDeclaringClass().getSuperclass().getMethod(
-                        method.getName(), method.getParameterTypes());
-            } catch (NoSuchMethodException e) {
-                throw new IllegalStateException(e);
-            }
+            method = method.getDeclaringClass().getSuperclass().getMethod(
+                    method.getName(), method.getParameterTypes());
         }
+
         return method;
     }
 
@@ -434,15 +432,22 @@ public abstract class Handler {
     private void updateAllowedMethods(Set<Method> allowedMethods) {
         for (final java.lang.reflect.Method orig_classMethod : getClass()
                 .getMethods()) {
-            final java.lang.reflect.Method classMethod = getAncestorMethod(orig_classMethod);
+            java.lang.reflect.Method classMethod;
 
-            if (classMethod.getName().startsWith("allow")
-                    && (classMethod.getParameterTypes().length == 0)) {
-                if ((Boolean) invoke(classMethod)) {
-                    final Method allowedMethod = Method.valueOf(classMethod
-                            .getName().substring(5));
-                    allowedMethods.add(allowedMethod);
+            try {
+                classMethod = getAncestorMethod(orig_classMethod);
+
+                if (classMethod.getName().startsWith("allow")
+                        && (classMethod.getParameterTypes().length == 0)) {
+                    if ((Boolean) invoke(classMethod)) {
+                        final Method allowedMethod = Method.valueOf(classMethod
+                                .getName().substring(5));
+                        allowedMethods.add(allowedMethod);
+                    }
                 }
+            } catch (NoSuchMethodException e) {
+                getLogger().log(Level.FINE,
+                        "Unable to find a public version of this method.", e);
             }
         }
     }
