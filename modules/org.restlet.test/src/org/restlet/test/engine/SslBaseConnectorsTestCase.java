@@ -84,6 +84,9 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
         parameters.add("keystorePath", testKeystoreFile.getPath());
         parameters.add("keystorePassword", "testtest");
         parameters.add("keyPassword", "testtest");
+
+        parameters.add("truststorePath", testKeystoreFile.getPath());
+        parameters.add("truststorePassword", "testtest");
     }
 
     protected abstract Application createApplication(Component component);

@@ -44,16 +44,18 @@ import java.util.logging.Level;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
 
 import org.restlet.data.Parameter;
 import org.restlet.data.Request;
 import org.restlet.data.Status;
 import org.restlet.engine.http.HttpClientCall;
+import org.restlet.engine.http.HttpsUtils;
+import org.restlet.engine.security.SslContextFactory;
 import org.restlet.engine.util.SystemUtils;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 import org.restlet.util.WrapperRepresentation;
-
 
 /**
  * HTTP client connector call based on JDK's java.net.HttpURLConnection class.
@@ -146,10 +148,25 @@ public class HttpUrlConnectionCall extends HttpClientCall {
 
             if (this.connection instanceof HttpsURLConnection) {
                 setConfidential(true);
+                final HttpsURLConnection https = (HttpsURLConnection) this.connection;
+                final SslContextFactory sslContextFactory = HttpsUtils
+                        .getSslContextFactory(getHelper());
+                if (sslContextFactory != null) {
+                    try {
+                        SSLContext sslContext = sslContextFactory
+                                .createSslContext();
+                        https
+                                .setSSLSocketFactory(sslContext
+                                        .getSocketFactory());
+                    } catch (Exception e) {
+                        throw new RuntimeException(
+                                "Unable to create SSLContext.", e);
+                    }
+                }
+
                 final HostnameVerifier verifier = helper.getHostnameVerifier();
 
                 if (verifier != null) {
-                    final HttpsURLConnection https = (HttpsURLConnection) this.connection;
                     https.setHostnameVerifier(verifier);
                 }
             }
@@ -317,8 +334,10 @@ public class HttpUrlConnectionCall extends HttpClientCall {
 
                 // These properties can only be used with Java 1.5 and upper
                 // releases
-                final int majorVersionNumber = SystemUtils.getJavaMajorVersion();
-                final int minorVersionNumber = SystemUtils.getJavaMinorVersion();
+                final int majorVersionNumber = SystemUtils
+                        .getJavaMajorVersion();
+                final int minorVersionNumber = SystemUtils
+                        .getJavaMinorVersion();
                 if ((majorVersionNumber > 1)
                         || ((majorVersionNumber == 1) && (minorVersionNumber >= 5))) {
                     // Adjust the streaming mode

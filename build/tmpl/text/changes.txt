@@ -85,6 +85,8 @@ Changes log
           Suggested by Arjohn Kampman.
         - Added a port of Restlet core to Android 1.5 (mobile OS) and to
           Google AppEngine 1.2.
+        - The Net HTTP client connector now supports SSLContextFactories
+          Contributed by Bruno Harbulot.
     - API changes
         - RepresentationInfo is now concrete and has more constructors.
           Suggested by Lars Heuer.

@@ -73,6 +73,7 @@ public class EngineTestSuite extends TestSuite {
         addTestSuite(PreferencesTestCase.class);
         addTestSuite(RemoteClientAddressTestCase.class);
         addTestSuite(SslGetTestCase.class);
+        addTestSuite(SslClientContextGetTestCase.class);
         addTestSuite(TunnelFilterTestCase.class);
         addTestSuite(UserAgentTunnelFilterTestCase.class);
     }
