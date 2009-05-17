@@ -36,6 +36,8 @@ Changes log
          Reported by Stephen Colebourne. 
        - Fixed potential NPE in DomRepresentation when creating the 
          transformer. Reported by Micah Whitacre.
+       - Fixed bug preventing the TunnelService to process full media
+         types passed in query parameter. Reported by Michael Berman.
     - Misc
        - The Template implementation now uses "\\d" as a regex for the
          Variable.TYPE_DIGIT constant.

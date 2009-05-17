@@ -215,7 +215,7 @@ public class TunnelFilter extends Filter {
         final Reference resourceRef = request.getResourceRef();
 
         if (resourceRef.hasQuery()) {
-            final Form query = resourceRef.getQueryAsForm(null);
+            final Form query = resourceRef.getQueryAsForm();
 
             // Tunnel the request method
             final Method method = request.getMethod();
@@ -224,7 +224,7 @@ public class TunnelFilter extends Filter {
                         .getMethodParameter());
 
                 Method tunnelledMethod = Method.valueOf(methodName);
-                // The OPTIONS method can be tunnelled via GET requests.
+                // The OPTIONS method can be tunneled via GET requests.
                 if (tunnelledMethod != null
                         && (Method.POST.equals(method) || Method.OPTIONS
                                 .equals(tunnelledMethod))) {
