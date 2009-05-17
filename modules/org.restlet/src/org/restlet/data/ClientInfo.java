@@ -445,7 +445,12 @@ public final class ClientInfo {
      * <br>
      * This information is only safe for intermediary components within your
      * local network. Other addresses could easily be changed by setting a fake
-     * header and should not be trusted for serious security checks.
+     * header and should not be trusted for serious security checks.<br>
+     * <br>
+     * Note that your HTTP server connectors have a special
+     * "useForwardedForHeader" parameter that you need to explicitly set to
+     * "true" in order to activate this feature due to potential security
+     * issues.
      * 
      * @return The list of forwarded IP addresses.
      * @see <a href="http://en.wikipedia.org/wiki/X-Forwarded-For">Wikipedia
@@ -553,7 +558,12 @@ public final class ClientInfo {
      * 
      * If the supporting {@link #getForwardedAddresses()} method returns a non
      * empty list, the IP address will be the first element. Otherwise, the
-     * value of {@link #getAddress()} will be returned.
+     * value of {@link #getAddress()} will be returned.<br>
+     * <br>
+     * Note that your HTTP server connectors have a special
+     * "useForwardedForHeader" parameter that you need to explicitly set to
+     * "true" in order to activate this feature due to potential security
+     * issues.
      * 
      * @return The most upstream IP address.
      */
