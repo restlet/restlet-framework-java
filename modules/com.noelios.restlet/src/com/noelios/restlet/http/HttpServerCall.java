@@ -490,6 +490,7 @@ public abstract class HttpServerCall extends HttpCall {
             entity.write(responseEntityChannel);
         } else if (responseEntityStream != null) {
             entity.write(responseEntityStream);
+            responseEntityStream.flush();
         }
     }
 
