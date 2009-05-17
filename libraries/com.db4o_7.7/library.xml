@@ -1,10 +1,10 @@
 <library id="db4o">
-	<package name="com.db4o">
+	<package id="db4o" name="com.db4o">
 		<maven>
 			<groupId>com.db4o</groupId>
 		</maven>
 	</package>
-	<package name="com.db4o.nativequery">
+	<package id="db4o-nativequery" name="com.db4o.nativequery">
 		<maven>
 			<groupId>com.db4o</groupId>
 		</maven>
