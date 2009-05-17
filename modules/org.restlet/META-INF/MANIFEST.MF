@@ -59,6 +59,13 @@ Export-Package: org.restlet;
    org.restlet.representation,
    org.restlet,
    org.restlet.engine",
+ org.restlet.engine.log;
+  uses:="org.restlet.routing,
+   org.restlet.service,
+   org.restlet.data,
+   org.restlet.representation,
+   org.restlet.util,
+   org.restlet",
  org.restlet.engine.resource;uses:="org.restlet.data,org.restlet.representation",
  org.restlet.engine.security;
   uses:="javax.security.auth.callback,
@@ -68,13 +75,6 @@ Export-Package: org.restlet;
    org.restlet.util,
    org.restlet.engine,
    javax.crypto",
- org.restlet.engine.service;
-  uses:="org.restlet.routing,
-   org.restlet.service,
-   org.restlet.data,
-   org.restlet.representation,
-   org.restlet.util,
-   org.restlet",
  org.restlet.engine.util;
   uses:="org.w3c.dom.ls,
    org.restlet.data,

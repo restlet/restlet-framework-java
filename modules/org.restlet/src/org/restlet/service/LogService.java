@@ -31,7 +31,7 @@
 package org.restlet.service;
 
 import org.restlet.Context;
-import org.restlet.engine.service.LogFilter;
+import org.restlet.engine.log.LogFilter;
 import org.restlet.routing.Filter;
 
 /**

@@ -28,37 +28,49 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.service;
+package org.restlet.engine.log;
 
 import java.util.logging.Handler;
-
-import org.restlet.engine.Engine;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 /**
- * Access log record formatter which writes a header describing the default log
- * format.
+ * Special handler that logs in the console all log message sent through the log
+ * manager. For each log record, it displays the source logger name and the
+ * actual message.
+ * 
+ * This is particularly useful for debugging.
  * 
  * @author Jerome Louvel
  */
-public class DefaultAccessLogFormatter extends AccessLogFormatter {
+public class TraceHandler extends Handler {
+
+    /**
+     * Registers the handler with the root logger. Removes any default handler
+     * like the default console handler.
+     */
+    public static void register() {
+        Logger rootLogger = Logger.getLogger("");
+
+        for (Handler handler : rootLogger.getHandlers()) {
+            rootLogger.removeHandler(handler);
+        }
+
+        rootLogger.addHandler(new TraceHandler());
+    }
 
     @Override
-    public String getHead(Handler h) {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("#Software: Noelios Restlet Engine ").append(Engine.VERSION)
-                .append('\n');
-        sb.append("#Version: 1.0\n");
-        sb.append("#Date: ");
-        final long currentTime = System.currentTimeMillis();
-        sb.append(String.format("%tF", currentTime));
-        sb.append(' ');
-        sb.append(String.format("%tT", currentTime));
-        sb.append('\n');
-        sb.append("#Fields: ");
-        sb.append("date time c-ip cs-username s-ip s-port cs-method ");
-        sb.append("cs-uri-stem cs-uri-query sc-status sc-bytes cs-bytes ");
-        sb.append("time-taken cs-host cs(User-Agent) cs(Referrer)\n");
-        return sb.toString();
+    public void close() throws SecurityException {
+    }
+
+    @Override
+    public void flush() {
+    }
+
+    @Override
+    public void publish(LogRecord record) {
+        System.out.println("[" + record.getLevel().getLocalizedName() + "]["
+                + record.getLoggerName() + "] " + record.getMessage());
     }
 
 }

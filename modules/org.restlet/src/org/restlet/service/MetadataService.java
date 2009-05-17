@@ -38,7 +38,7 @@ import org.restlet.data.Encoding;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
-import org.restlet.engine.service.MetadataExtension;
+import org.restlet.engine.application.MetadataExtension;
 
 /**
  * Application service providing access to metadata and their associated

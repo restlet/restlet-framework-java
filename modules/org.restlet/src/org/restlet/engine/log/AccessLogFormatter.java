@@ -28,49 +28,22 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.service;
+package org.restlet.engine.log;
 
-import java.util.logging.Handler;
+import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
-import java.util.logging.Logger;
 
 /**
- * Special handler that logs in the console all log message sent through the log
- * manager. For each log record, it displays the source logger name and the
- * actual message.
- * 
- * This is particularly useful for debugging.
+ * Log record formatter which simply outputs the message on a new line. Useful
+ * for Web-style logs.
  * 
  * @author Jerome Louvel
  */
-public class TraceHandler extends Handler {
-
-    /**
-     * Registers the handler with the root logger. Removes any default handler
-     * like the default console handler.
-     */
-    public static void register() {
-        Logger rootLogger = Logger.getLogger("");
-
-        for (Handler handler : rootLogger.getHandlers()) {
-            rootLogger.removeHandler(handler);
-        }
-
-        rootLogger.addHandler(new TraceHandler());
-    }
+public class AccessLogFormatter extends Formatter {
 
     @Override
-    public void close() throws SecurityException {
-    }
-
-    @Override
-    public void flush() {
-    }
-
-    @Override
-    public void publish(LogRecord record) {
-        System.out.println("[" + record.getLevel().getLocalizedName() + "]["
-                + record.getLoggerName() + "] " + record.getMessage());
+    public String format(LogRecord logRecord) {
+        return logRecord.getMessage() + '\n';
     }
 
 }

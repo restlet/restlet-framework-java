@@ -163,8 +163,8 @@ public class TunnelFilter extends Filter {
 
                 // Discover extensions from right to left and stop at the first
                 // unknown extension. Only one extension per type of metadata is
-                // also allowed: i.e. one language, one mediatype, one encoding,
-                // one character set.
+                // also allowed: i.e. one language, one media type, one
+                // encoding, one character set.
                 while (true) {
                     final int lastIndexOfPoint = extensions.lastIndexOf('.');
                     final String extension = extensions
@@ -252,7 +252,7 @@ public class TunnelFilter extends Filter {
         final Reference resourceRef = request.getResourceRef();
 
         if (resourceRef.hasQuery()) {
-            final Form query = resourceRef.getQueryAsForm(null);
+            final Form query = resourceRef.getQueryAsForm();
 
             // Tunnel the request method
             final Method method = request.getMethod();
