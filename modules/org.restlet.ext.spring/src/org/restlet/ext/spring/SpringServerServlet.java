@@ -131,7 +131,7 @@ public class SpringServerServlet extends ServerServlet {
         final String componentBeanName = getInitParameter(
                 Component_BEAN_PARAM_NAME, null);
 
-        // Not mentionned in the Spring javadocs, but getBean surely fails if
+        // Not mentioned in the Spring javadocs, but getBean surely fails if
         // the argument is null.
         if (componentBeanName != null) {
             try {

@@ -61,7 +61,7 @@ public class ConverterUtils {
         for (ConverterHelper ch : Engine.getInstance()
                 .getRegisteredConverters()) {
 
-            variants = ch.getVariants(sourceObject.getClass(), targetVariant);
+            variants = ch.getVariants(sourceObject.getClass());
 
             if (variants != null) {
                 if (targetVariant != null) {

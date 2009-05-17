@@ -75,10 +75,9 @@ public class XstreamConverter extends ConverterHelper {
     }
 
     @Override
-    public List<Variant> getVariants(Class<?> objectClass, Variant targetVariant) {
-        List<Variant> result = new ArrayList<Variant>();
-        result.add(VARIANT_JSON);
-        result.add(VARIANT_XML);
+    public List<Variant> getVariants(Class<?> objectClass) {
+        List<Variant> result = addVariant(null, VARIANT_JSON);
+        addVariant(result, VARIANT_XML);
         return result;
     }
 

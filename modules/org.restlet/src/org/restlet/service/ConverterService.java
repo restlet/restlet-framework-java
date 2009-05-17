@@ -115,7 +115,7 @@ public class ConverterService extends Service {
 
         for (ConverterHelper ch : Engine.getInstance()
                 .getRegisteredConverters()) {
-            helperVariants = ch.getVariants(sourceClass, targetVariant);
+            helperVariants = ch.getVariants(sourceClass);
 
             if (helperVariants != null) {
                 if (result == null) {
@@ -160,19 +160,26 @@ public class ConverterService extends Service {
     public <T> T toObject(Representation sourceRepresentation,
             Class<T> targetClass, UniformResource resource) throws IOException {
         T result = null;
-        ConverterHelper ch = ConverterUtils.getHelper(sourceRepresentation,
-                targetClass, resource);
 
-        if (ch != null) {
-            result = ch.toObject(sourceRepresentation, targetClass, resource);
-        } else {
-            // TODO there is no converter for Representation -> Representation
-            if (targetClass.isAssignableFrom(sourceRepresentation.getClass())) {
-                result = (T) sourceRepresentation;
+        if ((sourceRepresentation != null)
+                && sourceRepresentation.isAvailable()) {
+            ConverterHelper ch = ConverterUtils.getHelper(sourceRepresentation,
+                    targetClass, resource);
+
+            if (ch != null) {
+                result = ch.toObject(sourceRepresentation, targetClass,
+                        resource);
             } else {
-                Context.getCurrentLogger().warning(
-                        "Unable to find a converter for this representation : "
-                                + sourceRepresentation);
+                // TODO there is no converter for Representation ->
+                // Representation
+                if (targetClass.isAssignableFrom(sourceRepresentation
+                        .getClass())) {
+                    result = (T) sourceRepresentation;
+                } else {
+                    Context.getCurrentLogger().warning(
+                            "Unable to find a converter for this representation : "
+                                    + sourceRepresentation);
+                }
             }
         }
 

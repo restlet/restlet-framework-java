@@ -81,7 +81,8 @@ public abstract class HttpClientCall extends HttpCall {
     public static Representation copyResponseEntityHeaders(
             Iterable<Parameter> responseHeaders, Representation representation)
             throws NumberFormatException {
-        Representation result = (representation == null) ? new EmptyRepresentation() : representation;
+        Representation result = (representation == null) ? new EmptyRepresentation()
+                : representation;
         boolean entityHeaderFound = false;
 
         for (final Parameter header : responseHeaders) {
@@ -337,7 +338,7 @@ public abstract class HttpClientCall extends HttpCall {
             // Informs that the size has not been specified in the header.
             if (size == Representation.UNKNOWN_SIZE) {
                 getLogger()
-                        .info(
+                        .fine(
                                 "The length of the message body is unknown. The entity must be handled carefully and consumed entirely in order to surely release the connection.");
             }
         }

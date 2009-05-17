@@ -74,10 +74,8 @@ public class JsonConverter extends ConverterHelper {
     }
 
     @Override
-    public List<Variant> getVariants(Class<?> objectClass, Variant targetVariant) {
-        List<Variant> result = new ArrayList<Variant>();
-        result.add(VARIANT_JSON);
-        return result;
+    public List<Variant> getVariants(Class<?> objectClass) {
+        return addVariant(null, VARIANT_JSON);
     }
 
     @SuppressWarnings("unchecked")

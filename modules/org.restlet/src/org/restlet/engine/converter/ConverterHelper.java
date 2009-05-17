@@ -70,20 +70,18 @@ public abstract class ConverterHelper extends Helper {
      * 
      * @param variants
      *            The variants list to update or null.
-     * @param variant
-     *            The variant to add.
+     * @param userVariant
+     *            The variant to add if not null.
      * @return The input variants list or a new one.
      */
     protected List<Variant> addVariant(List<Variant> variants,
-            Variant userVariant, Variant defaultVariant) {
-        if (variants == null) {
-            variants = new ArrayList<Variant>();
-        }
-
+            Variant userVariant) {
         if (userVariant != null) {
+            if (variants == null) {
+                variants = new ArrayList<Variant>();
+            }
+
             variants.add(userVariant);
-        } else {
-            variants.add(defaultVariant);
         }
 
         return variants;
@@ -105,12 +103,9 @@ public abstract class ConverterHelper extends Helper {
      * 
      * @param sourceClass
      *            The source object class.
-     * @param targetVariant
-     *            The expected representation metadata.
      * @return The list of variants that can be converted.
      */
-    public abstract List<Variant> getVariants(Class<?> sourceClass,
-            Variant targetVariant);
+    public abstract List<Variant> getVariants(Class<?> sourceClass);
 
     /**
      * Converts a Representation into a regular Java object.

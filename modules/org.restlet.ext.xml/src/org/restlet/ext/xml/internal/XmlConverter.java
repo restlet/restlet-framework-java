@@ -81,16 +81,16 @@ public class XmlConverter extends ConverterHelper {
     }
 
     @Override
-    public List<Variant> getVariants(Class<?> objectClass, Variant targetVariant) {
+    public List<Variant> getVariants(Class<?> objectClass) {
         List<Variant> result = null;
 
         if (Document.class.isAssignableFrom(objectClass)
                 || DomRepresentation.class.isAssignableFrom(objectClass)) {
-            result = addVariant(result, targetVariant, VARIANT_XML_APP);
-            result = addVariant(result, targetVariant, VARIANT_XML_TEXT);
+            result = addVariant(result, VARIANT_XML_APP);
+            result = addVariant(result, VARIANT_XML_TEXT);
         } else if (SaxRepresentation.class.isAssignableFrom(objectClass)) {
-            result = addVariant(result, targetVariant, VARIANT_XML_APP);
-            result = addVariant(result, targetVariant, VARIANT_XML_TEXT);
+            result = addVariant(result, VARIANT_XML_APP);
+            result = addVariant(result, VARIANT_XML_TEXT);
         }
 
         return result;

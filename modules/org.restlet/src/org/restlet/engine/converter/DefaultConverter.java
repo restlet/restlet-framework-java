@@ -101,30 +101,30 @@ public class DefaultConverter extends ConverterHelper {
     }
 
     @Override
-    public List<Variant> getVariants(Class<?> objectClass, Variant targetVariant) {
+    public List<Variant> getVariants(Class<?> objectClass) {
         List<Variant> result = null;
 
         if (String.class.isAssignableFrom(objectClass)
                 || StringRepresentation.class.isAssignableFrom(objectClass)) {
-            result = addVariant(result, targetVariant, VARIANT_TEXT);
+            result = addVariant(result, VARIANT_TEXT);
         } else if (File.class.isAssignableFrom(objectClass)
                 || FileRepresentation.class.isAssignableFrom(objectClass)) {
-            result = addVariant(result, targetVariant, VARIANT_OCTETS);
+            result = addVariant(result, VARIANT_OCTETS);
         } else if (InputStream.class.isAssignableFrom(objectClass)
                 || InputRepresentation.class.isAssignableFrom(objectClass)) {
-            result = addVariant(result, targetVariant, VARIANT_OCTETS);
+            result = addVariant(result, VARIANT_OCTETS);
         } else if (Reader.class.isAssignableFrom(objectClass)
                 || ReaderRepresentation.class.isAssignableFrom(objectClass)) {
-            result = addVariant(result, targetVariant, VARIANT_TEXT);
+            result = addVariant(result, VARIANT_TEXT);
         } else if (Representation.class.isAssignableFrom(objectClass)) {
-            result = addVariant(result, targetVariant, VARIANT_OCTETS);
+            result = addVariant(result, VARIANT_OCTETS);
         } else if (Form.class.isAssignableFrom(objectClass)) {
-            result = addVariant(result, targetVariant, VARIANT_FORM);
+            result = addVariant(result, VARIANT_FORM);
         }
 
         if (Serializable.class.isAssignableFrom(objectClass)) {
-            result = addVariant(result, targetVariant, VARIANT_OBJECT);
-            result = addVariant(result, targetVariant, VARIANT_OBJECT_XML);
+            result = addVariant(result, VARIANT_OBJECT);
+            result = addVariant(result, VARIANT_OBJECT_XML);
         }
 
         return result;

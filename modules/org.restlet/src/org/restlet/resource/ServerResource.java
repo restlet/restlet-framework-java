@@ -469,7 +469,6 @@ public class ServerResource extends UniformResource {
                 } else {
                     result = cs.toRepresentation(resultObject, variant, this);
                 }
-
             }
         } catch (IllegalArgumentException e) {
             throw new ResourceException(e);
