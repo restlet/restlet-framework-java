@@ -34,6 +34,8 @@ Changes log
          response could be sent too early due to "Content-Length" 
          header triggering the sending too early. 
          Reported by Stephen Colebourne. 
+       - Fixed potential NPE in DomRepresentation when creating the 
+         transformer. Reported by Micah Whitacre.
     - Misc
        - The Template implementation now uses "\\d" as a regex for the
          Variable.TYPE_DIGIT constant.

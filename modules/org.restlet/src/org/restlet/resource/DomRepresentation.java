@@ -44,6 +44,7 @@ import javax.xml.xpath.XPathFactory;
 
 import org.restlet.data.MediaType;
 import org.w3c.dom.Document;
+import org.w3c.dom.DocumentType;
 import org.xml.sax.SAXException;
 
 /**
@@ -108,11 +109,17 @@ public class DomRepresentation extends XmlRepresentation {
                     .newTransformer();
             transformer.setOutputProperty(OutputKeys.METHOD, "xml");
 
-            if (getDocument().getDoctype() != null) {
-                transformer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM,
-                        getDocument().getDoctype().getSystemId());
-                transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC,
-                        getDocument().getDoctype().getPublicId());
+            DocumentType docType = getDocument().getDoctype();
+            if (docType != null) {
+                if (docType.getSystemId() != null) {
+                    transformer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM,
+                            getDocument().getDoctype().getSystemId());
+                }
+
+                if (docType.getPublicId() != null) {
+                    transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC,
+                            getDocument().getDoctype().getPublicId());
+                }
             }
 
             return transformer;
