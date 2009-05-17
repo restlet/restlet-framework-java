@@ -28,6 +28,8 @@ Changes log
          Reported by Jean-Yves Cronier.
        - ObjectRepresentation was closing the outputstream too early 
          instead of simply flushing.
+       - Fixed potential IllegalStateException when updating the allowed 
+         methods on Resource subclasses. Reported by Micah Whitacre.
     - Misc
        - The Template implementation now uses "\\d" as a regex for the
          Variable.TYPE_DIGIT constant.
