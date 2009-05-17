@@ -28,52 +28,16 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.util;
-
-import org.restlet.data.Metadata;
+package org.restlet.engine.edition;
 
 /**
- * Associates an extension name and a metadata.
+ * Enumeration of Restlet editions.
  * 
- * @author Alex Milowski (alexml@milowski.org)
- * @author Thierry Boileau
+ * @author Jerome Louvel
  */
-public class MetadataExtension {
-    /** The mapped metadata. */
-    private final Metadata metadata;
+public enum Edition {
 
-    /** The name of the extension. */
-    private final String name;
-
-    /**
-     * Constructor.
-     * 
-     * @param name
-     *            The extension name.
-     * @param metadata
-     *            The metadata.
-     */
-    public MetadataExtension(String name, Metadata metadata) {
-        this.name = name;
-        this.metadata = metadata;
-    }
-
-    /**
-     * Returns the metadata.
-     * 
-     * @return the metadata.
-     */
-    public Metadata getMetadata() {
-        return this.metadata;
-    }
-
-    /**
-     * Returns the extension name.
-     * 
-     * @return The extension name.
-     */
-    public String getName() {
-        return this.name;
-    }
+    /** Android mobile OS. */
+    ANDROID, GAE, GWT, JSE, JEE;
 
 }

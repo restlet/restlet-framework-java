@@ -50,7 +50,6 @@ import org.restlet.engine.security.DefaultSslContextFactory;
 import org.restlet.engine.security.SslContextFactory;
 import org.restlet.util.Series;
 
-
 /**
  * This SslContextFactory uses PKIXSSLContextFactory from <a
  * href="http://code.google.com/p/jsslutils/">jSSLutils</a> and can be

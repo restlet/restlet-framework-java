@@ -40,7 +40,7 @@ import org.restlet.data.Response;
 import org.restlet.engine.Engine;
 import org.restlet.engine.RestletHelper;
 import org.restlet.engine.application.ApplicationHelper;
-import org.restlet.engine.util.AnnotationUtils;
+import org.restlet.engine.resource.AnnotationUtils;
 import org.restlet.resource.Finder;
 import org.restlet.security.Role;
 import org.restlet.service.ConnectorService;

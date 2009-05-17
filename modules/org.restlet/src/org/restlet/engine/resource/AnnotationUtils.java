@@ -1,4 +1,4 @@
-package org.restlet.engine.util;
+package org.restlet.engine.resource;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;

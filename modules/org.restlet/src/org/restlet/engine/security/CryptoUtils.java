@@ -28,12 +28,14 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.util;
+package org.restlet.engine.security;
 
 import java.security.GeneralSecurityException;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
+
+import org.restlet.engine.util.Base64;
 
 /**
  * Simple usage of standard cipher features from JRE.

@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine;
+package org.restlet.engine.service;
 
 import java.util.logging.Level;
 
@@ -50,7 +50,7 @@ import org.restlet.service.StatusService;
  * If any exception occurs during the call handling, a "server internal error"
  * status is automatically associated to the call. Of course, you can
  * personalize the representation of this error. Also, if no status is set
- * (null), then the "success ok" status is assumed.
+ * (null), then the "success OK" status is assumed.
  * 
  * Concurrency note: instances of this class or its subclasses can be invoked by
  * several threads at the same time and therefore must be thread-safe. You

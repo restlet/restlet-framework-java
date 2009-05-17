@@ -28,22 +28,37 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.util;
+package org.restlet.engine.service;
 
-import java.util.logging.Formatter;
-import java.util.logging.LogRecord;
+import java.util.logging.Handler;
+
+import org.restlet.engine.Engine;
 
 /**
- * Log record formatter which simply outputs the message on a new line. Useful
- * for Web-style logs.
+ * Access log record formatter which writes a header describing the default log
+ * format.
  * 
  * @author Jerome Louvel
  */
-public class AccessLogFormatter extends Formatter {
+public class DefaultAccessLogFormatter extends AccessLogFormatter {
 
     @Override
-    public String format(LogRecord logRecord) {
-        return logRecord.getMessage() + '\n';
+    public String getHead(Handler h) {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("#Software: Noelios Restlet Engine ").append(Engine.VERSION)
+                .append('\n');
+        sb.append("#Version: 1.0\n");
+        sb.append("#Date: ");
+        final long currentTime = System.currentTimeMillis();
+        sb.append(String.format("%tF", currentTime));
+        sb.append(' ');
+        sb.append(String.format("%tT", currentTime));
+        sb.append('\n');
+        sb.append("#Fields: ");
+        sb.append("date time c-ip cs-username s-ip s-port cs-method ");
+        sb.append("cs-uri-stem cs-uri-query sc-status sc-bytes cs-bytes ");
+        sb.append("time-taken cs-host cs(User-Agent) cs(Referrer)\n");
+        return sb.toString();
     }
 
 }
