@@ -435,21 +435,22 @@ public abstract class HttpClientCall extends HttpCall {
 
                 // In order to workaround bug #6472250
                 // (http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6472250),
-                // it is very important to reuse that exact same "rs" reference
-                // when manipulating the request stream, otherwise "insufficient
-                // data sent" exceptions will occur in "fixedLengthMode"
-                final OutputStream rs = getRequestEntityStream();
+                // it is very important to reuse that exact same "requestStream"
+                // reference when manipulating the request stream, otherwise
+                // "insufficient data sent" exceptions will occur in
+                // "fixedLengthMode"
+                final OutputStream requestStream = getRequestEntityStream();
                 final WritableByteChannel wbc = getRequestEntityChannel();
 
                 if (wbc != null) {
                     entity.write(wbc);
-                } else if (rs != null) {
-                    entity.write(rs);
-                    rs.flush();
+                } else if (requestStream != null) {
+                    entity.write(requestStream);
+                    requestStream.flush();
                 }
 
-                if (rs != null) {
-                    rs.close();
+                if (requestStream != null) {
+                    requestStream.close();
                 } else if (wbc != null) {
                     wbc.close();
                 }
