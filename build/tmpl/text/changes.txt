@@ -87,6 +87,8 @@ Changes log
           Google AppEngine 1.2.
         - The Net HTTP client connector now supports SSLContextFactories
           Contributed by Bruno Harbulot.
+        - Added check for JAXP parsers not supporting XInclude feature.
+          Reported by Mikis.
     - API changes
         - RepresentationInfo is now concrete and has more constructors.
           Suggested by Lars Heuer.

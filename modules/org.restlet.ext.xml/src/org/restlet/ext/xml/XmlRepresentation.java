@@ -252,7 +252,14 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             dbf.setNamespaceAware(isNamespaceAware());
             dbf.setValidating(isValidating());
-            dbf.setXIncludeAware(isXIncludeAware());
+
+            try {
+                dbf.setXIncludeAware(isXIncludeAware());
+            } catch (UnsupportedOperationException uoe) {
+                Context.getCurrentLogger().log(Level.FINE,
+                        "The JAXP parser doesn't support XInclude.", uoe);
+            }
+
             Schema xsd = getSchema();
 
             if (xsd != null) {
