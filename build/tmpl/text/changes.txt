@@ -39,6 +39,8 @@ Changes log
     - Misc
        - The Template implementation now uses "\\d" as a regex for the
          Variable.TYPE_DIGIT constant.
+       - The "com.noelios.restlet" OSGi bundle is now lazily activated.
+         Suggested by Micah Whitacre.
          
 - 1.1.4 (2009-04-06)
     - Bugs fixed
