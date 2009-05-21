@@ -8,7 +8,7 @@
 		<version>@parent-version@</version>
 	</parent>
 
-	<artifactId>org.restlet.atom</artifactId>
+	<artifactId>org.restlet.ext.atom</artifactId>
 	<name>Restlet extension: Atom</name>
 	<description>Support for the Atom syndication and the AtomPub (Atom Publication Protocol) standards in their 1.0 version.</description>
 
