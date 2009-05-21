@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.restlet</groupId>
 		<artifactId>org.restlet.parent</artifactId>
-		<version>1.2-SNAPSHOT</version>
+		<version>2.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>org.restlet.ext.gwt</artifactId>
@@ -29,5 +29,10 @@
 			<artifactId>org.restlet.ext.servlet</artifactId>
 			<version>${version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.google.gwt</groupId>
+			<artifactId>gwt-servlet</artifactId>
+			<version>${lib-gwt-version}</version>
+        </dependency>        
 	</dependencies>
 </project>

@@ -5,7 +5,7 @@
 
 	<groupId>org.restlet</groupId>
 	<artifactId>org.restlet.parent</artifactId>
-	<version>1.2-SNAPSHOT</version>
+	<version>2.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Restlet project</name>
@@ -99,11 +99,6 @@
 
 	<modules>
 		<module>org.restlet</module>
-		<module>org.restlet.example</module>
-		<module>org.restlet.gae</module>
-		<module>org.restlet.gwt</module>
-		<!-- <module>org.restlet.test</module> -->
-
 		<module>org.restlet.ext.atom</module>
 		<module>org.restlet.ext.fileupload</module>
 		<module>org.restlet.ext.freemarker</module>
@@ -116,22 +111,28 @@
 		<module>org.restlet.ext.jdbc</module>
 		<module>org.restlet.ext.jetty</module>
 		<module>org.restlet.ext.jibx</module>
-		<module>org.restlet.ext.jmx</module>
 		<module>org.restlet.ext.json</module>
-		<!-- <module>org.restlet.ext.jxta</module> -->
 		<module>org.restlet.ext.lucene</module>
 		<module>org.restlet.ext.net</module>
 		<module>org.restlet.ext.oauth</module>
 		<module>org.restlet.ext.rdf</module>
-		<!-- <module>org.restlet.ext.script</module> -->
+        <module>org.restlet.ext.rome</module>
 		<module>org.restlet.ext.servlet</module>
-		<module>org.restlet.ext.shell</module>
 		<module>org.restlet.ext.simple</module>
 		<module>org.restlet.ext.spring</module>
 		<module>org.restlet.ext.ssl</module>
 		<module>org.restlet.ext.velocity</module>
 		<module>org.restlet.ext.wadl</module>
 		<module>org.restlet.ext.xdb</module>
+		<module>org.restlet.ext.xml</module>
+		<module>org.restlet.ext.xstream</module>
+
+		<module>org.restlet.example</module>
+		<!-- <module>org.restlet.test</module> -->
+
+		<module>org.restlet.android</module>
+		<module>org.restlet.gae</module>
+		<module>org.restlet.gwt</module>
 	</modules>
 
 	<licenses>

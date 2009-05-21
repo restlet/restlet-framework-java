@@ -8,7 +8,7 @@
 		<version>@parent-version@</version>
 	</parent>
 
-	<artifactId>org.restlet.xml</artifactId>
+	<artifactId>org.restlet.ext.xml</artifactId>
 	<name>Restlet extension: XML</name>
 	<description>Support for the XML documents.</description>
 
