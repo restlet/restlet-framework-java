@@ -194,13 +194,13 @@ public class ComponentHelper extends ChainHelper<Component> {
             // Logging of calls
             if (getHelped().getLogService().isEnabled()) {
                 addFilter(getHelped().getLogService().createInboundFilter(
-                        getContext()));
+                        getContext().createChildContext()));
             }
 
             // Addition of status pages
             if (getHelped().getStatusService().isEnabled()) {
                 addFilter(getHelped().getStatusService().createInboundFilter(
-                        getContext()));
+                        getContext().createChildContext()));
             }
 
             // Re-attach the original filter's attached Restlet
