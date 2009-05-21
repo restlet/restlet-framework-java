@@ -48,10 +48,10 @@ import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
 
 /**
- * Generic RDF representation. Provides support for the Resource Description Framework
- * (RDF) Semantic Web standard. It supports major RDF serialization formats (n3, Turtle,
- * N-Triples and RDF/XML) and is able to both serialize and deserialize a
- * {@link Graph}.
+ * Generic RDF representation. Provides support for the Resource Description
+ * Framework (RDF) Semantic Web standard. It supports major RDF serialization
+ * formats (n3, Turtle, N-Triples and RDF/XML) and is able to both serialize and
+ * deserialize a {@link Graph}.
  * 
  * @author Jerome Louvel
  */
@@ -98,8 +98,6 @@ public class RdfRepresentation extends OutputRepresentation {
      * 
      * @param rdfRepresentation
      *            The RDF representation to parse.
-     * @param linkSet
-     *            The link set to update.
      * @throws IOException
      */
     public RdfRepresentation(Representation rdfRepresentation)
@@ -112,8 +110,8 @@ public class RdfRepresentation extends OutputRepresentation {
      * Returns an instance of a graph handler used when parsing the inner RDF
      * representation.
      * 
-     * @param mediaType
-     *            The given media type of the parsed RDF representation.
+     * @param graph
+     *            The graph to build.
      * @return An instance of a graph handler used when parsing the inner RDF
      *         representation.
      */

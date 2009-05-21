@@ -331,14 +331,14 @@ public class Component extends Restlet {
      * client connector. This is used to manage private, internal and optimized
      * access to local applications.<br>
      * <br>
-     * The first use case is the modularisation of a large application into
+     * The first use case is the modularization of a large application into
      * modules or layers. This can also be achieved using the
      * {@link Context#getServerDispatcher()} method, but the internal router is
      * easily addressable via an URI scheme and can be fully private to the
      * current Component.<br>
      * <br>
      * The second use case is the composition/mash-up of several representations
-     * via the {@link org.restlet.routing.Transformer} class for example. For
+     * via the {@link org.restlet.ext.xml.Transformer} class for example. For
      * this you can leverage the XPath's document() function or the XSLT's
      * include and import elements with RIAP URIs.
      * 

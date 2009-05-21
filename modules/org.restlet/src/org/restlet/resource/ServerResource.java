@@ -161,7 +161,7 @@ public class ServerResource extends UniformResource {
      *            The variant of the response entity.
      * @return The optional response entity.
      * @throws ResourceException
-     * @see #getVariants(Method))
+     * @see ServerResource#getVariants(Method))
      * @see <a
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.7"
      *      >HTTP DELETE method</a>
@@ -630,7 +630,7 @@ public class ServerResource extends UniformResource {
      * @param variant
      *            The variant whose full representation must be returned.
      * @return The resource's representation.
-     * @see #getVariants(Method))
+     * @see ServerResource#getVariants(Method))
      * @throws ResourceException
      */
     protected Representation get(Variant variant) throws ResourceException {
@@ -981,7 +981,7 @@ public class ServerResource extends UniformResource {
      * @param variant
      *            The variant whose full representation must be returned.
      * @return The resource's representation.
-     * @see #getVariants(Method))
+     * @see ServerResource#getVariants(Method))
      * @throws ResourceException
      */
     protected Representation head(Variant variant) throws ResourceException {
@@ -1066,7 +1066,7 @@ public class ServerResource extends UniformResource {
      * @param variant
      *            The variant of the response entity.
      * @return The optional response entity.
-     * @see #getVariants(Method))
+     * @see ServerResource#getVariants(Method))
      */
     protected Representation options(Variant variant) throws ResourceException {
         setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
@@ -1082,7 +1082,7 @@ public class ServerResource extends UniformResource {
      *            The posted entity.
      * @return The optional response entity.
      * @throws ResourceException
-     * @see #getVariants(Method))
+     * @see ServerResource#getVariants(Method))
      * @see <a
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.5">HTTP
      *      POST method</a>
@@ -1144,7 +1144,7 @@ public class ServerResource extends UniformResource {
      *            The variant of the response entity.
      * @return The optional result entity.
      * @throws ResourceException
-     * @see #getVariants(Method))
+     * @see ServerResource#getVariants(Method))
      * @see <a
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6"
      *      >HTTP PUT method</a>

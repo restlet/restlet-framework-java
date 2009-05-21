@@ -62,7 +62,7 @@ import org.restlet.data.Status;
  * If no matching handle*() method is found, then a
  * Status.CLIENT_ERROR_METHOD_NOT_ALLOWED is returned.<br>
  * <br>
- * Once the call is handled, the {@link ServerResource#destroy()} method is
+ * Once the call is handled, the {@link ServerResource#release()} method is
  * invoked to permit clean-up actions.<br>
  * <br>
  * Concurrency note: instances of this class or its subclasses can be invoked by

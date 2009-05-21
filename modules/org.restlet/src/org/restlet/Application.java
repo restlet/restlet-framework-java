@@ -562,15 +562,16 @@ public class Application extends Restlet {
         }
 
         if (!replaced) {
-        	this.services.add(newService);
+            this.services.add(newService);
         }
 
     }
 
     /**
-     * Sets the modifiable list of services.
+     * Sets the list of services.
      * 
-     * @return The modifiable list of services.
+     * @param services
+     *            The list of services.
      */
     public synchronized void setServices(List<Service> services) {
         this.services.clear();

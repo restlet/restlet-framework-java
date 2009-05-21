@@ -133,7 +133,7 @@ public class RestletFrameworkServlet extends FrameworkServlet {
     }
 
     /**
-     * Provides access to the {@link ServletConverter} used to handle requests.
+     * Provides access to the {@link ServletAdapter} used to handle requests.
      * Exposed so that subclasses may do additional configuration, if necessary,
      * by overriding {@link #initFrameworkServlet()}.
      * 
