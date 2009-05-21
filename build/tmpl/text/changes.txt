@@ -98,7 +98,10 @@ Changes log
         - Refactored the class loading code in the engine.
           Suggested by David Fogel.
         - Tag#weak internal field is now final. 
-          Suggested by Arjohn Kampman 
+          Suggested by Arjohn Kampman
+        - Added provider for JAX-RS based on the new ConverterService.
+          This allow pluggable support for converters such as JSON or
+          XStream. 
     - API changes
         - RepresentationInfo is now concrete and has more constructors.
           Suggested by Lars Heuer.
