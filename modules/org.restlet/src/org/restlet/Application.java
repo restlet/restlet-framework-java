@@ -30,7 +30,6 @@
 
 package org.restlet;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
@@ -541,12 +540,11 @@ public class Application extends Restlet {
      *            The new service to set.
      */
     protected synchronized void setService(Service newService) {
-        List<Service> services = new ArrayList<Service>();
         Service service;
         boolean replaced = false;
 
-        for (int i = 0; !replaced && (i < services.size()); i++) {
-            service = services.get(i);
+        for (int i = 0; !replaced && (i < this.services.size()); i++) {
+            service = this.services.get(i);
 
             if ((service != null)
                     && service.getClass().isAssignableFrom(
@@ -558,16 +556,15 @@ public class Application extends Restlet {
                             "Unable to stop service replaced", e);
                 }
 
-                services.set(i, newService);
+                this.services.set(i, newService);
                 replaced = true;
             }
         }
 
         if (!replaced) {
-            services.add(newService);
+        	this.services.add(newService);
         }
 
-        setServices(services);
     }
 
     /**
