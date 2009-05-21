@@ -201,133 +201,138 @@ public class MetadataService extends Service {
      * </ul>
      */
     public void addCommonExtensions() {
-        addExtension("en", Language.ENGLISH);
-        addExtension("es", Language.SPANISH);
-        addExtension("fr", Language.FRENCH);
+        List<MetadataExtension> dm = new ArrayList<MetadataExtension>();
 
-        addExtension("ai", MediaType.APPLICATION_POSTSCRIPT);
-        addExtension("atom", MediaType.APPLICATION_ATOM);
-        addExtension("au", MediaType.AUDIO_BASIC);
-        addExtension("bin", MediaType.APPLICATION_OCTET_STREAM);
-        addExtension("bmp", MediaType.IMAGE_BMP);
-        addExtension("class", MediaType.APPLICATION_JAVA);
-        addExtension("css", MediaType.TEXT_CSS);
-        addExtension("csv", MediaType.TEXT_CSV);
-        addExtension("dat", MediaType.TEXT_DAT);
-        addExtension("dib", MediaType.IMAGE_BMP);
-        addExtension("doc", MediaType.APPLICATION_WORD);
-        addExtension("docm", MediaType.APPLICATION_MSOFFICE_DOCM);
-        addExtension("docx", MediaType.APPLICATION_MSOFFICE_DOCX);
-        addExtension("dotm", MediaType.APPLICATION_MSOFFICE_DOTM);
-        addExtension("dotx", MediaType.APPLICATION_MSOFFICE_DOTX);
-        addExtension("dtd", MediaType.APPLICATION_XML_DTD);
-        addExtension("eps", MediaType.APPLICATION_POSTSCRIPT);
-        addExtension("exe", MediaType.APPLICATION_OCTET_STREAM);
-        addExtension("fmt", Encoding.FREEMARKER);
-        addExtension("form", MediaType.APPLICATION_WWW_FORM);
-        addExtension("gif", MediaType.IMAGE_GIF);
-        addExtension("hqx", MediaType.APPLICATION_MAC_BINHEX40);
-        addExtension("htm", MediaType.TEXT_HTML);
-        addExtension("html", MediaType.TEXT_HTML);
-        addExtension("ico", MediaType.IMAGE_ICON);
-        addExtension("jad", MediaType.TEXT_J2ME_APP_DESCRIPTOR);
-        addExtension("jar", MediaType.APPLICATION_JAVA_ARCHIVE);
-        addExtension("java", MediaType.TEXT_PLAIN);
-        addExtension("jnlp", MediaType.APPLICATION_JNLP);
-        addExtension("jpe", MediaType.IMAGE_JPEG);
-        addExtension("jpeg", MediaType.IMAGE_JPEG);
-        addExtension("jpg", MediaType.IMAGE_JPEG);
-        addExtension("js", MediaType.APPLICATION_JAVASCRIPT);
-        addExtension("jsf", MediaType.TEXT_PLAIN);
-        addExtension("json", MediaType.APPLICATION_JSON);
-        addExtension("kar", MediaType.AUDIO_MIDI);
-        addExtension("latex", MediaType.APPLICATION_LATEX);
-        addExtension("man", MediaType.APPLICATION_TROFF_MAN);
-        addExtension("mathml", MediaType.APPLICATION_MATHML);
-        addExtension("mid", MediaType.AUDIO_MIDI);
-        addExtension("midi", MediaType.AUDIO_MIDI);
-        addExtension("mov", MediaType.VIDEO_QUICKTIME);
-        addExtension("mp2", MediaType.AUDIO_MPEG);
-        addExtension("mp3", MediaType.AUDIO_MPEG);
-        addExtension("mp4", MediaType.VIDEO_MP4);
-        addExtension("mpe", MediaType.VIDEO_MPEG);
-        addExtension("mpeg", MediaType.VIDEO_MPEG);
-        addExtension("mpg", MediaType.VIDEO_MPEG);
-        addExtension("n3", MediaType.TEXT_RDF_N3);
-        addExtension("nt", MediaType.TEXT_PLAIN);
-        addExtension("odb", MediaType.APPLICATION_OPENOFFICE_ODB);
-        addExtension("odc", MediaType.APPLICATION_OPENOFFICE_ODC);
-        addExtension("odf", MediaType.APPLICATION_OPENOFFICE_ODF);
-        addExtension("odi", MediaType.APPLICATION_OPENOFFICE_ODI);
-        addExtension("odm", MediaType.APPLICATION_OPENOFFICE_ODM);
-        addExtension("odg", MediaType.APPLICATION_OPENOFFICE_ODG);
-        addExtension("odp", MediaType.APPLICATION_OPENOFFICE_ODP);
-        addExtension("ods", MediaType.APPLICATION_OPENOFFICE_ODS);
-        addExtension("odt", MediaType.APPLICATION_OPENOFFICE_ODT);
-        addExtension("onetoc", MediaType.APPLICATION_MSOFFICE_ONETOC);
-        addExtension("onetoc2", MediaType.APPLICATION_MSOFFICE_ONETOC2);
-        addExtension("otg", MediaType.APPLICATION_OPENOFFICE_OTG);
-        addExtension("oth", MediaType.APPLICATION_OPENOFFICE_OTH);
-        addExtension("otp", MediaType.APPLICATION_OPENOFFICE_OTP);
-        addExtension("ots", MediaType.APPLICATION_OPENOFFICE_OTS);
-        addExtension("ott", MediaType.APPLICATION_OPENOFFICE_OTT);
-        addExtension("oxt", MediaType.APPLICATION_OPENOFFICE_OXT);
-        addExtension("pdf", MediaType.APPLICATION_PDF);
-        addExtension("png", MediaType.IMAGE_PNG);
-        addExtension("potx", MediaType.APPLICATION_MSOFFICE_POTX);
-        addExtension("potm", MediaType.APPLICATION_MSOFFICE_POTM);
-        addExtension("ppam", MediaType.APPLICATION_MSOFFICE_PPAM);
-        addExtension("pps", MediaType.APPLICATION_POWERPOINT);
-        addExtension("ppsm", MediaType.APPLICATION_MSOFFICE_PPSM);
-        addExtension("ppsx", MediaType.APPLICATION_MSOFFICE_PPSX);
-        addExtension("ppt", MediaType.APPLICATION_POWERPOINT);
-        addExtension("pptm", MediaType.APPLICATION_MSOFFICE_PPTM);
-        addExtension("pptx", MediaType.APPLICATION_MSOFFICE_PPTX);
-        addExtension("ps", MediaType.APPLICATION_POSTSCRIPT);
-        addExtension("qt", MediaType.VIDEO_QUICKTIME);
-        addExtension("rdf", MediaType.APPLICATION_RDF_XML);
-        addExtension("rnc", MediaType.APPLICATION_RELAXNG_COMPACT);
-        addExtension("rng", MediaType.APPLICATION_RELAXNG_XML);
-        addExtension("rss", MediaType.APPLICATION_RSS);
-        addExtension("rtf", MediaType.APPLICATION_RTF);
-        addExtension("sav", MediaType.APPLICATION_SPSS_SAV);
-        addExtension("sit", MediaType.APPLICATION_STUFFIT);
-        addExtension("sldm", MediaType.APPLICATION_MSOFFICE_SLDM);
-        addExtension("sldx", MediaType.APPLICATION_MSOFFICE_SLDX);
-        addExtension("snd", MediaType.AUDIO_BASIC);
-        addExtension("sps", MediaType.APPLICATION_SPSS_SPS);
-        addExtension("sta", MediaType.APPLICATION_STATA_STA);
-        addExtension("svg", MediaType.IMAGE_SVG);
-        addExtension("swf", MediaType.APPLICATION_FLASH);
-        addExtension("tar", MediaType.APPLICATION_TAR);
-        addExtension("tex", MediaType.APPLICATION_TEX);
-        addExtension("tif", MediaType.IMAGE_TIFF);
-        addExtension("tiff", MediaType.IMAGE_TIFF);
-        addExtension("tsv", MediaType.TEXT_TSV);
-        addExtension("txt", MediaType.TEXT_PLAIN, true);
-        addExtension("ulw", MediaType.AUDIO_BASIC);
-        addExtension("vm", Encoding.VELOCITY);
-        addExtension("vrml", MediaType.MODEL_VRML);
-        addExtension("vxml", MediaType.APPLICATION_VOICEXML);
-        addExtension("wadl", MediaType.APPLICATION_WADL);
-        addExtension("wav", MediaType.AUDIO_WAV);
-        addExtension("wrl", MediaType.MODEL_VRML);
-        addExtension("xht", MediaType.APPLICATION_XHTML);
-        addExtension("xhtml", MediaType.APPLICATION_XHTML);
-        addExtension("xls", MediaType.APPLICATION_EXCEL);
-        addExtension("xlsx", MediaType.APPLICATION_MSOFFICE_XLSX);
-        addExtension("xlsm", MediaType.APPLICATION_MSOFFICE_XLSM);
-        addExtension("xltx", MediaType.APPLICATION_MSOFFICE_XLTX);
-        addExtension("xltm", MediaType.APPLICATION_MSOFFICE_XLTM);
-        addExtension("xlsb", MediaType.APPLICATION_MSOFFICE_XLSB);
-        addExtension("xlam", MediaType.APPLICATION_MSOFFICE_XLAM);
-        addExtension("xml", MediaType.TEXT_XML);
-        addExtension("xml", MediaType.APPLICATION_XML);
-        addExtension("xsd", MediaType.APPLICATION_W3C_SCHEMA);
-        addExtension("xslt", MediaType.APPLICATION_W3C_XSLT);
-        addExtension("xul", MediaType.APPLICATION_XUL);
-        addExtension("z", MediaType.APPLICATION_COMPRESS);
-        addExtension("zip", MediaType.APPLICATION_ZIP);
+        ext(dm, "en", Language.ENGLISH);
+        ext(dm, "es", Language.SPANISH);
+        ext(dm, "fr", Language.FRENCH);
+
+        ext(dm, "ai", MediaType.APPLICATION_POSTSCRIPT);
+        ext(dm, "atom", MediaType.APPLICATION_ATOM);
+        ext(dm, "au", MediaType.AUDIO_BASIC);
+        ext(dm, "bin", MediaType.APPLICATION_OCTET_STREAM);
+        ext(dm, "bmp", MediaType.IMAGE_BMP);
+        ext(dm, "class", MediaType.APPLICATION_JAVA);
+        ext(dm, "css", MediaType.TEXT_CSS);
+        ext(dm, "csv", MediaType.TEXT_CSV);
+        ext(dm, "dat", MediaType.TEXT_DAT);
+        ext(dm, "dib", MediaType.IMAGE_BMP);
+        ext(dm, "doc", MediaType.APPLICATION_WORD);
+        ext(dm, "docm", MediaType.APPLICATION_MSOFFICE_DOCM);
+        ext(dm, "docx", MediaType.APPLICATION_MSOFFICE_DOCX);
+        ext(dm, "dotm", MediaType.APPLICATION_MSOFFICE_DOTM);
+        ext(dm, "dotx", MediaType.APPLICATION_MSOFFICE_DOTX);
+        ext(dm, "dtd", MediaType.APPLICATION_XML_DTD);
+        ext(dm, "eps", MediaType.APPLICATION_POSTSCRIPT);
+        ext(dm, "exe", MediaType.APPLICATION_OCTET_STREAM);
+        ext(dm, "fmt", Encoding.FREEMARKER);
+        ext(dm, "form", MediaType.APPLICATION_WWW_FORM);
+        ext(dm, "gif", MediaType.IMAGE_GIF);
+        ext(dm, "hqx", MediaType.APPLICATION_MAC_BINHEX40);
+        ext(dm, "htm", MediaType.TEXT_HTML);
+        ext(dm, "html", MediaType.TEXT_HTML);
+        ext(dm, "ico", MediaType.IMAGE_ICON);
+        ext(dm, "jad", MediaType.TEXT_J2ME_APP_DESCRIPTOR);
+        ext(dm, "jar", MediaType.APPLICATION_JAVA_ARCHIVE);
+        ext(dm, "java", MediaType.TEXT_PLAIN);
+        ext(dm, "jnlp", MediaType.APPLICATION_JNLP);
+        ext(dm, "jpe", MediaType.IMAGE_JPEG);
+        ext(dm, "jpeg", MediaType.IMAGE_JPEG);
+        ext(dm, "jpg", MediaType.IMAGE_JPEG);
+        ext(dm, "js", MediaType.APPLICATION_JAVASCRIPT);
+        ext(dm, "jsf", MediaType.TEXT_PLAIN);
+        ext(dm, "json", MediaType.APPLICATION_JSON);
+        ext(dm, "kar", MediaType.AUDIO_MIDI);
+        ext(dm, "latex", MediaType.APPLICATION_LATEX);
+        ext(dm, "man", MediaType.APPLICATION_TROFF_MAN);
+        ext(dm, "mathml", MediaType.APPLICATION_MATHML);
+        ext(dm, "mid", MediaType.AUDIO_MIDI);
+        ext(dm, "midi", MediaType.AUDIO_MIDI);
+        ext(dm, "mov", MediaType.VIDEO_QUICKTIME);
+        ext(dm, "mp2", MediaType.AUDIO_MPEG);
+        ext(dm, "mp3", MediaType.AUDIO_MPEG);
+        ext(dm, "mp4", MediaType.VIDEO_MP4);
+        ext(dm, "mpe", MediaType.VIDEO_MPEG);
+        ext(dm, "mpeg", MediaType.VIDEO_MPEG);
+        ext(dm, "mpg", MediaType.VIDEO_MPEG);
+        ext(dm, "n3", MediaType.TEXT_RDF_N3);
+        ext(dm, "nt", MediaType.TEXT_PLAIN);
+        ext(dm, "odb", MediaType.APPLICATION_OPENOFFICE_ODB);
+        ext(dm, "odc", MediaType.APPLICATION_OPENOFFICE_ODC);
+        ext(dm, "odf", MediaType.APPLICATION_OPENOFFICE_ODF);
+        ext(dm, "odi", MediaType.APPLICATION_OPENOFFICE_ODI);
+        ext(dm, "odm", MediaType.APPLICATION_OPENOFFICE_ODM);
+        ext(dm, "odg", MediaType.APPLICATION_OPENOFFICE_ODG);
+        ext(dm, "odp", MediaType.APPLICATION_OPENOFFICE_ODP);
+        ext(dm, "ods", MediaType.APPLICATION_OPENOFFICE_ODS);
+        ext(dm, "odt", MediaType.APPLICATION_OPENOFFICE_ODT);
+        ext(dm, "onetoc", MediaType.APPLICATION_MSOFFICE_ONETOC);
+        ext(dm, "onetoc2", MediaType.APPLICATION_MSOFFICE_ONETOC2);
+        ext(dm, "otg", MediaType.APPLICATION_OPENOFFICE_OTG);
+        ext(dm, "oth", MediaType.APPLICATION_OPENOFFICE_OTH);
+        ext(dm, "otp", MediaType.APPLICATION_OPENOFFICE_OTP);
+        ext(dm, "ots", MediaType.APPLICATION_OPENOFFICE_OTS);
+        ext(dm, "ott", MediaType.APPLICATION_OPENOFFICE_OTT);
+        ext(dm, "oxt", MediaType.APPLICATION_OPENOFFICE_OXT);
+        ext(dm, "pdf", MediaType.APPLICATION_PDF);
+        ext(dm, "png", MediaType.IMAGE_PNG);
+        ext(dm, "potx", MediaType.APPLICATION_MSOFFICE_POTX);
+        ext(dm, "potm", MediaType.APPLICATION_MSOFFICE_POTM);
+        ext(dm, "ppam", MediaType.APPLICATION_MSOFFICE_PPAM);
+        ext(dm, "pps", MediaType.APPLICATION_POWERPOINT);
+        ext(dm, "ppsm", MediaType.APPLICATION_MSOFFICE_PPSM);
+        ext(dm, "ppsx", MediaType.APPLICATION_MSOFFICE_PPSX);
+        ext(dm, "ppt", MediaType.APPLICATION_POWERPOINT);
+        ext(dm, "pptm", MediaType.APPLICATION_MSOFFICE_PPTM);
+        ext(dm, "pptx", MediaType.APPLICATION_MSOFFICE_PPTX);
+        ext(dm, "ps", MediaType.APPLICATION_POSTSCRIPT);
+        ext(dm, "qt", MediaType.VIDEO_QUICKTIME);
+        ext(dm, "rdf", MediaType.APPLICATION_RDF_XML);
+        ext(dm, "rnc", MediaType.APPLICATION_RELAXNG_COMPACT);
+        ext(dm, "rng", MediaType.APPLICATION_RELAXNG_XML);
+        ext(dm, "rss", MediaType.APPLICATION_RSS);
+        ext(dm, "rtf", MediaType.APPLICATION_RTF);
+        ext(dm, "sav", MediaType.APPLICATION_SPSS_SAV);
+        ext(dm, "sit", MediaType.APPLICATION_STUFFIT);
+        ext(dm, "sldm", MediaType.APPLICATION_MSOFFICE_SLDM);
+        ext(dm, "sldx", MediaType.APPLICATION_MSOFFICE_SLDX);
+        ext(dm, "snd", MediaType.AUDIO_BASIC);
+        ext(dm, "sps", MediaType.APPLICATION_SPSS_SPS);
+        ext(dm, "sta", MediaType.APPLICATION_STATA_STA);
+        ext(dm, "svg", MediaType.IMAGE_SVG);
+        ext(dm, "swf", MediaType.APPLICATION_FLASH);
+        ext(dm, "tar", MediaType.APPLICATION_TAR);
+        ext(dm, "tex", MediaType.APPLICATION_TEX);
+        ext(dm, "tif", MediaType.IMAGE_TIFF);
+        ext(dm, "tiff", MediaType.IMAGE_TIFF);
+        ext(dm, "tsv", MediaType.TEXT_TSV);
+        ext(dm, "txt", MediaType.TEXT_PLAIN, true);
+        ext(dm, "ulw", MediaType.AUDIO_BASIC);
+        ext(dm, "vm", Encoding.VELOCITY);
+        ext(dm, "vrml", MediaType.MODEL_VRML);
+        ext(dm, "vxml", MediaType.APPLICATION_VOICEXML);
+        ext(dm, "wadl", MediaType.APPLICATION_WADL);
+        ext(dm, "wav", MediaType.AUDIO_WAV);
+        ext(dm, "wrl", MediaType.MODEL_VRML);
+        ext(dm, "xht", MediaType.APPLICATION_XHTML);
+        ext(dm, "xhtml", MediaType.APPLICATION_XHTML);
+        ext(dm, "xls", MediaType.APPLICATION_EXCEL);
+        ext(dm, "xlsx", MediaType.APPLICATION_MSOFFICE_XLSX);
+        ext(dm, "xlsm", MediaType.APPLICATION_MSOFFICE_XLSM);
+        ext(dm, "xltx", MediaType.APPLICATION_MSOFFICE_XLTX);
+        ext(dm, "xltm", MediaType.APPLICATION_MSOFFICE_XLTM);
+        ext(dm, "xlsb", MediaType.APPLICATION_MSOFFICE_XLSB);
+        ext(dm, "xlam", MediaType.APPLICATION_MSOFFICE_XLAM);
+        ext(dm, "xml", MediaType.TEXT_XML);
+        ext(dm, "xml", MediaType.APPLICATION_XML);
+        ext(dm, "xsd", MediaType.APPLICATION_W3C_SCHEMA);
+        ext(dm, "xslt", MediaType.APPLICATION_W3C_XSLT);
+        ext(dm, "xul", MediaType.APPLICATION_XUL);
+        ext(dm, "z", MediaType.APPLICATION_COMPRESS);
+        ext(dm, "zip", MediaType.APPLICATION_ZIP);
+
+        // Add all those mappings
+        this.mappings.addAll(dm);
     }
 
     /**
@@ -370,6 +375,76 @@ public class MetadataService extends Service {
      */
     public void clearExtensions() {
         this.mappings.clear();
+    }
+
+    /**
+     * Creates a new extension mapping.
+     * 
+     * @param extensions
+     *            The extensions list to update.
+     * @param extension
+     *            The extension name.
+     * @param metadata
+     *            The associated metadata.
+     * @param preferred
+     *            indicates if this mapping is the preferred one.
+     * @return The new extension mapping.
+     */
+    private void ext(List<MetadataExtension> extensions, String extension,
+            Metadata metadata) {
+        ext(extensions, extension, metadata, false);
+    }
+
+    /**
+     * Creates a new extension mapping.
+     * 
+     * @param extensions
+     *            The extensions list to update.
+     * @param extension
+     *            The extension name.
+     * @param metadata
+     *            The associated metadata.
+     * @param preferred
+     *            indicates if this mapping is the preferred one.
+     * @return The new extension mapping.
+     */
+    private void ext(List<MetadataExtension> extensions, String extension,
+            Metadata metadata, boolean preferred) {
+        if (preferred) {
+            // Add the mapping at the beginning of the list
+            extensions.add(0, new MetadataExtension(extension, metadata));
+        } else {
+            // Add the mapping at the end of the list
+            extensions.add(new MetadataExtension(extension, metadata));
+        }
+    }
+
+    /**
+     * Returns all the media types associated to this extension. It returns null
+     * if the extension was not declared.
+     * 
+     * @param extension
+     *            The extension name without any delimiter.
+     * @return The list of media type associated to this extension.
+     */
+    public List<MediaType> getAllMediaTypes(String extension) {
+        List<MediaType> result = null;
+
+        if (extension != null) {
+            // Look for all registered convenient mapping.
+            for (final MetadataExtension metadataExtension : this.mappings) {
+                if (extension.equals(metadataExtension.getName())
+                        && (metadataExtension.getMetadata() instanceof MediaType)) {
+                    if (result == null) {
+                        result = new ArrayList<MediaType>();
+                    }
+
+                    result.add(metadataExtension.getMediaType());
+                }
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -443,6 +518,48 @@ public class MetadataService extends Service {
             }
         }
         return null;
+    }
+
+    /**
+     * Returns the language associated to this extension. It returns null if the
+     * extension was not declared of it is corresponds to another type of
+     * medatata such as a media type. If several metadata are associated to the
+     * same extension then only the first matching metadata is returned.
+     * 
+     * @param extension
+     *            The extension name without any delimiter.
+     * @return The language associated to this extension.
+     */
+    public Language getLanguage(String extension) {
+        Metadata metadata = getMetadata(extension);
+
+        if (metadata instanceof Language) {
+            return (Language) metadata;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Returns the mediatype associated to this extension. It returns null if
+     * the extension was not declared of it is corresponds to another type of
+     * medatata such as a language. If several metadata are associated to the
+     * same extension (ex: 'xml' for both 'text/xml' and 'application/xml') then
+     * only the first matching metadata is returned.
+     * 
+     * 
+     * @param extension
+     *            The extension name without any delimiter.
+     * @return The media type associated to this extension.
+     */
+    public MediaType getMediaType(String extension) {
+        Metadata metadata = getMetadata(extension);
+
+        if (metadata instanceof MediaType) {
+            return (MediaType) metadata;
+        } else {
+            return null;
+        }
     }
 
     /**

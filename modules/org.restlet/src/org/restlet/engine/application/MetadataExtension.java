@@ -30,6 +30,10 @@
 
 package org.restlet.engine.application;
 
+import org.restlet.data.CharacterSet;
+import org.restlet.data.Encoding;
+import org.restlet.data.Language;
+import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
 
 /**
@@ -56,6 +60,42 @@ public class MetadataExtension {
     public MetadataExtension(String name, Metadata metadata) {
         this.name = name;
         this.metadata = metadata;
+    }
+
+    /**
+     * Returns the character set.
+     * 
+     * @return the character set.
+     */
+    public CharacterSet getCharacterSet() {
+        return (CharacterSet) getMetadata();
+    }
+
+    /**
+     * Returns the encoding.
+     * 
+     * @return the encoding.
+     */
+    public Encoding getEncoding() {
+        return (Encoding) getMetadata();
+    }
+
+    /**
+     * Returns the language.
+     * 
+     * @return the language.
+     */
+    public Language getLanguage() {
+        return (Language) getMetadata();
+    }
+
+    /**
+     * Returns the media type.
+     * 
+     * @return the media type.
+     */
+    public MediaType getMediaType() {
+        return (MediaType) getMetadata();
     }
 
     /**
