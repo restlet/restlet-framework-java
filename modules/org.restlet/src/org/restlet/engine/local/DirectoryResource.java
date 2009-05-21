@@ -280,8 +280,7 @@ public class DirectoryResource extends ServerResource {
                         }
                     } else {
                         // Allows underlying helpers that do not support
-                        // "content
-                        // negotiation" to return the targeted file.
+                        // "content negotiation" to return the targeted file.
                         this.directoryTarget = false;
                         this.fileTarget = true;
                         this.fileContent = contextResponse.getEntity();
@@ -294,8 +293,7 @@ public class DirectoryResource extends ServerResource {
                     // client connector does not handle directory listing.
                     if (this.targetUri.endsWith("/")) {
                         // In this case, the trailing "/" shows that the URI
-                        // must
-                        // point to a directory
+                        // must point to a directory
                         if ((getDirectory().getIndexName() != null)
                                 && (getDirectory().getIndexName().length() > 0)) {
                             this.directoryUri = this.targetUri;
@@ -315,8 +313,8 @@ public class DirectoryResource extends ServerResource {
                         }
                     } else {
                         // Try to determine if this target URI with no trailing
-                        // "/"
-                        // is a directory, in order to force the redirection.
+                        // "/" is a directory, in order to force the
+                        // redirection.
                         if ((getDirectory().getIndexName() != null)
                                 && (getDirectory().getIndexName().length() > 0)) {
                             // Append the index name
@@ -339,8 +337,7 @@ public class DirectoryResource extends ServerResource {
                 }
 
                 // In case the request does not target a directory and the file
-                // has
-                // not been found, try with the tunneled URI.
+                // has not been found, try with the tunneled URI.
                 if (isNegotiated() && !this.directoryTarget && !this.fileTarget
                         && (this.originalRef != null)) {
                     this.relativePart = getReference().getRemainingPart();
@@ -360,8 +357,7 @@ public class DirectoryResource extends ServerResource {
                 }
 
                 // Try to get the directory content, in case the request does
-                // not
-                // target a directory
+                // not target a directory
                 if (!this.directoryTarget) {
                     final int lastSlashIndex = this.targetUri.lastIndexOf('/');
                     if (lastSlashIndex == -1) {
@@ -794,9 +790,9 @@ public class DirectoryResource extends ServerResource {
 
             // Restore the cut extensions in case the call has been tunneled.
             if (this.originalRef != null) {
-                redirectPermanent(this.originalRef.getIdentifier() + "/");
+                redirectSeeOther(this.originalRef.getIdentifier() + "/");
             } else {
-                redirectPermanent(getReference().getIdentifier() + "/");
+                redirectSeeOther(getReference().getIdentifier() + "/");
             }
         } else {
             result = super.handle();
@@ -834,8 +830,7 @@ public class DirectoryResource extends ServerResource {
                 }
             } else {
                 // Transfer of PUT calls is only allowed if the readOnly flag is
-                // not
-                // set.
+                // not set.
                 final Request contextRequest = new Request(Method.PUT,
                         this.targetUri);
                 // Add support of partial PUT calls.
