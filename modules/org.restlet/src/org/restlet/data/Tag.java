@@ -43,8 +43,12 @@ import org.restlet.Context;
  * entities are equivalent and could be substituted for each other with no
  * significant change in semantics."
  * 
- * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.11">HTTP Entity Tags</a>
- * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html#sec13.3.2">HTTP Entity Tag Cache Validators</a>
+ * @see <a
+ *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.11">HTTP
+ *      Entity Tags</a>
+ * @see <a
+ *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html#sec13.3.2">HTTP
+ *      Entity Tag Cache Validators</a>
  * @author Jerome Louvel
  */
 public final class Tag extends Metadata {
@@ -60,7 +64,9 @@ public final class Tag extends Metadata {
      *            tag; otherwise it should be surrounded with quotes (e.g.,
      *            "sometag").
      * @return A new tag instance.
-     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.11">HTTP Entity Tags</a>
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.11">HTTP
+     *      Entity Tags</a>
      */
     public static Tag parse(final String httpTag) {
         Tag result = null;
@@ -86,7 +92,7 @@ public final class Tag extends Metadata {
     }
 
     /** The tag weakness. */
-    private volatile boolean weak;
+    private final boolean weak;
 
     /**
      * Default constructor. The opaque tag is set to null and the weakness
@@ -167,7 +173,9 @@ public final class Tag extends Metadata {
      * Returns tag formatted as an HTTP tag string.
      * 
      * @return The formatted HTTP tag string.
-     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.11">HTTP Entity Tags</a>
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.11">HTTP
+     *      Entity Tags</a>
      */
     public String format() {
         if (getName().equals("*")) {

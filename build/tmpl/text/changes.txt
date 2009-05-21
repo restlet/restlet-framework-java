@@ -97,6 +97,8 @@ Changes log
           Suggested by Remi Dewitte.
         - Refactored the class loading code in the engine.
           Suggested by David Fogel.
+        - Tag#weak internal field is now final. 
+          Suggested by Arjohn Kampman 
     - API changes
         - RepresentationInfo is now concrete and has more constructors.
           Suggested by Lars Heuer.
