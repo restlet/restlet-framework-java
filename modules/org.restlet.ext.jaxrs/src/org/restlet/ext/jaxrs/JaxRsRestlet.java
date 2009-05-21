@@ -74,6 +74,7 @@ import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.RequestHandledException;
 import org.restlet.ext.jaxrs.internal.provider.BufferedReaderProvider;
 import org.restlet.ext.jaxrs.internal.provider.ByteArrayProvider;
+import org.restlet.ext.jaxrs.internal.provider.ConverterProvider;
 import org.restlet.ext.jaxrs.internal.provider.FileProvider;
 import org.restlet.ext.jaxrs.internal.provider.InputStreamProvider;
 import org.restlet.ext.jaxrs.internal.provider.ReaderProvider;
@@ -206,6 +207,7 @@ public class JaxRsRestlet extends Restlet {
         this.addSingleton(
                 "org.restlet.ext.jaxrs.internal.provider.FileUploadProvider",
                 true); // not yet tested
+        this.addSingleton(new ConverterProvider(), true);
         this.addSingleton(new FileProvider(), true);
         this.addSingleton(new InputStreamProvider(), true);
         this.addSingleton(
