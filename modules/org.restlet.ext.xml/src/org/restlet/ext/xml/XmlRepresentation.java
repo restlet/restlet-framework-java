@@ -328,7 +328,7 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
      * 
      * @return The map of namespaces.
      */
-    private Map<String, String> getNamespaces() {
+    protected Map<String, String> getNamespaces() {
         if (this.namespaces == null) {
             this.namespaces = new HashMap<String, String>();
         }

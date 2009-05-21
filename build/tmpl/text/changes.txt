@@ -93,6 +93,8 @@ Changes log
           Reported by Mikis.
         - Optimized MetadataService#addCommonExtensions() to prevent
           multiple array copies. Reported by David Fogel.
+        - XmlRepresentation#getNamespaces() is now protected.
+          Suggested by Remi Dewitte.
     - API changes
         - RepresentationInfo is now concrete and has more constructors.
           Suggested by Lars Heuer.
