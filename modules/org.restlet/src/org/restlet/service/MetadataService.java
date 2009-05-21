@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.restlet.data.CharacterSet;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
@@ -475,6 +476,21 @@ public class MetadataService extends Service {
     }
 
     /**
+     * Returns the character set associated to this extension. It returns null
+     * if the extension was not declared of it is corresponds to another type of
+     * medatata such as a media type. If several metadata are associated to the
+     * same extension then only the first matching metadata is returned.
+     * 
+     * 
+     * @param extension
+     *            The extension name without any delimiter.
+     * @return The character set associated to this extension.
+     */
+    public CharacterSet getCharacterSet(String extension) {
+        return getMetadata(extension, CharacterSet.class);
+    }
+
+    /**
      * Returns the default encoding for local representations.
      * 
      * @return The default encoding for local representations.
@@ -499,6 +515,20 @@ public class MetadataService extends Service {
      */
     public MediaType getDefaultMediaType() {
         return this.defaultMediaType;
+    }
+
+    /**
+     * Returns the encoding associated to this extension. It returns null if the
+     * extension was not declared of it is corresponds to another type of
+     * medatata such as a media type. If several metadata are associated to the
+     * same extension then only the first matching metadata is returned.
+     * 
+     * @param extension
+     *            The extension name without any delimiter.
+     * @return The encoding associated to this extension.
+     */
+    public Encoding getEncoding(String extension) {
+        return getMetadata(extension, Encoding.class);
     }
 
     /**
@@ -531,13 +561,7 @@ public class MetadataService extends Service {
      * @return The language associated to this extension.
      */
     public Language getLanguage(String extension) {
-        Metadata metadata = getMetadata(extension);
-
-        if (metadata instanceof Language) {
-            return (Language) metadata;
-        } else {
-            return null;
-        }
+        return getMetadata(extension, Language.class);
     }
 
     /**
@@ -553,13 +577,7 @@ public class MetadataService extends Service {
      * @return The media type associated to this extension.
      */
     public MediaType getMediaType(String extension) {
-        Metadata metadata = getMetadata(extension);
-
-        if (metadata instanceof MediaType) {
-            return (MediaType) metadata;
-        } else {
-            return null;
-        }
+        return getMetadata(extension, MediaType.class);
     }
 
     /**
@@ -583,6 +601,28 @@ public class MetadataService extends Service {
         }
 
         return null;
+    }
+
+    /**
+     * Returns the metadata associated to this extension. It returns null if the
+     * extension was not declared or is not of the target metadata type.
+     * 
+     * @param <T>
+     * @param extension
+     *            The extension name without any delimiter.
+     * @param metadataType
+     *            The target metadata type.
+     * @return The metadata associated to this extension.
+     */
+    public <T extends Metadata> T getMetadata(String extension,
+            Class<T> metadataType) {
+        Metadata metadata = getMetadata(extension);
+
+        if (metadataType.isAssignableFrom(metadata.getClass())) {
+            return metadataType.cast(metadata);
+        } else {
+            return null;
+        }
     }
 
     /**

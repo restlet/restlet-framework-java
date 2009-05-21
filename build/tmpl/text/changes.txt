@@ -145,8 +145,8 @@ Changes log
           methods to automatically register them when starting the
           application.
         - Added MetadataService#getAllMediaTypes(), getLanguage() and
-          getMediaType() methods. Reported by David Fogel and suggested
-          by Remi Dewitte.
+          getMediaType() and similar methods. Reported by David Fogel 
+          and suggested by Remi Dewitte and Tim Peierls.
     - Miscellaneous
         - Component XML configuration has been moved into an Engine 
           ComponentXmlParser class.
