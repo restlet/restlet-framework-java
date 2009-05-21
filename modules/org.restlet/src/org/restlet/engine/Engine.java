@@ -64,6 +64,7 @@ import org.restlet.engine.security.HttpDigestHelper;
 import org.restlet.engine.security.HttpMsSharedKeyHelper;
 import org.restlet.engine.security.HttpMsSharedKeyLiteHelper;
 import org.restlet.engine.security.SmtpPlainHelper;
+import org.restlet.engine.util.EngineClassLoader;
 
 /**
  * Engine supporting the Restlet API.
@@ -71,6 +72,9 @@ import org.restlet.engine.security.SmtpPlainHelper;
  * @author Jerome Louvel
  */
 public class Engine {
+
+    /** Engine class loader to use for dynamic class loading. */
+    private static volatile ClassLoader classLoader = new EngineClassLoader();
 
     public static final String DESCRIPTOR = "META-INF/services";
 
@@ -114,36 +118,20 @@ public class Engine {
             + RELEASE_NUMBER;
 
     /** Complete version header. */
-    public static final String VERSION_HEADER = "Noelios-Restlet-Engine/"
-            + VERSION;
+    public static final String VERSION_HEADER = "Noelios-Restlet/" + VERSION;
 
     /**
-     * Returns the best class loader, first the user class loader, or the
-     * current thread context class loader, or the classloader of the current
-     * class or finally the system classloader.
+     * Returns the engine class loader. It uses the delegation model with the
+     * Engine class's class loader as a parent. If this parent doesn't find a
+     * class or resource, it then tries the user class loader (via
+     * {@link #getUserClassLoader()} and finally the
+     * {@link Thread#getContextClassLoader()}.
      * 
-     * @return The best class loader.
-     * @see #getUserClassLoader()
-     * @see Thread#getContextClassLoader()
-     * @see Class#getClassLoader()
-     * @see ClassLoader#getSystemClassLoader()
+     * @return The engine class loader.
+     * @see EngineClassLoader
      */
     public static ClassLoader getClassLoader() {
-        ClassLoader result = getUserClassLoader();
-
-        if (result == null) {
-            result = Thread.currentThread().getContextClassLoader();
-        }
-
-        if (result == null) {
-            result = Engine.class.getClassLoader();
-        }
-
-        if (result == null) {
-            result = ClassLoader.getSystemClassLoader();
-        }
-
-        return result;
+        return classLoader;
     }
 
     /**
@@ -167,79 +155,21 @@ public class Engine {
      * 
      * @return The user class loader
      */
-    private static ClassLoader getUserClassLoader() {
+    public static ClassLoader getUserClassLoader() {
         return userClassLoader;
     }
 
     /**
-     * Returns the class object for the given name using the given class loader.
-     * 
-     * @param classLoader
-     *            The class loader to use.
-     * @param className
-     *            The class name to lookup.
-     * @return The class object or null.
-     */
-    private static Class<?> loadClass(ClassLoader classLoader, String className) {
-        Class<?> result = null;
-
-        if (classLoader != null) {
-            try {
-                result = classLoader.loadClass(className);
-            } catch (ClassNotFoundException e) {
-                // Do nothing
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * Returns the class object for the given name using the user classloader
-     * first, then the current thread context classloader, or the classloader of
-     * the current class or finally the system classloader.
+     * Returns the class object for the given name using the engine classloader.
      * 
      * @param className
      *            The class name to lookup.
      * @return The class object or null if the class was not found.
-     * @see #getUserClassLoader()
-     * @see Thread#getContextClassLoader()
-     * @see Class#forName(String)
-     * @see ClassLoader#getSystemClassLoader()
+     * @see #getClassLoader()
      */
     public static Class<?> loadClass(String className)
             throws ClassNotFoundException {
-        Class<?> result = null;
-
-        // First, try using the engine class loader
-        result = loadClass(getUserClassLoader(), className);
-
-        // Then, try using the current thread context class loader
-        if (result == null) {
-            result = loadClass(Thread.currentThread().getContextClassLoader(),
-                    className);
-        }
-
-        // Then, try using the current class's class loader
-        if (result == null) {
-            result = loadClass(Engine.class.getClassLoader(), className);
-        }
-
-        // Then, try using the caller's class loader
-        if (result == null) {
-            result = Class.forName(className);
-        }
-
-        // Finally try using the system class loader
-        if (result == null) {
-            result = loadClass(ClassLoader.getSystemClassLoader(), className);
-        }
-
-        if (result == null) {
-            throw new ClassNotFoundException(className);
-        }
-
-        return result;
+        return getClassLoader().loadClass(className);
     }
 
     /**

@@ -1,0 +1,135 @@
+/**
+ * Copyright 2005-2009 Noelios Technologies.
+ * 
+ * The contents of this file are subject to the terms of one of the following
+ * open source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL 1.0 (the
+ * "Licenses"). You can select the license that you prefer but you may not use
+ * this file except in compliance with one of these Licenses.
+ * 
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.opensource.org/licenses/lgpl-3.0.html
+ * 
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.opensource.org/licenses/lgpl-2.1.php
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.opensource.org/licenses/cddl1.php
+ * 
+ * You can obtain a copy of the EPL 1.0 license at
+ * http://www.opensource.org/licenses/eclipse-1.0.php
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royalty free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
+ */
+
+package org.restlet.engine.util;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.Enumeration;
+
+import org.restlet.engine.Engine;
+
+/**
+ * Flexible engine class loader. Uses the current class's class loader as its
+ * parent. Can also check with the user class loader defined by
+ * {@link Engine#getUserClassLoader()} or with
+ * {@link Thread#getContextClassLoader()} or with {@link Class#forName(String)}.
+ * 
+ * @author Jerome Louvel
+ */
+public class EngineClassLoader extends ClassLoader {
+
+    /**
+     * Constructor.
+     */
+    public EngineClassLoader() {
+        super(EngineClassLoader.class.getClassLoader());
+    }
+
+    @Override
+    protected Class<?> findClass(String name) throws ClassNotFoundException {
+        Class<?> result = null;
+
+        // First try the user class loader
+        ClassLoader cl = Engine.getUserClassLoader();
+
+        if (cl != null) {
+            result = cl.loadClass(name);
+        }
+
+        // Then try the current thread's class loader
+        if (result == null) {
+            cl = Thread.currentThread().getContextClassLoader();
+
+            if (cl != null) {
+                result = cl.loadClass(name);
+            }
+        }
+
+        // Finally try with this ultimate approach
+        if (result == null) {
+            result = Class.forName(name);
+        }
+
+        // Otherwise throw an exception
+        if (result == null) {
+            throw new ClassNotFoundException(name);
+        }
+
+        return result;
+    }
+
+    @Override
+    protected URL findResource(String name) {
+        URL result = null;
+
+        // First try the user class loader
+        ClassLoader cl = Engine.getUserClassLoader();
+
+        if (cl != null) {
+            result = cl.getResource(name);
+        }
+
+        // Then try the current thread's class loader
+        if (result == null) {
+            cl = Thread.currentThread().getContextClassLoader();
+
+            if (cl != null) {
+                result = cl.getResource(name);
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    protected Enumeration<URL> findResources(String name) throws IOException {
+        Enumeration<URL> result = null;
+
+        // First try the user class loader
+        ClassLoader cl = Engine.getUserClassLoader();
+
+        if (cl != null) {
+            result = cl.getResources(name);
+        }
+
+        // Then try the current thread's class loader
+        if (result == null) {
+            cl = Thread.currentThread().getContextClassLoader();
+
+            if (cl != null) {
+                result = cl.getResources(name);
+            }
+        }
+
+        return result;
+    }
+
+}

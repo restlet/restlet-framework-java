@@ -95,6 +95,8 @@ Changes log
           multiple array copies. Reported by David Fogel.
         - XmlRepresentation#getNamespaces() is now protected.
           Suggested by Remi Dewitte.
+        - Refactored the class loading code in the engine.
+          Suggested by David Fogel.
     - API changes
         - RepresentationInfo is now concrete and has more constructors.
           Suggested by Lars Heuer.
