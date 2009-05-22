@@ -207,7 +207,7 @@ public class JaxRsRestlet extends Restlet {
         this.addSingleton(
                 "org.restlet.ext.jaxrs.internal.provider.FileUploadProvider",
                 true); // not yet tested
-        this.addSingleton(new ConverterProvider(), true);
+        // this.addSingleton(new ConverterProvider(), true);
         this.addSingleton(new FileProvider(), true);
         this.addSingleton(new InputStreamProvider(), true);
         this.addSingleton(

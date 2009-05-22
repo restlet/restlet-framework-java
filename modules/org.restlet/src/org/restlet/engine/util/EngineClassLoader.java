@@ -33,6 +33,7 @@ package org.restlet.engine.util;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Enumeration;
+import java.util.Vector;
 
 import org.restlet.engine.Engine;
 
@@ -61,7 +62,11 @@ public class EngineClassLoader extends ClassLoader {
         ClassLoader cl = Engine.getUserClassLoader();
 
         if (cl != null) {
-            result = cl.loadClass(name);
+            try {
+                result = cl.loadClass(name);
+            } catch (ClassNotFoundException cnfe) {
+                // Ignore
+            }
         }
 
         // Then try the current thread's class loader
@@ -69,13 +74,21 @@ public class EngineClassLoader extends ClassLoader {
             cl = Thread.currentThread().getContextClassLoader();
 
             if (cl != null) {
-                result = cl.loadClass(name);
+                try {
+                    result = cl.loadClass(name);
+                } catch (ClassNotFoundException cnfe) {
+                    // Ignore
+                }
             }
         }
 
         // Finally try with this ultimate approach
         if (result == null) {
-            result = Class.forName(name);
+            try {
+                result = Class.forName(name);
+            } catch (ClassNotFoundException cnfe) {
+                // Ignore
+            }
         }
 
         // Otherwise throw an exception
@@ -130,6 +143,23 @@ public class EngineClassLoader extends ClassLoader {
         }
 
         return result;
+    }
+
+    @Override
+    public Enumeration<URL> getResources(String name) throws IOException {
+        Enumeration<URL> allUrls = super.getResources(name);
+        Vector<URL> result = new Vector<URL>();
+
+        URL url;
+        while (allUrls.hasMoreElements()) {
+            url = allUrls.nextElement();
+
+            if (result.indexOf(url) == -1) {
+                result.add(url);
+            }
+        }
+
+        return result.elements();
     }
 
 }
