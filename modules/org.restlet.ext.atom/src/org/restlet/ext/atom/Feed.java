@@ -56,472 +56,472 @@ import org.xml.sax.helpers.AttributesImpl;
  * @author Jerome Louvel
  */
 public class Feed extends SaxRepresentation {
-	/** Atom Syndication Format namespace. */
-	public final static String ATOM_NAMESPACE = "http://www.w3.org/2005/Atom";
+    /** Atom Syndication Format namespace. */
+    public final static String ATOM_NAMESPACE = "http://www.w3.org/2005/Atom";
 
-	/** XHTML namespace. */
-	public final static String XHTML_NAMESPACE = "http://www.w3.org/1999/xhtml";
+    /** XHTML namespace. */
+    public final static String XHTML_NAMESPACE = "http://www.w3.org/1999/xhtml";
 
-	/** The authors of the feed. */
-	private volatile List<Person> authors;
+    /** The authors of the feed. */
+    private volatile List<Person> authors;
 
-	/** The categories associated with the feed. */
-	private volatile List<Category> categories;
+    /** The categories associated with the feed. */
+    private volatile List<Category> categories;
 
-	/** The contributors to the feed. */
-	private volatile List<Person> contributors;
+    /** The contributors to the feed. */
+    private volatile List<Person> contributors;
 
-	/**
-	 * Individual entries, acting as a components for associated metadata and
-	 * data.
-	 */
-	private List<Entry> entries;
+    /**
+     * Individual entries, acting as a components for associated metadata and
+     * data.
+     */
+    private List<Entry> entries;
 
-	/** The agent used to generate a feed. */
-	private volatile Generator generator;
+    /** The agent used to generate a feed. */
+    private volatile Generator generator;
 
-	/** Image that provides iconic visual identification for a feed. */
-	private volatile Reference icon;
+    /** Image that provides iconic visual identification for a feed. */
+    private volatile Reference icon;
 
-	/** Permanent, universally unique identifier for the feed. */
-	private volatile String id;
+    /** Permanent, universally unique identifier for the feed. */
+    private volatile String id;
 
-	/** The references from the entry to Web resources. */
-	private volatile List<Link> links;
+    /** The references from the entry to Web resources. */
+    private volatile List<Link> links;
 
-	/** Image that provides visual identification for a feed. */
-	private volatile Reference logo;
+    /** Image that provides visual identification for a feed. */
+    private volatile Reference logo;
 
-	/** Information about rights held in and over an entry. */
-	private volatile Text rights;
+    /** Information about rights held in and over an entry. */
+    private volatile Text rights;
 
-	/** Short summary, abstract, or excerpt of an entry. */
-	private volatile Text subtitle;
+    /** Short summary, abstract, or excerpt of an entry. */
+    private volatile Text subtitle;
 
-	/** The human-readable title for the entry. */
-	private volatile Text title;
+    /** The human-readable title for the entry. */
+    private volatile Text title;
 
-	/** Most recent moment when the entry was modified in a significant way. */
-	private volatile Date updated;
+    /** Most recent moment when the entry was modified in a significant way. */
+    private volatile Date updated;
 
-	/**
-	 * Constructor.
-	 */
-	public Feed() {
-		super(MediaType.APPLICATION_ATOM);
-		this.authors = null;
-		this.categories = null;
-		this.contributors = null;
-		this.generator = null;
-		this.icon = null;
-		this.id = null;
-		this.links = null;
-		this.logo = null;
-		this.rights = null;
-		this.subtitle = null;
-		this.title = null;
-		this.updated = null;
-		this.entries = null;
-	}
+    /**
+     * Constructor.
+     */
+    public Feed() {
+        super(MediaType.APPLICATION_ATOM);
+        this.authors = null;
+        this.categories = null;
+        this.contributors = null;
+        this.generator = null;
+        this.icon = null;
+        this.id = null;
+        this.links = null;
+        this.logo = null;
+        this.rights = null;
+        this.subtitle = null;
+        this.title = null;
+        this.updated = null;
+        this.entries = null;
+    }
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param context
-	 *            The context from which the client dispatcher will be
-	 *            retrieved.
-	 * @param feedUri
-	 *            The feed URI.
-	 * @throws IOException
-	 */
-	public Feed(Context context, String feedUri) throws IOException {
-		this(context.getClientDispatcher().get(feedUri).getEntity());
-	}
+    /**
+     * Constructor.
+     * 
+     * @param context
+     *            The context from which the client dispatcher will be
+     *            retrieved.
+     * @param feedUri
+     *            The feed URI.
+     * @throws IOException
+     */
+    public Feed(Context context, String feedUri) throws IOException {
+        this(context.getClientDispatcher().get(feedUri).getEntity());
+    }
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param xmlFeed
-	 *            The XML feed document.
-	 * @throws IOException
-	 */
-	public Feed(Representation xmlFeed) throws IOException {
-		super(xmlFeed);
-		parse(new FeedContentReader(this));
-	}
+    /**
+     * Constructor.
+     * 
+     * @param xmlFeed
+     *            The XML feed document.
+     * @throws IOException
+     */
+    public Feed(Representation xmlFeed) throws IOException {
+        super(xmlFeed);
+        parse(new FeedContentReader(this));
+    }
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param feedUri
-	 *            The feed URI.
-	 * @throws IOException
-	 */
-	public Feed(String feedUri) throws IOException {
-		this(new Client(Protocol.HTTP), feedUri);
-	}
+    /**
+     * Constructor.
+     * 
+     * @param feedUri
+     *            The feed URI.
+     * @throws IOException
+     */
+    public Feed(String feedUri) throws IOException {
+        this(new Client(Protocol.HTTP), feedUri);
+    }
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param clientDispatcher
-	 *            The client HTTP dispatcher.
-	 * @param feedUri
-	 *            The feed URI.
-	 * @throws IOException
-	 */
-	public Feed(Uniform clientDispatcher, String feedUri) throws IOException {
-		this(clientDispatcher.get(feedUri).getEntity());
-	}
+    /**
+     * Constructor.
+     * 
+     * @param clientDispatcher
+     *            The client HTTP dispatcher.
+     * @param feedUri
+     *            The feed URI.
+     * @throws IOException
+     */
+    public Feed(Uniform clientDispatcher, String feedUri) throws IOException {
+        this(clientDispatcher.get(feedUri).getEntity());
+    }
 
-	/**
-	 * Returns the authors of the entry.
-	 * 
-	 * @return The authors of the entry.
-	 */
-	public List<Person> getAuthors() {
-		// Lazy initialization with double-check.
-		List<Person> a = this.authors;
-		if (a == null) {
-			synchronized (this) {
-				a = this.authors;
-				if (a == null) {
-					this.authors = a = new ArrayList<Person>();
-				}
-			}
-		}
-		return a;
-	}
+    /**
+     * Returns the authors of the entry.
+     * 
+     * @return The authors of the entry.
+     */
+    public List<Person> getAuthors() {
+        // Lazy initialization with double-check.
+        List<Person> a = this.authors;
+        if (a == null) {
+            synchronized (this) {
+                a = this.authors;
+                if (a == null) {
+                    this.authors = a = new ArrayList<Person>();
+                }
+            }
+        }
+        return a;
+    }
 
-	/**
-	 * Returns the categories associated with the entry.
-	 * 
-	 * @return The categories associated with the entry.
-	 */
-	public List<Category> getCategories() {
-		// Lazy initialization with double-check.
-		List<Category> c = this.categories;
-		if (c == null) {
-			synchronized (this) {
-				c = this.categories;
-				if (c == null) {
-					this.categories = c = new ArrayList<Category>();
-				}
-			}
-		}
-		return c;
-	}
+    /**
+     * Returns the categories associated with the entry.
+     * 
+     * @return The categories associated with the entry.
+     */
+    public List<Category> getCategories() {
+        // Lazy initialization with double-check.
+        List<Category> c = this.categories;
+        if (c == null) {
+            synchronized (this) {
+                c = this.categories;
+                if (c == null) {
+                    this.categories = c = new ArrayList<Category>();
+                }
+            }
+        }
+        return c;
+    }
 
-	/**
-	 * Returns the contributors to the entry.
-	 * 
-	 * @return The contributors to the entry.
-	 */
-	public List<Person> getContributors() {
-		// Lazy initialization with double-check.
-		List<Person> c = this.contributors;
-		if (c == null) {
-			synchronized (this) {
-				c = this.contributors;
-				if (c == null) {
-					this.contributors = c = new ArrayList<Person>();
-				}
-			}
-		}
-		return c;
-	}
+    /**
+     * Returns the contributors to the entry.
+     * 
+     * @return The contributors to the entry.
+     */
+    public List<Person> getContributors() {
+        // Lazy initialization with double-check.
+        List<Person> c = this.contributors;
+        if (c == null) {
+            synchronized (this) {
+                c = this.contributors;
+                if (c == null) {
+                    this.contributors = c = new ArrayList<Person>();
+                }
+            }
+        }
+        return c;
+    }
 
-	/**
-	 * Returns the individual entries, acting as a components for associated
-	 * metadata and data.
-	 * 
-	 * @return The individual entries, acting as a components for associated
-	 *         metadata and data.
-	 */
-	public List<Entry> getEntries() {
-		// Lazy initialization with double-check.
-		List<Entry> e = this.entries;
-		if (e == null) {
-			synchronized (this) {
-				e = this.entries;
-				if (e == null) {
-					this.entries = e = new ArrayList<Entry>();
-				}
-			}
-		}
-		return e;
-	}
+    /**
+     * Returns the individual entries, acting as a components for associated
+     * metadata and data.
+     * 
+     * @return The individual entries, acting as a components for associated
+     *         metadata and data.
+     */
+    public List<Entry> getEntries() {
+        // Lazy initialization with double-check.
+        List<Entry> e = this.entries;
+        if (e == null) {
+            synchronized (this) {
+                e = this.entries;
+                if (e == null) {
+                    this.entries = e = new ArrayList<Entry>();
+                }
+            }
+        }
+        return e;
+    }
 
-	/**
-	 * Returns the agent used to generate a feed.
-	 * 
-	 * @return The agent used to generate a feed.
-	 */
-	public Generator getGenerator() {
-		return this.generator;
-	}
+    /**
+     * Returns the agent used to generate a feed.
+     * 
+     * @return The agent used to generate a feed.
+     */
+    public Generator getGenerator() {
+        return this.generator;
+    }
 
-	/**
-	 * Returns the image that provides iconic visual identification for a feed.
-	 * 
-	 * @return The image that provides iconic visual identification for a feed.
-	 */
-	public Reference getIcon() {
-		return this.icon;
-	}
+    /**
+     * Returns the image that provides iconic visual identification for a feed.
+     * 
+     * @return The image that provides iconic visual identification for a feed.
+     */
+    public Reference getIcon() {
+        return this.icon;
+    }
 
-	/**
-	 * Returns the permanent, universally unique identifier for the entry.
-	 * 
-	 * @return The permanent, universally unique identifier for the entry.
-	 */
-	public String getId() {
-		return this.id;
-	}
+    /**
+     * Returns the permanent, universally unique identifier for the entry.
+     * 
+     * @return The permanent, universally unique identifier for the entry.
+     */
+    public String getId() {
+        return this.id;
+    }
 
-	/**
-	 * Returns the references from the entry to Web resources.
-	 * 
-	 * @return The references from the entry to Web resources.
-	 */
-	public List<Link> getLinks() {
-		// Lazy initialization with double-check.
-		List<Link> l = this.links;
-		if (l == null) {
-			synchronized (this) {
-				l = this.links;
-				if (l == null) {
-					this.links = l = new ArrayList<Link>();
-				}
-			}
-		}
-		return l;
-	}
+    /**
+     * Returns the references from the entry to Web resources.
+     * 
+     * @return The references from the entry to Web resources.
+     */
+    public List<Link> getLinks() {
+        // Lazy initialization with double-check.
+        List<Link> l = this.links;
+        if (l == null) {
+            synchronized (this) {
+                l = this.links;
+                if (l == null) {
+                    this.links = l = new ArrayList<Link>();
+                }
+            }
+        }
+        return l;
+    }
 
-	/**
-	 * Returns the image that provides visual identification for a feed.
-	 * 
-	 * @return The image that provides visual identification for a feed.
-	 */
-	public Reference getLogo() {
-		return this.logo;
-	}
+    /**
+     * Returns the image that provides visual identification for a feed.
+     * 
+     * @return The image that provides visual identification for a feed.
+     */
+    public Reference getLogo() {
+        return this.logo;
+    }
 
-	/**
-	 * Returns the information about rights held in and over an entry.
-	 * 
-	 * @return The information about rights held in and over an entry.
-	 */
-	public Text getRights() {
-		return this.rights;
-	}
+    /**
+     * Returns the information about rights held in and over an entry.
+     * 
+     * @return The information about rights held in and over an entry.
+     */
+    public Text getRights() {
+        return this.rights;
+    }
 
-	/**
-	 * Returns the short summary, abstract, or excerpt of an entry.
-	 * 
-	 * @return The short summary, abstract, or excerpt of an entry.
-	 */
-	public Text getSubtitle() {
-		return this.subtitle;
-	}
+    /**
+     * Returns the short summary, abstract, or excerpt of an entry.
+     * 
+     * @return The short summary, abstract, or excerpt of an entry.
+     */
+    public Text getSubtitle() {
+        return this.subtitle;
+    }
 
-	/**
-	 * Returns the human-readable title for the entry.
-	 * 
-	 * @return The human-readable title for the entry.
-	 */
-	public Text getTitle() {
-		return this.title;
-	}
+    /**
+     * Returns the human-readable title for the entry.
+     * 
+     * @return The human-readable title for the entry.
+     */
+    public Text getTitle() {
+        return this.title;
+    }
 
-	/**
-	 * Returns the most recent moment when the entry was modified in a
-	 * significant way.
-	 * 
-	 * @return The most recent moment when the entry was modified in a
-	 *         significant way.
-	 */
-	public Date getUpdated() {
-		return this.updated;
-	}
+    /**
+     * Returns the most recent moment when the entry was modified in a
+     * significant way.
+     * 
+     * @return The most recent moment when the entry was modified in a
+     *         significant way.
+     */
+    public Date getUpdated() {
+        return this.updated;
+    }
 
-	/**
-	 * Sets the agent used to generate a feed.
-	 * 
-	 * @param generator
-	 *            The agent used to generate a feed.
-	 */
-	public void setGenerator(Generator generator) {
-		this.generator = generator;
-	}
+    /**
+     * Sets the agent used to generate a feed.
+     * 
+     * @param generator
+     *            The agent used to generate a feed.
+     */
+    public void setGenerator(Generator generator) {
+        this.generator = generator;
+    }
 
-	/**
-	 * Sets the image that provides iconic visual identification for a feed.
-	 * 
-	 * @param icon
-	 *            The image that provides iconic visual identification for a
-	 *            feed.
-	 */
-	public void setIcon(Reference icon) {
-		this.icon = icon;
-	}
+    /**
+     * Sets the image that provides iconic visual identification for a feed.
+     * 
+     * @param icon
+     *            The image that provides iconic visual identification for a
+     *            feed.
+     */
+    public void setIcon(Reference icon) {
+        this.icon = icon;
+    }
 
-	/**
-	 * Sets the permanent, universally unique identifier for the entry.
-	 * 
-	 * @param id
-	 *            The permanent, universally unique identifier for the entry.
-	 */
-	public void setId(String id) {
-		this.id = id;
-	}
+    /**
+     * Sets the permanent, universally unique identifier for the entry.
+     * 
+     * @param id
+     *            The permanent, universally unique identifier for the entry.
+     */
+    public void setId(String id) {
+        this.id = id;
+    }
 
-	/**
-	 * Sets the image that provides visual identification for a feed.
-	 * 
-	 * @param logo
-	 *            The image that provides visual identification for a feed.
-	 */
-	public void setLogo(Reference logo) {
-		this.logo = logo;
-	}
+    /**
+     * Sets the image that provides visual identification for a feed.
+     * 
+     * @param logo
+     *            The image that provides visual identification for a feed.
+     */
+    public void setLogo(Reference logo) {
+        this.logo = logo;
+    }
 
-	/**
-	 * Sets the information about rights held in and over an entry.
-	 * 
-	 * @param rights
-	 *            The information about rights held in and over an entry.
-	 */
-	public void setRights(Text rights) {
-		this.rights = rights;
-	}
+    /**
+     * Sets the information about rights held in and over an entry.
+     * 
+     * @param rights
+     *            The information about rights held in and over an entry.
+     */
+    public void setRights(Text rights) {
+        this.rights = rights;
+    }
 
-	/**
-	 * Sets the short summary, abstract, or excerpt of an entry.
-	 * 
-	 * @param subtitle
-	 *            The short summary, abstract, or excerpt of an entry.
-	 */
-	public void setSubtitle(Text subtitle) {
-		this.subtitle = subtitle;
-	}
+    /**
+     * Sets the short summary, abstract, or excerpt of an entry.
+     * 
+     * @param subtitle
+     *            The short summary, abstract, or excerpt of an entry.
+     */
+    public void setSubtitle(Text subtitle) {
+        this.subtitle = subtitle;
+    }
 
-	/**
-	 * Sets the human-readable title for the entry.
-	 * 
-	 * @param title
-	 *            The human-readable title for the entry.
-	 */
-	public void setTitle(Text title) {
-		this.title = title;
-	}
+    /**
+     * Sets the human-readable title for the entry.
+     * 
+     * @param title
+     *            The human-readable title for the entry.
+     */
+    public void setTitle(Text title) {
+        this.title = title;
+    }
 
-	/**
-	 * Sets the most recent moment when the entry was modified in a significant
-	 * way.
-	 * 
-	 * @param updated
-	 *            The most recent moment when the entry was modified in a
-	 *            significant way.
-	 */
-	public void setUpdated(Date updated) {
-		this.updated = DateUtils.unmodifiable(updated);
-	}
+    /**
+     * Sets the most recent moment when the entry was modified in a significant
+     * way.
+     * 
+     * @param updated
+     *            The most recent moment when the entry was modified in a
+     *            significant way.
+     */
+    public void setUpdated(Date updated) {
+        this.updated = DateUtils.unmodifiable(updated);
+    }
 
-	/**
-	 * Writes the representation to a XML writer.
-	 * 
-	 * @param writer
-	 *            The XML writer to write to.
-	 * @throws IOException
-	 */
-	@Override
-	public void write(XmlWriter writer) throws IOException {
-		try {
-			writer.setPrefix(ATOM_NAMESPACE, "atom");
-			writer.setDataFormat(true);
-			writer.setIndentStep(3);
-			writer.startDocument();
-			writeElement(writer);
-			writer.endDocument();
-		} catch (SAXException e) {
-			e.printStackTrace();
-		}
-	}
+    /**
+     * Writes the representation to a XML writer.
+     * 
+     * @param writer
+     *            The XML writer to write to.
+     * @throws IOException
+     */
+    @Override
+    public void write(XmlWriter writer) throws IOException {
+        try {
+            writer.setPrefix(ATOM_NAMESPACE, "atom");
+            writer.setDataFormat(true);
+            writer.setIndentStep(3);
+            writer.startDocument();
+            writeElement(writer);
+            writer.endDocument();
+        } catch (SAXException e) {
+            e.printStackTrace();
+        }
+    }
 
-	/**
-	 * Writes the current object as an XML element using the given SAX writer.
-	 * 
-	 * @param writer
-	 *            The SAX writer.
-	 * @throws SAXException
-	 */
-	public void writeElement(XmlWriter writer) throws SAXException {
-		writer.startElement(ATOM_NAMESPACE, "feed");
+    /**
+     * Writes the current object as an XML element using the given SAX writer.
+     * 
+     * @param writer
+     *            The SAX writer.
+     * @throws SAXException
+     */
+    public void writeElement(XmlWriter writer) throws SAXException {
+        writer.startElement(ATOM_NAMESPACE, "feed");
 
-		if (getAuthors() != null) {
-			for (final Person person : getAuthors()) {
-				person.writeElement(writer, "author");
-			}
-		}
+        if (getAuthors() != null) {
+            for (final Person person : getAuthors()) {
+                person.writeElement(writer, "author");
+            }
+        }
 
-		if (getCategories() != null) {
-			for (final Category category : getCategories()) {
-				category.writeElement(writer);
-			}
-		}
-		if (getContributors() != null) {
-			for (final Person person : getContributors()) {
-				person.writeElement(writer, "contributor");
-			}
-		}
+        if (getCategories() != null) {
+            for (final Category category : getCategories()) {
+                category.writeElement(writer);
+            }
+        }
+        if (getContributors() != null) {
+            for (final Person person : getContributors()) {
+                person.writeElement(writer, "contributor");
+            }
+        }
 
-		if (getGenerator() != null) {
-			getGenerator().writeElement(writer);
-		}
+        if (getGenerator() != null) {
+            getGenerator().writeElement(writer);
+        }
 
-		if (getIcon() != null) {
-			writer.dataElement(ATOM_NAMESPACE, "icon", getIcon().toString());
-		}
+        if (getIcon() != null) {
+            writer.dataElement(ATOM_NAMESPACE, "icon", getIcon().toString());
+        }
 
-		if (getId() != null) {
-			writer.dataElement(ATOM_NAMESPACE, "id", null,
-					new AttributesImpl(), getId());
-		}
+        if (getId() != null) {
+            writer.dataElement(ATOM_NAMESPACE, "id", null,
+                    new AttributesImpl(), getId());
+        }
 
-		if (getLinks() != null) {
-			for (final Link link : getLinks()) {
-				link.writeElement(writer);
-			}
-		}
+        if (getLinks() != null) {
+            for (final Link link : getLinks()) {
+                link.writeElement(writer);
+            }
+        }
 
-		if ((getLogo() != null) && (getLogo().toString() != null)) {
-			writer.dataElement(ATOM_NAMESPACE, "logo", getLogo().toString());
-		}
+        if ((getLogo() != null) && (getLogo().toString() != null)) {
+            writer.dataElement(ATOM_NAMESPACE, "logo", getLogo().toString());
+        }
 
-		if (getRights() != null) {
-			getRights().writeElement(writer, "rights");
-		}
+        if (getRights() != null) {
+            getRights().writeElement(writer, "rights");
+        }
 
-		if (getSubtitle() != null) {
-			getSubtitle().writeElement(writer, "subtitle");
-		}
+        if (getSubtitle() != null) {
+            getSubtitle().writeElement(writer, "subtitle");
+        }
 
-		if (getTitle() != null) {
-			getTitle().writeElement(writer, "title");
-		}
+        if (getTitle() != null) {
+            getTitle().writeElement(writer, "title");
+        }
 
-		if (getUpdated() != null) {
-			Text.writeElement(writer, getUpdated(), ATOM_NAMESPACE, "updated");
-		}
+        if (getUpdated() != null) {
+            Text.writeElement(writer, getUpdated(), ATOM_NAMESPACE, "updated");
+        }
 
-		if (getEntries() != null) {
-			for (final Entry entry : getEntries()) {
-				entry.writeElement(writer);
-			}
-		}
+        if (getEntries() != null) {
+            for (final Entry entry : getEntries()) {
+                entry.writeElement(writer);
+            }
+        }
 
-		writer.endElement(ATOM_NAMESPACE, "feed");
-	}
+        writer.endElement(ATOM_NAMESPACE, "feed");
+    }
 
 }

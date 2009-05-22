@@ -30,7 +30,10 @@
 
 package org.restlet.ext.atom.internal;
 
+import java.io.StringWriter;
 import java.util.Date;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
@@ -44,6 +47,7 @@ import org.restlet.ext.atom.Link;
 import org.restlet.ext.atom.Person;
 import org.restlet.ext.atom.Relation;
 import org.restlet.ext.atom.Text;
+import org.restlet.ext.xml.XmlWriter;
 import org.restlet.representation.StringRepresentation;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -62,28 +66,37 @@ public class FeedContentReader extends DefaultHandler {
     /** Buffer for the current text content of the current tag. */
     private StringBuilder contentBuffer;
 
-    /** The current parsed Category. */
+    /** The currently parsed Category. */
     private Category currentCategory;
 
-    /** The current date parsed from the current text content. */
+    /** The currently parsed Content. */
+    private Content currentContent;
+
+    /** The currently parsed XML content writer. */
+    private XmlWriter currentContentWriter;
+
+    /** The currently date parsed from the current text content. */
     private Date currentDate;
 
-    /** The current parsed Entry. */
+    /** The currently parsed Entry. */
     private Entry currentEntry;
 
-    /** The current parsed Feed. */
+    /** The currently parsed Feed. */
     private final Feed currentFeed;
 
-    /** The current parsed Link. */
+    /** The currently parsed Link. */
     private Link currentLink;
 
-    /** The current parsed Person. */
+    /** The currently parsed Person. */
     private Person currentPerson;
 
-    /** The current parsed Text. */
+    /** The currently parsed Text. */
     private Text currentText;
 
-    /** The current state. */
+    /** The current list of prefix mappings. */
+    private Map<String, String> prefixMappings;
+
+    /** The currently state. */
     private FeedContentReader.State state;
 
     /**
@@ -102,6 +115,8 @@ public class FeedContentReader extends DefaultHandler {
         this.currentPerson = null;
         this.contentBuffer = null;
         this.currentCategory = null;
+        this.currentContent = null;
+        this.prefixMappings = new TreeMap<String, String>();
     }
 
     /**
@@ -117,7 +132,14 @@ public class FeedContentReader extends DefaultHandler {
     @Override
     public void characters(char[] ch, int start, int length)
             throws SAXException {
-        this.contentBuffer.append(ch, start, length);
+        if (this.state == State.FEED_ENTRY_CONTENT) {
+            // The content might embed XML elements from various namespaces
+            if (this.currentContentWriter != null) {
+                this.currentContentWriter.characters(ch, start, length);
+            }
+        } else {
+            this.contentBuffer.append(ch, start, length);
+        }
     }
 
     /**
@@ -258,19 +280,30 @@ public class FeedContentReader extends DefaultHandler {
                 }
             } else if (localName.equalsIgnoreCase("content")) {
                 if (this.state == State.FEED_ENTRY_CONTENT) {
-                    if (this.currentEntry.getContent().isInline()) {
-                        final StringRepresentation sr = (StringRepresentation) this.currentEntry
-                                .getContent().getInlineContent();
-                        sr.setText(this.contentBuffer.toString());
+                    if (!this.currentEntry.getContent().isExternal()) {
+                        currentContent
+                                .setInlineContent(new StringRepresentation(
+                                        this.currentContentWriter.getWriter()
+                                                .toString()));
                     }
 
                     this.state = State.FEED_ENTRY;
                 }
             }
+        } else if (this.state == State.FEED_ENTRY_CONTENT) {
+            // The content might embed XML elements from various namespaces
+            if (this.currentContentWriter != null) {
+                this.currentContentWriter.endElement(uri, localName, qName);
+            }
         }
 
         this.currentText = null;
         this.currentDate = null;
+    }
+
+    @Override
+    public void endPrefixMapping(String prefix) throws SAXException {
+        this.prefixMappings.remove(prefix);
     }
 
     /**
@@ -430,24 +463,41 @@ public class FeedContentReader extends DefaultHandler {
                     final MediaType type = getMediaType(attrs.getValue("",
                             "type"));
                     final String srcAttr = attrs.getValue("", "src");
-                    final Content currentContent = new Content();
+                    this.currentContent = new Content();
 
                     if (srcAttr == null) {
                         // Content available inline
-                        currentContent
-                                .setInlineContent(new StringRepresentation(
-                                        null, type));
+                        StringWriter sw = new StringWriter();
+                        currentContentWriter = new XmlWriter(sw);
+
+                        for (String prefix : this.prefixMappings.keySet()) {
+                            currentContentWriter.forceNSDecl(
+                                    this.prefixMappings.get(prefix), prefix);
+                        }
                     } else {
                         // Content available externally
-                        currentContent.setExternalRef(new Reference(srcAttr));
-                        currentContent.setExternalType(type);
+                        this.currentContent.setExternalRef(new Reference(
+                                srcAttr));
+                        this.currentContent.setExternalType(type);
                     }
 
                     this.currentEntry.setContent(currentContent);
                     this.state = State.FEED_ENTRY_CONTENT;
                 }
             }
+        } else if (this.state == State.FEED_ENTRY_CONTENT) {
+            // The content might embed XML elements from various namespaces
+            if (this.currentContentWriter != null) {
+                this.currentContentWriter.startElement(uri, localName, qName,
+                        attrs);
+            }
         }
+    }
+
+    @Override
+    public void startPrefixMapping(String prefix, String uri)
+            throws SAXException {
+        this.prefixMappings.put(prefix, uri);
     }
 
     /**
