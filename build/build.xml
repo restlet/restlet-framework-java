@@ -1013,11 +1013,11 @@
 		<pomModule name="jetty" />
 		<pomModule name="jibx" />
 		<pomModule name="json" />
-		<pomModule name="rdf" />
 		<pomModule name="lucene" />
 		<pomModule name="net" />
 		<pomModule name="oauth" />
-		<!-- disabled for now <pomModule name="rome" /> -->
+		<pomModule name="rdf" />
+		<pomModule name="rome" />
 		<pomModule name="servlet" />
 		<pomModule name="simple" />
 		<pomModule name="spring" />
