@@ -3,7 +3,7 @@ Main-Class: org.restlet.Component
 Bundle-ManifestVersion: 2
 Bundle-Name: Restlet API for Android
 Bundle-SymbolicName: org.restlet.android
-Bundle-Version: 1.2
+Bundle-Version: 2.0
 Bundle-Vendor: Noelios Technologies
 Import-Package: javax.crypto,
  javax.crypto.spec,

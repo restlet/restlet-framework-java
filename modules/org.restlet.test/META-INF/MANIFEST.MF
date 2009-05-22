@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Restlet Unit Tests
 Bundle-SymbolicName: org.restlet.test
-Bundle-Version: 1.2
+Bundle-Version: 2.0
 Bundle-Vendor: Noelios Technologies
 Import-Package: com.google.gwt.core.client,
  com.google.gwt.user.client,

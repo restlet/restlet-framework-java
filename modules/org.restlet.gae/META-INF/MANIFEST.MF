@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Restlet API for GAE
 Bundle-SymbolicName: org.restlet.gae
-Bundle-Version: 1.2
+Bundle-Version: 2.0
 Bundle-Vendor: Noelios Technologies
 Import-Package: 
  javax.mail,

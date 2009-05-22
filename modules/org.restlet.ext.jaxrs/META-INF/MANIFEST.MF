@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Restlet Extension - JAX-RS
 Bundle-SymbolicName: org.restlet.ext.jaxrs
-Bundle-Version: 1.2
+Bundle-Version: 2.0
 Bundle-Vendor: Noelios Technologies
 Export-Package: org.restlet.ext.jaxrs;
   uses:="org.restlet.ext.jaxrs.internal.wrappers,

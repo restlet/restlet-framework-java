@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Restlet Extension - ROME
 Bundle-SymbolicName: org.restlet.ext.rome
-Bundle-Version: 1.2
+Bundle-Version: 2.0
 Bundle-Vendor: Noelios Technologies
 Import-Package: com.sun.syndication.feed,
  com.sun.syndication.feed.atom,
