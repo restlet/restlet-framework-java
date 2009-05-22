@@ -38,7 +38,8 @@ Changes log
          transformer. Reported by Micah Whitacre.
        - Fixed bug preventing the TunnelService to process full media
          types passed in query parameter. Reported by Michael Berman.
-       - Fixed flushing bug with HTTP server connectors.         
+       - Fixed flushing bug with HTTP server connectors.
+       - Fixed parsing bug in Atom extension for inline content.         
     - Misc
        - The Template implementation now uses "\\d" as a regex for the
          Variable.TYPE_DIGIT constant.
