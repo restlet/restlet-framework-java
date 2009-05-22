@@ -46,9 +46,16 @@ import org.restlet.test.ext.freemarker.FreeMarkerTestCase;
 import org.restlet.test.ext.spring.AllSpringTests;
 import org.restlet.test.ext.velocity.VelocityTestCase;
 import org.restlet.test.ext.wadl.WadlTestCase;
+import org.restlet.test.ext.xml.ResolvingTransformerTestCase;
+import org.restlet.test.ext.xml.RestletXmlTestCase;
+import org.restlet.test.ext.xml.TransformerTestCase;
 import org.restlet.test.jaxrs.AllJaxRsTests;
+import org.restlet.test.representation.AppendableTestCase;
 import org.restlet.test.resource.FileRepresentationTestCase;
 import org.restlet.test.resource.ResourceTestCase;
+import org.restlet.test.routing.FilterTestCase;
+import org.restlet.test.routing.RedirectTestCase;
+import org.restlet.test.routing.RouteListTestCase;
 import org.restlet.test.security.HttpBasicTestCase;
 import org.restlet.test.util.TemplateTestCase;
 
@@ -70,6 +77,7 @@ public class RestletTestSuite extends TestSuite {
 
     /** Constructor. */
     public RestletTestSuite() {
+        addTestSuite(AppendableTestCase.class);
         addTestSuite(AtomTestCase.class);
         addTestSuite(CallTestCase.class);
         addTestSuite(ComponentXmlConfigTestCase.class);

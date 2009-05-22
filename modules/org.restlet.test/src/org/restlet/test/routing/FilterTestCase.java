@@ -28,12 +28,15 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.test;
+package org.restlet.test.routing;
 
 import org.restlet.Restlet;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.routing.Filter;
+import org.restlet.test.AbstractFilterTestCase;
+import org.restlet.test.MockFilter;
+import org.restlet.test.MockRestlet;
 
 /**
  * Test {@link org.restlet.routing.Filter}.

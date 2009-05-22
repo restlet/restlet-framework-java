@@ -340,7 +340,7 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
      * javax.xml.namespace.NamespaceContext#getNamespaceURI(java.lang.String}
      */
     public String getNamespaceURI(String prefix) {
-        return this.namespaces.get(prefix);
+        return (this.namespaces == null) ? null : this.namespaces.get(prefix);
     }
 
     /**

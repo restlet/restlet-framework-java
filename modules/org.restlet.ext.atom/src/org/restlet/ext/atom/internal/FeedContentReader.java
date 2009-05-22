@@ -284,7 +284,7 @@ public class FeedContentReader extends DefaultHandler {
                         currentContent
                                 .setInlineContent(new StringRepresentation(
                                         this.currentContentWriter.getWriter()
-                                                .toString()));
+                                                .toString().trim()));
                     }
 
                     this.state = State.FEED_ENTRY;

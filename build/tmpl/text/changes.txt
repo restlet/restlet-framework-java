@@ -47,6 +47,7 @@ Changes log
           in some cases. Reported by Michael Berman.
         - Fixed some Maven artifact IDs (Atom, XML and FileUpload
           extensions). Reported by Jean-Yves Cronier and Remi Dewitte.
+        - Fixed potential NPE in XmlRepresentation with namespaces.
     - Enhancements
         - Servlet's UserPrincipal is now transferred into Restlet's
           ClientInfo#subject property. Suggested by Paul Davis.
@@ -156,6 +157,8 @@ Changes log
         - Added MetadataService#getAllMediaTypes(), getLanguage() and
           getMediaType() and similar methods. Reported by David Fogel 
           and suggested by Remi Dewitte and Tim Peierls.
+        - Added AppendableRepresentation for dynamic generation of
+          StringRepresentation instances.
     - Miscellaneous
         - Component XML configuration has been moved into an Engine 
           ComponentXmlParser class.

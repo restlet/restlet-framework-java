@@ -122,7 +122,7 @@ public class StringRepresentation extends StreamRepresentation {
     public StringRepresentation(CharSequence text, MediaType mediaType,
             Language language, CharacterSet characterSet) {
         super(mediaType);
-        this.text = text;
+        setText(text);
         setMediaType(mediaType);
         if (language != null) {
             getLanguages().add(language);
@@ -172,9 +172,19 @@ public class StringRepresentation extends StreamRepresentation {
      * @param text
      *            The string value.
      */
-    public void setText(String text) {
+    public void setText(CharSequence text) {
         this.text = text;
         updateSize();
+    }
+
+    /**
+     * Sets the string value.
+     * 
+     * @param text
+     *            The string value.
+     */
+    public void setText(String text) {
+        setText((CharSequence) text);
     }
 
     /**
