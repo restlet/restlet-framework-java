@@ -288,7 +288,8 @@ public class Feed extends SaxRepresentation {
                             currentContent
                                     .setInlineContent(new StringRepresentation(
                                             this.currentContentWriter
-                                                    .getWriter().toString()));
+                                                    .getWriter().toString()
+                                                    .trim()));
                         }
 
                         this.state = State.FEED_ENTRY;
