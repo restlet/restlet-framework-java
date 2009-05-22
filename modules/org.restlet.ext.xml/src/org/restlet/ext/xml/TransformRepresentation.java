@@ -67,7 +67,8 @@ import org.xml.sax.XMLFilter;
  * This representation should be viewed as a wrapper representation that applies
  * a transform sheet on a source representation when it is read or written out.
  * Therefore, it isn't intended to be reused on different sources. For this use
- * case, you should instead use the {@link org.restlet.routing.Transformer} filter.
+ * case, you should instead use the {@link org.restlet.routing.Transformer}
+ * filter.
  * 
  * @author Jerome Louvel
  */
@@ -337,31 +338,34 @@ public class TransformRepresentation extends OutputRepresentation {
      */
     public Templates getTemplates() throws IOException {
         if (this.templates == null) {
-            try {
-                // Prepare the XSLT transformer documents
-                final StreamSource transformSource = new StreamSource(
-                        getTransformSheet().getStream());
+            if (getTransformSheet() != null) {
+                try {
+                    // Prepare the XSLT transformer documents
+                    final StreamSource transformSource = new StreamSource(
+                            getTransformSheet().getStream());
 
-                if (getTransformSheet().getIdentifier() != null) {
-                    transformSource.setSystemId(getTransformSheet()
-                            .getIdentifier().getTargetRef().toString());
+                    if (getTransformSheet().getIdentifier() != null) {
+                        transformSource.setSystemId(getTransformSheet()
+                                .getIdentifier().getTargetRef().toString());
+                    }
+
+                    // Create the transformer factory
+                    final TransformerFactory transformerFactory = TransformerFactory
+                            .newInstance();
+
+                    // Set the URI resolver
+                    if (getUriResolver() != null) {
+                        transformerFactory.setURIResolver(getUriResolver());
+                    }
+
+                    // Create a new transformer
+                    this.templates = transformerFactory
+                            .newTemplates(transformSource);
+                } catch (TransformerConfigurationException tce) {
+                    throw new IOException(
+                            "Transformer configuration exception. "
+                                    + tce.getMessage());
                 }
-
-                // Create the transformer factory
-                final TransformerFactory transformerFactory = TransformerFactory
-                        .newInstance();
-
-                // Set the URI resolver
-                if (getUriResolver() != null) {
-                    transformerFactory.setURIResolver(getUriResolver());
-                }
-
-                // Create a new transformer
-                this.templates = transformerFactory
-                        .newTemplates(transformSource);
-            } catch (TransformerConfigurationException tce) {
-                throw new IOException("Transformer configuration exception. "
-                        + tce.getMessage());
             }
         }
 
@@ -562,12 +566,20 @@ public class TransformRepresentation extends OutputRepresentation {
 
     @Override
     public void write(OutputStream outputStream) throws IOException {
-        try {
-            // Generates the result of the transformation
-            getTransformer().transform(getSaxSource(),
-                    new StreamResult(outputStream));
-        } catch (TransformerException te) {
-            throw new IOException("Transformer exception. " + te.getMessage());
+        if (getTransformer() == null) {
+            Context
+                    .getCurrentLogger()
+                    .warning(
+                            "Unable to apply the transformation. No transformer found!");
+        } else {
+            try {
+                // Generates the result of the transformation
+                getTransformer().transform(getSaxSource(),
+                        new StreamResult(outputStream));
+            } catch (TransformerException te) {
+                throw new IOException("Transformer exception. "
+                        + te.getMessage());
+            }
         }
     }
 }

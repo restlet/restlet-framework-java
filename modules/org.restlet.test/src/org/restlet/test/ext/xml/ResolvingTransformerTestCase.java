@@ -273,8 +273,7 @@ public class ResolvingTransformerTestCase extends RestletTestCase {
         // then be fed into a DOMBuilder
         // and then the assertions should be written as DOM tests...
         // (NOTE: current string-compare assertion might fail on lexical aspects
-        // as
-        // ignorable whitespace, encoding settings etc etc)
+        // as ignorable whitespace, encoding settings etc etc)
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         tr.write(out);
         final String xmlOut = out.toString();
