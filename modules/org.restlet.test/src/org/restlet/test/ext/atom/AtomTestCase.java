@@ -79,6 +79,11 @@ public class AtomTestCase extends RestletTestCase {
         try {
             final Service atomService = new Service(
                     "clap://class/org/restlet/test/ext/atom/service.xml");
+            assertEquals("AtomPub Test Site", atomService.getWorkspaces()
+                    .get(0).getTitle());
+            assertEquals("entry", atomService.getWorkspaces().get(0)
+                    .getCollections().get(0).getTitle());
+
             final Feed atomFeed = atomService.getWorkspaces().get(0)
                     .getCollections().get(0).getFeed();
 

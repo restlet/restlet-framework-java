@@ -1,21 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <service xmlns="http://www.w3.org/2007/app" xmlns:atom="http://www.w3.org/2005/Atom">
-  <workspace>
-    <atom:title>AtomPub Test Site</atom:title>
-      <collection href="entry.xml">
-           <atom:title>entry</atom:title>
-           <accept>application/atom+xml;type=entry</accept>
-         <categories fixed="yes" />
-      </collection>
-      <collection href="draft.xml">
-           <atom:title>draft</atom:title>
-           <accept>application/atom+xml;type=entry</accept>
-         <categories fixed="yes" />
-      </collection>
-      <collection href="media.xml">
-           <atom:title>media</atom:title>
-        <accept>*/*</accept>
-         <categories fixed="yes" />
-      </collection>
-  </workspace>
+	<workspace>
+		<atom:title>AtomPub Test Site</atom:title>
+		<collection href="entry.xml">
+			<atom:title>entry</atom:title>
+			<accept>application/atom+xml;type=entry
+			</accept>
+			<categories fixed="yes" />
+		</collection>
+		<collection href="draft.xml">
+			<atom:title>draft</atom:title>
+			<accept>application/atom+xml;type=entry
+			</accept>
+			<categories fixed="yes" />
+		</collection>
+		<collection href="media.xml">
+			<atom:title>media</atom:title>
+			<accept>*/*</accept>
+			<categories fixed="yes" />
+		</collection>
+	</workspace>
 </service>

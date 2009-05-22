@@ -650,27 +650,36 @@ public final class MediaType extends Metadata {
      * @return The normalized type.
      */
     private static String normalizeType(String name) {
-        int index;
+        int slashIndex;
+        int colonIndex;
         String mainType;
         String subType;
+        String parameters = null;
 
         // Ignore null names (backward compatibility).
         if (name == null)
             return null;
 
+        // Check presence of parameters
+        if ((colonIndex = name.indexOf(';')) != -1) {
+            parameters = name.substring(colonIndex + 1);
+            name = name.substring(0, colonIndex);
+        }
+
         // No main / sub separator, assumes name/*.
-        if ((index = name.indexOf('/')) == -1) {
+        if ((slashIndex = name.indexOf('/')) == -1) {
             mainType = normalizeToken(name);
             subType = "*";
         }
 
         // Normalizes the main and sub types.
         else {
-            mainType = normalizeToken(name.substring(0, index));
-            subType = normalizeToken(name.substring(index + 1));
+            mainType = normalizeToken(name.substring(0, slashIndex));
+            subType = normalizeToken(name.substring(slashIndex + 1));
         }
 
-        return mainType + '/' + subType;
+        return (parameters == null) ? mainType + '/' + subType : mainType + '/'
+                + subType + ";" + parameters;
     }
 
     /**
@@ -849,8 +858,23 @@ public final class MediaType extends Metadata {
             synchronized (this) {
                 p = this.parameters;
                 if (p == null) {
+                    Form params = null;
+
+                    if (getName() != null) {
+                        int index = getName().indexOf(';');
+
+                        if (index != -1) {
+                            params = new Form(getName().substring(index + 1),
+                                    ';');
+                        }
+                    }
+
+                    if (params == null) {
+                        params = new Form();
+                    }
+
                     this.parameters = p = (Series<Parameter>) Series
-                            .unmodifiableSeries(new Form());
+                            .unmodifiableSeries(params);
                 }
             }
         }

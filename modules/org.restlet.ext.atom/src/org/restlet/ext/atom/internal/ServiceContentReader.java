@@ -30,8 +30,12 @@
 
 package org.restlet.ext.atom.internal;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.restlet.data.MediaType;
 import org.restlet.ext.atom.Collection;
-import org.restlet.ext.atom.MemberType;
+import org.restlet.ext.atom.Feed;
 import org.restlet.ext.atom.Service;
 import org.restlet.ext.atom.Workspace;
 import org.xml.sax.Attributes;
@@ -45,15 +49,19 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class ServiceContentReader extends DefaultHandler {
 
-    private final static int IN_COLLECTION = 3;
+    private final static int IN_ACCEPT = 1;
 
-    private final static int IN_MEMBER_TYPE = 4;
+    private final static int IN_COLLECTION = 2;
+
+    private final static int IN_COLLECTION_TITLE = 3;
 
     private final static int IN_NONE = 0;
 
-    private final static int IN_SERVICE = 1;
+    private final static int IN_SERVICE = 4;
 
-    private final static int IN_WORKSPACE = 2;
+    private final static int IN_WORKSPACE = 5;
+
+    private final static int IN_WORKSPACE_TITLE = 6;
 
     private StringBuilder contentBuffer = null;
 
@@ -88,7 +96,8 @@ public class ServiceContentReader extends DefaultHandler {
     @Override
     public void characters(char[] ch, int start, int length)
             throws SAXException {
-        if (this.state == IN_MEMBER_TYPE) {
+        if ((this.state == IN_ACCEPT) || (this.state == IN_COLLECTION_TITLE)
+                || (this.state == IN_WORKSPACE_TITLE)) {
             this.contentBuffer.append(ch, start, length);
         }
     }
@@ -121,32 +130,51 @@ public class ServiceContentReader extends DefaultHandler {
     @Override
     public void endElement(String uri, String localName, String qName)
             throws SAXException {
-        if (localName.equalsIgnoreCase("service")) {
-            this.state = IN_NONE;
-        } else if (localName.equalsIgnoreCase("workspace")) {
-            if (this.state == IN_WORKSPACE) {
-                currentService.getWorkspaces().add(this.currentWorkspace);
-                this.currentWorkspace = null;
-                this.state = IN_SERVICE;
-            }
-        } else if (localName.equalsIgnoreCase("collection")) {
-            if (this.state == IN_COLLECTION) {
-                this.currentWorkspace.getCollections().add(
-                        this.currentCollection);
-                this.currentCollection = null;
-                this.state = IN_WORKSPACE;
-            }
-        } else if (localName.equalsIgnoreCase("member-type")) {
-            if (this.state == IN_MEMBER_TYPE) {
-                final String memberType = this.contentBuffer.toString();
-
-                if (memberType.equalsIgnoreCase("entry")) {
-                    this.currentCollection.setMemberType(MemberType.ENTRY);
-                } else if (memberType.equalsIgnoreCase("media")) {
-                    this.currentCollection.setMemberType(MemberType.MEDIA);
+        if (uri.equalsIgnoreCase(Service.APP_NAMESPACE)) {
+            if (localName.equalsIgnoreCase("service")) {
+                this.state = IN_NONE;
+            } else if (localName.equalsIgnoreCase("workspace")) {
+                if (this.state == IN_WORKSPACE) {
+                    currentService.getWorkspaces().add(this.currentWorkspace);
+                    this.currentWorkspace = null;
+                    this.state = IN_SERVICE;
                 }
+            } else if (localName.equalsIgnoreCase("collection")) {
+                if (this.state == IN_COLLECTION) {
+                    this.currentWorkspace.getCollections().add(
+                            this.currentCollection);
+                    this.currentCollection = null;
+                    this.state = IN_WORKSPACE;
+                }
+            } else if (localName.equalsIgnoreCase("accept")) {
+                if (this.state == IN_ACCEPT) {
+                    List<MediaType> mediaTypes = null;
+                    String accept = this.contentBuffer.toString();
 
-                this.state = IN_COLLECTION;
+                    if ((accept != null) && (accept.length() > 0)) {
+                        String[] acceptTokens = accept.split(",");
+                        mediaTypes = new ArrayList<MediaType>();
+
+                        for (String acceptToken : acceptTokens) {
+                            mediaTypes.add(MediaType.valueOf(acceptToken));
+                        }
+                    }
+
+                    this.currentCollection.setAccept(mediaTypes);
+                    this.state = IN_COLLECTION;
+                }
+            }
+        } else if (uri.equalsIgnoreCase(Feed.ATOM_NAMESPACE)) {
+            if (localName.equalsIgnoreCase("title")) {
+                if (this.state == IN_COLLECTION_TITLE) {
+                    String title = this.contentBuffer.toString();
+                    this.currentCollection.setTitle(title);
+                    this.state = IN_COLLECTION;
+                } else if (this.state == IN_WORKSPACE_TITLE) {
+                    String title = this.contentBuffer.toString();
+                    this.currentWorkspace.setTitle(title);
+                    this.state = IN_WORKSPACE;
+                }
             }
         }
     }
@@ -188,8 +216,7 @@ public class ServiceContentReader extends DefaultHandler {
                 this.state = IN_SERVICE;
             } else if (localName.equalsIgnoreCase("workspace")) {
                 if (this.state == IN_SERVICE) {
-                    this.currentWorkspace = new Workspace(this.currentService,
-                            attrs.getValue("title"));
+                    this.currentWorkspace = new Workspace(this.currentService);
                     this.state = IN_WORKSPACE;
                 }
             } else if (localName.equalsIgnoreCase("collection")) {
@@ -199,10 +226,20 @@ public class ServiceContentReader extends DefaultHandler {
                             attrs.getValue("href"));
                     this.state = IN_COLLECTION;
                 }
-            } else if (localName.equalsIgnoreCase("member-type")) {
+            } else if (localName.equalsIgnoreCase("accept")) {
                 if (this.state == IN_COLLECTION) {
                     this.contentBuffer = new StringBuilder();
-                    this.state = IN_MEMBER_TYPE;
+                    this.state = IN_ACCEPT;
+                }
+            }
+        } else if (uri.equalsIgnoreCase(Feed.ATOM_NAMESPACE)) {
+            if (localName.equalsIgnoreCase("title")) {
+                if (this.state == IN_COLLECTION) {
+                    this.contentBuffer = new StringBuilder();
+                    this.state = IN_COLLECTION_TITLE;
+                } else if (this.state == IN_WORKSPACE) {
+                    this.contentBuffer = new StringBuilder();
+                    this.state = IN_WORKSPACE_TITLE;
                 }
             }
         }

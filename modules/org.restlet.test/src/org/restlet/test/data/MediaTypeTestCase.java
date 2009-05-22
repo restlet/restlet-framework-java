@@ -47,11 +47,11 @@ public class MediaTypeTestCase extends RestletTestCase {
     protected final static String DEFAULT_SCHEMEPART = "//";
 
     /**
-     * Makes sure that a {@link MediaType} instance initialised on the specified
+     * Makes sure that a {@link MediaType} instance initialized on the specified
      * name has the expected values.
      * 
      * @param name
-     *            type to analyse.
+     *            type to analyze.
      * @param main
      *            expected main type.
      * @param sub
@@ -70,13 +70,23 @@ public class MediaTypeTestCase extends RestletTestCase {
     }
 
     /**
-     * Makes sure concrete types are properly initialised.
+     * Makes sure concrete types are properly initialized.
      */
     public void testConcrete() {
         assertMediaType("application/xml", "application", "xml", true);
         assertMediaType("application/ xml ", "application", "xml", true);
         assertMediaType(" application /xml", "application", "xml", true);
         assertMediaType(" application / xml ", "application", "xml", true);
+        assertMediaType("application/atom+xml;type=entry", "application",
+                "atom+xml", true);
+    }
+
+    /**
+     * Makes sure concrete types are properly initialized.
+     */
+    public void testParameters() {
+        MediaType mt = MediaType.valueOf("application/atom+xml;type=entry");
+        assertEquals("entry", mt.getParameters().getFirstValue("type"));
     }
 
     /**
@@ -200,46 +210,6 @@ public class MediaTypeTestCase extends RestletTestCase {
         assertMediaType(" application /*", "application", "*", false);
         assertMediaType("application/ * ", "application", "*", false);
         assertMediaType(" application /*", "application", "*", false);
-    }
-
-    /**
-     * Tests RFC compliance.
-     * <p>
-     * Note that we don't need to check predefined types: they are registered at
-     * runtime through MediaType's static initialisation.
-     * </p>
-     */
-    public void testRfcCompliance() {
-        String TSPECIALS;
-        int length;
-
-        TSPECIALS = "()<>@,;:/[]?=\\\"";
-        length = TSPECIALS.length();
-
-        // Checks that TSPECIALS token are spotted.
-        // In theory, we should also check for non-ASCII characters,
-        // but it's not worth the pain.
-        for (int i = 0; i < length; i++) {
-            Exception error;
-
-            // Makes sure that errors in the subtype are spotted.
-            error = null;
-            try {
-                new MediaType("application/" + TSPECIALS.charAt(i));
-            } catch (IllegalArgumentException e) {
-                error = e;
-            }
-            assertNotNull(error);
-
-            // Makes sure that errors in the main type are spotted.
-            error = null;
-            try {
-                new MediaType(TSPECIALS.charAt(i) + "/xml");
-            } catch (IllegalArgumentException e) {
-                error = e;
-            }
-            assertNotNull(error);
-        }
     }
 
     /**

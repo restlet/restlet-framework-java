@@ -33,6 +33,9 @@ package org.restlet.ext.atom;
 import static org.restlet.ext.atom.Feed.ATOM_NAMESPACE;
 import static org.restlet.ext.atom.Service.APP_NAMESPACE;
 
+import java.util.List;
+
+import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
@@ -56,9 +59,9 @@ public class Collection {
     private volatile Reference href;
 
     /**
-     * The type of members.
+     * The accepted media types.
      */
-    private volatile MemberType memberType;
+    private volatile List<MediaType> accept;
 
     /**
      * The title.
@@ -84,7 +87,7 @@ public class Collection {
         this.workspace = workspace;
         this.title = title;
         this.href = new Reference(href);
-        this.memberType = null;
+        this.accept = null;
     }
 
     /**
@@ -123,12 +126,12 @@ public class Collection {
     }
 
     /**
-     * Returns the type of members.
+     * Returns the accepted media types.
      * 
-     * @return The type of members.
+     * @return The accepted media types.
      */
-    public MemberType getMemberType() {
-        return this.memberType;
+    public List<MediaType> getAccept() {
+        return this.accept;
     }
 
     /**
@@ -183,13 +186,13 @@ public class Collection {
     }
 
     /**
-     * Sets the type of members.
+     * Sets the accepted media types.
      * 
-     * @param memberType
-     *            The type of members.
+     * @param accept
+     *            The accepted media types.
      */
-    public void setMemberType(MemberType memberType) {
-        this.memberType = memberType;
+    public void setAccept(List<MediaType> accept) {
+        this.accept = accept;
     }
 
     /**
@@ -233,8 +236,17 @@ public class Collection {
             writer.dataElement(ATOM_NAMESPACE, "title", getTitle());
         }
 
-        if (getMemberType() != null) {
-            getMemberType().writeElement(writer, APP_NAMESPACE);
+        if (getAccept() != null) {
+            StringBuilder sb = new StringBuilder();
+            for (MediaType mediaType : getAccept()) {
+                if (sb.length() > 0) {
+                    sb.append(", ");
+                }
+
+                sb.append(mediaType.toString());
+            }
+
+            writer.dataElement(APP_NAMESPACE, "accept", sb.toString());
         }
 
         try {
