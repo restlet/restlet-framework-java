@@ -35,6 +35,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 
 import org.restlet.data.MediaType;
+import org.restlet.data.Reference;
+import org.restlet.ext.atom.Categories;
 import org.restlet.ext.atom.Feed;
 import org.restlet.ext.atom.Service;
 import org.restlet.representation.FileRepresentation;
@@ -69,45 +71,48 @@ public class AtomTestCase extends RestletTestCase {
         dir.delete();
     }
 
-    public void testAtom() {
+    public void testCategories() throws Exception {
+        final Categories atomCategories = new Categories(
+                "clap://class/org/restlet/test/ext/atom/categories.xml");
+        assertEquals(new Reference("http://example.com/cats/big3"),
+                atomCategories.getScheme());
+        assertEquals("animal", atomCategories.getEntries().get(0).getTerm());
+    }
+
+    public void testAtom() throws Exception {
         // Create a temporary directory for the tests
         final File testDir = new File(System.getProperty("java.io.tmpdir"),
                 "AtomTestCase");
         deleteDir(testDir);
         testDir.mkdir();
 
-        try {
-            final Service atomService = new Service(
-                    "clap://class/org/restlet/test/ext/atom/service.xml");
-            assertEquals("AtomPub Test Site", atomService.getWorkspaces()
-                    .get(0).getTitle());
-            assertEquals("entry", atomService.getWorkspaces().get(0)
-                    .getCollections().get(0).getTitle());
+        final Service atomService = new Service(
+                "clap://class/org/restlet/test/ext/atom/service.xml");
+        assertEquals("AtomPub Test Site", atomService.getWorkspaces().get(0)
+                .getTitle());
+        assertEquals("entry", atomService.getWorkspaces().get(0)
+                .getCollections().get(0).getTitle());
 
-            final Feed atomFeed = atomService.getWorkspaces().get(0)
-                    .getCollections().get(0).getFeed();
+        final Feed atomFeed = atomService.getWorkspaces().get(0)
+                .getCollections().get(0).getFeed();
 
-            // Write the feed into a file.
-            final File feedFile = new File(testDir, "feed.xml");
-            atomFeed.write(new BufferedOutputStream(new FileOutputStream(
-                    feedFile)));
+        // Write the feed into a file.
+        final File feedFile = new File(testDir, "feed.xml");
+        atomFeed
+                .write(new BufferedOutputStream(new FileOutputStream(feedFile)));
 
-            // Get the service from the file
-            final FileRepresentation fileRepresentation = new FileRepresentation(
-                    feedFile, MediaType.TEXT_XML);
-            final Feed atomFeed2 = new Feed(fileRepresentation);
+        // Get the service from the file
+        final FileRepresentation fileRepresentation = new FileRepresentation(
+                feedFile, MediaType.TEXT_XML);
+        final Feed atomFeed2 = new Feed(fileRepresentation);
 
-            assertEquals(atomFeed2.getAuthors().get(0).getName(), atomFeed
-                    .getAuthors().get(0).getName());
-            assertEquals(atomFeed2.getEntries().get(0).getContent()
-                    .getInlineContent().getText(), atomFeed2.getEntries()
-                    .get(0).getContent().getInlineContent().getText());
-            assertEquals(atomFeed2.getEntries().get(0).getTitle().getContent(),
-                    atomFeed2.getEntries().get(0).getTitle().getContent());
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        assertEquals(atomFeed2.getAuthors().get(0).getName(), atomFeed
+                .getAuthors().get(0).getName());
+        assertEquals(atomFeed2.getEntries().get(0).getContent()
+                .getInlineContent().getText(), atomFeed2.getEntries().get(0)
+                .getContent().getInlineContent().getText());
+        assertEquals(atomFeed2.getEntries().get(0).getTitle().getContent(),
+                atomFeed2.getEntries().get(0).getTitle().getContent());
 
         deleteDir(testDir);
     }

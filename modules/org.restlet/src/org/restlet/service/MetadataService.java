@@ -210,6 +210,8 @@ public class MetadataService extends Service {
 
         ext(dm, "ai", MediaType.APPLICATION_POSTSCRIPT);
         ext(dm, "atom", MediaType.APPLICATION_ATOM);
+        ext(dm, "atomcat", MediaType.APPLICATION_ATOMPUB_CATEGORY);
+        ext(dm, "atomsvc", MediaType.APPLICATION_ATOMPUB_SERVICE);
         ext(dm, "au", MediaType.AUDIO_BASIC);
         ext(dm, "bin", MediaType.APPLICATION_OCTET_STREAM);
         ext(dm, "bmp", MediaType.IMAGE_BMP);

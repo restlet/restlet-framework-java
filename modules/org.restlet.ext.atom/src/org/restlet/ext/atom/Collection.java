@@ -54,14 +54,17 @@ import org.xml.sax.helpers.AttributesImpl;
 public class Collection {
 
     /**
-     * The hypertext reference.
-     */
-    private volatile Reference href;
-
-    /**
      * The accepted media types.
      */
     private volatile List<MediaType> accept;
+
+    /** The categories. */
+    private volatile Categories categories;
+
+    /**
+     * The hypertext reference.
+     */
+    private volatile Reference href;
 
     /**
      * The title.
@@ -88,6 +91,25 @@ public class Collection {
         this.title = title;
         this.href = new Reference(href);
         this.accept = null;
+        this.categories = null;
+    }
+
+    /**
+     * Returns the accepted media types.
+     * 
+     * @return The accepted media types.
+     */
+    public List<MediaType> getAccept() {
+        return this.accept;
+    }
+
+    /**
+     * Returns the categories.
+     * 
+     * @return The categories.
+     */
+    public Categories getCategories() {
+        return categories;
     }
 
     /**
@@ -123,15 +145,6 @@ public class Collection {
      */
     public Reference getHref() {
         return this.href;
-    }
-
-    /**
-     * Returns the accepted media types.
-     * 
-     * @return The accepted media types.
-     */
-    public List<MediaType> getAccept() {
-        return this.accept;
     }
 
     /**
@@ -176,16 +189,6 @@ public class Collection {
     }
 
     /**
-     * Sets the hypertext reference.
-     * 
-     * @param href
-     *            The hypertext reference.
-     */
-    public void setHref(Reference href) {
-        this.href = href;
-    }
-
-    /**
      * Sets the accepted media types.
      * 
      * @param accept
@@ -193,6 +196,26 @@ public class Collection {
      */
     public void setAccept(List<MediaType> accept) {
         this.accept = accept;
+    }
+
+    /**
+     * Sets the categories.
+     * 
+     * @param categories
+     *            The categories.
+     */
+    public void setCategories(Categories categories) {
+        this.categories = categories;
+    }
+
+    /**
+     * Sets the hypertext reference.
+     * 
+     * @param href
+     *            The hypertext reference.
+     */
+    public void setHref(Reference href) {
+        this.href = href;
     }
 
     /**

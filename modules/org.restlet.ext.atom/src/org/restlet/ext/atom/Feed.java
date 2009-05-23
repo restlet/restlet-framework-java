@@ -39,7 +39,6 @@ import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.Uniform;
 import org.restlet.data.MediaType;
-import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.ext.atom.internal.FeedContentReader;
@@ -158,7 +157,7 @@ public class Feed extends SaxRepresentation {
      * @throws IOException
      */
     public Feed(String feedUri) throws IOException {
-        this(new Client(Protocol.HTTP), feedUri);
+        this(new Client(new Reference(feedUri).getSchemeProtocol()), feedUri);
     }
 
     /**
