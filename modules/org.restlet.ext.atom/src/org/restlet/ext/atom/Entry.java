@@ -32,13 +32,22 @@ package org.restlet.ext.atom;
 
 import static org.restlet.ext.atom.Feed.ATOM_NAMESPACE;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import org.restlet.Client;
+import org.restlet.Context;
+import org.restlet.Uniform;
+import org.restlet.data.MediaType;
+import org.restlet.data.Reference;
 import org.restlet.engine.util.DateUtils;
+import org.restlet.ext.atom.internal.EntryContentReader;
+import org.restlet.ext.xml.SaxRepresentation;
 import org.restlet.ext.xml.XmlWriter;
+import org.restlet.representation.Representation;
 import org.xml.sax.SAXException;
 
 /**
@@ -47,7 +56,7 @@ import org.xml.sax.SAXException;
  * 
  * @author Jerome Louvel
  */
-public class Entry {
+public class Entry extends SaxRepresentation {
 
     /** The authors of the entry. */
     private volatile List<Person> authors;
@@ -89,6 +98,7 @@ public class Entry {
      * Constructor.
      */
     public Entry() {
+        super(MediaType.APPLICATION_ATOM);
         this.authors = null;
         this.categories = null;
         this.content = null;
@@ -101,6 +111,56 @@ public class Entry {
         this.summary = null;
         this.title = null;
         this.updated = null;
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param context
+     *            The context from which the client dispatcher will be
+     *            retrieved.
+     * @param entryUri
+     *            The entry URI.
+     * @throws IOException
+     */
+    public Entry(Context context, String entryUri) throws IOException {
+        this(context.getClientDispatcher().get(entryUri).getEntity());
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param xmlEntry
+     *            The XML entry document.
+     * @throws IOException
+     */
+    public Entry(Representation xmlEntry) throws IOException {
+        super(xmlEntry);
+        parse(new EntryContentReader(this));
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param feedUri
+     *            The entry URI.
+     * @throws IOException
+     */
+    public Entry(String entryUri) throws IOException {
+        this(new Client(new Reference(entryUri).getSchemeProtocol()), entryUri);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param clientDispatcher
+     *            The client HTTP dispatcher.
+     * @param feedUri
+     *            The entry URI.
+     * @throws IOException
+     */
+    public Entry(Uniform clientDispatcher, String entryUri) throws IOException {
+        this(clientDispatcher.get(entryUri).getEntity());
     }
 
     /**
@@ -364,6 +424,30 @@ public class Entry {
      */
     public void setUpdated(Date updated) {
         this.updated = DateUtils.unmodifiable(updated);
+    }
+
+    /**
+     * Writes the representation to a XML writer.
+     * 
+     * @param writer
+     *            The XML writer to write to.
+     * @throws IOException
+     */
+    @Override
+    public void write(XmlWriter writer) throws IOException {
+        try {
+            writer.setPrefix(ATOM_NAMESPACE, "");
+            writer.setDataFormat(true);
+            writer.setIndentStep(3);
+            writer.startDocument();
+            writeElement(writer);
+            writer.endDocument();
+        } catch (SAXException e) {
+            IOException ioe = new IOException(
+                    "Unable to write the Atom entry document.");
+            ioe.initCause(e);
+            throw ioe;
+        }
     }
 
     /**

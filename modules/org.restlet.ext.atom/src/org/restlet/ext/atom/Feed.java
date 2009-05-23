@@ -437,14 +437,17 @@ public class Feed extends SaxRepresentation {
     @Override
     public void write(XmlWriter writer) throws IOException {
         try {
-            writer.setPrefix(ATOM_NAMESPACE, "atom");
+            writer.setPrefix(ATOM_NAMESPACE, "");
             writer.setDataFormat(true);
             writer.setIndentStep(3);
             writer.startDocument();
             writeElement(writer);
             writer.endDocument();
         } catch (SAXException e) {
-            e.printStackTrace();
+            IOException ioe = new IOException(
+                    "Unable to write the Atom feed document.");
+            ioe.initCause(e);
+            throw ioe;
         }
     }
 

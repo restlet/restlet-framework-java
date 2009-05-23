@@ -87,6 +87,10 @@ public class CategoriesContentReader extends DefaultHandler {
                 category.setLabel((attr == null) ? null : attr);
                 attr = attrs.getValue("", "scheme");
                 category.setScheme((attr == null) ? null : new Reference(attr));
+
+                if (category.getScheme() == null) {
+                    category.setScheme(this.categories.getScheme());
+                }
             }
         }
     }

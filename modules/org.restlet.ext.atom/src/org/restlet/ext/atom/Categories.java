@@ -30,6 +30,8 @@
 
 package org.restlet.ext.atom;
 
+import static org.restlet.ext.atom.Feed.ATOM_NAMESPACE;
+import static org.restlet.ext.atom.Service.APP_NAMESPACE;
 import java.io.IOException;
 import java.util.List;
 
@@ -39,7 +41,9 @@ import org.restlet.Uniform;
 import org.restlet.data.Reference;
 import org.restlet.ext.atom.internal.CategoriesContentReader;
 import org.restlet.ext.xml.SaxRepresentation;
+import org.restlet.ext.xml.XmlWriter;
 import org.restlet.representation.Representation;
+import org.xml.sax.SAXException;
 
 /**
  * 
@@ -167,4 +171,46 @@ public class Categories extends SaxRepresentation {
         this.scheme = scheme;
     }
 
+    /**
+     * Writes the representation to a XML writer.
+     * 
+     * @param writer
+     *            The XML writer to write to.
+     * @throws IOException
+     */
+    @Override
+    public void write(XmlWriter writer) throws IOException {
+        try {
+            writer.setPrefix(APP_NAMESPACE, "");
+            writer.setPrefix(ATOM_NAMESPACE, "atom");
+            writer.setDataFormat(true);
+            writer.setIndentStep(3);
+            writer.startDocument();
+            writeElement(writer);
+            writer.endDocument();
+        } catch (SAXException e) {
+            IOException ioe = new IOException(
+                    "Unable to write the AtomPub categories document.");
+            ioe.initCause(e);
+            throw ioe;
+        }
+    }
+
+    /**
+     * Writes the representation to a XML writer.
+     * 
+     * @param writer
+     *            The XML writer to write to.
+     * @throws SAXException
+     */
+    public void writeElement(XmlWriter writer) throws SAXException {
+        writer.startElement(APP_NAMESPACE, "categories");
+
+        for (final Category entry : getEntries()) {
+            entry.writeElement(writer);
+        }
+
+        writer.endElement(APP_NAMESPACE, "categories");
+        writer.endDocument();
+    }
 }

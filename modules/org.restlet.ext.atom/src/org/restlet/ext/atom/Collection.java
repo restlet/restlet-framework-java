@@ -273,8 +273,8 @@ public class Collection {
         }
 
         try {
-            if (getFeed() != null) {
-                getFeed().writeElement(writer);
+            if (getCategories() != null) {
+                getCategories().writeElement(writer);
             }
         } catch (Exception e) {
             e.printStackTrace();
