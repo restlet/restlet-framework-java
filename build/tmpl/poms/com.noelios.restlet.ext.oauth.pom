@@ -20,8 +20,8 @@
       </dependency>
       <dependency>
          <groupId>net.oauth</groupId>
-         <artifactId>core</artifactId>
-         <version>20080229</version>
+         <artifactId>oauth-core</artifactId>
+         <version>20090522</version>
       </dependency>
    </dependencies>
 
