@@ -1,4 +1,4 @@
-<module id="oauth">
+<module id="oauth" includes="jse" type="standard" package="org.restlet.ext.oauth">
 	<name>Restlet Extension - OAuth</name>
 	<description>
 		Support for OAuth HTTP authentication.
@@ -9,7 +9,7 @@
 	</distributions>
 
 	<dependencies>
-		<dependency type="lib">
+		<dependency type="library">
 			<id>auth</id>
 		</dependency>
 		<dependency type="module">

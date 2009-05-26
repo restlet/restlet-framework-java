@@ -1,4 +1,4 @@
-<module includes="gae" id="core-gae">
+<module includes="gae" id="core-gae" type="core" package="org.restlet.gae">
 	<name>Restlet API for GAE</name>
 	<description>
 		Port of Restlet to Google App Engine.
@@ -9,10 +9,10 @@
 	</distributions>
 
 	<dependencies>
-		<dependency type="lib">
+		<dependency type="library">
 			<id>javamail</id>
 		</dependency>
-		<dependency type="lib">
+		<dependency type="library">
 			<id>servlet</id>
 		</dependency>
 	</dependencies>

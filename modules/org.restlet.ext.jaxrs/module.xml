@@ -1,4 +1,4 @@
-<module id="example">
+<module id="jaxrs" includes="jse" type="standard" package="org.restlet.ext.jaxrs">
 	<name>Restlet Extension - JAX-RS</name>
 	<description>
 		Implementation of JAX-RS (JSR-311)
@@ -9,25 +9,25 @@
 	</distributions>
 
 	<dependencies>
-		<dependency type="lib">
+		<dependency type="library">
 			<id>jaxb-ri</id>
 		</dependency>
-		<dependency type="lib">
+		<dependency type="library">
 			<id>fileupload</id>
 		</dependency>
-		<dependency type="lib">
+		<dependency type="library">
 			<id>activation</id>
 		</dependency>
-		<dependency type="lib">
+		<dependency type="library">
 			<id>javamail</id>
 		</dependency>
-		<dependency type="lib">
+		<dependency type="library">
 			<id>servlet</id>
 		</dependency>
-		<dependency type="lib">
+		<dependency type="library">
 			<id>jaxrs</id>
 		</dependency>
-		<dependency type="lib">
+		<dependency type="library">
 			<id>json</id>
 		</dependency>
 		<dependency type="module">

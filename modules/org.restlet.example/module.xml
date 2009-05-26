@@ -1,4 +1,4 @@
-<module includes="jse" id="example">
+<module includes="jse" id="example" package="org.restlet.example">
 	<name>Restlet examples</name>
 	<description>
 		Various examples including those from the tutorial
@@ -9,10 +9,10 @@
 	</distributions>
 
 	<dependencies>
-		<dependency type="lib">
+		<dependency type="library">
 			<id>db4o</id>
 		</dependency>
-		<dependency type="lib">
+		<dependency type="library">
 			<id>junit</id>
 		</dependency>
 		<dependency type="module">

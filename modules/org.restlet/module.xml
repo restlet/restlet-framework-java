@@ -1,4 +1,4 @@
-<module id="core">
+<module id="core" includes="jse" type="core" package="org.restlet">
 	<name>Restlet API</name>
 	<description>
 		Restlet API is a Java framework for the REST architectural style.
@@ -9,7 +9,7 @@
 	</distributions>
 
 	<dependencies>
-		<dependency excludes="android">
+		<dependency excludes="android" type="library">
 			<id>osgi</id>
 		</dependency>
 	</dependencies>

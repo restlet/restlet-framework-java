@@ -1,4 +1,4 @@
-<module id="atom">
+<module id="atom" includes="jse" type="standard" package="org.restlet.ext.atom">
 	<name>Restlet Extension - Atom</name>
 	<description>
 		Support for the Atom syndication and the AtomPub (Atom Publication

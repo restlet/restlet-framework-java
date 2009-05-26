@@ -1,4 +1,4 @@
-<module id="jdbc" type="connector">
+<module id="jdbc" includes="jse" type="connector" package="org.restlet.ext.jdbc">
 	<name>Restlet Extension - JDBC</name>
 	<description>
 		Integration with Java DataBase Connectivity (JDBC).
@@ -9,7 +9,7 @@
 	</distributions>
 
 	<dependencies>
-		<dependency type="lib">
+		<dependency type="library">
 			<id>dbcp</id>
 		</dependency>
 		<dependency type="module">

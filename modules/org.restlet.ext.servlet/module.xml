@@ -1,4 +1,4 @@
-<module id="servlet" type="integration">
+<module id="servlet" includes="jse" type="integration" package="org.restlet.ext.servlet">
 	<name>Restlet Extension - Servlet</name>
 	<description>
 		Integration with Servlet API.
@@ -9,7 +9,7 @@
 	</distributions>
 
 	<dependencies>
-		<dependency type="lib">
+		<dependency type="library">
 			<id>servlet</id>
 		</dependency>
 		<dependency type="module">

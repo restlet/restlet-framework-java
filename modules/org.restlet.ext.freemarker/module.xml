@@ -1,4 +1,4 @@
-<module id="freemarker" type="integration">
+<module id="freemarker" includes="jse" type="integration" package="org.restlet.ext.freemarker">
 	<name>Restlet Extension - FreeMarker</name>
 	<description>
 		Integration with FreeMarker.
@@ -9,7 +9,7 @@
 	</distributions>
 
 	<dependencies>
-		<dependency type="lib">
+		<dependency type="library">
 			<id>freemarker</id>
 		</dependency>
 		<dependency type="module">

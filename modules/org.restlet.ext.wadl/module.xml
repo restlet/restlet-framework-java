@@ -1,4 +1,4 @@
-<module id="wadl">
+<module id="wadl" includes="jse" type="standard" package="org.restlet.ext.wadl">
 	<name>Restlet Extension - WADL</name>
 	<description>
 		Support for the WADL specification.

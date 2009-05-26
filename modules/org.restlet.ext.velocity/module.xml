@@ -1,4 +1,4 @@
-<module id="velocity" type="integration">
+<module id="velocity" includes="jse" type="integration" package="org.restlet.ext.velocity">
 	<name>Restlet Extension - Velocity</name>
 	<description>
 		Integration with Apache Velocity.
@@ -9,7 +9,7 @@
 	</distributions>
 
 	<dependencies>
-		<dependency type="lib">
+		<dependency type="library">
 			<id>velocity</id>
 		</dependency>
 		<dependency type="module">

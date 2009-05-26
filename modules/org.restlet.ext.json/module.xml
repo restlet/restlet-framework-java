@@ -1,4 +1,4 @@
-<module id="json">
+<module id="json" type="standard" package="org.restlet.ext.json">
 	<name>Restlet Extension - JSON</name>
 	<description>
 		Support for JSON representations.
@@ -9,7 +9,7 @@
 	</distributions>
 
 	<dependencies>
-		<dependency type="lib">
+		<dependency type="library">
 			<id>json</id>
 		</dependency>
 		<dependency type="module">

@@ -1,4 +1,4 @@
-<module id="rdf">
+<module id="rdf" includes="jse,android" type="standard" package="org.restlet.ext.rdf">
 	<name>Restlet Extension - RDF</name>
 	<description>
 		Support for the RDF parsing and generation.

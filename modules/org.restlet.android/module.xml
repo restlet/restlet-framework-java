@@ -1,4 +1,4 @@
-<module includes="android" id="android">
+<module includes="android" id="android" type="core" package="org.restlet.android">
 	<name>Restlet API for Android</name>
 	<description>
 		Port of Restlet to Android SDK.

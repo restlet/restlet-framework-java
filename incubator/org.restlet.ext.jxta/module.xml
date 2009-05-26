@@ -1,4 +1,4 @@
-<module id="jxta">
+<module id="jxta" includes="jse" type="integration" package="org.restlet.ext.jxta">
 	<name>Restlet Extension - JXTA</name>
 	<description>
 		Integration with JXTA framework.
@@ -9,10 +9,10 @@
 	</distributions>
 
 	<dependencies>
-		<dependency type="lib">
+		<dependency type="library">
 			<id>servlet</id>
 		</dependency>
-		<dependency type="lib">
+		<dependency type="library">
 			<id>jxta</id>
 		</dependency>
 		<dependency type="module">

@@ -1,4 +1,4 @@
-<module id="ssl">
+<module id="ssl" includes="jse" type="standard" package="org.restlet.ext.ssl">
 	<name>Restlet Extension - SSL support</name>
 	<description>
 		Utilities to configure SSL support.
@@ -9,7 +9,7 @@
 	</distributions>
 
 	<dependencies>
-		<dependency type="lib">
+		<dependency type="library">
 			<id>jsslutils</id>
 		</dependency>
 		<dependency type="module">

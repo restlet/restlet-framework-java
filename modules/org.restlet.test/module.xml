@@ -1,4 +1,4 @@
-<module includes="jse" id="test">
+<module includes="jse" id="test" package="org.restlet.test">
 	<name>Restlet Unit Tests</name>
 	<description>
 		All Restlet unit tests.
@@ -9,7 +9,7 @@
 	</distributions>
 
 	<dependencies>
-		<dependency type="lib">
+		<dependency type="library">
 			<id>junit</id>
 		</dependency>
 		<dependency type="module">

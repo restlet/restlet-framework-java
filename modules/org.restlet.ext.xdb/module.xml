@@ -1,4 +1,4 @@
-<module id="xdb" type="integration">
+<module id="xdb" includes="jse" type="integration" package="org.restlet.ext.xdb">
 	<name>Restlet Extension - Oracle XML DB</name>
 	<description>
 		Integration within OracleJVM via the Oracle XML DB feature.
@@ -9,7 +9,7 @@
 	</distributions>
 
 	<dependencies>
-		<dependency type="lib">
+		<dependency type="library">
 			<id>servlet</id>
 		</dependency>
 		<dependency type="module">

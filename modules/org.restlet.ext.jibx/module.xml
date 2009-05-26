@@ -1,4 +1,4 @@
-<module id="jibx" type="integration">
+<module id="jibx" includes="jse" type="integration" package="org.restlet.ext.jibx">
 	<name>Restlet Extension - JiBX</name>
 	<description>
 		Integration with JiBX.
@@ -9,7 +9,7 @@
 	</distributions>
 
 	<dependencies>
-		<dependency type="lib">
+		<dependency type="library">
 			<id>jibx</id>
 		</dependency>
 		<dependency type="module">

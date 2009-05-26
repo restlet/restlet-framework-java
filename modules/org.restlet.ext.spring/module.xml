@@ -1,4 +1,4 @@
-<module id="spring" type="integration">
+<module id="spring" includes="jse" type="integration" package="org.restlet.ext.spring">
 	<name>Restlet Extension - Spring Framework</name>
 	<description>
 		Integration with Spring Framework.
@@ -9,10 +9,10 @@
 	</distributions>
 
 	<dependencies>
-		<dependency type="lib">
+		<dependency type="library">
 			<id>servlet</id>
 		</dependency>
-		<dependency type="lib">
+		<dependency type="library">
 			<id>spring</id>
 		</dependency>
 		<dependency type="module">
