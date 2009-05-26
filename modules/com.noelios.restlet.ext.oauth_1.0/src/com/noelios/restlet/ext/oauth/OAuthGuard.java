@@ -29,6 +29,7 @@ package com.noelios.restlet.ext.oauth;
 
 import net.oauth.OAuthAccessor;
 import net.oauth.OAuthMessage;
+import net.oauth.SimpleOAuthValidator;
 
 import org.restlet.Context;
 import org.restlet.Guard;
@@ -77,7 +78,8 @@ public class OAuthGuard extends Guard {
         }
 
         try {
-            requestMessage.validateSignature(accessor);
+            requestMessage
+                    .validateMessage(accessor, new SimpleOAuthValidator());
         } catch (Exception e1) {
             return Guard.AUTHENTICATION_INVALID;
         }
@@ -85,5 +87,4 @@ public class OAuthGuard extends Guard {
         return Boolean.TRUE.equals(accessor.getProperty("authorized")) ? Guard.AUTHENTICATION_VALID
                 : Guard.AUTHENTICATION_INVALID;
     }
-
 }

@@ -32,6 +32,7 @@ import java.io.IOException;
 import net.oauth.OAuth;
 import net.oauth.OAuthAccessor;
 import net.oauth.OAuthMessage;
+import net.oauth.SimpleOAuthValidator;
 
 import org.restlet.Context;
 import org.restlet.data.ChallengeRequest;
@@ -113,7 +114,8 @@ public class AccessTokenResource extends Resource {
 
         // verify the signature
         try {
-            requestMessage.validateSignature(accessor);
+            requestMessage
+                    .validateMessage(accessor, new SimpleOAuthValidator());
         } catch (Exception e1) {
             getResponse().setChallengeRequest(challengeRequest);
             getResponse().setStatus(Status.CLIENT_ERROR_UNAUTHORIZED, e1);
