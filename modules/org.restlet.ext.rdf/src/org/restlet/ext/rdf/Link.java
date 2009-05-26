@@ -41,7 +41,7 @@ import org.restlet.data.Reference;
  * Web of data (also know as Linked Data and Hyperdata).
  * 
  * @author Jerome Louvel
- * @see <a href="http://www.w3.org/TR/rdf-concepts/">RDF concepts< /a>
+ * @see <a href="http://www.w3.org/TR/rdf-concepts/">RDF concepts</a>
  */
 public class Link {
 

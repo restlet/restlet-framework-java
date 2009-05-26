@@ -139,7 +139,7 @@ public class ServerResource extends UniformResource {
      * @throws ResourceException
      * @see <a
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.7"
-     *      >HTTP DELETE method< /a>
+     *      >HTTP DELETE method</a>
      */
     protected Representation delete() throws ResourceException {
         setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
@@ -605,9 +605,9 @@ public class ServerResource extends UniformResource {
      * 
      * @return The resource's representation.
      * @throws ResourceException
-     * @see <a *
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.3"
-     *      >HTTP * GET method< /a>
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.3">HTTP
+     *      GET method</a>
      */
     protected Representation get() throws ResourceException {
         setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
@@ -957,9 +957,9 @@ public class ServerResource extends UniformResource {
      * 
      * @return The resource's representation.
      * @throws ResourceException
-     * @see <a *
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.3"
-     *      >HTTP * GET method< /a>
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.3">HTTP
+     *      GET method</a>
      */
     protected Representation head() throws ResourceException {
         return get();
@@ -1104,9 +1104,9 @@ public class ServerResource extends UniformResource {
      *            The variant of the response entity.
      * @return The optional result entity.
      * @throws ResourceException
-     * @see <a *
+     * @see <a
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.5"
-     *      >HTTP * POST method< /a>
+     *      >HTTP POST method</a>
      */
     protected Representation post(Representation entity, Variant variant)
             throws ResourceException {
