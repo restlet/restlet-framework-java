@@ -1,0 +1,34 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Simple Framework
+Bundle-SymbolicName: org.simpleframework
+Bundle-Version: 3.1.3
+Bundle-ClassPath: org.simpleframework.jar
+Bundle-Vendor: Niall Gallagher
+Export-Package: simple.http;
+  uses:="simple.util.parse,
+   simple.util,
+   simple.util.schedule,
+   simple.http.session,
+   simple.util.net",
+ simple.http.connect;uses:="simple.http.serve,simple.http",
+ simple.http.load;
+  uses:="simple.util.xml,
+   simple.util,
+   simple.http.serve,
+   simple.http",
+ simple.http.serve;
+  uses:="simple.util.xml,
+   simple.util.cache,
+   simple.http,
+   simple.util.net",
+ simple.http.session;uses:="simple.util.lease,simple.http,simple.util.net",
+ simple.util;uses:="simple.util.parse,simple.util.xml",
+ simple.util.cache;uses:="simple.util.schedule",
+ simple.util.lease;uses:="simple.util",
+ simple.util.net,
+ simple.util.parse;uses:="simple.util.net",
+ simple.util.process;uses:="simple.util",
+ simple.util.schedule,
+ simple.util.xml
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

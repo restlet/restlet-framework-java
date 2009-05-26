@@ -1,0 +1,9 @@
+<binding>
+  <mapping name="customer" class="chapter7.jibx.Customer">
+    <value name="street" field="street"/>
+    <value name="city" field="city"/>
+    <value name="state" field="state"/>
+    <value name="zip" field="zip"/>
+    <value name="phone" field="phone"/>
+  </mapping>
+</binding>
