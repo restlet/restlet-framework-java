@@ -104,14 +104,20 @@ public class StreamServerCall extends HttpServerCall {
                 // Flush the output stream
                 this.socket.getOutputStream().flush();
                 this.socket.shutdownOutput();
-
+            }
+        } catch (IOException ex) {
+            getLogger().log(Level.WARNING, "Unable to shutdown server socket",
+                    ex);
+        }
+        try {
+            if (!this.socket.isClosed()) {
                 // As we don't support persistent connections,
                 // we must call this method to make sure sockets
                 // are properly released.
                 this.socket.close();
             }
         } catch (IOException ex) {
-            getLogger().log(Level.WARNING, "Unable to shutdown server socket",
+            getLogger().log(Level.WARNING, "Unable to close server socket",
                     ex);
         }
     }
