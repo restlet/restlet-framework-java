@@ -15,6 +15,51 @@
 	<!-- Load default properties -->
 	<property file="build.properties" />
 
+	<!-- Library properties -->
+	<property file="libraries.properties" />
+
+	<!-- Module properties -->
+	<property file="modules.properties" />
+	
+	<!-- Edition properties -->
+	<property file="edition.properties" />
+	
+	<!-- General properties -->
+	<property name="author" value="Jerome Louvel" />
+	<property name="vendor" value="Noelios Technologies" />
+	<property name="excludes" value="**/.emptyDir **/package.html **/overview.html" />
+	<!-- Location properties -->
+	<property name="tools" value="../../tools" />
+	<property name="temp" value="${basedir}" />
+	<property name="dist-base" value="dist" />
+	<property name="bin" value="bin" />
+	<property name="tmpl" value="../../tmpl" />
+	<property name="dist-path" value="restlet-${version-compact}" />
+	<property name="src" value="../../.." />
+	<property name="mod-maven-groupId" value="org.restlet" />
+	<property name="images" value="images" />
+	<property name="jdk1.4-home" value="../jdk1.4-home" />
+
+	<property name="lib" value="${src}/libraries" />
+	<property name="dist-classic" value="${dist-base}/classic/${dist-path}" />
+	<property name="dist-eclipse" value="${dist-base}/eclipse/${dist-path}" />
+	<property name="dist-maven2" value="${dist-base}/maven2/${dist-path}" />
+	<property name="classes" value="${temp}/classes" />
+	<property name="mod" value="${temp}/modules" />
+	<property name="docs" value="${temp}/docs" />
+	<property name="docs-api" value="${docs}/api" />
+	<property name="docs-engine" value="${docs}/engine" />
+	<property name="docs-ext" value="${docs}/ext" />
+	<property name="uml-reports" value="${temp}/uml-reports" />
+	<property name="uml-reports-api" value="${uml-reports}/api" />
+	<property name="icons" value="${images}/ico" />
+
+	<!-- Include the definition of paths regarding edition modules -->
+	<import file="paths.xml" />
+
+	<!-- Include the javadocs tasks -->
+	<import file="javadocs.xml" />
+
 	<!-- Boot classpath propertiesLoad system specific paths -->
 	<pathconvert property="defaultbootclasspath">
 		<path path="${sun.boot.class.path}" />
@@ -22,62 +67,11 @@
 
 	<pathconvert property="backportbootclasspath">
 		<path>
-			<pathelement location="tools/retrotranslator/rowset.jar" />
-			<pathelement location="tools/retrotranslator/xerces.jar" />
+			<pathelement location="${tools}/retrotranslator/rowset.jar" />
+			<pathelement location="${tools}/retrotranslator/xerces.jar" />
 		</path>
 		<path path="${sun.boot.class.path}" />
 	</pathconvert>
-
-	<!-- General properties -->
-	<property name="author" value="Jerome Louvel" />
-	<property name="vendor" value="Noelios Technologies" />
-	<property name="excludes" value="**/.emptyDir **/package.html **/overview.html" />
-	<property name="edition-api" value="@edition-api@" />
-	<property name="edition-engine" value="@edition-engine@" />
-	<property name="edition-ext" value="@edition-ext@" />
-	<property name="edition-ext-standards" value="@edition-ext-standards@" />
-	<property name="edition-ext-connectors" value="@edition-ext-connectors@" />
-	<property name="edition-ext-integrations" value="@edition-ext-integrations@" />
-
-	<property name="mod-maven-groupId" value="org.restlet" />
-
-	<property name="restlet-gae" value="Restlet-GAE" />
-	<property name="restlet-gwt" value="Restlet-GWT" />
-	<property name="restlet-android" value="Restlet-Android" />
-	<property name="docs-gae" value="${docs}/gae" />
-	<property name="docs-gwt" value="${docs}/gwt" />
-	<property name="docs-android" value="${docs}/android" />
-
-	<!-- Location properties -->
-	<!-- Base directories -->
-	<property name="dist-base" value="dist/@edition@" />
-	<property name="temp" value="temp/@edition@" />
-	<property name="bin" value="bin" />
-	<property name="lib" value="../libraries" />
-	<property name="tmpl" value="tmpl" />
-	<property name="images" value="images" />
-
-	<!-- Other directories -->
-	<property name="dist-path" value="restlet-${version-compact}" />
-	<property name="dist-classic" value="${dist-base}/classic/${dist-path}" />
-	<property name="dist-eclipse" value="${dist-base}/eclipse/${dist-path}" />
-	<property name="dist-maven2" value="${dist-base}/maven2/${dist-path}" />
-	<property name="classes" value="${temp}/classes" />
-	<property name="mod" value="${temp}/modules" />
-	<property name="docs" value="${temp}/docs/@edition@" />
-	<property name="docs-api" value="${docs}/api" />
-	<property name="docs-engine" value="${docs}/engine" />
-	<property name="docs-ext" value="${docs}/ext" />
-	<property name="icons" value="${images}/ico" />
-
-	<property name="uml-reports" value="${temp}/uml-reports" />
-	<property name="uml-reports-api" value="${uml-reports}/api" />
-
-	<!-- Library properties -->
-	<property file="libraries.properties" />
-
-	<!-- Module properties -->
-	<property file="modules.properties" />
 
 	<!-- Create the time stamp -->
 	<tstamp>
@@ -205,443 +199,7 @@
 	<!-- ======================= -->
 	<!-- ===  Paths setting  === -->
 	<!-- ======================= -->
-
-	<path id="mod-core-path">
-		<pathelement path="${classes}/org.restlet" />
-		<fileset dir="${lib}/${lib-osgi-id}" includes="*.jar" />
-	</path>
-
-	<path id="mod-core-gae-path">
-		<path refid="mod-core-path" />
-		<pathelement path="${classes}/${mod-core-id}" />
-		<fileset dir="${lib}/${lib-servlet-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-javamail-id}" includes="*.jar" />
-	</path>
-
-	<path id="mod-core-gwt-path">
-		<path refid="mod-core-path" />
-		<pathelement path="${classes}/${mod-core-id}" />
-		<fileset dir="${lib}/${lib-gwt-id}" includes="*.jar" />
-	</path>
-
-	<path id="mod-core-android-path">
-		<path refid="mod-core-path" />
-		<pathelement path="${classes}/${mod-core-id}" />
-	</path>
-
-	<path id="mod-atom-path">
-		<path refid="mod-core-path" />
-		<path refid="mod-xml-path" />
-		<pathelement path="${classes}/${mod-core-id}" />
-		<pathelement path="${classes}/${mod-xml-id}" />
-	</path>
-
-	<path id="mod-fileupload-path">
-		<path refid="mod-core-path" />
-		<pathelement path="${classes}/${mod-core-id}" />
-		<fileset dir="${lib}/${lib-servlet-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-fileupload-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-io-id}" includes="*.jar" />
-	</path>
-
-	<path id="mod-freemarker-path">
-		<path refid="mod-core-path" />
-		<pathelement path="${classes}/${mod-core-id}" />
-		<fileset dir="${lib}/${lib-freemarker-id}" includes="*.jar" />
-	</path>
-
-	<path id="mod-grizzly-path">
-		<path refid="mod-core-path" />
-		<pathelement path="${classes}/${mod-core-id}" />
-		<fileset dir="${lib}/${lib-grizzly-id}" includes="*.jar" />
-	</path>
-
-	<path id="mod-httpclient-path">
-		<path refid="mod-core-path" />
-		<pathelement path="${classes}/${mod-core-id}" />
-		<fileset dir="${lib}/${lib-httpclient-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-logging-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-codec-id}" includes="*.jar" />
-	</path>
-
-	<path id="mod-javamail-path">
-		<path refid="mod-core-path" />
-		<path refid="mod-xml-path" />
-		<pathelement path="${classes}/${mod-core-id}" />
-		<pathelement path="${classes}/${mod-xml-id}" />
-		<fileset dir="${lib}/${lib-javamail-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-activation-id}" includes="*.jar" />
-
-	</path>
-
-	<path id="mod-jaxb-path">
-		<path refid="mod-core-path" />
-		<path refid="mod-xml-path" />
-		<pathelement path="${classes}/${mod-core-id}" />
-		<pathelement path="${classes}/${mod-xml-id}" />
-		<fileset dir="${lib}/${lib-jaxb-api-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-jaxb-ri-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-stax-id}" includes="*.jar" />
-	</path>
-
-	<path id="mod-jaxrs-path">
-		<path refid="mod-core-path" />
-		<path refid="mod-javamail-path" />
-		<path refid="mod-jaxb-path" />
-		<path refid="mod-json-path" />
-		<pathelement path="${classes}/${mod-core-id}" />
-		<fileset dir="${lib}/${lib-jaxrs-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-fileupload-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-servlet-id}" includes="*.jar" />
-	</path>
-
-	<path id="mod-jdbc-path">
-		<path refid="mod-core-path" />
-		<pathelement path="${classes}/${mod-core-id}" />
-		<fileset dir="${lib}/${lib-dbcp-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-logging-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-pool-id}" includes="*.jar" />
-	</path>
-
-	<path id="mod-jetty-path">
-		<path refid="mod-core-path" />
-		<pathelement path="${classes}/${mod-core-id}" />
-		<fileset dir="${lib}/${lib-servlet-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-jetty-id}" includes="*.jar" />
-	</path>
-
-	<path id="mod-jibx-path">
-		<path refid="mod-core-path" />
-		<path refid="mod-xml-path" />
-		<pathelement path="${classes}/${mod-core-id}" />
-		<pathelement path="${classes}/${mod-xml-id}" />
-		<fileset dir="${lib}/${lib-jibx-id}" includes="*.jar" />
-	</path>
-
-	<path id="mod-json-path">
-		<path refid="mod-core-path" />
-		<pathelement path="${classes}/${mod-core-id}" />
-		<fileset dir="${lib}/${lib-json-id}" includes="*.jar" />
-	</path>
-
-	<path id="mod-lucene-path">
-		<path refid="mod-core-path" />
-		<path refid="mod-xml-path" />
-		<pathelement path="${classes}/${mod-core-id}" />
-		<pathelement path="${classes}/${mod-xml-id}" />
-		<fileset dir="${lib}/${lib-lucene-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-solr-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-tika-id}" includes="*.jar" />
-	</path>
-
-	<path id="mod-net-path">
-		<path refid="mod-core-path" />
-		<pathelement path="${classes}/${mod-core-id}" />
-	</path>
-
-	<path id="mod-oauth-path">
-		<path refid="mod-core-path" />
-		<pathelement path="${classes}/${mod-core-id}" />
-		<fileset dir="${lib}/${lib-oauth-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-codec-id}" includes="*.jar" />
-	</path>
-
-	<path id="mod-rdf-path">
-		<path refid="mod-core-path" />
-		<path refid="mod-xml-path" />
-		<pathelement path="${classes}/${mod-core-id}" />
-		<pathelement path="${classes}/${mod-xml-id}" />
-	</path>
-
-	<path id="mod-servlet-path">
-		<path refid="mod-core-path" />
-		<pathelement path="${classes}/${mod-core-id}" />
-		<fileset dir="${lib}/${lib-servlet-id}" includes="*.jar" />
-	</path>
-
-	<path id="mod-gwt-path">
-		<path refid="mod-core-path" />
-		<path refid="mod-core-gwt-path" />
-		<path refid="mod-servlet-path" />
-		<pathelement path="${classes}/${mod-core-id}" />
-		<pathelement path="${classes}/${mod-core-gwt-id}" />
-		<pathelement path="${classes}/${mod-servlet-id}" />
-		<fileset dir="${lib}/${lib-gwt-id}" includes="*.jar" />
-	</path>
-
-	<path id="mod-rome-path">
-		<path refid="mod-core-path" />
-		<pathelement path="${classes}/${mod-core-id}" />
-		<fileset dir="${lib}/${lib-rome-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-jdom-id}" includes="*.jar" />
-	</path>
-
-	<path id="mod-simple-path">
-		<path refid="mod-core-path" />
-		<pathelement path="${classes}/${mod-core-id}" />
-		<fileset dir="${lib}/${lib-simple-id}" includes="*.jar" />
-	</path>
-
-	<path id="mod-spring-path">
-		<path refid="mod-core-path" />
-		<path refid="mod-servlet-path" />
-		<pathelement path="${classes}/${mod-core-id}" />
-		<pathelement path="${classes}/${mod-servlet-id}" />
-		<fileset dir="${lib}/${lib-logging-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-cglib-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-spring-id}" includes="*.jar" />
-	</path>
-
-	<path id="mod-ssl-path">
-		<path refid="mod-core-path" />
-		<pathelement path="${classes}/${mod-core-id}" />
-		<fileset dir="${lib}/${lib-jsslutils-id}" includes="*.jar" />
-	</path>
-
-	<path id="mod-velocity-path">
-		<path refid="mod-core-path" />
-		<pathelement path="${classes}/${mod-core-id}" />
-		<fileset dir="${lib}/${lib-collections-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-velocity-id}" includes="*.jar" />
-	</path>
-
-	<path id="mod-wadl-path">
-		<path refid="mod-core-path" />
-		<path refid="mod-xml-path" />
-		<pathelement path="${classes}/${mod-core-id}" />
-		<pathelement path="${classes}/${mod-xml-id}" />
-	</path>
-
-	<path id="mod-xdb-path">
-		<path refid="mod-core-path" />
-		<path refid="mod-servlet-path" />
-		<pathelement path="${classes}/${mod-core-id}" />
-		<pathelement path="${classes}/${mod-servlet-id}" />
-	</path>
-
-	<path id="mod-xml-path">
-		<path refid="mod-core-path" />
-		<pathelement path="${classes}/${mod-core-id}" />
-	</path>
-
-	<path id="mod-xstream-path">
-		<path refid="mod-core-path" />
-		<pathelement path="${classes}/${mod-core-id}" />
-		<fileset dir="${lib}/${lib-jettison-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-xstream-id}" includes="*.jar" />
-	</path>
-
-	<path id="mod-core-example-path">
-		<path refid="mod-core-path" />
-		<path refid="mod-atom-path" />
-		<path refid="mod-freemarker-path" />
-		<path refid="mod-jaxb-path" />
-		<path refid="mod-jaxrs-path" />
-		<path refid="mod-jibx-path" />
-		<path refid="mod-json-path" />
-		<path refid="mod-rdf-path" />
-		<path refid="mod-velocity-path" />
-		<path refid="mod-xstream-path" />
-		<pathelement path="${mod}/${mod-jaxrs-id}/src" />
-		<pathelement path="${classes}/${mod-core-id}" />
-		<pathelement path="${classes}/${mod-atom-id}" />
-		<pathelement path="${classes}/${mod-freemarker-id}" />
-		<pathelement path="${classes}/${mod-jaxb-id}" />
-		<pathelement path="${classes}/${mod-jaxrs-id}" />
-		<pathelement path="${classes}/${mod-jibx-id}" />
-		<pathelement path="${classes}/${mod-json-id}" />
-		<pathelement path="${classes}/${mod-rdf-id}" />
-		<pathelement path="${classes}/${mod-velocity-id}" />
-		<pathelement path="${classes}/${mod-xstream-id}" />
-		<fileset dir="${lib}/${lib-bloat-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-collections-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-db4o-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-junit-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-lang-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-spring-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-spring-modules-db4o-id}" includes="*.jar" />
-	</path>
-
-	<path id="mod-core-test-path">
-		<fileset dir="${lib}/${lib-junit-id}" includes="*.jar" />
-
-		<pathelement path="${mod}/${mod-core-id}/src" />
-		<pathelement path="${mod}/${mod-core-test-id}/src" />
-
-		<pathelement path="${classes}/${mod-core-test-id}" />
-		<pathelement path="${classes}/${mod-core-example-id}" />
-
-		<path refid="mod-core-gae-path" />
-		<pathelement path="${classes}/${mod-core-gae-id}" />
-		<pathelement path="${mod}/${mod-core-gae-id}/src" />
-
-		<path refid="mod-core-gwt-path" />
-		<pathelement path="${classes}/${mod-core-gwt-id}" />
-		<pathelement path="${mod}/${mod-core-gwt-id}/src" />
-
-		<path refid="mod-atom-path" />
-		<pathelement path="${classes}/${mod-atom-id}" />
-		<pathelement path="${mod}/${mod-atom-id}/src" />
-
-		<path refid="mod-net-path" />
-		<pathelement path="${classes}/${mod-net-id}" />
-		<pathelement path="${mod}/${mod-net-id}/src" />
-
-		<path refid="mod-freemarker-path" />
-		<pathelement path="${classes}/${mod-freemarker-id}" />
-		<pathelement path="${mod}/${mod-freemarker-id}/src" />
-
-		<path refid="mod-grizzly-path" />
-		<pathelement path="${classes}/${mod-grizzly-id}" />
-		<pathelement path="${mod}/${mod-grizzly-id}/src" />
-
-		<path refid="mod-lucene-path" />
-		<pathelement path="${classes}/${mod-lucene-id}" />
-		<pathelement path="${mod}/${mod-lucene-id}/src" />
-
-		<path refid="mod-simple-path" />
-		<pathelement path="${classes}/${mod-simple-id}" />
-		<pathelement path="${mod}/${mod-simple-id}/src" />
-
-		<path refid="mod-httpclient-path" />
-		<pathelement path="${classes}/${mod-httpclient-id}" />
-		<pathelement path="${mod}/${mod-httpclient-id}/src" />
-
-		<path refid="mod-jaxb-path" />
-		<pathelement path="${classes}/${mod-jaxb-id}" />
-		<pathelement path="${mod}/${mod-jaxb-id}/src" />
-
-		<path refid="mod-jaxrs-path" />
-		<pathelement path="${classes}/${mod-jaxrs-id}" />
-		<pathelement path="${mod}/${mod-jaxrs-id}/src" />
-
-		<path refid="mod-jetty-path" />
-		<pathelement path="${classes}/${mod-jetty-id}" />
-		<pathelement path="${mod}/${mod-jetty-id}/src" />
-
-		<path refid="mod-jibx-path" />
-		<pathelement path="${classes}/${mod-jibx-id}" />
-		<pathelement path="${mod}/${mod-jibx-id}/src" />
-
-		<path refid="mod-net-path" />
-		<pathelement path="${classes}/${mod-net-id}" />
-		<pathelement path="${mod}/${mod-net-id}/src" />
-
-		<path refid="mod-rdf-path" />
-		<pathelement path="${classes}/${mod-rdf-id}" />
-		<pathelement path="${mod}/${mod-rdf-id}/src" />
-
-		<path refid="mod-simple-path" />
-		<pathelement path="${classes}/${mod-simple-id}" />
-		<pathelement path="${mod}/${mod-simple-id}/src" />
-
-		<path refid="mod-spring-path" />
-		<pathelement path="${classes}/${mod-spring-id}" />
-		<pathelement path="${mod}/${mod-spring-id}/src" />
-
-		<path refid="mod-ssl-path" />
-		<pathelement path="${classes}/${mod-ssl-id}" />
-		<pathelement path="${mod}/${mod-ssl-id}/src" />
-
-		<path refid="mod-velocity-path" />
-		<pathelement path="${classes}/${mod-velocity-id}" />
-		<pathelement path="${mod}/${mod-velocity-id}/src" />
-
-		<path refid="mod-wadl-path" />
-		<pathelement path="${classes}/${mod-wadl-id}" />
-		<pathelement path="${mod}/${mod-wadl-id}/src" />
-
-		<path refid="mod-xml-path" />
-		<pathelement path="${classes}/${mod-xml-id}" />
-		<pathelement path="${mod}/${mod-xml-id}/src" />
-
-		<path refid="mod-xstream-path" />
-		<pathelement path="${classes}/${mod-xstream-id}" />
-		<pathelement path="${mod}/${mod-xstream-id}/src" />
-
-		<fileset dir="${lib}/${lib-collections-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-junit-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-lang-id}" includes="*.jar" />
-
-		<!-- retrotranslator 1.2 -->
-		<pathelement location="tools/retrotranslator/backport-util-concurrent-3.1.jar" />
-		<pathelement location="tools/retrotranslator/retrotranslator-runtime-1.2.7.jar" />
-		<pathelement location="tools/retrotranslator/retrotranslator-transformer-1.2.7.jar" />
-	</path>
-
-	<path id="path-all">
-		<pathelement path="${classes}/${mod-core-id}" />
-		<pathelement path="${classes}/${mod-fileupload-id}" />
-		<pathelement path="${classes}/${mod-freemarker-id}" />
-		<pathelement path="${classes}/${mod-grizzly-id}" />
-		<pathelement path="${classes}/${mod-core-gae-id}" />
-		<pathelement path="${classes}/${mod-core-gwt-id}" />
-		<pathelement path="${classes}/${mod-core-android-id}" />
-		<pathelement path="${classes}/${mod-gwt-id}" />
-		<pathelement path="${classes}/${mod-httpclient-id}" />
-		<pathelement path="${classes}/${mod-javamail-id}" />
-		<pathelement path="${classes}/${mod-jaxb-id}" />
-		<pathelement path="${classes}/${mod-jaxrs-id}" />
-		<pathelement path="${classes}/${mod-jdbc-id}" />
-		<pathelement path="${classes}/${mod-jetty-id}" />
-		<pathelement path="${classes}/${mod-jibx-id}" />
-		<pathelement path="${classes}/${mod-json-id}" />
-		<pathelement path="${classes}/${mod-lucene-id}" />
-		<pathelement path="${classes}/${mod-net-id}" />
-		<pathelement path="${classes}/${mod-oauth-id}" />
-		<pathelement path="${classes}/${mod-rdf-id}" />
-		<pathelement path="${classes}/${mod-servlet-id}" />
-		<pathelement path="${classes}/${mod-spring-id}" />
-		<pathelement path="${classes}/${mod-ssl-id}" />
-		<pathelement path="${classes}/${mod-velocity-id}" />
-		<pathelement path="${classes}/${mod-wadl-id}" />
-		<pathelement path="${classes}/${mod-xdb-id}" />
-		<pathelement path="${classes}/${mod-xml-id}" />
-		<pathelement path="${classes}/${mod-xstream-id}" />
-		<path refid="mod-fileupload-path" />
-		<path refid="mod-freemarker-path" />
-		<path refid="mod-grizzly-path" />
-		<path refid="mod-core-gae-path" />
-		<path refid="mod-core-gwt-path" />
-		<path refid="mod-core-android-path" />
-		<path refid="mod-gwt-path" />
-		<path refid="mod-httpclient-path" />
-		<path refid="mod-javamail-path" />
-		<path refid="mod-jaxb-path" />
-		<path refid="mod-jaxrs-path" />
-		<path refid="mod-jdbc-path" />
-		<path refid="mod-jetty-path" />
-		<path refid="mod-jibx-path" />
-		<path refid="mod-json-path" />
-		<path refid="mod-lucene-path" />
-		<path refid="mod-net-path" />
-		<path refid="mod-oauth-path" />
-		<path refid="mod-rdf-path" />
-		<path refid="mod-rome-path" />
-		<path refid="mod-servlet-path" />
-		<path refid="mod-simple-path" />
-		<path refid="mod-spring-path" />
-		<path refid="mod-ssl-path" />
-		<path refid="mod-velocity-path" />
-		<path refid="mod-wadl-path" />
-		<path refid="mod-xdb-path" />
-		<path refid="mod-xml-path" />
-		<path refid="mod-xstream-path" />
-	</path>
-
 	<path id="path-none" />
-
-	<path id="ant-contrib.path">
-		<fileset dir="tools/ant-contrib" includes="**/*.jar" />
-	</path>
-
-	<path id="fmpp.path">
-		<pathelement location="tools/fmpp/bsh.jar" />
-		<pathelement location="tools/fmpp/fmpp.jar" />
-		<pathelement location="tools/fmpp/freemarker.jar" />
-		<pathelement location="tools/fmpp/oro.jar" />
-		<pathelement location="tools/fmpp/resolver.jar" />
-	</path>
 
 	<!-- =================== -->
 	<!-- ===  Ant Tasks  === -->
@@ -650,38 +208,46 @@
 	<!-- Retrotranslator 1.2.0 -->
 	<taskdef name="retrotranslator" classname="net.sf.retrotranslator.transformer.RetrotranslatorTask">
 		<classpath>
-			<pathelement location="tools/retrotranslator/retrotranslator-transformer-1.2.7.jar" />
-			<pathelement location="tools/retrotranslator/retrotranslator-runtime-1.2.7.jar" />
+			<pathelement location="${tools}/retrotranslator/retrotranslator-transformer-1.2.7.jar" />
+			<pathelement location="${tools}/retrotranslator/retrotranslator-runtime-1.2.7.jar" />
 		</classpath>
 	</taskdef>
 
 	<!-- Findbugs -->
 	<taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask">
 		<classpath>
-			<pathelement location="tools/findbugs/lib/findbugs-ant.jar" />
+			<pathelement location="${tools}/findbugs/lib/findbugs-ant.jar" />
 		</classpath>
 	</taskdef>
 
 	<!-- Checkstyle -->
 	<taskdef resource="checkstyletask.properties">
 		<classpath>
-			<pathelement location="tools/checkstyle/checkstyle-all-4.2.jar" />
+			<pathelement location="${tools}/checkstyle/checkstyle-all-4.2.jar" />
 		</classpath>
 	</taskdef>
 
 	<!-- NSIS 1.3 -->
 	<taskdef name="nsis" classname="net.sf.nsisant.Task">
 		<classpath>
-			<pathelement location="tools/nsis/nsisant-1.3.custom.jar" />
+			<pathelement location="${tools}/nsis/nsisant-1.3.custom.jar" />
 		</classpath>
 	</taskdef>
 
 	<!-- Ant Contrib -->
-	<taskdef resource="net/sf/antcontrib/antcontrib.properties" classpathref="ant-contrib.path" />
+	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
+		<classpath>
+			<fileset dir="${tools}/ant-contrib" includes="**/*.jar" />
+		</classpath>
+	</taskdef>
 
 	<!-- FMPP (FreeMarker-based text file PreProcessor) -->
-	<taskdef name="fmpp" classname="fmpp.tools.AntTask" classpathref="fmpp.path" />
-
+	<taskdef name="fmpp" classname="fmpp.tools.AntTask" >
+		<classpath>
+			<fileset dir="${tools}/fmpp" includes="**/*.jar" />
+		</classpath>
+	</taskdef>
+	
 	<!-- ==================== -->
 	<!-- ===  Ant Macros  === -->
 	<!-- ==================== -->
@@ -763,7 +329,7 @@
 	<macrodef name="findbugsModule">
 		<attribute name="name" />
 		<sequential>
-			<findbugs debug="false" home="tools/findbugs" output="html" outputFile="${temp}/findbugs/${mod-@{name}-id}-fb.html">
+			<findbugs debug="false" home="${tools}/findbugs" output="html" outputFile="${temp}/findbugs/${mod-@{name}-id}-fb.html">
 				<auxClasspath refid="mod-@{name}-path" />
 				<sourcePath path="${mod}/${mod-@{name}-id}/src" />
 				<class location="${classes}/${mod-@{name}-id}" />
@@ -798,7 +364,7 @@
 			<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@artifact-id@" value="${mod-pom-@{name}-artifactId}" />
 
 			<!-- Generation of the pom.xml file --> 
-			<copy file="${temp}/poms/${mod-@{name}-id}.pom" tofile="../modules/${mod-@{name}-id}/pom.xml" overwrite="true" />
+			<copy file="${temp}/poms/${mod-@{name}-id}.pom" tofile="${src}/modules/${mod-@{name}-id}/pom.xml" overwrite="true" />
 		</sequential>
 	</macrodef>
 
@@ -824,7 +390,7 @@
 			<!-- sets the final pom group id: "org.restlet" -->
 			<property name="lib-@{name}-groupId" value="${lib-@{name}-package}" />
 			<property name="lib-pom-@{name}-groupId" value="org.restlet" />
-				
+			
 			<copy file="${tmpl}/poms/${lib-@{name}-package}.pom" tofile="${temp}/poms/${lib-@{name}-id}.pom" overwrite="true" />
 			<replace file="${temp}/poms/${lib-@{name}-id}.pom" token="@parent-group-id@" value="${parent-maven-groupId}" />
 			<replace file="${temp}/poms/${lib-@{name}-id}.pom" token="@parent-artifact-id@" value="${parent-maven-artifactId}" />
@@ -857,7 +423,7 @@
 			<path id="backport-@{name}-classpath">
 				<dirset dir="${classes}" />
 				<path refid="mod-@{name}-path" />
-				<fileset dir="tools/retrotranslator">
+				<fileset dir="${tools}/retrotranslator">
 					<include name="**/*.jar" />
 				</fileset>
 				<fileset dir="${jdk1.4-home}/jre/lib">
@@ -937,7 +503,7 @@
 			</condition>
 			<property name="mod-pom-@{name}-artifactId" value="${mod-@{name}-id}" />
 
-			<!-- All files generated from the modules are stampped with the current full version number -->
+			<!-- All files generated from the modules are stamped with the current full version number -->
 			<property name="mod-dir-@{name}-maven2" value="${dist-maven2}/${mod-dir-@{name}-maven-groupId}/${mod-pom-@{name}-artifactId}/${version-maven}" />
 			<mkdir dir="${mod-dir-@{name}-maven2}" />
 
@@ -999,39 +565,12 @@
 
 		<!-- Generate the Maven POM files -->
 		<mkdir dir="${temp}/poms" />
-		<pomModule name="core" />
-		<pomModule name="core-gae" />
-		<pomModule name="core-gwt" />
-		<pomModule name="core-example" />
-		<pomModule name="core-test" />
-		<pomModule name="core-android" />
-		<pomModule name="atom" />
-		<pomModule name="fileupload" />
-		<pomModule name="freemarker" />
-		<pomModule name="grizzly" />
-		<pomModule name="gwt" />
-		<pomModule name="httpclient" />
-		<pomModule name="javamail" />
-		<pomModule name="jaxb" />
-		<pomModule name="jaxrs" />
-		<pomModule name="jdbc" />
-		<pomModule name="jetty" />
-		<pomModule name="jibx" />
-		<pomModule name="json" />
-		<pomModule name="rdf" />
-		<pomModule name="lucene" />
-		<pomModule name="net" />
-		<pomModule name="oauth" />
-		<!-- disabled for now <pomModule name="rome" /> -->
-		<pomModule name="servlet" />
-		<pomModule name="simple" />
-		<pomModule name="spring" />
-		<pomModule name="ssl" />
-		<pomModule name="velocity" />
-		<pomModule name="wadl" />
-		<pomModule name="xdb" />
-		<pomModule name="xml" />
-		<pomModule name="xstream" />
+		
+		<for param="module" delimiter=" " list="${modules}">
+			<sequential>
+				<pomModule name="${module"/>
+			</sequential>
+		</for>
 
 		<!-- Generate the parent POM -->
 		<fmpp sourcefile="${tmpl}/poms/${parent-maven-artifactId}.pom" outputfile="${temp}/poms/${parent-maven-artifactId}.pom" dataroot="${basedir}" >
@@ -1041,14 +580,14 @@
 			</data>
 		</fmpp>
 		<!-- Copy it as the parent pom module -->
-		<copy file="${temp}/poms/${parent-maven-artifactId}.pom" tofile="../modules/pom.xml" overwrite="true" />
-		
-		<pomLibrary name="simple" />
-		<pomLibrary name="jaxrs" />
-		<pomLibrary name="json" />
-		<pomLibrary name="db4o"/>
-		<pomLibrary name="db4o-nativequery" />
-		<pomLibrary name="bloat" />
+		<copy file="${temp}/poms/${parent-maven-artifactId}.pom" tofile="${src}/modules/pom.xml" overwrite="true" />
+
+
+		<for param="package" delimiter=" " list="${packages-maven}">
+			<sequential>
+				<pomLibrary name="${package}" />
+			</sequential>
+		</for>
 		
 		<!-- Generate the NSIS files -->
 		<copy file="${tmpl}/nsis/common.nsh" todir="${temp}" overwrite="true" />
@@ -1065,6 +604,7 @@
 		<replace file="${temp}/setup.nsi" token="@dist-base@" value="../${dist-base}" />
 
 		<!-- Generate the javadocs overview files -->
+		<!-- TODO -->
 		<copy file="${tmpl}/javadocs/overview-api.tmpl" tofile="${temp}/javadocs/overview-api.html" overwrite="true" />
 		<copy file="${tmpl}/javadocs/overview-engine.tmpl" tofile="${temp}/javadocs/overview-engine.html" overwrite="true" />
 		<copy file="${tmpl}/javadocs/overview-ext.tmpl" tofile="${temp}/javadocs/overview-ext.html" overwrite="true" />
@@ -1083,8 +623,9 @@
 	<target name="generate-classes" description="Compile the Java source files.">
 		<mkdir dir="${classes}" />
 		<copy todir="${mod}" overwrite="true">
-			<fileset dir="../modules" />
+			<fileset dir="${src}/modules" />
 		</copy>
+		<!-- TODO -->
 		<replace file="${mod}/${mod-core-id}/src/org/restlet/engine/Engine.java" token="@major-number@" value="${major-number}" />
 		<replace file="${mod}/${mod-core-id}/src/org/restlet/engine/Engine.java" token="@minor-number@" value="${minor-number}" />
 		<replace file="${mod}/${mod-core-id}/src/org/restlet/engine/Engine.java" token="@release-type@" value="${release-type}" />
@@ -1105,282 +646,20 @@
 		<replace file="${mod}/${mod-core-android-id}/src/org/restlet/engine/Engine.java" token="@release-type@" value="${release-type}" />
 		<replace file="${mod}/${mod-core-android-id}/src/org/restlet/engine/Engine.java" token="@release-number@" value="${release-number}" />
 
-		<compileModule name="core" />
-		<compileModule name="core-gae" />
-		<compileModule name="core-gwt" />
-		<compileModule name="core-android" />
-
-		<compileModule name="xml" />
-		<compileModule name="atom" />
-		<compileModule name="fileupload" />
-		<compileModule name="freemarker" />
-		<compileModule name="grizzly" />
-		<compileModule name="httpclient" />
-		<compileModule name="javamail" />
-		<compileModule name="jaxb" />
-		<compileModule name="jdbc" />
-		<compileModule name="jetty" />
-		<compileModule name="jibx" />
-		<compileModule name="json" />
-
-		<!-- depends on json -->
-		<compileModule name="jaxrs" />
-
-		<compileModule name="lucene" />
-		<compileModule name="net" />
-		<compileModule name="oauth" />
-		<compileModule name="rdf" />
-		<compileModule name="servlet" />
-
-		<!-- depends on servlet -->
-		<compileModule name="gwt" />
-
-		<compileModule name="rome" />
-		<compileModule name="simple" />
-
-		<!-- depends on servlet -->
-		<compileModule name="spring" />
-
-		<compileModule name="ssl" />
-		<compileModule name="velocity" />
-		<compileModule name="wadl" />
-
-		<!-- depends on servlet -->
-		<compileModule name="xdb" />
-
-		<compileModule name="xstream" />
-
-		<!-- depends on many things -->
-		<compileModule name="core-example" />
-		<compileModule name="core-test" />
+		<for param="module" delimiter=" " list="${modules-sorted-by-dep}">
+			<sequential>
+				<compileModule name="${module"/>
+			</sequential>
+		</for>
 	</target>
 
 	<!-- GENERATE-BACKPORT target -->
 	<target name="generate-backport" if="do-backport" depends="generate-classes" description="Backport classes using Retrotranslator.">
-		<backportModule name="core" failonwarning="@{backport-failonwarning}" />
-		<backportModule name="core-example" failonwarning="@{backport-failonwarning}" />
-		<backportModule name="core-gwt" failonwarning="@{backport-failonwarning}" />
-		<backportModule name="core-android" failonwarning="@{backport-failonwarning}" />
-		<backportModule name="core-test" failonwarning="@{backport-failonwarning}" />
-		<backportModule name="atom" failonwarning="@{backport-failonwarning}" />
-		<backportModule name="fileupload" failonwarning="@{backport-failonwarning}" />
-		<backportModule name="freemarker" failonwarning="@{backport-failonwarning}" />
-		<backportModule name="grizzly" failonwarning="@{backport-failonwarning}" />
-		<backportModule name="gwt" failonwarning="@{backport-failonwarning}" />
-		<backportModule name="httpclient" failonwarning="@{backport-failonwarning}" />
-		<backportModule name="javamail" failonwarning="@{backport-failonwarning}" />
-		<backportModule name="jaxb" failonwarning="@{backport-failonwarning}" />
-		<backportModule name="jaxrs" failonwarning="@{backport-failonwarning}" />
-		<backportModule name="jdbc" failonwarning="@{backport-failonwarning}" />
-		<backportModule name="jetty" failonwarning="@{backport-failonwarning}" />
-		<backportModule name="jibx" failonwarning="@{backport-failonwarning}" />
-		<backportModule name="json" failonwarning="@{backport-failonwarning}" />
-		<backportModule name="lucene" failonwarning="@{backport-failonwarning}" />
-		<backportModule name="net" failonwarning="@{backport-failonwarning}" />
-		<backportModule name="oauth" failonwarning="@{backport-failonwarning}" />
-		<backportModule name="rdf" failonwarning="@{backport-failonwarning}" />
-		<backportModule name="rome" failonwarning="@{backport-failonwarning}" />
-		<backportModule name="servlet" failonwarning="@{backport-failonwarning}" />
-		<backportModule name="simple" failonwarning="@{backport-failonwarning}" />
-		<backportModule name="spring" failonwarning="@{backport-failonwarning}" />
-		<backportModule name="ssl" failonwarning="@{backport-failonwarning}" />
-		<backportModule name="velocity" failonwarning="@{backport-failonwarning}" />
-		<backportModule name="wadl" failonwarning="@{backport-failonwarning}" />
-		<backportModule name="xdb" failonwarning="@{backport-failonwarning}" />
-		<backportModule name="xml" failonwarning="@{backport-failonwarning}" />
-		<backportModule name="xstream" failonwarning="@{backport-failonwarning}" />
-	</target>
-
-	<!-- JAVADOC target -->
-	<target name="generate-javadocs" if="do-javadoc" depends="generate-classes" description="Generate the Javadocs.">
-		<delete includeEmptyDirs="true" verbose="false" quiet="true">
-			<fileset dir="${docs-api}" excludes="**/.svn" />
-			<fileset dir="${docs-engine}" excludes="**/.svn" />
-			<fileset dir="${docs-ext}" excludes="**/.svn" />
-			<fileset dir="${docs-gae}" excludes="**/.svn" />
-			<fileset dir="${docs-gwt}" excludes="**/.svn" />
-			<fileset dir="${docs-android}" excludes="**/.svn" />
-		</delete>
-
-		<javadoc packagenames="org.restlet.*" excludepackagenames="${exclude-packages}, org.restlet.engine.*" destdir="${docs-api}" classpathref="path-all" author="true" version="true" use="true" windowtitle="Restlet API ${version-full}" doctitle="Restlet API ${version-full}" overview="${temp}/javadocs/overview-api.html" stylesheetfile="${tmpl}/javadocs/stylesheet.css" verbose="${verbose}">
-			<sourcepath>
-				<pathelement path="${mod}/${mod-core-id}/src/" />
-			</sourcepath>
-
-			<bottom>
-				<![CDATA[<i>Copyright &#169; 2005-2009 <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
-			</bottom>
-
-			<group title="${edition-api}">
-				<package name="org.restlet*" />
-			</group>
-
-			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
-		</javadoc>
-
-		<javadoc packagenames="org.restlet.engine.*" excludepackagenames="${exclude-packages}" destdir="${docs-engine}" classpathref="path-all" author="true" version="true" use="true" windowtitle="Restlet Engine ${version-full}" doctitle="Restlet Engine ${version-full}" overview="${temp}/javadocs/overview-engine.html" stylesheetfile="${tmpl}/javadocs/stylesheet.css" verbose="${verbose}">
-			<sourcepath>
-				<pathelement path="${mod}/${mod-core-id}/src/" />
-			</sourcepath>
-
-			<bottom>
-				<![CDATA[<i>Copyright &#169; 2005-2009 <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
-			</bottom>
-
-			<group title="${edition-engine}">
-				<package name="org.restlet.engine*" />
-			</group>
-
-			<link href="http://www.restlet.org/documentation/${version-minor}/api/" packagelistLoc="${docs-api}" offline="true" />
-			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
-		</javadoc>
-
-		<javadoc packagenames="org.restlet.ext.*" excludepackagenames="${exclude-packages}" destdir="${docs-ext}" classpathref="path-all" author="true" version="true" use="true" windowtitle="Restlet Extensions ${version-full}" doctitle="Restlet Extensions ${version-full}" overview="${temp}/javadocs/overview-ext.html" stylesheetfile="${tmpl}/javadocs/stylesheet.css" verbose="${verbose}">
-			<sourcepath>
-				<pathelement path="${mod}/${mod-atom-id}/src/" />
-				<pathelement path="${mod}/${mod-fileupload-id}/src/" />
-				<pathelement path="${mod}/${mod-freemarker-id}/src/" />
-				<pathelement path="${mod}/${mod-grizzly-id}/src/" />
-				<pathelement path="${mod}/${mod-gwt-id}/src/" />
-				<pathelement path="${mod}/${mod-httpclient-id}/src/" />
-				<pathelement path="${mod}/${mod-javamail-id}/src/" />
-				<pathelement path="${mod}/${mod-jaxb-id}/src/" />
-				<pathelement path="${mod}/${mod-jaxrs-id}/src/" />
-				<pathelement path="${mod}/${mod-jdbc-id}/src/" />
-				<pathelement path="${mod}/${mod-jetty-id}/src/" />
-				<pathelement path="${mod}/${mod-jibx-id}/src/" />
-				<pathelement path="${mod}/${mod-json-id}/src/" />
-				<pathelement path="${mod}/${mod-lucene-id}/src/" />
-				<pathelement path="${mod}/${mod-net-id}/src/" />
-				<pathelement path="${mod}/${mod-oauth-id}/src/" />
-				<pathelement path="${mod}/${mod-rdf-id}/src/" />
-				<!-- disabled for now <pathelement path="${mod}/${mod-rome-id}/src/" /> -->
-				<pathelement path="${mod}/${mod-servlet-id}/src/" />
-				<pathelement path="${mod}/${mod-simple-id}/src/" />
-				<pathelement path="${mod}/${mod-spring-id}/src/" />
-				<pathelement path="${mod}/${mod-ssl-id}/src/" />
-				<pathelement path="${mod}/${mod-velocity-id}/src/" />
-				<pathelement path="${mod}/${mod-wadl-id}/src/" />
-				<pathelement path="${mod}/${mod-xdb-id}/src/" />
-				<pathelement path="${mod}/${mod-xml-id}/src/" />
-				<pathelement path="${mod}/${mod-xstream-id}/src/" />
-			</sourcepath>
-
-			<bottom>
-				<![CDATA[<i>Copyright &#169; 2005-2009 <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
-			</bottom>
-
-			<group title="${edition-ext-standards}">
-				<package name="org.restlet.ext.atom*" />
-				<package name="org.restlet.ext.jaxrs*" />
-				<package name="org.restlet.ext.json*" />
-				<package name="org.restlet.ext.oauth*" />
-				<package name="org.restlet.ext.rdf*" />
-				<package name="org.restlet.ext.ssl*" />
-				<package name="org.restlet.ext.wadl*" />
-				<package name="org.restlet.ext.xml*" />
-			</group>
-			<group title="${edition-ext-connectors}">
-				<package name="org.restlet.ext.grizzly*" />
-				<package name="org.restlet.ext.httpclient*" />
-				<package name="org.restlet.ext.javamail*" />
-				<package name="org.restlet.ext.jdbc*" />
-				<package name="org.restlet.ext.jetty*" />
-				<package name="org.restlet.ext.net*" />
-				<package name="org.restlet.ext.simple*" />
-			</group>
-			<group title="${edition-ext-integrations}">
-				<package name="org.restlet.ext.gwt*" />
-				<package name="org.restlet.ext.lucene*" />
-				<package name="org.restlet.ext.rome*" />
-				<package name="org.restlet.ext.servlet*" />
-				<package name="org.restlet.ext.spring*" />
-				<package name="org.restlet.ext.xdb*" />
-				<package name="org.restlet.ext.fileupload*" />
-				<package name="org.restlet.ext.freemarker*" />
-				<package name="org.restlet.ext.jaxb*" />
-				<package name="org.restlet.ext.jibx*" />
-				<package name="org.restlet.ext.velocity*" />
-				<package name="org.restlet.ext.xstream*" />
-			</group>
-
-			<link href="http://freemarker.sourceforge.net/docs/api/" />
-			<link href="http://jakarta.apache.org/commons/codec/apidocs/" />
-			<link href="http://jakarta.apache.org/commons/collections/api-release/" />
-			<link href="http://jakarta.apache.org/commons/fileupload/apidocs/" />
-			<link href="http://jakarta.apache.org/commons/httpclient/apidocs/" />
-			<link href="http://jakarta.apache.org/velocity/docs/api/" />
-			<link href="http://xstream.codehaus.org/javadoc/" />
-			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
-			<link href="http://java.sun.com/javaee/5/docs/api/" />
-			<!-- Note: The link to Java 6 is a fall-back for the javax.script package, which otherwise is not documented for Java 5.
-			     Order is important here: it *must* appear after the link for Java 5 documentation. -->
-			<link href="http://java.sun.com/javase/6/docs/api/" />
-			<link href="http://java.sun.com/products/javamail/javadocs/" />
-			<link href="https://jaxb.dev.java.net/nonav/${lib-jaxb-ri-version}.${lib-jaxb-ri-release}/docs/api/" />
-			<link href="http://jetty.mortbay.org/apidocs/" />
-			<link href="http://jibx.sourceforge.net/api/" />
-			<link href="https://jsr311.dev.java.net/nonav/javadoc/" />
-			<link href="http://lucene.apache.org/java/2_4_0/api/" />
-			<link href="http://lucene.apache.org/solr/api/" />
-			<link href="http://lucene.apache.org/tika/apidocs/" />
-			<link href="https://rome.dev.java.net/apidocs/1_0/" />
-			<link href="http://static.springframework.org/spring/docs/${lib-spring-version}.x/api/" />
-			<link href="http://www.json.org/javadoc/" />
-			<link href="http://www.restlet.org/documentation/${version-minor}/api/" packagelistLoc="${docs-api}" offline="true" />
-			<link href="http://www.restlet.org/documentation/${version-minor}/engine/" packagelistLoc="${docs-engine}" offline="true" />
-			<link href="http://www.simpleframework.org/doc/javadoc/" />
-		</javadoc>
-
-		<javadoc packagenames="org.restlet.*" excludepackagenames="${exclude-packages},*org.restlet.engine.*" destdir="${docs-gae}" classpathref="path-all" author="true" version="true" use="true" windowtitle="Restlet-GAE module ${version-full}" doctitle="Restlet-GAE module ${version-full}" overview="${temp}/javadocs/overview-gae.html" stylesheetfile="${tmpl}/javadocs/stylesheet.css" verbose="${verbose}">
-			<sourcepath>
-				<pathelement path="${mod}/${mod-core-gae-id}/src/" />
-			</sourcepath>
-
-			<bottom>
-				<![CDATA[<i>Copyright &#169; 2005-2009 <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
-			</bottom>
-
-			<group title="${restlet-gae}">
-				<package name="org.restlet*" />
-			</group>
-
-			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
-		</javadoc>
-
-		<javadoc packagenames="org.restlet.gwt.*" excludepackagenames="${exclude-packages},*org.restlet.gwt.engine.*" destdir="${docs-gwt}" classpathref="path-all" author="true" version="true" use="true" windowtitle="Restlet-GWT module ${version-full}" doctitle="Restlet-GWT module ${version-full}" overview="${temp}/javadocs/overview-gwt.html" stylesheetfile="${tmpl}/javadocs/stylesheet.css" verbose="${verbose}">
-			<sourcepath>
-				<pathelement path="${mod}/${mod-core-gwt-id}/src/" />
-			</sourcepath>
-
-			<bottom>
-				<![CDATA[<i>Copyright &#169; 2005-2009 <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
-			</bottom>
-
-			<group title="${restlet-gwt}">
-				<package name="org.restlet.gwt*" />
-			</group>
-
-			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
-			<link href="http://google-web-toolkit.googlecode.com/svn/javadoc/1.5/" />
-		</javadoc>
-
-		<javadoc packagenames="org.restlet.*" excludepackagenames="${exclude-packages},*org.restlet.engine.*" destdir="${docs-android}" classpathref="path-all" author="true" version="true" use="true" windowtitle="Restlet-Android module ${version-full}" doctitle="Restlet-Android module ${version-full}" overview="${temp}/javadocs/overview-android.html" stylesheetfile="${tmpl}/javadocs/stylesheet.css" verbose="${verbose}">
-			<sourcepath>
-				<pathelement path="${mod}/${mod-core-android-id}/src/" />
-			</sourcepath>
-
-			<bottom>
-				<![CDATA[<i>Copyright &#169; 2005-2009 <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
-			</bottom>
-
-			<group title="${restlet-android}">
-				<package name="org.restlet*" />
-			</group>
-
-			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
-		</javadoc>
-
+		<for param="module" delimiter=" " list="${modules}">
+			<sequential>
+				<backportModule name="${module" failonwarning="@{backport-failonwarning}" />
+			</sequential>
+		</for>
 	</target>
 
 	<!-- umlgraph target -->
@@ -1395,12 +674,12 @@
 				<![CDATA[<i>Copyright &#169; 2005-2009 <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
 			</bottom>
 
-			<group title="${edition-api}">
+			<group title="${restlet-api}">
 				<package name="org.restlet*" />
 			</group>
 
 			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
-			<doclet name="org.umlgraph.doclet.UmlGraphDoc" path="tools/umlgraph/umlgraph.jar">
+			<doclet name="org.umlgraph.doclet.UmlGraphDoc" path="${tools}/umlgraph/umlgraph.jar">
 				<param name="-attributes" />
 				<param name="-operations" />
 				<param name="-qualify" />
@@ -1450,74 +729,20 @@
 
 	<target name="verify-findbugs" if="do-findbugs" description="Attempts to find bugs.">
 		<mkdir dir="${temp}/findbugs" />
-		<findbugsModule name="core" />
-		<findbugsModule name="core-example" />
-		<findbugsModule name="core-gae" />
-		<findbugsModule name="core-gwt" />
-		<findbugsModule name="core-android" />
-		<findbugsModule name="atom" />
-		<findbugsModule name="fileupload" />
-		<findbugsModule name="freemarker" />
-		<findbugsModule name="grizzly" />
-		<findbugsModule name="gwt" />
-		<findbugsModule name="httpclient" />
-		<findbugsModule name="javamail" />
-		<findbugsModule name="jaxb" />
-		<findbugsModule name="jaxrs" />
-		<findbugsModule name="jdbc" />
-		<findbugsModule name="jetty" />
-		<findbugsModule name="jibx" />
-		<findbugsModule name="json" />
-		<findbugsModule name="lucene" />
-		<findbugsModule name="net" />
-		<findbugsModule name="oauth" />
-		<findbugsModule name="rdf" />
-		<findbugsModule name="rome" />
-		<findbugsModule name="servlet" />
-		<findbugsModule name="simple" />
-		<findbugsModule name="spring" />
-		<findbugsModule name="ssl" />
-		<findbugsModule name="velocity" />
-		<findbugsModule name="wadl" />
-		<findbugsModule name="xdb" />
-		<findbugsModule name="xml" />
-		<findbugsModule name="xstream" />
+		<for param="module" delimiter=" " list="${modules}">
+			<sequential>
+				<findbugsModule name="${module" />
+			</sequential>
+		</for>
 	</target>
 
 	<target name="verify-checkstyle" if="do-checkstyle" description="Check the style of the code.">
 		<mkdir dir="${temp}/checkstyle" />
-		<checkstyleModule name="core" />
-		<checkstyleModule name="core-example" />
-		<checkstyleModule name="core-gae" />
-		<checkstyleModule name="core-gwt" />
-		<checkstyleModule name="core-android" />
-		<checkstyleModule name="atom" />
-		<checkstyleModule name="fileupload" />
-		<checkstyleModule name="freemarker" />
-		<checkstyleModule name="grizzly" />
-		<checkstyleModule name="gwt" />
-		<checkstyleModule name="httpclient" />
-		<checkstyleModule name="javamail" />
-		<checkstyleModule name="jaxb" />
-		<checkstyleModule name="jaxrs" />
-		<checkstyleModule name="jdbc" />
-		<checkstyleModule name="jetty" />
-		<checkstyleModule name="jibx" />
-		<checkstyleModule name="json" />
-		<checkstyleModule name="lucene" />
-		<checkstyleModule name="net" />
-		<checkstyleModule name="oauth" />
-		<checkstyleModule name="rdf" />
-		<checkstyleModule name="rome" />
-		<checkstyleModule name="servlet" />
-		<checkstyleModule name="simple" />
-		<checkstyleModule name="spring" />
-		<checkstyleModule name="ssl" />
-		<checkstyleModule name="velocity" />
-		<checkstyleModule name="wadl" />
-		<checkstyleModule name="xdb" />
-		<checkstyleModule name="xml" />
-		<checkstyleModule name="xstream" />
+		<for param="module" delimiter=" " list="${modules}">
+			<sequential>
+				<checkstyleModule name="${module" />
+			</sequential>
+		</for>
 	</target>
 
 	<!-- Integrate target -->
@@ -1544,6 +769,7 @@
 		</copy>
 
 		<!-- Copy the Javadoc -->
+		<!-- TODO -->
 		<if>
 			<istrue value="${do-javadoc}" />
 			<then>
@@ -1586,81 +812,19 @@
 		</copy>
 
 		<!-- Packages libraries -->
-		<stageLibrary name="activation" />
-		<stageLibrary name="bloat" />
-		<stageLibrary name="cli" />
-		<stageLibrary name="codec" />
-		<stageLibrary name="collections" />
-		<stageLibrary name="db4o" />
-		<stageLibrary name="dbcp" />
-		<stageLibrary name="fileupload" />
-		<stageLibrary name="freemarker" />
-		<stageLibrary name="grizzly" />
-		<!-- disabled for now  <stageLibrary name="gwt" /> -->
-		<stageLibrary name="httpclient" />
-		<stageLibrary name="io" />
-		<stageLibrary name="javamail" />
-		<stageLibrary name="jaxb-api" />
-		<stageLibrary name="jaxb-ri" />
-		<stageLibrary name="jaxrs" />
-		<!-- disabled for now  <stageLibrary name="jdom" /> -->
-		<stageLibrary name="jettison" />
-		<stageLibrary name="jetty" />
-		<stageLibrary name="jibx" />
-		<!-- disabled for now  <stageLibrary name="jline" /> -->
-		<stageLibrary name="json" />
-		<stageLibrary name="jsslutils" />
-		<stageLibrary name="lang" />
-		<stageLibrary name="logging" />
-		<stageLibrary name="lucene" />
-		<!-- disabled for now  <stageLibrary name="mina" /> -->
-		<stageLibrary name="oauth" />
-		<stageLibrary name="pool" />
-		<stageLibrary name="rhino" />
-		<!-- disabled for now  <stageLibrary name="rome" /> -->
-		<stageLibrary name="servlet" />
-		<stageLibrary name="simple" />
-		<stageLibrary name="solr" />
-		<stageLibrary name="spring" />
-		<stageLibrary name="stax" />
-		<stageLibrary name="tika" />
-		<stageLibrary name="velocity" />
-		<stageLibrary name="wrapper" />
-		<stageLibrary name="xstream" />
+		<for param="library" delimiter=" " list="${libraries-classic}">
+			<sequential>
+				<stageLibrary name="${library}" />
+			</sequential>
+		</for>
 
 		<!-- Package modules -->
-		<stageModule name="core" />
-		<stageModule name="core-example" />
-		<stageModule name="core-gae" />
-		<stageModule name="core-gwt" includeSource="true" />
-		<stageModule name="core-android" />
-		<stageModule name="atom" />
-		<stageModule name="fileupload" />
-		<stageModule name="freemarker" />
-		<stageModule name="grizzly" />
-		<stageModule name="gwt" />
-		<stageModule name="httpclient" />
-		<stageModule name="javamail" />
-		<stageModule name="jaxb" />
-		<stageModule name="jaxrs" />
-		<stageModule name="jibx" />
-		<stageModule name="jdbc" />
-		<stageModule name="jetty" />
-		<stageModule name="json" />
-		<stageModule name="lucene" />
-		<stageModule name="net" />
-		<stageModule name="oauth" />
-		<stageModule name="rdf" />
-		<!-- disabled for now  <stageModule name="rome" /> -->
-		<stageModule name="servlet" />
-		<stageModule name="simple" />
-		<stageModule name="spring" />
-		<stageModule name="ssl" />
-		<stageModule name="velocity" />
-		<stageModule name="wadl" />
-		<stageModule name="xdb" />
-		<stageModule name="xml" />
-		<stageModule name="xstream" />
+		<!-- TODO include source pour le module core gwt -->
+		<for param="module" delimiter=" " list="${modules}">
+			<sequential>
+				<stageModule name="${module}" />
+			</sequential>
+		</for>
 
 		<!-- Copy the POM files -->
 		<!-- 
@@ -1692,46 +856,19 @@
 	<!-- STAGE-MAVEN-2 target -->
 	<target name="stage-maven-2" if="do-maven" description="Generate the maven-2.x distributions.">
 		<delete dir="${dist-maven2}" verbose="false" quiet="true" includeEmptyDirs="true" />
-		<maven2Module name="core" />
-		<maven2Module name="core-example" />
-		<maven2Module name="core-gae" />
-		<maven2Module name="core-gwt" />
-		<maven2Module name="core-android" />
-		<maven2Module name="atom" />
-		<maven2Module name="fileupload" />
-		<maven2Module name="freemarker" />
-		<maven2Module name="grizzly" />
-		<maven2Module name="gwt" />
-		<maven2Module name="httpclient" />
-		<maven2Module name="javamail" />
-		<maven2Module name="jaxb" />
-		<maven2Module name="jaxrs" />
-		<maven2Module name="jdbc" />
-		<maven2Module name="jetty" />
-		<maven2Module name="jibx" />
-		<maven2Module name="json" />
-		<maven2Module name="lucene" />
-		<maven2Module name="net" />
-		<maven2Module name="oauth" />
-		<maven2Module name="rdf" />
-		<!-- disabled for now <maven2Module name="rome" /> -->
-		<maven2Module name="servlet" />
-		<maven2Module name="simple" />
-		<maven2Module name="spring" />
-		<maven2Module name="ssl" />
-		<maven2Module name="velocity" />
-		<maven2Module name="wadl" />
-		<maven2Module name="xdb" />
-		<maven2Module name="xml" />
-		<maven2Module name="xstream" />
+		<for param="module" delimiter=" " list="${modules}">
+			<sequential>
+				<maven2Module name="${module}" />
+			</sequential>
+		</for>
 
-		<maven2Library name="simple" />
-		<maven2Library name="jaxrs" />
-		<!-- disabled for now <maven2Library name="jdom" /> -->
-		<!-- disabled for now <maven2Library name="rome" /> -->
-		<maven2Library name="db4o" />
-		<maven2Library name="db4o-nativequery" />
-		<maven2Library name="bloat" />
+		<for param="package" delimiter=" " list="${packages-maven}">
+			<sequential>
+				<maven2Library name="${package}" />
+			</sequential>
+		</for>
+		
+		<!-- TODO attention au nom des packages -->
 
 		<!-- Add the parent pom -->
 		<property name="mod-restlet-parent-version-maven" value="${version-maven}" />
