@@ -1,0 +1,56 @@
+﻿<?xml version="1.0"?>
+
+<!-- ===============================================================
+     Restlet paths script - Copyright 2005-2009 Noelios Technologies
+     =============================================================== -->
+
+<project name="Restlet-paths">
+
+<#list editions[editionKey].modules?sort_by("dependencyLevel") as module>
+	<path id="mod-${module.id}-path">
+<#if module.modDependencies?size = 0>
+		<#noparse><pathelement path="${classes}/</#noparse>${module.package}" />
+<#else>
+	<#list module.modDependencies as dependency>
+		<path refid="mod-${dependency.id}-path" />
+		<#noparse><pathelement path="${classes}/${mod-</#noparse>${dependency.id}-id}" />
+	</#list>
+</#if>
+	<#list module.libDependencies as dependency>
+		<#noparse><fileset dir="${lib}/${lib-</#noparse>${dependency.id}-id}" includes="*.jar" />
+	</#list>
+	</path>
+</#list>
+	
+		<!-- retrotranslator 1.2 Pour le module de tests
+		<pathelement location="$ {tools}/retrotranslator/backport-util-concurrent-3.1.jar" />
+		<pathelement location="$ {tools}/retrotranslator/retrotranslator-runtime-1.2.7.jar" />
+		<pathelement location="$ {tools}/retrotranslator/retrotranslator-transformer-1.2.7.jar" />
+-->
+
+	<path id="path-all">
+<#list editions[editionKey].modules?sort_by("id") as module>
+		<#noparse><pathelement path="${classes}/${mod-</#noparse>${module.id}-id}" />
+		<path refid="mod-${module.id}-path" />
+</#list>
+	</path>
+
+
+   <path id="core-source-path">
+<#list editions[editionKey].modules?sort_by("id") as module>
+<#if ((module.type!"") = "core")>
+      <#noparse><pathelement path="${mod}/${mod-</#noparse>${module.id}-id}-id}/src/" />
+</#if>
+</#list>
+   </path>
+
+
+   <path id="extensions-source-path">
+<#list editions[editionKey].modules?sort_by("id") as module>
+<#if ((module.type!"") = "connector") || ((module.type!"") = "integration") || ((module.type!"") = "extension")>
+      <#noparse><pathelement path="${mod}/${mod-</#noparse>${module.id}-id}-id}/src/" />
+</#if>
+</#list>
+   </path>
+
+</project>
