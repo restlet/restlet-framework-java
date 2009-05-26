@@ -87,9 +87,6 @@ import org.restlet.engine.http.HttpClientCall;
  * </tr>
  * </table>
  * 
- * It is also possible to specify a hostname verifier for HTTPS connections. See
- * the {@link #getHostnameVerifier()} method for details.
- * 
  * Note that by default, the {@link HttpURLConnection} class as implemented by
  * Sun will retry a request if an IO exception is caught, for example due to a
  * connection reset by the server. This can be annoying, especially because the

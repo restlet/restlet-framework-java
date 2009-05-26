@@ -179,7 +179,7 @@ public abstract class XmlRepresentation extends OutputRepresentation {
      * TODO Seems unused.
      * 
      * @param prefix
-     * @return
+     * @return result
      */
     public String getNamespaceURI(String prefix) {
         return this.namespaces.get(prefix);
@@ -189,7 +189,7 @@ public abstract class XmlRepresentation extends OutputRepresentation {
      * TODO Seems unused.
      * 
      * @param namespaceURI
-     * @return
+     * @return result
      */
     public String getPrefix(String namespaceURI) {
         String result = null;
@@ -212,7 +212,7 @@ public abstract class XmlRepresentation extends OutputRepresentation {
      * TODO Seems unused.
      * 
      * @param namespaceURI
-     * @return
+     * @return result
      */
     public Iterator<String> getPrefixes(String namespaceURI) {
         final List<String> result = new ArrayList<String>();
