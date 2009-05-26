@@ -1,5 +1,5 @@
 <library id="javamail">
-	<package id="javax.mail" />
+	<package id="javamail" name="javax.mail" />
 	<version>1.4</version>
 	<release>1</release>
 	<distributions>

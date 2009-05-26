@@ -5,6 +5,6 @@
 		http://www.junit.org/
 	</homeUri>
 	<downloadUri>
-		http://sourceforge.net/project/showfiles.php?group_id=15278&package_id=12472
+		<![CDATA[http://sourceforge.net/project/showfiles.php?group_id=15278&package_id=12472]]>
 	</downloadUri>
 </library>
