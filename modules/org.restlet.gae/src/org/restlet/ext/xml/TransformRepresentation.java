@@ -67,7 +67,7 @@ import org.xml.sax.XMLFilter;
  * This representation should be viewed as a wrapper representation that applies
  * a transform sheet on a source representation when it is read or written out.
  * Therefore, it isn't intended to be reused on different sources. For this use
- * case, you should instead use the {@link org.restlet.routing.Transformer} filter.
+ * case, you should instead use the {@link org.restlet.ext.xml.Transformer} filter.
  * 
  * @author Jerome Louvel
  */

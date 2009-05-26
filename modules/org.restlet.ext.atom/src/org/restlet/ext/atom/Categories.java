@@ -148,14 +148,15 @@ public class Categories extends SaxRepresentation {
      * @param entries
      *            The list of entries.
      */
-    public void setEntries(List<Category> categories) {
-        this.entries = categories;
+    public void setEntries(List<Category> entries) {
+        this.entries = entries;
     }
 
     /**
      * Indicates if the list is fixed.
      * 
-     * @return True if the list is fixed.
+     * @param fixed
+     *            True if the list is fixed.
      */
     public void setFixed(boolean fixed) {
         this.fixed = fixed;

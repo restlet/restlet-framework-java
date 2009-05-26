@@ -51,8 +51,6 @@ public class AppendableRepresentation extends StringRepresentation implements
      * Constructor. The following metadata are used by default: "text/plain"
      * media type, no language and the ISO-8859-1 character set.
      * 
-     * @param text
-     *            The string value.
      */
     public AppendableRepresentation() {
         this(null);

@@ -55,277 +55,283 @@ import org.xml.sax.ErrorHandler;
  */
 public abstract class XmlRepresentation extends OutputRepresentation {
 
-	/**
-	 * A SAX {@link EntityResolver} to use when resolving external entity
-	 * references while parsing this type of XML representations.
-	 * 
-	 * @see DocumentBuilder#setEntityResolver(EntityResolver)
-	 */
-	private volatile EntityResolver entityResolver;
+    /**
+     * A SAX {@link EntityResolver} to use when resolving external entity
+     * references while parsing this type of XML representations.
+     * 
+     * @see DocumentBuilder#setEntityResolver(EntityResolver)
+     */
+    private volatile EntityResolver entityResolver;
 
-	/**
-	 * A SAX {@link ErrorHandler} to use for signaling SAX exceptions while
-	 * parsing this type of XML representations.
-	 * 
-	 * @see DocumentBuilder#setErrorHandler(ErrorHandler)
-	 */
-	private volatile ErrorHandler errorHandler;
+    /**
+     * A SAX {@link ErrorHandler} to use for signaling SAX exceptions while
+     * parsing this type of XML representations.
+     * 
+     * @see DocumentBuilder#setErrorHandler(ErrorHandler)
+     */
+    private volatile ErrorHandler errorHandler;
 
-	/** Indicates if processing is namespace aware. */
-	private volatile boolean namespaceAware;
+    /** Indicates if processing is namespace aware. */
+    private volatile boolean namespaceAware;
 
-	/** Internal map of namespaces. */
-	private volatile Map<String, String> namespaces;
+    /** Internal map of namespaces. */
+    private volatile Map<String, String> namespaces;
 
-	/**
-	 * Indicates the desire for validating this type of XML representations
-	 * against an XML schema if one is referenced within the contents.
-	 * 
-	 * @see DocumentBuilderFactory#setValidating(boolean)
-	 */
-	private volatile boolean validating;
+    /**
+     * Indicates the desire for validating this type of XML representations
+     * against an XML schema if one is referenced within the contents.
+     * 
+     * @see DocumentBuilderFactory#setValidating(boolean)
+     */
+    private volatile boolean validating;
 
-	/**
-	 * Indicates the desire for processing <em>XInclude</em> if found in this
-	 * type of XML representations.
-	 * 
-	 * @see DocumentBuilderFactory#setXIncludeAware(boolean)
-	 */
-	private volatile boolean xIncludeAware;
+    /**
+     * Indicates the desire for processing <em>XInclude</em> if found in this
+     * type of XML representations.
+     * 
+     * @see DocumentBuilderFactory#setXIncludeAware(boolean)
+     */
+    private volatile boolean xIncludeAware;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param mediaType
-	 *            The representation's mediaType.
-	 */
-	public XmlRepresentation(MediaType mediaType) {
-		super(mediaType);
-		this.namespaces = null;
-		this.namespaceAware = false;
-	}
+    /**
+     * Constructor.
+     * 
+     * @param mediaType
+     *            The representation's mediaType.
+     */
+    public XmlRepresentation(MediaType mediaType) {
+        super(mediaType);
+        this.namespaces = null;
+        this.namespaceAware = false;
+    }
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param mediaType
-	 *            The representation's mediaType.
-	 * @param expectedSize
-	 *            The expected input stream size.
-	 */
-	public XmlRepresentation(MediaType mediaType, long expectedSize) {
-		super(mediaType, expectedSize);
-		this.namespaces = null;
-		this.namespaceAware = false;
-	}
+    /**
+     * Constructor.
+     * 
+     * @param mediaType
+     *            The representation's mediaType.
+     * @param expectedSize
+     *            The expected input stream size.
+     */
+    public XmlRepresentation(MediaType mediaType, long expectedSize) {
+        super(mediaType, expectedSize);
+        this.namespaces = null;
+        this.namespaceAware = false;
+    }
 
-	/**
-	 * Returns a document builder properly configured.
-	 * 
-	 * @return A document builder properly configured.
-	 */
-	protected DocumentBuilder getDocumentBuilder() throws IOException {
-		DocumentBuilder result = null;
+    /**
+     * Returns a document builder properly configured.
+     * 
+     * @return A document builder properly configured.
+     */
+    protected DocumentBuilder getDocumentBuilder() throws IOException {
+        DocumentBuilder result = null;
 
-		try {
-			final DocumentBuilderFactory dbf = DocumentBuilderFactory
-					.newInstance();
-			dbf.setNamespaceAware(isNamespaceAware());
-			dbf.setValidating(isValidating());
-			dbf.setXIncludeAware(isXIncludeAware());
+        try {
+            final DocumentBuilderFactory dbf = DocumentBuilderFactory
+                    .newInstance();
+            dbf.setNamespaceAware(isNamespaceAware());
+            dbf.setValidating(isValidating());
+            dbf.setXIncludeAware(isXIncludeAware());
 
-			result = dbf.newDocumentBuilder();
-			result.setEntityResolver(getEntityResolver());
-			result.setErrorHandler(getErrorHandler());
-		} catch (ParserConfigurationException pce) {
-			throw new IOException("Couldn't create the empty document: "
-					+ pce.getMessage());
-		}
+            result = dbf.newDocumentBuilder();
+            result.setEntityResolver(getEntityResolver());
+            result.setErrorHandler(getErrorHandler());
+        } catch (ParserConfigurationException pce) {
+            throw new IOException("Couldn't create the empty document: "
+                    + pce.getMessage());
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	/**
-	 * Return the possibly null current SAX {@link EntityResolver}.
-	 * 
-	 * @return The possibly null current SAX {@link EntityResolver}.
-	 */
-	public EntityResolver getEntityResolver() {
-		return entityResolver;
-	}
+    /**
+     * Return the possibly null current SAX {@link EntityResolver}.
+     * 
+     * @return The possibly null current SAX {@link EntityResolver}.
+     */
+    public EntityResolver getEntityResolver() {
+        return entityResolver;
+    }
 
-	/**
-	 * Return the possibly null current SAX {@link ErrorHandler}.
-	 * 
-	 * @return The possibly null current SAX {@link ErrorHandler}.
-	 */
-	public ErrorHandler getErrorHandler() {
-		return errorHandler;
-	}
+    /**
+     * Return the possibly null current SAX {@link ErrorHandler}.
+     * 
+     * @return The possibly null current SAX {@link ErrorHandler}.
+     */
+    public ErrorHandler getErrorHandler() {
+        return errorHandler;
+    }
 
-	/**
-	 * Returns the map of namespaces.
-	 * 
-	 * @return The map of namespaces.
-	 */
-	private Map<String, String> getNamespaces() {
-		if (this.namespaces == null) {
-			this.namespaces = new HashMap<String, String>();
-		}
-		return this.namespaces;
-	}
+    /**
+     * Returns the map of namespaces.
+     * 
+     * @return The map of namespaces.
+     */
+    private Map<String, String> getNamespaces() {
+        if (this.namespaces == null) {
+            this.namespaces = new HashMap<String, String>();
+        }
+        return this.namespaces;
+    }
 
-	/**
-	 * {@inheritDoc
-	 * javax.xml.namespace.NamespaceContext#getNamespaceURI(java.lang.String}
-	 */
-	public String getNamespaceURI(String prefix) {
-		return this.namespaces.get(prefix);
-	}
+    /**
+     * TODO Seems unused.
+     * 
+     * @param prefix
+     * @return
+     */
+    public String getNamespaceURI(String prefix) {
+        return this.namespaces.get(prefix);
+    }
 
-	/**
-	 * {@inheritDoc
-	 * javax.xml.namespace.NamespaceContext#getPrefix(java.lang.String}
-	 */
-	public String getPrefix(String namespaceURI) {
-		String result = null;
-		boolean found = false;
+    /**
+     * TODO Seems unused.
+     * 
+     * @param namespaceURI
+     * @return
+     */
+    public String getPrefix(String namespaceURI) {
+        String result = null;
+        boolean found = false;
 
-		for (Iterator<String> iterator = getNamespaces().keySet().iterator(); iterator
-				.hasNext()
-				&& !found;) {
-			String key = iterator.next();
-			if (getNamespaces().get(key).equals(namespaceURI)) {
-				found = true;
-				result = key;
-			}
-		}
+        for (Iterator<String> iterator = getNamespaces().keySet().iterator(); iterator
+                .hasNext()
+                && !found;) {
+            String key = iterator.next();
+            if (getNamespaces().get(key).equals(namespaceURI)) {
+                found = true;
+                result = key;
+            }
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	/**
-	 * {@inheritDoc
-	 * javax.xml.namespace.NamespaceContext#getPrefixes(java.lang.String}
-	 */
-	public Iterator<String> getPrefixes(String namespaceURI) {
-		final List<String> result = new ArrayList<String>();
+    /**
+     * TODO Seems unused.
+     * 
+     * @param namespaceURI
+     * @return
+     */
+    public Iterator<String> getPrefixes(String namespaceURI) {
+        final List<String> result = new ArrayList<String>();
 
-		for (Iterator<String> iterator = getNamespaces().keySet().iterator(); iterator
-				.hasNext();) {
-			String key = iterator.next();
-			if (getNamespaces().get(key).equals(namespaceURI)) {
-				result.add(key);
-			}
-		}
+        for (Iterator<String> iterator = getNamespaces().keySet().iterator(); iterator
+                .hasNext();) {
+            String key = iterator.next();
+            if (getNamespaces().get(key).equals(namespaceURI)) {
+                result.add(key);
+            }
+        }
 
-		return Collections.unmodifiableList(result).iterator();
-	}
+        return Collections.unmodifiableList(result).iterator();
+    }
 
-	/**
-	 * Indicates if processing is namespace aware.
-	 * 
-	 * @return True if processing is namespace aware.
-	 */
-	public boolean isNamespaceAware() {
-		return this.namespaceAware;
-	}
+    /**
+     * Indicates if processing is namespace aware.
+     * 
+     * @return True if processing is namespace aware.
+     */
+    public boolean isNamespaceAware() {
+        return this.namespaceAware;
+    }
 
-	/**
-	 * Indicates the desire for validating this type of XML representations
-	 * against an XML schema if one is referenced within the contents.
-	 * 
-	 * @return True if the schema-based validation is enabled.
-	 */
-	public boolean isValidating() {
-		return validating;
-	}
+    /**
+     * Indicates the desire for validating this type of XML representations
+     * against an XML schema if one is referenced within the contents.
+     * 
+     * @return True if the schema-based validation is enabled.
+     */
+    public boolean isValidating() {
+        return validating;
+    }
 
-	/**
-	 * Indicates the desire for processing <em>XInclude</em> if found in this
-	 * type of XML representations.
-	 * 
-	 * @return The current value of the xIncludeAware flag.
-	 */
-	public boolean isXIncludeAware() {
-		return xIncludeAware;
-	}
+    /**
+     * Indicates the desire for processing <em>XInclude</em> if found in this
+     * type of XML representations.
+     * 
+     * @return The current value of the xIncludeAware flag.
+     */
+    public boolean isXIncludeAware() {
+        return xIncludeAware;
+    }
 
-	/**
-	 * Puts a new mapping between a prefix and a namespace URI.
-	 * 
-	 * @param prefix
-	 *            The namespace prefix.
-	 * @param namespaceURI
-	 *            The namespace URI.
-	 */
-	public void putNamespace(String prefix, String namespaceURI) {
-		getNamespaces().put(prefix, namespaceURI);
-	}
+    /**
+     * Puts a new mapping between a prefix and a namespace URI.
+     * 
+     * @param prefix
+     *            The namespace prefix.
+     * @param namespaceURI
+     *            The namespace URI.
+     */
+    public void putNamespace(String prefix, String namespaceURI) {
+        getNamespaces().put(prefix, namespaceURI);
+    }
 
-	/**
-	 * Releases the namespaces map.
-	 */
-	@Override
-	public void release() {
-		if (this.namespaces != null) {
-			this.namespaces.clear();
-			this.namespaces = null;
-		}
-		super.release();
-	}
+    /**
+     * Releases the namespaces map.
+     */
+    @Override
+    public void release() {
+        if (this.namespaces != null) {
+            this.namespaces.clear();
+            this.namespaces = null;
+        }
+        super.release();
+    }
 
-	/**
-	 * Set the {@link EntityResolver} to use when resolving external entity
-	 * references encountered in this type of XML representations.
-	 * 
-	 * @param entityResolver
-	 *            the {@link EntityResolver} to set.
-	 */
-	public void setEntityResolver(EntityResolver entityResolver) {
-		this.entityResolver = entityResolver;
-	}
+    /**
+     * Set the {@link EntityResolver} to use when resolving external entity
+     * references encountered in this type of XML representations.
+     * 
+     * @param entityResolver
+     *            the {@link EntityResolver} to set.
+     */
+    public void setEntityResolver(EntityResolver entityResolver) {
+        this.entityResolver = entityResolver;
+    }
 
-	/**
-	 * Set the {@link ErrorHandler} to use when signaling SAX event exceptions.
-	 * 
-	 * @param errorHandler
-	 *            the {@link ErrorHandler} to set.
-	 */
-	public void setErrorHandler(ErrorHandler errorHandler) {
-		this.errorHandler = errorHandler;
-	}
+    /**
+     * Set the {@link ErrorHandler} to use when signaling SAX event exceptions.
+     * 
+     * @param errorHandler
+     *            the {@link ErrorHandler} to set.
+     */
+    public void setErrorHandler(ErrorHandler errorHandler) {
+        this.errorHandler = errorHandler;
+    }
 
-	/**
-	 * Indicates if processing is namespace aware.
-	 * 
-	 * @param namespaceAware
-	 *            Indicates if processing is namespace aware.
-	 */
-	public void setNamespaceAware(boolean namespaceAware) {
-		this.namespaceAware = namespaceAware;
-	}
+    /**
+     * Indicates if processing is namespace aware.
+     * 
+     * @param namespaceAware
+     *            Indicates if processing is namespace aware.
+     */
+    public void setNamespaceAware(boolean namespaceAware) {
+        this.namespaceAware = namespaceAware;
+    }
 
-	/**
-	 * Indicates the desire for validating this type of XML representations
-	 * against an XML schema if one is referenced within the contents.
-	 * 
-	 * @param validating
-	 *            The new validation flag to set.
-	 */
-	public void setValidating(boolean validating) {
-		this.validating = validating;
-	}
+    /**
+     * Indicates the desire for validating this type of XML representations
+     * against an XML schema if one is referenced within the contents.
+     * 
+     * @param validating
+     *            The new validation flag to set.
+     */
+    public void setValidating(boolean validating) {
+        this.validating = validating;
+    }
 
-	/**
-	 * Indicates the desire for processing <em>XInclude</em> if found in this
-	 * type of XML representations.
-	 * 
-	 * @param includeAware
-	 *            The new value of the xIncludeAware flag.
-	 */
-	public void setXIncludeAware(boolean includeAware) {
-		xIncludeAware = includeAware;
-	}
+    /**
+     * Indicates the desire for processing <em>XInclude</em> if found in this
+     * type of XML representations.
+     * 
+     * @param includeAware
+     *            The new value of the xIncludeAware flag.
+     */
+    public void setXIncludeAware(boolean includeAware) {
+        xIncludeAware = includeAware;
+    }
 
 }

@@ -142,7 +142,7 @@ public class Entry extends SaxRepresentation {
     /**
      * Constructor.
      * 
-     * @param feedUri
+     * @param entryUri
      *            The entry URI.
      * @throws IOException
      */
@@ -155,7 +155,7 @@ public class Entry extends SaxRepresentation {
      * 
      * @param clientDispatcher
      *            The client HTTP dispatcher.
-     * @param feedUri
+     * @param entryUri
      *            The entry URI.
      * @throws IOException
      */

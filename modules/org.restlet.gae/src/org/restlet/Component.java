@@ -338,7 +338,7 @@ public class Component extends Restlet {
      * current Component.<br>
      * <br>
      * The second use case is the composition/mash-up of several representations
-     * via the {@link org.restlet.routing.Transformer} class for example. For
+     * via the {@link org.restlet.ext.xml.Transformer} class for example. For
      * this you can leverage the XPath's document() function or the XSLT's
      * include and import elements with RIAP URIs.
      * 

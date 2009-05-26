@@ -44,7 +44,7 @@ import org.restlet.routing.Filter;
 
 /**
  * Filter that can transform XML representations by applying an XSLT transform
- * sheet. It uses the {@link org.restlet.representation.TransformRepresentation} to
+ * sheet. It uses the {@link TransformRepresentation} to
  * actually transform the XML entities.<br>
  * <br>
  * Concurrency note: instances of this class or its subclasses can be invoked by
