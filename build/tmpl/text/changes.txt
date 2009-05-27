@@ -4,6 +4,8 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+
+- 1.1.5 (2009-05-26)
     - Bugs fixed
        - Fixed bug in Directory AlphaNumComparator. 
          Reported and fixed by Rob Heittman.
