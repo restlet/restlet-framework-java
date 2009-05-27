@@ -1,0 +1,16 @@
+<module id="wadl" includes="jse" type="standard" package="org.restlet.ext.wadl">
+	<name>Restlet Extension - WADL</name>
+	<description>
+		Support for the WADL specification.
+	</description>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+	</distributions>
+
+	<dependencies>
+		<dependency type="module">
+			<id>core</id>
+		</dependency>
+	</dependencies>
+</module>

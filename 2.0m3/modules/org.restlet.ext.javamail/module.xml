@@ -1,0 +1,22 @@
+<module id="javamail" includes="jse" type="connector" package="org.restlet.ext.javamail">
+	<name>Restlet Extension - JavaMail</name>
+	<description>
+		Integration with JavaMail.
+	</description>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+	</distributions>
+
+	<dependencies>
+		<dependency type="library">
+			<id>activation</id>
+		</dependency>
+		<dependency type="library">
+			<id>javamail</id>
+		</dependency>
+		<dependency type="module">
+			<id>core</id>
+		</dependency>
+	</dependencies>
+</module>

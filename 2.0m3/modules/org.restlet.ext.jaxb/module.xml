@@ -1,0 +1,19 @@
+<module id="jaxb" includes="jse" type="integration" package="org.restlet.ext.jaxb">
+	<name>Restlet Extension - JAXB</name>
+	<description>
+		Integration with Java XML Binding.
+	</description>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+	</distributions>
+
+	<dependencies>
+		<dependency type="library">
+			<id>jaxb-ri</id>
+		</dependency>
+		<dependency type="module">
+			<id>core</id>
+		</dependency>
+	</dependencies>
+</module>

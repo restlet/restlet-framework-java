@@ -1,0 +1,25 @@
+<module id="shell" includes="jse" type="integration" package="org.restlet.ext.shell">
+	<name>Interactive shell for Restlet.</name>
+	<description>
+		Restlet Extension - Shell
+	</description>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+	</distributions>
+
+	<dependencies>
+		<dependency type="library">
+			<id>cli</id>
+		</dependency>
+		<dependency type="library">
+			<id>jline</id>
+		</dependency>
+		<dependency type="library">
+			<id>rhino</id>
+		</dependency>
+		<dependency type="module">
+			<id>core</id>
+		</dependency>
+	</dependencies>
+</module>

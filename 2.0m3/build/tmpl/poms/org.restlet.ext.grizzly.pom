@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>@parent-group-id@</groupId>
+		<artifactId>@parent-artifact-id@</artifactId>
+		<version>@parent-version@</version>
+	</parent>
+
+	<artifactId>org.restlet.ext.grizzly</artifactId>
+	<name>Restlet extension: Grizzly</name>
+	<description>Integration with Grizzly NIO framework.</description>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.sun.grizzly</groupId>
+			<artifactId>grizzly-framework</artifactId>
+			<version>${lib-grizzly-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.restlet</groupId>
+			<artifactId>org.restlet</artifactId>
+			<version>${version}</version>
+		</dependency>
+	</dependencies>
+</project>

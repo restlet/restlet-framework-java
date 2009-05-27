@@ -1,0 +1,10 @@
+<library id="script">
+	<package name="javax.script" />
+	<version>1.0</version>
+	<homeUri>
+		https://scripting.dev.java.net/
+	</homeUri>
+	<downloadUri>
+		https://scripting.dev.java.net/servlets/ProjectDocumentList
+	</downloadUri>
+</library>

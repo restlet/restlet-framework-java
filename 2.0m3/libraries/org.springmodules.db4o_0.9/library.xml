@@ -1,0 +1,10 @@
+<library id="spring-modules-db4o">
+	<package name="org.springmodules.db4o" />
+	<version>0.9</version>
+	<homeUri>
+		http://www.springframework.org/
+	</homeUri>
+	<downloadUri>
+		http://www.springframework.org/download
+	</downloadUri>
+</library>

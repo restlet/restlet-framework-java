@@ -1,0 +1,52 @@
+<module includes="jse" id="example" package="org.restlet.example">
+	<name>Restlet examples</name>
+	<description>
+		Various examples including those from the tutorial
+	</description>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+	</distributions>
+
+	<dependencies>
+		<dependency type="library">
+			<id>db4o</id>
+		</dependency>
+		<dependency type="library">
+			<id>junit</id>
+		</dependency>
+		<dependency type="module">
+			<id>core</id>
+		</dependency>
+		<dependency type="module">
+			<id>atom</id>
+		</dependency>
+		<dependency type="module">
+			<id>freemarker</id>
+		</dependency>
+		<dependency type="module">
+			<id>jaxb</id>
+		</dependency>
+		<dependency type="module">
+			<id>jaxrs</id>
+		</dependency>
+		<dependency type="module">
+			<id>jetty</id>
+		</dependency>
+		<dependency type="module">
+			<id>jibx</id>
+		</dependency>
+		<dependency type="module">
+			<id>json</id>
+		</dependency>
+		<dependency type="module">
+			<id>rdf</id>
+		</dependency>
+		<dependency type="module">
+			<id>spring</id>
+		</dependency>
+		<dependency type="module">
+			<id>velocity</id>
+		</dependency>
+	</dependencies>
+</module>

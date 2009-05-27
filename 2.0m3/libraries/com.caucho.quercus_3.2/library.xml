@@ -1,0 +1,8 @@
+<library id="quercus">
+	<package name="com.caucho.quercus" />
+	<version>3.2</version>
+	<release>1</release>
+	<homeUri>
+		http://quercus.caucho.com/
+	</homeUri>
+</library>

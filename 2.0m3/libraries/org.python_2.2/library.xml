@@ -1,0 +1,13 @@
+<library id="jpython">
+	<package name="org.jpython">
+		<maven />
+	</package>
+	<version>2.2</version>
+	<release>1</release>
+	<homeUri>
+		http://www.jython.org/
+	</homeUri>
+	<downloadUri>
+		http://www.jython.org/Project/download.html
+	</downloadUri>
+</library>

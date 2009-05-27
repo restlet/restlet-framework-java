@@ -1,0 +1,16 @@
+<module id="net" includes="jse" type="connector" package="org.restlet.ext.net">
+	<name>Restlet Extension - Net</name>
+	<description>
+		Integration with java.net.HttpURLConnection class.
+	</description>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+	</distributions>
+
+	<dependencies>
+		<dependency type="module">
+			<id>core</id>
+		</dependency>
+	</dependencies>
+</module>

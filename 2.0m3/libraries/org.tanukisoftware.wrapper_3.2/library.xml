@@ -1,0 +1,14 @@
+<library id="wrapper">
+	<package name="org.tanukisoftware.wrapper" />
+	<version>3.2</version>
+	<release>3</release>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+	<homeUri>
+		http://wrapper.tanukisoftware.org/doc/english/introduction.html
+	</homeUri>
+	<downloadUri>
+		http://wrapper.tanukisoftware.org/doc/english/download.jsp
+	</downloadUri>
+</library>

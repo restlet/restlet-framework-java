@@ -1,0 +1,14 @@
+<library id="grizzly">
+	<package name="com.sun.grizzly" />
+	<version>1.9</version>
+	<release>10</release>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+	<homeUri>
+		https://grizzly.dev.java.net/
+	</homeUri>
+	<downloadUri>
+		http://download.java.net/maven/2/com/sun/grizzly/grizzly-framework/
+	</downloadUri>
+</library>

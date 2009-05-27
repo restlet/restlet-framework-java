@@ -1,0 +1,11 @@
+<library id="gwt">
+	<package name="com.google.gwt" />
+	<version>1.6</version>
+	<release>4</release>
+	<homeUri>
+		http://code.google.com/webtoolkit/
+	</homeUri>
+	<downloadUri>
+		http://code.google.com/webtoolkit/download.html
+	</downloadUri>
+</library>

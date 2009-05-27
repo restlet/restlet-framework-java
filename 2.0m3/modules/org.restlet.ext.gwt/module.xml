@@ -1,0 +1,22 @@
+<module includes="gwt" id="gwt" type="integration" package="org.restlet.ext.gwt">
+	<name>Restlet Extension - GWT</name>
+	<description>
+		Server-side integration with GWT.
+	</description>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+	</distributions>
+
+	<dependencies>
+		<dependency type="library">
+			<id>servlet</id>
+		</dependency>
+		<dependency type="module">
+			<id>core</id>
+		</dependency>
+		<dependency type="module">
+			<id>servlet</id>
+		</dependency>
+	</dependencies>
+</module>

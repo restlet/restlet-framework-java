@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Java API for RESTful Web Services
+Bundle-SymbolicName: javax.ws.rs
+Bundle-Version: 1.0
+Bundle-ClassPath: javax.ws.rs.jar
+Bundle-Vendor: Sun Microsystems Inc.
+Export-Package: javax.ws.rs;uses:="javax.ws.rs.core",
+ javax.ws.rs.core,
+ javax.ws.rs.ext;uses:="javax.ws.rs.core"
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

@@ -1,0 +1,10 @@
+<library id="rome">
+	<package name="com.sun.syndication" />
+	<version>1.0</version>
+	<homeUri>
+		https://rome.dev.java.net/
+	</homeUri>
+	<downloadUri>
+		https://rome.dev.java.net/
+	</downloadUri>
+</library>

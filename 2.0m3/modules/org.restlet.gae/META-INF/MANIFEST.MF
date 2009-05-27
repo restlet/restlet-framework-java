@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Restlet API for GAE
+Bundle-SymbolicName: org.restlet.gae
+Bundle-Version: 2.0
+Bundle-Vendor: Noelios Technologies
+Import-Package: 
+ javax.mail,
+ javax.mail.event,
+ javax.mail.internet,
+ javax.mail.search,
+ javax.mail.util,
+ javax.servlet,
+ javax.servlet.http
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

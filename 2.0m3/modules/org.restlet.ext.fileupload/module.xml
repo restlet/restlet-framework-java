@@ -1,0 +1,22 @@
+<module id="fileupload" includes="jse" type="integration" package="org.restlet.ext.fileupload">
+	<name>Restlet Extension - FileUpload</name>
+	<description>
+		Integration with Apache FileUpload.
+	</description>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+	</distributions>
+
+	<dependencies>
+		<dependency type="library">
+			<id>servlet</id>
+		</dependency>
+		<dependency type="library">
+			<id>fileupload</id>
+		</dependency>
+		<dependency type="module">
+			<id>core</id>
+		</dependency>
+	</dependencies>
+</module>

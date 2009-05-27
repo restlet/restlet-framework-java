@@ -1,0 +1,10 @@
+<library id="jdom">
+	<package name="org.jdom" />
+	<version>1.1</version>
+	<homeUri>
+		http://www.jdom.org/
+	</homeUri>
+	<downloadUri>
+		http://www.jdom.org/dist/binary/ 
+	</downloadUri>
+</library>

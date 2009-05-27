@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+
+<!--
+  Copyright World Wide Web Consortium, (Massachusetts Institute of
+  Technology, European Research Consortium for Informatics and
+  Mathematics, Keio University).
+ 
+  All Rights Reserved.
+ 
+  Please see the full Copyright clause at
+  <http://www.w3.org/Consortium/Legal/copyright-software.html>
+
+  Description: the typed literal in this file is well-formed.
+
+  Related issue:  
+
+   http://www.w3.org/2001/sw/RDFCore/20030123-issues/#xmlsch-02
+
+  Author: Jeremy Carroll
+
+  $Id: test001.rdf,v 1.1 2003/05/12 20:07:01 jcarroll Exp $
+
+-->
+
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:eg="http://example.org/">
+
+
+  <Description about="http://www.example.org/a">
+    <eg:prop datatype="http://www.w3.org/2001/XMLSchema#int">3</eg:prop>
+    <eg:toutou datatype="http://www.w3.org/2001/XMLSchema#int">10</eg:toutou>
+  </Description>
+
+</RDF>
+

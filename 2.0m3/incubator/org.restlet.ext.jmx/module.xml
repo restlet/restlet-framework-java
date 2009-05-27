@@ -1,0 +1,16 @@
+<module id="jmx" excludes="*" type="integration" package="org.restlet.ext.jmx">
+	<name>Restlet Extension - JMX</name>
+	<description>
+		Integration with Java Management Extensions (JMX).
+	</description>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+	</distributions>
+
+	<dependencies>
+		<dependency type="module">
+			<id>core</id>
+		</dependency>
+	</dependencies>
+</module>

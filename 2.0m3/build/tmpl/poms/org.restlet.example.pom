@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>@parent-group-id@</groupId>
+		<artifactId>@parent-artifact-id@</artifactId>
+		<version>@parent-version@</version>
+	</parent>
+
+	<artifactId>org.restlet.example</artifactId>
+	<name>Restlet examples</name>
+	<description>Various examples including those from the tutorial</description>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.restlet</groupId>
+			<artifactId>org.restlet.lib.com.db4o</artifactId>
+			<version>${lib-db4o-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.restlet</groupId>
+			<artifactId>org.restlet.lib.com.db4o.nativequery</artifactId>
+			<version>${lib-db4o-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${lib-junit-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.restlet</groupId>
+			<artifactId>org.restlet</artifactId>
+			<version>${version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.restlet</groupId>
+			<artifactId>org.restlet.ext.atom</artifactId>
+			<version>${version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.restlet</groupId>
+			<artifactId>org.restlet.ext.freemarker</artifactId>
+			<version>${version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.restlet</groupId>
+			<artifactId>org.restlet.ext.jaxb</artifactId>
+			<version>${version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.restlet</groupId>
+			<artifactId>org.restlet.ext.jaxrs</artifactId>
+			<version>${version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.restlet</groupId>
+			<artifactId>org.restlet.ext.jetty</artifactId>
+			<version>${version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.restlet</groupId>
+			<artifactId>org.restlet.ext.jibx</artifactId>
+			<version>${version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.restlet</groupId>
+			<artifactId>org.restlet.ext.json</artifactId>
+			<version>${version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.restlet</groupId>
+			<artifactId>org.restlet.ext.rdf</artifactId>
+			<version>${version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.restlet</groupId>
+			<artifactId>org.restlet.ext.spring</artifactId>
+			<version>${version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.restlet</groupId>
+			<artifactId>org.restlet.ext.velocity</artifactId>
+			<version>${version}</version>
+		</dependency>
+	</dependencies>
+</project>

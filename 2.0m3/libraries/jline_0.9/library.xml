@@ -1,0 +1,11 @@
+<library id="jline">
+	<package name="jline" />
+	<version>0.9</version>
+	<release>94</release>
+	<homeUri>
+		http://jline.sourceforge.net/
+	</homeUri>
+	<downloadUri>
+		http://jline.sourceforge.net/downloads.html
+	</downloadUri>
+</library>

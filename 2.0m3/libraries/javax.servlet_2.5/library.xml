@@ -1,0 +1,13 @@
+<library id="servlet">
+	<package name="javax.servlet" />
+	<version>2.5</version>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+	<homeUri>
+		http://java.sun.com/products/servlet/index.jsp
+	</homeUri>
+	<downloadUri>
+		http://java.sun.com/products/servlet/download.html
+	</downloadUri>
+</library>

@@ -1,0 +1,463 @@
+   
+===========
+Changes log  
+===========
+
+- @version-full@ (@release-date@)
+    - Breaking changes
+        - Deprecated ServletConverter and added an equivalent 
+          ServletAdapter class to prevent confusion with the 
+          ConverterService reintroduced in Restlet 1.2. 
+        - Moved all XML, DOM, SAX and XSLT related classes from the core 
+          Restlet API to a new "org.restlet.ext.xml" package. This was
+          need to keep a uniform API with the new Android port.
+    - Bugs fixed
+        - Fixed bug with a ServerResource when an annotated method does 
+          not return a value.
+        - Fixed dependency issue in the org.restlet.example.pom. 
+          Reported by Marcelo Ochoa.
+        - ServerServlet ignores client connectors that are now available.
+        - Fixed issue with annotation inheritance. 
+          Contributed by Tal Liron.
+        - Fixed bug causing Engine to be instantiated several time.
+          Reported by David Fogel. 
+        - Fixed potential issue in Engine classloading logic which used
+          Class.class instead of Engine.class to get the class's 
+          classloader. Reported by David Fogel.
+        - Fixed conversion issues with edge cases.
+        - MediaType#isCompatible() now requires the other mediatype to be
+          non null.
+        - Fixed issues with conditional method in ServerResource.
+          Reported by Tal Liron and David Fogel.
+        - Fixed issues with ServerResource used in OSGi environments.
+          Reported by David Fogel and fixed by Tim Peierls.
+        - Fixed NPE with SpringFinder. Reported by Eric Hough.
+        - Fixed potential NPE. Contribution from Remi Dewitte.
+        - Fixed issue with the Authenticator class. 
+          Reported by Remi Dewitte.
+        - SpringServerServlet now don't directly instantiate a 
+          ServletContextAdapter. Reported by Mikhail Spirydonau.          
+        - Fixed Maven build issue with resource files. 
+          Contributed by Remi Dewitte.
+        - Fixed potential bug when a serverResource handle several 
+          representations with methods that return String objects.
+        - Fixed potential bug with WriterRepresentation when character 
+          set is not defined.
+        - Fixed bug in Finder with ServerResource causing some NPE
+          in some cases. Reported by Michael Berman.
+        - Fixed some Maven artifact IDs (Atom, XML and FileUpload
+          extensions). Reported by Jean-Yves Cronier and Remi Dewitte.
+        - Fixed potential NPE in XmlRepresentation with namespaces.
+        - Fixed Atom extension for better AtomPub 1.0 compliance.
+          Reported by Thom Nelson.
+        - Fixed MediaType for proper parsing of parameters.
+          Reported by David Bordoley.
+    - Enhancements
+        - Servlet's UserPrincipal is now transferred into Restlet's
+          ClientInfo#subject property. Suggested by Paul Davis.
+        - Updated Media type RDF N3 from "text/rdf+n3" to "text/n3". 
+          Suggested by Simon Reinhardt.
+        - Added support of the parsing and writing of RDF documents 
+          expressed in N-Triples notation.
+        - Added support of the parsing and writing of RDF documents 
+          expressed in Turtle notation.
+        - Added an initial port of Restlet to the new Google App Engine.
+          Suggested by Didier Girard.
+        - Added a ContextTemplateLoader to FreeMarker extension to load
+          template based on the client dispatcher and a base URI.
+        - Added new extension based on XStream library to automatically
+          convert Java objects to/from XML and JSON.
+        - Added converter helper to the "org.restlet.ext.json" extension.
+          Useful for the ConverterService.
+        - Added ObjectRepresentation classes to both the Restlet/GWT
+          edition and to the server-side GWT extension. This class can
+          (de-)serialize POJOs using the JSON-based encoding used by
+          GWT-RPC.
+        - Added content-length header (with 0 value), in case the 
+          entity is not available when posting or putting since MS 
+          Azure requires this header for any request. Reported by 
+          Ronny Kwon.
+        - Improved implementation of converter plugins (default/internal,
+          Atom extension and GWT server-side extension).
+        - Added MediaType#APPLICATION_JAVA_OBJECT_XML constant.
+        - Added support for automatic conversion between serializable
+          JavaBeans and Representations using either binary Java Object
+          Serialization or JavaBeans XML encoding.
+        - Added conversion support for forms.  
+        - Interfaces implemented by server resource classes are now
+          introspected for annotations.
+        - Added ClientResource#create(...) and wrap() methods to create
+          dynamic proxies implementing a given interface. 
+        - Added Series#getValuesArray() with a flag to ignore case.
+          Suggested by Arjohn Kampman.
+        - Added a port of Restlet core to Android 1.5 (mobile OS) and to
+          Google AppEngine 1.2.
+        - The Net HTTP client connector now supports SSLContextFactories
+          Contributed by Bruno Harbulot.
+        - Added check for JAXP parsers not supporting XInclude feature.
+          Reported by Mikis.
+        - Optimized MetadataService#addCommonExtensions() to prevent
+          multiple array copies. Reported by David Fogel.
+        - XmlRepresentation#getNamespaces() is now protected.
+          Suggested by Remi Dewitte.
+        - Refactored the class loading code in the engine.
+          Suggested by David Fogel.
+        - Tag#weak internal field is now final. 
+          Suggested by Arjohn Kampman
+        - Added provider for JAX-RS based on the new ConverterService.
+          This allow pluggable support for converters such as JSON or
+          XStream. 
+    - API changes
+        - RepresentationInfo is now concrete and has more constructors.
+          Suggested by Lars Heuer.
+        - UniformResource#init() now throws ResourceException and 
+          catches it to update the response. Suggested by Lars Heuer.
+        - Renamed UniformResource#init() into doInit().
+        - Renamed UniformResource#destroy() into release().
+        - Added an UniformResource#doRelease() method.
+        - ClientResource now overrides finalize() to call the release()
+          method.
+        - Connector#isAvailable() method added to test the presence
+          of the underlying connector helper.
+        - Removed Context#setRealm() to prevent potential threading 
+          issues. Reported by Tim Peierls.
+        - Added new constructors to Representation based on the parent
+          RepresentationInfo class. Suggested by Remi Dewitte.
+        - Added FileRepresentation#autoDelete property. Contributed by
+          Remi Dewitte.
+        - Added intercepter methods to ServerServlet needed for the 
+          XDB extension. Contributed by Marcelo Ochoa.
+        - Added a "form" extension mapping in MetadataService for the
+          media type "application/www-form-urlencoded". 
+          Suggested by Tal Liron.
+        - The class EmptyRepresentation is now public and the static 
+          method Representation#createEmpty() has been deprecated.
+        - Moved several implementation classes of the Servlet extension
+          into an "org.restlet.ext.servlet.internal" package to hide
+          them from the public Javadocs as they should rarely be used
+          directly by end users.
+        - Renamed ServerResource#exists property to "existing".
+          Suggested by Lars Heuer.
+        - Filter#setNext() now accepts ServerResource subclasses.
+          Suggested by Lars Heuer.
+        - Added Method#safe and idempotent properties.
+        - Added ClientResource#followRedirects property and the related
+          implementation code.
+        - Deprecated the abstract DigestRepresentation class, replaced 
+          by Digester. Added a getDigester method on the Representation 
+          class.
+        - Deprecated Representation#checkDigest and 
+          Representation#computeDigest methods.
+        - XML component configuration now supports new ServerResource 
+          subclasses.
+        - Deprecated the Resource and Guard classes.
+        - Added toObject() and toRepresentation() methods on 
+          ClientResource.
+        - Refactored the services API. Added a "services" property
+          on Application to allow users to register new ones. Also,
+          add a createInboundFilter() and createOutboundFilter()
+          methods to automatically register them when starting the
+          application.
+        - Added MetadataService#getAllMediaTypes(), getLanguage() and
+          getMediaType() and similar methods. Reported by David Fogel 
+          and suggested by Remi Dewitte and Tim Peierls.
+        - Added AppendableRepresentation for dynamic generation of
+          StringRepresentation instances.
+    - Miscellaneous
+        - Component XML configuration has been moved into an Engine 
+          ComponentXmlParser class.
+        - Added unit test case for the Alphanum algorithm. 
+          Contributed by Davide Angelocola.
+        - ServerResource now rethrows exceptions from annotated methods.
+          Reported by Tal Liron.
+        - Removed the Script extension and Scripturian libraries that 
+          will now be managed outside the Restlet project by Tal Liron.
+        - Updated GWT library to version 1.6.4.
+ 
+- 1.2 Milestone 2 (2009-04-01)
+    - Breaking changes
+        - Finder#createTarget() methods are now all protected. The 
+          findTarget() method is now public. Suggested by Leigh Klotz.
+        - All core representation classes have been moved from the
+          "org.restlet.resource" package into a new 
+          "org.restlet.representation" package. Make sure to adjust your
+          import instructions.
+        - The ConnectorService#afterSend() and beforeSend() are now
+          always called, even if no entity is written. They are now 
+          related to the sending of the message itself.
+          Suggested by Paul Davis.
+        - The Router.createFinder() method is now public.
+        - The Callback abstract class in the GWT module is now an 
+          interface. This should have no impact in most cases. Just
+          remove any associated @Override annotations.
+          Suggested by Scooter Willis.
+    - Bugs fixed
+        - Fixed typo in the declaration of the 
+          o.r.e.Engine#DESCRIPTOR_AUTHENTICATOR. 
+          Reported by Remi Dewitte.    
+        - Removed all string instantiations of secrets. 
+          Contributed by Remi Dewitte.
+        - Fixed various OSGi issues. Reported by David Fogel.
+        - Fixed missing entries in ChallengeScheme#valueOf.
+          Reported by Sean Sullivan.
+        - Fixed JAXB pom issue. Reported by Fabio Mancinelli.
+        - Added workaround to make sure that the JAX-RS extension
+          is registered as an implementation of the JAX-RS API.
+          Suggested by David Fogel.
+        - Fixed encoding issue with percent characters at the end
+          of URI references with the required two digits following.
+          Now the percentage sign is encoded and a fine trace is logged.
+          Reported by Nels Nelson.
+    - Enhancements
+        - Added a getItemIterator() on RestletFileUpload to facilitate
+          access to parts in streaming mode. Suggested by Paul Austin.
+        - The default SAX handler has been implemented to log 
+          validation information. Contributed by Raif S. Naffah.
+        - DirectoryResource class in engine now has a protected
+          getDirectoryContent() method. Suggested by Gordon Mohr.
+        - Implemented Text#toString() in the Atom extension.
+        - Completed list of registered media types. Suggested by Remi 
+          Dewitte.
+        - JAX-RS extension now leverages the new security API.
+          Contributed by Bruno Dumon.
+        - Added setters for helpers in Engine. 
+          Suggested by Kevin Conaway.
+        - Added the ability to tunnel methods via a specific header.
+          Contributed by Fabrice Boileau.
+        - Added conversion methods to engine's ByteUtils between byte
+          arrays and character arrays. Contributed by Remi Dewitte.
+        - Added protected DirectoryResource#getRepresentation() and 
+          getClientDispatcher() method to facilitate extension and 
+          support of special cases. 
+          Original issue reported by Dave Fogel.
+        - Added a client connector supporting ZIP and JAR URIs that
+          are based on local archive files.
+          Contributed by Remi Dewitte.
+        - Enhanced JsonRepresentation based on Tal Liron's contributions.
+          Now supports indentation configuration and more manipulation
+          and conversion methods.
+        - Added RDF extension that aims to support the parsing and 
+          writing of RDF representations. 
+        - Added support of parsing and writing of RDF/XML and RDF/N3
+          representations.
+    - API changes
+        - Added Role class and "roles" property to Application.
+        - Fully refactored the security package introduce in 1.2 M1 
+          based on community feed-back.
+        - Added Realm, MemoryRealm classes and "realms" property to 
+          Component.
+        - Added "verifier" and "enroler" properties to Context.
+        - Reverted represent*() auto-matching support for further 
+          discussions. Suggested by Tim Peierls.
+        - Added constructors with feed URI in the Feed class of the Atom 
+          extension.
+        - Added "indent" property to DomRepresentation. Suggested by
+          Cliff Binstock.
+        - Added support of Shared Key and Shared Key Lite authentication 
+          schemes developed by Microsoft. Suggested by Steve Sfartz.
+        - WadlApplication now invokes the findTarget() method on Finder 
+          instances instead of the createTarget() one. 
+          Suggested by Leigh Klotz.
+        - Added Delete, Get, Options, Post and Put annotations
+          to the org.restlet.resource package. Based on community 
+          feed-back and suggestions by Tim Peierls.
+        - Added org.restlet.resource.UniformResource and ClientResource
+          classes as part of our new Resource API.
+        - Added createClientInfo() method on Variant.
+        - Added a Message#getEntityAsText() method caching the text
+          content to allow several reads along a chain of filters.
+        - Added a Server#setTarget() method taking a Resource class as a
+          parameter. This is useful for minimalistic examples.
+        - TunnelService now accepts query parameter values such as
+          "application/xml" and now just registered extension names 
+          such as "xml". Suggested by Paul Austin. 
+        - Renamed LinkSet to Graph and added support for N3 formulae.
+          Graph can be source or target in Link instances.
+        - Removed Link.identifier and Graph.identifier properties.
+        - Series#getFirstValue() now returns the default value if the
+          parameter exists but has a null value. 
+          Suggested by Jonathan Hall.
+        - Added Context#setClientDispatcher() and 
+          Context#setServerDispatcher() methods.
+        - Added support for proxy authentication in the Restlet API.
+          Added "proxyChallengeResponse" property to Request, added
+          "proxyChallengeRequests" to Response. Added support in the
+          HTTP parsing and formatting layers.
+        - Added a WadlApplication#createFinder() method to facilitate
+          customization of behavior with Spring. 
+          Suggested by Rhett Sutphin.
+        - Added Protocol#ZIP constant.
+        - Representation#finalize() method now has a default 
+          implementation that calls the release() method.
+          Suggested by Remi Dewitte.
+        - Updated accept.properties file, removing Firefox 
+          customization as version 3.0 has proper 'Accept' header.
+        - Added a JaxbRepresentation#setValidationEventHandler method.
+        - Added Variant#isCompatible() method.
+        - Added an org.restlet.representation.RepresentationInfo class
+          that contains the "lastModified" and "tags" properties from
+          Representation which is now a subclass. Variant is the super
+          class. Useful to check conditions without pulling a full
+          representation. Suggested by Lars Heuer. 
+        - Added Method.ALL constant. Useful to declare variants common
+          to all methods in the new ServerResource class.
+        - Added new org.restlet.routing package and moved Filter, 
+          Router, Redirector and subclasses to it.
+        - Moved Directory, Finder and Handler to org.restlet.resource
+          package.
+        - Renamed org.restlet.security.Guard to UniformGuard in order to
+          move org.restlet.Guard to this security package.
+    - Misc
+        - Upgraded Simple server to version 4.1.9. 
+          Contributed by Niall Gallagher.
+        - Fixed Javadocs typos in Router and Resource. 
+          Contributed by Raif S. Naffah.
+        - Fixed issue with parent contexts in ServerServlets. 
+          Contributed by Marcelo Ochoa.
+        - Updated OAuth library to latest version. 
+          Suggested by Sean Sullivan.
+        - Added HttpRequest#getHeaders() and HttpResponse#getHeaders()
+          methods. Added HttpRequest#addHeader() and 
+          HttpResponse#addHeader() static methods.
+          Suggested by Kevin Conaway.
+        - Updated licensing information to mention addition of the 
+          EPL 1.0 licensing option (Eclipse Public License 1.0).
+        - Added Maven support to build Restlet modules.
+          Suggested by many. Contributions by Jean-Yves Cronier.
+
+- 1.2 Milestone 1 (2009-01-23)
+    - Breaking changes
+        - The engine has been moved from "com.noelios.restlet" to
+          the "org.restlet.engine" package, simplifying the packaging.
+        - All engine extensions have been moved to "org.restlet.ext"
+          packages.
+        - The com.noelios.restlet.ext.spring extension has been merged
+          with org.restlet.ext.spring.
+        - Moved org.restlet.util.DateUtils, ByteUtils and Engine 
+          classes to org.restlet.engine.* packages.
+    - Enhancements
+        - Internal HTTP connector now supports HTTPS connections.
+          Contributed by Kevin Conaway.
+        - Added a Lucene extension including a Solr client connector
+          contributed by Remi Dewitte. Also contains a useful 
+          TikaRepresentation to extract metadata from a representation
+          using Lucene Tika parsing and analysis library. Suggested by
+          Ben Johnson.
+        - The Atom Service class now supports getting documents from
+          other protocols than HTTP.
+        - Updated org.restlet.Component to support validating parsing. 
+          Contributed by Raif S. Naffah.
+        - XmlRepresentation now has "entityResolver", "errorHandler", 
+          "schema", "xIncludeAware" and "validating" properties. 
+          Contributed by Raif S. Naffah.
+    - API changes
+        - A response with a 200 (Ok) status should have an entity. Now,
+          we make sure that a warning is logged. 
+          Reported by Rob Heittman.
+        - Removed all code deprecated in the Restlet 1.1 release.
+        - Added org.restlet.data.Literal to represent RDF
+          literals with an optional datatype. 
+        - Added org.restlet.data.Link to represent RDF links (aka 
+          triples, statements or relationships).
+        - Moved o.r.u.Helper class, used privately by API classes to 
+          the o.r.engine package.
+        - Added MediaType constants APPLICATION_RDF_TRIG, 
+          APPLICATION_RDF_TRIX, APPLICATION_RDF_TURTLE, 
+          APPLICATION_SPARQL_RESULTS_XML and
+          APPLICATION_SPARQL_RESULTS_JSON for RDF and SPARQL.
+        - Added LinkReference and LinkSet classes to support RDF 
+          reference manipulation (blank nodes for example) and RDF 
+          graphs or models.
+        - Added CharacterSet#DEFAULT constant, new constructor for 
+          Charset instances and a toCharset() method. Suggested by
+          Charles Gay.
+        - Added Reference#toUri(), toUrl() and constructors from 
+          java.net.URI and URL instances. Suggested by Cliff Binstock.
+        - Added APPLICATION_ATOM media type constant and 
+          deprecated APPLICATION_ATOM_XML.          
+        - Added APPLICATION_ATOM_SERVICE_XML media type constant and 
+          deprecated APPLICATION_ATOMPUB_SERVICE.
+        - Added APPLICATION_ATOMPUB_CATEGORY media type constant.
+        - Added APPLICATION_KML and APPLICATION_KMZ media type 
+          constants. Suggested by Frank Hellwig.          
+        - Added APPLICATION_MATHML_XML media type constant and 
+          deprecated APPLICATION_MATHML.
+        - Added APPLICATION_RSS_XML media type constant and 
+          deprecated APPLICATION_RSS.
+        - Added APPLICATION_W3C_SCHEMA_XML media type constant and 
+          deprecated APPLICATION_W3C_SCHEMA.
+        - Added APPLICATION_WADL_XML media type constant and 
+          deprecated APPLICATION_WADL.
+        - Added APPLICATION_XHTML_XML media type constant and 
+          deprecated APPLICATION_XHTML.
+        - MediaType constructor now normalizes the main and sub parts.
+          If invalid characters are detected, an IllegalArgumentExcept
+          is thrown. Spaces are also trimmed and empty parts are 
+          converted to '*'. Contributed by Nicolas Rinaudo.
+        - Method#setUri() has been deprecated as Method instances 
+          shouldn't be modifiable.
+        - Language.getSubTags() now returns an unmodifiable list.
+        - MediaType.parameters property is now unmodifiable. Initial
+          issue reported by Nicolas Rinaudo. 
+        - Added static Series#unmodifiableSeries() method.
+        - Added DateUtils.format(Date) method which uses HTTP default
+          format.
+        - Added a new "org.restlet.security" package with a full
+          replacement for current Guard mechanism. This is
+          an alpha level package not intended for Restlet users yet.
+        - Made the SpringBeanRouter implement ApplicationContextAware
+          to enable AOP on target resources. Suggested by Daniel Woo.
+        - Resource subclasses can now declared variants and match them
+          more easily using an automatic detection mechanism based on
+          represent*() methods where '*' is a series of extensions. 
+          Also added a "detectVariants" property to turn off this
+          behavior if necessary.
+        - Added a getAllMetadata(String extension) method on the
+          MetadataService class. 
+        - Deprecated the ClientInfo#addresses property and replaced it
+          by a more explicit "forwardedAddresses" property. Also, added
+          a new getUpstreamAddress() method. Adjusted the Resolver 
+          class to add a new "ciua" variable. Change suggested by 
+          John D. Mitchell. Initial patch provided by Remi Dewitte. 	
+        - Added ClientInfo#subject property returning a JAAS Subject.
+          Can contain several principals and credentials. Deprecated 
+          the ChallengeResponse#getPrincipal() method.
+        - Added new Conditions.getStatus() method signature for usage
+          by the JAX-RS extension. Suggested by Stephan Koops.
+    - Misc
+        - JAX-RS extension:
+            - added class ExendedUriBuilder with "file" extensions for
+              content negotiation and an ExtendedUriInfo to get it.
+            - Supports per-request-providers now.
+            - JaxRsApplication will not clear the MetadataService (as
+              before; was required to not use other extensions as given
+              in the JAX-RS ApplicationConfig class).
+        - The Directory class doesn't override the findTarget() method
+          but uses the default Finder mechanism based on the 
+          "targetClass" property. Therefore, it is easier to specify a
+          subclass of org.restlet.engine.local.DirectoryResource in
+          order to customize the default behavior. 
+          Suggested by Cliff Binstock.
+        - Upgraded db4o to version 7.7.67.
+		- Refactored engine support for the StatusService. Removed
+		  ApplicationStatusFilter and ComponentStatusFilter.
+		- Extracted all internal classes of ByteUtils into the new
+		  org.restlet.engine.io package for easier reuse and 
+		  maintenance.
+		- Clarified Javadocs in Reference#getPath() methods.
+        - Fixed potential NPE in Reference#decode() method.
+        - Clarified Javadocs in FileRepresentation and methods 
+          Representation#getDownloadName(), setDownloadName() in order
+          to explain that setDownloadable(true) must be called first.
+          Issue reported by Kevin Conaway.
+        - The internal HTTP client doesn't send absolute request URIs
+          anymore. It now sends them as relative URIs according to the
+          HTTP 1.1 specification. Reported by Jonas Maturana Larsen.
+        - Upgraded Apache Commons IO to version 1.4.
+        - The ServerServlet now sets the HTTP headers after the status
+          to prevent issues with Tomcat 5.0 and "Content-Length: 0" 
+          headers sending the response immediately. 
+          Reported by Eirik Bjorsnos. 
+		- The internal HTTP client no longer forces the user agent name
+		  if one has already been specified by the user. Contributed by
+		  Kevin Conaway.

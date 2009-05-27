@@ -1,0 +1,1620 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+<!-- Content Stylesheet for Site -->
+
+    
+    
+
+    
+<!-- start the processing -->
+    <!-- ====================================================================== -->
+    <!-- GENERATED FILE, DO NOT EDIT, EDIT THE XML FILE IN xdocs INSTEAD! -->
+    <!-- Main Page Section -->
+    <!-- ====================================================================== -->
+<html>
+  <head>
+    <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type" />
+
+                          <meta name="author" content="Checkstyle Development Team">
+            <meta name="email" content="checkstyle-devel@lists.sourceforge.net">
+    
+    
+            
+        
+    <title>Checkstyle - Javadoc Comments</title>
+
+    <style type="text/css" media="all">
+      @import url("./css/cs-layout.css");
+      @import url("./css/cs-style.css");
+    </style>
+  </head>
+
+  <body>
+    <div class="csTopBar">
+      <div class="csTopBarContents">
+        <div class="csLeft">
+          <h1>Javadoc Comments</h1>
+        </div>
+        <div class="csRight">
+          <a href="http://checkstyle.sourceforge.net/">
+            <img src="images/logo.png" alt="Checkstyle Logo" height="70"/>
+          </a>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="csMiddleContainer">
+      <div class="csLeftBar">
+        <div class="csLeftBarContents">
+            <!-- ============================================================ -->
+  <!-- start makeNavigationBar -->
+  
+  <ul>
+          <li>
+        <strong>About</strong>
+      </li>
+                        <li>    <a href="./index.html">Checkstyle</a>
+</li>
+                    
+  
+          <li>
+        <strong>Documentation</strong>
+      </li>
+                        <li>    <a href="./releasenotes.html">Release Notes</a>
+</li>
+                    
+                  <li>    <a href="./config.html">Configuration</a>
+</li>
+                                    <li>    <a href="./property_types.html">&nbsp;&nbsp;&nbsp;Property Types</a>
+</li>
+                    
+  
+                  <li>    <a href="./running.html">Running</a>
+</li>
+                                    <li>    <a href="./anttask.html">&nbsp;&nbsp;&nbsp;Ant Task</a>
+</li>
+                    
+                  <li>    <a href="./cmdline.html">&nbsp;&nbsp;&nbsp;Command Line</a>
+</li>
+                    
+  
+                  <li>    <a href="./availablechecks.html">Available Checks</a>
+</li>
+                    
+                  <li>    <a href="./checks.html">Standard Checks</a>
+</li>
+                                    <li><b>    <a href="./config_javadoc.html">&nbsp;&nbsp;&nbsp;Javadoc Comments</a>
+</b></li>
+                                                      <li><a href="#PackageHtml">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PackageHtml</a></li>
+                                                        <li><a href="#JavadocType">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;JavadocType</a></li>
+                                                        <li><a href="#JavadocMethod">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;JavadocMethod</a></li>
+                                                        <li><a href="#JavadocVariable">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;JavadocVariable</a></li>
+                                                        <li><a href="#JavadocStyle">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;JavadocStyle</a></li>
+                                                        <li><a href="#WriteTag">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;WriteTag</a></li>
+                                      
+                  <li>    <a href="./config_naming.html">&nbsp;&nbsp;&nbsp;Naming Conventions</a>
+</li>
+                    
+                  <li>    <a href="./config_header.html">&nbsp;&nbsp;&nbsp;Headers</a>
+</li>
+                    
+                  <li>    <a href="./config_imports.html">&nbsp;&nbsp;&nbsp;Imports</a>
+</li>
+                    
+                  <li>    <a href="./config_sizes.html">&nbsp;&nbsp;&nbsp;Size Violations</a>
+</li>
+                    
+                  <li>    <a href="./config_whitespace.html">&nbsp;&nbsp;&nbsp;Whitespace</a>
+</li>
+                    
+                  <li>    <a href="./config_modifier.html">&nbsp;&nbsp;&nbsp;Modifiers</a>
+</li>
+                    
+                  <li>    <a href="./config_blocks.html">&nbsp;&nbsp;&nbsp;Block Checks</a>
+</li>
+                    
+                  <li>    <a href="./config_coding.html">&nbsp;&nbsp;&nbsp;Coding</a>
+</li>
+                    
+                  <li>    <a href="./config_design.html">&nbsp;&nbsp;&nbsp;Class Design</a>
+</li>
+                    
+                  <li>    <a href="./config_duplicates.html">&nbsp;&nbsp;&nbsp;Duplicate Code</a>
+</li>
+                    
+                  <li>    <a href="./config_metrics.html">&nbsp;&nbsp;&nbsp;Metrics</a>
+</li>
+                    
+                  <li>    <a href="./config_misc.html">&nbsp;&nbsp;&nbsp;Miscellaneous</a>
+</li>
+                    
+  
+                  <li>    <a href="./optional.html">Optional Checks</a>
+</li>
+                                    <li>    <a href="./config_j2ee.html">&nbsp;&nbsp;&nbsp;J2EE Checks</a>
+</li>
+                    
+  
+                  <li>    <a href="./extending.html">Extending Checkstyle</a>
+</li>
+                                    <li>    <a href="./writingchecks.html">&nbsp;&nbsp;&nbsp;Writing checks</a>
+</li>
+                    
+                  <li>    <a href="./writingfilters.html">&nbsp;&nbsp;&nbsp;Writing filters</a>
+</li>
+                    
+                  <li>    <a href="./writinglisteners.html">&nbsp;&nbsp;&nbsp;Writing listeners</a>
+</li>
+                    
+  
+                  <li>    <a href="./api/index.html">Javadoc</a>
+</li>
+                    
+  
+          <li>
+        <strong>SourceForge</strong>
+      </li>
+                        <li>    <a href="http://sourceforge.net/mail/?group_id=29721">Mailing Lists</a>
+</li>
+                    
+                  <li>    <a href="http://sourceforge.net/tracker/?atid=397078&group_id=29721&func=browse">Bug Database</a>
+</li>
+                    
+                  <li>    <a href="http://sourceforge.net/tracker/?atid=397081&group_id=29721&func=browse">Feature Requests</a>
+</li>
+                    
+  
+          <li>
+        <strong>Developers</strong>
+      </li>
+                        <li>    <a href="http://sourceforge.net/projects/checkstyle">Project Page</a>
+</li>
+                    
+                  <li>    <a href="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/checkstyle/">CVS Repository</a>
+</li>
+                    
+                  <li>    <a href="./contributing.html">Contributing</a>
+</li>
+                    
+  
+      </ul>
+
+  <ul>
+    <li>
+      <strong>Hosted by:</strong>
+      <div align="center">
+        <p><a href="http://sourceforge.net">
+        <img src="http://sourceforge.net/sflogo.php?group_id=29721&amp;type=1" width="88" height="31" alt="SourceForge Logo"/></a>
+         </p>
+       </div>
+    </li>
+  </ul>
+
+  <!-- end makeNavigationBar -->
+  <!-- ============================================================ -->
+        </div>
+      </div>
+
+      <div class="csMain">
+                          <a id="PackageHtml"></a>
+  <h2>PackageHtml</h2>
+                                            <h3>Description</h3>
+                                    <p>
+          Checks that a <span class="code">package.html</span> file
+          exists for each package. More specifically, checks that each
+          java file has a package.html sibling.
+        </p>
+                                                                            <h3>Properties</h3>
+                                    <table>
+                                            <tr class="even">
+                        <th valign="top" align="left"
+>
+                name
+        </th>
+                                <th valign="top" align="left"
+>
+                description
+        </th>
+                                <th valign="top" align="left"
+>
+                type
+        </th>
+                                <th valign="top" align="left"
+>
+                default value
+        </th>
+            </tr>
+                                                <tr class="odd">
+                        <td class="odd"
+>
+                fileExtensions
+        </td>
+                                <td class="odd"
+>
+                
+              file type extension to identify java files. Setting this
+              property is typically only required if your java source
+              files are preprocessed and the original files do not have
+              the extension <span class="code">.java</span>
+            
+        </td>
+                                <td class="odd"
+>
+                <a href="property_types.html#stringSet">String Set</a>
+        </td>
+                                <td class="odd"
+>
+                <span class="default">java</span>
+        </td>
+            </tr>
+            </table>
+                                                                            <h3>Example</h3>
+                                    <p>
+          To configure the check:
+        </p>
+                                                    <div align="left">
+    <table cellspacing="4" cellpadding="0" border="0">
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#ffffff"><pre>&lt;module name=&quot;PackageHtml&quot;/&gt;</pre></td>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    </table>
+    </div>
+                                                                            <h3>Package</h3>
+                                    <p>
+          com.puppycrawl.tools.checkstyle.checks.javadoc
+        </p>
+                                                                            <h3>Parent Module</h3>
+                                    <p>
+          <a href="config.html#checker">Checker</a>
+        </p>
+                                                                          <a id="JavadocType"></a>
+  <h2>JavadocType</h2>
+                                            <h3>Description</h3>
+                                    <p>
+          Checks Javadoc comments for class and interface definitions.
+          By default, does not check for author or version tags.  The
+          scope to verify is specified using the <code>Scope</code>
+          class and defaults to <code>Scope.PRIVATE</code>. To verify
+          another scope, set property scope to one of the
+          <code>Scope</code> constants.  To define the format for an
+          author tag or a version tag, set property authorFormat or
+          versionFormat respectively to a
+          <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/regex/Pattern.html">
+            regular expression</a>.
+        </p>
+                                                <p>
+          Error messages about type parameters for which no param tags are
+          present can be suppressed by defining property
+          <code>allowMissingParamTags</code>.
+        </p>
+                                                                            <h3>Properties</h3>
+                                    <table>
+                                            <tr class="even">
+                        <th valign="top" align="left"
+>
+                name
+        </th>
+                                <th valign="top" align="left"
+>
+                description
+        </th>
+                                <th valign="top" align="left"
+>
+                type
+        </th>
+                                <th valign="top" align="left"
+>
+                default value
+        </th>
+            </tr>
+                                                <tr class="odd">
+                        <td class="odd"
+>
+                scope
+        </td>
+                                <td class="odd"
+>
+                visibility scope where Javadoc comments are checked
+        </td>
+                                <td class="odd"
+>
+                <a href="property_types.html#scope">scope</a>
+        </td>
+                                <td class="odd"
+>
+                <span class="default">private</span>
+        </td>
+            </tr>
+                                                <tr class="even">
+                        <td class="even"
+>
+                excludeScope
+        </td>
+                                <td class="even"
+>
+                visibility scope where Javadoc comments are not checked
+        </td>
+                                <td class="even"
+>
+                <a href="property_types.html#scope">scope</a>
+        </td>
+                                <td class="even"
+>
+                <span class="default">null</span>
+        </td>
+            </tr>
+                                                <tr class="odd">
+                        <td class="odd"
+>
+                authorFormat
+        </td>
+                                <td class="odd"
+>
+                pattern for @author tag
+        </td>
+                                <td class="odd"
+>
+                <a href="property_types.html#regexp">regular expression</a>
+        </td>
+                                <td class="odd"
+>
+                <span class="default">null</span> (tag not required)
+        </td>
+            </tr>
+                                                <tr class="even">
+                        <td class="even"
+>
+                versionFormat
+        </td>
+                                <td class="even"
+>
+                pattern for @version tag
+        </td>
+                                <td class="even"
+>
+                <a href="property_types.html#regexp">regular expression</a>
+        </td>
+                                <td class="even"
+>
+                <span class="default">null</span> (tag not required)
+        </td>
+            </tr>
+                                                <tr class="odd">
+                        <td class="odd"
+>
+                allowMissingParamTags
+        </td>
+                                <td class="odd"
+>
+                whether to ignore errors when a class has type parameters
+              but does not have matching param tags in the javadoc.
+        </td>
+                                <td class="odd"
+>
+                <a href="property_types.html#boolean">boolean</a>
+        </td>
+                                <td class="odd"
+>
+                <span class="default">false</span>
+        </td>
+            </tr>
+                                                <tr class="even">
+                        <td class="even"
+>
+                tokens
+        </td>
+                                <td class="even"
+>
+                definitions to check
+        </td>
+                                <td class="even"
+>
+                
+              subset of tokens <a href="api/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#INTERFACE_DEF">INTERFACE_DEF</a>,
+              <a href="api/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#CLASS_DEF">CLASS_DEF</a>
+            
+        </td>
+                                <td class="even"
+>
+                
+              <a href="api/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#INTERFACE_DEF">INTERFACE_DEF</a>,
+               <a href="api/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#CLASS_DEF">CLASS_DEF</a>,
+            
+        </td>
+            </tr>
+            </table>
+                                                                            <h3>Examples</h3>
+                                    <p>
+          To configure the default check:
+        </p>
+                                                    <div align="left">
+    <table cellspacing="4" cellpadding="0" border="0">
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#ffffff"><pre>&lt;module name=&quot;JavadocType&quot;/&gt;</pre></td>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    </table>
+    </div>
+                                                <p>
+          To configure the check for <span class="default">public</span> scope:
+        </p>
+                                                    <div align="left">
+    <table cellspacing="4" cellpadding="0" border="0">
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#ffffff"><pre>&lt;module name=&quot;JavadocType&quot;&gt;
+   &lt;property name=&quot;scope&quot; value=&quot;public&quot;/&gt;
+&lt;/module&gt;</pre></td>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    </table>
+    </div>
+                                                <p>
+          To configure the check for an @author tag:
+        </p>
+                                                    <div align="left">
+    <table cellspacing="4" cellpadding="0" border="0">
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#ffffff"><pre>&lt;module name=&quot;JavadocType&quot;&gt;
+   &lt;property name=&quot;authorFormat&quot; value=&quot;\S&quot;/&gt;
+&lt;/module&gt;</pre></td>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    </table>
+    </div>
+                                                <p>
+          To configure the check for a CVS revision version tag:
+        </p>
+                                                    <div align="left">
+    <table cellspacing="4" cellpadding="0" border="0">
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#ffffff"><pre>&lt;module name=&quot;JavadocType&quot;&gt;
+   &lt;property name=&quot;versionFormat&quot; value=&quot;\$Revision.*\$&quot;/&gt;
+&lt;/module&gt;</pre></td>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    </table>
+    </div>
+                                                <p>
+          To configure the check for <span class="default">private</span> classes only:
+        </p>
+                                                    <div align="left">
+    <table cellspacing="4" cellpadding="0" border="0">
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#ffffff"><pre>&lt;module name=&quot;JavadocType&quot;&gt;
+   &lt;property name=&quot;scope&quot; value=&quot;private&quot;/&gt;
+   &lt;property name=&quot;excludescope&quot; value=&quot;package&quot;/&gt;
+&lt;/module&gt;</pre></td>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    </table>
+    </div>
+                                                                            <h3>Package</h3>
+                                    <p>
+          com.puppycrawl.tools.checkstyle.checks.javadoc
+        </p>
+                                                                            <h3>Parent Module</h3>
+                                    <p>
+          <a href="config.html#treewalker">TreeWalker</a>
+        </p>
+                                                                          <a id="JavadocMethod"></a>
+  <h2>JavadocMethod</h2>
+                                            <h3>Description</h3>
+                                    <p>
+          Checks the Javadoc of a method or constructor. By default,
+          does not check for unused throws. To allow documented
+          <code>java.lang.RuntimeException</code>s that are not
+          declared, set property allowUndeclaredRTE to true. The scope
+          to verify is specified using the <code>Scope</code> class and
+          defaults to <code>Scope.PRIVATE</code>. To verify another
+          scope, set property scope to a different
+          <a href="property_types.html#scope">scope</a>.
+        </p>
+                                                <p>
+          Error messages about parameters and type parameters
+          for which no param tags are
+          present can be suppressed by defining property
+          <code>allowMissingParamTags</code>. Error messages about
+          exceptions which are declared to be thrown, but for which no
+          throws tag is present can be suppressed by defining property
+          <code>allowMissingThrowsTags</code>. Error messages about
+          methods which return non-void but for which no return tag is
+          present can be suppressed by defining property
+          <code>allowMissingReturnTag</code>.
+        </p>
+                                                                            <h3>Properties</h3>
+                                    <table>
+                                            <tr class="even">
+                        <th valign="top" align="left"
+>
+                name
+        </th>
+                                <th valign="top" align="left"
+>
+                description
+        </th>
+                                <th valign="top" align="left"
+>
+                type
+        </th>
+                                <th valign="top" align="left"
+>
+                default value
+        </th>
+            </tr>
+                                                <tr class="odd">
+                        <td class="odd"
+>
+                scope
+        </td>
+                                <td class="odd"
+>
+                visibility scope where Javadoc comments are checked
+        </td>
+                                <td class="odd"
+>
+                <a href="property_types.html#scope">scope</a>
+        </td>
+                                <td class="odd"
+>
+                <span class="default">private</span>
+        </td>
+            </tr>
+                                                <tr class="even">
+                        <td class="even"
+>
+                excludeScope
+        </td>
+                                <td class="even"
+>
+                visibility scope where Javadoc comments are not checked
+        </td>
+                                <td class="even"
+>
+                <a href="property_types.html#scope">scope</a>
+        </td>
+                                <td class="even"
+>
+                <span class="default">null</span>
+        </td>
+            </tr>
+                                                <tr class="odd">
+                        <td class="odd"
+>
+                allowUndeclaredRTE
+        </td>
+                                <td class="odd"
+>
+                whether to allow documented exceptions that
+            are not declared if they are a subclass of <span class="code">java.lang.RuntimeException</span>
+        </td>
+                                <td class="odd"
+>
+                <a href="property_types.html#boolean">boolean</a>
+        </td>
+                                <td class="odd"
+>
+                <span class="default">false</span>
+        </td>
+            </tr>
+                                                <tr class="even">
+                        <td class="even"
+>
+                allowThrowsTagsForSubclasses
+        </td>
+                                <td class="even"
+>
+                whether to allow documented exceptions that
+            are subclass of one of declared exception.
+        </td>
+                                <td class="even"
+>
+                <a href="property_types.html#boolean">boolean</a>
+        </td>
+                                <td class="even"
+>
+                <span class="default">false</span>
+        </td>
+            </tr>
+                                                <tr class="odd">
+                        <td class="odd"
+>
+                allowMissingParamTags
+        </td>
+                                <td class="odd"
+>
+                whether to ignore errors when a method has parameters
+            but does not have matching param tags in the javadoc.
+        </td>
+                                <td class="odd"
+>
+                <a href="property_types.html#boolean">boolean</a>
+        </td>
+                                <td class="odd"
+>
+                <span class="default">false</span>
+        </td>
+            </tr>
+                                                <tr class="even">
+                        <td class="even"
+>
+                allowMissingThrowsTags
+        </td>
+                                <td class="even"
+>
+                whether to ignore errors when a method declares
+            that it throws exceptions but does have matching throws tags
+            in the javadoc.
+        </td>
+                                <td class="even"
+>
+                <a href="property_types.html#boolean">boolean</a>
+        </td>
+                                <td class="even"
+>
+                <span class="default">false</span>
+        </td>
+            </tr>
+                                                <tr class="odd">
+                        <td class="odd"
+>
+                allowMissingReturnTag
+        </td>
+                                <td class="odd"
+>
+                whether to ignore errors when a method returns
+            non-void type does have a return tag in the javadoc.
+        </td>
+                                <td class="odd"
+>
+                <a href="property_types.html#boolean">boolean</a>
+        </td>
+                                <td class="odd"
+>
+                <span class="default">false</span>
+        </td>
+            </tr>
+                                                <tr class="even">
+                        <td class="even"
+>
+                allowMissingJavadoc
+        </td>
+                                <td class="even"
+>
+                whether to ignore errors when a method javadoc is missed.
+        </td>
+                                <td class="even"
+>
+                <a href="property_types.html#boolean">boolean</a>
+        </td>
+                                <td class="even"
+>
+                <span class="default">false</span>
+        </td>
+            </tr>
+                                                <tr class="odd">
+                        <td class="odd"
+>
+                allowMissingPropertyJavadoc
+        </td>
+                                <td class="odd"
+>
+                
+              Whether to allow missing Javadoc on accessor methods for
+              properties (setters and getters). The setter and getter
+              methods must match exactly the structures below.
+
+              <pre>
+public void setNumber(final int number)
+{
+    mNumber = number;
+}
+
+public int getNumber()
+{
+    return mNumber;
+}
+
+public boolean isSomething()
+{
+    return false;
+}
+              </pre>
+            
+        </td>
+                                <td class="odd"
+>
+                <a href="property_types.html#boolean">boolean</a>
+        </td>
+                                <td class="odd"
+>
+                <span class="default">false</span>
+        </td>
+            </tr>
+                                                <tr class="even">
+                        <td class="even"
+>
+                logLoadErrors
+        </td>
+                                <td class="even"
+>
+                This check may need to load exception classes mentioned in
+            the @throws tag to check whether they are RuntimeExceptions.
+            If loading the class fails, this property allows to control
+            checkstyle's error handling. If set to false (the default) a
+            classpath configuration problem is assumed and the TreeWalker
+            stops operating on the class completely.
+            If set to true, checkstyle assumes a typo or refactoring problem in the
+            javadoc and logs the problem in the normal checkstyle report
+            (potentially masking a configuration error).
+        </td>
+                                <td class="even"
+>
+                <a href="property_types.html#boolean">boolean</a>
+        </td>
+                                <td class="even"
+>
+                <span class="default">false</span>
+        </td>
+            </tr>
+                                                <tr class="odd">
+                        <td class="odd"
+>
+                suppressLoadErrors
+        </td>
+                                <td class="odd"
+>
+                When logLoadErrors is set to true, the TreeWalker completely
+            processes a class and displays any problems with loading exceptions
+            as checkstyle violations.
+            When this property is set to true, the violations generated when
+            logLoadErrors is set true are suppressed from being reported as
+            violations in the checkstyle report.
+            
+        </td>
+                                <td class="odd"
+>
+                <a href="property_types.html#boolean">boolean</a>
+        </td>
+                                <td class="odd"
+>
+                <span class="default">false</span>
+        </td>
+            </tr>
+                                                <tr class="even">
+                        <td class="even"
+>
+                tokens
+        </td>
+                                <td class="even"
+>
+                definitions to check
+        </td>
+                                <td class="even"
+>
+                subset of tokens <a href="api/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#METHOD_DEF">METHOD_DEF</a>,
+            <a href="api/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#CTOR_DEF">CTOR_DEF</a>
+        </td>
+                                <td class="even"
+>
+                <a href="api/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#METHOD_DEF">METHOD_DEF</a>,
+            <a href="api/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#CTOR_DEF">CTOR_DEF</a>
+        </td>
+            </tr>
+            </table>
+                                                                            <h3>Examples</h3>
+                                    <p>
+          To configure the default check:
+        </p>
+                                                    <div align="left">
+    <table cellspacing="4" cellpadding="0" border="0">
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#ffffff"><pre>&lt;module name=&quot;JavadocMethod&quot;/&gt;</pre></td>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    </table>
+    </div>
+                                                <p>
+          To configure the check for <span class="default">public</span>
+          scope and to allow documentation of undeclared
+          RuntimeExceptions:
+        </p>
+                                                    <div align="left">
+    <table cellspacing="4" cellpadding="0" border="0">
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#ffffff"><pre>&lt;module name=&quot;JavadocMethod&quot;&gt;
+   &lt;property name=&quot;scope&quot; value=&quot;public&quot;/&gt;
+   &lt;property name=&quot;allowUndeclaredRTE&quot; value=&quot;true&quot;/&gt;
+&lt;/module&gt;</pre></td>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    </table>
+    </div>
+                                                <p>
+          To configure the check for for <span class="default">public</span>
+          scope, to allow documentation of undeclared RuntimeExceptions,
+          while ignoring any missing param tags is:
+        </p>
+                                                    <div align="left">
+    <table cellspacing="4" cellpadding="0" border="0">
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#ffffff"><pre>&lt;module name=&quot;JavadocMethod&quot;&gt;
+  &lt;property name=&quot;scope&quot; value=&quot;public&quot;/&gt;
+  &lt;property name=&quot;allowUndeclaredRTE&quot; value=&quot;true&quot;/&gt;
+  &lt;property name=&quot;allowMissingParamTags&quot; value=&quot;true&quot;/&gt;
+&lt;/module&gt;</pre></td>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    </table>
+    </div>
+                                                <p>
+          To configure the check for methods which are in <span class="default">private</span> , but not in <span class="default">protected</span> scope:
+        </p>
+                                                    <div align="left">
+    <table cellspacing="4" cellpadding="0" border="0">
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#ffffff"><pre>&lt;module name=&quot;JavadocMethod&quot;&gt;
+   &lt;property name=&quot;scope&quot; value=&quot;private&quot;/&gt;
+   &lt;property name=&quot;excludeScope&quot; value=&quot;protected&quot;/&gt;
+&lt;/module&gt;</pre></td>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    </table>
+    </div>
+                                                                            <h3>Notes</h3>
+                                    <ul>
+          <li>
+            The classpath may need to be configured to locate the class
+            information. The classpath configuration is dependent on the
+            mechanism used to invoke Checkstyle.
+          </li>
+
+          <li>
+            It can be extremely painful writing or duplicating Javadoc
+            for a method required for an interface. Hence checkstyle
+            supports using the convention of using a single <span class="code">{@inheritDoc}</span> tag instead of all the
+            other tags. For example, if the <a href="#checkReturnTag">above method</a> was implementing a
+            method required by the <span class="code">
+            com.puppycrawl.tools.checkstyle.Verifier</span> interface,
+            then the Javadoc could be done as:
+
+            <pre>
+/** {@inheritDoc} */
+public int checkReturnTag(final int aTagIndex,
+                          JavadocTag[] aTags,
+                          int aLineNo)
+            </pre>
+
+          </li>
+        </ul>
+                                                                            <h3>Package</h3>
+                                    <p>
+          com.puppycrawl.tools.checkstyle.checks.javadoc
+        </p>
+                                                                            <h3>Parent Module</h3>
+                                    <p>
+          <a href="config.html#treewalker">TreeWalker</a>
+        </p>
+                                                                          <a id="JavadocVariable"></a>
+  <h2>JavadocVariable</h2>
+                                            <h3>Description</h3>
+                                    <p>
+          Checks that variables have Javadoc comments.
+        </p>
+                                                                            <h3>Properties</h3>
+                                    <table>
+                                            <tr class="even">
+                        <th valign="top" align="left"
+>
+                name
+        </th>
+                                <th valign="top" align="left"
+>
+                description
+        </th>
+                                <th valign="top" align="left"
+>
+                type
+        </th>
+                                <th valign="top" align="left"
+>
+                default value
+        </th>
+            </tr>
+                                                <tr class="odd">
+                        <td class="odd"
+>
+                scope
+        </td>
+                                <td class="odd"
+>
+                visibility scope where Javadoc comments are checked
+        </td>
+                                <td class="odd"
+>
+                <a href="property_types.html#scope">scope</a>
+        </td>
+                                <td class="odd"
+>
+                <span class="default">private</span>
+        </td>
+            </tr>
+                                                <tr class="even">
+                        <td class="even"
+>
+                excludeScope
+        </td>
+                                <td class="even"
+>
+                visibility scope where Javadoc comments are not checked
+        </td>
+                                <td class="even"
+>
+                <a href="property_types.html#scope">scope</a>
+        </td>
+                                <td class="even"
+>
+                <span class="default">null</span>
+        </td>
+            </tr>
+            </table>
+                                                                            <h3>Examples</h3>
+                                    <p>
+          To configure the default check:
+        </p>
+                                                    <div align="left">
+    <table cellspacing="4" cellpadding="0" border="0">
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#ffffff"><pre>&lt;module name=&quot;JavadocVariable&quot;/&gt;</pre></td>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    </table>
+    </div>
+                                                <p>
+          To configure the check for <span class="default">public</span>
+          scope:
+        </p>
+                                                    <div align="left">
+    <table cellspacing="4" cellpadding="0" border="0">
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#ffffff"><pre>&lt;module name=&quot;JavadocVariable&quot;&gt;
+   &lt;property name=&quot;scope&quot; value=&quot;public&quot;/&gt;
+&lt;/module&gt;</pre></td>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    </table>
+    </div>
+                                                <p>
+          To configure the check for members which are in <span class="default">private</span>, but not in <span class="default">protected</span> scope:
+        </p>
+                                                    <div align="left">
+    <table cellspacing="4" cellpadding="0" border="0">
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#ffffff"><pre>&lt;module name=&quot;JavadocVariable&quot;&gt;
+   &lt;property name=&quot;scope&quot; value=&quot;private&quot;/&gt;
+   &lt;property name=&quot;excludeScope&quot; value=&quot;protected&quot;/&gt;
+&lt;/module&gt;</pre></td>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    </table>
+    </div>
+                                                                            <h3>Package</h3>
+                                    <p>
+          com.puppycrawl.tools.checkstyle.checks.javadoc
+        </p>
+                                                                            <h3>Parent Module</h3>
+                                    <p>
+          <a href="config.html#treewalker">TreeWalker</a>
+        </p>
+                                                                          <a id="JavadocStyle"></a>
+  <h2>JavadocStyle</h2>
+                                            <h3>Description</h3>
+                                    <p>
+          Validates Javadoc comments to help ensure they are well
+          formed.  The following checks are performed:
+        </p>
+                                                <ul>
+          <li>
+            Ensures the first sentence ends with proper punctuation
+            (That is a period, question mark, or exclamation mark).
+            Javadoc automatically places the first sentence in the
+            method summary table and index.  With out proper punctuation
+            the Javadoc may be malformed.
+          </li>
+
+          <li>
+            Check text for Javadoc statements that do not have any
+            description.  This includes both completely empty Javadoc,
+            and Javadoc with only tags such as @param and @return.
+          </li>
+
+          <li>
+            Check text for incomplete HTML tags.  Verifies that HTML
+            tags have corresponding end tags and issues an "Unclosed
+            HTML tag found:" error if not.  An "Extra HTML tag found:"
+            error is issued if an end tag is found without a previous
+            open tag.
+          </li>
+        </ul>
+                                                <p>
+          These checks were patterned after the checks made by the <a href="http://java.sun.com/j2se/javadoc/doccheck/index.html">DocCheck</a>
+          doclet available from Sun.
+        </p>
+                                                                            <h3>Properties</h3>
+                                    <table>
+                                            <tr class="even">
+                        <th valign="top" align="left"
+>
+                name
+        </th>
+                                <th valign="top" align="left"
+>
+                description
+        </th>
+                                <th valign="top" align="left"
+>
+                type
+        </th>
+                                <th valign="top" align="left"
+>
+                default value
+        </th>
+            </tr>
+                                                <tr class="odd">
+                        <td class="odd"
+>
+                scope
+        </td>
+                                <td class="odd"
+>
+                visibility scope where Javadoc comments are checked
+        </td>
+                                <td class="odd"
+>
+                <a href="property_types.html#scope">scope</a>
+        </td>
+                                <td class="odd"
+>
+                <span class="default">private</span>
+        </td>
+            </tr>
+                                                <tr class="even">
+                        <td class="even"
+>
+                excludeScope
+        </td>
+                                <td class="even"
+>
+                visibility scope where Javadoc comments are not checked
+        </td>
+                                <td class="even"
+>
+                <a href="property_types.html#scope">scope</a>
+        </td>
+                                <td class="even"
+>
+                <span class="default">null</span>
+        </td>
+            </tr>
+                                                <tr class="odd">
+                        <td class="odd"
+>
+                checkFirstSentence
+        </td>
+                                <td class="odd"
+>
+                
+              Whether to check the first sentence for proper end of sentence.
+            
+        </td>
+                                <td class="odd"
+>
+                <a href="property_types.html#boolean">boolean</a>
+        </td>
+                                <td class="odd"
+>
+                <span class="default">true</span>
+        </td>
+            </tr>
+                                                <tr class="even">
+                        <td class="even"
+>
+                checkEmptyJavadoc
+        </td>
+                                <td class="even"
+>
+                
+              Whether to check if the Javadoc is missing a describing text.
+            
+        </td>
+                                <td class="even"
+>
+                <a href="property_types.html#boolean">boolean</a>
+        </td>
+                                <td class="even"
+>
+                <span class="default">false</span>
+        </td>
+            </tr>
+                                                <tr class="odd">
+                        <td class="odd"
+>
+                checkHtml
+        </td>
+                                <td class="odd"
+>
+                Whether to check for incomplete html tags.
+        </td>
+                                <td class="odd"
+>
+                <a href="property_types.html#boolean">boolean</a>
+        </td>
+                                <td class="odd"
+>
+                <span class="default">true</span>
+        </td>
+            </tr>
+                                                <tr class="even">
+                        <td class="even"
+>
+                tokens
+        </td>
+                                <td class="even"
+>
+                definitions to check
+        </td>
+                                <td class="even"
+>
+                
+              subset of tokens <a href="api/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#INTERFACE_DEF">INTERFACE_DEF</a>,
+              <a href="api/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#CLASS_DEF">CLASS_DEF</a>,
+              <a href="api/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#METHOD_DEF">METHOD_DEF</a>,
+              <a href="api/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#CTOR_DEF">CTOR_DEF</a>,
+              <a href="api/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#VARIABLE_DEF">VARIABLE_DEF</a>
+            
+        </td>
+                                <td class="even"
+>
+                
+              <a href="api/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#INTERFACE_DEF">INTERFACE_DEF</a>,
+              <a href="api/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#CLASS_DEF">CLASS_DEF</a>,
+              <a href="api/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#METHOD_DEF">METHOD_DEF</a>,
+              <a href="api/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#CTOR_DEF">CTOR_DEF</a>,
+              <a href="api/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#VARIABLE_DEF">VARIABLE_DEF</a>
+            
+        </td>
+            </tr>
+            </table>
+                                                                            <h3>Examples</h3>
+                                    <p>
+          To configure the default check:
+        </p>
+                                                    <div align="left">
+    <table cellspacing="4" cellpadding="0" border="0">
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#ffffff"><pre>&lt;module name=&quot;JavadocStyle&quot;/&gt;</pre></td>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    </table>
+    </div>
+                                                <p>
+          To configure the check for <span class="default">public</span>
+          scope:
+        </p>
+                                                    <div align="left">
+    <table cellspacing="4" cellpadding="0" border="0">
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#ffffff"><pre>&lt;module name=&quot;JavadocStyle&quot;&gt;
+   &lt;property name=&quot;scope&quot; value=&quot;public&quot;/&gt;
+&lt;/module&gt;</pre></td>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    </table>
+    </div>
+                                                <p>
+          To configure the check for javadoc which is in <span class="default">private</span>, but not in <span class="default">package</span> scope:
+        </p>
+                                                    <div align="left">
+    <table cellspacing="4" cellpadding="0" border="0">
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#ffffff"><pre>&lt;module name=&quot;JavadocStyle&quot;&gt;
+   &lt;property name=&quot;scope&quot; value=&quot;private&quot;/&gt;
+   &lt;property name=&quot;excludeScope&quot; value=&quot;package&quot;/&gt;
+&lt;/module&gt;</pre></td>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    </table>
+    </div>
+                                                <p>
+          To configure the check to turn off first sentence checking:
+        </p>
+                                                    <div align="left">
+    <table cellspacing="4" cellpadding="0" border="0">
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#ffffff"><pre>&lt;module name=&quot;JavadocStyle&quot;&gt;
+   &lt;property name=&quot;checkFirstSentence&quot; value=&quot;false&quot;/&gt;
+&lt;/module&gt;</pre></td>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    </table>
+    </div>
+                                                                            <h3>Package</h3>
+                                    <p>
+          com.puppycrawl.tools.checkstyle.checks
+        </p>
+                                                                            <h3>Parent Module</h3>
+                                    <p>
+          <a href="config.html#treewalker">TreeWalker</a>
+        </p>
+                                                                          <a id="WriteTag"></a>
+  <h2>WriteTag</h2>
+                                            <h3>Description</h3>
+                                    <p>
+         Outputs a JavaDoc tag as information. Can be used e.g. with the
+         stylesheets that sort the report by author name.  To define the
+         format for a tag, set property tagFormat to a regular
+         expression.  This check uses two different severity levels. The
+         normal one is used for reporting when the tag is missing. The
+         additional one (tagSeverity) is used for the level of reporting
+         when the tag exists.
+        </p>
+                                                                            <h3>Properties</h3>
+                                    <table>
+                                            <tr class="even">
+                        <th valign="top" align="left"
+>
+                name
+        </th>
+                                <th valign="top" align="left"
+>
+                description
+        </th>
+                                <th valign="top" align="left"
+>
+                type
+        </th>
+                                <th valign="top" align="left"
+>
+                default value
+        </th>
+            </tr>
+                                                <tr class="odd">
+                        <td class="odd"
+>
+                tag
+        </td>
+                                <td class="odd"
+>
+                Name of tag
+        </td>
+                                <td class="odd"
+>
+                <a href="property_types.html#string">String</a>
+        </td>
+                                <td class="odd"
+>
+                <span class="default">null</span>
+        </td>
+            </tr>
+                                                <tr class="even">
+                        <td class="even"
+>
+                tagFormat
+        </td>
+                                <td class="even"
+>
+                Format of tag
+        </td>
+                                <td class="even"
+>
+                <a href="property_types.html#regexp">regular expression</a>
+        </td>
+                                <td class="even"
+>
+                <span class="default">null</span>
+        </td>
+            </tr>
+                                                <tr class="odd">
+                        <td class="odd"
+>
+                tagSeverity
+        </td>
+                                <td class="odd"
+>
+                Severity level when tag is found and printed
+        </td>
+                                <td class="odd"
+>
+                <a href="property_types.html#severity">severity</a>
+        </td>
+                                <td class="odd"
+>
+                <span class="default">info</span>
+        </td>
+            </tr>
+            </table>
+                                                                            <h3>Examples</h3>
+                                    <p>
+        An example of how to configure the check for printing author name is:
+        </p>
+                                                    <div align="left">
+    <table cellspacing="4" cellpadding="0" border="0">
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#ffffff"><pre>&lt;module name=&quot;WriteTag&quot;&gt;
+   &lt;property name=&quot;tag&quot; value=&quot;@author&quot;/&gt;
+   &lt;property name=&quot;tagFormat&quot; value=&quot;\S&quot;/&gt;
+&lt;/module&gt;</pre></td>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    </table>
+    </div>
+                                                <p>
+         An example of how to configure the check to print warnings if an
+         "@incomplete" tag is found, and not print anything if it is not found:
+        </p>
+                                                    <div align="left">
+    <table cellspacing="4" cellpadding="0" border="0">
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#ffffff"><pre>&lt;module name=&quot;WriteTag&quot;&gt;
+   &lt;property name=&quot;tag&quot; value=&quot;@incomplete&quot;/&gt;
+   &lt;property name=&quot;tagFormat&quot; value=&quot;\S&quot;/&gt;
+   &lt;property name=&quot;severity&quot; value=&quot;ignore&quot;/&gt;
+   &lt;property name=&quot;tagSeverity&quot; value=&quot;warning&quot;/&gt;
+&lt;/module&gt;</pre></td>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    </table>
+    </div>
+                                                                            <h3>Package</h3>
+                                    <p>
+          com.puppycrawl.tools.checkstyle.checks
+        </p>
+                                                                            <h3>Parent Module</h3>
+                                    <p>
+          <a href="config.html#treewalker">TreeWalker</a>
+        </p>
+                                                            </div>
+    </div>
+
+    <div class="csBottomBar">
+      <div class="csBottomBarContents">
+        Copyright &copy; 2001-2005, Oliver Burn
+      </div>
+    </div>
+  </body>
+</html>
+
+<!-- end the processing -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

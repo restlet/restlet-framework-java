@@ -1,0 +1,14 @@
+<library id="osgi">
+	<package name="org.osgi">
+		<maven>
+			<version>1.0</version>
+		</maven>
+	</package>
+	<version>4.0</version>
+	<homeUri>
+		http://www.osgi.org/
+	</homeUri>
+	<downloadUri>
+		http://felix.apache.org/site/downloads.cgi
+	</downloadUri>
+</library>

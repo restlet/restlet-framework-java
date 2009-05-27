@@ -1,0 +1,21 @@
+Manifest-Version: 1.0
+Main-Class: org.restlet.Component
+Bundle-ManifestVersion: 2
+Bundle-Name: Restlet API for Android
+Bundle-SymbolicName: org.restlet.android
+Bundle-Version: 2.0
+Bundle-Vendor: Noelios Technologies
+Import-Package: javax.crypto,
+ javax.crypto.spec,
+ javax.net,
+ javax.net.ssl,
+ javax.security.auth,
+ javax.security.auth.callback,
+ javax.security.auth.login,
+ javax.xml,
+ javax.xml.namespace,
+ javax.xml.parsers,
+ org.w3c.dom,
+ org.xml.sax,
+ org.xml.sax.helpers
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

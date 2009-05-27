@@ -1,0 +1,13 @@
+<library id="json">
+	<package name="org.json" />
+	<version>2.0</version>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+	<homeUri>
+		http://www.json.org/
+	</homeUri>
+	<downloadUri>
+		http://www.json.org/java/index.html
+	</downloadUri>
+</library>

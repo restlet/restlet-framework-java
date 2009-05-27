@@ -1,0 +1,20 @@
+<library id="rhino">
+	<package name="org.mozilla.rhino">
+		<maven>
+			<groupId>rhino</groupId>
+			<artifactId>js</artifactId>
+			<version>1.7R1</version>
+		</maven>
+	</package>
+	<version>1.7</version>
+	<release>0.rc1</release>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+	<homeUri>
+		http://www.mozilla.org/rhino/
+	</homeUri>
+	<downloadUri>
+		http://www.mozilla.org/rhino/download.html
+	</downloadUri>
+</library>

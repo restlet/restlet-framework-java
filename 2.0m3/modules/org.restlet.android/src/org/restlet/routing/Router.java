@@ -1,0 +1,591 @@
+/**
+ * Copyright 2005-2009 Noelios Technologies.
+ * 
+ * The contents of this file are subject to the terms of one of the following
+ * open source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL 1.0 (the
+ * "Licenses"). You can select the license that you prefer but you may not use
+ * this file except in compliance with one of these Licenses.
+ * 
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.opensource.org/licenses/lgpl-3.0.html
+ * 
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.opensource.org/licenses/lgpl-2.1.php
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.opensource.org/licenses/cddl1.php
+ * 
+ * You can obtain a copy of the EPL 1.0 license at
+ * http://www.opensource.org/licenses/eclipse-1.0.php
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royalty free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
+ */
+
+package org.restlet.routing;
+
+import org.restlet.Context;
+import org.restlet.Restlet;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
+import org.restlet.data.Status;
+import org.restlet.resource.Finder;
+import org.restlet.util.RouteList;
+import org.restlet.util.Template;
+
+/**
+ * Restlet routing calls to one of the attached routes. Each route can compute
+ * an affinity score for each call depending on various criteria. The attach()
+ * method allow the creation of routes based on URI patterns matching the
+ * beginning of a the resource reference's remaining part.<br>
+ * <br>
+ * In addition, several routing modes are supported, implementing various
+ * algorithms:
+ * <ul>
+ * <li>Best match (default)</li>
+ * <li>First match</li>
+ * <li>Last match</li>
+ * <li>Random match</li>
+ * <li>Round robin</li>
+ * <li>Custom</li>
+ * </ul>
+ * <br>
+ * Note that for routes using URI patterns will update the resource reference's
+ * base reference during the routing if they are selected. It is also important
+ * to know that the routing is very strict about path separators in your URI
+ * patterns. Finally, you can modify the list of routes while handling incoming
+ * calls as the delegation code is ensured to be thread-safe.<br>
+ * <br>
+ * Concurrency note: instances of this class or its subclasses can be invoked by
+ * several threads at the same time and therefore must be thread-safe. You
+ * should be especially careful when storing state in member variables.
+ * 
+ * @see <a
+ *      href="http://www.restlet.org/documentation/1.1/tutorial#part11">Tutorial:
+ *      Routers and hierarchical URIs</a>
+ * @author Jerome Louvel
+ */
+public class Router extends Restlet {
+    /**
+     * Each call will be routed to the route with the best score, if the
+     * required score is reached.
+     */
+    public static final int BEST = 1;
+
+    /**
+     * Each call will be routed according to a custom mode.
+     */
+    public static final int CUSTOM = 6;
+
+    /**
+     * Each call is routed to the first route if the required score is reached.
+     * If the required score is not reached, then the route is skipped and the
+     * next one is considered.
+     */
+    public static final int FIRST = 2;
+
+    /**
+     * Each call will be routed to the last route if the required score is
+     * reached. If the required score is not reached, then the route is skipped
+     * and the previous one is considered.
+     */
+    public static final int LAST = 3;
+
+    /**
+     * Each call is be routed to the next route target if the required score is
+     * reached. The next route is relative to the previous call routed (round
+     * robin mode). If the required score is not reached, then the route is
+     * skipped and the next one is considered. If the last route is reached, the
+     * first route will be considered.
+     */
+    public static final int NEXT = 4;
+
+    /**
+     * Each call will be randomly routed to one of the routes that reached the
+     * required score. If the random route selected is not a match then the
+     * immediate next route is evaluated until one matching route is found. If
+     * we get back to the initial random route selected with no match, then we
+     * return null.
+     */
+    public static final int RANDOM = 5;
+
+    /** The default matching mode to use when selecting routes based on URIs. */
+    private volatile int defaultMatchingMode;
+
+    /**
+     * The default setting for whether the routing should be done on URIs with
+     * or without taking into account query string.
+     */
+    private volatile boolean defaultMatchQuery;
+
+    /** The default route tested if no other one was available. */
+    private volatile Route defaultRoute;
+
+    /** Finder class to instantiate. */
+    private volatile Class<? extends Finder> finderClass;
+
+    /**
+     * The maximum number of attempts if no attachment could be matched on the
+     * first attempt.
+     */
+    private volatile int maxAttempts;
+
+    /** The minimum score required to have a match. */
+    private volatile float requiredScore;
+
+    /** The delay (in milliseconds) before a new attempt. */
+    private volatile long retryDelay;
+
+    /** The modifiable list of routes. */
+    private volatile RouteList routes;
+
+    /** The routing mode. */
+    private volatile int routingMode;
+
+    /**
+     * Constructor. Note that usage of this constructor is not recommended as
+     * the Router won't have a proper context set. In general you will prefer to
+     * use the other constructor and pass it the parent application's context or
+     * eventually the parent component's context if you don't use applications.
+     */
+    public Router() {
+        this(null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param context
+     *            The context.
+     */
+    public Router(Context context) {
+        super(context);
+        this.routes = new RouteList();
+        this.defaultMatchingMode = Template.MODE_STARTS_WITH;
+        this.defaultMatchQuery = true;
+        this.defaultRoute = null;
+        this.finderClass = Finder.class;
+        this.routingMode = BEST;
+        this.requiredScore = 0.5F;
+        this.maxAttempts = 1;
+        this.retryDelay = 500L;
+    }
+
+    /**
+     * Attaches a target Restlet to this router with an empty URI pattern. A new
+     * route will be added routing to the target when any call is received.
+     * 
+     * @param target
+     *            The target Restlet to attach.
+     * @return The created route.
+     */
+    public Route attach(Restlet target) {
+        return attach("", target);
+    }
+
+    /**
+     * Attaches a target Resource class to this router based on a given URI
+     * pattern. A new route will be added routing to the target when calls with
+     * a URI matching the pattern will be received.
+     * 
+     * @param pathTemplate
+     *            The URI path template that must match the relative part of the
+     *            resource URI.
+     * @param targetClass
+     *            The target Resource class to attach.
+     * @return The created route.
+     */
+    public Route attach(String pathTemplate, Class<?> targetClass) {
+        return attach(pathTemplate, createFinder(targetClass));
+    }
+
+    /**
+     * Attaches a target Restlet to this router based on a given URI pattern. A
+     * new route will be added routing to the target when calls with a URI
+     * matching the pattern will be received.
+     * 
+     * @param pathTemplate
+     *            The URI path template that must match the relative part of the
+     *            resource URI.
+     * @param target
+     *            The target Restlet to attach.
+     * @return The created route.
+     */
+    public Route attach(String pathTemplate, Restlet target) {
+        final Route result = createRoute(pathTemplate, target);
+        getRoutes().add(result);
+        return result;
+    }
+
+    /**
+     * Attaches a Resource class to this router as the default target to invoke
+     * when no route matches. It actually sets a default route that scores all
+     * calls to 1.0.
+     * 
+     * @param defaultTargetClass
+     *            The target Resource class to attach.
+     * @return The created route.
+     */
+    public Route attachDefault(Class<?> defaultTargetClass) {
+        return attachDefault(createFinder(defaultTargetClass));
+    }
+
+    /**
+     * Attaches a Restlet to this router as the default target to invoke when no
+     * route matches. It actually sets a default route that scores all calls to
+     * 1.0.
+     * 
+     * @param defaultTarget
+     *            The Restlet to use as the default target.
+     * @return The created route.
+     */
+    public Route attachDefault(Restlet defaultTarget) {
+        final Route result = new Route(this, "", defaultTarget);
+        setDefaultRoute(result);
+        return result;
+    }
+
+    /**
+     * Creates a new finder instance based on the "targetClass" property.
+     * 
+     * @param targetClass
+     *            The target Resource class to attach.
+     * @return The new finder instance.
+     */
+    public Finder createFinder(Class<?> targetClass) {
+        return Finder.createFinder(targetClass, getFinderClass(), getContext(), getLogger());
+    }
+
+    /**
+     * Creates a new route for the given URI pattern and target.
+     * 
+     * @param uriPattern
+     *            The URI pattern that must match the relative part of the
+     *            resource URI.
+     * @param target
+     *            The target Restlet to attach.
+     * @return The created route.
+     */
+    protected Route createRoute(String uriPattern, Restlet target) {
+        final Route result = new Route(this, uriPattern, target);
+        result.getTemplate().setMatchingMode(getDefaultMatchingMode());
+        result.setMatchQuery(this.defaultMatchQuery);
+        return result;
+    }
+
+    /**
+     * Detaches the target from this router. All routes routing to this target
+     * Restlet are removed from the list of routes and the default route is set
+     * to null.
+     * 
+     * @param target
+     *            The target Restlet to detach.
+     */
+    public void detach(Restlet target) {
+        getRoutes().removeAll(target);
+        if ((getDefaultRoute() != null)
+                && (getDefaultRoute().getNext() == target)) {
+            setDefaultRoute(null);
+        }
+    }
+
+    /**
+     * Returns the matched route according to a custom algorithm. To use in
+     * combination of the {@link #CUSTOM} option. The default implementation (to
+     * be overridden), returns null.
+     * 
+     * @param request
+     *            The request to handle.
+     * @param response
+     *            The response to update.
+     * @return The matched route if available or null.
+     */
+    protected Route getCustom(Request request, Response response) {
+        return null;
+    }
+
+    /**
+     * Returns the default matching mode to use when selecting routes based on
+     * URIs. By default it returns {@link Template#MODE_STARTS_WITH}.
+     * 
+     * @return The default matching mode.
+     */
+    public int getDefaultMatchingMode() {
+        return this.defaultMatchingMode;
+    }
+
+    /**
+     * Returns the default setting for whether the routing should be done on
+     * URIs with or without taking into account query string.
+     * 
+     * @return the default setting for whether the routing should be done on
+     *         URIs with or without taking into account query string.
+     */
+    public boolean getDefaultMatchQuery() {
+        return this.defaultMatchQuery;
+    }
+
+    /**
+     * Returns the default route to test if no other one was available after
+     * retrying the maximum number of attempts.
+     * 
+     * @return The default route tested if no other one was available.
+     */
+    public Route getDefaultRoute() {
+        return this.defaultRoute;
+    }
+
+    /**
+     * Returns the finder class to instantiate.
+     * 
+     * @return the finder class to instantiate.
+     */
+    public Class<? extends Finder> getFinderClass() {
+        return this.finderClass;
+    }
+
+    /**
+     * Returns the maximum number of attempts if no attachment could be matched
+     * on the first attempt. This is useful when the attachment scoring is
+     * dynamic and therefore could change on a retry. The default value is set
+     * to 1.
+     * 
+     * @return The maximum number of attempts if no attachment could be matched
+     *         on the first attempt.
+     */
+    public int getMaxAttempts() {
+        return this.maxAttempts;
+    }
+
+    /**
+     * Returns the next Restlet if available.
+     * 
+     * @param request
+     *            The request to handle.
+     * @param response
+     *            The response to update.
+     * @return The next Restlet if available or null.
+     */
+    public Restlet getNext(Request request, Response response) {
+        Route result = null;
+
+        for (int i = 0; (result == null) && (i < getMaxAttempts()); i++) {
+            if (i > 0) {
+                // Before attempting another time, let's
+                // sleep during the "retryDelay" set.
+                try {
+                    Thread.sleep(getRetryDelay());
+                } catch (InterruptedException e) {
+                }
+            }
+
+            if (this.routes != null) {
+                // Select the routing mode
+                switch (getRoutingMode()) {
+                case BEST:
+                    result = getRoutes().getBest(request, response,
+                            getRequiredScore());
+                    break;
+
+                case FIRST:
+                    result = getRoutes().getFirst(request, response,
+                            getRequiredScore());
+                    break;
+
+                case LAST:
+                    result = getRoutes().getLast(request, response,
+                            getRequiredScore());
+                    break;
+
+                case NEXT:
+                    result = getRoutes().getNext(request, response,
+                            getRequiredScore());
+                    break;
+
+                case RANDOM:
+                    result = getRoutes().getRandom(request, response,
+                            getRequiredScore());
+                    break;
+
+                case CUSTOM:
+                    result = getCustom(request, response);
+                    break;
+                }
+            }
+        }
+
+        if (result == null) {
+            // If nothing matched in the routes list, check the default
+            // route
+            if ((getDefaultRoute() != null)
+                    && (getDefaultRoute().score(request, response) >= getRequiredScore())) {
+                result = getDefaultRoute();
+            } else {
+                // No route could be found
+                response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the minimum score required to have a match.
+     * 
+     * @return The minimum score required to have a match.
+     */
+    public float getRequiredScore() {
+        return this.requiredScore;
+    }
+
+    /**
+     * Returns the delay in milliseconds before a new attempt is made. The
+     * default value is {@code 500}.
+     * 
+     * @return The delay in milliseconds before a new attempt is made.
+     */
+    public long getRetryDelay() {
+        return this.retryDelay;
+    }
+
+    /**
+     * Returns the modifiable list of routes. Creates a new instance if no one
+     * has been set.
+     * 
+     * @return The modifiable list of routes.
+     */
+    public RouteList getRoutes() {
+        return this.routes;
+    }
+
+    /**
+     * Returns the routing mode.
+     * 
+     * @return The routing mode.
+     */
+    public int getRoutingMode() {
+        return this.routingMode;
+    }
+
+    /**
+     * Handles a call by invoking the next Restlet if it is available.
+     * 
+     * @param request
+     *            The request to handle.
+     * @param response
+     *            The response to update.
+     */
+    @Override
+    public void handle(Request request, Response response) {
+        super.handle(request, response);
+
+        final Restlet next = getNext(request, response);
+        if (next != null) {
+            next.handle(request, response);
+        } else {
+            response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+        }
+    }
+
+    /**
+     * Sets the default matching mode to use when selecting routes based on
+     * URIs.
+     * 
+     * @param defaultMatchingMode
+     *            The default matching mode.
+     */
+    public void setDefaultMatchingMode(int defaultMatchingMode) {
+        this.defaultMatchingMode = defaultMatchingMode;
+    }
+
+    /**
+     * Sets the default setting for whether the routing should be done on URIs
+     * with or without taking into account query string.
+     * 
+     * @param defaultMatchQuery
+     *            The default setting for whether the routing should be done on
+     *            URIs with or without taking into account query string.
+     */
+    public void setDefaultMatchQuery(boolean defaultMatchQuery) {
+        this.defaultMatchQuery = defaultMatchQuery;
+    }
+
+    /**
+     * Sets the default route tested if no other one was available.
+     * 
+     * @param defaultRoute
+     *            The default route tested if no other one was available.
+     */
+    public void setDefaultRoute(Route defaultRoute) {
+        this.defaultRoute = defaultRoute;
+    }
+
+    /**
+     * Sets the finder class to instantiate.
+     * 
+     * @param finderClass
+     *            The finder class to instantiate.
+     */
+    public void setFinderClass(Class<? extends Finder> finderClass) {
+        this.finderClass = finderClass;
+    }
+
+    /**
+     * Sets the maximum number of attempts if no attachment could be matched on
+     * the first attempt. This is useful when the attachment scoring is dynamic
+     * and therefore could change on a retry.
+     * 
+     * @param maxAttempts
+     *            The maximum number of attempts.
+     */
+    public void setMaxAttempts(int maxAttempts) {
+        this.maxAttempts = maxAttempts;
+    }
+
+    /**
+     * Sets the score required to have a match.
+     * 
+     * @param score
+     *            The score required to have a match.
+     */
+    public void setRequiredScore(float score) {
+        this.requiredScore = score;
+    }
+
+    /**
+     * Sets the delay in milliseconds before a new attempt is made.
+     * 
+     * @param retryDelay
+     *            The delay in milliseconds before a new attempt is made.
+     */
+    public void setRetryDelay(long retryDelay) {
+        this.retryDelay = retryDelay;
+    }
+
+    /**
+     * Sets the modifiable list of routes.
+     * 
+     * @param routes
+     *            The modifiable list of routes.
+     */
+    public void setRoutes(RouteList routes) {
+        this.routes = routes;
+    }
+
+    /**
+     * Sets the routing mode.
+     * 
+     * @param routingMode
+     *            The routing mode.
+     */
+    public void setRoutingMode(int routingMode) {
+        this.routingMode = routingMode;
+    }
+
+}
