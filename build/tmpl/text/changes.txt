@@ -4,7 +4,10 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
-
+    - API changes
+        - Added client and server RIAP connectors.
+          Suggested by John Logsdon and Nirav Shah.
+          
 - 2.0 Milestone 3 (2009-05-27)
     - Breaking changes
         - Deprecated ServletConverter and added an equivalent 

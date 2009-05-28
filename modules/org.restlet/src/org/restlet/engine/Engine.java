@@ -50,6 +50,8 @@ import org.restlet.Server;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
 import org.restlet.data.Response;
+import org.restlet.engine.component.RiapClientHelper;
+import org.restlet.engine.component.RiapServerHelper;
 import org.restlet.engine.converter.ConverterHelper;
 import org.restlet.engine.converter.DefaultConverter;
 import org.restlet.engine.http.StreamClientHelper;
@@ -523,7 +525,9 @@ public class Engine {
         getRegisteredClients().add(new ClapClientHelper(null));
         getRegisteredClients().add(new FileClientHelper(null));
         getRegisteredClients().add(new ZipClientHelper(null));
+        getRegisteredClients().add(new RiapClientHelper(null));
         getRegisteredServers().add(new StreamServerHelper(null));
+        getRegisteredServers().add(new RiapServerHelper(null));
     }
 
     /**
