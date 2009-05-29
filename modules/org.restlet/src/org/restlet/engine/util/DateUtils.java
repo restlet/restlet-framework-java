@@ -30,6 +30,7 @@
 
 package org.restlet.engine.util;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -38,136 +39,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
-import java.util.WeakHashMap;
 
 /**
  * Date manipulation utilities.
  * 
  * @author Jerome Louvel
- * @author Piyush Purang (ppurang@gmail.com)
  */
 public final class DateUtils {
-
-    /**
-     * Class acting as an immutable date class based on the {@link Date} class.
-     * 
-     * Throws {@link UnsupportedOperationException} when mutable methods are
-     * invoked.
-     * 
-     * @author Piyush Purang (ppurang@gmail.com)
-     * @see java.util.Date
-     * @see <a
-     *      href="http://discuss.fogcreek.com/joelonsoftware3/default.asp?cmd=show&ixPost=73959&ixReplies=24"
-     *      >Immutable Date</a>
-     */
-    private static final class ImmutableDate extends Date {
-        private static final transient WeakHashMap<Date, ImmutableDate> CACHE = new WeakHashMap<Date, ImmutableDate>();
-
-        // TODO Are we serializable?
-        private static final long serialVersionUID = -5946186780670229206L;
-
-        /**
-         * Returns an ImmutableDate object wrapping the given date.
-         * 
-         * @param date
-         *            object to be made immutable
-         * @return an immutable date object
-         */
-        public static ImmutableDate valueOf(Date date) {
-            if (!CACHE.containsKey(date)) {
-                CACHE.put(date, new ImmutableDate(date));
-            }
-            return CACHE.get(date);
-        }
-
-        /**
-         * Private constructor. A factory method is provided.
-         * 
-         * @param date
-         *            date to be made immutable
-         */
-        private ImmutableDate(Date date) {
-            super(date.getTime());
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Object clone() {
-            throw new UnsupportedOperationException(
-                    "ImmutableDate is immutable");
-        }
-
-        /**
-         * As an ImmutableDate is immutable, this method throws an
-         * UnsupportedOperationException exception.
-         */
-        @Override
-        public void setDate(int arg0) {
-            throw new UnsupportedOperationException(
-                    "ImmutableDate is immutable");
-        }
-
-        /**
-         * As an ImmutableDate is immutable, this method throws an
-         * UnsupportedOperationException exception.
-         */
-        @Override
-        public void setHours(int arg0) {
-            throw new UnsupportedOperationException(
-                    "ImmutableDate is immutable");
-        }
-
-        /**
-         * As an ImmutableDate is immutable, this method throws an
-         * UnsupportedOperationException exception.
-         */
-        @Override
-        public void setMinutes(int arg0) {
-            throw new UnsupportedOperationException(
-                    "ImmutableDate is immutable");
-        }
-
-        /**
-         * As an ImmutableDate is immutable, this method throws an
-         * UnsupportedOperationException exception.
-         */
-        @Override
-        public void setMonth(int arg0) {
-            throw new UnsupportedOperationException(
-                    "ImmutableDate is immutable");
-        }
-
-        /**
-         * As an ImmutableDate is immutable, this method throws an
-         * UnsupportedOperationException exception.
-         */
-        @Override
-        public void setSeconds(int arg0) {
-            throw new UnsupportedOperationException(
-                    "ImmutableDate is immutable");
-        }
-
-        /**
-         * As an ImmutableDate is immutable, this method throws an
-         * UnsupportedOperationException exception.
-         */
-        @Override
-        public void setTime(long arg0) {
-            throw new UnsupportedOperationException(
-                    "ImmutableDate is immutable");
-        }
-
-        /**
-         * As an ImmutableDate is immutable, this method throws an
-         * UnsupportedOperationException exception.
-         */
-        @Override
-        public void setYear(int arg0) {
-            throw new UnsupportedOperationException(
-                    "ImmutableDate is immutable");
-        }
-
-    }
 
     /** Obsoleted HTTP date format (ANSI C asctime() format). */
     public static final List<String> FORMAT_ASC_TIME = unmodifiableList("EEE MMM dd HH:mm:ss yyyy");
@@ -179,9 +57,7 @@ public final class DateUtils {
     public static final List<String> FORMAT_RFC_1123 = unmodifiableList("EEE, dd MMM yyyy HH:mm:ss zzz");
 
     /** W3C date format (RFC 3339). */
-    public static final List<String> FORMAT_RFC_3339 = unmodifiableList(
-            "yyyy-MM-dd'T'HH:mm:ssz", "yyyy-MM-dd'T'HH:mmz", "yyyy-MM-dd",
-            "yyyy-MM", "yyyy");
+    public static final List<String> FORMAT_RFC_3339 = unmodifiableList("yyyy-MM-dd'T'HH:mm:ssz");
 
     /** Common date format (RFC 822). */
     public static final List<String> FORMAT_RFC_822 = unmodifiableList(
@@ -276,9 +152,14 @@ public final class DateUtils {
             throw new IllegalArgumentException("Date is null");
         }
 
-        final SimpleDateFormat formatter = new SimpleDateFormat(format,
-                Locale.US);
-        formatter.setTimeZone(TIMEZONE_GMT);
+        DateFormat formatter = null;
+        if (FORMAT_RFC_3339.get(0).equals(format)) {
+            formatter = new InternetDateFormat(TIMEZONE_GMT);
+        } else {
+            formatter = new SimpleDateFormat(format, Locale.US);
+            formatter.setTimeZone(TIMEZONE_GMT);
+        }
+
         return formatter.format(date);
     }
 
@@ -299,12 +180,18 @@ public final class DateUtils {
         }
 
         String format = null;
-        final int formatsSize = formats.size();
+        int formatsSize = formats.size();
+        DateFormat parser = null;
+
         for (int i = 0; (result == null) && (i < formatsSize); i++) {
             format = formats.get(i);
-            final SimpleDateFormat parser = new SimpleDateFormat(format,
-                    Locale.US);
-            parser.setTimeZone(TIMEZONE_GMT);
+
+            if (FORMAT_RFC_3339.get(0).equals(format)) {
+                parser = new InternetDateFormat(TIMEZONE_GMT);
+            } else {
+                parser = new SimpleDateFormat(format, Locale.US);
+                parser.setTimeZone(TIMEZONE_GMT);
+            }
 
             try {
                 result = parser.parse(date);

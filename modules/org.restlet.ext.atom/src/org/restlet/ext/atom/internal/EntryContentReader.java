@@ -144,7 +144,7 @@ public class EntryContentReader extends DefaultHandler {
 
         if (this.currentDate != null) {
             final String formattedDate = this.contentBuffer.toString();
-            final Date parsedDate = DateUtils.parse(formattedDate,
+            final Date parsedDate = DateUtils.parse(formattedDate.trim(),
                     DateUtils.FORMAT_RFC_3339);
 
             if (parsedDate != null) {

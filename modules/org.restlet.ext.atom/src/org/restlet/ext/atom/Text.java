@@ -36,6 +36,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.restlet.data.MediaType;
+import org.restlet.engine.util.DateUtils;
 import org.restlet.ext.xml.XmlWriter;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
@@ -64,9 +65,8 @@ public class Text {
         writer.startElement(namespace, localName);
 
         if (date != null) {
-            final SimpleDateFormat dateFormat = new SimpleDateFormat(
-                    "yyyy-MM-dd'T'hh:mm:ssZ");
-            writer.characters(dateFormat.format(date));
+            writer.characters(DateUtils.format(date, DateUtils.FORMAT_RFC_3339
+                    .get(0)));
         }
 
         writer.endElement(namespace, localName);
