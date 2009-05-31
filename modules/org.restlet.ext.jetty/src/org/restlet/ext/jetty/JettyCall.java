@@ -51,7 +51,6 @@ import org.restlet.data.Status;
 import org.restlet.engine.http.HttpServerCall;
 import org.restlet.util.Series;
 
-
 /**
  * Call that is used by the Jetty 6 HTTP server connector.
  * 
@@ -80,13 +79,20 @@ public class JettyCall extends HttpServerCall {
 
     @Override
     public void complete() {
+        // Flush the response
         try {
-            // Fully complete and commit the response
             this.connection.flushResponse();
+        } catch (IOException ex) {
+            getLogger().log(Level.FINE,
+                    "Unable to flush the response", ex);
+        }
+
+        // Fully complete the response
+        try {
             this.connection.completeResponse();
         } catch (IOException ex) {
-            getLogger().log(Level.WARNING,
-                    "Unable to complete or commit the response", ex);
+            getLogger().log(Level.FINE,
+                    "Unable to complete the response", ex);
         }
     }
 
