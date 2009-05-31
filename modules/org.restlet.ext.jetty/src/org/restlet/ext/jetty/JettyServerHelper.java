@@ -131,6 +131,13 @@ import org.mortbay.thread.QueuedThreadPool;
  * requests and responses.</td>
  * </tr>
  * <tr>
+ * <td>gracefulShutdown</td>
+ * <td>int</td>
+ * <td>0</td>
+ * <td>The time (in ms) to wait for existing requests to complete before fully
+ * stopping the server.</td>
+ * </tr>
+ * <tr>
  * <td>useForwardedForHeader</td>
  * <td>boolean</td>
  * <td>false</td>
@@ -203,6 +210,10 @@ public abstract class JettyServerHelper extends
         btp.setMaxThreads(getMaxThreads());
         btp.setMinThreads(getMinThreads());
         getWrappedServer().setThreadPool(btp);
+
+        if (getGracefulShutdown() > 0) {
+            getWrappedServer().setGracefulShutdown(getGracefulShutdown());
+        }
     }
 
     /**
@@ -347,6 +358,17 @@ public abstract class JettyServerHelper extends
     public int getSoLingerTime() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
                 "soLingerTime", "1000"));
+    }
+
+    /**
+     * Returns the time (in ms) to wait for existing requests to complete before
+     * fully stopping the server.
+     * 
+     * @return The graceful shutdown delay.
+     */
+    public int getGracefulShutdown() {
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "gracefulShutdown", "0"));
     }
 
     /**
