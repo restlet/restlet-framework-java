@@ -58,7 +58,8 @@ import org.restlet.data.Response;
  * {@link #parse(String, Request)}.
  * 
  * @see Resolver
- * @see <a href="http://bitworking.org/projects/URI-Templates/">URI Template specification</a>
+ * @see <a href="http://bitworking.org/projects/URI-Templates/">URI Template
+ *      specification</a>
  * @author Jerome Louvel
  */
 public class Template {
@@ -170,6 +171,12 @@ public class Template {
             final String URI_ALL = "[" + URI_RESERVED + URI_UNRESERVED
                     + "]|(?:" + PCT_ENCODED + ")";
 
+            // Special case of query parameter characters
+            final String QUERY_PARAM_DELIMS = "\\!\\$\\'\\(\\)\\*\\+\\,\\;";
+            final String QUERY_PARAM_CHAR = "[" + URI_UNRESERVED
+                    + QUERY_PARAM_DELIMS + "\\:\\@]|(?:" + PCT_ENCODED + ")";
+            final String QUERY_PARAM = QUERY_PARAM_CHAR + "|\\/|\\?";
+
             final StringBuilder coreRegex = new StringBuilder();
 
             switch (variable.getType()) {
@@ -202,6 +209,9 @@ public class Template {
                 break;
             case Variable.TYPE_URI_QUERY:
                 appendGroup(coreRegex, QUERY, variable.isRequired());
+                break;
+            case Variable.TYPE_URI_QUERY_PARAM:
+                appendGroup(coreRegex, QUERY_PARAM, variable.isRequired());
                 break;
             case Variable.TYPE_URI_SEGMENT:
                 appendGroup(coreRegex, PCHAR, variable.isRequired());
@@ -266,10 +276,9 @@ public class Template {
      *            True if the variables must be encoded when formatting the
      *            template.
      */
-    public Template(String pattern, int matchingMode,
-            int defaultType, String defaultDefaultValue,
-            boolean defaultRequired, boolean defaultFixed,
-            boolean encodeVariables) {
+    public Template(String pattern, int matchingMode, int defaultType,
+            String defaultDefaultValue, boolean defaultRequired,
+            boolean defaultFixed, boolean encodeVariables) {
         this.logger = (logger == null) ? Logger.getLogger(getClass()
                 .getCanonicalName()) : logger;
         this.pattern = pattern;

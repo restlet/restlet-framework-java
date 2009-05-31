@@ -50,40 +50,43 @@ public final class Variable {
     public static final int TYPE_ALPHA_DIGIT = 3;
 
     /** Matches any TEXT excluding "(" and ")". */
-    public static final int TYPE_COMMENT = 14;
+    public static final int TYPE_COMMENT = 4;
 
     /** Matches any TEXT inside a comment excluding ";". */
-    public static final int TYPE_COMMENT_ATTRIBUTE = 15;
+    public static final int TYPE_COMMENT_ATTRIBUTE = 5;
 
     /** Matches all digital characters. */
-    public static final int TYPE_DIGIT = 4;
+    public static final int TYPE_DIGIT = 6;
 
     /** Matches any CHAR except CTLs or separators. */
-    public static final int TYPE_TOKEN = 13;
+    public static final int TYPE_TOKEN = 7;
 
     /** Matches all URI characters. */
-    public static final int TYPE_URI_ALL = 5;
+    public static final int TYPE_URI_ALL = 8;
 
     /** Matches URI fragment characters. */
-    public static final int TYPE_URI_FRAGMENT = 6;
+    public static final int TYPE_URI_FRAGMENT = 9;
 
     /** Matches URI path characters (not the query or the fragment parts). */
-    public static final int TYPE_URI_PATH = 7;
+    public static final int TYPE_URI_PATH = 10;
 
     /** Matches URI query characters. */
-    public static final int TYPE_URI_QUERY = 8;
+    public static final int TYPE_URI_QUERY = 11;
+
+    /** Matches URI query parameter characters (name or value). */
+    public static final int TYPE_URI_QUERY_PARAM = 12;
 
     /** Matches URI scheme characters. */
-    public static final int TYPE_URI_SCHEME = 9;
+    public static final int TYPE_URI_SCHEME = 13;
 
     /** Matches URI segment characters. */
-    public static final int TYPE_URI_SEGMENT = 10;
+    public static final int TYPE_URI_SEGMENT = 14;
 
     /** Matches unreserved URI characters. */
-    public static final int TYPE_URI_UNRESERVED = 11;
+    public static final int TYPE_URI_UNRESERVED = 15;
 
     /** Matches all alphabetical and digital characters plus the underscore. */
-    public static final int TYPE_WORD = 12;
+    public static final int TYPE_WORD = 16;
 
     /** Indicates if the parsed value must be decoded. */
     private volatile boolean decodedOnParse;

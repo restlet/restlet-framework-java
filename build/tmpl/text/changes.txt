@@ -16,7 +16,9 @@ Changes log
         - Upgraded Jetty library to version 6.1.18.
         - SpringServerServlet nows gets its component fully configured,
           with a default WAR client and parameters copied.
-          Reported by Dustin N. Jenkins 
+          Reported by Dustin N. Jenkins
+        - Added Variable.URI_QUERY_PARAM type to match query parameter
+          names or values. Suggested by John Wismar
     - API changes
         - Added client and server RIAP connectors.
           Suggested by John Logsdon and Nirav Shah.
