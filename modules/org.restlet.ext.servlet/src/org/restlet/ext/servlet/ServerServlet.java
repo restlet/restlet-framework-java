@@ -267,6 +267,52 @@ public class ServerServlet extends HttpServlet {
     }
 
     /**
+     * Configures a component. Adds a default WAR client and copies Servlet
+     * parameters into the component's context.
+     * 
+     * @param component
+     *            The component to configure.
+     */
+    @SuppressWarnings("unchecked")
+    protected void configure(Component component) {
+        // Complete the configuration of the Component
+        // Add the WAR client
+        component.getClients().add(
+                createWarClient(component.getContext(), getServletConfig()));
+
+        // Copy all the servlet parameters into the context
+        final ComponentContext componentContext = (ComponentContext) component
+                .getContext();
+        String initParam;
+
+        // Copy all the Servlet container initialization parameters
+        final javax.servlet.ServletConfig servletConfig = getServletConfig();
+        for (final Enumeration<String> enum1 = servletConfig
+                .getInitParameterNames(); enum1.hasMoreElements();) {
+            initParam = enum1.nextElement();
+            componentContext.getParameters().add(initParam,
+                    servletConfig.getInitParameter(initParam));
+        }
+
+        // Copy all the Servlet application initialization parameters
+        for (final Enumeration<String> enum1 = getServletContext()
+                .getInitParameterNames(); enum1.hasMoreElements();) {
+            initParam = enum1.nextElement();
+            componentContext.getParameters().add(initParam,
+                    getServletContext().getInitParameter(initParam));
+        }
+
+        // Copy all Servlet's context attributes
+        String attributeName;
+        for (final Enumeration<String> namesEnum = getServletContext()
+                .getAttributeNames(); namesEnum.hasMoreElements();) {
+            attributeName = namesEnum.nextElement();
+            componentContext.getAttributes().put(attributeName,
+                    getServletContext().getAttribute(attributeName));
+        }
+    }
+
+    /**
      * Creates the single Application used by this Servlet.
      * 
      * @param parentContext
@@ -378,7 +424,6 @@ public class ServerServlet extends HttpServlet {
      * 
      * @return The newly created Component or null if unable to create.
      */
-    @SuppressWarnings("unchecked")
     protected Component createComponent() {
         Component component = null;
 
@@ -446,42 +491,6 @@ public class ServerServlet extends HttpServlet {
                     }
                 }
             }
-        }
-
-        // Complete the configuration of the Component
-        // Add the WAR client
-        component.getClients().add(
-                createWarClient(component.getContext(), getServletConfig()));
-
-        // Copy all the servlet parameters into the context
-        final ComponentContext componentContext = (ComponentContext) component
-                .getContext();
-        String initParam;
-
-        // Copy all the Servlet container initialization parameters
-        final javax.servlet.ServletConfig servletConfig = getServletConfig();
-        for (final Enumeration<String> enum1 = servletConfig
-                .getInitParameterNames(); enum1.hasMoreElements();) {
-            initParam = enum1.nextElement();
-            componentContext.getParameters().add(initParam,
-                    servletConfig.getInitParameter(initParam));
-        }
-
-        // Copy all the Servlet application initialization parameters
-        for (final Enumeration<String> enum1 = getServletContext()
-                .getInitParameterNames(); enum1.hasMoreElements();) {
-            initParam = enum1.nextElement();
-            componentContext.getParameters().add(initParam,
-                    getServletContext().getInitParameter(initParam));
-        }
-
-        // Copy all Servlet's context attributes
-        String attributeName;
-        for (final Enumeration<String> namesEnum = getServletContext()
-                .getAttributeNames(); namesEnum.hasMoreElements();) {
-            attributeName = namesEnum.nextElement();
-            componentContext.getAttributes().put(attributeName,
-                    getServletContext().getAttribute(attributeName));
         }
 
         return component;
@@ -752,6 +761,7 @@ public class ServerServlet extends HttpServlet {
 
                     if (result == null) {
                         result = createComponent();
+                        configure(result);
                         getServletContext().setAttribute(
                                 componentAttributeName, result);
                     }

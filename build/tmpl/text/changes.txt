@@ -14,6 +14,9 @@ Changes log
           Suggested by Arjohn Kampman.        
     - Enhancements
         - Upgraded Jetty library to version 6.1.18.
+        - SpringServerServlet nows gets its component fully configured,
+          with a default WAR client and parameters copied.
+          Reported by Dustin N. Jenkins 
     - API changes
         - Added client and server RIAP connectors.
           Suggested by John Logsdon and Nirav Shah.
