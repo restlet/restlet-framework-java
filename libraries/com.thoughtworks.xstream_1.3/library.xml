@@ -7,10 +7,10 @@
    </distributions>
    <homeUri>
       http://xstream.codehaus.org/
-	</homeUri>
+   </homeUri>
    <downloadUri>
       http://xstream.codehaus.org/download.html
-	</downloadUri>
+   </downloadUri>
    <javadocs>
       <link href="http://xstream.codehaus.org/javadoc/" />
    </javadocs>
