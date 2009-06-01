@@ -9,8 +9,8 @@
    </distributions>
 
    <dependencies>
-      <dependency type="library" id="xstream" />
       <dependency type="library" id="jettison" />
+      <dependency type="library" id="xstream" />
       <dependency type="module" id="core" />
    </dependencies>
 </module>

@@ -1,14 +1,14 @@
 <library id="stax">
-	<package name="javax.xml.stream" />
-	<version>1.0</version>
-	<release>2</release>
-	<distributions>
-		<distribution id="classic" />
-	</distributions>
-	<homeUri>
-		http://java.sun.com/webservices/docs/2.0/sjsxp/index.html
+   <package name="javax.xml.stream" />
+   <version>1.0</version>
+   <release>2</release>
+   <distributions>
+      <distribution id="classic" />
+   </distributions>
+   <homeUri>
+      http://java.sun.com/webservices/docs/2.0/sjsxp/index.html
 	</homeUri>
-	<downloadUri>
-		http://download.java.net/maven/1/javax.xml.stream/jars/
-	</downloadUri>
+   <downloadUri>
+      http://download.java.net/maven/1/javax.xml.stream/jars/
+   </downloadUri>
 </library>
