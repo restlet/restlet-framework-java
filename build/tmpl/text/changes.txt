@@ -4,6 +4,10 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - Bugs fixed
+       - 
+    - Misc
+       - Upgraded Grizzly to version 1.9.16.
 
 - 1.1.5 (2009-05-26)
     - Bugs fixed
