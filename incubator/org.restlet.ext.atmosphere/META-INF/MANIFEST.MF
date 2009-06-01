@@ -1,0 +1,22 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Restlet Extension - JMX
+Bundle-SymbolicName: org.restlet.ext.jmx
+Bundle-Version: 2.0
+Bundle-Vendor: Noelios Technologies
+Import-Package: org.apache.commons.dbcp,
+ org.apache.commons.pool,
+ org.apache.commons.pool.impl,
+ org.restlet,
+ org.restlet.data,
+ org.restlet.engine,
+ org.restlet.engine.application,
+ org.restlet.engine.component,
+ org.restlet.engine.http,
+ org.restlet.engine.local,
+ org.restlet.engine.security,
+ org.restlet.engine.util,
+ org.restlet.resource,
+ org.restlet.service,
+ org.restlet.util
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
