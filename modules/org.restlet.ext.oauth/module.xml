@@ -9,7 +9,8 @@
    </distributions>
 
    <dependencies>
-      <dependency type="library" id="auth" />
+      <dependency type="library" id="codec" />
+      <dependency type="library" id="oauth" />
       <dependency type="module" id="core" />
    </dependencies>
 </module>
