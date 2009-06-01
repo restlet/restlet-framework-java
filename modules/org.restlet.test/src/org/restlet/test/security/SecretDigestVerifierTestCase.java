@@ -42,7 +42,7 @@ import org.restlet.test.RestletTestCase;
  */
 public class SecretDigestVerifierTestCase extends RestletTestCase {
 
-    public void testSecurity() {
+    public void test1() {
         MapVerifier mv = new MapVerifier();
         mv.getSecrets().put("scott", "tiger".toCharArray());
 
@@ -51,5 +51,28 @@ public class SecretDigestVerifierTestCase extends RestletTestCase {
 
         assertTrue(sdv.verify("scott", "RuPXcqGIjq3/JsetpH/XUC15bgc="
                 .toCharArray()));
+    }
+
+    public void test2() {
+        MapVerifier mv = new MapVerifier();
+        mv.getSecrets().put("scott",
+                "RuPXcqGIjq3/JsetpH/XUC15bgc=".toCharArray());
+
+        SecretDigestVerifier sdv = new SecretDigestVerifier(
+                Digest.ALGORITHM_SHA_1, Digest.ALGORITHM_SHA_1, mv);
+
+        assertTrue(sdv.verify("scott", "RuPXcqGIjq3/JsetpH/XUC15bgc="
+                .toCharArray()));
+    }
+
+    public void test3() {
+        MapVerifier mv = new MapVerifier();
+        mv.getSecrets().put("scott",
+                "RuPXcqGIjq3/JsetpH/XUC15bgc=".toCharArray());
+
+        SecretDigestVerifier sdv = new SecretDigestVerifier(null,
+                Digest.ALGORITHM_SHA_1, mv);
+
+        assertTrue(sdv.verify("scott", "tiger".toCharArray()));
     }
 }
