@@ -42,6 +42,36 @@ import org.restlet.data.Response;
  * @author Jerome Louvel
  */
 public abstract class SecretVerifier extends Verifier {
+    /**
+     * Compares that two secrets are equal.
+     * 
+     * @param secret1
+     *            The input secret.
+     * @param secret2
+     *            The output secret.
+     * @return True if both are equal.
+     */
+    public static boolean compare(char[] secret1, char[] secret2) {
+        boolean result = false;
+
+        if ((secret1 == null) || (secret2 == null)) {
+            // Check if both are null
+            result = (secret1 == secret2);
+        } else {
+            // None is null
+            if (secret1.length == secret2.length) {
+                boolean equals = true;
+
+                for (int i = 0; (i < secret1.length) && equals; i++) {
+                    equals = (secret1[i] == secret2[i]);
+                }
+
+                result = equals;
+            }
+        }
+
+        return result;
+    }
 
     /**
      * When the verification succeeds, we need to update the {@link Subject}
@@ -96,7 +126,9 @@ public abstract class SecretVerifier extends Verifier {
      * Verifies that the identifier/secret couple is valid.
      * 
      * @param identifier
+     *            The user identifier to match.
      * @param inputSecret
+     *            The input secret to verify.
      * @return true if the identifier/secret couple is valid.
      */
     public abstract boolean verify(String identifier, char[] inputSecret);

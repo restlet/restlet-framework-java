@@ -17,6 +17,8 @@ Changes log
         - XStreamRepresentation didn't register JettisonMappedXmlDriver
           correctly. Necessary for proper deserialization.
           Reported by Gabriel Ciuloaica.
+        - Fixed and completed SecretDigestVerifier class.
+          Reported by Thomas Cozien.
     - Enhancements
         - Upgraded Jetty library to version 6.1.18.
         - SpringServerServlet nows gets its component fully configured,

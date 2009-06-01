@@ -38,6 +38,8 @@ import java.security.NoSuchAlgorithmException;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.restlet.data.Digest;
+
 /**
  * Security data manipulation utilities.
  * 
@@ -245,6 +247,40 @@ public class DigestUtils {
             throw new RuntimeException(
                     "US-ASCII is an unsupported encoding, unable to compute SHA1");
         }
+    }
+
+    /**
+     * Returns the digest of the target string. Target is decoded to bytes using
+     * the US-ASCII charset. Supports MD5 and SHA-1 algorithms.
+     * 
+     * @param target
+     *            The string to encode.
+     * @param algorithm
+     *            The digest algorithm to use.
+     * @return The digest of the target string.
+     */
+    public static char[] digest(char[] target, String algorithm) {
+        return DigestUtils.digest(new String(target), algorithm).toCharArray();
+    }
+
+    /**
+     * Returns the digest of the target string. Target is decoded to bytes using
+     * the US-ASCII charset. Supports MD5 and SHA-1 algorithms.
+     * 
+     * @param target
+     *            The string to encode.
+     * @param algorithm
+     *            The digest algorithm to use.
+     * @return The digest of the target string.
+     */
+    public static String digest(String target, String algorithm) {
+        if (Digest.ALGORITHM_MD5.equals(algorithm)) {
+            return toMd5(target);
+        } else if (Digest.ALGORITHM_SHA_1.equals(algorithm)) {
+            return toSha1(target);
+        }
+
+        throw new IllegalArgumentException("Unsupported algorithm.");
     }
 
     /**

@@ -48,26 +48,7 @@ public abstract class LocalVerifier extends SecretVerifier {
 
     @Override
     public boolean verify(String identifier, char[] inputSecret) {
-        boolean result = false;
-        final char[] outputSecret = getSecret(identifier);
-
-        if ((inputSecret == null) || (outputSecret == null)) {
-            // Check if both are null
-            result = (inputSecret == outputSecret);
-        } else {
-            // None is null
-            if (inputSecret.length == outputSecret.length) {
-                boolean equals = true;
-
-                for (int i = 0; (i < inputSecret.length) && equals; i++) {
-                    equals = (inputSecret[i] == outputSecret[i]);
-                }
-
-                result = equals;
-            }
-        }
-
-        return result;
+        return compare(inputSecret, getSecret(identifier));
     }
 
 }

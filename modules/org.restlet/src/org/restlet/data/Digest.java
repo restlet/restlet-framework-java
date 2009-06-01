@@ -40,13 +40,16 @@ import java.util.Arrays;
  */
 public class Digest {
 
-    /** Digest algorightm defined in RFC 1319. */
+    /** Digest algorithm defined in RFC 1319. */
     public static final String ALGORITHM_MD2 = "MD2";
 
-    /** Digest algorightm defined in RFC 1321. */
+    /** Digest algorithm defined in RFC 1321. */
     public static final String ALGORITHM_MD5 = "MD5";
 
-    /** Digest algorightm defined in Secure Hash Standard, NIST FIPS 180-1. */
+    /** No digest algorithm defined. */
+    public static final String ALGORITHM_NONE = "NONE";
+
+    /** Digest algorithm defined in Secure Hash Standard, NIST FIPS 180-1. */
     public static final String ALGORITHM_SHA_1 = "SHA-1";
 
     /** NIST approved digest algorithm from SHA-2 family. */

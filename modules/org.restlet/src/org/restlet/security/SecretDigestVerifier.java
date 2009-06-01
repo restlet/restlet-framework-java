@@ -30,11 +30,19 @@
 
 package org.restlet.security;
 
+import java.util.logging.Level;
+
+import org.restlet.Context;
+import org.restlet.data.Digest;
+import org.restlet.engine.util.DigestUtils;
+
 /**
- * Wrapper verifier that can handle digested secrets. If the input secret is a
- * digest, then the target secret must be a digest of the same algorithm.<br>
+ * Wrapper verifier that can verify digested secrets. If the input secret is a
+ * digest, then the output secret must either be a digest of the same algorithm
+ * or the wrapped verifier must be a {@link LocalVerifier} returning secrets in
+ * clear.<br>
  * <br>
- * If the input secret is a regular secret, then the target secret can be in any
+ * If the input secret is a regular secret, then the output secret can be in any
  * digest algorithm or a regular secret.
  * 
  * @author Jerome Louvel
@@ -47,6 +55,9 @@ public class SecretDigestVerifier extends SecretVerifier {
     /** The digest algorithm of output secrets. */
     private String outputAlgorithm;
 
+    /** The wrapped secret verifier. */
+    private SecretVerifier wrappedVerifier;
+
     /**
      * Constructor.
      * 
@@ -56,42 +67,35 @@ public class SecretDigestVerifier extends SecretVerifier {
      *            The digest algorithm of output secrets.
      * @param wrappedVerifier
      *            The wrapped secret verifier.
+     * @see Digest
      */
     public SecretDigestVerifier(String inputAlgorithm, String outputAlgorithm,
             SecretVerifier wrappedVerifier) {
         this.inputAlgorithm = inputAlgorithm;
         this.outputAlgorithm = outputAlgorithm;
-        checkCompatibility();
+        this.wrappedVerifier = wrappedVerifier;
     }
 
     /**
-     * Checks the compatibility of input and output algorithms. Throws an
-     * illegal argument exception if necessary.
-     */
-    private void checkCompatibility() throws IllegalArgumentException {
-        if ((this.inputAlgorithm != null)
-                && !this.inputAlgorithm.equals(this.outputAlgorithm)) {
-            throw new IllegalArgumentException(
-                    "The input and output algorithms can't be different.");
-        }
-    }
-
-    /**
-     * Computes the digest of a secret according to a specified algorithm.
+     * Computes the digest of a secret according to a specified algorithm. By
+     * default, MD5 hashes (represented as a sequence of 32 hexadecimal digits)
+     * and SHA-1 hashes are supported. For additional algorithm, override this
+     * method.
      * 
      * @param secret
      *            The regular secret to digest.
      * @param algorithm
      *            The digest algorithm to use.
      * @return The digested secret.
+     * @see Digest
      */
     protected char[] digest(char[] secret, String algorithm) {
-        // TODO
-        return null;
+        return DigestUtils.digest(secret, algorithm);
     }
 
     /**
-     * Returns the digest algorithm of input secrets.
+     * Returns the digest algorithm of input secrets. Input secrets are the ones
+     * sent by clients when attempting to authenticate.
      * 
      * @return The digest algorithm of input secrets.
      */
@@ -100,7 +104,9 @@ public class SecretDigestVerifier extends SecretVerifier {
     }
 
     /**
-     * Returns the digest algorithm of output secrets.
+     * Returns the digest algorithm of output secrets. Output secrets are the
+     * ones used by the verifier to compare those sent by clients when
+     * attempting to authenticate.
      * 
      * @return The digest algorithm of output secrets.
      */
@@ -109,43 +115,91 @@ public class SecretDigestVerifier extends SecretVerifier {
     }
 
     /**
-     * Sets the digest algorithm of input secrets.
+     * Returns the wrapped secret verifier.
      * 
-     * @param inputAlgorithm
-     *            The digest algorithm of input secrets.
+     * @return The wrapped secret verifier.
      */
-    public void setInputAlgorithm(String inputAlgorithm) {
-        this.inputAlgorithm = inputAlgorithm;
-        checkCompatibility();
+    public SecretVerifier getWrappedVerifier() {
+        return wrappedVerifier;
     }
 
     /**
-     * Sets the digest algorithm of output secrets.
+     * Sets the digest algorithm of input secrets. Input secrets are the ones
+     * sent by clients when attempting to authenticate.
+     * 
+     * @param inputAlgorithm
+     *            The digest algorithm of input secrets.
+     * @see Digest
+     */
+    public void setInputAlgorithm(String inputAlgorithm) {
+        this.inputAlgorithm = inputAlgorithm;
+    }
+
+    /**
+     * Sets the digest algorithm of output secrets. Output secrets are the ones
+     * used by the verifier to compare those sent by clients when attempting to
+     * authenticate.
      * 
      * @param outputAlgorithm
      *            The digest algorithm of output secrets.
+     * @see Digest
      */
     public void setOutputAlgorithm(String outputAlgorithm) {
         this.outputAlgorithm = outputAlgorithm;
-        checkCompatibility();
+    }
+
+    /**
+     * Sets the wrapped secret verifier.
+     * 
+     * @param wrappedVerifier
+     *            The wrapped secret verifier.
+     */
+    public void setWrappedVerifier(SecretVerifier wrappedVerifier) {
+        this.wrappedVerifier = wrappedVerifier;
     }
 
     @Override
-    public boolean verify(String identifier, char[] inputSecret) {
-        // char[] inputSecretDigest = inputSecret;
+    public final boolean verify(String identifier, char[] inputSecret) {
+        boolean result = false;
+        char[] inputSecretDigest = inputSecret;
 
         if (getInputAlgorithm() == null) {
             if (getOutputAlgorithm() != null) {
-                // inputSecretDigest = digest(inputSecret,
-                // getOutputAlgorithm());
+                inputSecretDigest = digest(inputSecret, getOutputAlgorithm());
             } else {
-                // The input secret should be a regular secret
+                // Both secrets should be in clear
             }
+
+            result = getWrappedVerifier().verify(identifier, inputSecretDigest);
         } else {
-            // The input secret is already digested
+            if (getOutputAlgorithm() == null) {
+                // Attempt to digest the output secret if we can get it in clear
+                if (getWrappedVerifier() instanceof LocalVerifier) {
+                    LocalVerifier localVerifier = (LocalVerifier) getWrappedVerifier();
+                    result = compare(inputSecretDigest, digest(localVerifier
+                            .getSecret(identifier), getInputAlgorithm()));
+                } else {
+                    Context
+                            .getCurrentLogger()
+                            .log(
+                                    Level.WARNING,
+                                    "The wrapped verifier must be a LocalVerifier to allow digesting of output secrets.");
+                }
+            } else {
+                if (getInputAlgorithm().equals(getOutputAlgorithm())) {
+                    // Same input and output algorithms
+                    result = getWrappedVerifier().verify(identifier,
+                            inputSecretDigest);
+                } else {
+                    // Different input and output algorithms
+                    Context
+                            .getCurrentLogger()
+                            .log(Level.WARNING,
+                                    "The input and output algorithms can't be different.");
+                }
+            }
         }
 
-        return true; // super.verify(subject, identifier, inputSecretDigest);
+        return result;
     }
-
 }
