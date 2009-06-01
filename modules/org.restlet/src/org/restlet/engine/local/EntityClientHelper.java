@@ -27,7 +27,7 @@
  * 
  * Restlet is a registered trademark of Noelios Technologies.
  */
- 
+
 package org.restlet.engine.local;
 
 import java.util.Collection;
@@ -283,9 +283,13 @@ public abstract class EntityClientHelper extends LocalClientHelper {
                     }
 
                     for (final Entity entry : children) {
-                        rl
-                                .add(directoryUri
-                                        + Reference.encode(entry.getName()));
+                        if (entry.isDirectory()) {
+                            rl.add(directoryUri
+                                    + Reference.encode(entry.getName()) + "/");
+                        } else {
+                            rl.add(directoryUri
+                                    + Reference.encode(entry.getName()));
+                        }
                     }
 
                     output = rl.getTextRepresentation();

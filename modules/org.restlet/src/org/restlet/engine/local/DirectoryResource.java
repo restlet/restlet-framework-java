@@ -434,7 +434,8 @@ public class DirectoryResource extends ServerResource {
      * @return A client dispatcher.
      */
     protected Uniform getClientDispatcher() {
-        return getDirectory().getContext().getClientDispatcher();
+        return getDirectory().getContext() == null ? null : getDirectory()
+                .getContext().getClientDispatcher();
     }
 
     /**
