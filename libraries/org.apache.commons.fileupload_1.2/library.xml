@@ -11,6 +11,6 @@
       http://commons.apache.org/downloads/download_fileupload.cgi
 	</downloadUri>
    <javadocs>
-      <link href="http://commons.apache.org/fileupload/apidocs/package-list" />
+      <link href="http://commons.apache.org/fileupload/apidocs/" />
    </javadocs>
 </library>
