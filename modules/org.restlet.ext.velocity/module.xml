@@ -9,6 +9,7 @@
    </distributions>
 
    <dependencies>
+      <dependency type="library" id="collections" />
       <dependency type="library" id="velocity" />
       <dependency type="module" id="core" />
    </dependencies>
