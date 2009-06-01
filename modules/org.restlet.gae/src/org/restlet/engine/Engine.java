@@ -57,6 +57,8 @@ import org.restlet.engine.security.HttpDigestHelper;
 import org.restlet.engine.security.HttpMsSharedKeyHelper;
 import org.restlet.engine.security.HttpMsSharedKeyLiteHelper;
 import org.restlet.engine.security.SmtpPlainHelper;
+import org.restlet.ext.javamail.JavaMailClientHelper;
+import org.restlet.ext.net.HttpClientHelper;
 
 /**
  * Engine supporting the Restlet API.
@@ -585,6 +587,8 @@ public class Engine {
         getRegisteredClients().add(new ClapClientHelper(null));
         getRegisteredClients().add(new FileClientHelper(null));
         getRegisteredClients().add(new ZipClientHelper(null));
+        getRegisteredClients().add(new HttpClientHelper(null));
+        getRegisteredClients().add(new JavaMailClientHelper(null));
     }
 
     /**
