@@ -36,6 +36,9 @@ Changes log
     - API changes
         - Added client and server RIAP connectors.
           Suggested by John Logsdon and Nirav Shah.
+        - Added ClientInfo#getPreferredLanguage(), 
+          getPreferredMediaType(), etc. methods.
+          Suggested by Jonathan Hall.
     - Misc
         - Exceptions thrown in the internal HTTP client are not logged
           with a FINE level instead of a WARNING level.

@@ -498,6 +498,78 @@ public final class ClientInfo {
     }
 
     /**
+     * Returns the preferred character set based on the client preferences only.
+     * 
+     * @return The preferred character set.
+     */
+    public CharacterSet getPreferredCharacterSet() {
+        CharacterSet result = null;
+        float maxQuality = 0;
+
+        for (Preference<CharacterSet> pref : getAcceptedCharacterSets()) {
+            if (pref.getQuality() > maxQuality) {
+                result = pref.getMetadata();
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the preferred encoding based on the client preferences only.
+     * 
+     * @return The preferred encoding.
+     */
+    public Encoding getPreferredEncoding() {
+        Encoding result = null;
+        float maxQuality = 0;
+
+        for (Preference<Encoding> pref : getAcceptedEncodings()) {
+            if (pref.getQuality() > maxQuality) {
+                result = pref.getMetadata();
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the preferred language based on the client preferences only.
+     * 
+     * @return The preferred language.
+     */
+    public Language getPreferredLanguage() {
+        Language result = null;
+        float maxQuality = 0;
+
+        for (Preference<Language> pref : getAcceptedLanguages()) {
+            if (pref.getQuality() > maxQuality) {
+                result = pref.getMetadata();
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the preferred media type based on the client preferences only.
+     * 
+     * @return The preferred media type.
+     */
+    public MediaType getPreferredMediaType() {
+        MediaType result = null;
+        float maxQuality = 0;
+
+        for (Preference<MediaType> pref : getAcceptedMediaTypes()) {
+            if (pref.getQuality() > maxQuality) {
+                result = pref.getMetadata();
+            }
+        }
+
+        return result;
+    }
+
+    /**
      * Returns the best variant for a given resource according the the client
      * preferences: accepted languages, accepted character sets, accepted media
      * types and accepted encodings.<br>
