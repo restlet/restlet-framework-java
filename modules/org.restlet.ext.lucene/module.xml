@@ -12,5 +12,6 @@
       <dependency type="library" id="solr" />
       <dependency type="library" id="tika" />
       <dependency type="module" id="core" />
+      <dependency type="module" id="xml" />
    </dependencies>
 </module>
