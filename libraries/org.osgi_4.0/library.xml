@@ -5,6 +5,9 @@
 		</maven>
 	</package>
 	<version>4.0</version>
+   <distributions>
+      <distribution id="classic" />
+   </distributions>
 	<homeUri>
 		http://www.osgi.org/
 	</homeUri>

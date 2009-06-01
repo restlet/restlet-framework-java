@@ -1,10 +1,13 @@
 <library id="junit">
-	<package name="org.junit" />
-	<version>4.4</version>
-	<homeUri>
-		http://www.junit.org/
+   <package name="org.junit" />
+   <version>4.4</version>
+   <distributions>
+      <distribution id="classic" />
+   </distributions>
+   <homeUri>
+      http://www.junit.org/
 	</homeUri>
-	<downloadUri>
+   <downloadUri>
 		<![CDATA[http://sourceforge.net/project/showfiles.php?group_id=15278&package_id=12472]]>
-	</downloadUri>
+   </downloadUri>
 </library>
