@@ -1,19 +1,15 @@
 <module id="servlet" includes="jse" type="integration" package="org.restlet.ext.servlet">
-	<name>Restlet Extension - Servlet</name>
-	<description>
-		Integration with Servlet API.
+   <name>Restlet Extension - Servlet</name>
+   <description>
+      Integration with Servlet API.
 	</description>
-	<distributions>
-		<distribution id="classic" />
-		<distribution id="maven" />
-	</distributions>
+   <distributions>
+      <distribution id="classic" />
+      <distribution id="maven" />
+   </distributions>
 
-	<dependencies>
-		<dependency type="library">
-			<id>servlet</id>
-		</dependency>
-		<dependency type="module">
-			<id>core</id>
-		</dependency>
-	</dependencies>
+   <dependencies>
+      <dependency type="library" id="servlet" />
+      <dependency type="module" id="core" />
+   </dependencies>
 </module>

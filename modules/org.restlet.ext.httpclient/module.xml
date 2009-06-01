@@ -1,19 +1,15 @@
 <module id="httpclient" includes="jse" type="connector" package="org.restlet.ext.httpclient">
-	<name>Restlet Extension - Apache HTTP Client</name>
-	<description>
-		Integration with Apache Commons HTTP Client.
+   <name>Restlet Extension - Apache HTTP Client</name>
+   <description>
+      Integration with Apache Commons HTTP Client.
 	</description>
-	<distributions>
-		<distribution id="classic" />
-		<distribution id="maven" />
-	</distributions>
+   <distributions>
+      <distribution id="classic" />
+      <distribution id="maven" />
+   </distributions>
 
-	<dependencies>
-		<dependency type="library">
-			<id>httpclient</id>
-		</dependency>
-		<dependency type="module">
-			<id>core</id>
-		</dependency>
-	</dependencies>
+   <dependencies>
+      <dependency type="library" id="httpclient" />
+      <dependency type="module" id="core" />
+   </dependencies>
 </module>

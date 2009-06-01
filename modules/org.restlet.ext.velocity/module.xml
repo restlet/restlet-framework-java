@@ -1,19 +1,15 @@
 <module id="velocity" includes="jse" type="integration" package="org.restlet.ext.velocity">
-	<name>Restlet Extension - Velocity</name>
-	<description>
-		Integration with Apache Velocity.
+   <name>Restlet Extension - Velocity</name>
+   <description>
+      Integration with Apache Velocity.
 	</description>
-	<distributions>
-		<distribution id="classic" />
-		<distribution id="maven" />
-	</distributions>
+   <distributions>
+      <distribution id="classic" />
+      <distribution id="maven" />
+   </distributions>
 
-	<dependencies>
-		<dependency type="library">
-			<id>velocity</id>
-		</dependency>
-		<dependency type="module">
-			<id>core</id>
-		</dependency>
-	</dependencies>
+   <dependencies>
+      <dependency type="library" id="velocity" />
+      <dependency type="module" id="core" />
+   </dependencies>
 </module>

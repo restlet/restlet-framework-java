@@ -1,16 +1,14 @@
 <module includes="gwt" id="core-gwt" type="core" package="org.restlet.gwt">
-	<name>Restlet API for GWT</name>
-	<description>
-		Port of Restlet to Google Web Toolkit.
+   <name>Restlet API for GWT</name>
+   <description>
+      Port of Restlet to Google Web Toolkit.
 	</description>
-	<distributions>
-		<distribution id="classic" />
-		<distribution id="maven" />
-	</distributions>
+   <distributions>
+      <distribution id="classic" />
+      <distribution id="maven" />
+   </distributions>
 
-	<dependencies>
-		<dependency type="library">
-			<id>gwt</id>
-		</dependency>
-	</dependencies>
+   <dependencies>
+      <dependency type="library" id="gwt" />
+   </dependencies>
 </module>

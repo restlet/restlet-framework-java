@@ -1,19 +1,15 @@
 <module id="jdbc" includes="jse" type="connector" package="org.restlet.ext.jdbc">
-	<name>Restlet Extension - JDBC</name>
-	<description>
-		Integration with Java DataBase Connectivity (JDBC).
+   <name>Restlet Extension - JDBC</name>
+   <description>
+      Integration with Java DataBase Connectivity (JDBC).
 	</description>
-	<distributions>
-		<distribution id="classic" />
-		<distribution id="maven" />
-	</distributions>
+   <distributions>
+      <distribution id="classic" />
+      <distribution id="maven" />
+   </distributions>
 
-	<dependencies>
-		<dependency type="library">
-			<id>dbcp</id>
-		</dependency>
-		<dependency type="module">
-			<id>core</id>
-		</dependency>
-	</dependencies>
+   <dependencies>
+      <dependency type="library" id="dbcp" />
+      <dependency type="module" id="core" />
+   </dependencies>
 </module>

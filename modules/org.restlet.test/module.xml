@@ -1,70 +1,32 @@
 <module includes="jse" id="test" package="org.restlet.test">
-	<name>Restlet Unit Tests</name>
-	<description>
-		All Restlet unit tests.
+   <name>Restlet Unit Tests</name>
+   <description>
+      All Restlet unit tests.
 	</description>
-	<distributions>
-		<distribution id="classic" />
-		<distribution id="maven" />
-	</distributions>
+   <distributions>
+      <distribution id="classic" />
+      <distribution id="maven" />
+   </distributions>
 
-	<dependencies>
-		<dependency type="library">
-			<id>junit</id>
-		</dependency>
-		<dependency type="module">
-			<id>core</id>
-		</dependency>
-		<dependency type="module">
-			<id>atom</id>
-		</dependency>
-		<dependency type="module">
-			<id>freemarker</id>
-		</dependency>
-		<dependency type="module">
-			<id>grizzly</id>
-		</dependency>
-		<dependency type="module">
-			<id>core-gwt</id>
-		</dependency>
-		<dependency type="module">
-			<id>gwt</id>
-		</dependency>
-		<dependency type="module">
-			<id>httpclient</id>
-		</dependency>
-		<dependency type="module">
-			<id>jaxb</id>
-		</dependency>
-		<dependency type="module">
-			<id>jaxrs</id>
-		</dependency>
-		<dependency type="module">
-			<id>jetty</id>
-		</dependency>
-		<dependency type="module">
-			<id>lucene</id>
-		</dependency>
-		<dependency type="module">
-			<id>net</id>
-		</dependency>
-		<dependency type="module">
-			<id>rdf</id>
-		</dependency>
-		<dependency type="module">
-			<id>script</id>
-		</dependency>
-		<dependency type="module">
-			<id>simple</id>
-		</dependency>
-		<dependency type="module">
-			<id>spring</id>
-		</dependency>
-		<dependency type="module">
-			<id>velocity</id>
-		</dependency>
-		<dependency type="module">
-			<id>wadl</id>
-		</dependency>
-	</dependencies>
+   <dependencies>
+      <dependency type="library" id="junit" />
+      <dependency type="module" id="core" />
+      <dependency type="module" id="atom" />
+      <dependency type="module" id="freemarker" />
+      <dependency type="module" id="grizzly" />
+      <dependency type="module" id="core-gwt" />
+      <dependency type="module" id="gwt" />
+      <dependency type="module" id="httpclient" />
+      <dependency type="module" id="jaxb" />
+      <dependency type="module" id="jaxrs" />
+      <dependency type="module" id="jetty" />
+      <dependency type="module" id="lucene" />
+      <dependency type="module" id="net" />
+      <dependency type="module" id="rdf" />
+      <dependency type="module" id="script" />
+      <dependency type="module" id="simple" />
+      <dependency type="module" id="spring" />
+      <dependency type="module" id="velocity" />
+      <dependency type="module" id="wadl" />
+   </dependencies>
 </module>

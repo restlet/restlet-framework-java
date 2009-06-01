@@ -1,19 +1,15 @@
 <module id="freemarker" includes="jse" type="integration" package="org.restlet.ext.freemarker">
-	<name>Restlet Extension - FreeMarker</name>
-	<description>
-		Integration with FreeMarker.
+   <name>Restlet Extension - FreeMarker</name>
+   <description>
+      Integration with FreeMarker.
 	</description>
-	<distributions>
-		<distribution id="classic" />
-		<distribution id="maven" />
-	</distributions>
+   <distributions>
+      <distribution id="classic" />
+      <distribution id="maven" />
+   </distributions>
 
-	<dependencies>
-		<dependency type="library">
-			<id>freemarker</id>
-		</dependency>
-		<dependency type="module">
-			<id>core</id>
-		</dependency>
-	</dependencies>
+   <dependencies>
+      <dependency type="library" id="freemarker" />
+      <dependency type="module" id="core" />
+   </dependencies>
 </module>

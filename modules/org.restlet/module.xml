@@ -1,46 +1,44 @@
 <module id="core" includes="jse" type="core" package="org.restlet">
-	<name>Restlet API</name>
-	<description>
-		Restlet API is a Java framework for the REST architectural style.
+   <name>Restlet API</name>
+   <description>
+      Restlet API is a Java framework for the REST architectural style.
 	</description>
-	<distributions>
-		<distribution id="classic" />
-		<distribution id="maven" />
-	</distributions>
+   <distributions>
+      <distribution id="classic" />
+      <distribution id="maven" />
+   </distributions>
 
-	<dependencies>
-		<dependency excludes="android" type="library">
-			<id>osgi</id>
-		</dependency>
-	</dependencies>
-	<osgi>
-		<export>org.restlet</export>
-		<export>org.restlet.data</export>
-		<export>org.restlet.engine</export>
-		<export>org.restlet.engine.application</export>
-		<export>org.restlet.engine.component</export>
-		<export>org.restlet.engine.converter</export>
-		<export>org.restlet.engine.http</export>
-		<export>org.restlet.engine.io</export>
-		<export>org.restlet.engine.local</export>
-		<export>org.restlet.engine.security</export>
-		<export>org.restlet.engine.util</export>
-		<export>org.restlet.representation</export>
-		<export>org.restlet.resource</export>
-		<export>org.restlet.routing</export>
-		<export>org.restlet.security</export>
-		<export>org.restlet.service</export>
-		<export>org.restlet.util</export>
+   <dependencies>
+      <dependency excludes="android" type="library" id="osgi" />
+   </dependencies>
+   <osgi>
+      <export>org.restlet</export>
+      <export>org.restlet.data</export>
+      <export>org.restlet.engine</export>
+      <export>org.restlet.engine.application</export>
+      <export>org.restlet.engine.component</export>
+      <export>org.restlet.engine.converter</export>
+      <export>org.restlet.engine.http</export>
+      <export>org.restlet.engine.io</export>
+      <export>org.restlet.engine.local</export>
+      <export>org.restlet.engine.security</export>
+      <export>org.restlet.engine.util</export>
+      <export>org.restlet.representation</export>
+      <export>org.restlet.resource</export>
+      <export>org.restlet.routing</export>
+      <export>org.restlet.security</export>
+      <export>org.restlet.service</export>
+      <export>org.restlet.util</export>
 
-		<import>javax.crypto</import>
-		<import> javax.crypto.spec</import>
-		<import> javax.net</import>
-		<import> javax.net.ssl</import>
-		<import> javax.security.auth</import>
-		<import> javax.security.auth.callback</import>
-		<import> javax.security.auth.login</import>
-		<import excludes="android">org.osgi.framework</import>
-		<activator includes="*" excludes="android" />
-	</osgi>
+      <import>javax.crypto</import>
+      <import> javax.crypto.spec</import>
+      <import> javax.net</import>
+      <import> javax.net.ssl</import>
+      <import> javax.security.auth</import>
+      <import> javax.security.auth.callback</import>
+      <import> javax.security.auth.login</import>
+      <import excludes="android">org.osgi.framework</import>
+      <activator includes="*" excludes="android" />
+   </osgi>
 
 </module>

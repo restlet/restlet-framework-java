@@ -1,19 +1,16 @@
 <module id="jetty" includes="jse" type="connector" package="org.restlet.ext.jetty">
-	<name>Restlet Extension - Jetty</name>
-	<description>
-		Integration with Jetty.
+   <name>Restlet Extension - Jetty</name>
+   <description>
+      Integration with Jetty.
 	</description>
-	<distributions>
-		<distribution id="classic" />
-		<distribution id="maven" />
-	</distributions>
+   <distributions>
+      <distribution id="classic" />
+      <distribution id="maven" />
+   </distributions>
 
-	<dependencies>
-		<dependency type="library">
-			<id>jetty</id>
-		</dependency>
-		<dependency type="module">
-			<id>core</id>
-		</dependency>
-	</dependencies>
+   <dependencies>
+      <dependency type="library" id="jetty" />
+      <dependency type="library" id="servlet" />
+      <dependency type="module" id="core" />
+   </dependencies>
 </module>

@@ -1,22 +1,16 @@
 <module id="jxta" includes="jse" type="integration" package="org.restlet.ext.jxta">
-	<name>Restlet Extension - JXTA</name>
-	<description>
-		Integration with JXTA framework.
+   <name>Restlet Extension - JXTA</name>
+   <description>
+      Integration with JXTA framework.
 	</description>
-	<distributions>
-		<distribution id="classic" />
-		<distribution id="maven" />
-	</distributions>
+   <distributions>
+      <distribution id="classic" />
+      <distribution id="maven" />
+   </distributions>
 
-	<dependencies>
-		<dependency type="library">
-			<id>servlet</id>
-		</dependency>
-		<dependency type="library">
-			<id>jxta</id>
-		</dependency>
-		<dependency type="module">
-			<id>core</id>
-		</dependency>
-	</dependencies>
+   <dependencies>
+      <dependency type="library" id="servlet" />
+      <dependency type="library" id="jxta" />
+      <dependency type="module" id="core" />
+   </dependencies>
 </module>

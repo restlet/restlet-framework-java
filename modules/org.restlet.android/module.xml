@@ -1,44 +1,10 @@
 <module includes="android" id="android" type="core" package="org.restlet.android">
-	<name>Restlet API for Android</name>
-	<description>
-		Port of Restlet to Android SDK.
+   <name>Restlet API for Android</name>
+   <description>
+      Port of Restlet to Android SDK.
 	</description>
-	<distributions>
-		<distribution id="classic" />
-		<distribution id="maven" />
-	</distributions>
-
-	<osgi>
-		<export>org.restlet</export>
-		<export>org.restlet.data</export>
-		<export>org.restlet.engine</export>
-		<export>org.restlet.engine.application</export>
-		<export>org.restlet.engine.component</export>
-		<export>org.restlet.engine.converter</export>
-		<export>org.restlet.engine.http</export>
-		<export>org.restlet.engine.io</export>
-		<export>org.restlet.engine.local</export>
-		<export>org.restlet.engine.security</export>
-		<export>org.restlet.engine.util</export>
-		<export>org.restlet.representation</export>
-		<export>org.restlet.resource</export>
-		<export>org.restlet.routing</export>
-		<export>org.restlet.security</export>
-		<export>org.restlet.service</export>
-		<export>org.restlet.util</export>
-
-		<import>javax.crypto</import>
-		<import>javax.crypto.spec</import>
-		<import>javax.net</import>
-		<import>javax.net.ssl</import>
-		<import>javax.security.auth</import>
-		<import>javax.security.auth.callback</import>
-		<import>javax.security.auth.login</import>
-		<import>javax.xml</import>
-		<import>javax.xml.namespace</import>
-		<import>javax.xml.parsers</import>
-		<import>org.w3c.dom</import>
-		<import>org.xml.sax</import>
-		<import>org.xml.sax.helpers</import>
-	</osgi>
+   <distributions>
+      <distribution id="classic" />
+      <distribution id="maven" />
+   </distributions>
 </module>
