@@ -24,6 +24,8 @@ Changes log
         - ServerServlet nows copies the ServletContext into a special
           "org.restlet.ext.servlet.ServletContext" attribute of both
           the Component's context and the Application's context.
+        - Added logging capabilities to the Router classes via a new
+          protected log(Route) method.
     - API changes
         - Added client and server RIAP connectors.
           Suggested by John Logsdon and Nirav Shah.

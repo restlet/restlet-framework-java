@@ -30,6 +30,8 @@
 
 package org.restlet.routing;
 
+import java.util.logging.Level;
+
 import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.data.Request;
@@ -259,7 +261,8 @@ public class Router extends Restlet {
      * @return The new finder instance.
      */
     public Finder createFinder(Class<?> targetClass) {
-        return Finder.createFinder(targetClass, getFinderClass(), getContext(), getLogger());
+        return Finder.createFinder(targetClass, getFinderClass(), getContext(),
+                getLogger());
     }
 
     /**
@@ -432,6 +435,7 @@ public class Router extends Restlet {
             }
         }
 
+        logRoute(result);
         return result;
     }
 
@@ -490,6 +494,22 @@ public class Router extends Restlet {
             next.handle(request, response);
         } else {
             response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+        }
+    }
+
+    /**
+     * Logs the route selected.
+     * 
+     * @param route
+     *            The route selected.
+     */
+    protected void logRoute(Route route) {
+        if (getLogger().isLoggable(Level.FINE)) {
+            if (getDefaultRoute() == route) {
+                getLogger().fine("The default route was selected.");
+            } else {
+                getLogger().fine("This route was selected: \"" + route + "\"");
+            }
         }
     }
 

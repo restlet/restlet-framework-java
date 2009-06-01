@@ -30,6 +30,8 @@
 
 package org.restlet.engine.component;
 
+import java.util.logging.Level;
+
 import org.restlet.Component;
 import org.restlet.Restlet;
 import org.restlet.data.Request;
@@ -74,6 +76,27 @@ public class ServerRouter extends Router {
      */
     private Component getComponent() {
         return this.component;
+    }
+
+    @Override
+    protected void logRoute(Route route) {
+        if (getLogger().isLoggable(Level.FINE)) {
+            if (route instanceof HostRoute) {
+                VirtualHost vhost = ((HostRoute) route).getVirtualHost();
+
+                if (getComponent().getDefaultHost() == vhost) {
+                    getLogger().fine("The default host was selected.");
+                } else {
+                    getLogger().fine(
+                            "This virtual host was selected: \""
+                                    + vhost.getHostScheme() + "\", \""
+                                    + vhost.getHostDomain() + "\", \""
+                                    + vhost.getHostPort() + "\"");
+                }
+            } else {
+                super.logRoute(route);
+            }
+        }
     }
 
     /** Starts the Restlet. */

@@ -577,6 +577,12 @@ public class Route extends Filter {
         this.template = template;
     }
 
+    @Override
+    public String toString() {
+        return (getTemplate() == null) ? super.toString() : getTemplate()
+                .getPattern();
+    }
+
     /**
      * Checks the request attributes for presence, format, etc. If the check
      * fails, then a response status CLIENT_ERROR_BAD_REQUEST is returned with

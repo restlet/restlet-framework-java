@@ -30,11 +30,14 @@
 
 package org.restlet.engine.component;
 
+import java.util.logging.Level;
+
 import org.restlet.Client;
 import org.restlet.Component;
 import org.restlet.Restlet;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.routing.Route;
 import org.restlet.routing.Router;
 
 /**
@@ -64,14 +67,28 @@ public class ClientRouter extends Router {
     }
 
     @Override
+    protected void logRoute(Route route) {
+        if (getLogger().isLoggable(Level.FINE)) {
+            if (route instanceof ClientRoute) {
+                Client client = ((ClientRoute) route).getClient();
+
+                getLogger().fine(
+                        "This client was selected: \"" + client.getProtocols());
+            } else {
+                super.logRoute(route);
+            }
+        }
+    }
+
+    @Override
     public Restlet getNext(Request request, Response response) {
         Restlet result = super.getNext(request, response);
         if (result == null) {
             getLogger()
                     .warning(
                             "The protocol used by this request is not declared in the list of client connectors. ("
-                                    + request.getResourceRef().getSchemeProtocol()
-                                    + ")");
+                                    + request.getResourceRef()
+                                            .getSchemeProtocol() + ")");
         }
         return result;
     }
