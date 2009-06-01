@@ -17,7 +17,7 @@
 	</#list>
 </#if>
 	<#list module.libDependencies as dependency>
-		<#noparse><fileset dir="${lib}/${lib-</#noparse>${dependency.id}-id}" includes="*.jar" />
+		<#noparse><fileset dir="${libs}/${lib-</#noparse>${dependency.id}-id}" includes="*.jar" />
 	</#list>
 	</path>
 </#list>
@@ -39,7 +39,7 @@
    <path id="core-source-path">
 <#list editions[editionKey].modules?sort_by("id") as module>
 <#if ((module.type!"") = "core")>
-      <#noparse><pathelement path="${mod}/${mod-</#noparse>${module.id}-id}-id}/src/" />
+      <#noparse><pathelement path="${mod}/${mod-</#noparse>${module.id}-id}/src/" />
 </#if>
 </#list>
    </path>
@@ -47,8 +47,8 @@
 
    <path id="extensions-source-path">
 <#list editions[editionKey].modules?sort_by("id") as module>
-<#if ((module.type!"") = "connector") || ((module.type!"") = "integration") || ((module.type!"") = "extension")>
-      <#noparse><pathelement path="${mod}/${mod-</#noparse>${module.id}-id}-id}/src/" />
+<#if ((module.type!"") = "connector") || ((module.type!"") = "integration") || ((module.type!"") = "standard")>
+      <#noparse><pathelement path="${mod}/${mod-</#noparse>${module.id}-id}/src/" />
 </#if>
 </#list>
    </path>

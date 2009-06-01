@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0"?>
 
-<!-- ===============================================================
+<!-- ==================================================================
      Restlet javadocs script - Copyright 2005-2009 Noelios Technologies
-     =============================================================== -->
+     ================================================================== -->
 
 <#noparse>
 <project name="Restlet-javadocs">
@@ -15,7 +15,19 @@
 			<fileset dir="${docs-ext}" excludes="**/.svn" />
 		</delete>
 
-		<javadoc sourcepathref="core-source-path" packagenames="org.restlet.*" excludepackagenames="${exclude-packages}, org.restlet.engine.*" destdir="${docs-api}" classpathref="path-all" author="true" version="true" use="true" windowtitle="${restlet-api} ${version-full}" doctitle="${restlet-api} ${version-full}" overview="${temp}/javadocs/overview-api.html" stylesheetfile="${tmpl}/javadocs/stylesheet.css" verbose="${verbose}">
+		<javadoc sourcepathref="core-source-path"
+                 packagenames="org.restlet.*"
+                 excludepackagenames="${exclude-packages}, org.restlet.engine.*"
+                 destdir="${docs-api}"
+                 classpathref="path-all"
+                 author="true"
+                 version="true"
+                 use="true"
+                 windowtitle="${restlet-api} ${version-full}"
+                 doctitle="${restlet-api} ${version-full}"
+                 overview="${temp}/javadocs/overview-api.html"
+                 stylesheetfile="${tmpl}/javadocs/stylesheet.css"
+                 verbose="${verbose}">
 			<bottom>
 				<![CDATA[<i>Copyright &#169; 2005-2009 <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
 			</bottom>
@@ -30,7 +42,19 @@
 <#noparse>
 		</javadoc>
 
-		<javadoc sourcepathref="core-source-path" packagenames="org.restlet.engine.*" excludepackagenames="${exclude-packages}" destdir="${docs-engine}" classpathref="path-all" author="true" version="true" use="true" windowtitle="Restlet Engine ${version-full}" doctitle="Restlet Engine ${version-full}" overview="${temp}/javadocs/overview-engine.html" stylesheetfile="${tmpl}/javadocs/stylesheet.css" verbose="${verbose}">
+		<javadoc sourcepathref="core-source-path"
+                 packagenames="org.restlet.engine.*"
+                 excludepackagenames="${exclude-packages}"
+                 destdir="${docs-engine}"
+                 classpathref="path-all"
+                 author="true"
+                 version="true"
+                 use="true"
+                 windowtitle="Restlet Engine ${version-full}"
+                 doctitle="Restlet Engine ${version-full}"
+                 overview="${temp}/javadocs/overview-engine.html"
+                 stylesheetfile="${tmpl}/javadocs/stylesheet.css"
+                 verbose="${verbose}">
 			<bottom>
 				<![CDATA[<i>Copyright &#169; 2005-2009 <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
 			</bottom>
@@ -38,10 +62,27 @@
 			<group title="${restlet-engine}">
 				<package name="org.restlet.engine*" />
 			</group>
-</#noparse><#list editions[editionKey].javadocsLinks as link>			${link}</#list><#noparse>
+</#noparse>
+<#list editions[editionKey].javadocsLinks as link>
+			${link}
+</#list>
+<#noparse>
+		    <link href="http://www.restlet.org/documentation/${version-minor}/api/" packagelistLoc="${docs-api}" offline="true" />
 		</javadoc>
 
-		<javadoc sourcepathref="extensions-source-path" packagenames="org.restlet.ext.*" excludepackagenames="${exclude-packages}" destdir="${docs-ext}" classpathref="path-all" author="true" version="true" use="true" windowtitle="Restlet Extensions ${version-full}" doctitle="Restlet Extensions ${version-full}" overview="${temp}/javadocs/overview-ext.html" stylesheetfile="${tmpl}/javadocs/stylesheet.css" verbose="${verbose}">
+		<javadoc sourcepathref="extensions-source-path"
+                 packagenames="org.restlet.ext.*"
+                 excludepackagenames="${exclude-packages}"
+                 destdir="${docs-ext}"
+                 classpathref="path-all"
+                 author="true"
+                 version="true"
+                 use="true"
+                 windowtitle="Restlet Extensions ${version-full}"
+                 doctitle="Restlet Extensions ${version-full}"
+                 overview="${temp}/javadocs/overview-ext.html"
+                 stylesheetfile="${tmpl}/javadocs/stylesheet.css"
+                 verbose="${verbose}">
 			<bottom>
 				<![CDATA[<i>Copyright &#169; 2005-2009 <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
 			</bottom>
@@ -49,8 +90,20 @@
 			<group title="${restlet-ext-standards}" packages="${standards-packages}" />
 			<group title="${restlet-ext-connectors}" packages="${connectors-packages}" />
 			<group title="${restlet-ext-integrations}" packages="${integrations-packages}" />
-
-</#noparse><#list editions[editionKey].javadocsLinks as link>			${link}</#list><#noparse>
+</#noparse>
+<#list editions[editionKey].javadocsLinks as link>
+			${link}
+</#list>
+<#list editions[editionKey].modules?sort_by("id") as module>
+   <#list module.libDependencies as library>
+      <#list library.javadocsLinks as link>
+			${link}
+      </#list>
+   </#list>
+</#list>
+<#noparse>
+		    <link href="http://www.restlet.org/documentation/${version-minor}/api/" packagelistLoc="${docs-api}" offline="true" />
+		    <link href="http://www.restlet.org/documentation/${version-minor}/engine/" packagelistLoc="${docs-engine}" offline="true" />
 		</javadoc>
 
 	</target>
