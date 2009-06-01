@@ -267,48 +267,98 @@ public class ServerServlet extends HttpServlet {
     }
 
     /**
-     * Configures a component. Adds a default WAR client and copies Servlet
-     * parameters into the component's context.
+     * Initialize a application. Copies Servlet parameters into the component's
+     * context. Copies the ServletContext into an
+     * "org.restlet.ext.servlet.ServletContext" attribute.
+     * 
+     * @param application
+     *            The application to configure.
+     */
+    @SuppressWarnings("unchecked")
+    protected void init(Application application) {
+        if (application != null) {
+            final Context applicationContext = application.getContext();
+
+            // Copies the ServletContext into an attribute
+            applicationContext.getAttributes().put(
+                    "org.restlet.ext.servlet.ServletContext",
+                    getServletContext());
+
+            // Copy all the servlet parameters into the context
+            String initParam;
+
+            // Copy all the Servlet component initialization parameters
+            final javax.servlet.ServletConfig servletConfig = getServletConfig();
+            for (final Enumeration<String> enum1 = servletConfig
+                    .getInitParameterNames(); enum1.hasMoreElements();) {
+                initParam = enum1.nextElement();
+                applicationContext.getParameters().add(initParam,
+                        servletConfig.getInitParameter(initParam));
+            }
+
+            // Copy all the Servlet application initialization parameters
+            for (final Enumeration<String> enum1 = getServletContext()
+                    .getInitParameterNames(); enum1.hasMoreElements();) {
+                initParam = enum1.nextElement();
+                applicationContext.getParameters().add(initParam,
+                        getServletContext().getInitParameter(initParam));
+            }
+        }
+    }
+
+    /**
+     * Initialize a component. Adds a default WAR client and copies Servlet
+     * parameters into the component's context. Copies the ServletContext into
+     * an "org.restlet.ext.servlet.ServletContext" attribute.
      * 
      * @param component
      *            The component to configure.
      */
     @SuppressWarnings("unchecked")
-    protected void configure(Component component) {
-        // Complete the configuration of the Component
-        // Add the WAR client
-        component.getClients().add(
-                createWarClient(component.getContext(), getServletConfig()));
+    protected void init(Component component) {
+        if (component != null) {
+            // Complete the configuration of the Component
+            // Add the WAR client
+            component.getClients()
+                    .add(
+                            createWarClient(component.getContext(),
+                                    getServletConfig()));
 
-        // Copy all the servlet parameters into the context
-        final ComponentContext componentContext = (ComponentContext) component
-                .getContext();
-        String initParam;
+            // Copy all the servlet parameters into the context
+            ComponentContext componentContext = (ComponentContext) component
+                    .getContext();
 
-        // Copy all the Servlet container initialization parameters
-        final javax.servlet.ServletConfig servletConfig = getServletConfig();
-        for (final Enumeration<String> enum1 = servletConfig
-                .getInitParameterNames(); enum1.hasMoreElements();) {
-            initParam = enum1.nextElement();
-            componentContext.getParameters().add(initParam,
-                    servletConfig.getInitParameter(initParam));
-        }
+            // Copies the ServletContext into an attribute
+            componentContext.getAttributes().put(
+                    "org.restlet.ext.servlet.ServletContext",
+                    getServletContext());
 
-        // Copy all the Servlet application initialization parameters
-        for (final Enumeration<String> enum1 = getServletContext()
-                .getInitParameterNames(); enum1.hasMoreElements();) {
-            initParam = enum1.nextElement();
-            componentContext.getParameters().add(initParam,
-                    getServletContext().getInitParameter(initParam));
-        }
+            // Copy all the Servlet container initialization parameters
+            String initParam;
+            javax.servlet.ServletConfig servletConfig = getServletConfig();
+            for (Enumeration<String> enum1 = servletConfig
+                    .getInitParameterNames(); enum1.hasMoreElements();) {
+                initParam = enum1.nextElement();
+                componentContext.getParameters().add(initParam,
+                        servletConfig.getInitParameter(initParam));
+            }
 
-        // Copy all Servlet's context attributes
-        String attributeName;
-        for (final Enumeration<String> namesEnum = getServletContext()
-                .getAttributeNames(); namesEnum.hasMoreElements();) {
-            attributeName = namesEnum.nextElement();
-            componentContext.getAttributes().put(attributeName,
-                    getServletContext().getAttribute(attributeName));
+            // Copy all the Servlet application initialization parameters
+            for (Enumeration<String> enum1 = getServletContext()
+                    .getInitParameterNames(); enum1.hasMoreElements();) {
+                initParam = enum1.nextElement();
+                componentContext.getParameters().add(initParam,
+                        getServletContext().getInitParameter(initParam));
+            }
+
+            // Copy all Servlet's context attributes
+            String attributeName;
+            for (Enumeration<String> namesEnum = getServletContext()
+                    .getAttributeNames(); namesEnum.hasMoreElements();) {
+                attributeName = namesEnum.nextElement();
+                componentContext.getAttributes().put(attributeName,
+                        getServletContext().getAttribute(attributeName));
+            }
         }
     }
 
@@ -320,7 +370,6 @@ public class ServerServlet extends HttpServlet {
      * 
      * @return The newly created Application or null if unable to create
      */
-    @SuppressWarnings("unchecked")
     protected Application createApplication(Context parentContext) {
         Application application = null;
 
@@ -372,30 +421,6 @@ public class ServerServlet extends HttpServlet {
                 log(
                         "[Restlet] ServerServlet couldn't instantiate the target class. An exception was thrown while creating "
                                 + applicationClassName, e);
-            }
-        }
-
-        if (application != null) {
-            final Context applicationContext = application.getContext();
-
-            // Copy all the servlet parameters into the context
-            String initParam;
-
-            // Copy all the Servlet component initialization parameters
-            final javax.servlet.ServletConfig servletConfig = getServletConfig();
-            for (final Enumeration<String> enum1 = servletConfig
-                    .getInitParameterNames(); enum1.hasMoreElements();) {
-                initParam = enum1.nextElement();
-                applicationContext.getParameters().add(initParam,
-                        servletConfig.getInitParameter(initParam));
-            }
-
-            // Copy all the Servlet application initialization parameters
-            for (final Enumeration<String> enum1 = getServletContext()
-                    .getInitParameterNames(); enum1.hasMoreElements();) {
-                initParam = enum1.nextElement();
-                applicationContext.getParameters().add(initParam,
-                        getServletContext().getInitParameter(initParam));
             }
         }
 
@@ -726,6 +751,7 @@ public class ServerServlet extends HttpServlet {
                         if (result == null) {
                             result = createApplication(getComponent()
                                     .getContext());
+                            init(result);
                             getServletContext().setAttribute(
                                     applicationAttributeName, result);
                         }
@@ -761,7 +787,7 @@ public class ServerServlet extends HttpServlet {
 
                     if (result == null) {
                         result = createComponent();
-                        configure(result);
+                        init(result);
                         getServletContext().setAttribute(
                                 componentAttributeName, result);
                     }

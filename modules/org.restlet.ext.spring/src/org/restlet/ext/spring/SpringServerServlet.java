@@ -30,8 +30,6 @@
 
 package org.restlet.ext.spring;
 
-import java.util.Enumeration;
-
 import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Context;
@@ -76,7 +74,6 @@ public class SpringServerServlet extends ServerServlet {
      *            The parent component context.
      * @return The Restlet-Application to use.
      */
-    @SuppressWarnings("unchecked")
     @Override
     public Application createApplication(Context parentContext) {
         Application application = null;
@@ -89,28 +86,6 @@ public class SpringServerServlet extends ServerServlet {
         if (application != null) {
             // Set the context based on the Servlet's context
             application.setContext(parentContext.createChildContext());
-            Context applicationContext = application.getContext();
-
-            // Copy all the servlet parameters into the context
-            String initParam;
-
-            // Copy all the Web component initialization parameters
-            final javax.servlet.ServletConfig servletConfig = getServletConfig();
-            for (final Enumeration<String> enum1 = servletConfig
-                    .getInitParameterNames(); enum1.hasMoreElements();) {
-                initParam = enum1.nextElement();
-                applicationContext.getParameters().add(initParam,
-                        servletConfig.getInitParameter(initParam));
-            }
-
-            // Copy all the Web Application initialization parameters
-            for (final Enumeration<String> enum1 = getServletContext()
-                    .getInitParameterNames(); enum1.hasMoreElements();) {
-                initParam = enum1.nextElement();
-                applicationContext.getParameters().add(initParam,
-                        getServletContext().getInitParameter(initParam));
-            }
-
         } else {
             application = super.createApplication(parentContext);
         }
