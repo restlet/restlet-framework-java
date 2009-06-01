@@ -10,5 +10,6 @@
 
    <dependencies>
       <dependency type="module" id="core" />
+      <dependency type="module" id="xml" />
    </dependencies>
 </module>

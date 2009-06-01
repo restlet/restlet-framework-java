@@ -10,7 +10,7 @@
 
    <dependencies>
       <dependency type="library" id="servlet" />
-      <dependency type="module" id="core" />
+      <dependency type="module" id="core-gwt" />
       <dependency type="module" id="servlet" />
    </dependencies>
 </module>
