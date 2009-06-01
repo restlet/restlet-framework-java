@@ -8,7 +8,10 @@
 	<homeUri>
 		http://www.mortbay.org/jetty/
 	</homeUri>
-	<downloadUri>
-		http://docs.codehaus.org/display/JETTY/Downloading+Jetty
+   <downloadUri>
+      http://docs.codehaus.org/display/JETTY/Downloading+Jetty
 	</downloadUri>
+   <javadocs>
+      <link href="http://jetty.mortbay.org/apidocs/" />
+   </javadocs>
 </library>

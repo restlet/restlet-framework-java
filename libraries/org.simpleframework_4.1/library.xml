@@ -1,15 +1,18 @@
 <library id="simple">
-	<package name="org.simpleframework" />
-	<version>4.1</version>
-	<release>10</release>
-	<distributions>
-		<distribution id="classic" />
-		<distribution id="maven" />
-	</distributions>
-	<homeUri>
-		http://simpleweb.sourceforge.net/
+   <package name="org.simpleframework" />
+   <version>4.1</version>
+   <release>10</release>
+   <distributions>
+      <distribution id="classic" />
+      <distribution id="maven" />
+   </distributions>
+   <homeUri>
+      http://simpleweb.sourceforge.net/
 	</homeUri>
-	<downloadUri>
-		http://www.simpleframework.org/download/
+   <downloadUri>
+      http://www.simpleframework.org/download/
 	</downloadUri>
+   <javadocs>
+      <link href="http://www.simpleframework.org/doc/javadoc/" />
+   </javadocs>
 </library>

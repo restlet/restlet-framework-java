@@ -1,14 +1,17 @@
 <library id="jibx">
-	<package name="org.jibx" />
-	<version>1.1</version>
-	<release>5</release>
-	<distributions>
-		<distribution id="classic" />
-	</distributions>
-	<homeUri>
-		http://jibx.sourceforge.net/
+   <package name="org.jibx" />
+   <version>1.1</version>
+   <release>5</release>
+   <distributions>
+      <distribution id="classic" />
+   </distributions>
+   <homeUri>
+      http://jibx.sourceforge.net/
 	</homeUri>
-	<downloadUri>
-		http://sourceforge.net/project/showfiles.php?group_id=69358
+   <downloadUri>
+      http://sourceforge.net/project/showfiles.php?group_id=69358
 	</downloadUri>
+   <javadocs>
+      <link href="http://jibx.sourceforge.net/api/" />
+   </javadocs>
 </library>

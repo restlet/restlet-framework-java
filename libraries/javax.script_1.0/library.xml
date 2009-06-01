@@ -1,10 +1,18 @@
 <library id="script">
-	<package name="javax.script" />
-	<version>1.0</version>
-	<homeUri>
-		https://scripting.dev.java.net/
+   <package name="javax.script" />
+   <version>1.0</version>
+   <homeUri>
+      https://scripting.dev.java.net/
 	</homeUri>
-	<downloadUri>
-		https://scripting.dev.java.net/servlets/ProjectDocumentList
+   <downloadUri>
+      https://scripting.dev.java.net/servlets/ProjectDocumentList
 	</downloadUri>
+   <javadocs>
+      <!--
+         Note: The link to Java 6 is a fall-back for the javax.script package,
+         which otherwise is not documented for Java 5. Order is important here:
+         it *must* appear after the link for Java 5 documentation.
+      -->
+      <link href="http://java.sun.com/javase/6/docs/api/" />
+   </javadocs>
 </library>

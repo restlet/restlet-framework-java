@@ -1,14 +1,18 @@
 <library id="spring">
-	<package name="org.springframework" />
-	<version>2.5</version>
-	<release>6</release>
-	<distributions>
-		<distribution id="classic" />
-	</distributions>
-	<homeUri>
-		http://www.springframework.org/
+   <package name="org.springframework" />
+   <version>2.5</version>
+   <release>6</release>
+   <distributions>
+      <distribution id="classic" />
+   </distributions>
+   <homeUri>
+      http://www.springframework.org/
 	</homeUri>
-	<downloadUri>
-		http://www.springframework.org/download
+   <downloadUri>
+      http://www.springframework.org/download
 	</downloadUri>
+   <javadocs>
+      <link
+         href="http://static.springframework.org/spring/docs/${lib-spring-version}.x/api/" />
+   </javadocs>
 </library>
