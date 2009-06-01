@@ -41,7 +41,7 @@ import org.restlet.representation.Representation;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.HierarchicalStreamDriver;
-import com.thoughtworks.xstream.io.json.JsonHierarchicalStreamDriver;
+import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
 /**
@@ -82,7 +82,7 @@ public class XstreamRepresentation<T> extends OutputRepresentation {
         super(mediaType);
         this.object = object;
         this.representation = null;
-        this.jsonDriverClass = JsonHierarchicalStreamDriver.class;
+        this.jsonDriverClass = JettisonMappedXmlDriver.class;
         this.xmlDriverClass = DomDriver.class;
         this.xstream = null;
     }
@@ -97,7 +97,7 @@ public class XstreamRepresentation<T> extends OutputRepresentation {
         super(representation.getMediaType());
         this.object = null;
         this.representation = representation;
-        this.jsonDriverClass = JsonHierarchicalStreamDriver.class;
+        this.jsonDriverClass = JettisonMappedXmlDriver.class;
         this.xmlDriverClass = DomDriver.class;
         this.xstream = null;
     }

@@ -14,6 +14,9 @@ Changes log
           Suggested by Arjohn Kampman.       
         - Registration of HTTP and JavaMail clients was missing in the
           GAE edition. Reported by MyloC.
+        - XStreamRepresentation didn't register JettisonMappedXmlDriver
+          correctly. Necessary for proper deserialization.
+          Reported by Gabriel Ciuloaica.
     - Enhancements
         - Upgraded Jetty library to version 6.1.18.
         - SpringServerServlet nows gets its component fully configured,
