@@ -160,7 +160,6 @@ public class TunnelFilter extends Filter {
     private List<AcceptReplacer> getAcceptReplacers() {
         // Lazy initialization with double-check.
         List<AcceptReplacer> a = this.acceptReplacers;
-
         if (a == null) {
             synchronized (this) {
                 a = this.acceptReplacers;
