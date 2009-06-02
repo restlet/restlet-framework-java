@@ -36,6 +36,7 @@ import java.util.List;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.data.Status;
 import org.restlet.engine.Engine;
 import org.restlet.engine.RestletHelper;
 
@@ -162,6 +163,14 @@ public class Client extends Connector {
 
         if (getHelper() != null) {
             getHelper().handle(request, response);
+        } else {
+            final StringBuilder sb = new StringBuilder();
+            sb
+                    .append("No available client connector supports the required protocol: ");
+            sb.append("'").append(request.getProtocol().getName()).append("'.");
+            sb
+                    .append(" Please add the JAR of a matching connector to your classpath.");
+            response.setStatus(Status.CONNECTOR_ERROR_INTERNAL, sb.toString());
         }
     }
 
