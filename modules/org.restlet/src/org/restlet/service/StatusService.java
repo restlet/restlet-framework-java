@@ -119,7 +119,7 @@ public class StatusService extends Service {
     /**
      * Returns a representation for the given status.<br>
      * In order to customize the default representation, this method can be
-     * overriden. It returns null by default.
+     * overridden. It returns null by default.
      * 
      * @param status
      *            The status to represent.
@@ -137,7 +137,8 @@ public class StatusService extends Service {
     /**
      * Returns a status for a given exception or error. By default it returns an
      * {@link Status#SERVER_ERROR_INTERNAL} status and logs a severe message.<br>
-     * In order to customize the default behavior, this method can be overriden.
+     * In order to customize the default behavior, this method can be
+     * overridden.
      * 
      * @param throwable
      *            The exception or error caught.
