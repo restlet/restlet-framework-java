@@ -1,5 +1,5 @@
 <module id="freemarker" includes="jse" type="integration" package="org.restlet.ext.freemarker">
-   <name>Restlet Extension - FreeMarker</name>
+   <label>Restlet Extension - FreeMarker</label>
    <description>
       Integration with FreeMarker.
 	</description>

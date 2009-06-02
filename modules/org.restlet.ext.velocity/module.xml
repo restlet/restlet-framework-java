@@ -1,5 +1,5 @@
 <module id="velocity" includes="jse" type="integration" package="org.restlet.ext.velocity">
-   <name>Restlet Extension - Velocity</name>
+   <label>Restlet Extension - Velocity</label>
    <description>
       Integration with Apache Velocity.
 	</description>

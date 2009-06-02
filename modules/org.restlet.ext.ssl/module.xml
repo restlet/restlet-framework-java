@@ -1,5 +1,5 @@
 <module id="ssl" includes="jse" type="standard" package="org.restlet.ext.ssl">
-   <name>Restlet Extension - SSL support</name>
+   <label>Restlet Extension - SSL support</label>
    <description>
       Utilities to configure SSL support.
 	</description>

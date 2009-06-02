@@ -1,5 +1,5 @@
 <module id="jaxrs" includes="jse" type="standard" package="org.restlet.ext.jaxrs">
-   <name>Restlet Extension - JAX-RS</name>
+   <label>Restlet Extension - JAX-RS</label>
    <description>
       Implementation of JAX-RS (JSR-311)
 	</description>

@@ -1,5 +1,5 @@
 <module id="json" includes="jse" type="standard" package="org.restlet.ext.json">
-   <name>Restlet Extension - JSON</name>
+   <label>Restlet Extension - JSON</label>
    <description>
       Support for JSON representations.
 	</description>

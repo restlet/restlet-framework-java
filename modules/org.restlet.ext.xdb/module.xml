@@ -1,5 +1,5 @@
 <module id="xdb" includes="jse" type="integration" package="org.restlet.ext.xdb">
-   <name>Restlet Extension - Oracle XML DB</name>
+   <label>Restlet Extension - Oracle XML DB</label>
    <description>
       Integration within OracleJVM via the Oracle XML DB feature.
 	</description>

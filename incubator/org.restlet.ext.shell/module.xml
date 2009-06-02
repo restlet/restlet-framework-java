@@ -1,5 +1,5 @@
 <module id="shell" includes="jse" type="integration" package="org.restlet.ext.shell">
-   <name>Interactive shell for Restlet.</name>
+   <label>Interactive shell for Restlet.</label>
    <description>
       Restlet Extension - Shell
 	</description>

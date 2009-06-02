@@ -1,5 +1,5 @@
 <module id="jibx" includes="jse" type="integration" package="org.restlet.ext.jibx">
-   <name>Restlet Extension - JiBX</name>
+   <label>Restlet Extension - JiBX</label>
    <description>
       Integration with JiBX.
 	</description>

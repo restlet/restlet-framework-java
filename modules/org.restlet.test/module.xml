@@ -1,5 +1,5 @@
 <module includes="jse" id="test" package="org.restlet.test">
-   <name>Restlet Unit Tests</name>
+   <label>Restlet Unit Tests</label>
    <description>
       All Restlet unit tests.
 	</description>
@@ -14,8 +14,6 @@
       <dependency type="module" id="atom" />
       <dependency type="module" id="freemarker" />
       <dependency type="module" id="grizzly" />
-      <dependency type="module" id="core-gwt" />
-      <dependency type="module" id="gwt" />
       <dependency type="module" id="httpclient" />
       <dependency type="module" id="jaxb" />
       <dependency type="module" id="jaxrs" />

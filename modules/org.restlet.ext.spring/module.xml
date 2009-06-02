@@ -1,5 +1,5 @@
 <module id="spring" includes="jse" type="integration" package="org.restlet.ext.spring">
-   <name>Restlet Extension - Spring Framework</name>
+   <label>Restlet Extension - Spring Framework</label>
    <description>
       Integration with Spring Framework.
 	</description>

@@ -1,5 +1,5 @@
 <module id="fileupload" includes="jse" type="integration" package="org.restlet.ext.fileupload">
-   <name>Restlet Extension - FileUpload</name>
+   <label>Restlet Extension - FileUpload</label>
    <description>
       Integration with Apache FileUpload.
 	</description>

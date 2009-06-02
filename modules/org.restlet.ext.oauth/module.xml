@@ -1,5 +1,5 @@
 <module id="oauth" includes="jse" type="standard" package="org.restlet.ext.oauth">
-   <name>Restlet Extension - OAuth</name>
+   <label>Restlet Extension - OAuth</label>
    <description>
       Support for OAuth HTTP authentication.
 	</description>

@@ -1,5 +1,5 @@
 <module id="rome" includes="jse" type="integration" package="org.restlet.ext.rome">
-   <name>Restlet Extension - ROME</name>
+   <label>Restlet Extension - ROME</label>
    <description>
       Support for syndicated representations via the ROME library.
 	</description>

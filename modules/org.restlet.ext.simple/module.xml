@@ -1,5 +1,5 @@
 <module id="simple" includes="jse" type="connector" package="org.restlet.ext.simple">
-   <name>Restlet Extension - Simple</name>
+   <label>Restlet Extension - Simple</label>
    <description>
       Integration with Simple framework.
 	</description>

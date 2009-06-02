@@ -1,5 +1,5 @@
 <module includes="gwt" id="gwt" type="integration" package="org.restlet.ext.gwt">
-   <name>Restlet Extension - GWT</name>
+   <label>Restlet Extension - GWT</label>
    <description>
       Server-side integration with GWT.
 	</description>

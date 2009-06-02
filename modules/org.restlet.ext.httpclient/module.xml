@@ -1,5 +1,5 @@
 <module id="httpclient" includes="jse" type="connector" package="org.restlet.ext.httpclient">
-   <name>Restlet Extension - Apache HTTP Client</name>
+   <label>Restlet Extension - Apache HTTP Client</label>
    <description>
       Integration with Apache Commons HTTP Client.
 	</description>

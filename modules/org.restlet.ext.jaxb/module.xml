@@ -1,5 +1,5 @@
 <module id="jaxb" includes="jse" type="integration" package="org.restlet.ext.jaxb">
-   <name>Restlet Extension - JAXB</name>
+   <label>Restlet Extension - JAXB</label>
    <description>
       Integration with Java XML Binding.
 	</description>
