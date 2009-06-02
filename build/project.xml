@@ -27,4 +27,13 @@
          <distribution id="maven" />
       </distributions>
    </edition>
+   <edition id="android">
+      <javadocs>
+         <link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
+      </javadocs>
+      <distributions>
+         <distribution id="classic" />
+         <distribution id="maven" />
+      </distributions>
+   </edition>
 </editions>
