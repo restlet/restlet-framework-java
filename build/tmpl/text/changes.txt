@@ -37,6 +37,8 @@ Changes log
           protected log(Route) method.
         - Directory listings now correctly display a trailing slash for
           directories. Suggested by Aron Roberts.
+        - Load only once the accept.properties file used by the 
+          TunnelFilter instance.
     - API changes
         - Added client and server RIAP connectors.
           Suggested by John Logsdon and Nirav Shah.

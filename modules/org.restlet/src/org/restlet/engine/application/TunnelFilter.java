@@ -34,7 +34,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.restlet.Context;
 import org.restlet.data.CharacterSet;
@@ -72,6 +76,51 @@ import org.restlet.util.Series;
 public class TunnelFilter extends Filter {
 
     /**
+     * Used to describe the replacement value for an old client preference and
+     * for a a series of specific agent (i.e. web client) attributes.
+     * 
+     * @author Thierry Boileau
+     * 
+     */
+    private static class AcceptReplacer {
+        /** New accept header value. */
+        private String acceptNew;
+
+        /** Old accept header value. */
+        private String acceptOld;
+
+        /** Agent attributes that must be checked. */
+        private Map<String, String> agentAttributes;
+
+        public String getAcceptNew() {
+            return acceptNew;
+        }
+
+        public String getAcceptOld() {
+            return acceptOld;
+        }
+
+        public Map<String, String> getAgentAttributes() {
+            if (agentAttributes == null) {
+                agentAttributes = new HashMap<String, String>();
+            }
+
+            return agentAttributes;
+        }
+
+        public void setAcceptNew(String acceptNew) {
+            this.acceptNew = acceptNew;
+        }
+
+        public void setAcceptOld(String acceptOld) {
+            this.acceptOld = acceptOld;
+        }
+    }
+
+    /** Used to replace accept header values. */
+    private volatile List<AcceptReplacer> acceptReplacers;
+
+    /**
      * Constructor.
      * 
      * @param context
@@ -100,6 +149,77 @@ public class TunnelFilter extends Filter {
         }
 
         return CONTINUE;
+    }
+
+    /**
+     * Returns the list of new accept header values. Each of them describe also
+     * a set of conditions required to set the new value.
+     * 
+     * @return The list of new accept header values.
+     */
+    private List<AcceptReplacer> getAcceptReplacers() {
+        // Lazy initialization with double-check.
+        List<AcceptReplacer> a = this.acceptReplacers;
+
+        if (a == null) {
+            synchronized (this) {
+                a = this.acceptReplacers;
+                if (a == null) {
+                    this.acceptReplacers = a = new ArrayList<AcceptReplacer>();
+
+                    // Load the accept.properties file.
+                    final URL userAgentPropertiesUrl = Engine.getClassLoader()
+                            .getResource(
+                                    "org/restlet/service/accept.properties");
+                    if (userAgentPropertiesUrl != null) {
+                        BufferedReader reader;
+                        try {
+                            reader = new BufferedReader(new InputStreamReader(
+                                    userAgentPropertiesUrl.openStream(),
+                                    CharacterSet.UTF_8.getName()));
+
+                            AcceptReplacer acceptReplacer = new AcceptReplacer();
+
+                            // Read the entire file, excluding comment lines
+                            // starting with "#" character.
+                            String line = reader.readLine();
+                            for (; line != null; line = reader.readLine()) {
+                                if (!line.startsWith("#")) {
+                                    final String[] keyValue = line.split(":");
+                                    if (keyValue.length == 2) {
+                                        final String key = keyValue[0].trim();
+                                        final String value = keyValue[1].trim();
+                                        if ("acceptOld".equalsIgnoreCase(key)) {
+                                            acceptReplacer.setAcceptOld((""
+                                                    .equals(value)) ? null
+                                                    : value);
+                                        } else if ("acceptNew"
+                                                .equalsIgnoreCase(key)) {
+                                            acceptReplacer.setAcceptNew(value);
+                                            this.acceptReplacers
+                                                    .add(acceptReplacer);
+
+                                            acceptReplacer = new AcceptReplacer();
+                                        } else {
+                                            acceptReplacer.getAgentAttributes()
+                                                    .put(key, value);
+                                        }
+                                    }
+                                }
+                            }
+
+                            reader.close();
+                        } catch (IOException e) {
+                            getContext().getLogger().warning(
+                                    "Cannot read '"
+                                            + userAgentPropertiesUrl.toString()
+                                            + "' due to: " + e.getMessage());
+                        }
+                    }
+                }
+            }
+        }
+        return a;
     }
 
     /**
@@ -389,9 +509,7 @@ public class TunnelFilter extends Filter {
         final Map<String, String> agentAttributes = request.getClientInfo()
                 .getAgentAttributes();
         if (agentAttributes != null) {
-            final URL userAgentPropertiesUrl = Engine.getClassLoader()
-                    .getResource("org/restlet/service/accept.properties");
-            if (userAgentPropertiesUrl != null) {
+            if (getAcceptReplacers() != null) {
                 // Get the old Accept header value
                 final Form headers = (Form) request.getAttributes().get(
                         HttpConstants.ATTRIBUTE_HEADERS);
@@ -400,58 +518,34 @@ public class TunnelFilter extends Filter {
                         .getFirstValue(HttpConstants.HEADER_ACCEPT, true)
                         : null;
 
-                BufferedReader reader;
-                try {
-                    reader = new BufferedReader(new InputStreamReader(
-                            userAgentPropertiesUrl.openStream(),
-                            CharacterSet.UTF_8.getName()));
-
-                    boolean processAcceptHeader = true;
-
-                    // Read the entire file, excluding comment lines
-                    // starting
-                    // with "#" character.
-                    String line = reader.readLine();
-                    for (; line != null; line = reader.readLine()) {
-                        if (!line.startsWith("#")) {
-                            final String[] keyValue = line.split(":");
-                            if (keyValue.length == 2) {
-                                final String key = keyValue[0].trim();
-                                final String value = keyValue[1].trim();
-                                if ("acceptNew".equalsIgnoreCase(key)) {
-                                    if (processAcceptHeader) {
-                                        final ClientInfo clientInfo = new ClientInfo();
-                                        PreferenceUtils.parseMediaTypes(value,
-                                                clientInfo);
-                                        request
-                                                .getClientInfo()
-                                                .setAcceptedMediaTypes(
-                                                        clientInfo
-                                                                .getAcceptedMediaTypes());
-                                        break;
-                                    }
-                                    processAcceptHeader = true;
-                                } else {
-                                    if (processAcceptHeader) {
-                                        if ("acceptOld".equalsIgnoreCase(key)
-                                                && !((value == null) || (value
-                                                        .length() == 0))) {
-                                            processAcceptHeader = value
-                                                    .equalsIgnoreCase(acceptOld);
-                                        } else {
-                                            final String attribute = agentAttributes
-                                                    .get(key);
-                                            processAcceptHeader = (attribute != null)
-                                                    && attribute
-                                                            .equalsIgnoreCase(value);
-                                        }
-                                    }
-                                }
-                            }
+                // Check each replacer
+                for (AcceptReplacer acceptReplacer : this.acceptReplacers) {
+                    // Check the conditions
+                    boolean checked = true;
+                    for (Entry<String, String> entry : acceptReplacer
+                            .getAgentAttributes().entrySet()) {
+                        final String attribute = agentAttributes.get(entry
+                                .getKey());
+                        checked = checked
+                                && (attribute != null && attribute.equals(entry
+                                        .getValue()));
+                    }
+                    if (checked) {
+                        if (acceptOld == null) {
+                            checked = acceptReplacer.getAcceptOld() == null;
+                        } else {
+                            checked = acceptOld.equals(acceptReplacer
+                                    .getAcceptOld());
+                        }
+                        if (checked) {
+                            final ClientInfo clientInfo = new ClientInfo();
+                            PreferenceUtils.parseMediaTypes(acceptReplacer
+                                    .getAcceptNew(), clientInfo);
+                            request.getClientInfo().setAcceptedMediaTypes(
+                                    clientInfo.getAcceptedMediaTypes());
+                            break;
                         }
                     }
-                    reader.close();
-                } catch (IOException e) {
                 }
             }
         }
