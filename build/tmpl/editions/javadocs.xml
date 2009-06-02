@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0"?>
 
 <!-- ==================================================================
-     Restlet javadocs script - Copyright 2005-2009 Noelios Technologies
+     Restlet javadocs script - Copyright 2005-${currentYear} Noelios Technologies
      ================================================================== -->
 
 <#noparse>
@@ -29,7 +29,7 @@
                  stylesheetfile="${tmpl}/javadocs/stylesheet.css"
                  verbose="${verbose}">
 			<bottom>
-				<![CDATA[<i>Copyright &#169; 2005-2009 <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
+				<![CDATA[<i>Copyright &#169; 2005-${current-year} <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
 			</bottom>
 
 			<group title="${restlet-api}">
@@ -56,7 +56,7 @@
                  stylesheetfile="${tmpl}/javadocs/stylesheet.css"
                  verbose="${verbose}">
 			<bottom>
-				<![CDATA[<i>Copyright &#169; 2005-2009 <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
+				<![CDATA[<i>Copyright &#169; 2005-${current-year} <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
 			</bottom>
 
 			<group title="${restlet-engine}">
@@ -84,7 +84,7 @@
                  stylesheetfile="${tmpl}/javadocs/stylesheet.css"
                  verbose="${verbose}">
 			<bottom>
-				<![CDATA[<i>Copyright &#169; 2005-2009 <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
+				<![CDATA[<i>Copyright &#169; 2005-${current-year} <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
 			</bottom>
 
 			<group title="${restlet-ext-standards}" packages="${standards-packages}" />

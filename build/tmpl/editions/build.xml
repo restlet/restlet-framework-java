@@ -42,7 +42,6 @@
 	<property name="images" location="images" />
 	<property name="jdk1.4-home" value="jdk1.4-home" />
 
-		
 	<property name="dist-classic" location="${dist-base}/classic/${dist-path}" />
 	<property name="dist-eclipse" location="${dist-base}/eclipse/${dist-path}" />
 	<property name="dist-maven2" location="${dist-base}/maven2/${dist-path}" />
@@ -83,6 +82,11 @@
 	<!-- Maven time stamp -->
 	<tstamp>
 		<format property="maven-snapshot-timestamp" pattern="yyyyMMdd.HHmmss" />
+	</tstamp>
+
+	<!-- Current year -->
+	<tstamp>
+		<format property="current-year" pattern="yyyy" />
 	</tstamp>
 
 	<condition property="ant-old">
