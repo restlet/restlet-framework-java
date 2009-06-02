@@ -1,4 +1,4 @@
-<module includes="gwt" id="core-gwt" type="core" package="org.restlet.gwt">
+<module includes="gwt" id="core" type="core" package="org.restlet.gwt">
    <name>Restlet API for GWT</name>
    <description>
       Port of Restlet to Google Web Toolkit.

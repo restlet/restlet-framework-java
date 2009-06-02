@@ -1,4 +1,4 @@
-<module includes="gae" id="core-gae" type="core" package="org.restlet.gae">
+<module includes="gae" id="core" type="core" package="org.restlet.gae">
    <name>Restlet API for GAE</name>
    <description>
       Port of Restlet to Google App Engine.
