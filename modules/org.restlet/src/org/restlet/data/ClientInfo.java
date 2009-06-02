@@ -42,6 +42,7 @@ import java.util.Map;
 
 import javax.security.auth.Subject;
 
+import org.restlet.Context;
 import org.restlet.engine.Engine;
 import org.restlet.engine.http.UserAgentUtils;
 import org.restlet.engine.util.ConnegUtils;
@@ -137,6 +138,70 @@ import org.restlet.util.Variable;
  * @author Jerome Louvel
  */
 public final class ClientInfo {
+
+    /**
+     * List of user-agent templates defined in "agent.properties" file.<br>
+     * 
+     * @see The {@link ClientInfo#getAgentAttributes()} method.
+     */
+    private static List<String> userAgentTemplates = null;
+
+    /**
+     * Returns the list of user-agent templates defined in "agent.properties"
+     * file.
+     * 
+     * @return The list of user-agent templates defined in "agent.properties"
+     *         file.
+     * @see The {@link ClientInfo#getAgentAttributes()} method.
+     */
+    private static List<String> getUserAgentTemplates() {
+        // Lazy initialization with double-check.
+        List<String> u = ClientInfo.userAgentTemplates;
+        if (u == null) {
+            synchronized (ClientInfo.class) {
+                u = ClientInfo.userAgentTemplates;
+                if (u == null) {
+                    // Load from the "agent.properties" file
+                    final URL userAgentPropertiesUrl = Engine.getClassLoader()
+                            .getResource("org/restlet/data/agent.properties");
+                    if (userAgentPropertiesUrl != null) {
+                        BufferedReader reader;
+                        try {
+                            reader = new BufferedReader(new InputStreamReader(
+                                    userAgentPropertiesUrl.openStream(),
+                                    CharacterSet.UTF_8.getName()));
+                            String line = reader.readLine();
+                            for (; line != null; line = reader.readLine()) {
+                                if ((line.trim().length() > 0)
+                                        && !line.trim().startsWith("#")) {
+                                    if (u == null) {
+                                        u = new ArrayList<String>();
+                                    }
+                                    u.add(line);
+                                }
+                            }
+                            reader.close();
+                        } catch (IOException e) {
+                            if (Context.getCurrent() != null) {
+                                Context
+                                        .getCurrent()
+                                        .getLogger()
+                                        .warning(
+                                                "Cannot read '"
+                                                        + userAgentPropertiesUrl
+                                                                .toString()
+                                                        + "' due to: "
+                                                        + e.getMessage());
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+        return u;
+    }
+
     /** The character set preferences. */
     private volatile List<Preference<CharacterSet>> acceptedCharacterSets;
 
@@ -336,55 +401,31 @@ public final class ClientInfo {
             // version and facultative comment. Respectively, these
             // variables are called "agentName", "agentVersion" and
             // "agentComment".
-            final URL userAgentPropertiesUrl = Engine.getClassLoader()
-                    .getResource("org/restlet/data/agent.properties");
-            if (userAgentPropertiesUrl != null) {
-                BufferedReader reader;
-                try {
-                    reader = new BufferedReader(new InputStreamReader(
-                            userAgentPropertiesUrl.openStream(),
-                            CharacterSet.UTF_8.getName()));
-                    Template template = null;
-                    // Predefined variables.
-                    final Variable agentName = new Variable(Variable.TYPE_TOKEN);
-                    final Variable agentVersion = new Variable(
-                            Variable.TYPE_TOKEN);
-                    final Variable agentComment = new Variable(
-                            Variable.TYPE_COMMENT);
-                    final Variable agentCommentAttribute = new Variable(
-                            Variable.TYPE_COMMENT_ATTRIBUTE);
-                    final Variable facultativeData = new Variable(
-                            Variable.TYPE_ALL, null, false, false);
-                    String line = reader.readLine();
-                    for (; line != null; line = reader.readLine()) {
-                        if ((line.trim().length() > 0)
-                                && !line.trim().startsWith("#")) {
-                            template = new Template(line, Template.MODE_EQUALS);
-                            // Update the predefined variables.
-                            template.getVariables().put("agentName", agentName);
-                            template.getVariables().put("agentVersion",
-                                    agentVersion);
-                            template.getVariables().put("agentComment",
-                                    agentComment);
-                            template.getVariables().put("agentOs",
-                                    agentCommentAttribute);
-                            template.getVariables().put("commentAttribute",
-                                    agentCommentAttribute);
-                            template.getVariables().put("facultativeData",
-                                    facultativeData);
-                            // Parse the template
-                            if (template.parse(getAgent(), map) > -1) {
-                                for (final String key : map.keySet()) {
-                                    this.agentAttributes.put(key, (String) map
-                                            .get(key));
-                                }
-                                break;
-                            }
-                        }
+            Template template = null;
+            // Predefined variables.
+            final Variable agentName = new Variable(Variable.TYPE_TOKEN);
+            final Variable agentVersion = new Variable(Variable.TYPE_TOKEN);
+            final Variable agentComment = new Variable(Variable.TYPE_COMMENT);
+            final Variable agentCommentAttribute = new Variable(
+                    Variable.TYPE_COMMENT_ATTRIBUTE);
+            final Variable facultativeData = new Variable(Variable.TYPE_ALL,
+                    null, false, false);
+            for (String string : ClientInfo.getUserAgentTemplates()) {
+                template = new Template(string, Template.MODE_EQUALS);
+                // Update the predefined variables.
+                template.getVariables().put("agentName", agentName);
+                template.getVariables().put("agentVersion", agentVersion);
+                template.getVariables().put("agentComment", agentComment);
+                template.getVariables().put("agentOs", agentCommentAttribute);
+                template.getVariables().put("commentAttribute",
+                        agentCommentAttribute);
+                template.getVariables().put("facultativeData", facultativeData);
+                // Parse the template
+                if (template.parse(getAgent(), map) > -1) {
+                    for (final String key : map.keySet()) {
+                        this.agentAttributes.put(key, (String) map.get(key));
                     }
-                    reader.close();
-                } catch (IOException e) {
-                    return this.agentAttributes;
+                    break;
                 }
             }
         }

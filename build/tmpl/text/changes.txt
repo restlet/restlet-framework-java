@@ -39,6 +39,8 @@ Changes log
           directories. Suggested by Aron Roberts.
         - Load only once the accept.properties file used by the 
           TunnelFilter instance.
+        - Load only once the agent.properties file used to populate 
+          ClientInfo instances.
     - API changes
         - Added client and server RIAP connectors.
           Suggested by John Logsdon and Nirav Shah.
