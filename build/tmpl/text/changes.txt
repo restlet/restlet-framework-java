@@ -22,6 +22,7 @@ Changes log
         - Returned error status when a client sends a request although 
           no client connector supporting this request's protocol is 
           registered. Reported by Avi Flax.
+        - Fixed bug in Template class when the pattern is updated.
           
     - Enhancements
         - Upgraded Jetty library to version 6.1.18.
