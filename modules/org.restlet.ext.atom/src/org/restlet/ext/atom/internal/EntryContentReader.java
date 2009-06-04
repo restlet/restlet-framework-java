@@ -60,7 +60,7 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class EntryContentReader extends DefaultHandler {
     private enum State {
-        FEED, FEED_AUTHOR, FEED_AUTHOR_EMAIL, FEED_AUTHOR_NAME, FEED_AUTHOR_URI, FEED_CATEGORY, FEED_CONTRIBUTOR, FEED_CONTRIBUTOR_EMAIL, FEED_CONTRIBUTOR_NAME, FEED_CONTRIBUTOR_URI, FEED_ENTRY, FEED_ENTRY_AUTHOR, FEED_ENTRY_AUTHOR_EMAIL, FEED_ENTRY_AUTHOR_NAME, FEED_ENTRY_AUTHOR_URI, FEED_ENTRY_CATEGORY, FEED_ENTRY_CONTENT, FEED_ENTRY_CONTRIBUTOR, FEED_ENTRY_ID, FEED_ENTRY_LINK, FEED_ENTRY_PUBLISHED, FEED_ENTRY_RIGHTS, FEED_ENTRY_SOURCE, FEED_ENTRY_SOURCE_AUTHOR, FEED_ENTRY_SOURCE_AUTHOR_EMAIL, FEED_ENTRY_SOURCE_AUTHOR_NAME, FEED_ENTRY_SOURCE_AUTHOR_URI, FEED_ENTRY_SOURCE_CATEGORY, FEED_ENTRY_SOURCE_CONTRIBUTOR, FEED_ENTRY_SOURCE_GENERATOR, FEED_ENTRY_SOURCE_ICON, FEED_ENTRY_SOURCE_ID, FEED_ENTRY_SOURCE_LINK, FEED_ENTRY_SOURCE_LOGO, FEED_ENTRY_SOURCE_RIGHTS, FEED_ENTRY_SOURCE_SUBTITLE, FEED_ENTRY_SOURCE_TITLE, FEED_ENTRY_SOURCE_UPDATED, FEED_ENTRY_SUMMARY, FEED_ENTRY_TITLE, FEED_ENTRY_UPDATED, FEED_GENERATOR, FEED_ICON, FEED_ID, FEED_LINK, FEED_LOGO, FEED_RIGHTS, FEED_SUBTITLE, FEED_TITLE, FEED_UPDATED, NONE
+        FEED_ENTRY, FEED_ENTRY_AUTHOR, FEED_ENTRY_AUTHOR_EMAIL, FEED_ENTRY_AUTHOR_NAME, FEED_ENTRY_AUTHOR_URI, FEED_ENTRY_CATEGORY, FEED_ENTRY_CONTENT, FEED_ENTRY_CONTRIBUTOR, FEED_ENTRY_ID, FEED_ENTRY_LINK, FEED_ENTRY_PUBLISHED, FEED_ENTRY_RIGHTS, FEED_ENTRY_SOURCE, FEED_ENTRY_SOURCE_AUTHOR, FEED_ENTRY_SOURCE_AUTHOR_EMAIL, FEED_ENTRY_SOURCE_AUTHOR_NAME, FEED_ENTRY_SOURCE_AUTHOR_URI, FEED_ENTRY_SOURCE_CATEGORY, FEED_ENTRY_SOURCE_CONTRIBUTOR, FEED_ENTRY_SOURCE_GENERATOR, FEED_ENTRY_SOURCE_ICON, FEED_ENTRY_SOURCE_ID, FEED_ENTRY_SOURCE_LINK, FEED_ENTRY_SOURCE_LOGO, FEED_ENTRY_SOURCE_RIGHTS, FEED_ENTRY_SOURCE_SUBTITLE, FEED_ENTRY_SOURCE_TITLE, FEED_ENTRY_SOURCE_UPDATED, FEED_ENTRY_SUMMARY, FEED_ENTRY_TITLE, FEED_ENTRY_UPDATED, NONE
     }
 
     /** Buffer for the current text content of the current tag. */
@@ -131,7 +131,6 @@ public class EntryContentReader extends DefaultHandler {
     @Override
     public void endDocument() throws SAXException {
         this.state = State.NONE;
-        this.currentEntry = null;
         this.contentBuffer = null;
     }
 
@@ -190,9 +189,7 @@ public class EntryContentReader extends DefaultHandler {
             } else if (localName.equals("name")) {
                 this.currentPerson.setName(this.contentBuffer.toString());
 
-                if (this.state == State.FEED_AUTHOR_NAME) {
-                    this.state = State.FEED_AUTHOR;
-                } else if (this.state == State.FEED_ENTRY_AUTHOR_NAME) {
+                if (this.state == State.FEED_ENTRY_AUTHOR_NAME) {
                     this.state = State.FEED_ENTRY_AUTHOR;
                 } else if (this.state == State.FEED_ENTRY_SOURCE_AUTHOR_NAME) {
                     this.state = State.FEED_ENTRY_SOURCE_AUTHOR;
@@ -288,14 +285,10 @@ public class EntryContentReader extends DefaultHandler {
         this.contentBuffer.delete(0, this.contentBuffer.length() + 1);
 
         if (uri.equalsIgnoreCase(Feed.ATOM_NAMESPACE)) {
-            if (localName.equals("feed")) {
-                this.state = State.FEED;
-            } else if (localName.equals("title")) {
+            if (localName.equals("title")) {
                 startTextElement(attrs);
 
-                if (this.state == State.FEED) {
-                    this.state = State.FEED_TITLE;
-                } else if (this.state == State.FEED_ENTRY) {
+                if (this.state == State.FEED_ENTRY) {
                     this.state = State.FEED_ENTRY_TITLE;
                 } else if (this.state == State.FEED_ENTRY_SOURCE) {
                     this.state = State.FEED_ENTRY_SOURCE_TITLE;
@@ -303,9 +296,7 @@ public class EntryContentReader extends DefaultHandler {
             } else if (localName.equals("updated")) {
                 this.currentDate = new Date();
 
-                if (this.state == State.FEED) {
-                    this.state = State.FEED_UPDATED;
-                } else if (this.state == State.FEED_ENTRY) {
+                if (this.state == State.FEED_ENTRY) {
                     this.state = State.FEED_ENTRY_UPDATED;
                 } else if (this.state == State.FEED_ENTRY_SOURCE) {
                     this.state = State.FEED_ENTRY_SOURCE_UPDATED;
@@ -319,25 +310,19 @@ public class EntryContentReader extends DefaultHandler {
             } else if (localName.equals("author")) {
                 this.currentPerson = new Person();
 
-                if (this.state == State.FEED) {
-                    this.state = State.FEED_AUTHOR;
-                } else if (this.state == State.FEED_ENTRY) {
+                if (this.state == State.FEED_ENTRY) {
                     this.state = State.FEED_ENTRY_AUTHOR;
                 } else if (this.state == State.FEED_ENTRY_SOURCE) {
                     this.state = State.FEED_ENTRY_SOURCE_AUTHOR;
                 }
             } else if (localName.equals("name")) {
-                if (this.state == State.FEED_AUTHOR) {
-                    this.state = State.FEED_AUTHOR_NAME;
-                } else if (this.state == State.FEED_ENTRY_AUTHOR) {
+                if (this.state == State.FEED_ENTRY_AUTHOR) {
                     this.state = State.FEED_ENTRY_AUTHOR_NAME;
                 } else if (this.state == State.FEED_ENTRY_SOURCE_AUTHOR) {
                     this.state = State.FEED_ENTRY_SOURCE_AUTHOR_NAME;
                 }
             } else if (localName.equals("id")) {
-                if (this.state == State.FEED) {
-                    this.state = State.FEED_ID;
-                } else if (this.state == State.FEED_ENTRY) {
+                if (this.state == State.FEED_ENTRY) {
                     this.state = State.FEED_ENTRY_ID;
                 } else if (this.state == State.FEED_ENTRY_SOURCE) {
                     this.state = State.FEED_ENTRY_SOURCE_ID;
@@ -357,18 +342,13 @@ public class EntryContentReader extends DefaultHandler {
                 this.currentLink.setLength((attr == null) ? -1L : Long
                         .parseLong(attr));
 
-                if (this.state == State.FEED) {
-                    this.state = State.FEED_LINK;
-                } else if (this.state == State.FEED_ENTRY) {
+                if (this.state == State.FEED_ENTRY) {
                     this.state = State.FEED_ENTRY_LINK;
                 } else if (this.state == State.FEED_ENTRY_SOURCE) {
                     this.state = State.FEED_ENTRY_SOURCE_LINK;
                 }
             } else if (localName.equalsIgnoreCase("entry")) {
-                if (this.state == State.FEED) {
-                    this.currentEntry = new Entry();
-                    this.state = State.FEED_ENTRY;
-                }
+                this.state = State.FEED_ENTRY;
             } else if (localName.equals("category")) {
                 this.currentCategory = new Category();
                 this.currentCategory.setTerm(attrs.getValue("", "term"));
@@ -376,9 +356,7 @@ public class EntryContentReader extends DefaultHandler {
                         "scheme")));
                 this.currentCategory.setLabel(attrs.getValue("", "label"));
 
-                if (this.state == State.FEED) {
-                    this.state = State.FEED_CATEGORY;
-                } else if (this.state == State.FEED_ENTRY) {
+                if (this.state == State.FEED_ENTRY) {
                     this.state = State.FEED_ENTRY_CATEGORY;
                 } else if (this.state == State.FEED_ENTRY_SOURCE) {
                     this.state = State.FEED_ENTRY_SOURCE_CATEGORY;
