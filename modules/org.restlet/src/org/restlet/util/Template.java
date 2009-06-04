@@ -548,6 +548,7 @@ public class Template {
         if (this.regexPattern == null) {
             synchronized (this) {
                 if (this.regexPattern == null) {
+                    getRegexVariables().clear();
                     final StringBuilder patternBuffer = new StringBuilder();
                     StringBuilder varBuffer = null;
                     char next;
@@ -920,6 +921,7 @@ public class Template {
      */
     public void setPattern(String pattern) {
         this.pattern = pattern;
+        this.regexPattern = null;
     }
 
     /**
