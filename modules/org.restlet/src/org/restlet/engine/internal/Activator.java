@@ -42,7 +42,6 @@ import org.restlet.Client;
 import org.restlet.Server;
 import org.restlet.engine.Engine;
 
-
 /**
  * OSGi activator. It registers the NRE into the Restlet API and also introspect
  * the bundles to find connector or authentication helpers.
