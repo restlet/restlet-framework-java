@@ -5,7 +5,7 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Bugs fixed
-       - 
+       - Fixed bug in Template class when the pattern is updated.
     - Misc
        - Upgraded Grizzly to version 1.9.16.
 
