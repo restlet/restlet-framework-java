@@ -141,6 +141,8 @@ public class ServletConverter extends HttpServerConverter {
             }
         }
 
+        result.normalize();
+        
         return result;
     }
 
