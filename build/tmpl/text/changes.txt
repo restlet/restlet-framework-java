@@ -6,6 +6,9 @@ Changes log
 - @version-full@ (@release-date@)
     - Bugs fixed
        - Fixed bug in Template class when the pattern is updated.
+       - Fixed bug when a Restlet application is deployed in Weblogic 
+         10 listening on port 80. Reported by Sondre Eikanger Kvalø.
+       
     - Misc
        - Upgraded Grizzly to version 1.9.16.
 
