@@ -32,21 +32,21 @@ package org.restlet.test.security;
 
 import org.restlet.data.Digest;
 import org.restlet.security.MapVerifier;
-import org.restlet.security.SecretDigestVerifier;
+import org.restlet.security.DigestVerifier;
 import org.restlet.test.RestletTestCase;
 
 /**
- * Restlet unit tests for the SecretDigestVerifierTestCase class.
+ * Restlet unit tests for the DigestVerifierTestCase class.
  * 
  * @author Jerome Louvel
  */
-public class SecretDigestVerifierTestCase extends RestletTestCase {
+public class DigestVerifierTestCase extends RestletTestCase {
 
     public void test1() {
         MapVerifier mv = new MapVerifier();
         mv.getSecrets().put("scott", "tiger".toCharArray());
 
-        SecretDigestVerifier sdv = new SecretDigestVerifier(
+        DigestVerifier sdv = new DigestVerifier(
                 Digest.ALGORITHM_SHA_1, null, mv);
 
         assertTrue(sdv.verify("scott", "RuPXcqGIjq3/JsetpH/XUC15bgc="
@@ -58,7 +58,7 @@ public class SecretDigestVerifierTestCase extends RestletTestCase {
         mv.getSecrets().put("scott",
                 "RuPXcqGIjq3/JsetpH/XUC15bgc=".toCharArray());
 
-        SecretDigestVerifier sdv = new SecretDigestVerifier(
+        DigestVerifier sdv = new DigestVerifier(
                 Digest.ALGORITHM_SHA_1, Digest.ALGORITHM_SHA_1, mv);
 
         assertTrue(sdv.verify("scott", "RuPXcqGIjq3/JsetpH/XUC15bgc="
@@ -70,7 +70,7 @@ public class SecretDigestVerifierTestCase extends RestletTestCase {
         mv.getSecrets().put("scott",
                 "RuPXcqGIjq3/JsetpH/XUC15bgc=".toCharArray());
 
-        SecretDigestVerifier sdv = new SecretDigestVerifier(null,
+        DigestVerifier sdv = new DigestVerifier(null,
                 Digest.ALGORITHM_SHA_1, mv);
 
         assertTrue(sdv.verify("scott", "tiger".toCharArray()));

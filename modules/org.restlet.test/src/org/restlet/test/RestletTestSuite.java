@@ -57,7 +57,7 @@ import org.restlet.test.routing.FilterTestCase;
 import org.restlet.test.routing.RedirectTestCase;
 import org.restlet.test.routing.RouteListTestCase;
 import org.restlet.test.security.HttpBasicTestCase;
-import org.restlet.test.security.SecretDigestVerifierTestCase;
+import org.restlet.test.security.DigestVerifierTestCase;
 import org.restlet.test.security.SecurityTestCase;
 import org.restlet.test.util.TemplateTestCase;
 
@@ -107,7 +107,7 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(RiapTestCase.class);
         addTestSuite(RouteListTestCase.class);
         addTestSuite(SecurityTestCase.class);
-        addTestSuite(SecretDigestVerifierTestCase.class);
+        addTestSuite(DigestVerifierTestCase.class);
         addTestSuite(StatusTestCase.class);
         addTestSuite(TemplateFilterTestCase.class);
         addTestSuite(TemplateTestCase.class);

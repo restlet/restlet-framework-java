@@ -36,7 +36,7 @@ import java.util.concurrent.ConcurrentMap;
 /**
  * Verifier that stores its secrets in a map indexed by the identifier. Note
  * that this verifier isn't very secure by itself. It is recommended to use it
- * in conjunction with a {@link SecretDigestVerifier}.
+ * in conjunction with a {@link DigestVerifier}.
  * 
  * @author Jerome Louvel
  */

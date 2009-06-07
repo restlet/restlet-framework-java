@@ -47,7 +47,7 @@ import org.restlet.engine.util.DigestUtils;
  * 
  * @author Jerome Louvel
  */
-public class SecretDigestVerifier extends SecretVerifier {
+public class DigestVerifier extends SecretVerifier {
 
     /** The digest algorithm of input secrets. */
     private String inputAlgorithm;
@@ -69,7 +69,7 @@ public class SecretDigestVerifier extends SecretVerifier {
      *            The wrapped secret verifier.
      * @see Digest
      */
-    public SecretDigestVerifier(String inputAlgorithm, String outputAlgorithm,
+    public DigestVerifier(String inputAlgorithm, String outputAlgorithm,
             SecretVerifier wrappedVerifier) {
         this.inputAlgorithm = inputAlgorithm;
         this.outputAlgorithm = outputAlgorithm;
