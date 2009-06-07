@@ -40,7 +40,7 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
 import org.restlet.ext.jaxrs.JaxRsApplication;
 import org.restlet.ext.jaxrs.RoleChecker;
-import org.restlet.security.ChallengeGuard;
+import org.restlet.security.ChallengeAuthenticator;
 import org.restlet.security.MemoryRealm;
 import org.restlet.security.Organization;
 import org.restlet.security.User;
@@ -86,7 +86,7 @@ public class GuardedExample {
             if (principal.getName().equalsIgnoreCase("admin")) {
                 return true;
             }
-            // example: every authenticatd user could read
+            // example: every authenticated user could read
             if (role.equalsIgnoreCase("read")) {
                 return true;
             }
@@ -105,8 +105,9 @@ public class GuardedExample {
                 .getContext().createChildContext());
 
         // create a Guard
-        final ChallengeGuard guard = new ChallengeGuard(application
-                .getContext(), ChallengeScheme.HTTP_BASIC, "JAX-RS example");
+        final ChallengeAuthenticator guard = new ChallengeAuthenticator(
+                application.getContext(), ChallengeScheme.HTTP_BASIC,
+                "JAX-RS example");
 
         // set valid users and their passwords.
         MemoryRealm realm = new MemoryRealm();

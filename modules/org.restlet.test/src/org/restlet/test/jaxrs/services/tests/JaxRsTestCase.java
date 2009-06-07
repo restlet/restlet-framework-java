@@ -45,7 +45,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.Application;
 
 import org.restlet.Context;
-import org.restlet.security.UniformGuard;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.ClientInfo;
@@ -65,6 +64,7 @@ import org.restlet.ext.jaxrs.RoleChecker;
 import org.restlet.ext.jaxrs.internal.util.Converter;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.representation.Representation;
+import org.restlet.security.Authenticator;
 import org.restlet.test.jaxrs.server.RestletServerTestCase;
 import org.restlet.test.jaxrs.util.OrderedReadonlySet;
 import org.restlet.test.jaxrs.util.TestUtils;
@@ -331,7 +331,7 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
         final JaxRsApplication application = new JaxRsApplication(new Context());
         if (roleChecker != null) {
             application.setRoleChecker(roleChecker);
-            final UniformGuard guard = createGuard(application.getContext(),
+            Authenticator guard = createAuthenticator(application.getContext(),
                     challengeScheme);
             application.setGuard(guard);
         }

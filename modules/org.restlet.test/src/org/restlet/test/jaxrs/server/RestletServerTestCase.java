@@ -157,8 +157,8 @@ public abstract class RestletServerTestCase extends TestCase {
      * @param challengeScheme
      * @return
      */
-    public static UniformGuard createGuard(final Context context,
-            final ChallengeScheme challengeScheme) {
+    public static ChallengeAuthenticator createAuthenticator(
+            final Context context, final ChallengeScheme challengeScheme) {
         MemoryRealm realm = new MemoryRealm();
 
         Organization organization = new Organization();
@@ -173,7 +173,7 @@ public abstract class RestletServerTestCase extends TestCase {
         context.setEnroler(realm.getEnroler());
         context.setVerifier(realm.getVerifier());
 
-        return new ChallengeGuard(context, challengeScheme, "");
+        return new ChallengeAuthenticator(context, challengeScheme, "");
     }
 
     /**

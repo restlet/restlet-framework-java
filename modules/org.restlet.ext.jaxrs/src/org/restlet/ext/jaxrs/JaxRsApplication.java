@@ -40,7 +40,7 @@ import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.data.ClientInfo;
 import org.restlet.routing.Filter;
-import org.restlet.security.UniformGuard;
+import org.restlet.security.Authenticator;
 
 /**
  * <p>
@@ -82,7 +82,7 @@ public class JaxRsApplication extends org.restlet.Application {
      * @see #JaxRsApplication(Context)
      */
     public JaxRsApplication() {
-        this((Context)null);
+        this((Context) null);
     }
 
     /**
@@ -224,6 +224,7 @@ public class JaxRsApplication extends org.restlet.Application {
 
     /**
      * Adds the given applications to the available applications.
+     * 
      * @param apps
      */
     public void setApplications(Collection<javax.ws.rs.core.Application> apps) {
@@ -247,7 +248,7 @@ public class JaxRsApplication extends org.restlet.Application {
      *             instead
      */
     @Deprecated
-    public void setAuthentication(UniformGuard guard, RoleChecker roleChecker) {
+    public void setAuthentication(Authenticator guard, RoleChecker roleChecker) {
         setGuard(guard);
         setRoleChecker(roleChecker);
     }
@@ -289,7 +290,7 @@ public class JaxRsApplication extends org.restlet.Application {
      * @param guard
      *            the Guard to use.
      */
-    public void setGuard(org.restlet.security.UniformGuard guard) {
+    public void setGuard(Authenticator guard) {
         this.guard = guard;
     }
 

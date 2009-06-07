@@ -53,6 +53,8 @@ Changes log
           been moved to the Restlet class.
         - Context#clientDispatcher and serverDispatcher properties are
           now instances of Client instead of Uniform.
+        - Removed the UniformGuard and ChallengeGuard classes. We now
+          recommend to directly use Authenticator and Authorizer classes.
     - Misc
         - Exceptions thrown in the internal HTTP client are not logged
           with a FINE level instead of a WARNING level.

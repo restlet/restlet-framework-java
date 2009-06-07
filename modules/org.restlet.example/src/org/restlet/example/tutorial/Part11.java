@@ -42,7 +42,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.resource.Directory;
 import org.restlet.routing.Router;
-import org.restlet.security.ChallengeGuard;
+import org.restlet.security.ChallengeAuthenticator;
 import org.restlet.security.MapVerifier;
 
 /**
@@ -84,9 +84,9 @@ public class Part11 extends Application {
 
         // Create a Guard
         // Attach a guard to secure access to the directory
-        ChallengeGuard guard = new ChallengeGuard(getContext(),
+        ChallengeAuthenticator guard = new ChallengeAuthenticator(getContext(),
                 ChallengeScheme.HTTP_BASIC, "Tutorial");
-        guard.getAuthenticator().setVerifier(verifier);
+        guard.setVerifier(verifier);
         router.attach("/docs/", guard);
 
         // Create a directory able to expose a hierarchy of files

@@ -37,7 +37,6 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.routing.Router;
 import org.restlet.security.Authorizer;
 import org.restlet.security.ChallengeAuthenticator;
-import org.restlet.security.ChallengeGuard;
 import org.restlet.security.Role;
 import org.restlet.security.RoleAuthorizer;
 import org.restlet.test.HelloWorldRestlet;
@@ -87,12 +86,12 @@ public class SaasApplication extends Application {
         // Attach test 4
         RoleAuthorizer roleAuthorizer = new RoleAuthorizer();
         roleAuthorizer.getAuthorizedRoles().add(findRole("admin"));
+        roleAuthorizer.setNext(new HelloWorldRestlet());
 
-        ChallengeGuard guard = new ChallengeGuard(getContext(),
+        authenticator = new ChallengeAuthenticator(getContext(),
                 ChallengeScheme.HTTP_BASIC, "saas");
-        guard.setAuthorizer(roleAuthorizer);
-        guard.setNext(new HelloWorldRestlet());
-        root.attach("/test4", guard);
+        authenticator.setNext(roleAuthorizer);
+        root.attach("/test4", authenticator);
 
         // Attach test 5
         roleAuthorizer = new RoleAuthorizer();

@@ -38,7 +38,7 @@ import org.restlet.Restlet;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
 import org.restlet.resource.Directory;
-import org.restlet.security.ChallengeGuard;
+import org.restlet.security.ChallengeAuthenticator;
 import org.restlet.security.MapVerifier;
 
 /**
@@ -76,9 +76,9 @@ public class Part09a extends Application {
         verifier.getSecrets().put("scott", "tiger".toCharArray());
 
         // Create a Guard
-        ChallengeGuard guard = new ChallengeGuard(getContext(),
+        ChallengeAuthenticator guard = new ChallengeAuthenticator(getContext(),
                 ChallengeScheme.HTTP_BASIC, "Tutorial");
-        guard.getAuthenticator().setVerifier(verifier);
+        guard.setVerifier(verifier);
 
         // Create a Directory able to return a deep hierarchy of files
         Directory directory = new Directory(getContext(), ROOT_URI);
