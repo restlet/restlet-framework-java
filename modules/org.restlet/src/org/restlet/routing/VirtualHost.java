@@ -252,6 +252,7 @@ public class VirtualHost extends Router {
      * @return The created route.
      */
     @Override
+    @SuppressWarnings("deprecation")
     public Route attach(Restlet target) {
         if ((target.getContext() == null) && (this.parentContext != null)) {
             target.setContext(this.parentContext.createChildContext());
@@ -277,6 +278,7 @@ public class VirtualHost extends Router {
      * @return The created route.
      */
     @Override
+    @SuppressWarnings("deprecation")
     public Route attach(String uriPattern, Restlet target) {
         if ((target.getContext() == null) && (this.parentContext != null)) {
             target.setContext(this.parentContext.createChildContext());
@@ -299,6 +301,7 @@ public class VirtualHost extends Router {
      * @return The created route.
      */
     @Override
+    @SuppressWarnings("deprecation")
     public Route attachDefault(Restlet defaultTarget) {
         if ((defaultTarget.getContext() == null)
                 && (this.parentContext != null)) {
@@ -327,6 +330,7 @@ public class VirtualHost extends Router {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected Route createRoute(String uriPattern, Restlet target) {
         return new Route(this, uriPattern, target) {
             @Override

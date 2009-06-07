@@ -53,7 +53,6 @@ import org.restlet.engine.Engine;
 import org.restlet.engine.util.DefaultSaxHandler;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ServerResource;
-import org.restlet.routing.Route;
 import org.restlet.routing.Router;
 import org.restlet.routing.VirtualHost;
 import org.restlet.util.Template;
@@ -141,9 +140,9 @@ public class ComponentXmlParser {
      * @return the created route, or null.
      */
     @SuppressWarnings( { "unchecked", "deprecation" })
-    private Route attach(Router router, String targetClassName,
-            String uriPattern, boolean defaultRoute) {
-        Route route = null;
+    private org.restlet.routing.Route attach(Router router,
+            String targetClassName, String uriPattern, boolean defaultRoute) {
+        org.restlet.routing.Route route = null;
         // Load the application class using the given class name
         if (targetClassName != null) {
             try {
@@ -250,9 +249,10 @@ public class ComponentXmlParser {
      *            Is this route the default one?
      * @return the created route, or null.
      */
-    private Route attachWithDescriptor(Router router, String targetDescriptor,
-            String uriPattern, boolean defaultRoute) {
-        Route route = null;
+    @SuppressWarnings("deprecation")
+    private org.restlet.routing.Route attachWithDescriptor(Router router,
+            String targetDescriptor, String uriPattern, boolean defaultRoute) {
+        org.restlet.routing.Route route = null;
         String targetClassName = null;
         try {
             // Only WADL descriptors are supported at this moment.
@@ -463,19 +463,19 @@ public class ComponentXmlParser {
             db.setErrorHandler(handler);
             db.setEntityResolver(handler);
 
-//            try {
-//                Client client = new Client(Protocol.CLAP);
-//                Representation xsd = client.get(
-//                        "clap://class/org/restlet/Component.xsd").getEntity();
-//                db.dom.setSchema(xsd);
-//            } catch (Exception x) {
-//                Context
-//                        .getCurrentLogger()
-//                        .log(
-//                                Level.CONFIG,
-//                                "Unable to acquire a compiled instance of Component.xsd "
-//                                        + "to check the given restlet.xml. Ignore and continue");
-//            }
+            // try {
+            // Client client = new Client(Protocol.CLAP);
+            // Representation xsd = client.get(
+            // "clap://class/org/restlet/Component.xsd").getEntity();
+            // db.dom.setSchema(xsd);
+            // } catch (Exception x) {
+            // Context
+            // .getCurrentLogger()
+            // .log(
+            // Level.CONFIG,
+            // "Unable to acquire a compiled instance of Component.xsd "
+            // + "to check the given restlet.xml. Ignore and continue");
+            // }
 
             final Document document = db.parse(getXmlConfiguration()
                     .getStream());
@@ -806,6 +806,7 @@ public class ComponentXmlParser {
      * @param node
      *            The node describing the Restlets to attach.
      */
+    @SuppressWarnings("deprecation")
     private void setAttach(Router router, Node node) {
         final NodeList childNodes = node.getChildNodes();
 
@@ -834,7 +835,7 @@ public class ComponentXmlParser {
                 final Context oldContext = router.getContext();
                 router.setContext(new Context());
 
-                Route route = null;
+                org.restlet.routing.Route route = null;
                 item = childNode.getAttributes().getNamedItem("targetClass");
                 if (item != null) {
                     route = attach(router, item.getNodeValue(), uriPattern,

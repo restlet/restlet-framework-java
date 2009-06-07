@@ -48,6 +48,7 @@ import org.restlet.routing.Router;
  * 
  * @author Jerome Louvel
  */
+@SuppressWarnings("deprecation")
 public class ClientRoute extends Route {
     /**
      * Constructor.

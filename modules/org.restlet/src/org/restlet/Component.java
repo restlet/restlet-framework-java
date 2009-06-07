@@ -47,7 +47,6 @@ import org.restlet.engine.component.ComponentXmlParser;
 import org.restlet.representation.FileRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Finder;
-import org.restlet.routing.Route;
 import org.restlet.routing.Router;
 import org.restlet.routing.VirtualHost;
 import org.restlet.service.LogService;
@@ -183,8 +182,9 @@ public class Component extends Restlet {
                 this.internalRouter = new Router(getContext()
                         .createChildContext()) {
 
+                    @SuppressWarnings("deprecation")
                     @Override
-                    public Route attach(Restlet target) {
+                    public org.restlet.routing.Route attach(Restlet target) {
                         if (target.getContext() == null) {
                             target
                                     .setContext(getContext()
@@ -195,7 +195,8 @@ public class Component extends Restlet {
                     }
 
                     @Override
-                    public Route attach(String uriPattern, Restlet target) {
+                    @SuppressWarnings("deprecation")
+                    public org.restlet.routing.Route attach(String uriPattern, Restlet target) {
                         if (target.getContext() == null) {
                             target
                                     .setContext(getContext()
@@ -206,7 +207,8 @@ public class Component extends Restlet {
                     }
 
                     @Override
-                    public Route attachDefault(Restlet defaultTarget) {
+                    @SuppressWarnings("deprecation")
+                    public org.restlet.routing.Route attachDefault(Restlet defaultTarget) {
                         if (defaultTarget.getContext() == null) {
                             defaultTarget.setContext(getContext()
                                     .createChildContext());

@@ -48,6 +48,7 @@ import org.restlet.routing.VirtualHost;
  * 
  * @author Jerome Louvel
  */
+@SuppressWarnings("deprecation")
 public class HostRoute extends Route {
     /**
      * Constructor.

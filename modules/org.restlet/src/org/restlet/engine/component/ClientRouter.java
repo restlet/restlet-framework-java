@@ -37,7 +37,6 @@ import org.restlet.Component;
 import org.restlet.Restlet;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.routing.Route;
 import org.restlet.routing.Router;
 
 /**
@@ -66,8 +65,9 @@ public class ClientRouter extends Router {
         this.component = component;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
-    protected void logRoute(Route route) {
+    protected void logRoute(org.restlet.routing.Route route) {
         if (getLogger().isLoggable(Level.FINE)) {
             if (route instanceof ClientRoute) {
                 Client client = ((ClientRoute) route).getClient();

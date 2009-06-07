@@ -37,7 +37,6 @@ import org.restlet.Restlet;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.routing.Route;
 import org.restlet.routing.Router;
 import org.restlet.routing.VirtualHost;
 
@@ -78,8 +77,9 @@ public class ServerRouter extends Router {
         return this.component;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
-    protected void logRoute(Route route) {
+    protected void logRoute(org.restlet.routing.Route route) {
         if (getLogger().isLoggable(Level.FINE)) {
             if (route instanceof HostRoute) {
                 VirtualHost vhost = ((HostRoute) route).getVirtualHost();
@@ -100,6 +100,7 @@ public class ServerRouter extends Router {
     }
 
     /** Starts the Restlet. */
+    @SuppressWarnings("deprecation")
     @Override
     public synchronized void start() throws Exception {
         // Attach all virtual hosts
@@ -123,7 +124,7 @@ public class ServerRouter extends Router {
             }
         };
 
-        setDefaultRoute(new Route(this, "", noHostMatched));
+        setDefaultRoute(new org.restlet.routing.Route(this, "", noHostMatched));
 
         // Start the router
         super.start();

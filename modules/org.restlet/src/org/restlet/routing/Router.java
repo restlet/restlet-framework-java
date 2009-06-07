@@ -127,6 +127,7 @@ public class Router extends Restlet {
     private volatile boolean defaultMatchQuery;
 
     /** The default route tested if no other one was available. */
+    @SuppressWarnings("deprecation")
     private volatile Route defaultRoute;
 
     /** Finder class to instantiate. */
@@ -187,6 +188,7 @@ public class Router extends Restlet {
      *            The target Restlet to attach.
      * @return The created route.
      */
+    @SuppressWarnings("deprecation")
     public Route attach(Restlet target) {
         return attach("", target);
     }
@@ -203,6 +205,7 @@ public class Router extends Restlet {
      *            The target Resource class to attach.
      * @return The created route.
      */
+    @SuppressWarnings("deprecation")
     public Route attach(String pathTemplate, Class<?> targetClass) {
         return attach(pathTemplate, createFinder(targetClass));
     }
@@ -219,6 +222,7 @@ public class Router extends Restlet {
      *            The target Restlet to attach.
      * @return The created route.
      */
+    @SuppressWarnings("deprecation")
     public Route attach(String pathTemplate, Restlet target) {
         final Route result = createRoute(pathTemplate, target);
         getRoutes().add(result);
@@ -234,6 +238,7 @@ public class Router extends Restlet {
      *            The target Resource class to attach.
      * @return The created route.
      */
+    @SuppressWarnings("deprecation")
     public Route attachDefault(Class<?> defaultTargetClass) {
         return attachDefault(createFinder(defaultTargetClass));
     }
@@ -247,6 +252,7 @@ public class Router extends Restlet {
      *            The Restlet to use as the default target.
      * @return The created route.
      */
+    @SuppressWarnings("deprecation")
     public Route attachDefault(Restlet defaultTarget) {
         final Route result = new Route(this, "", defaultTarget);
         setDefaultRoute(result);
@@ -275,6 +281,7 @@ public class Router extends Restlet {
      *            The target Restlet to attach.
      * @return The created route.
      */
+    @SuppressWarnings("deprecation")
     protected Route createRoute(String uriPattern, Restlet target) {
         final Route result = new Route(this, uriPattern, target);
         result.getTemplate().setMatchingMode(getDefaultMatchingMode());
@@ -309,6 +316,7 @@ public class Router extends Restlet {
      *            The response to update.
      * @return The matched route if available or null.
      */
+    @SuppressWarnings("deprecation")
     protected Route getCustom(Request request, Response response) {
         return null;
     }
@@ -340,6 +348,7 @@ public class Router extends Restlet {
      * 
      * @return The default route tested if no other one was available.
      */
+    @SuppressWarnings("deprecation")
     public Route getDefaultRoute() {
         return this.defaultRoute;
     }
@@ -375,6 +384,7 @@ public class Router extends Restlet {
      *            The response to update.
      * @return The next Restlet if available or null.
      */
+    @SuppressWarnings("deprecation")
     public Restlet getNext(Request request, Response response) {
         Route result = null;
 
@@ -503,6 +513,7 @@ public class Router extends Restlet {
      * @param route
      *            The route selected.
      */
+    @SuppressWarnings("deprecation")
     protected void logRoute(Route route) {
         if (getLogger().isLoggable(Level.FINE)) {
             if (getDefaultRoute() == route) {
@@ -542,6 +553,7 @@ public class Router extends Restlet {
      * @param defaultRoute
      *            The default route tested if no other one was available.
      */
+    @SuppressWarnings("deprecation")
     public void setDefaultRoute(Route defaultRoute) {
         this.defaultRoute = defaultRoute;
     }

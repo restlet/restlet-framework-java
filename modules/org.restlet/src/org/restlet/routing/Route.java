@@ -62,8 +62,10 @@ import org.restlet.util.Variable;
  * 
  * @see org.restlet.util.Template
  * @author Jerome Louvel
+ * @deprecated Use {@link TemplateRoute} instead.
  */
-public class Route extends Filter {
+@Deprecated
+public class Route extends TemplateRoute {
     /** Internal class holding extraction information. */
     private static final class ExtractInfo {
         /** Target attribute name. */
@@ -126,20 +128,8 @@ public class Route extends Filter {
     /** The list of request entity parameters to extract. */
     private volatile List<ExtractInfo> entityExtracts;
 
-    /**
-     * Indicates whether the query part should be taken into account when
-     * matching a reference with the template.
-     */
-    private volatile boolean matchQuery;
-
     /** The list of query parameters to extract. */
     private volatile List<ExtractInfo> queryExtracts;
-
-    /** The parent router. */
-    private volatile Router router;
-
-    /** The reference template to match. */
-    private volatile Template template;
 
     /** The list of attribute validations. */
     private volatile List<ValidateInfo> validations;
@@ -183,11 +173,7 @@ public class Route extends Filter {
      *            The next Restlet.
      */
     public Route(Router router, Template template, Restlet next) {
-        super(router == null ? null : router.getContext(), next);
-        this.matchQuery = (router == null) ? true : router
-                .getDefaultMatchQuery();
-        this.router = router;
-        this.template = template;
+        super(router, template, next);
     }
 
     /**
@@ -416,27 +402,6 @@ public class Route extends Filter {
     }
 
     /**
-     * Returns the matching mode to use on the template when parsing a formatted
-     * reference.
-     * 
-     * @return The matching mode to use.
-     */
-    public int getMatchingMode() {
-        return getTemplate().getMatchingMode();
-    }
-
-    /**
-     * Indicates whether the query part should be taken into account when
-     * matching a reference with the template.
-     * 
-     * @return True if the query part of the reference should be taken into
-     *         account, false otherwise.
-     */
-    public boolean getMatchQuery() {
-        return this.matchQuery;
-    }
-
-    /**
      * Returns the list of query extracts.
      * 
      * @return The list of query extracts.
@@ -456,24 +421,6 @@ public class Route extends Filter {
     }
 
     /**
-     * Returns the parent router.
-     * 
-     * @return The parent router.
-     */
-    public Router getRouter() {
-        return this.router;
-    }
-
-    /**
-     * Returns the reference template to match.
-     * 
-     * @return The reference template to match.
-     */
-    public Template getTemplate() {
-        return this.template;
-    }
-
-    /**
      * Returns the list of attribute validations.
      * 
      * @return The list of attribute validations.
@@ -490,97 +437,6 @@ public class Route extends Filter {
             }
         }
         return v;
-    }
-
-    /**
-     * Returns the score for a given call (between 0 and 1.0).
-     * 
-     * @param request
-     *            The request to score.
-     * @param response
-     *            The response to score.
-     * @return The score for a given call (between 0 and 1.0).
-     */
-    public float score(Request request, Response response) {
-        float result = 0F;
-
-        if ((getRouter() != null) && (request.getResourceRef() != null)
-                && (getTemplate() != null)) {
-            final String remainingPart = request.getResourceRef()
-                    .getRemainingPart(false, getMatchQuery());
-            if (remainingPart != null) {
-                final int matchedLength = getTemplate().match(remainingPart);
-
-                if (matchedLength != -1) {
-                    final float totalLength = remainingPart.length();
-
-                    if (totalLength > 0.0F) {
-                        result = getRouter().getRequiredScore()
-                                + (1.0F - getRouter().getRequiredScore())
-                                * (matchedLength / totalLength);
-                    } else {
-                        result = 1.0F;
-                    }
-                }
-            }
-
-            if (getLogger().isLoggable(Level.FINER)) {
-                getLogger().finer(
-                        "Call score for the \"" + getTemplate().getPattern()
-                                + "\" URI pattern: " + result);
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * Sets the matching mode to use on the template when parsing a formatted
-     * reference.
-     * 
-     * @param matchingMode
-     *            The matching mode to use.
-     */
-    public void setMatchingMode(int matchingMode) {
-        getTemplate().setMatchingMode(matchingMode);
-    }
-
-    /**
-     * Sets whether the matching should be done on the URI with or without query
-     * string.
-     * 
-     * @param matchQuery
-     *            True if the matching should be done with the query string,
-     *            false otherwise.
-     */
-    public void setMatchQuery(boolean matchQuery) {
-        this.matchQuery = matchQuery;
-    }
-
-    /**
-     * Sets the parent router.
-     * 
-     * @param router
-     *            The parent router.
-     */
-    public void setRouter(Router router) {
-        this.router = router;
-    }
-
-    /**
-     * Sets the reference template to match.
-     * 
-     * @param template
-     *            The reference template to match.
-     */
-    public void setTemplate(Template template) {
-        this.template = template;
-    }
-
-    @Override
-    public String toString() {
-        return (getTemplate() == null) ? super.toString() : getTemplate()
-                .getPattern();
     }
 
     /**

@@ -39,7 +39,7 @@ import org.restlet.Restlet;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.engine.ChainHelper;
-import org.restlet.routing.Route;
+import org.restlet.routing.TemplateRoute;
 import org.restlet.routing.VirtualHost;
 
 /**
@@ -79,7 +79,7 @@ public class ComponentHelper extends ChainHelper<Component> {
         boolean result = true;
 
         if (host != null) {
-            for (final Route route : host.getRoutes()) {
+            for (TemplateRoute route : host.getRoutes()) {
                 final Restlet next = route.getNext();
 
                 if (next instanceof Application) {
@@ -227,7 +227,7 @@ public class ComponentHelper extends ChainHelper<Component> {
      * @throws Exception
      */
     private void stopVirtualHostApplications(VirtualHost host) throws Exception {
-        for (final Route route : host.getRoutes()) {
+        for (final TemplateRoute route : host.getRoutes()) {
             if (route.getNext().isStarted()) {
                 route.getNext().stop();
             }

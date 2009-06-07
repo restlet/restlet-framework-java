@@ -53,6 +53,7 @@ import org.restlet.routing.Route;
  * @see java.util.Collections
  * @see java.util.List
  */
+@SuppressWarnings("deprecation")
 public final class RouteList extends WrapperList<Route> {
     /** The index of the last route used in the round robin mode. */
     private volatile int lastIndex;
