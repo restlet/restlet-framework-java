@@ -39,7 +39,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.logging.Level;
 
-import org.restlet.Uniform;
+import org.restlet.Client;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Preference;
@@ -433,7 +433,7 @@ public class DirectoryResource extends ServerResource {
      * 
      * @return A client dispatcher.
      */
-    protected Uniform getClientDispatcher() {
+    protected Client getClientDispatcher() {
         return getDirectory().getContext() == null ? null : getDirectory()
                 .getContext().getClientDispatcher();
     }

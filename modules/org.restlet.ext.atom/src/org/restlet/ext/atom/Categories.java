@@ -32,12 +32,12 @@ package org.restlet.ext.atom;
 
 import static org.restlet.ext.atom.Feed.ATOM_NAMESPACE;
 import static org.restlet.ext.atom.Service.APP_NAMESPACE;
+
 import java.io.IOException;
 import java.util.List;
 
 import org.restlet.Client;
 import org.restlet.Context;
-import org.restlet.Uniform;
 import org.restlet.data.Reference;
 import org.restlet.ext.atom.internal.CategoriesContentReader;
 import org.restlet.ext.xml.SaxRepresentation;
@@ -110,7 +110,7 @@ public class Categories extends SaxRepresentation {
      *            The feed URI.
      * @throws IOException
      */
-    public Categories(Uniform clientDispatcher, String categoriesUri)
+    public Categories(Client clientDispatcher, String categoriesUri)
             throws IOException {
         this(clientDispatcher.get(categoriesUri).getEntity());
     }

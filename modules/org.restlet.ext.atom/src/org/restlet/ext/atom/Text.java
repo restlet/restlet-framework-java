@@ -32,7 +32,6 @@ package org.restlet.ext.atom;
 
 import static org.restlet.ext.atom.Feed.ATOM_NAMESPACE;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.restlet.data.MediaType;

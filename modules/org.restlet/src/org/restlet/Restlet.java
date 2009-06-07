@@ -51,7 +51,7 @@ import org.restlet.engine.component.ChildContext;
  * 
  * @author Jerome Louvel
  */
-public class Restlet extends Uniform {
+public class Restlet implements Uniform {
     /** Error message. */
     private static final String UNABLE_TO_START = "Unable to start the Restlet";
 
@@ -142,6 +142,19 @@ public class Restlet extends Uniform {
     }
 
     /**
+     * Handles a call.
+     * 
+     * @param request
+     *            The request to handle.
+     * @return The returned response.
+     */
+    public final Response handle(Request request) {
+        final Response response = new Response(request);
+        handle(request, response);
+        return response;
+    }
+
+    /**
      * Handles a call. The default behavior is to initialize the Restlet by
      * setting the current context using the {@link Context#setCurrent(Context)}
      * method and by attempting to start it, unless it was already started. If
@@ -156,7 +169,6 @@ public class Restlet extends Uniform {
      * @param response
      *            The response to update.
      */
-    @Override
     public void handle(Request request, Response response) {
         // Associate the response to the current thread
         Response.setCurrent(response);

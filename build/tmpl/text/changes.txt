@@ -23,7 +23,6 @@ Changes log
           no client connector supporting this request's protocol is 
           registered. Reported by Avi Flax.
         - Fixed bug in Template class when the pattern is updated.
-          
     - Enhancements
         - Upgraded Jetty library to version 6.1.18.
         - SpringServerServlet nows gets its component fully configured,
@@ -48,6 +47,12 @@ Changes log
         - Added ClientInfo#getPreferredLanguage(), 
           getPreferredMediaType(), etc. methods.
           Suggested by Jonathan Hall.
+        - Uniform has been trimmed to a single handle(Request, Response)
+          method and converted to an interface. The other methods have
+          been moved to the Client class. The handle(Request) method has
+          been moved to the Restlet class.
+        - Context#clientDispatcher and serverDispatcher properties are
+          now instances of Client instead of Uniform.
     - Misc
         - Exceptions thrown in the internal HTTP client are not logged
           with a FINE level instead of a WARNING level.

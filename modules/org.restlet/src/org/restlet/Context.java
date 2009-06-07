@@ -102,10 +102,10 @@ public class Context {
     }
 
     /** The client dispatcher. */
-    private volatile Uniform clientDispatcher;
+    private volatile Client clientDispatcher;
 
     /** The server dispatcher. */
-    private volatile Uniform serverDispatcher;
+    private volatile Client serverDispatcher;
 
     /** The modifiable attributes map. */
     private final ConcurrentMap<String, Object> attributes;
@@ -213,7 +213,7 @@ public class Context {
      * 
      * @return A request dispatcher to available client connectors.
      */
-    public Uniform getClientDispatcher() {
+    public Client getClientDispatcher() {
         return this.clientDispatcher;
     }
 
@@ -260,7 +260,7 @@ public class Context {
      * 
      * @return A request dispatcher to the server connectors' router.
      */
-    public Uniform getServerDispatcher() {
+    public Client getServerDispatcher() {
         return this.serverDispatcher;
     }
 
@@ -291,7 +291,7 @@ public class Context {
      * @param clientDispatcher
      *            The new client dispatcher.
      */
-    public void setClientDispatcher(Uniform clientDispatcher) {
+    public void setClientDispatcher(Client clientDispatcher) {
         this.clientDispatcher = clientDispatcher;
     }
 
@@ -346,7 +346,7 @@ public class Context {
      * @param serverDispatcher
      *            The new server dispatcher.
      */
-    public void setServerDispatcher(Uniform serverDispatcher) {
+    public void setServerDispatcher(Client serverDispatcher) {
         this.serverDispatcher = serverDispatcher;
     }
 

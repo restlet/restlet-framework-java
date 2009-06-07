@@ -35,9 +35,9 @@ import java.io.Serializable;
 import junit.framework.TestCase;
 
 import org.restlet.Application;
+import org.restlet.Client;
 import org.restlet.Component;
 import org.restlet.Restlet;
-import org.restlet.Uniform;
 import org.restlet.data.LocalReference;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
@@ -120,7 +120,7 @@ public class RiapTestCase extends TestCase {
         comp.getInternalRouter().attach("/local", localOnly);
         final String localBase = "riap://component/local";
 
-        final Uniform dispatcher = comp.getContext().getClientDispatcher();
+        final Client dispatcher = comp.getContext().getClientDispatcher();
 
         final String msg = "this%20message";
         final String echoURI = localBase + "/echo/" + msg;

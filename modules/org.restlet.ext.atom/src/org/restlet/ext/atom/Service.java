@@ -38,7 +38,6 @@ import java.util.List;
 
 import org.restlet.Client;
 import org.restlet.Context;
-import org.restlet.Uniform;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
@@ -60,7 +59,7 @@ public class Service extends SaxRepresentation {
     /**
      * The client HTTP dispatcher.
      */
-    private volatile Uniform clientDispatcher;
+    private volatile Client clientDispatcher;
 
     /**
      * The reference.
@@ -120,7 +119,7 @@ public class Service extends SaxRepresentation {
      * @param clientDispatcher
      *            The client HTTP dispatcher.
      */
-    public Service(Uniform clientDispatcher) {
+    public Service(Client clientDispatcher) {
         super(new MediaType("***"));
         this.clientDispatcher = clientDispatcher;
     }
@@ -134,7 +133,7 @@ public class Service extends SaxRepresentation {
      *            The service URI.
      * @throws IOException
      */
-    public Service(Uniform clientDispatcher, String serviceUri)
+    public Service(Client clientDispatcher, String serviceUri)
             throws IOException {
         this(clientDispatcher, serviceUri, clientDispatcher.get(serviceUri)
                 .getEntity());
@@ -151,7 +150,7 @@ public class Service extends SaxRepresentation {
      *            The XML introspection document.
      * @throws IOException
      */
-    public Service(Uniform clientDispatcher, String serviceUri,
+    public Service(Client clientDispatcher, String serviceUri,
             Representation xmlService) throws IOException {
         super(xmlService);
         this.clientDispatcher = clientDispatcher;
@@ -175,7 +174,7 @@ public class Service extends SaxRepresentation {
      * 
      * @return The client HTTP dispatcher.
      */
-    public Uniform getClientDispatcher() {
+    public Client getClientDispatcher() {
         return this.clientDispatcher;
     }
 
@@ -218,7 +217,7 @@ public class Service extends SaxRepresentation {
      * @param clientDispatcher
      *            The client HTTP dispatcher.
      */
-    public void setClientDispatcher(Uniform clientDispatcher) {
+    public void setClientDispatcher(Client clientDispatcher) {
         this.clientDispatcher = clientDispatcher;
     }
 

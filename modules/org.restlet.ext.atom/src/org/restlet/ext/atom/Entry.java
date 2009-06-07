@@ -40,7 +40,6 @@ import java.util.List;
 
 import org.restlet.Client;
 import org.restlet.Context;
-import org.restlet.Uniform;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.engine.util.DateUtils;
@@ -159,7 +158,7 @@ public class Entry extends SaxRepresentation {
      *            The entry URI.
      * @throws IOException
      */
-    public Entry(Uniform clientDispatcher, String entryUri) throws IOException {
+    public Entry(Client clientDispatcher, String entryUri) throws IOException {
         this(clientDispatcher.get(entryUri).getEntity());
     }
 

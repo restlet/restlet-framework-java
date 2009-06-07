@@ -30,10 +30,8 @@
 
 package org.restlet.engine;
 
-import java.util.logging.Logger;
-
+import org.restlet.Client;
 import org.restlet.Context;
-import org.restlet.Uniform;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -48,9 +46,7 @@ import org.restlet.util.Template;
  * 
  * @author Jerome Louvel
  */
-public class TemplateDispatcher extends Uniform {
-    /** The context. */
-    private volatile Context context;
+public class TemplateDispatcher extends Client {
 
     /**
      * Constructor.
@@ -59,13 +55,13 @@ public class TemplateDispatcher extends Uniform {
      *            The context.
      */
     public TemplateDispatcher(Context context) {
-        this.context = context;
+        super(context, Protocol.ALL);
     }
 
     /**
      * Actually handles the call. Since this method only sets the request's
      * original reference ({@link Request#getOriginalRef()} with the the
-     * targetted one, it must be overriden by subclasses.
+     * targeted one, it must be overridden by subclasses.
      * 
      * 
      * @param request
@@ -78,24 +74,6 @@ public class TemplateDispatcher extends Uniform {
     }
 
     /**
-     * Returns the context.
-     * 
-     * @return The context.
-     */
-    public Context getContext() {
-        return this.context;
-    }
-
-    /**
-     * Returns the context's logger.
-     * 
-     * @return The context's logger.
-     */
-    public Logger getLogger() {
-        return getContext().getLogger();
-    }
-
-    /**
      * Handles the call after resolving any URI template on the request's target
      * resource reference.
      * 
@@ -104,7 +82,6 @@ public class TemplateDispatcher extends Uniform {
      * @param response
      *            The response to update.
      */
-    @Override
     public void handle(Request request, Response response) {
         // Associate the response to the current thread
         Response.setCurrent(response);
