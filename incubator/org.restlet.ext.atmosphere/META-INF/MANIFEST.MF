@@ -10,7 +10,6 @@ Import-Package: org.restlet,
  org.restlet.engine.application,
  org.restlet.engine.component,
  org.restlet.engine.converter,
- org.restlet.engine.edition,
  org.restlet.engine.http,
  org.restlet.engine.io,
  org.restlet.engine.local,
@@ -26,4 +25,5 @@ Import-Package: org.restlet,
  org.restlet.security,
  org.restlet.service,
  org.restlet.util
+onment: J2SE-1.5
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
