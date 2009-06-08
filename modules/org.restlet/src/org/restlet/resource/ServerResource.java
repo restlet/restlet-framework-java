@@ -81,7 +81,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
-public class ServerResource extends UniformResource {
+public abstract class ServerResource extends UniformResource {
 
     /** Indicates if annotations are supported. */
     private boolean annotated;

@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.edition;
+package org.restlet.engine;
 
 /**
  * Enumeration of Restlet editions.
@@ -38,6 +38,8 @@ package org.restlet.engine.edition;
 public enum Edition {
 
     /** Android mobile OS. */
-    ANDROID, GAE, GWT, JSE, JEE;
+    ANDROID, GAE, GWT, JEE, JSE;
 
+    /** The current engine edition. */
+    public static final Edition CURRENT = Edition.JSE;
 }
