@@ -47,11 +47,11 @@ public class ComponentServerDispatcher extends TemplateDispatcher {
     /**
      * Constructor.
      * 
-     * @param context
+     * @param componentContext
      *            The component context.
      */
-    public ComponentServerDispatcher(ComponentContext context) {
-        super(context);
+    public ComponentServerDispatcher(ComponentContext componentContext) {
+        super(componentContext);
     }
 
     @Override

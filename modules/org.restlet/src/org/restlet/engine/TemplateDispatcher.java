@@ -32,6 +32,7 @@ package org.restlet.engine;
 
 import org.restlet.Client;
 import org.restlet.Context;
+import org.restlet.Restlet;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -48,6 +49,9 @@ import org.restlet.util.Template;
  */
 public class TemplateDispatcher extends Client {
 
+    /** The context. */
+    private Context context;
+
     /**
      * Constructor.
      * 
@@ -55,7 +59,8 @@ public class TemplateDispatcher extends Client {
      *            The context.
      */
     public TemplateDispatcher(Context context) {
-        super(context, Protocol.ALL);
+        super(null, (Protocol) null);
+        this.context = context;
     }
 
     /**
@@ -71,6 +76,16 @@ public class TemplateDispatcher extends Client {
      */
     protected void doHandle(Request request, Response response) {
         request.setOriginalRef(request.getResourceRef().getTargetRef());
+    }
+
+    /**
+     * Returns the context. Override default behavior from {@link Restlet}.
+     * 
+     * @return The context.
+     */
+    @Override
+    public Context getContext() {
+        return context;
     }
 
     /**
@@ -114,5 +129,16 @@ public class TemplateDispatcher extends Client {
             response.getEntity().setIdentifier(
                     request.getResourceRef().toString());
         }
+    }
+
+    /**
+     * Sets the context. Override default behavior from {@link Restlet}.
+     * 
+     * @param context
+     *            The context to set.
+     */
+    @Override
+    public void setContext(Context context) {
+        this.context = context;
     }
 }
