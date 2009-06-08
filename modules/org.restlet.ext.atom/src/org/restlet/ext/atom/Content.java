@@ -161,6 +161,8 @@ public class Content {
                     type = "xhtml";
                 } else if (mediaType.getSubType().contains("html")) {
                     type = "html";
+                } else {
+                    type = mediaType.getName();
                 }
             }
 
