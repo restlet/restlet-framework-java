@@ -8,7 +8,7 @@ Changes log
        - Fixed bug in Template class when the pattern is updated.
        - Fixed bug when a Restlet application is deployed in Weblogic 
          10 listening on port 80. Reported by Sondre Eikanger Kvalø.
-       
+       - Fixed bug with the type of the content tag of Atom documents.
     - Misc
        - Upgraded Grizzly to version 1.9.16.
 
