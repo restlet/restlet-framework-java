@@ -9,7 +9,6 @@ import org.restlet.engine.ServerHelper;
  * by JVM.
  * 
  * @author Thierry Boileau
- * 
  */
 public class RiapServerHelper extends ServerHelper {
 
