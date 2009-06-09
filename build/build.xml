@@ -466,14 +466,6 @@
 		<pathelement path="${classes}/${mod-core-test-id}" />
 		<pathelement path="${classes}/${mod-core-example-id}" />
 
-		<path refid="mod-core-gae-path" />
-		<pathelement path="${classes}/${mod-core-gae-id}" />
-		<pathelement path="${mod}/${mod-core-gae-id}/src" />
-
-		<path refid="mod-core-gwt-path" />
-		<pathelement path="${classes}/${mod-core-gwt-id}" />
-		<pathelement path="${mod}/${mod-core-gwt-id}/src" />
-
 		<path refid="mod-atom-path" />
 		<pathelement path="${classes}/${mod-atom-id}" />
 		<pathelement path="${mod}/${mod-atom-id}/src" />
