@@ -35,7 +35,7 @@ package org.restlet.data;
  * 
  * @author Jerome Louvel
  */
-public final class Method extends Metadata implements Comparable<Method> {
+public final class Method implements Comparable<Method> {
     /**
      * Pseudo-method use to match all methods.
      */
@@ -290,11 +290,17 @@ public final class Method extends Metadata implements Comparable<Method> {
         return result;
     }
 
+    /** The description. */
+    private final String description;
+
     /**
      * Indicates if the side-effects of several requests is the same as a single
      * request.
      */
     private boolean idempotent;
+
+    /** The name. */
+    private volatile String name;
 
     /**
      * Indicates if it should have the significance of taking an action other
@@ -361,7 +367,8 @@ public final class Method extends Metadata implements Comparable<Method> {
      */
     public Method(String name, String description, String uri, boolean safe,
             boolean idempotent) {
-        super(name, description);
+        this.name = name;
+        this.description = description;
         this.uri = uri;
         this.safe = safe;
         this.idempotent = idempotent;
@@ -387,6 +394,24 @@ public final class Method extends Metadata implements Comparable<Method> {
     public boolean equals(final Object object) {
         return (object instanceof Method)
                 && ((Method) object).getName().equals(getName());
+    }
+
+    /**
+     * Returns the description.
+     * 
+     * @return The description.
+     */
+    public String getDescription() {
+        return this.description;
+    }
+
+    /**
+     * Returns the name.
+     * 
+     * @return The name.
+     */
+    public String getName() {
+        return name;
     }
 
     /**

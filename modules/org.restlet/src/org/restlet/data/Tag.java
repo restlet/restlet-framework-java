@@ -51,7 +51,7 @@ import org.restlet.Context;
  *      Entity Tag Cache Validators</a>
  * @author Jerome Louvel
  */
-public final class Tag extends Metadata {
+public final class Tag {
     /** Tag matching any other tag, used in call's condition data. */
     public static final Tag ALL = Tag.parse("*");
 
@@ -91,6 +91,9 @@ public final class Tag extends Metadata {
         return result;
     }
 
+    /** The name. */
+    private volatile String name;
+
     /** The tag weakness. */
     private final boolean weak;
 
@@ -121,7 +124,7 @@ public final class Tag extends Metadata {
      *            The weakness indicator.
      */
     public Tag(final String opaqueTag, boolean weak) {
-        super(opaqueTag);
+        this.name = opaqueTag;
         this.weak = weak;
     }
 
@@ -190,23 +193,12 @@ public final class Tag extends Metadata {
     }
 
     /**
-     * Returns the description.
-     * 
-     * @return The description.
-     */
-    @Override
-    public String getDescription() {
-        return "Validation tag equivalent to an HTTP entity tag";
-    }
-
-    /**
      * Returns the name, corresponding to an HTTP opaque tag value.
      * 
      * @return The name, corresponding to an HTTP opaque tag value.
      */
-    @Override
     public String getName() {
-        return super.getName();
+        return this.name;
     }
 
     /** {@inheritDoc} */

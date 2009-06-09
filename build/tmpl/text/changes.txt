@@ -61,6 +61,8 @@ Changes log
           class. In Restlet 2.1, we will reintroduce Route as an 
           abstract parent of TemplateRoute.
         - Renamed SecretDigestVerifier into DigestVerifier.
+        - Restricted the role of Metadata class to metadata about
+          representations for conneg. 
     - Misc
         - Exceptions thrown in the internal HTTP client are not logged
           with a FINE level instead of a WARNING level.

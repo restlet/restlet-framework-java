@@ -35,7 +35,7 @@ package org.restlet.data;
  * 
  * @author Jerome Louvel
  */
-public final class ChallengeScheme extends Metadata {
+public final class ChallengeScheme {
     /** Custom scheme based on IP address or cookies or query params, etc. */
     public static final ChallengeScheme CUSTOM = new ChallengeScheme("CUSTOM",
             "Custom", "Custom authentication");
@@ -131,6 +131,12 @@ public final class ChallengeScheme extends Metadata {
         return result;
     }
 
+    /** The description. */
+    private final String description;
+
+    /** The name. */
+    private volatile String name;
+
     /** The technical name. */
     private volatile String technicalName;
 
@@ -158,7 +164,8 @@ public final class ChallengeScheme extends Metadata {
      */
     public ChallengeScheme(final String name, final String technicalName,
             final String description) {
-        super(name, description);
+        this.name = name;
+        this.description = description;
         this.technicalName = technicalName;
     }
 
@@ -168,6 +175,24 @@ public final class ChallengeScheme extends Metadata {
         return (object instanceof ChallengeScheme)
                 && ((ChallengeScheme) object).getName().equalsIgnoreCase(
                         getName());
+    }
+
+    /**
+     * Returns the description.
+     * 
+     * @return The description.
+     */
+    public String getDescription() {
+        return this.description;
+    }
+
+    /**
+     * Returns the name.
+     * 
+     * @return The name.
+     */
+    public String getName() {
+        return name;
     }
 
     /**

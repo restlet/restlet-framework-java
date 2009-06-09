@@ -36,7 +36,7 @@ package org.restlet.data;
  * 
  * @author Jerome Louvel
  */
-public final class Protocol extends Metadata {
+public final class Protocol {
 
     /** Indicates that the port number is undefined. */
     public static final int UNKNOWN_PORT = -1;
@@ -204,6 +204,12 @@ public final class Protocol extends Metadata {
     /** The default port if known or -1. */
     private volatile int defaultPort;
 
+    /** The description. */
+    private final String description;
+
+    /** The name. */
+    private volatile String name;
+
     /** The scheme name. */
     private volatile String schemeName;
 
@@ -252,7 +258,8 @@ public final class Protocol extends Metadata {
     public Protocol(final String schemeName, final String name,
             final String description, int defaultPort,
             final boolean confidential) {
-        super(name, description);
+        this.name = name;
+        this.description = description;
         this.schemeName = schemeName;
         this.defaultPort = defaultPort;
         this.confidential = confidential;
@@ -272,6 +279,24 @@ public final class Protocol extends Metadata {
      */
     public int getDefaultPort() {
         return this.defaultPort;
+    }
+
+    /**
+     * Returns the description.
+     * 
+     * @return The description.
+     */
+    public String getDescription() {
+        return this.description;
+    }
+
+    /**
+     * Returns the name.
+     * 
+     * @return The name.
+     */
+    public String getName() {
+        return name;
     }
 
     /**

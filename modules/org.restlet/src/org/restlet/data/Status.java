@@ -35,7 +35,7 @@ package org.restlet.data;
  * 
  * @author Jerome Louvel
  */
-public final class Status extends Metadata {
+public final class Status {
     private static final String BASE_HTTP = "http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html";
 
     private static final String BASE_RESTLET = "http://www.restlet.org/documentation/1.1/api/";
@@ -821,6 +821,12 @@ public final class Status extends Metadata {
     /** The specification code. */
     private final int code;
 
+    /** The description. */
+    private final String description;
+
+    /** The name. */
+    private volatile String name;
+
     /** The related error or exception. */
     private final Throwable throwable;
 
@@ -882,7 +888,8 @@ public final class Status extends Metadata {
      */
     public Status(int code, Throwable throwable, final String name,
             final String description, final String uri) {
-        super(name, checkDescription(description));
+        this.name = name;
+        this.description = checkDescription(description);
         this.throwable = throwable;
         this.code = code;
         this.uri = uri;
@@ -957,9 +964,8 @@ public final class Status extends Metadata {
      * 
      * @return The description.
      */
-    @Override
     public String getDescription() {
-        String result = super.getDescription();
+        String result = this.description;
 
         if (result == null) {
             switch (this.code) {
@@ -1126,9 +1132,8 @@ public final class Status extends Metadata {
      * 
      * @return The name of this status.
      */
-    @Override
     public String getName() {
-        String result = super.getName();
+        String result = this.name;
 
         if (result == null) {
             switch (this.code) {
