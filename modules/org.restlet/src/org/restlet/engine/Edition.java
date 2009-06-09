@@ -37,7 +37,7 @@ package org.restlet.engine;
  */
 public enum Edition {
 
-    /** Android mobile OS. */
+    /** Android mobile OS, Google App Engine, Google Web Toolkit, JEE, JSE. */
     ANDROID, GAE, GWT, JEE, JSE;
 
     /** The current engine edition. */
