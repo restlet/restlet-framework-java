@@ -33,6 +33,8 @@ package org.restlet.engine.util;
 import java.util.Date;
 import java.util.WeakHashMap;
 
+import org.restlet.engine.Edition;
+
 /**
  * Class acting as an immutable date class based on the {@link Date} class.
  * 
@@ -131,7 +133,12 @@ final class ImmutableDate extends Date {
      */
     @Override
     public void setTime(long arg0) {
-        throw new UnsupportedOperationException("ImmutableDate is immutable");
+        if (Edition.CURRENT == Edition.ANDROID) {
+            super.setTime(arg0);
+        } else {
+            throw new UnsupportedOperationException(
+                    "ImmutableDate is immutable");
+        }
     }
 
     /**
