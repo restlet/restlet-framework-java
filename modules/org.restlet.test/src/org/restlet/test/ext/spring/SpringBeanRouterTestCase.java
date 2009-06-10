@@ -246,7 +246,7 @@ public class SpringBeanRouterTestCase extends RestletTestCase {
             fail("Exception not thrown");
         } catch (IllegalStateException ise) {
             assertEquals(
-                "someOtherBean is not routable.  It must be either a Resource or a Restlet.",
+                "someOtherBean is not routable.  It must be either a Resource, a ServerResource or a Restlet.",
                 ise.getMessage());
         }
     }
