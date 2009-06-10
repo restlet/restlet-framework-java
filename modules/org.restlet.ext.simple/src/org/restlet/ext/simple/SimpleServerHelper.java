@@ -94,9 +94,9 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
     private volatile Connection connection;
 
     /**
-     * Simple pipeline handler.
+     * Simple container server.
      */
-    private volatile ContainerServer container;
+    private volatile ContainerServer containerServer;
 
     /**
      * Socket this server is listening to.
@@ -133,12 +133,12 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
     }
 
     /**
-     * Returns the Simple server.
+     * Returns the Simple container server.
      * 
      * @return The Simple container server.
      */
-    protected ContainerServer getContainer() {
-        return this.container;
+    protected ContainerServer getContainerServer() {
+        return this.containerServer;
     }
 
     /**
@@ -180,13 +180,13 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
     }
 
     /**
-     * Sets the Simple container.
+     * Sets the Simple container server.
      * 
-     * @param container
-     *            The Simple container.
+     * @param containerServer
+     *            The Simple containerServer.
      */
-    protected void setContainer(ContainerServer container) {
-        this.container = container;
+    protected void setContainerServer(ContainerServer container) {
+        this.containerServer = container;
     }
 
     /**
@@ -213,6 +213,7 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
         getLogger().info("Stopping the Simple server");
 
         try {
+            getContainerServer().stop();
             getConnection().close();
         } catch (Exception e) {
             getLogger()
@@ -222,7 +223,7 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
                             e);
         }
 
-        getContainer().stop();
+        getContainerServer().stop();
     }
 
 }

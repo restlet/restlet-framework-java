@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Simple Framework
 Bundle-SymbolicName: org.simpleframework
-Bundle-Version: 4.1.10
+Bundle-Version: 4.1.12
 Bundle-ClassPath: org.simpleframework.jar
 Bundle-Vendor: Niall Gallagher
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
@@ -24,9 +24,9 @@ Export-Package: org.simpleframework.http;uses:="org.simpleframework.http.session
    org.simpleframework.transport,
    org.simpleframework.transport.reactor,
    javax.net.ssl",
- org.simpleframework.transport.reactor,
+ org.simpleframework.transport.reactor;uses:="org.simpleframework.util.thread",
  org.simpleframework.util,
- org.simpleframework.util.buffer,
- org.simpleframework.util.lease;uses:="org.simpleframework.util",
+ org.simpleframework.util.buffer;uses:="org.simpleframework.util.thread",
+ org.simpleframework.util.lease;uses:="org.simpleframework.util.thread,org.simpleframework.util",
  org.simpleframework.util.parse,
  org.simpleframework.util.thread

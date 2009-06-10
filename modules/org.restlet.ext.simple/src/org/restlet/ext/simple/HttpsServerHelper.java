@@ -51,7 +51,8 @@ import org.simpleframework.http.core.ContainerServer;
 
 /**
  * Simple HTTP server connector. Here is the list of additional parameters that
- * are supported: <table>
+ * are supported:
+ * <table>
  * <tr>
  * <th>Parameter name</th>
  * <th>Value type</th>
@@ -70,8 +71,8 @@ import org.simpleframework.http.core.ContainerServer;
  * <td>sslContextFactory</td>
  * <td>String</td>
  * <td>null</td>
- * <td>Let you specify a {@link SslContextFactory} class name as a parameter,
- * or an instance as an attribute for a more complete and flexible SSL context
+ * <td>Let you specify a {@link SslContextFactory} class name as a parameter, or
+ * an instance as an attribute for a more complete and flexible SSL context
  * setting. If set, it takes precedance over the other SSL parameters below.</td>
  * </tr>
  * <tr>
@@ -109,14 +110,16 @@ import org.simpleframework.http.core.ContainerServer;
  * <td>enabledCipherSuites</td>
  * <td>String</td>
  * <td>null</td>
- * <td>Whitespace-separated list of enabled cipher suites and/or can be specified multiple times.</td>
+ * <td>Whitespace-separated list of enabled cipher suites and/or can be
+ * specified multiple times.</td>
  * </tr>
  * <tr>
  * <td>disabledCipherSuites</td>
  * <td>String</td>
  * <td>null</td>
- * <td>Whitespace-separated list of disabled cipher suites and/or can be specified multiple times.
- * It affects the cipher suites manually enabled or the default ones.</td>
+ * <td>Whitespace-separated list of disabled cipher suites and/or can be
+ * specified multiple times. It affects the cipher suites manually enabled or
+ * the default ones.</td>
  * </tr>
  * <tr>
  * <td>needClientAuthentication</td>
@@ -143,17 +146,17 @@ import org.simpleframework.http.core.ContainerServer;
  * @author Jerome Louvel
  */
 public class HttpsServerHelper extends SimpleServerHelper {
-	
-	/**
-	 * This is the SSL context.
-	 */
-	private SSLContext sslContext;
-    
-	/**
+
+    /**
+     * This is the SSL context.
+     */
+    private SSLContext sslContext;
+
+    /**
      * Constructor.
      * 
      * @param server
-     *                The server to help.
+     *            The server to help.
      */
     public HttpsServerHelper(Server server) {
         super(server);
@@ -234,25 +237,26 @@ public class HttpsServerHelper extends SimpleServerHelper {
         return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
                 "wantClientAuthentication", "false"));
     }
-    
+
     /**
      * Gets the SSL context used by this server.
      * 
      * @return this returns the SSL context.
      */
     public SSLContext getSslContext() {
-    	return sslContext;
+        return sslContext;
     }
 
     /**
      * Sets the SSL context for the server.
      * 
-     * @param sslContext the SSL context
+     * @param sslContext
+     *            the SSL context
      */
     public void setSslContext(SSLContext sslContext) {
-    	this.sslContext = sslContext;
+        this.sslContext = sslContext;
     }
-    
+
     /** Starts the Restlet. */
     @Override
     public void start() throws Exception {
@@ -263,7 +267,7 @@ public class HttpsServerHelper extends SimpleServerHelper {
         /*
          * If an SslContextFactory has been set up, its settings take priority
          * over the other parameters (which are otherwise used to build and
-         * initialise an SSLContext).
+         * initialize an SSLContext).
          */
         if (sslContextFactory == null) {
             final KeyStore keyStore = KeyStore.getInstance(getKeystoreType());
@@ -301,26 +305,28 @@ public class HttpsServerHelper extends SimpleServerHelper {
             // Note: the backlog of 50 is the default
             setAddress(new InetSocketAddress(iaddr, getHelped().getPort()));
         } else {
-        	int port = getHelped().getPort();
-        	
-        	// Use ephemeral port
-        	if(port > 0) {
-        		setAddress(new InetSocketAddress(getHelped().getPort()));
-        	}
+            int port = getHelped().getPort();
+
+            // Use ephemeral port
+            if (port > 0) {
+                setAddress(new InetSocketAddress(getHelped().getPort()));
+            }
         }
 
         // Complete initialization
         final Container container = new SimpleContainer(this);
-        final ContainerServer server = new ContainerServer(container, getDefaultThreads());
+        final ContainerServer server = new ContainerServer(container,
+                getDefaultThreads());
         final SimpleServer filter = new SimpleServer(server);
         final Connection connection = new SocketConnection(filter);
-        
+
         setSslContext(sslContext);
         setConfidential(true);
-        setContainer(server);
+        setContainerServer(server);
         setConnection(connection);
-        
-        InetSocketAddress address = (InetSocketAddress)getConnection().connect(getAddress(), getSslContext());
+
+        InetSocketAddress address = (InetSocketAddress) getConnection()
+                .connect(getAddress(), getSslContext());
         setEphemeralPort(address.getPort());
         super.start();
     }
