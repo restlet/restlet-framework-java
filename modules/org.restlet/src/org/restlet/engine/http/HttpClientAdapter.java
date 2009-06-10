@@ -93,12 +93,12 @@ public class HttpClientAdapter extends HttpAdapter {
                     HttpConstants.HEADER_WWW_AUTHENTICATE)) {
                 final ChallengeRequest request = AuthenticatorUtils
                         .parseAuthenticateHeader(header.getValue());
-                response.setChallengeRequest(request);
+                response.getChallengeRequests().add(request);
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_PROXY_AUTHENTICATE)) {
                 final ChallengeRequest request = AuthenticatorUtils
                         .parseAuthenticateHeader(header.getValue());
-                response.setProxyChallengeRequest(request);
+                response.getProxyChallengeRequests().add(request);
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_SERVER)) {
                 response.getServerInfo().setAgent(header.getValue());

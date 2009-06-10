@@ -126,8 +126,8 @@ public abstract class AuthenticatorHelper extends Helper {
     @Deprecated
     public void challenge(Response response, boolean stale, Guard guard) {
         response.setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
-        response.setChallengeRequest(new ChallengeRequest(guard.getScheme(),
-                guard.getRealm()));
+        response.getChallengeRequests().add(
+                new ChallengeRequest(guard.getScheme(), guard.getRealm()));
     }
 
     /**

@@ -200,14 +200,14 @@ public class ChallengeAuthenticator extends Authenticator {
      */
     public void challenge(Response response, boolean stale) {
         response.setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
-        response.setChallengeRequest(new ChallengeRequest(getScheme(),
-                getRealm()));
+        response.getChallengeRequests().add(
+                new ChallengeRequest(getScheme(), getRealm()));
     }
 
     /**
      * Rejects the call due to a failed authentication or authorization. This
-     * can be overriden to change the defaut behavior, for example to display an
-     * error page. By default, if authentication is required, the challenge
+     * can be overridden to change the default behavior, for example to display
+     * an error page. By default, if authentication is required, the challenge
      * method is invoked, otherwise the call status is set to
      * CLIENT_ERROR_FORBIDDEN.
      * 
@@ -248,8 +248,8 @@ public class ChallengeAuthenticator extends Authenticator {
     /**
      * Indicates if a new challenge should be sent when invalid credentials are
      * received (true by default to conform to HTTP recommendations). If set to
-     * false, upon reception of invalid credentials, the Guard will forbid the
-     * access ({@link Status#CLIENT_ERROR_FORBIDDEN}).
+     * false, upon reception of invalid credentials, the method
+     * {@link #forbid(Response)} will be called.
      * 
      * @return True if invalid credentials result in a new challenge.
      */

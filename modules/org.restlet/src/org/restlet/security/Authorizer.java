@@ -30,6 +30,7 @@
 
 package org.restlet.security;
 
+import org.restlet.data.ClientInfo;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -47,6 +48,27 @@ public abstract class Authorizer extends Filter {
         @Override
         public boolean authorize(Request request, Response response) {
             return true;
+        }
+    };
+
+    /**
+     * Authorizer returning true for all authenticated requests. For
+     * unauthenticated requests, it sets the response's status to
+     * {@value Status#CLIENT_ERROR_UNAUTHORIZED} instead of the default
+     * {@link Status#CLIENT_ERROR_FORBIDDEN}.
+     * 
+     * @see ClientInfo#isAuthenticated()
+     */
+    public static final Authorizer AUTHENTICATED = new Authorizer() {
+        @Override
+        public boolean authorize(Request request, Response response) {
+            return request.getClientInfo().isAuthenticated();
+        }
+
+        @Override
+        protected int unauthorized(Request request, Response response) {
+            response.setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
+            return STOP;
         }
     };
 
@@ -86,19 +108,29 @@ public abstract class Authorizer extends Filter {
      *            The response to update.
      * @return True if the authorization succeeded.
      */
-    public abstract boolean authorize(Request request, Response response);
+    protected abstract boolean authorize(Request request, Response response);
+
+    /**
+     * Invoked upon successful authorization. Returns {@link Filter#CONTINUE} by
+     * default.
+     * 
+     * @param request
+     *            The request sent.
+     * @param response
+     *            The response to update.
+     * @return The filter continuation code.
+     */
+    protected int authorized(Request request, Response response) {
+        return CONTINUE;
+    }
 
     @Override
     protected int beforeHandle(Request request, Response response) {
-        int result = STOP;
-
         if (authorize(request, response)) {
-            result = CONTINUE;
+            return authorized(request, response);
         } else {
-            response.setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+            return unauthorized(request, response);
         }
-
-        return result;
     }
 
     /**
@@ -118,6 +150,22 @@ public abstract class Authorizer extends Filter {
      */
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
+    }
+
+    /**
+     * Invoked upon failed authorization. Sets the status to
+     * {@link Status#CLIENT_ERROR_FORBIDDEN} and returns {@link Filter#STOP} by
+     * default.
+     * 
+     * @param request
+     *            The request sent.
+     * @param response
+     *            The response to update.
+     * @return The filter continuation code.
+     */
+    protected int unauthorized(Request request, Response response) {
+        response.setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+        return STOP;
     }
 
 }

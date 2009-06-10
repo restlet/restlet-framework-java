@@ -70,7 +70,7 @@ public class UserResource extends ServerResource {
      */
     public void challenge() {
         getResponse().setStatus(Status.CLIENT_ERROR_CONFLICT);
-        getResponse().setChallengeRequest(
+        getResponse().getChallengeRequests().add(
                 new ChallengeRequest(ChallengeScheme.HTTP_BASIC, "Restlet"));
     }
 

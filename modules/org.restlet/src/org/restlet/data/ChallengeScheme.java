@@ -42,7 +42,7 @@ public final class ChallengeScheme {
 
     /** Amazon S3 HTTP scheme. */
     public static final ChallengeScheme HTTP_AWS_S3 = new ChallengeScheme(
-            "HTTP_AWS_S3", "AWS", "Amazon S3 HTTP authentication");
+            "HTTP_AWS", "AWS", "Amazon S3 HTTP authentication");
 
     /** Basic HTTP scheme. */
     public static final ChallengeScheme HTTP_BASIC = new ChallengeScheme(
@@ -220,4 +220,15 @@ public final class ChallengeScheme {
     private void setTechnicalName(String technicalName) {
         this.technicalName = technicalName;
     }
+
+    /**
+     * Returns the name.
+     * 
+     * @return The name.
+     */
+    @Override
+    public String toString() {
+        return getName();
+    }
+
 }

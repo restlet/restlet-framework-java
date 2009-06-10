@@ -324,4 +324,14 @@ public final class Protocol {
         return this.confidential;
     }
 
+    /**
+     * Returns the name.
+     * 
+     * @return The name.
+     */
+    @Override
+    public String toString() {
+        return getName();
+    }
+
 }

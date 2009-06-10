@@ -102,43 +102,79 @@ public abstract class Authenticator extends Filter {
      * result and the mode set, it either skips or invoke the (optionally)
      * attached Restlet.
      */
-    @SuppressWarnings("deprecation")
     @Override
     protected int beforeHandle(Request request, Response response) {
-        int result = CONTINUE;
-        boolean success = authenticate(request, response);
+        if (authenticate(request, response)) {
+            return authenticated(request, response);
+        } else {
+            return unauthenticated(request, response);
+        }
+    }
 
-        if (success) {
+    /**
+     * Invoked upon successful authentication. By default, it updates the
+     * request's clientInfo and challengeResponse "authenticated" properties,
+     * clears the existing challenge requests on the response, calls the enroler
+     * and finally returns {@link Filter#CONTINUE}.
+     * 
+     * @param request
+     *            The request sent.
+     * @param response
+     *            The response to update.
+     * @return The filter continuation code.
+     */
+    @SuppressWarnings("deprecation")
+    protected int authenticated(Request request, Response response) {
+        // Update the challenge response accordingly
+        if (request.getChallengeResponse() != null) {
+            request.getChallengeResponse().setAuthenticated(true);
+        }
+
+        // Update the client info accordingly
+        if (request.getClientInfo() != null) {
+            request.getClientInfo().setAuthenticated(true);
+        }
+
+        // Clear previous challenge requests
+        response.getChallengeRequests().clear();
+
+        // Add the roles for the authenticated subject
+        if (getEnroler() != null) {
+            getEnroler().enrole(request.getClientInfo().getSubject());
+        }
+
+        return CONTINUE;
+    }
+
+    /**
+     * Invoked upon failed authentication. By default, it updates the request's
+     * clientInfo and challengeResponse "authenticated" properties, and returns
+     * {@link Filter#STOP}.
+     * 
+     * @param request
+     *            The request sent.
+     * @param response
+     *            The response to update.
+     * @return The filter continuation code.
+     */
+    @SuppressWarnings("deprecation")
+    protected int unauthenticated(Request request, Response response) {
+        if (isOptional()) {
+            return CONTINUE;
+        } else {
             // Update the challenge response accordingly
             if (request.getChallengeResponse() != null) {
-                request.getChallengeResponse().setAuthenticated(success);
+                request.getChallengeResponse().setAuthenticated(false);
             }
 
             // Update the client info accordingly
             if (request.getClientInfo() != null) {
-                request.getClientInfo().setAuthenticated(success);
-            }
-
-            // Add the roles for the authenticated subject
-            if (getEnroler() != null) {
-                getEnroler().enrole(request.getClientInfo().getSubject());
-            }
-        } else if (!isOptional()) {
-            // Update the challenge response accordingly
-            if (request.getChallengeResponse() != null) {
-                request.getChallengeResponse().setAuthenticated(success);
-            }
-
-            // Update the client info accordingly
-            if (request.getClientInfo() != null) {
-                request.getClientInfo().setAuthenticated(success);
+                request.getClientInfo().setAuthenticated(false);
             }
 
             // Stop the filtering chain
-            result = STOP;
+            return STOP;
         }
-
-        return result;
     }
 
     /**

@@ -86,7 +86,7 @@ public abstract class AuthorizationResource extends Resource {
         if (accessor == null) {
             final ChallengeRequest challengeRequest = new ChallengeRequest(
                     ChallengeScheme.HTTP_OAUTH, this.realm);
-            getResponse().setChallengeRequest(challengeRequest);
+            getResponse().getChallengeRequests().add(challengeRequest);
             // TODO: Use OAuthServlet mapping from problem to status.
             getResponse().setStatus(Status.CLIENT_ERROR_UNAUTHORIZED,
                     "Invalid / expired Token");

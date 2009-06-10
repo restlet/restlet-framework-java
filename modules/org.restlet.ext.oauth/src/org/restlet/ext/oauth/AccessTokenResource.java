@@ -107,7 +107,7 @@ public class AccessTokenResource extends Resource {
                 ChallengeScheme.HTTP_OAUTH, this.realm);
 
         if (accessor == null) {
-            getResponse().setChallengeRequest(challengeRequest);
+            getResponse().getChallengeRequests().add(challengeRequest);
             getResponse().setStatus(Status.CLIENT_ERROR_UNAUTHORIZED,
                     "Invalid Consumer Key");
             challengeRequest.getParameters().add("oauth_problem",

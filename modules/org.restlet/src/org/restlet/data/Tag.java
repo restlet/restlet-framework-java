@@ -215,4 +215,14 @@ public final class Tag {
     public boolean isWeak() {
         return this.weak;
     }
+
+    /**
+     * Returns the name.
+     * 
+     * @return The name.
+     */
+    @Override
+    public String toString() {
+        return getName();
+    }
 }

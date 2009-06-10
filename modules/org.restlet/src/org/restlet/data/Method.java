@@ -462,4 +462,14 @@ public final class Method implements Comparable<Method> {
     public void setUri(String uri) {
         this.uri = uri;
     }
+
+    /**
+     * Returns the name.
+     * 
+     * @return The name.
+     */
+    @Override
+    public String toString() {
+        return getName();
+    }
 }

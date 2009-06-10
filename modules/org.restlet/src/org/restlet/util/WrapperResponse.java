@@ -346,6 +346,7 @@ public class WrapperResponse extends Response {
      *            client.
      */
     @Override
+    @Deprecated
     public void setChallengeRequest(ChallengeRequest request) {
         getWrappedResponse().setChallengeRequest(request);
     }
@@ -409,17 +410,6 @@ public class WrapperResponse extends Response {
     @Override
     public void setLocationRef(String locationUri) {
         getWrappedResponse().setLocationRef(locationUri);
-    }
-
-    /**
-     * Sets the authentication request sent by a proxy to a client.
-     * 
-     * @param request
-     *            The authentication request sent by a proxy to a client.
-     */
-    @Override
-    public void setProxyChallengeRequest(ChallengeRequest request) {
-        getWrappedResponse().setProxyChallengeRequest(request);
     }
 
     /**

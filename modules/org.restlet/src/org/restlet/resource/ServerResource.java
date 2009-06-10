@@ -1265,18 +1265,6 @@ public abstract class ServerResource extends UniformResource {
     }
 
     /**
-     * Sets the authentication request sent by an origin server to a client.
-     * 
-     * @param request
-     *            The authentication request sent by an origin server to a
-     *            client.
-     * @see Response#setChallengeRequest(ChallengeRequest)
-     */
-    public void setChallengeRequest(ChallengeRequest request) {
-        getResponse().setChallengeRequest(request);
-    }
-
-    /**
      * Sets the list of authentication requests sent by an origin server to a
      * client. The list instance set must be thread-safe (use
      * {@link CopyOnWriteArrayList} for example.

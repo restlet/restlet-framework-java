@@ -382,7 +382,10 @@ public class Response extends Message {
      * @param request
      *            The authentication request sent by an origin server to a
      *            client.
+     * @deprecated Add request to {@link #getChallengeRequests()} method result
+     *             instead or use {@link #setChallengeRequests(List)}.
      */
+    @Deprecated
     public void setChallengeRequest(ChallengeRequest request) {
         final List<ChallengeRequest> requests = new CopyOnWriteArrayList<ChallengeRequest>();
         requests.add(request);
@@ -457,18 +460,6 @@ public class Response extends Message {
         }
 
         setLocationRef(new Reference(baseRef, locationUri).getTargetRef());
-    }
-
-    /**
-     * Sets the authentication request sent by a proxy to a client.
-     * 
-     * @param request
-     *            The authentication request sent by a proxy to a client.
-     */
-    public void setProxyChallengeRequest(ChallengeRequest request) {
-        final List<ChallengeRequest> requests = new CopyOnWriteArrayList<ChallengeRequest>();
-        requests.add(request);
-        setProxyChallengeRequests(requests);
     }
 
     /**

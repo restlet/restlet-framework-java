@@ -25,6 +25,8 @@ Changes log
         - Fixed bug in Template class when the pattern is updated.
         - Fixed regression with Directory causing a 405 status to be
           returned for conditional GETs. Reported by Serge Ilyn.
+        - Fixed issue with parsing of AWS authentication HTTP headers. 
+          Reported by Stuart MacKay.
     - Enhancements
         - Upgraded Jetty library to version 6.1.18.
         - SpringServerServlet nows gets its component fully configured,
@@ -69,6 +71,14 @@ Changes log
         - Renamed SecretDigestVerifier into DigestVerifier.
         - Restricted the role of Metadata class to metadata about
           representations for conneg. 
+        - Added protected authenticated() and unauthenticated() methods
+          on Authenticator.
+        - Added protected authorized() and unauthorized() methods
+          on Authorizer.
+        - Added Authorizer#AUTHENTICATED constant to authorize only 
+          authenticated requests.
+        - Deprecated Request#setChallengeRequest(). 
+          Use getChallengeRequests() instead.
     - Misc
         - Exceptions thrown in the internal HTTP client are not logged
           with a FINE level instead of a WARNING level.
