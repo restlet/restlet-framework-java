@@ -37,6 +37,7 @@ import java.util.List;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
+import org.restlet.data.Metadata;
 import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
 import org.restlet.representation.Variant;
@@ -47,6 +48,33 @@ import org.restlet.representation.Variant;
  * @author Jerome Louvel
  */
 public class ConnegUtils {
+
+    /**
+     * Returns the preferred metadata taking into account both metadata
+     * supported by the server and client preferences.
+     * 
+     * @param supported
+     *            The metadata supported by the server
+     * @param preferences
+     *            The client preferences.
+     * @return The preferred metadata.
+     */
+    public static <T extends Metadata> T getPreferredMetadata(
+            List<T> supported, List<Preference<T>> preferences) {
+        T result = null;
+        float maxQuality = 0;
+
+        if (supported != null) {
+            for (Preference<T> pref : preferences) {
+                if (supported.contains(pref.getMetadata())
+                        && (pref.getQuality() > maxQuality)) {
+                    result = pref.getMetadata();
+                }
+            }
+        }
+
+        return result;
+    }
 
     /**
      * Returns the best variant representation for a given resource according

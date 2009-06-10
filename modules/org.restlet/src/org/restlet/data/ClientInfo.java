@@ -539,6 +539,58 @@ public final class ClientInfo {
     }
 
     /**
+     * Returns the preferred character set among a list of supported ones, based
+     * on the client preferences.
+     * 
+     * @param supported
+     *            The supported character sets.
+     * @return The preferred character set.
+     */
+    public CharacterSet getPreferredCharacterSet(List<CharacterSet> supported) {
+        return ConnegUtils.getPreferredMetadata(supported,
+                getAcceptedCharacterSets());
+    }
+
+    /**
+     * Returns the preferred encoding among a list of supported ones, based on
+     * the client preferences.
+     * 
+     * @param supported
+     *            The supported encodings.
+     * @return The preferred encoding.
+     */
+    public Encoding getPreferredEncoding(List<Encoding> supported) {
+        return ConnegUtils.getPreferredMetadata(supported,
+                getAcceptedEncodings());
+    }
+
+    /**
+     * Returns the preferred language among a list of supported ones, based on
+     * the client preferences.
+     * 
+     * @param supported
+     *            The supported languages.
+     * @return The preferred language.
+     */
+    public Language getPreferredLanguage(List<Language> supported) {
+        return ConnegUtils.getPreferredMetadata(supported,
+                getAcceptedLanguages());
+    }
+
+    /**
+     * Returns the preferred media type among a list of supported ones, based on
+     * the client preferences.
+     * 
+     * @param supported
+     *            The supported media types.
+     * @return The preferred media type.
+     */
+    public MediaType getPreferredMediaType(List<MediaType> supported) {
+        return ConnegUtils.getPreferredMetadata(supported,
+                getAcceptedMediaTypes());
+    }
+
+    /**
      * Returns the best variant for a given resource according the the client
      * preferences: accepted languages, accepted character sets, accepted media
      * types and accepted encodings.<br>
