@@ -108,16 +108,4 @@ public class GwtHttpClientHelper extends HttpClientHelper {
         return Integer.parseInt(getParameters().getFirstValue("timeout", "0"));
     }
 
-    @Override
-    public synchronized void start() throws Exception {
-        super.start();
-        System.out.println("Starting the HTTP client");
-    }
-
-    @Override
-    public synchronized void stop() throws Exception {
-        super.stop();
-        System.out.println("Stopping the HTTP client");
-    }
-
 }
