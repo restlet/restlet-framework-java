@@ -36,7 +36,6 @@ import java.util.logging.Level;
 import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.engine.Engine;
-import org.restlet.resource.Resource;
 import org.restlet.routing.Router;
 
 /**
@@ -73,7 +72,7 @@ public class SpringRouter extends Router {
      * @param routes
      *            The map of routes to attach
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( { "unchecked", "deprecation" })
     public static void setAttachments(Router router, Map<String, Object> routes) {
         Object value;
         Class resourceClass;
@@ -85,23 +84,27 @@ public class SpringRouter extends Router {
                 if (value instanceof Restlet) {
                     router.attach(key, (Restlet) value);
                 } else if (value instanceof Class) {
-                    router.attach(key, (Class<? extends Resource>) value);
+                    router.attach(key, (Class<?>) value);
                 } else if (value instanceof String) {
                     resourceClass = Engine.loadClass((String) value);
 
-                    if (Resource.class.isAssignableFrom(resourceClass)) {
+                    if (org.restlet.resource.Resource.class
+                            .isAssignableFrom(resourceClass)) {
+                        router.attach(key, resourceClass);
+                    } else if (org.restlet.resource.ServerResource.class
+                            .isAssignableFrom(resourceClass)) {
                         router.attach(key, resourceClass);
                     } else {
                         router
                                 .getLogger()
                                 .warning(
-                                        "Unknown class found in the mappings. Only subclasses of org.restlet.resource.Resource are allowed.");
+                                        "Unknown class found in the mappings. Only subclasses of org.restlet.resource.Resource and ServerResource are allowed.");
                     }
                 } else {
                     router
                             .getLogger()
                             .warning(
-                                    "Unknown object found in the mappings. Only instances of Restlet and subclasses of org.restlet.resource.Resource are allowed.");
+                                    "Unknown object found in the mappings. Only instances of Restlet and subclasses of org.restlet.resource.Resource and ServerResource are allowed.");
                 }
             }
         } catch (ClassNotFoundException e) {

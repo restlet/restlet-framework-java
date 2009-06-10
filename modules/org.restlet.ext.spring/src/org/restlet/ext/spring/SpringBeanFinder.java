@@ -30,7 +30,7 @@
 
 package org.restlet.ext.spring;
 
-import org.restlet.resource.Resource;
+import org.restlet.resource.ServerResource;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.context.ApplicationContext;
@@ -39,7 +39,7 @@ import org.springframework.context.ApplicationContextAware;
 /**
  * An alternative to {@link SpringFinder} which uses Spring's BeanFactory
  * mechanism to load a prototype bean by name.
- *
+ * 
  * If both a {@link BeanFactory} and a {@link ApplicationContext} are provided,
  * the bean will be looked up first in the application context and then in the
  * bean factory.
@@ -50,13 +50,13 @@ import org.springframework.context.ApplicationContextAware;
  * 
  * @author Rhett Sutphin
  */
-public class SpringBeanFinder extends SpringFinder
-        implements BeanFactoryAware, ApplicationContextAware {
-    /** The parent bean factory. */
-    private volatile BeanFactory beanFactory;
-
+public class SpringBeanFinder extends SpringFinder implements BeanFactoryAware,
+        ApplicationContextAware {
     /** The parent application context. */
     private volatile ApplicationContext applicationContext;
+
+    /** The parent bean factory. */
+    private volatile BeanFactory beanFactory;
 
     /** The bean name. */
     private volatile String beanName;
@@ -81,26 +81,51 @@ public class SpringBeanFinder extends SpringFinder
     }
 
     @Override
-    public Resource createResource() {
+    public ServerResource create() {
         final Object resource = findBean();
 
-        if (!(resource instanceof Resource)) {
+        if (!(resource instanceof ServerResource)) {
             throw new ClassCastException(getBeanName()
                     + " does not resolve to an instance of "
-                    + Resource.class.getName());
+                    + org.restlet.resource.ServerResource.class.getName());
         }
 
-        return (Resource) resource;
+        return (org.restlet.resource.ServerResource) resource;
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public org.restlet.resource.Resource createResource() {
+        final Object resource = findBean();
+
+        if (!(resource instanceof org.restlet.resource.Resource)) {
+            throw new ClassCastException(getBeanName()
+                    + " does not resolve to an instance of "
+                    + org.restlet.resource.Resource.class.getName());
+        }
+
+        return (org.restlet.resource.Resource) resource;
     }
 
     private Object findBean() {
-        if (getApplicationContext() != null && getApplicationContext().containsBean(getBeanName())) {
+        if (getApplicationContext() != null
+                && getApplicationContext().containsBean(getBeanName())) {
             return getApplicationContext().getBean(getBeanName());
-        } else if (getBeanFactory() != null && getBeanFactory().containsBean(getBeanName())) {
+        } else if (getBeanFactory() != null
+                && getBeanFactory().containsBean(getBeanName())) {
             return getBeanFactory().getBean(getBeanName());
         }
         throw new IllegalStateException(
                 "Either a beanFactory or an applicationContext is required for SpringBeanFinder.");
+    }
+
+    /**
+     * Returns the parent application context.
+     * 
+     * @return The parent context.
+     */
+    public ApplicationContext getApplicationContext() {
+        return applicationContext;
     }
 
     /**
@@ -122,12 +147,13 @@ public class SpringBeanFinder extends SpringFinder
     }
 
     /**
-     * Returns the parent application context.
-     *
-     * @return The parent context.
+     * Sets the parent application context
+     * 
+     * @param applicationContext
+     *            The parent context.
      */
-    public ApplicationContext getApplicationContext() {
-        return applicationContext;
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
     }
 
     /**
@@ -138,15 +164,6 @@ public class SpringBeanFinder extends SpringFinder
      */
     public void setBeanFactory(BeanFactory beanFactory) {
         this.beanFactory = beanFactory;
-    }
-
-    /**
-     * Sets the parent application context
-     *
-     * @param applicationContext The parent context.
-     */
-    public void setApplicationContext(ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
     }
 
     /**

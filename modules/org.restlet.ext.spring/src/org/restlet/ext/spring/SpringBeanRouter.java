@@ -32,7 +32,6 @@ package org.restlet.ext.spring;
 
 import org.restlet.Restlet;
 import org.restlet.resource.Finder;
-import org.restlet.resource.Resource;
 import org.restlet.routing.Router;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
@@ -92,15 +91,86 @@ public class SpringBeanRouter extends Router implements
     /** The Spring application context. */
     private volatile ApplicationContext applicationContext;
 
-    /** If beans should be searched for higher up in the BeanFactory hierarchy */
-    private volatile boolean findInAncestors = true;
-
-    /** Supplemental explicit mappings */
+    /** Supplemental explicit mappings. */
     private Map<String, String> attachments;
 
+    /** If beans should be searched for higher up in the BeanFactory hierarchy. */
+    private volatile boolean findInAncestors = true;
+
     /**
-     * Creates an instance of {@link SpringBeanFinder}. This can be overriden if
-     * necessary.
+     * Attaches all the resources.
+     * 
+     * @param beanFactory
+     *            The Spring bean factory.
+     */
+    @SuppressWarnings("deprecation")
+    private void attachAllResources(ListableBeanFactory beanFactory) {
+        for (String beanName : getBeanNamesByType(
+                org.restlet.resource.Resource.class, beanFactory)) {
+            String uri = resolveUri(beanName, beanFactory);
+
+            if (uri != null)
+                attachResource(uri, beanName, beanFactory);
+        }
+
+        for (String beanName : getBeanNamesByType(
+                org.restlet.resource.ServerResource.class, beanFactory)) {
+            String uri = resolveUri(beanName, beanFactory);
+
+            if (uri != null)
+                attachResource(uri, beanName, beanFactory);
+        }
+    }
+
+    /**
+     * Attaches all the Restlet instances.
+     * 
+     * @param beanFactory
+     *            The Spring bean factory.
+     */
+    private void attachAllRestlets(ListableBeanFactory beanFactory) {
+        for (String beanName : getBeanNamesByType(Restlet.class, beanFactory)) {
+            String uri = resolveUri(beanName, beanFactory);
+
+            if (uri != null)
+                attachRestlet(uri, beanName, beanFactory);
+        }
+    }
+
+    /**
+     * Attaches the named resource bean at the given URI, creating a finder for
+     * it via {@link #createFinder(BeanFactory, String)}.
+     * 
+     * @param uri
+     *            The attachment URI.
+     * @param beanName
+     *            The bean name.
+     * @param beanFactory
+     *            The Spring bean factory.
+     */
+    protected void attachResource(String uri, String beanName,
+            BeanFactory beanFactory) {
+        attach(uri, createFinder(beanFactory, beanName));
+    }
+
+    /**
+     * Attaches the named restlet bean directly at the given URI.
+     * 
+     * @param uri
+     *            The attachment URI.
+     * @param beanName
+     *            The bean name.
+     * @param beanFactory
+     *            The Spring bean factory.
+     */
+    protected void attachRestlet(String uri, String beanName,
+            BeanFactory beanFactory) {
+        attach(uri, (Restlet) beanFactory.getBean(beanName));
+    }
+
+    /**
+     * Creates an instance of {@link SpringBeanFinder}. This can be overridden
+     * if necessary.
      * 
      * @param beanFactory
      *            The Spring bean factory.
@@ -113,16 +183,53 @@ public class SpringBeanRouter extends Router implements
     }
 
     /**
-     * Returns true if bean names will be searched for higher up in the
-     * BeanFactory hierarchy.
-     * <p>
-     * Default is true.
+     * Returns supplemental explicit mappings
      * 
-     * @return true if bean names will be searched for higher up in the
-     *         BeanFactory hierarchy
+     * @return Supplemental explicit mappings
+     */
+    protected Map<String, String> getAttachments() {
+        return this.attachments;
+    }
+
+    /**
+     * Returns the list of bean name for the given type.
+     * 
+     * @param beanClass
+     *            The bean class to lookup.
+     * @param beanFactory
+     *            The Spring bean factory.
+     * @return The array of bean names.
+     */
+    private String[] getBeanNamesByType(Class<?> beanClass,
+            ListableBeanFactory beanFactory) {
+        return isFindInAncestors() ? BeanFactoryUtils
+                .beanNamesForTypeIncludingAncestors(beanFactory, beanClass,
+                        true, true) : beanFactory.getBeanNamesForType(
+                beanClass, true, true);
+    }
+
+    /**
+     * Indicates if the attachments contain a mapping for the given URI.
+     * 
+     * @param name
+     *            The name to test.
+     * @return True if the attachments contain a mapping for the given URI.
+     */
+    private boolean isAvailableUri(String name) {
+        return name.startsWith("/")
+                && (getAttachments() == null || !getAttachments().containsKey(
+                        name));
+    }
+
+    /**
+     * Returns true if bean names will be searched for higher up in the
+     * BeanFactory hierarchy. Default is true.
+     * 
+     * @return True if bean names will be searched for higher up in the
+     *         BeanFactory hierarchy.
      */
     public boolean isFindInAncestors() {
-        return findInAncestors;
+        return this.findInAncestors;
     }
 
     /**
@@ -130,72 +237,41 @@ public class SpringBeanRouter extends Router implements
      * factory for which {@link #resolveUri} finds a usable URI. Also attaches
      * everything explicitly routed in the attachments property.
      * 
+     * @param beanFactory
+     *            The Spring bean factory.
      * @see #setAttachments
      */
-    public void postProcessBeanFactory(ConfigurableListableBeanFactory factory)
-            throws BeansException {
+    @SuppressWarnings("deprecation")
+    public void postProcessBeanFactory(
+            ConfigurableListableBeanFactory beanFactory) throws BeansException {
 
-        ListableBeanFactory source = this.applicationContext == null ? factory
+        ListableBeanFactory source = this.applicationContext == null ? beanFactory
                 : this.applicationContext;
         attachAllResources(source);
         attachAllRestlets(source);
+
         if (getAttachments() != null) {
             for (Map.Entry<String, String> attachment : getAttachments()
                     .entrySet()) {
                 String uri = attachment.getKey();
                 String beanName = attachment.getValue();
                 Class<?> beanType = source.getType(beanName);
-                if (Resource.class.isAssignableFrom(beanType)) {
+
+                if (org.restlet.resource.Resource.class
+                        .isAssignableFrom(beanType)) {
+                    attachResource(uri, beanName, source);
+                } else if (org.restlet.resource.ServerResource.class
+                        .isAssignableFrom(beanType)) {
                     attachResource(uri, beanName, source);
                 } else if (Restlet.class.isAssignableFrom(beanType)) {
                     attachRestlet(uri, beanName, source);
                 } else {
                     throw new IllegalStateException(
                             beanName
-                                    + " is not routable.  It must be either a Resource or a Restlet.");
+                                    + " is not routable.  It must be either a Resource, a ServerResource or a Restlet.");
                 }
             }
         }
-    }
-
-    private void attachAllResources(ListableBeanFactory source) {
-        for (final String name : beanNamesForType(source, Resource.class)) {
-            final String uri = resolveUri(name, source);
-            if (uri != null)
-                attachResource(uri, name, source);
-        }
-    }
-
-    /**
-     * Attaches the named resource bean at the given URI, creating a finder for
-     * it via {@link #createFinder(BeanFactory, String)}.
-     */
-    protected void attachResource(String uri, String beanName,
-            BeanFactory source) {
-        attach(uri, createFinder(source, beanName));
-    }
-
-    private void attachAllRestlets(ListableBeanFactory source) {
-        for (final String name : beanNamesForType(source, Restlet.class)) {
-            final String uri = resolveUri(name, source);
-            if (uri != null)
-                attachRestlet(uri, name, source);
-        }
-    }
-
-    /**
-     * Attaches the named restlet bean directly at the given URI.
-     */
-    protected void attachRestlet(String uri, String name, BeanFactory source) {
-        attach(uri, (Restlet) source.getBean(name));
-    }
-
-    private String[] beanNamesForType(ListableBeanFactory factory,
-            Class<?> beanClass) {
-        return isFindInAncestors() ? BeanFactoryUtils
-                .beanNamesForTypeIncludingAncestors(factory, beanClass, true,
-                        true) : factory.getBeanNamesForType(beanClass, true,
-                true);
     }
 
     /**
@@ -204,12 +280,19 @@ public class SpringBeanRouter extends Router implements
      * behavior of
      * {@link org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping}
      * .
+     * 
+     * @param beanName
+     *            The bean name to lookup in the bean factory aliases.
+     * @param beanFactory
+     *            The Spring bean factory.
+     * @return The alias URI.
      */
-    protected String resolveUri(String resourceName, ListableBeanFactory factory) {
-        if (isAvailableUri(resourceName)) {
-            return resourceName;
+    protected String resolveUri(String beanName, ListableBeanFactory beanFactory) {
+        if (isAvailableUri(beanName)) {
+            return beanName;
         }
-        for (final String alias : factory.getAliases(resourceName)) {
+
+        for (final String alias : beanFactory.getAliases(beanName)) {
             if (isAvailableUri(alias)) {
                 return alias;
             }
@@ -218,32 +301,15 @@ public class SpringBeanRouter extends Router implements
         return null;
     }
 
-    private boolean isAvailableUri(String name) {
-        return name.startsWith("/")
-                && (getAttachments() == null || !getAttachments().containsKey(
-                        name));
-    }
-
     /**
      * Sets the Spring application context.
      * 
      * @param applicationContext
-     *            The context to set.
+     *            The context.
      */
     public void setApplicationContext(ApplicationContext applicationContext)
             throws BeansException {
         this.applicationContext = applicationContext;
-    }
-
-    /**
-     * Sets if bean names will be searched for higher up in the BeanFactory
-     * hierarchy.
-     * 
-     * @param findInAncestors
-     *            search for beans higher up in the BeanFactory hierarchy.
-     */
-    public void setFindInAncestors(boolean findInAncestors) {
-        this.findInAncestors = findInAncestors;
     }
 
     /**
@@ -252,13 +318,22 @@ public class SpringBeanRouter extends Router implements
      * both this mapping and as a bean name, the bean it is mapped to here is
      * the one that will be used.
      * 
+     * @param attachments
+     *            Supplemental explicit mappings.
      * @see SpringRouter
      */
     public void setAttachments(Map<String, String> attachments) {
         this.attachments = attachments;
     }
 
-    protected Map<String, String> getAttachments() {
-        return this.attachments;
+    /**
+     * Sets if bean names will be searched for higher up in the BeanFactory
+     * hierarchy.
+     * 
+     * @param findInAncestors
+     *            Search for beans higher up in the BeanFactory hierarchy.
+     */
+    public void setFindInAncestors(boolean findInAncestors) {
+        this.findInAncestors = findInAncestors;
     }
 }

@@ -43,6 +43,10 @@ Changes log
           TunnelFilter instance.
         - Load only once the agent.properties file used to populate 
           ClientInfo instances.
+        - SpringFinder and SpringBeanFinder now support the creation of 
+          resources based on ServerResource.
+        - SpringRouter and SpringBeanRouter now support the creation of 
+          resources based on ServerResource.
     - API changes
         - Added client and server RIAP connectors.
           Suggested by John Logsdon and Nirav Shah.
