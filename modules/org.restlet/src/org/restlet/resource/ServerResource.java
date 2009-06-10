@@ -273,7 +273,7 @@ public abstract class ServerResource extends UniformResource {
      * @return The response entity.
      * @throws ResourceException
      */
-    protected RepresentationInfo doGetInfo() throws ResourceException {
+    private RepresentationInfo doGetInfo() throws ResourceException {
         RepresentationInfo result = null;
         AnnotationInfo annotationInfo = getAnnotation(Method.GET);
 
@@ -302,6 +302,8 @@ public abstract class ServerResource extends UniformResource {
         if (variant instanceof VariantInfo) {
             result = doHandle(((VariantInfo) variant).getAnnotationInfo(),
                     variant);
+        } else if (variant instanceof RepresentationInfo) {
+            result = (RepresentationInfo) variant;
         } else {
             result = getInfo(variant);
         }
@@ -943,7 +945,7 @@ public abstract class ServerResource extends UniformResource {
      * @return True if annotations were defined on this resource.
      */
     private boolean hasAnnotations() {
-        return getAnnotations() != null;
+        return (getAnnotations() != null) && (!getAnnotations().isEmpty());
     }
 
     /**

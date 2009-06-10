@@ -23,6 +23,8 @@ Changes log
           no client connector supporting this request's protocol is 
           registered. Reported by Avi Flax.
         - Fixed bug in Template class when the pattern is updated.
+        - Fixed regression with Directory causing a 405 status to be
+          returned for conditional GETs. Reported by Serge Ilyn.
     - Enhancements
         - Upgraded Jetty library to version 6.1.18.
         - SpringServerServlet nows gets its component fully configured,
