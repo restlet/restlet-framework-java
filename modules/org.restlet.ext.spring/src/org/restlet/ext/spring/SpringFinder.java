@@ -36,7 +36,7 @@ import org.restlet.Context;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.resource.Finder;
-import org.restlet.resource.Resource;
+import org.restlet.resource.ServerResource;
 
 /**
  * Finder that is specialized for easier usage by Spring wiring services. The
@@ -101,6 +101,41 @@ public class SpringFinder extends Finder {
     }
 
     /**
+     * Creates a new instance of the {@link ServerResource} class designated by
+     * the "targetClass" property. This method is intended to be configured as a
+     * lookup method in Spring.
+     * 
+     * @return The created resource or null.
+     */
+    public ServerResource create() {
+        ServerResource result = null;
+
+        if (getTargetClass() != null) {
+            try {
+                // Invoke the default constructor
+                result = (ServerResource) getTargetClass().newInstance();
+            } catch (Exception e) {
+                getLogger()
+                        .log(
+                                Level.WARNING,
+                                "Exception while instantiating the target server resource.",
+                                e);
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Calls the {@link #create()} method that can be configured as a lookup
+     * method in Spring.
+     */
+    @Override
+    public ServerResource create(Request request, Response response) {
+        return create();
+    }
+
+    /**
      * Creates a new instance of the resource class designated by the
      * "targetClass" property. For easier Spring configuration, the default
      * target resource's constructor is invoked. The created instance must be
@@ -109,13 +144,15 @@ public class SpringFinder extends Finder {
      * 
      * @return The created resource or null.
      */
-    public Resource createResource() {
-        Resource result = null;
+    @SuppressWarnings("deprecation")
+    public org.restlet.resource.Resource createResource() {
+        org.restlet.resource.Resource result = null;
 
         if (getTargetClass() != null) {
             try {
                 // Invoke the default constructor
-                result = (Resource) getTargetClass().newInstance();
+                result = (org.restlet.resource.Resource) getTargetClass()
+                        .newInstance();
             } catch (Exception e) {
                 getLogger()
                         .log(
@@ -128,9 +165,11 @@ public class SpringFinder extends Finder {
         return result;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
-    public Resource createTarget(Request request, Response response) {
-        final Resource result = createResource();
+    public org.restlet.resource.Resource createTarget(Request request,
+            Response response) {
+        final org.restlet.resource.Resource result = createResource();
 
         if (result != null) {
             result.init(getContext(), request, response);
