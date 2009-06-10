@@ -213,7 +213,6 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
         getLogger().info("Stopping the Simple server");
 
         try {
-            getContainerServer().stop();
             getConnection().close();
         } catch (Exception e) {
             getLogger()

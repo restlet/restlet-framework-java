@@ -54,7 +54,7 @@ import org.restlet.engine.http.HttpServerCall;
 import org.restlet.engine.http.HttpServerHelper;
 import org.restlet.ext.servlet.internal.ServletCall;
 import org.restlet.ext.servlet.internal.ServletWarClient;
-import org.restlet.routing.Route;
+import org.restlet.routing.TemplateRoute;
 import org.restlet.routing.VirtualHost;
 
 /**
@@ -569,8 +569,8 @@ public class ServerServlet extends HttpServlet {
                         addFullServletPath = component.getDefaultHost()
                                 .getDefaultRoute() != null;
                     } else {
-                        for (final Route route : component.getDefaultHost()
-                                .getRoutes()) {
+                        for (final TemplateRoute route : component
+                                .getDefaultHost().getRoutes()) {
                             if (route.getTemplate().getPattern() == null) {
                                 addFullServletPath = true;
                                 continue;
@@ -597,7 +597,7 @@ public class ServerServlet extends HttpServlet {
                                 addFullServletPath = virtualHost
                                         .getDefaultRoute() != null;
                             } else {
-                                for (final Route route : virtualHost
+                                for (final TemplateRoute route : virtualHost
                                         .getRoutes()) {
                                     if (route.getTemplate().getPattern() == null) {
                                         addFullServletPath = true;
@@ -637,7 +637,7 @@ public class ServerServlet extends HttpServlet {
                         }
 
                         // Shift the default route (if any) of the default host
-                        Route defaultRoute = component.getDefaultHost()
+                        TemplateRoute defaultRoute = component.getDefaultHost()
                                 .getDefaultRoute();
                         if (defaultRoute != null) {
                             defaultRoute.getTemplate().setPattern(
@@ -651,7 +651,7 @@ public class ServerServlet extends HttpServlet {
                         }
 
                         // Shift the routes of the default host
-                        for (final Route route : component.getDefaultHost()
+                        for (TemplateRoute route : component.getDefaultHost()
                                 .getRoutes()) {
                             log("[Restlet] Attaching restlet: "
                                     + route.getNext() + " to URI: "
@@ -661,8 +661,7 @@ public class ServerServlet extends HttpServlet {
                                     offsetPath
                                             + route.getTemplate().getPattern());
                         }
-                        for (final VirtualHost virtualHost : component
-                                .getHosts()) {
+                        for (VirtualHost virtualHost : component.getHosts()) {
                             // Shift the default route (if any) of the virtual
                             // host
                             defaultRoute = virtualHost.getDefaultRoute();
@@ -679,7 +678,7 @@ public class ServerServlet extends HttpServlet {
                                                 .getPattern());
                             }
                             // Shift the routes of the virtual host
-                            for (final Route route : virtualHost.getRoutes()) {
+                            for (TemplateRoute route : virtualHost.getRoutes()) {
                                 log("[Restlet] Attaching restlet: "
                                         + route.getNext() + " to URI: "
                                         + offsetPath
