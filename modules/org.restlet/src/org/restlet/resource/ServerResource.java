@@ -468,7 +468,7 @@ public abstract class ServerResource extends UniformResource {
                 // negotiated variant.
                 if (resultObject instanceof Representation) {
                     result = (Representation) resultObject;
-                } else {
+                    if (variant.getCharacterSet() != null) {                        result.setCharacterSet(variant.getCharacterSet());                    } else if (variant.getMediaType() != null) {                        result.setMediaType(variant.getMediaType());                    } else if ((variant.getLanguages() != null)                            && !variant.getLanguages().isEmpty()) {                        result.setLanguages(variant.getLanguages());                    } else if ((variant.getEncodings() != null)                            && !variant.getEncodings().isEmpty()) {                        result.setEncodings(variant.getEncodings());                    }                } else {
                     result = cs.toRepresentation(resultObject, variant, this);
                 }
             }
@@ -690,21 +690,17 @@ public abstract class ServerResource extends UniformResource {
             for (AnnotationInfo annotationInfo : annotations) {
                 if (method.equals(annotationInfo.getRestletMethod())) {
                     if (annotationInfo.getValue() != null) {
-                        Metadata metadata = ms.getMetadata(annotationInfo
-                                .getValue());
+                        List<Metadata> allMetadata = ms
+                                .getAllMetadata(annotationInfo.getValue());
 
-                        if (metadata instanceof MediaType) {
-                            annoVariants = cs.getVariants(annotationInfo
-                                    .getJavaReturnType(), new Variant(
-                                    (MediaType) metadata));
-                            if (annoVariants != null) {
-                                if (result == null) {
-                                    result = new ArrayList<Variant>();
-                                }
-                                for (Variant v : annoVariants) {
-                                    result.add(new VariantInfo(v,
-                                            annotationInfo));
-                                }
+                        for (Metadata metadata : allMetadata) {
+                            if (metadata instanceof MediaType) {
+                                annoVariants = cs.getVariants(annotationInfo
+                                        .getJavaReturnType(), new Variant(
+                                        (MediaType) metadata));
+                                if (annoVariants != null) {
+                                    if (result == null) {
+                                        result = new ArrayList<Variant>();                                    }                                    for (Variant v : annoVariants) {                                        result.add(new VariantInfo(v,                                                annotationInfo));                                    }                                }
                             }
                         }
                     } else {

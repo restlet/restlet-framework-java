@@ -29,6 +29,10 @@ Changes log
           Reported by Stuart MacKay.
         - Fixed infinite loop when instantiating a Form with a query 
           in the GWT extension. Reported by Olivier Monaco.
+        - Fixed issue with annotated method returning a representation
+          and whose metadata where ignored (always returning the
+          "octet/stream" media type for example). 
+          Reported by Fabian Mandelbaum.
     - Enhancements
         - Upgraded Jetty library to version 6.1.18.
         - SpringServerServlet nows gets its component fully configured,
