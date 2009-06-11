@@ -53,8 +53,8 @@ public class FormReader {
     /** Indicates if the parameters should be decoded. */
     private boolean decode;
 
-    /** The form stream. */
-    private String text;
+    /** The form reader. */
+    final StringReader cr;
 
     /** The separator character used between parameters. */
     private char separator;
@@ -71,7 +71,7 @@ public class FormReader {
      */
     public FormReader(Representation representation) throws Exception {
         this.decode = true;
-        this.text = representation.getText();
+        this.cr = new StringReader(representation.getText());
         this.separator = '&';
 
         if (representation.getCharacterSet() != null) {
@@ -89,7 +89,7 @@ public class FormReader {
      */
     public FormReader(String parametersString, char separator) {
         this.decode = false;
-        this.text = parametersString;
+        this.cr = new StringReader(parametersString);
         this.characterSet = null;
         this.separator = separator;
     }
@@ -106,7 +106,7 @@ public class FormReader {
     public FormReader(String parametersString, CharacterSet characterSet,
             char separator) {
         this.decode = true;
-        this.text = parametersString;
+        this.cr = new StringReader(parametersString);
         this.characterSet = characterSet;
         this.separator = separator;
     }
@@ -196,7 +196,6 @@ public class FormReader {
         final StringBuilder nameBuffer = new StringBuilder();
         final StringBuilder valueBuffer = new StringBuilder();
 
-        final StringReader cr = new StringReader(this.text);
         int nextChar = 0;
         while ((result == null) && (nextChar != -1)) {
             nextChar = cr.read();
