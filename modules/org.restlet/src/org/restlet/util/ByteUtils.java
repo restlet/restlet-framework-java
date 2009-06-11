@@ -701,6 +701,7 @@ public final class ByteUtils {
             public void run() {
                 try {
                     representation.write(pipedWriter);
+                    pipedWriter.close();
                 } catch (IOException ioe) {
                     Context.getCurrentLogger().log(Level.FINE,
                             "Error while writing to the piped reader.", ioe);
