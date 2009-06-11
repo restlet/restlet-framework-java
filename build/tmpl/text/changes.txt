@@ -27,6 +27,8 @@ Changes log
           returned for conditional GETs. Reported by Serge Ilyn.
         - Fixed issue with parsing of AWS authentication HTTP headers. 
           Reported by Stuart MacKay.
+        - Fixed infinite loop when instantiating a Form with a query 
+          in the GWT extension. Reported by Olivier Monaco.
     - Enhancements
         - Upgraded Jetty library to version 6.1.18.
         - SpringServerServlet nows gets its component fully configured,
