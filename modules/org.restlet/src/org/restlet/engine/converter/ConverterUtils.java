@@ -30,9 +30,11 @@
 
 package org.restlet.engine.converter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.engine.Engine;
+import org.restlet.engine.resource.VariantInfo;
 import org.restlet.representation.Variant;
 import org.restlet.resource.UniformResource;
 
@@ -42,6 +44,41 @@ import org.restlet.resource.UniformResource;
  * @author Jerome Louvel
  */
 public class ConverterUtils {
+
+    /**
+     * Returns the list of variants that can be converted from a given object
+     * class.
+     * 
+     * @param sourceClass
+     *            The source class.
+     * @param targetVariant
+     *            The expected representation metadata.
+     * @return The list of variants that can be converted.
+     */
+    public static List<VariantInfo> getVariants(Class<?> sourceClass,
+            Variant targetVariant) {
+        List<VariantInfo> result = null;
+        List<VariantInfo> helperVariants = null;
+
+        for (ConverterHelper ch : Engine.getInstance()
+                .getRegisteredConverters()) {
+            helperVariants = ch.getVariants(sourceClass);
+
+            if (helperVariants != null) {
+                for (VariantInfo helperVariant : helperVariants) {
+                    if (helperVariant.isCompatible(targetVariant)) {
+                        if (result == null) {
+                            result = new ArrayList<VariantInfo>();
+                        }
+
+                        result.add(helperVariant);
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
 
     /**
      * Returns the best converter helper matching the given parameters.
@@ -57,7 +94,7 @@ public class ConverterUtils {
     public static ConverterHelper getHelper(Object sourceObject,
             Variant targetVariant, UniformResource resource) {
 
-        List<Variant> variants;
+        List<VariantInfo> variants;
         for (ConverterHelper ch : Engine.getInstance()
                 .getRegisteredConverters()) {
 

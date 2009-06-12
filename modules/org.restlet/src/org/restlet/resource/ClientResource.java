@@ -382,7 +382,7 @@ public class ClientResource extends UniformResource {
         // Create a fresh one for this request
         ClientInfo newClientInfo = new ClientInfo();
         ConverterService cs = getConverterService();
-        List<Variant> variants = cs.getVariants(responseClass, null);
+        List<? extends Variant> variants = cs.getVariants(responseClass, null);
 
         for (Variant variant : variants) {
             newClientInfo.getAcceptedMediaTypes().add(

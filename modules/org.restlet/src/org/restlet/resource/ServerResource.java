@@ -40,13 +40,11 @@ import java.util.TreeMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Dimension;
-import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
 import org.restlet.data.Method;
@@ -468,7 +466,18 @@ public abstract class ServerResource extends UniformResource {
                 // negotiated variant.
                 if (resultObject instanceof Representation) {
                     result = (Representation) resultObject;
-                    if (variant.getCharacterSet() != null) {                        result.setCharacterSet(variant.getCharacterSet());                    } else if (variant.getMediaType() != null) {                        result.setMediaType(variant.getMediaType());                    } else if ((variant.getLanguages() != null)                            && !variant.getLanguages().isEmpty()) {                        result.setLanguages(variant.getLanguages());                    } else if ((variant.getEncodings() != null)                            && !variant.getEncodings().isEmpty()) {                        result.setEncodings(variant.getEncodings());                    }                } else {
+                    if (variant.getCharacterSet() != null) {
+                        result.setCharacterSet(variant.getCharacterSet());
+                    } else if (variant.getMediaType() != null) {
+                        result.setMediaType(variant.getMediaType());
+                    } else if ((variant.getLanguages() != null)
+                            && !variant.getLanguages().isEmpty()) {
+                        result.setLanguages(variant.getLanguages());
+                    } else if ((variant.getEncodings() != null)
+                            && !variant.getEncodings().isEmpty()) {
+                        result.setEncodings(variant.getEncodings());
+                    }
+                } else {
                     result = cs.toRepresentation(resultObject, variant, this);
                 }
             }
@@ -558,22 +567,14 @@ public abstract class ServerResource extends UniformResource {
      */
     protected Representation doNegotiatedHandle() throws ResourceException {
         Representation result = null;
-
         List<Variant> variants = getAvailableVariants(getMethod());
 
         if ((variants != null) && (!variants.isEmpty())) {
-            // If variants were found, select the best matching one
-            Language language = null;
-            // Compute the preferred variant. Get the default language
-            // preference from the Application (if any).
-            final Application app = Application.getCurrent();
-
-            if (app != null) {
-                language = app.getMetadataService().getDefaultLanguage();
-            }
-
             Variant preferredVariant = getClientInfo().getPreferredVariant(
-                    variants, language);
+                    variants,
+                    (getApplication() == null) ? new MetadataService()
+                            : getApplication().getMetadataService());
+
             if (preferredVariant == null) {
                 // No variant was found matching the client preferences
                 setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
@@ -673,6 +674,7 @@ public abstract class ServerResource extends UniformResource {
      *            The method.
      * @return The list of available variants for the given method.
      */
+    @SuppressWarnings("unchecked")
     private List<Variant> getAvailableVariants(Method method) {
         List<Variant> result = null;
 
@@ -685,7 +687,7 @@ public abstract class ServerResource extends UniformResource {
             }
 
             ConverterService cs = getConverterService();
-            List<Variant> annoVariants = null;
+            List<VariantInfo> annoVariants = null;
 
             for (AnnotationInfo annotationInfo : annotations) {
                 if (method.equals(annotationInfo.getRestletMethod())) {
@@ -695,24 +697,35 @@ public abstract class ServerResource extends UniformResource {
 
                         for (Metadata metadata : allMetadata) {
                             if (metadata instanceof MediaType) {
-                                annoVariants = cs.getVariants(annotationInfo
-                                        .getJavaReturnType(), new Variant(
-                                        (MediaType) metadata));
+                                annoVariants = (List<VariantInfo>) cs
+                                        .getVariants(annotationInfo
+                                                .getJavaReturnType(),
+                                                new Variant(
+                                                        (MediaType) metadata));
+
                                 if (annoVariants != null) {
                                     if (result == null) {
-                                        result = new ArrayList<Variant>();                                    }                                    for (Variant v : annoVariants) {                                        result.add(new VariantInfo(v,                                                annotationInfo));                                    }                                }
+                                        result = new ArrayList<Variant>();
+                                    }
+
+                                    for (VariantInfo v : annoVariants) {
+                                        v.setAnnotationInfo(annotationInfo);
+                                        result.add(v);
+                                    }
+                                }
                             }
                         }
                     } else {
-                        annoVariants = cs.getVariants(annotationInfo
-                                .getJavaReturnType(), null);
+                        annoVariants = (List<VariantInfo>) cs.getVariants(
+                                annotationInfo.getJavaReturnType(), null);
                         if (annoVariants != null) {
                             if (result == null) {
                                 result = new ArrayList<Variant>();
                             }
 
-                            for (Variant v : annoVariants) {
-                                result.add(new VariantInfo(v, annotationInfo));
+                            for (VariantInfo v : annoVariants) {
+                                v.setAnnotationInfo(annotationInfo);
+                                result.add(v);
                             }
                         }
                     }
@@ -789,16 +802,10 @@ public abstract class ServerResource extends UniformResource {
 
         // If variants were found, select the best matching one
         if ((variants != null) && (!variants.isEmpty())) {
-            Language language = null;
-            // Compute the preferred variant. Get the default language
-            // preference from the Application (if any).
-            final Application app = Application.getCurrent();
-
-            if (app != null) {
-                language = app.getMetadataService().getDefaultLanguage();
-            }
-
-            result = getClientInfo().getPreferredVariant(variants, language);
+            result = getClientInfo().getPreferredVariant(
+                    variants,
+                    (getApplication() == null) ? null : getApplication()
+                            .getMetadataService());
         }
 
         return result;

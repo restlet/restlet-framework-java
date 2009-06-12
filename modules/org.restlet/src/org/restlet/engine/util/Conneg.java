@@ -380,6 +380,9 @@ public class Conneg {
             for (Preference<CharacterSet> pref : getCharacterSetPrefs()) {
                 if (characterSet.equals(pref.getMetadata())) {
                     current = 1.0F * pref.getQuality();
+                } else if (pref.getMetadata().equals(CharacterSet.ALL)
+                        || characterSet.equals(CharacterSet.ALL)) {
+                    current = 0.0F;
                 } else {
                     current = -1.0F;
                 }
@@ -432,8 +435,11 @@ public class Conneg {
 
         if (mediaType != null) {
             for (Preference<MediaType> pref : getMediaTypePrefs()) {
-                current = score(mediaType, pref.getMetadata())
-                        * pref.getQuality();
+                current = score(mediaType, pref.getMetadata());
+
+                if (current != -1.0F) {
+                    current *= pref.getQuality();
+                }
 
                 if (current > result) {
                     result = current;

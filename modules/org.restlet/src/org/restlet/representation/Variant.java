@@ -76,42 +76,37 @@ public class Variant {
 
         if (getIdentifier() != null) {
             sb.append(getIdentifier());
-
-            if (first) {
-                first = false;
-            } else {
-                sb.append(",");
-            }
+            first = false;
         }
 
         if (getMediaType() != null) {
-            sb.append(getMediaType());
-
-            if (first) {
-                first = false;
-            } else {
+            if (!first) {
                 sb.append(",");
+            } else {
+                first = false;
             }
+
+            sb.append(getMediaType());
         }
 
         if (getCharacterSet() != null) {
-            sb.append(getCharacterSet());
-
-            if (first) {
-                first = false;
-            } else {
+            if (!first) {
                 sb.append(",");
+            } else {
+                first = false;
             }
+
+            sb.append(getCharacterSet());
         }
 
         if (!getLanguages().isEmpty()) {
-            sb.append(getLanguages());
-
-            if (first) {
-                first = false;
-            } else {
+            if (!first) {
                 sb.append(",");
+            } else {
+                first = false;
             }
+
+            sb.append(getLanguages());
         }
 
         if (!getEncodings().isEmpty()) {

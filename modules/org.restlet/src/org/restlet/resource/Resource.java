@@ -33,10 +33,8 @@ package org.restlet.resource;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.data.Dimension;
-import org.restlet.data.Language;
 import org.restlet.data.Parameter;
 import org.restlet.data.ReferenceList;
 import org.restlet.data.Request;
@@ -227,18 +225,12 @@ public class Resource extends Handler {
         final List<Variant> variants = getVariants();
 
         if ((variants != null) && (!variants.isEmpty())) {
-            Language language = null;
             // Compute the preferred variant. Get the default language
             // preference from the Application (if any).
-            final Application app = Application.getCurrent();
-
-            if (app != null) {
-                language = app.getMetadataService().getDefaultLanguage();
-            }
-
-            result = getRequest().getClientInfo().getPreferredVariant(variants,
-                    language);
-
+            result = getRequest().getClientInfo().getPreferredVariant(
+                    variants,
+                    (getApplication() == null) ? null : getApplication()
+                            .getMetadataService());
         }
 
         return result;

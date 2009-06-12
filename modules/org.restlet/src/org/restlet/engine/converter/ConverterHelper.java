@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.engine.Helper;
+import org.restlet.engine.resource.VariantInfo;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.UniformResource;
@@ -74,13 +75,14 @@ public abstract class ConverterHelper extends Helper {
      *            The variant to add if not null.
      * @return The input variants list or a new one.
      */
-    protected List<Variant> addVariant(List<Variant> variants,
-            Variant userVariant) {
+    protected List<VariantInfo> addVariant(List<VariantInfo> variants,
+            VariantInfo userVariant) {
         if (userVariant != null) {
             if (variants == null) {
-                variants = new ArrayList<Variant>();
+                variants = new ArrayList<VariantInfo>();
             }
 
+            userVariant.setConverterHelper(this);
             variants.add(userVariant);
         }
 
@@ -105,7 +107,7 @@ public abstract class ConverterHelper extends Helper {
      *            The source object class.
      * @return The list of variants that can be converted.
      */
-    public abstract List<Variant> getVariants(Class<?> sourceClass);
+    public abstract List<VariantInfo> getVariants(Class<?> sourceClass);
 
     /**
      * Converts a Representation into a regular Java object.

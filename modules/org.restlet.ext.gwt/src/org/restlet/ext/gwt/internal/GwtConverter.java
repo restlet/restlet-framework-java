@@ -36,6 +36,7 @@ import java.util.List;
 
 import org.restlet.data.MediaType;
 import org.restlet.engine.converter.ConverterHelper;
+import org.restlet.engine.resource.VariantInfo;
 import org.restlet.ext.gwt.ObjectRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
@@ -49,7 +50,7 @@ import org.restlet.resource.UniformResource;
 public class GwtConverter extends ConverterHelper {
 
     /** JSON variant. */
-    private static final Variant VARIANT_GWT = new Variant(
+    private static final VariantInfo VARIANT_GWT = new VariantInfo(
             MediaType.APPLICATION_JAVA_OBJECT_GWT);
 
     @Override
@@ -66,7 +67,7 @@ public class GwtConverter extends ConverterHelper {
     }
 
     @Override
-    public List<Variant> getVariants(Class<?> objectClass) {
+    public List<VariantInfo> getVariants(Class<?> objectClass) {
         return addVariant(null, VARIANT_GWT);
     }
 

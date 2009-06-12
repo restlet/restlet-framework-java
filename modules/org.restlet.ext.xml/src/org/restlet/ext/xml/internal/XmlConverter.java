@@ -35,6 +35,7 @@ import java.util.List;
 
 import org.restlet.data.MediaType;
 import org.restlet.engine.converter.ConverterHelper;
+import org.restlet.engine.resource.VariantInfo;
 import org.restlet.ext.xml.DomRepresentation;
 import org.restlet.ext.xml.SaxRepresentation;
 import org.restlet.ext.xml.XmlRepresentation;
@@ -50,12 +51,13 @@ import org.w3c.dom.Document;
  */
 public class XmlConverter extends ConverterHelper {
 
-    /** XML application variant. */
-    private static final Variant VARIANT_XML_APP = new Variant(
+    private static final VariantInfo VARIANT_APPLICATION_ALL_XML = new VariantInfo(
+            MediaType.APPLICATION_ALL_XML);
+
+    private static final VariantInfo VARIANT_APPLICATION_XML = new VariantInfo(
             MediaType.APPLICATION_XML);
 
-    /** XML text variant. */
-    private static final Variant VARIANT_XML_TEXT = new Variant(
+    private static final VariantInfo VARIANT_TEXT_XML = new VariantInfo(
             MediaType.TEXT_XML);
 
     @Override
@@ -65,13 +67,9 @@ public class XmlConverter extends ConverterHelper {
         if (variant.getMediaType() != null) {
             MediaType mediaType = variant.getMediaType();
 
-            if (MediaType.APPLICATION_ALL_XML.equals(mediaType)
-                    || MediaType.TEXT_XML.equals(mediaType)
-                    || MediaType.APPLICATION_ATOMPUB_SERVICE.equals(mediaType)
-                    || MediaType.APPLICATION_ATOM.equals(mediaType)
-                    || MediaType.APPLICATION_RDF_XML.equals(mediaType)
-                    || MediaType.APPLICATION_WADL.equals(mediaType)
-                    || MediaType.APPLICATION_XHTML.equals(mediaType)) {
+            if (MediaType.APPLICATION_ALL_XML.isCompatible(mediaType)
+                    || MediaType.APPLICATION_XML.isCompatible(mediaType)
+                    || MediaType.TEXT_XML.isCompatible(mediaType)) {
                 result = addObjectClass(result, Document.class);
                 result = addObjectClass(result, XmlRepresentation.class);
             }
@@ -81,16 +79,15 @@ public class XmlConverter extends ConverterHelper {
     }
 
     @Override
-    public List<Variant> getVariants(Class<?> objectClass) {
-        List<Variant> result = null;
+    public List<VariantInfo> getVariants(Class<?> objectClass) {
+        List<VariantInfo> result = null;
 
         if (Document.class.isAssignableFrom(objectClass)
-                || DomRepresentation.class.isAssignableFrom(objectClass)) {
-            result = addVariant(result, VARIANT_XML_APP);
-            result = addVariant(result, VARIANT_XML_TEXT);
-        } else if (SaxRepresentation.class.isAssignableFrom(objectClass)) {
-            result = addVariant(result, VARIANT_XML_APP);
-            result = addVariant(result, VARIANT_XML_TEXT);
+                || DomRepresentation.class.isAssignableFrom(objectClass)
+                || SaxRepresentation.class.isAssignableFrom(objectClass)) {
+            result = addVariant(result, VARIANT_APPLICATION_ALL_XML);
+            result = addVariant(result, VARIANT_APPLICATION_XML);
+            result = addVariant(result, VARIANT_TEXT_XML);
         }
 
         return result;

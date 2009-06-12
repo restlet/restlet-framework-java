@@ -49,6 +49,7 @@ import org.restlet.engine.util.ConnegUtils;
 import org.restlet.representation.Variant;
 import org.restlet.security.Role;
 import org.restlet.security.RolePrincipal;
+import org.restlet.service.MetadataService;
 import org.restlet.util.Template;
 import org.restlet.util.Variable;
 
@@ -599,16 +600,16 @@ public final class ClientInfo {
      * 
      * @param variants
      *            The list of variants to compare.
-     * @param defaultLanguage
-     *            The default language.
+     * @param metadataService
+     *            The metadata service.
      * @return The best variant.
      * @see <a
      *      href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache
      *      content negotiation algorithm</a>
      */
     public Variant getPreferredVariant(List<Variant> variants,
-            Language defaultLanguage) {
-        return ConnegUtils.getPreferredVariant(this, variants, defaultLanguage);
+            MetadataService metadataService) {
+        return ConnegUtils.getPreferredVariant(this, variants, metadataService);
     }
 
     /**
@@ -620,8 +621,8 @@ public final class ClientInfo {
      * @param resource
      *            The resource for which the best representation needs to be
      *            set.
-     * @param defaultLanguage
-     *            The default language.
+     * @param metadataService
+     *            The metadata service.
      * @return The best variant.
      * @see <a
      *      href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache
@@ -630,8 +631,8 @@ public final class ClientInfo {
      */
     @Deprecated
     public Variant getPreferredVariant(org.restlet.resource.Resource resource,
-            Language defaultLanguage) {
-        return getPreferredVariant(resource.getVariants(), defaultLanguage);
+            MetadataService metadataService) {
+        return getPreferredVariant(resource.getVariants(), metadataService);
     }
 
     /**

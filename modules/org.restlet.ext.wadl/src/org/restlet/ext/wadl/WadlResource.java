@@ -316,7 +316,9 @@ public class WadlResource extends Resource {
         }
 
         result = getRequest().getClientInfo().getPreferredVariant(
-                getWadlVariants(), language);
+                getWadlVariants(),
+                (getApplication() == null) ? null : getApplication()
+                        .getMetadataService());
 
         return result;
     }

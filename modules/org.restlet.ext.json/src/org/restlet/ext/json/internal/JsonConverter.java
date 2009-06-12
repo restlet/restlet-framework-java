@@ -40,6 +40,7 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.restlet.data.MediaType;
 import org.restlet.engine.converter.ConverterHelper;
+import org.restlet.engine.resource.VariantInfo;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.UniformResource;
@@ -51,7 +52,7 @@ import org.restlet.resource.UniformResource;
  */
 public class JsonConverter extends ConverterHelper {
 
-    private static final Variant VARIANT_JSON = new Variant(
+    private static final VariantInfo VARIANT_JSON = new VariantInfo(
             MediaType.APPLICATION_JSON);
 
     @Override
@@ -74,7 +75,7 @@ public class JsonConverter extends ConverterHelper {
     }
 
     @Override
-    public List<Variant> getVariants(Class<?> objectClass) {
+    public List<VariantInfo> getVariants(Class<?> objectClass) {
         return addVariant(null, VARIANT_JSON);
     }
 

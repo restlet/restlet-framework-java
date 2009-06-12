@@ -119,8 +119,8 @@ public class ConverterProvider extends AbstractProvider<Object> {
         Variant targetVariant = new Variant(new org.restlet.data.MediaType(
                 mediaType.toString()));
 
-        List<Variant> variants = getConverterService().getVariants(type,
-                targetVariant);
+        List<? extends Variant> variants = getConverterService().getVariants(
+                type, targetVariant);
 
         return (variants != null) && !variants.isEmpty();
     }

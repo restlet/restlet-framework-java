@@ -40,6 +40,7 @@ import java.util.List;
 
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
+import org.restlet.engine.resource.VariantInfo;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.FileRepresentation;
 import org.restlet.representation.InputRepresentation;
@@ -58,23 +59,23 @@ import org.restlet.resource.UniformResource;
 public class DefaultConverter extends ConverterHelper {
 
     /** Web form variant. */
-    private static final Variant VARIANT_FORM = new Variant(
+    private static final VariantInfo VARIANT_FORM = new VariantInfo(
             MediaType.APPLICATION_WWW_FORM);
 
     /** Octet stream variant. */
-    private static final Variant VARIANT_OBJECT = new Variant(
+    private static final VariantInfo VARIANT_OBJECT = new VariantInfo(
             MediaType.APPLICATION_JAVA_OBJECT);
 
     /** Octet stream variant. */
-    private static final Variant VARIANT_OBJECT_XML = new Variant(
+    private static final VariantInfo VARIANT_OBJECT_XML = new VariantInfo(
             MediaType.APPLICATION_JAVA_OBJECT_XML);
 
-    /** Octet stream variant. */
-    private static final Variant VARIANT_OCTETS = new Variant(
-            MediaType.APPLICATION_OCTET_STREAM);
+    /** Neutral variant. */
+    private static final VariantInfo VARIANT_ALL = new VariantInfo(
+            MediaType.ALL);
 
     /** Plain text variant. */
-    private static final Variant VARIANT_TEXT = new Variant(
+    private static final VariantInfo VARIANT_TEXT = new VariantInfo(
             MediaType.TEXT_PLAIN);
 
     @Override
@@ -101,23 +102,23 @@ public class DefaultConverter extends ConverterHelper {
     }
 
     @Override
-    public List<Variant> getVariants(Class<?> objectClass) {
-        List<Variant> result = null;
+    public List<VariantInfo> getVariants(Class<?> objectClass) {
+        List<VariantInfo> result = null;
 
         if (String.class.isAssignableFrom(objectClass)
                 || StringRepresentation.class.isAssignableFrom(objectClass)) {
             result = addVariant(result, VARIANT_TEXT);
         } else if (File.class.isAssignableFrom(objectClass)
                 || FileRepresentation.class.isAssignableFrom(objectClass)) {
-            result = addVariant(result, VARIANT_OCTETS);
+            result = addVariant(result, VARIANT_ALL);
         } else if (InputStream.class.isAssignableFrom(objectClass)
                 || InputRepresentation.class.isAssignableFrom(objectClass)) {
-            result = addVariant(result, VARIANT_OCTETS);
+            result = addVariant(result, VARIANT_ALL);
         } else if (Reader.class.isAssignableFrom(objectClass)
                 || ReaderRepresentation.class.isAssignableFrom(objectClass)) {
             result = addVariant(result, VARIANT_TEXT);
         } else if (Representation.class.isAssignableFrom(objectClass)) {
-            result = addVariant(result, VARIANT_OCTETS);
+            result = addVariant(result, VARIANT_ALL);
         } else if (Form.class.isAssignableFrom(objectClass)) {
             result = addVariant(result, VARIANT_FORM);
         }

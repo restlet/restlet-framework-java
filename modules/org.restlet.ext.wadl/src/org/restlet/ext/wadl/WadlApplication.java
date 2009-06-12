@@ -42,7 +42,6 @@ import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.Server;
 import org.restlet.data.ClientInfo;
-import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
@@ -443,14 +442,9 @@ public class WadlApplication extends Application {
 
         // Compute the preferred variant. Get the default language
         // preference from the Application (if any).
-        final Application app = Application.getCurrent();
-        Language language = null;
-
-        if (app != null) {
-            language = app.getMetadataService().getDefaultLanguage();
-        }
-
-        result = clientInfo.getPreferredVariant(getWadlVariants(), language);
+        result = clientInfo.getPreferredVariant(getWadlVariants(),
+                (getApplication() == null) ? null : getApplication()
+                        .getMetadataService());
         return result;
     }
 

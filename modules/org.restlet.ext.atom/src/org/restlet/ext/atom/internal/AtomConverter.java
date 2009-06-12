@@ -35,6 +35,7 @@ import java.util.List;
 
 import org.restlet.data.MediaType;
 import org.restlet.engine.converter.ConverterHelper;
+import org.restlet.engine.resource.VariantInfo;
 import org.restlet.ext.atom.Feed;
 import org.restlet.ext.atom.Service;
 import org.restlet.representation.Representation;
@@ -48,10 +49,10 @@ import org.restlet.resource.UniformResource;
  */
 public class AtomConverter extends ConverterHelper {
 
-    private static final Variant VARIANT_ATOM = new Variant(
+    private static final VariantInfo VARIANT_ATOM = new VariantInfo(
             MediaType.APPLICATION_ATOM);
 
-    private static final Variant VARIANT_ATOMPUB_SERVICE = new Variant(
+    private static final VariantInfo VARIANT_ATOMPUB_SERVICE = new VariantInfo(
             MediaType.APPLICATION_ATOMPUB_SERVICE);
 
     // private static final Variant VARIANT_ATOMPUB_CATEGORY = new Variant(
@@ -73,8 +74,8 @@ public class AtomConverter extends ConverterHelper {
     }
 
     @Override
-    public List<Variant> getVariants(Class<?> objectClass) {
-        List<Variant> result = null;
+    public List<VariantInfo> getVariants(Class<?> objectClass) {
+        List<VariantInfo> result = null;
 
         if (Feed.class.isAssignableFrom(objectClass)) {
             result = addVariant(result, VARIANT_ATOM);

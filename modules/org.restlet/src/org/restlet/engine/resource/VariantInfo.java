@@ -31,6 +31,7 @@
 package org.restlet.engine.resource;
 
 import org.restlet.data.MediaType;
+import org.restlet.engine.converter.ConverterHelper;
 import org.restlet.representation.Variant;
 
 /**
@@ -42,6 +43,32 @@ public class VariantInfo extends Variant {
 
     /** The optional annotation descriptor. */
     private AnnotationInfo annotationInfo;
+
+    /** The optional converter helper. */
+    private ConverterHelper converterHelper;
+
+    /**
+     * Constructor.
+     * 
+     * @param mediaType
+     *            The media type.
+     */
+    public VariantInfo(MediaType mediaType) {
+        super(mediaType);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param mediaType
+     *            The media type.
+     * @param annotationInfo
+     *            The optional annotation descriptor.
+     */
+    public VariantInfo(MediaType mediaType, AnnotationInfo annotationInfo) {
+        super(mediaType);
+        this.annotationInfo = annotationInfo;
+    }
 
     /**
      * Constructor.
@@ -60,25 +87,21 @@ public class VariantInfo extends Variant {
     }
 
     /**
-     * Constructor.
-     * 
-     * @param mediaType
-     *            The media type.
-     * @param annotationInfo
-     *            The optional annotation descriptor.
-     */
-    public VariantInfo(MediaType mediaType, AnnotationInfo annotationInfo) {
-        super(mediaType);
-        this.annotationInfo = annotationInfo;
-    }
-
-    /**
      * Returns the optional annotation descriptor.
      * 
      * @return The optional annotation descriptor.
      */
     public AnnotationInfo getAnnotationInfo() {
         return annotationInfo;
+    }
+
+    /**
+     * Returns the optional converter helper.
+     * 
+     * @return The optional converter helper.
+     */
+    public ConverterHelper getConverterHelper() {
+        return converterHelper;
     }
 
     /**
@@ -89,6 +112,16 @@ public class VariantInfo extends Variant {
      */
     public void setAnnotationInfo(AnnotationInfo annotationInfo) {
         this.annotationInfo = annotationInfo;
+    }
+
+    /**
+     * Sets the optional converter helper.
+     * 
+     * @param converterHelper
+     *            The optional converter helper.
+     */
+    public void setConverterHelper(ConverterHelper converterHelper) {
+        this.converterHelper = converterHelper;
     }
 
 }

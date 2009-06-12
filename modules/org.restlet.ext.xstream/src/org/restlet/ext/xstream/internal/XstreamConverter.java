@@ -36,6 +36,7 @@ import java.util.List;
 
 import org.restlet.data.MediaType;
 import org.restlet.engine.converter.ConverterHelper;
+import org.restlet.engine.resource.VariantInfo;
 import org.restlet.ext.xstream.XstreamRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
@@ -50,11 +51,17 @@ import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
  */
 public class XstreamConverter extends ConverterHelper {
 
-    private static final Variant VARIANT_JSON = new Variant(
+    private static final VariantInfo VARIANT_APPLICATION_ALL_XML = new VariantInfo(
+            MediaType.APPLICATION_ALL_XML);
+
+    private static final VariantInfo VARIANT_APPLICATION_XML = new VariantInfo(
+            MediaType.APPLICATION_XML);
+
+    private static final VariantInfo VARIANT_JSON = new VariantInfo(
             MediaType.APPLICATION_JSON);
 
-    private static final Variant VARIANT_XML = new Variant(
-            MediaType.APPLICATION_XML);
+    private static final VariantInfo VARIANT_TEXT_XML = new VariantInfo(
+            MediaType.TEXT_XML);
 
     @Override
     public List<Class<?>> getObjectClasses(Variant variant) {
@@ -62,7 +69,9 @@ public class XstreamConverter extends ConverterHelper {
 
         if (variant != null) {
             if (VARIANT_JSON.isCompatible(variant)
-                    || VARIANT_XML.isCompatible(variant)) {
+                    || VARIANT_APPLICATION_ALL_XML.isCompatible(variant)
+                    || VARIANT_APPLICATION_XML.isCompatible(variant)
+                    || VARIANT_TEXT_XML.isCompatible(variant)) {
                 if (result == null) {
                     result = new ArrayList<Class<?>>();
                 }
@@ -75,9 +84,11 @@ public class XstreamConverter extends ConverterHelper {
     }
 
     @Override
-    public List<Variant> getVariants(Class<?> objectClass) {
-        List<Variant> result = addVariant(null, VARIANT_JSON);
-        addVariant(result, VARIANT_XML);
+    public List<VariantInfo> getVariants(Class<?> objectClass) {
+        List<VariantInfo> result = addVariant(null, VARIANT_JSON);
+        addVariant(result, VARIANT_APPLICATION_ALL_XML);
+        addVariant(result, VARIANT_APPLICATION_XML);
+        addVariant(result, VARIANT_TEXT_XML);
         return result;
     }
 
@@ -92,7 +103,9 @@ public class XstreamConverter extends ConverterHelper {
             xstreamRepresentation
                     .setJsonDriverClass(JettisonMappedXmlDriver.class);
             result = xstreamRepresentation.getObject();
-        } else if (VARIANT_XML.isCompatible(representation)) {
+        } else if (VARIANT_APPLICATION_ALL_XML.isCompatible(representation)
+                || VARIANT_APPLICATION_XML.isCompatible(representation)
+                || VARIANT_TEXT_XML.isCompatible(representation)) {
             xstreamRepresentation = new XstreamRepresentation<T>(representation);
             result = xstreamRepresentation.getObject();
         }
