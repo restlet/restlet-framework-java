@@ -32,6 +32,7 @@ package org.restlet.data;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -44,6 +45,14 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public final class Language extends Metadata {
     /** All languages acceptable. */
     public static final Language ALL = new Language("*", "All languages");
+
+    /**
+     * The default language of the JVM.
+     * 
+     * @see Locale#getDefault()
+     */
+    public static final Language DEFAULT = new Language(Locale.getDefault()
+            .getLanguage());
 
     /** English language. */
     public static final Language ENGLISH = new Language("en",
@@ -131,7 +140,8 @@ public final class Language extends Metadata {
 
     @Override
     public Language getParent() {
-        return Language.valueOf(getPrimaryTag());
+        return ((getSubTags() != null) && !getSubTags().isEmpty()) ? Language
+                .valueOf(getPrimaryTag()) : null;
     }
 
     /**

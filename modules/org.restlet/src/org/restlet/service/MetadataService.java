@@ -51,13 +51,16 @@ import org.restlet.engine.application.MetadataExtension;
  * @author Jerome Louvel
  */
 public class MetadataService extends Service {
-    /** The default encoding for local representations. */
+    /** The default character set for textual representations. */
+    private volatile CharacterSet defaultCharacterSet;
+
+    /** The default encoding for representations. */
     private volatile Encoding defaultEncoding;
 
-    /** The default language for local representations. */
+    /** The default language for representations. */
     private volatile Language defaultLanguage;
 
-    /** The default media type for local representations. */
+    /** The default media type for representations. */
     private volatile MediaType defaultMediaType;
 
     /** The list of mappings between extension names and metadata. */
@@ -70,8 +73,9 @@ public class MetadataService extends Service {
      * calls the {@link #addCommonExtensions()} method.
      */
     public MetadataService() {
+        this.defaultCharacterSet = CharacterSet.DEFAULT;
         this.defaultEncoding = Encoding.IDENTITY;
-        this.defaultLanguage = Language.ENGLISH_US;
+        this.defaultLanguage = Language.DEFAULT;
         this.defaultMediaType = MediaType.APPLICATION_OCTET_STREAM;
         this.mappings = new CopyOnWriteArrayList<MetadataExtension>();
         addCommonExtensions();
@@ -493,27 +497,36 @@ public class MetadataService extends Service {
     }
 
     /**
-     * Returns the default encoding for local representations.
+     * Returns the default character set for textual representations.
      * 
-     * @return The default encoding for local representations.
+     * @return The default character set for textual representations.
+     */
+    public CharacterSet getDefaultCharacterSet() {
+        return this.defaultCharacterSet;
+    }
+
+    /**
+     * Returns the default encoding for representations.
+     * 
+     * @return The default encoding for representations.
      */
     public Encoding getDefaultEncoding() {
         return this.defaultEncoding;
     }
 
     /**
-     * Returns the default language for local representations.
+     * Returns the default language for representations.
      * 
-     * @return The default language for local representations.
+     * @return The default language for representations.
      */
     public Language getDefaultLanguage() {
         return this.defaultLanguage;
     }
 
     /**
-     * Returns the default media type for local representations.
+     * Returns the default media type for representations.
      * 
-     * @return The default media type for local representations.
+     * @return The default media type for representations.
      */
     public MediaType getDefaultMediaType() {
         return this.defaultMediaType;
@@ -625,6 +638,16 @@ public class MetadataService extends Service {
         } else {
             return null;
         }
+    }
+
+    /**
+     * Sets the default character set for local representations.
+     * 
+     * @param defaultCharacterSet
+     *            The default character set for local representations.
+     */
+    public void setDefaultCharacterSet(CharacterSet defaultCharacterSet) {
+        this.defaultCharacterSet = defaultCharacterSet;
     }
 
     /**

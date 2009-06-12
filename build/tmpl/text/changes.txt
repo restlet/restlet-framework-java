@@ -55,6 +55,11 @@ Changes log
           resources based on ServerResource.
         - SpringRouter and SpringBeanRouter now support the creation of 
           resources based on ServerResource.
+        - Refactored content negotiation to take into account all 
+          dimensions (language, media type, character set and encoding). 
+    - Breaking changes
+        - The default language, defined in MetadataService is now based
+          on the JVM's default locale, instead of English/US.
     - API changes
         - Added client and server RIAP connectors.
           Suggested by John Logsdon and Nirav Shah.
@@ -87,6 +92,9 @@ Changes log
           Use getChallengeRequests() instead.
         - Added Metadate#getParent() method.
         - Added better Variant#toString() implementation.
+        - Added MetadataService#defaultCharacterSet property.
+        - Added Conneg class in the engine to support content 
+          negotiation in a more maintenable way.
      - Misc
         - Exceptions thrown in the internal HTTP client are not logged
           with a FINE level instead of a WARNING level.
