@@ -22,6 +22,7 @@ Import-Package:
  org.restlet.data,
  org.restlet.engine,
  org.restlet.engine.converter,
+ org.restlet.engine.resource,
  org.restlet.representation,
  org.restlet.resource,
  org.restlet.service,

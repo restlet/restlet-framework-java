@@ -45,12 +45,19 @@ package org.restlet.data;
  *      >Source dissertation</a>
  * @author Jerome Louvel
  */
-public class Metadata {
+public abstract class Metadata {
     /** The metadata name like "text/html" or "compress" or "iso-8851-1". */
     private final String name;
 
     /** The description of this metadata. */
     private final String description;
+
+    /**
+     * Returns the parent metadata if available or null.
+     * 
+     * @return The parent metadata.
+     */
+    public abstract Metadata getParent();
 
     /**
      * Constructor.

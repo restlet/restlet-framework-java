@@ -12,6 +12,7 @@ Export-Package: org.restlet.ext.xml;
 Import-Package: org.restlet,
  org.restlet.data,
  org.restlet.engine.converter,
+ org.restlet.engine.resource,
  org.restlet.engine.util,
  org.restlet.representation,
  org.restlet.resource,

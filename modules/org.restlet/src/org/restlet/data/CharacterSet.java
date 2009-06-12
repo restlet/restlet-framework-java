@@ -153,6 +153,11 @@ public final class CharacterSet extends Metadata {
                         .equalsIgnoreCase(((CharacterSet) object).getName());
     }
 
+    @Override
+    public Metadata getParent() {
+        return null;
+    }
+
     /** {@inheritDoc} */
     @Override
     public int hashCode() {

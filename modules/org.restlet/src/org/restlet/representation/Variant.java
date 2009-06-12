@@ -69,6 +69,59 @@ public class Variant {
     /** The media type. */
     private volatile MediaType mediaType;
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("[");
+        boolean first = true;
+
+        if (getIdentifier() != null) {
+            sb.append(getIdentifier());
+
+            if (first) {
+                first = false;
+            } else {
+                sb.append(",");
+            }
+        }
+
+        if (getMediaType() != null) {
+            sb.append(getMediaType());
+
+            if (first) {
+                first = false;
+            } else {
+                sb.append(",");
+            }
+        }
+
+        if (getCharacterSet() != null) {
+            sb.append(getCharacterSet());
+
+            if (first) {
+                first = false;
+            } else {
+                sb.append(",");
+            }
+        }
+
+        if (!getLanguages().isEmpty()) {
+            sb.append(getLanguages());
+
+            if (first) {
+                first = false;
+            } else {
+                sb.append(",");
+            }
+        }
+
+        if (!getEncodings().isEmpty()) {
+            sb.append(getEncodings());
+        }
+
+        sb.append("]");
+        return sb.toString();
+    }
+
     /**
      * Default constructor.
      */

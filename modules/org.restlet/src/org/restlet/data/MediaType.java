@@ -881,6 +881,11 @@ public final class MediaType extends Metadata {
         return p;
     }
 
+    @Override
+    public MediaType getParent() {
+        return MediaType.valueOf(getMainType() + "/*");
+    }
+
     /**
      * Returns the sub-type.
      * 

@@ -85,7 +85,9 @@ Changes log
           authenticated requests.
         - Deprecated Request#setChallengeRequest(). 
           Use getChallengeRequests() instead.
-    - Misc
+        - Added Metadate#getParent() method.
+        - Added better Variant#toString() implementation.
+     - Misc
         - Exceptions thrown in the internal HTTP client are not logged
           with a FINE level instead of a WARNING level.
         - Upgraded Simple to version 4.1.12.

@@ -131,6 +131,11 @@ public final class Encoding extends Metadata {
                 && getName().equalsIgnoreCase(((Encoding) object).getName());
     }
 
+    @Override
+    public Metadata getParent() {
+        return null;
+    }
+
     /** {@inheritDoc} */
     @Override
     public int hashCode() {

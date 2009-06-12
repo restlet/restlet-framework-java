@@ -129,6 +129,11 @@ public final class Language extends Metadata {
                 && getName().equalsIgnoreCase(((Language) object).getName());
     }
 
+    @Override
+    public Language getParent() {
+        return Language.valueOf(getPrimaryTag());
+    }
+
     /**
      * Returns the primary tag.
      * 
