@@ -155,13 +155,35 @@ public final class CharacterSet extends Metadata {
 
     @Override
     public Metadata getParent() {
-        return null;
+        return equals(ALL) ? null : ALL;
     }
 
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
         return (getName() == null) ? 0 : getName().toLowerCase().hashCode();
+    }
+
+    /**
+     * Indicates if a given character set is included in the current one. The
+     * test is true if both character sets are equal or if the given character
+     * set is within the range of the current one. For example, ALL includes all
+     * character sets. A null character set is considered as included into the
+     * current one.
+     * <p>
+     * Examples:
+     * <ul>
+     * <li>ALL.includes(UTF_16) -> true</li>
+     * <li>UTF_16.includes(ALL) -> false</li>
+     * </ul>
+     * 
+     * @param included
+     *            The character set to test for inclusion.
+     * @return True if the given character set is included in the current one.
+     * @see #isCompatible(Metadata)
+     */
+    public boolean includes(Metadata included) {
+        return equals(ALL) || (included == null) || equals(included);
     }
 
     /**

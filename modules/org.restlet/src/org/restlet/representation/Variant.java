@@ -69,54 +69,6 @@ public class Variant {
     /** The media type. */
     private volatile MediaType mediaType;
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder("[");
-        boolean first = true;
-
-        if (getIdentifier() != null) {
-            sb.append(getIdentifier());
-            first = false;
-        }
-
-        if (getMediaType() != null) {
-            if (!first) {
-                sb.append(",");
-            } else {
-                first = false;
-            }
-
-            sb.append(getMediaType());
-        }
-
-        if (getCharacterSet() != null) {
-            if (!first) {
-                sb.append(",");
-            } else {
-                first = false;
-            }
-
-            sb.append(getCharacterSet());
-        }
-
-        if (!getLanguages().isEmpty()) {
-            if (!first) {
-                sb.append(",");
-            } else {
-                first = false;
-            }
-
-            sb.append(getLanguages());
-        }
-
-        if (!getEncodings().isEmpty()) {
-            sb.append(getEncodings());
-        }
-
-        sb.append("]");
-        return sb.toString();
-    }
-
     /**
      * Default constructor.
      */
@@ -131,9 +83,27 @@ public class Variant {
      *            The media type.
      */
     public Variant(MediaType mediaType) {
+        this(mediaType, null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param mediaType
+     *            The media type.
+     * @param language
+     *            The language.
+     */
+    public Variant(MediaType mediaType, Language language) {
         this.characterSet = null;
         this.encodings = null;
-        this.languages = null;
+
+        if (language != null) {
+            getLanguages().add(language);
+        } else {
+            this.languages = null;
+        }
+
         this.mediaType = mediaType;
         this.identifier = null;
     }
@@ -347,6 +317,39 @@ public class Variant {
     }
 
     /**
+     * Indicates if the current variant is compatible with the given variant.
+     * 
+     * @param other
+     *            The other variant.
+     * @return True if the current variant includes the other.
+     */
+    public boolean isCompatible(Variant other) {
+        boolean result = other != null;
+
+        // Compare the character set
+        if (result) {
+            result = (getCharacterSet() == null)
+                    || getCharacterSet().equals(CharacterSet.ALL)
+                    || getCharacterSet().equals(other.getCharacterSet());
+        }
+
+        // Compare the media type
+        if (result) {
+            result = (getMediaType() == null)
+                    || getMediaType().isCompatible(other.getMediaType());
+        }
+
+        // Compare the languages
+        if (result) {
+            result = (getLanguages().isEmpty())
+                    || getLanguages().contains(Language.ALL)
+                    || getLanguages().containsAll(other.getLanguages());
+        }
+
+        return result;
+    }
+
+    /**
      * Sets the character set or null if not applicable.
      * 
      * @param characterSet
@@ -408,36 +411,51 @@ public class Variant {
         this.mediaType = mediaType;
     }
 
-    /**
-     * Indicates if the current variant is compatible with the given variant.
-     * 
-     * @param other
-     *            The other variant.
-     * @return True if the current variant includes the other.
-     */
-    public boolean isCompatible(Variant other) {
-        boolean result = true;
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("[");
+        boolean first = true;
 
-        // Compare the character set
-        if (result) {
-            result = (getCharacterSet() == null)
-                    || getCharacterSet().equals(CharacterSet.ALL)
-                    || getCharacterSet().equals(other.getCharacterSet());
+        if (getIdentifier() != null) {
+            sb.append(getIdentifier());
+            first = false;
         }
 
-        // Compare the media type
-        if (result) {
-            result = (getMediaType() == null)
-                    || getMediaType().isCompatible(other.getMediaType());
+        if (getMediaType() != null) {
+            if (!first) {
+                sb.append(",");
+            } else {
+                first = false;
+            }
+
+            sb.append(getMediaType());
         }
 
-        // Compare the languages
-        if (result) {
-            result = (getLanguages().isEmpty())
-                    || getLanguages().contains(Language.ALL)
-                    || getLanguages().containsAll(other.getLanguages());
+        if (getCharacterSet() != null) {
+            if (!first) {
+                sb.append(",");
+            } else {
+                first = false;
+            }
+
+            sb.append(getCharacterSet());
         }
 
-        return result;
+        if (!getLanguages().isEmpty()) {
+            if (!first) {
+                sb.append(",");
+            } else {
+                first = false;
+            }
+
+            sb.append(getLanguages());
+        }
+
+        if (!getEncodings().isEmpty()) {
+            sb.append(getEncodings());
+        }
+
+        sb.append("]");
+        return sb.toString();
     }
 }

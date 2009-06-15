@@ -93,10 +93,15 @@ Changes log
         - Deprecated Request#setChallengeRequest(). 
           Use getChallengeRequests() instead.
         - Added Metadate#getParent() method.
+        - Added Metadate#isCompatible() method.
+        - Added Metadate#includes() method.
         - Added better Variant#toString() implementation.
         - Added MetadataService#defaultCharacterSet property.
         - Added Conneg class in the engine to support content 
-          negotiation in a more maintenable way.
+          negotiation in a more maintenable way, and to support all
+          dimensions (character sets, encodings, languages and media
+          types). Suggested by Alexander Horn, Maxence Bernard and
+          David Fogel.
      - Misc
         - Exceptions thrown in the internal HTTP client are not logged
           with a FINE level instead of a WARNING level.

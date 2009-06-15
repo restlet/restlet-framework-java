@@ -140,8 +140,15 @@ public final class Language extends Metadata {
 
     @Override
     public Language getParent() {
-        return ((getSubTags() != null) && !getSubTags().isEmpty()) ? Language
-                .valueOf(getPrimaryTag()) : null;
+        Language result = null;
+
+        if ((getSubTags() != null) && !getSubTags().isEmpty()) {
+            result = Language.valueOf(getPrimaryTag());
+        } else {
+            result = equals(ALL) ? null : ALL;
+        }
+
+        return result;
     }
 
     /**
@@ -192,5 +199,41 @@ public final class Language extends Metadata {
     @Override
     public int hashCode() {
         return (getName() == null) ? 0 : getName().toLowerCase().hashCode();
+    }
+
+    /**
+     * Indicates if a given language is included in the current one. The test is
+     * true if both languages are equal or if the given language is within the
+     * range of the current one. For example, ALL includes all languages. A null
+     * language is considered as included into the current one.
+     * <p>
+     * Examples:
+     * <ul>
+     * <li>ENGLISH.includes(ENGLISH_US) -> true</li>
+     * <li>ENGLISH_US.includes(ENGLISH) -> false</li>
+     * </ul>
+     * 
+     * @param included
+     *            The language to test for inclusion.
+     * @return True if the language type is included in the current one.
+     * @see #isCompatible(Metadata)
+     */
+    public boolean includes(Metadata included) {
+        boolean result = equals(ALL) || (included == null) || equals(included);
+
+        if (!result && (included instanceof Language)) {
+            Language includedLanguage = (Language) included;
+
+            if (getPrimaryTag().equals(includedLanguage.getPrimaryTag())) {
+                // Both languages are different
+                if (getSubTags().equals(includedLanguage.getSubTags())) {
+                    result = true;
+                } else if (getSubTags().isEmpty()) {
+                    result = true;
+                }
+            }
+        }
+
+        return result;
     }
 }

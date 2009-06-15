@@ -33,6 +33,7 @@ package org.restlet.test;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.restlet.test.data.ConnegTestCase;
 import org.restlet.test.data.CookieTestCase;
 import org.restlet.test.data.FileReferenceTestCase;
 import org.restlet.test.data.LanguageTestCase;
@@ -85,6 +86,7 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(ComponentXmlConfigTestCase.class);
         addTestSuite(ComponentXmlTestCase.class);
         addTestSuite(CookieTestCase.class);
+        addTestSuite(ConnegTestCase.class);
         addTestSuite(DigestTestCase.class);
         addTestSuite(DirectoryTestCase.class);
         addTestSuite(FileClientTestCase.class);

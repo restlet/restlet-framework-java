@@ -39,7 +39,6 @@ import org.restlet.data.Encoding;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
-import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
 import org.restlet.representation.Variant;
 import org.restlet.service.MetadataService;
@@ -245,127 +244,6 @@ public class Conneg {
     }
 
     /**
-     * Returns a matching score between 2 Languages
-     * 
-     * @param variantLanguage
-     * @param preferenceLanguage
-     * @return the positive matching score or -1 if the languages are not
-     *         compatible
-     */
-    protected float score(Language variantLanguage, Language preferenceLanguage) {
-        float score = 0.0f;
-        boolean compatibleLang = true;
-
-        // 1) Compare the main tag
-        if (variantLanguage.getPrimaryTag().equalsIgnoreCase(
-                preferenceLanguage.getPrimaryTag())) {
-            score += 100;
-        } else if (!preferenceLanguage.getPrimaryTag().equals("*")) {
-            compatibleLang = false;
-        } else if (!preferenceLanguage.getSubTags().isEmpty()) {
-            // Only "*" is an acceptable language range
-            compatibleLang = false;
-        } else {
-            // The valid "*" range has the lowest valid score
-            score++;
-        }
-
-        if (compatibleLang) {
-            // 2) Compare the sub tags
-            if ((preferenceLanguage.getSubTags().isEmpty())
-                    || (variantLanguage.getSubTags().isEmpty())) {
-                if (variantLanguage.getSubTags().isEmpty()
-                        && preferenceLanguage.getSubTags().isEmpty()) {
-                    score += 10;
-                } else {
-                    // Don't change the score
-                }
-            } else {
-                final int maxSize = Math.min(preferenceLanguage.getSubTags()
-                        .size(), variantLanguage.getSubTags().size());
-                for (int i = 0; (i < maxSize) && compatibleLang; i++) {
-                    if (preferenceLanguage.getSubTags().get(i)
-                            .equalsIgnoreCase(
-                                    variantLanguage.getSubTags().get(i))) {
-                        // Each subtag contribution to the score
-                        // is getting less and less important
-                        score += Math.pow(10, 1 - i);
-                    } else {
-                        // SubTags are different
-                        compatibleLang = false;
-                    }
-                }
-            }
-        }
-
-        return (compatibleLang ? score : -1.0f);
-    }
-
-    /**
-     * Returns a matching score between 2 Media types
-     * 
-     * @param variantMediaType
-     * @param preferenceMediaType
-     * @return the positive matching score or -1 if the media types are not
-     *         compatible
-     */
-    protected float score(MediaType variantMediaType,
-            MediaType preferenceMediaType) {
-        float score = 0.0F;
-        boolean comptabibleMediaType = true;
-
-        // 1) Compare the main types
-        if (preferenceMediaType.getMainType().equals(
-                variantMediaType.getMainType())) {
-            score += 1.0F;
-        } else {
-            if (variantMediaType.getMainType().equals("*")) {
-                // Ranges such as "*/html" are not supported
-                // Only "*/*" is acceptable in this case
-                comptabibleMediaType = (variantMediaType.getSubType()
-                        .equals("*"));
-            } else if (preferenceMediaType.getMainType().equals("*")) {
-                // Ranges such as "*/html" are not supported
-                // Only "*/*" is acceptable in this case
-                comptabibleMediaType = (preferenceMediaType.getSubType()
-                        .equals("*"));
-            } else {
-                comptabibleMediaType = false;
-            }
-        }
-
-        if (comptabibleMediaType) {
-            // 2) Compare the sub types
-            if (variantMediaType.getSubType().equals(
-                    preferenceMediaType.getSubType())) {
-                score += 0.1F;
-            } else {
-                comptabibleMediaType = variantMediaType.getSubType()
-                        .equals("*")
-                        || preferenceMediaType.getSubType().equals("*");
-            }
-
-            if (comptabibleMediaType
-                    && (variantMediaType.getParameters() != null)) {
-                // 3) Compare the parameters
-                // If current media type is compatible with the
-                // current media range then the parameters need to
-                // be checked too
-                for (final Parameter currentParam : variantMediaType
-                        .getParameters()) {
-                    if (preferenceMediaType.getParameters().contains(
-                            currentParam)) {
-                        score++;
-                    }
-                }
-            }
-
-        }
-
-        return (comptabibleMediaType ? score : -1.0F);
-    }
-
-    /**
      * Scores a character set relatively to enriched client preferences.
      * 
      * @param characterSet
@@ -373,29 +251,7 @@ public class Conneg {
      * @return The score.
      */
     public float scoreCharacterSet(CharacterSet characterSet) {
-        float result = -1.0F;
-        float current;
-
-        if (characterSet != null) {
-            for (Preference<CharacterSet> pref : getCharacterSetPrefs()) {
-                if (characterSet.equals(pref.getMetadata())) {
-                    current = 1.0F * pref.getQuality();
-                } else if (pref.getMetadata().equals(CharacterSet.ALL)
-                        || characterSet.equals(CharacterSet.ALL)) {
-                    current = 0.0F;
-                } else {
-                    current = -1.0F;
-                }
-
-                if (current > result) {
-                    result = current;
-                }
-            }
-        } else {
-            result = 0.0F;
-        }
-
-        return result;
+        return scoreMetadata(characterSet, getCharacterSetPrefs());
     }
 
     /**
@@ -406,8 +262,7 @@ public class Conneg {
      * @return The score.
      */
     public float scoreEncodings(List<Encoding> encodings) {
-        float result = 0.0F;
-        return result;
+        return scoreMetadata(encodings, getEncodingPrefs());
     }
 
     /**
@@ -418,27 +273,71 @@ public class Conneg {
      * @return The score.
      */
     public float scoreLanguages(List<Language> languages) {
-        float result = 0.0F;
-        return result;
+        return scoreMetadata(languages, getLanguagePrefs());
     }
 
     /**
-     * Scores an media type relatively to enriched client preferences.
+     * Scores a media type relatively to enriched client preferences.
      * 
      * @param mediaType
      *            The media type to score.
      * @return The score.
      */
     public float scoreMediaType(MediaType mediaType) {
+        return scoreMetadata(mediaType, getMediaTypePrefs());
+    }
+
+    /**
+     * Scores a list of metadata relatively to enriched client preferences.
+     * 
+     * @param metadataList
+     *            The list of metadata to score.
+     * @return The score.
+     */
+    private <T extends Metadata> float scoreMetadata(List<T> metadataList,
+            List<Preference<T>> prefs) {
         float result = -1.0F;
         float current;
 
-        if (mediaType != null) {
-            for (Preference<MediaType> pref : getMediaTypePrefs()) {
-                current = score(mediaType, pref.getMetadata());
+        if ((metadataList != null) && !metadataList.isEmpty()) {
+            for (Preference<T> pref : prefs) {
+                for (T metadata : metadataList) {
+                    if (pref.getMetadata().includes(metadata)) {
+                        current = pref.getQuality();
+                    } else {
+                        current = -1.0F;
+                    }
 
-                if (current != -1.0F) {
-                    current *= pref.getQuality();
+                    if (current > result) {
+                        result = current;
+                    }
+                }
+            }
+        } else {
+            result = 0.0F;
+        }
+
+        return result;
+    }
+
+    /**
+     * Scores a metadata relatively to enriched client preferences.
+     * 
+     * @param metadata
+     *            The metadata to score.
+     * @return The score.
+     */
+    private <T extends Metadata> float scoreMetadata(T metadata,
+            List<Preference<T>> prefs) {
+        float result = -1.0F;
+        float current;
+
+        if (metadata != null) {
+            for (Preference<? extends Metadata> pref : prefs) {
+                if (pref.getMetadata().includes(metadata)) {
+                    current = pref.getQuality();
+                } else {
+                    current = -1.0F;
                 }
 
                 if (current > result) {

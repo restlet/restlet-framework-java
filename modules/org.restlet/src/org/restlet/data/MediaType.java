@@ -883,8 +883,15 @@ public final class MediaType extends Metadata {
 
     @Override
     public MediaType getParent() {
-        return getSubType().equals("*") ? null : MediaType
-                .valueOf(getMainType() + "/*");
+        MediaType result = null;
+
+        if (getSubType().equals("*")) {
+            result = equals(ALL) ? null : ALL;
+        } else {
+            result = MediaType.valueOf(getMainType() + "/*");
+        }
+
+        return result;
     }
 
     /**
@@ -936,20 +943,22 @@ public final class MediaType extends Metadata {
      * @param included
      *            The media type to test for inclusion.
      * @return True if the given media type is included in the current one.
-     * @see #isCompatible(MediaType)
+     * @see #isCompatible(Metadata)
      */
-    public boolean includes(MediaType included) {
+    public boolean includes(Metadata included) {
         boolean result = equals(ALL) || (included == null) || equals(included);
 
-        if (!result) {
-            // Both media types are different
-            if (getMainType().equals(included.getMainType())) {
-                if (getSubType().equals(included.getSubType())) {
+        if (!result && (included instanceof MediaType)) {
+            MediaType includedMediaType = (MediaType) included;
+
+            if (getMainType().equals(includedMediaType.getMainType())) {
+                // Both media types are different
+                if (getSubType().equals(includedMediaType.getSubType())) {
                     result = true;
                 } else if (getSubType().equals("*")) {
                     result = true;
                 } else if (getSubType().startsWith("*+")
-                        && included.getSubType().endsWith(
+                        && includedMediaType.getSubType().endsWith(
                                 getSubType().substring(2))) {
                     result = true;
                 }
@@ -957,26 +966,6 @@ public final class MediaType extends Metadata {
         }
 
         return result;
-    }
-
-    /**
-     * Checks if this MediaType is compatible with the given media type.
-     * <p>
-     * Examples:
-     * <ul>
-     * <li>TEXT_ALL.isCompatible(TEXT_PLAIN) -> true</li>
-     * <li>TEXT_PLAIN.isCompatible(TEXT_ALL) -> true</li>
-     * <li>TEXT_PLAIN.isCompatible(APPLICATION_ALL) -> false</li>
-     * </ul>
-     * 
-     * @param otherMediaType
-     *            The other media type to compare.
-     * @return True if the media types are compatible.
-     * @see #includes(MediaType)
-     */
-    public boolean isCompatible(MediaType otherMediaType) {
-        return (otherMediaType != null)
-                && (includes(otherMediaType) || otherMediaType.includes(this));
     }
 
     /**
