@@ -319,9 +319,16 @@ public class FileClientHelper extends EntityClientHelper {
                 // without known extensions (beginning from the left)
                 final String baseName = Entity.getBaseName(file.getName(),
                         metadataService);
-                final Collection<String> extensions = Entity.getExtensions(file
-                        .getName(), metadataService);
-                // 2- loooking for resources with the same base name
+                // 2- set the list of extensions, due to the file name and the
+                // default metadata.
+                // TODO It seems we may handle more clearly the equivalence
+                // between the file name space and the target resource (URI
+                // completed by default metadata)
+                Variant variant = new Variant();
+                updateMetadata(metadataService, file.getName(), variant);
+                final Collection<String> extensions = Entity.getExtensions(
+                        variant, metadataService);
+                // 3- look for resources with the same base name
                 final File[] files = file.getParentFile().listFiles();
                 File uniqueVariant = null;
 
@@ -336,7 +343,8 @@ public class FileClientHelper extends EntityClientHelper {
                             if (entryExtensions.containsAll(extensions)) {
                                 variantsList.add(entry);
                                 if (extensions.containsAll(entryExtensions)) {
-                                    // The right representation has been found.
+                                    // 4- the right representation has been
+                                    // found.
                                     uniqueVariant = entry;
                                 }
                             }

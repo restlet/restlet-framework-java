@@ -36,8 +36,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.restlet.data.Encoding;
+import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.representation.Representation;
+import org.restlet.representation.Variant;
 import org.restlet.service.MetadataService;
 
 /**
@@ -93,6 +96,44 @@ public abstract class Entity {
         if (extensionFound) {
             for (--i; (i < tokens.length); i++) {
                 result.add(tokens[i]);
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the list of known extensions taken from a given variant.
+     * 
+     * @param variant
+     *            the given variant.
+     * @param metadataService
+     *            Service that holds the known extensions.
+     * @return The list of known extensions taken from the variant.
+     */
+    public static Collection<String> getExtensions(Variant variant,
+            MetadataService metadataService) {
+        final Set<String> result = new TreeSet<String>();
+
+        String extension = metadataService.getExtension(variant
+                .getCharacterSet());
+        if (extension != null) {
+            result.add(extension);
+        }
+        extension = metadataService.getExtension(variant.getMediaType());
+        if (extension != null) {
+            result.add(extension);
+        }
+        for (Language language : variant.getLanguages()) {
+            extension = metadataService.getExtension(language);
+            if (extension != null) {
+                result.add(extension);
+            }
+        }
+        for (Encoding encoding : variant.getEncodings()) {
+            extension = metadataService.getExtension(encoding);
+            if (extension != null) {
+                result.add(extension);
             }
         }
 
