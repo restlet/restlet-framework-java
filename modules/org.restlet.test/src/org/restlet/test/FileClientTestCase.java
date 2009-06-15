@@ -54,16 +54,15 @@ public class FileClientTestCase extends RestletTestCase {
                 .createTempFile("Restlet", ".txt"));
 
         // Write the text to temporary file
-        Response response = fc.put(fr.toString(),
-                new StringRepresentation(text));
+        Response response = fc.put(fr, new StringRepresentation(text));
         assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
 
         // Get the text and compare to the original
-        response = fc.get(fr.toString());
+        response = fc.get(fr);
         assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
 
         // Delete the file
-        response = fc.delete(fr.toString());
+        response = fc.delete(fr);
         assertTrue(response.getStatus().equals(Status.SUCCESS_NO_CONTENT));
     }
 
