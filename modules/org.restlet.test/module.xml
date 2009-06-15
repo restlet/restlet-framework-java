@@ -1,4 +1,4 @@
-<module includes="jse" id="test" package="org.restlet.test">
+<module includes="jse,gwt" id="test" package="org.restlet.test">
    <label>Restlet Unit Tests</label>
    <description>
       All Restlet unit tests.
@@ -21,10 +21,31 @@
       <dependency type="module" id="lucene" />
       <dependency type="module" id="net" />
       <dependency type="module" id="rdf" />
-      <dependency type="module" id="script" />
       <dependency type="module" id="simple" />
       <dependency type="module" id="spring" />
       <dependency type="module" id="velocity" />
       <dependency type="module" id="wadl" />
    </dependencies>
+   <source edition="jse">
+      <files-sets>
+<![CDATA[
+      <fileset dir="${mods}/org.restlet.test">
+         <exclude name="tomcat/**" />
+         <exclude name="target/**" />
+         <exclude name="src/org/restlet/test/gwt/**" />
+      </fileset>
+]]>
+      </files-sets>
+   </source>
+   <source edition="gwt">
+      <files-sets>
+<![CDATA[
+      <fileset dir="${mods}/org.restlet.test">
+         <include name="tomcat/**" />
+         <include name="target/**" />
+         <include name="src/org/restlet/test/gwt/**" />
+      </fileset>
+]]>
+      </files-sets>
+   </source>
 </module>
