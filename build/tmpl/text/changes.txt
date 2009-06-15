@@ -33,6 +33,8 @@ Changes log
           and whose metadata where ignored (always returning the
           "octet/stream" media type for example). 
           Reported by Fabian Mandelbaum.
+        - Added implementation of the "exhaust" method in 
+          DigesterRepresentation class.
     - Enhancements
         - Upgraded Jetty library to version 6.1.18.
         - SpringServerServlet nows gets its component fully configured,
