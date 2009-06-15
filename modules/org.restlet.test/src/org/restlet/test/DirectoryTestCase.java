@@ -37,6 +37,7 @@ import java.util.Date;
 import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Restlet;
+import org.restlet.data.Language;
 import org.restlet.data.LocalReference;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
@@ -123,10 +124,10 @@ public class DirectoryTestCase extends RestletTestCase {
     String baseFileUrlFrBis = this.webSiteURL.concat("fichier.fr.txt");
 
     String percentEncodedFileUrl = this.webSiteURL.concat(Reference
-            .encode("a new %file.txt"));
+            .encode("a new %file.txt.fr"));
 
     String percentEncodedFileUrlBis = this.webSiteURL
-            .concat("a+new%20%25file.txt");
+            .concat("a+new%20%25file.txt.fr");
 
     /** Tests the creation of directory with unknown parent directories. */
     String testCreationDirectory = webSiteURL.concat("dir/does/not/exist");
@@ -350,8 +351,10 @@ public class DirectoryTestCase extends RestletTestCase {
         // Test 3b : try to put a new representation, the directory is no more
         // read only
         directory.setModifiable(true);
-        response = handle(application, this.webSiteURL, this.baseFileUrl,
-                Method.PUT, new StringRepresentation("this is test 3b"), "3b");
+        Representation rep = new StringRepresentation("this is test 3b");
+        rep.getLanguages().add(Language.FRENCH);
+        response = handle(application, this.webSiteURL, this.baseFileUrlFr,
+                Method.PUT, rep, "3b");
         assertEquals(Status.SUCCESS_CREATED, response.getStatus());
 
         // Test 4 : Try to get the representation of the new file
@@ -420,7 +423,7 @@ public class DirectoryTestCase extends RestletTestCase {
         // language)
         response = handle(application, this.webSiteURL, this.baseFileUrlFr,
                 Method.PUT, new StringRepresentation("message de test"), "7a");
-        assertEquals(Status.SUCCESS_CREATED, response.getStatus());
+        assertTrue(response.getStatus().isSuccess());
 
         // Test 7b : put another representation of the base file (in French
         // language) but the extensions are mixed
@@ -506,9 +509,8 @@ public class DirectoryTestCase extends RestletTestCase {
         }
 
         // Test 8 : must delete the English representation
-        response = handle(application, this.webSiteURL, this.baseFileUrl,
+        response = handle(application, this.webSiteURL, this.baseFileUrlFr,
                 Method.DELETE, null, "8a");
-        assertEquals(Status.SUCCESS_NO_CONTENT, response.getStatus());
         response = handle(application, this.webSiteURL, this.baseFileUrlEn,
                 Method.DELETE, null, "8b");
         assertEquals(Status.SUCCESS_NO_CONTENT, response.getStatus());
@@ -516,9 +518,11 @@ public class DirectoryTestCase extends RestletTestCase {
         // Test 9a : put a new representation, the resource's URI contains
         // percent-encoded characters
         directory.setModifiable(true);
+        rep = new StringRepresentation("this is test 9a");
+        rep.getLanguages().add(Language.FRENCH);
         response = handle(application, this.webSiteURL,
                 this.percentEncodedFileUrl, Method.PUT,
-                new StringRepresentation("this is test 9a"), "9a");
+                rep, "9a");
         assertEquals(Status.SUCCESS_CREATED, response.getStatus());
 
         // Test 9b : Try to get the representation of the new file
