@@ -155,6 +155,22 @@ public class DigesterRepresentation extends WrapperRepresentation {
         }
     }
 
+    /**
+     * Exhauts the content of the representation by reading it and silently
+     * discarding anything read.
+     * 
+     * @return The number of bytes consumed or -1 if unknown.
+     */
+    public long exhaust() throws IOException {
+        long result = -1L;
+
+        if (isAvailable()) {
+            result = ByteUtils.exhaust(getStream());
+        }
+
+        return result;
+    }
+
     @Override
     public ReadableByteChannel getChannel() throws IOException {
         return ByteUtils.getChannel(getStream());
@@ -185,8 +201,8 @@ public class DigesterRepresentation extends WrapperRepresentation {
      */
     @Override
     public InputStream getStream() throws IOException {
-        return new DigestInputStream(getWrappedRepresentation()
-                .getStream(), this.computedDigest);
+        return new DigestInputStream(getWrappedRepresentation().getStream(),
+                this.computedDigest);
     }
 
     /**
@@ -203,8 +219,7 @@ public class DigesterRepresentation extends WrapperRepresentation {
     }
 
     @Override
-    public void write(WritableByteChannel writableChannel)
-            throws IOException {
+    public void write(WritableByteChannel writableChannel) throws IOException {
         write(ByteUtils.getStream(writableChannel));
     }
 

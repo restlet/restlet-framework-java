@@ -1,8 +1,7 @@
 <module id="core" includes="jse" type="core" package="org.restlet">
    <label>Restlet API</label>
    <description>
-      Restlet API is a Java framework for the REST architectural
-      style.
+      Restlet API is a Java framework for the REST architectural style.
 	</description>
    <distributions>
       <distribution id="classic" />
