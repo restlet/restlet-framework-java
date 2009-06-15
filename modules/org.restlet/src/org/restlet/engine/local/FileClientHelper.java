@@ -33,6 +33,7 @@ package org.restlet.engine.local;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -315,38 +316,42 @@ public class FileClientHelper extends EntityClientHelper {
                 return;
             } else {
                 // We look for the possible variants
-                // 1- set up base name as the longest part of the name
+                // Set up base name as the longest part of the name
                 // without known extensions (beginning from the left)
                 final String baseName = Entity.getBaseName(file.getName(),
                         metadataService);
-                // 2- set the list of extensions, due to the file name and the
-                // default metadata.
-                // TODO It seems we may handle more clearly the equivalence
-                // between the file name space and the target resource (URI
-                // completed by default metadata)
-                Variant variant = new Variant();
-                updateMetadata(metadataService, file.getName(), variant);
-                final Collection<String> extensions = Entity.getExtensions(
-                        variant, metadataService);
-                // 3- look for resources with the same base name
-                final File[] files = file.getParentFile().listFiles();
-                File uniqueVariant = null;
 
+                // Look for resources with the same base name
+                FileFilter filter = new FileFilter() {
+                    public boolean accept(File file) {
+                        return file.isFile()
+                                && baseName.equals(Entity.getBaseName(file
+                                        .getName(), metadataService));
+                    }
+                };
+                final File[] files = file.getParentFile().listFiles(filter);
+
+                File uniqueVariant = null;
                 final List<File> variantsList = new ArrayList<File>();
                 if (files != null) {
+                    // Set the list of extensions, due to the file name and the
+                    // default metadata.
+                    // TODO It seems we may handle more clearly the equivalence
+                    // between the file name space and the target resource (URI
+                    // completed by default metadata)
+                    Variant variant = new Variant();
+                    updateMetadata(metadataService, file.getName(), variant);
+                    final Collection<String> extensions = Entity.getExtensions(
+                            variant, metadataService);
+
                     for (final File entry : files) {
-                        if (baseName.equals(Entity.getBaseName(entry.getName(),
-                                metadataService))) {
-                            final Collection<String> entryExtensions = Entity
-                                    .getExtensions(entry.getName(),
-                                            metadataService);
-                            if (entryExtensions.containsAll(extensions)) {
-                                variantsList.add(entry);
-                                if (extensions.containsAll(entryExtensions)) {
-                                    // 4- the right representation has been
-                                    // found.
-                                    uniqueVariant = entry;
-                                }
+                        final Collection<String> entryExtensions = Entity
+                                .getExtensions(entry.getName(), metadataService);
+                        if (entryExtensions.containsAll(extensions)) {
+                            variantsList.add(entry);
+                            if (extensions.containsAll(entryExtensions)) {
+                                // The right representation has been found.
+                                uniqueVariant = entry;
                             }
                         }
                     }
