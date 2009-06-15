@@ -38,12 +38,12 @@ import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
 import org.restlet.Restlet;
-import org.restlet.data.Digest;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.representation.DigesterRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 
@@ -69,12 +69,26 @@ public class DigestTestCase extends RestletTestCase {
                 @Override
                 public void handle(Request request, Response response) {
                     Representation rep = request.getEntity();
-                    StringRepresentation f = new StringRepresentation(
-                            "9876543210");
-                    f.setDigest(f.computeDigest(Digest.ALGORITHM_MD5));
-                    response.setEntity(f);
-                    if (rep.checkDigest(Digest.ALGORITHM_MD5)) {
+                    DigesterRepresentation digester = rep.getDigester();
+                    try {
+                        // Such representation computes the digest while
+                        // consuming the wrapped representation.
+                        digester.exhaust();
+                    } catch (IOException e1) {
+                    }
+                    if (digester.checkDigest()) {
                         response.setStatus(Status.SUCCESS_OK);
+                        StringRepresentation f = new StringRepresentation(
+                                "9876543210");
+                        digester = f.getDigester();
+                        try {
+                            // Consume first
+                            digester.exhaust();
+                        } catch (IOException e) {
+                        }
+                        // Set the digest
+                        digester.setDigest(digester.computeDigest());
+                        response.setEntity(digester);
                     } else {
                         response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
                     }
@@ -111,11 +125,19 @@ public class DigestTestCase extends RestletTestCase {
         Request request = new Request(Method.PUT, "http://localhost:"
                 + TEST_PORT + "/");
         StringRepresentation rep = new StringRepresentation("0123456789");
-        rep.setDigest(rep.computeDigest(Digest.ALGORITHM_MD5));
-        request.setEntity(rep);
+        DigesterRepresentation digester = rep.getDigester();
+        // Such representation computes the digest while
+        // consuming the wrapped representation.
+        digester.exhaust();
+        // Set the digest with the computed one
+        digester.setDigest(digester.computeDigest());
+        request.setEntity(digester);
+
         Response response = client.handle(request);
 
-        assertTrue(response.getEntity().checkDigest(Digest.ALGORITHM_MD5));
         assertEquals(Status.SUCCESS_OK, response.getStatus());
+        digester = response.getEntity().getDigester();
+        digester.exhaust();
+        assertTrue(digester.checkDigest());
     }
 }
