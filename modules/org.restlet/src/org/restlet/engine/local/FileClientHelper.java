@@ -49,6 +49,7 @@ import org.restlet.Client;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
 import org.restlet.data.LocalReference;
+import org.restlet.data.Metadata;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Range;
@@ -382,27 +383,17 @@ public class FileClientHelper extends EntityClientHelper {
                         // Update the URI
                         final StringBuilder fileName = new StringBuilder(
                                 baseName);
-                        if (metadataService.getExtension(request.getEntity()
-                                .getMediaType()) != null) {
-                            fileName.append("."
-                                    + metadataService.getExtension(request
-                                            .getEntity().getMediaType()));
-                        }
+                        updateFileExtension(fileName, request.getEntity()
+                                .getMediaType(), metadataService);
                         for (final Language language : request.getEntity()
                                 .getLanguages()) {
-                            if (metadataService.getExtension(language) != null) {
-                                fileName.append("."
-                                        + metadataService
-                                                .getExtension(language));
-                            }
+                            updateFileExtension(fileName, language,
+                                    metadataService);
                         }
                         for (final Encoding encoding : request.getEntity()
                                 .getEncodings()) {
-                            if (metadataService.getExtension(encoding) != null) {
-                                fileName.append("."
-                                        + metadataService
-                                                .getExtension(encoding));
-                            }
+                            updateFileExtension(fileName, encoding,
+                                    metadataService);
                         }
                         file = new File(file.getParentFile(), fileName
                                 .toString());
@@ -738,5 +729,29 @@ public class FileClientHelper extends EntityClientHelper {
     public boolean isResumeUpload() {
         return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
                 "resumeUpload", "false"));
+    }
+
+    /**
+     * Complete the given file name with the extension corresponding to the
+     * given metadata.
+     * 
+     * @param fileName
+     *            The file name to complete.
+     * @param metadata
+     *            The metadata.
+     * @param metadataService
+     *            The metadataService that manages metadata and extensions.
+     */
+    private void updateFileExtension(StringBuilder fileName, Metadata metadata,
+            MetadataService metadataService) {
+        String extension = metadataService.getExtension(metadata);
+        if (extension != null) {
+            fileName.append("." + extension);
+        } else {
+            if (metadata.getParent() != null) {
+                updateFileExtension(fileName, metadata.getParent(),
+                        metadataService);
+            }
+        }
     }
 }
