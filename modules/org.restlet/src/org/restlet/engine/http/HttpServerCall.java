@@ -168,7 +168,6 @@ public abstract class HttpServerCall extends HttpCall {
                     contentLength);
         }
 
-        // TODO result may be null
         result.setSize(contentLength);
 
         // Extract some interesting header values

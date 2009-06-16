@@ -345,7 +345,6 @@ public abstract class Representation extends RepresentationInfo {
     @Override
     protected void finalize() throws Throwable {
         super.finalize();
-
         release();
     }
 
