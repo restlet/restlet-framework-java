@@ -389,15 +389,15 @@ public class DirectoryResource extends ServerResource {
                     if ((variants == null) || (variants.isEmpty())) {
                         setExisting(false);
                     }
+                }
 
-                    // Check if the resource is located in a sub directory.
-                    if (isExisting() && !this.directory.isDeeplyAccessible()) {
-                        // Count the number of "/" character.
-                        int index = this.relativePart.indexOf("/");
-                        if (index != -1) {
-                            index = this.relativePart.indexOf("/", index);
-                            setExisting((index == -1));
-                        }
+                // Check if the resource is located in a sub directory.
+                if (isExisting() && !this.directory.isDeeplyAccessible()) {
+                    // Count the number of "/" character.
+                    int index = this.relativePart.indexOf("/");
+                    if (index != -1) {
+                        index = this.relativePart.indexOf("/", index);
+                        setExisting((index == -1));
                     }
                 }
             }
