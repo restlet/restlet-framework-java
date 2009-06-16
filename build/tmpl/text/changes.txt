@@ -105,7 +105,8 @@ Changes log
      - Misc
         - Exceptions thrown in the internal HTTP client are not logged
           with a FINE level instead of a WARNING level.
-        - Upgraded Simple to version 4.1.12.
+        - Upgraded Simple to version 4.1.13 which now supports 
+          programmatic shutdown. Contributed by Niall Gallagher.
           
 - 2.0 Milestone 3 (2009-05-27)
     - Breaking changes

@@ -78,19 +78,22 @@ public class Conneg {
         this.clientInfo = clientInfo;
         this.metadataService = metadataService;
 
-        // Get the enriched user preferences
-        this.languagePrefs = getEnrichedPreferences(clientInfo
-                .getAcceptedLanguages(), metadataService.getDefaultLanguage(),
-                Language.ALL);
-        this.mediaTypePrefs = getEnrichedPreferences(clientInfo
-                .getAcceptedMediaTypes(),
-                metadataService.getDefaultMediaType(), MediaType.ALL);
-        this.characterSetPrefs = getEnrichedPreferences(clientInfo
-                .getAcceptedCharacterSets(), metadataService
-                .getDefaultCharacterSet(), CharacterSet.ALL);
-        this.encodingPrefs = getEnrichedPreferences(clientInfo
-                .getAcceptedEncodings(), metadataService.getDefaultEncoding(),
-                Encoding.ALL);
+        if (clientInfo != null) {
+            // Get the enriched user preferences
+            this.languagePrefs = getEnrichedPreferences(clientInfo
+                    .getAcceptedLanguages(), (metadataService == null) ? null
+                    : metadataService.getDefaultLanguage(), Language.ALL);
+            this.mediaTypePrefs = getEnrichedPreferences(clientInfo
+                    .getAcceptedMediaTypes(), (metadataService == null) ? null
+                    : metadataService.getDefaultMediaType(), MediaType.ALL);
+            this.characterSetPrefs = getEnrichedPreferences(clientInfo
+                    .getAcceptedCharacterSets(),
+                    (metadataService == null) ? null : metadataService
+                            .getDefaultCharacterSet(), CharacterSet.ALL);
+            this.encodingPrefs = getEnrichedPreferences(clientInfo
+                    .getAcceptedEncodings(), (metadataService == null) ? null
+                    : metadataService.getDefaultEncoding(), Encoding.ALL);
+        }
     }
 
     /**

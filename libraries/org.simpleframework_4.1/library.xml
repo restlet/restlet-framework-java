@@ -1,7 +1,7 @@
 <library id="simple">
    <package name="org.simpleframework" />
    <version>4.1</version>
-   <release>12</release>
+   <release>13</release>
    <distributions>
       <distribution id="classic" />
       <distribution id="maven" />
