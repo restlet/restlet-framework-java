@@ -102,14 +102,14 @@ public class LogFilter extends Filter {
      */
     @Override
     protected void afterHandle(Request request, Response response) {
-        // Format the call into a log entry
-        if (this.logTemplate != null) {
-            this.logLogger.log(Level.INFO, format(request, response));
-        } else {
-            if (this.logLogger.isLoggable(Level.INFO)) {
-                final long startTime = (Long) request.getAttributes().get(
+        if (this.logLogger.isLoggable(Level.INFO)) {
+            // Format the call into a log entry
+            if (this.logTemplate != null) {
+                this.logLogger.log(Level.INFO, format(request, response));
+            } else {
+                long startTime = (Long) request.getAttributes().get(
                         "org.restlet.startTime");
-                final int duration = (int) (System.currentTimeMillis() - startTime);
+                int duration = (int) (System.currentTimeMillis() - startTime);
                 this.logLogger.log(Level.INFO, formatDefault(request, response,
                         duration));
             }
@@ -172,15 +172,16 @@ public class LogFilter extends Filter {
         sb.append('\t');
 
         // Append the client IP address
-        final String clientAddress = request.getClientInfo().getUpstreamAddress();
+        final String clientAddress = request.getClientInfo()
+                .getUpstreamAddress();
         sb.append((clientAddress == null) ? "-" : clientAddress);
         sb.append('\t');
 
         // Append the user name (via IDENT protocol)
         if (this.logService.isIdentityCheck()) {
             final IdentClient ic = new IdentClient(request.getClientInfo()
-                    .getUpstreamAddress(), request.getClientInfo().getPort(), response
-                    .getServerInfo().getPort());
+                    .getUpstreamAddress(), request.getClientInfo().getPort(),
+                    response.getServerInfo().getPort());
             sb.append((ic.getUserIdentifier() == null) ? "-" : ic
                     .getUserIdentifier());
         } else {
