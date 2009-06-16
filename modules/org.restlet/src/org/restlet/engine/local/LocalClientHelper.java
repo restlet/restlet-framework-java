@@ -33,7 +33,6 @@ package org.restlet.engine.local;
 import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.data.Language;
-import org.restlet.data.Request;
 import org.restlet.engine.ClientHelper;
 import org.restlet.service.MetadataService;
 
@@ -92,13 +91,11 @@ public class LocalClientHelper extends ClientHelper {
     }
 
     /**
-     * Returns the metadata service associated to a request.
+     * Returns the metadata service.
      * 
-     * @param request
-     *            The request to lookup.
-     * @return The metadata service associated to a request.
+     * @return The metadata service.
      */
-    public MetadataService getMetadataService(Request request) {
+    public MetadataService getMetadataService() {
         MetadataService result = null;
         Application application = Application.getCurrent();
 

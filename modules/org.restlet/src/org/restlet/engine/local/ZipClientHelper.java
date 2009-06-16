@@ -90,7 +90,7 @@ public class ZipClientHelper extends LocalClientHelper {
         // As the path may be percent-encoded, it has to be percent-decoded.
         // Then, all generated URIs must be encoded.
         final String decodedPath = Reference.decode(path);
-        final MetadataService metadataService = getMetadataService(request);
+        final MetadataService metadataService = getMetadataService();
 
         // Finally, actually handle the call
         handleEntity(request, response, path, decodedPath, metadataService);

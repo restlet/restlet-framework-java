@@ -34,7 +34,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.logging.Level;
@@ -68,24 +67,8 @@ import org.restlet.resource.ServerResource;
  */
 public class DirectoryResource extends ServerResource {
 
-    /**
-     * Returns the set of extensions contained in a given directory entry name.
-     * 
-     * @param entryName
-     *            The directory entry name.
-     * @return The set of extensions.
-     */
-    public static Set<String> getExtensions(String entryName) {
-        final Set<String> result = new TreeSet<String>();
-        final String[] tokens = entryName.split("\\.");
-        for (int i = 1; i < tokens.length; i++) {
-            result.add(tokens[i].toLowerCase());
-        }
-        return result;
-    }
-
-    /** The base set of extensions. */
-    private Set<String> baseExtensions;
+    /** The base variant. */
+    private Variant baseVariant;
 
     /**
      * The local base name of the resource. For example, "foo.en" and
@@ -142,9 +125,9 @@ public class DirectoryResource extends ServerResource {
                     redirectSeeOther(getReference().getIdentifier() + "/");
                 }
             } else {
-                final Request contextRequest = new Request(Method.DELETE,
+                Request contextRequest = new Request(Method.DELETE,
                         this.targetUri);
-                final Response contextResponse = new Response(contextRequest);
+                Response contextResponse = new Response(contextRequest);
 
                 if (this.directoryTarget && !this.indexTarget) {
                     contextRequest.setResourceRef(this.targetUri);
@@ -154,7 +137,7 @@ public class DirectoryResource extends ServerResource {
                     // Check if there is only one representation
 
                     // Try to get the unique representation of the resource
-                    final ReferenceList references = getVariantsReferences();
+                    ReferenceList references = getVariantsReferences();
                     if (!references.isEmpty()) {
                         if (this.uniqueReference != null) {
                             contextRequest.setResourceRef(this.uniqueReference);
@@ -364,8 +347,7 @@ public class DirectoryResource extends ServerResource {
                     // Try to get the directory content, in case the request
                     // does not target a directory
                     if (!this.directoryTarget) {
-                        final int lastSlashIndex = this.targetUri
-                                .lastIndexOf('/');
+                        int lastSlashIndex = this.targetUri.lastIndexOf('/');
                         if (lastSlashIndex == -1) {
                             this.directoryUri = "";
                             this.baseName = this.targetUri;
@@ -387,21 +369,18 @@ public class DirectoryResource extends ServerResource {
                     }
 
                     if (this.baseName != null) {
-                        // Remove the extensions from the base name
-                        final int firstDotIndex = this.baseName.indexOf('.');
-                        if (firstDotIndex != -1) {
-                            // Store the set of extensions
-                            this.baseExtensions = getExtensions(this.baseName);
+                        // Store the set of extensions
+                        this.baseVariant = new Variant();
+                        Entity.updateMetadata(getMetadataService(),
+                                this.baseName, this.baseVariant);
 
-                            // Remove stored extensions from the base name
-                            this.baseName = this.baseName.substring(0,
-                                    firstDotIndex);
-                        }
-
+                        // Remove stored extensions from the base name
+                        this.baseName = Entity.getBaseName(this.baseName,
+                                getMetadataService());
                     }
 
                     // Check if the resource exists or not.
-                    final List<Variant> variants = getVariants(Method.GET);
+                    List<Variant> variants = getVariants(Method.GET);
                     if ((variants == null) || (variants.isEmpty())) {
                         setExisting(false);
                     }
@@ -515,10 +494,10 @@ public class DirectoryResource extends ServerResource {
      */
     private Comparator<Representation> getRepresentationsComparator() {
         // Sort the list of representations by their identifier.
-        final Comparator<Representation> identifiersComparator = new Comparator<Representation>() {
+        Comparator<Representation> identifiersComparator = new Comparator<Representation>() {
             public int compare(Representation rep0, Representation rep1) {
-                final boolean bRep0Null = (rep0.getIdentifier() == null);
-                final boolean bRep1Null = (rep1.getIdentifier() == null);
+                boolean bRep0Null = (rep0.getIdentifier() == null);
+                boolean bRep1Null = (rep1.getIdentifier() == null);
 
                 if (bRep0Null && bRep1Null) {
                     return 0;
@@ -553,7 +532,7 @@ public class DirectoryResource extends ServerResource {
         // The variant that may need to meet the request conditions
         Representation result = null;
 
-        final List<Variant> variants = getVariants(Method.GET);
+        List<Variant> variants = getVariants(Method.GET);
         if ((variants == null) || (variants.isEmpty())) {
             // Resource not found
             getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
@@ -561,9 +540,9 @@ public class DirectoryResource extends ServerResource {
             if (variants.size() == 1) {
                 result = (Representation) variants.get(0);
             } else {
-                final ReferenceList variantRefs = new ReferenceList();
+                ReferenceList variantRefs = new ReferenceList();
 
-                for (final Variant variant : variants) {
+                for (Variant variant : variants) {
                     if (variant.getIdentifier() != null) {
                         variantRefs.add(variant.getIdentifier());
                     } else {
@@ -603,7 +582,7 @@ public class DirectoryResource extends ServerResource {
                     && (getReference().getBaseRef() != null)) {
 
                 // Allows to sort the list of representations
-                final SortedSet<Representation> resultSet = new TreeSet<Representation>(
+                SortedSet<Representation> resultSet = new TreeSet<Representation>(
                         getRepresentationsComparator());
 
                 // Compute the base reference (from a call's client point of
@@ -615,26 +594,25 @@ public class DirectoryResource extends ServerResource {
                     baseRef += "/";
                 }
 
-                final int lastIndex = this.relativePart.lastIndexOf("/");
+                int lastIndex = this.relativePart.lastIndexOf("/");
 
                 if (lastIndex != -1) {
                     baseRef += this.relativePart.substring(0, lastIndex);
                 }
 
-                final int rootLength = getDirectoryUri().length();
+                int rootLength = getDirectoryUri().length();
 
                 if (this.baseName != null) {
                     String filePath;
-                    for (final Reference ref : getVariantsReferences()) {
+                    for (Reference ref : getVariantsReferences()) {
                         // Add the new variant to the result list
-                        final Response contextResponse = getRepresentation(ref
+                        Response contextResponse = getRepresentation(ref
                                 .toString());
                         if (contextResponse.getStatus().isSuccess()
                                 && (contextResponse.getEntity() != null)) {
                             filePath = ref.toString(false, false).substring(
                                     rootLength);
-                            final Representation rep = contextResponse
-                                    .getEntity();
+                            Representation rep = contextResponse.getEntity();
 
                             if (filePath.startsWith("/")) {
                                 rep.setIdentifier(baseRef + filePath);
@@ -658,19 +636,19 @@ public class DirectoryResource extends ServerResource {
                 if (resultSet.isEmpty()) {
                     if (this.directoryTarget
                             && getDirectory().isListingAllowed()) {
-                        final ReferenceList userList = new ReferenceList(
+                        ReferenceList userList = new ReferenceList(
                                 this.directoryContent.size());
                         // Set the list identifier
                         userList.setIdentifier(baseRef);
 
-                        final SortedSet<Reference> sortedSet = new TreeSet<Reference>(
+                        SortedSet<Reference> sortedSet = new TreeSet<Reference>(
                                 getDirectory().getComparator());
                         sortedSet.addAll(this.directoryContent);
 
-                        for (final Reference ref : sortedSet) {
-                            final String filePart = ref.toString(false, false)
+                        for (Reference ref : sortedSet) {
+                            String filePart = ref.toString(false, false)
                                     .substring(rootLength);
-                            final StringBuilder filePath = new StringBuilder();
+                            StringBuilder filePath = new StringBuilder();
                             if ((!baseRef.endsWith("/"))
                                     && (!filePart.startsWith("/"))) {
                                 filePath.append('/');
@@ -678,9 +656,9 @@ public class DirectoryResource extends ServerResource {
                             filePath.append(filePart);
                             userList.add(baseRef + filePath);
                         }
-                        final List<Variant> list = getDirectory()
-                                .getIndexVariants(userList);
-                        for (final Variant variant : list) {
+                        List<Variant> list = getDirectory().getIndexVariants(
+                                userList);
+                        for (Variant variant : list) {
                             if (result == null) {
                                 result = new ArrayList<Variant>();
                             }
@@ -721,25 +699,25 @@ public class DirectoryResource extends ServerResource {
      */
     private ReferenceList getVariantsReferences() {
         this.uniqueReference = null;
-        final ReferenceList result = new ReferenceList(0);
+        ReferenceList result = new ReferenceList(0);
         try {
             // Ask for the list of all variants of this resource
-            final Response contextResponse = getRepresentation(this.targetUri,
+            Response contextResponse = getRepresentation(this.targetUri,
                     MediaType.TEXT_URI_LIST);
             if (contextResponse.getEntity() != null) {
                 // Test if the given response is the list of all variants for
                 // this resource
                 if (MediaType.TEXT_URI_LIST.equals(contextResponse.getEntity()
                         .getMediaType())) {
-                    final ReferenceList listVariants = new ReferenceList(
+                    ReferenceList listVariants = new ReferenceList(
                             contextResponse.getEntity());
-                    Set<String> extensions = null;
                     String entryUri;
                     String fullEntryName;
                     String baseEntryName;
                     int lastSlashIndex;
                     int firstDotIndex;
-                    for (final Reference ref : listVariants) {
+
+                    for (Reference ref : listVariants) {
                         entryUri = ref.toString();
                         lastSlashIndex = entryUri.lastIndexOf('/');
                         fullEntryName = (lastSlashIndex == -1) ? entryUri
@@ -757,16 +735,15 @@ public class DirectoryResource extends ServerResource {
                         if (baseEntryName.equals(this.baseName)) {
                             boolean validVariant = true;
 
-                            // Verify that the extensions are compatible
-                            extensions = getExtensions(fullEntryName);
-                            validVariant = (((extensions == null) && (this.baseExtensions == null))
-                                    || (this.baseExtensions == null) || extensions
-                                    .containsAll(this.baseExtensions));
+                            Variant variant = new Variant();
+                            Entity.updateMetadata(getMetadataService(),
+                                    fullEntryName, variant);
+
+                            validVariant = this.baseVariant
+                                    .isCompatible(variant);
 
                             if (validVariant
-                                    && (this.baseExtensions != null)
-                                    && this.baseExtensions
-                                            .containsAll(extensions)) {
+                                    && this.baseVariant.equals(variant)) {
                                 // The unique reference has been found.
                                 this.uniqueReference = ref;
                             }
@@ -840,12 +817,12 @@ public class DirectoryResource extends ServerResource {
             } else {
                 // Transfer of PUT calls is only allowed if the readOnly flag is
                 // not set.
-                final Request contextRequest = new Request(Method.PUT,
-                        this.targetUri);
+                Request contextRequest = new Request(Method.PUT, this.targetUri);
+
                 // Add support of partial PUT calls.
                 contextRequest.getRanges().addAll(getRanges());
                 contextRequest.setEntity(entity);
-                final Response contextResponse = new Response(contextRequest);
+                Response contextResponse = new Response(contextRequest);
                 contextRequest.setResourceRef(this.targetUri);
                 getClientDispatcher().handle(contextRequest, contextResponse);
                 setStatus(contextResponse.getStatus());

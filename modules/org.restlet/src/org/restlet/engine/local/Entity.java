@@ -163,6 +163,7 @@ public abstract class Entity {
             // We found a potential variant
             for (int j = 1; j < tokens.length; j++) {
                 current = metadataService.getMetadata(tokens[j]);
+
                 if (current != null) {
                     // Metadata extension detected
                     if (current instanceof MediaType) {

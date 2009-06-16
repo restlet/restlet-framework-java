@@ -205,7 +205,7 @@ public class XdbServletWarClientHelper extends ServletWarClientHelper {
                         if (blob != null) {
                             InputStream is = null;
                             is = blob.getBinaryStream();
-                            final MetadataService metadataService = getMetadataService(request);
+                            final MetadataService metadataService = getMetadataService();
                             output = new InputRepresentation(is,
                                     metadataService.getDefaultMediaType());
                             output.setIdentifier(request.getResourceRef());

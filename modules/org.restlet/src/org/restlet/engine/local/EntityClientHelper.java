@@ -181,7 +181,7 @@ public abstract class EntityClientHelper extends LocalClientHelper {
         // As the path may be percent-encoded, it has to be percent-decoded.
         // Then, all generated URIs must be encoded.
         String decodedPath = Reference.decode(path);
-        MetadataService metadataService = getMetadataService(request);
+        MetadataService metadataService = getMetadataService();
 
         // Finally, actually handle the call
         handleEntity(request, response, path, decodedPath, metadataService);

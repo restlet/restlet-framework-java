@@ -125,7 +125,7 @@ public class ClapClientHelper extends LocalClientHelper {
      */
     protected void handleClassLoader(Request request, Response response,
             ClassLoader classLoader) {
-        final MetadataService metadataService = getMetadataService(request);
+        final MetadataService metadataService = getMetadataService();
 
         if (request.getMethod().equals(Method.GET)
                 || request.getMethod().equals(Method.HEAD)) {

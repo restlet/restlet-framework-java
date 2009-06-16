@@ -40,6 +40,7 @@ import java.util.TreeMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.data.ChallengeRequest;
@@ -787,6 +788,25 @@ public abstract class ServerResource extends UniformResource {
     protected RepresentationInfo getInfo(Variant variant)
             throws ResourceException {
         return get(variant);
+    }
+
+    /**
+     * Returns the metadata service. If the parent application doesn't exist, a
+     * new instance is created.
+     * 
+     * @return The metadata service.
+     */
+    public MetadataService getMetadataService() {
+        MetadataService result = null;
+        Application application = Application.getCurrent();
+
+        if (application != null) {
+            result = application.getMetadataService();
+        } else {
+            result = new MetadataService();
+        }
+
+        return result;
     }
 
     /**
