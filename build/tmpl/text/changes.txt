@@ -67,6 +67,9 @@ Changes log
         - Added Variant#includes() method.
         - Significantly improved converter service implementation. Now
           converter helpers support affinity scoring.
+        - HTTPS connectors now reuses the keystore password as the key
+          password if no specific one is defined. Supports keystore
+          default behavior.
     - Breaking changes
         - The default language, defined in MetadataService is now based
           on the JVM's default locale, instead of English/US.

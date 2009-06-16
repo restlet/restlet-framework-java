@@ -83,7 +83,7 @@ import org.restlet.engine.security.SslContextFactory;
  * <tr>
  * <td>keyPassword</td>
  * <td>String</td>
- * <td></td>
+ * <td>${keystorePassword}</td>
  * <td>SSL key password.</td>
  * </tr>
  * <tr>
@@ -284,7 +284,8 @@ public class HttpsServerHelper extends JettyServerHelper {
      * @return The SSL key password.
      */
     public String getKeyPassword() {
-        return getHelpedParameters().getFirstValue("keyPassword", "");
+        return getHelpedParameters().getFirstValue("keyPassword",
+                getKeystorePassword());
     }
 
     /**

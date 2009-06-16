@@ -89,7 +89,7 @@ import com.sun.grizzly.filter.SSLReadFilter;
  * <tr>
  * <td>keyPassword</td>
  * <td>String</td>
- * <td></td>
+ * <td>${keystorePassword}</td>
  * <td>SSL key password.</td>
  * </tr>
  * <tr>
@@ -225,7 +225,8 @@ public class HttpsServerHelper extends GrizzlyServerHelper {
      * @return The SSL key password.
      */
     public String getKeyPassword() {
-        return getHelpedParameters().getFirstValue("keyPassword", "");
+        return getHelpedParameters().getFirstValue("keyPassword",
+                getKeystorePassword());
     }
 
     /**
