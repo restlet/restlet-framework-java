@@ -104,6 +104,8 @@ Changes log
           dimensions (character sets, encodings, languages and media
           types). Suggested by Alexander Horn, Maxence Bernard and
           David Fogel.
+        - Implemented Variant#equals() method and improved the 
+          implementation of isCompatible() method.
      - Misc
         - Exceptions thrown in the internal HTTP client are not logged
           with a FINE level instead of a WARNING level.

@@ -317,6 +317,45 @@ public class Variant {
     }
 
     /**
+     * Indicates if the current variant is equal to the given variant.
+     * 
+     * @param other
+     *            The other variant.
+     * @return True if the current variant includes the other.
+     */
+    @Override
+    public boolean equals(Object other) {
+        boolean result = (other instanceof Variant);
+        Variant otherVariant = (Variant) other;
+
+        // Compare the character set
+        if (result) {
+            result = ((getCharacterSet() == null)
+                    && (otherVariant.getCharacterSet() == null) || getCharacterSet()
+                    .equals(otherVariant.getCharacterSet()));
+        }
+
+        // Compare the media type
+        if (result) {
+            result = ((getMediaType() == null)
+                    && (otherVariant.getMediaType() == null) || getMediaType()
+                    .equals(otherVariant.getMediaType()));
+        }
+
+        // Compare the languages
+        if (result) {
+            result = getLanguages().equals(otherVariant.getLanguages());
+        }
+
+        // Compare the encodings
+        if (result) {
+            result = getEncodings().equals(otherVariant.getEncodings());
+        }
+
+        return result;
+    }
+
+    /**
      * Indicates if the current variant is compatible with the given variant.
      * 
      * @param other
@@ -344,6 +383,13 @@ public class Variant {
             result = (getLanguages().isEmpty())
                     || getLanguages().contains(Language.ALL)
                     || getLanguages().containsAll(other.getLanguages());
+        }
+
+        // Compare the encodings
+        if (result) {
+            result = (getEncodings().isEmpty())
+                    || getEncodings().contains(Encoding.ALL)
+                    || getEncodings().containsAll(other.getEncodings());
         }
 
         return result;
