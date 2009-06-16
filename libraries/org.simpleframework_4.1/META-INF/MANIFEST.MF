@@ -18,7 +18,7 @@ Export-Package: org.simpleframework.http;uses:="org.simpleframework.http.session
  org.simpleframework.http.parse;uses:="org.simpleframework.http,org.simpleframework.util.parse,org.simpleframework.util",
  org.simpleframework.http.resource;uses:="org.simpleframework.http.core,org.simpleframework.http",
  org.simpleframework.http.session;uses:="org.simpleframework.util.lease",
- org.simpleframework.transport;uses:="org.simpleframework.transport.reactor,javax.net.ssl",
+ org.simpleframework.transport;uses:="org.simpleframework.util.thread,org.simpleframework.transport.reactor,javax.net.ssl",
  org.simpleframework.transport.connect;
   uses:="org.simpleframework.http.core,
    org.simpleframework.transport,
