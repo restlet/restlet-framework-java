@@ -43,8 +43,15 @@ import org.restlet.service.MetadataService;
  * Annotation for methods that remove representations. Its semantics is
  * equivalent to an HTTP DELETE method.<br>
  * <br>
- * Note: The current implementation isn't complete and doesn't support the full
- * syntax. This is work in progress and should only be used for experimentation.
+ * Example:
+ * 
+ * <pre>
+ * &#064;Delete()
+ * public void removeAll();
+ * 
+ * &#064;Delete(&quot;xml&quot;)
+ * public Representation deleteXml();
+ * </pre>
  * 
  * @author Jerome Louvel
  */
@@ -55,12 +62,15 @@ import org.restlet.service.MetadataService;
 public @interface Delete {
 
     /**
-     * Returns the optional list of response variants supported. The variants
-     * must be expressed using extension names as declared in the
-     * {@link MetadataService}. Example: "xml", "xml+fr", "xml|json + fr",
-     * "xml|json * fr|en", etc.
+     * Specifies the result media type extension. Note that this isn't the full
+     * MIME type value, just the extension name declared in
+     * {@link MetadataService}. For a list of all predefined extensions, please
+     * check {@link MetadataService#addCommonExtensions()}. New extension can be
+     * registered using
+     * {@link MetadataService#addExtension(String, org.restlet.data.Metadata)}
+     * method.
      * 
-     * @return The optional list of response variants supported.
+     * @return The result media types.
      */
     String value() default "";
 

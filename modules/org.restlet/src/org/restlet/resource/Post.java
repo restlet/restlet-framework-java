@@ -37,13 +37,21 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.restlet.engine.Method;
+import org.restlet.service.MetadataService;
 
 /**
  * Annotation for methods that accept submitted representations. Its semantics
  * is equivalent to an HTTP POST method.<br>
  * <br>
- * Note: The current implementation isn't complete and doesn't support the full
- * syntax. This is work in progress and should only be used for experimentation.
+ * Example:
+ * 
+ * <pre>
+ * &#064;Post(&quot;json:json&quot;)
+ * public String acceptJson(String value);
+ * 
+ * &#064;Post(&quot;xml:xml&quot;)
+ * public Representation acceptXml(Representation value);
+ * </pre>
  * 
  * @author Jerome Louvel
  */
@@ -53,6 +61,17 @@ import org.restlet.engine.Method;
 @Method("POST")
 public @interface Post {
 
+    /**
+     * Specifies the result media type extension. Note that this isn't the full
+     * MIME type value, just the extension name declared in
+     * {@link MetadataService}. For a list of all predefined extensions, please
+     * check {@link MetadataService#addCommonExtensions()}. New extension can be
+     * registered using
+     * {@link MetadataService#addExtension(String, org.restlet.data.Metadata)}
+     * method.
+     * 
+     * @return The result media types.
+     */
     String value() default "";
 
 }

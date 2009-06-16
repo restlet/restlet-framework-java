@@ -32,7 +32,7 @@ Changes log
         - Fixed issue with annotated method returning a representation
           and whose metadata where ignored (always returning the
           "octet/stream" media type for example). 
-          Reported by Fabian Mandelbaum.
+          Reported by Fabian Mandelbaum, David Fogel.
         - Added implementation of the "exhaust" method in 
           DigesterRepresentation class.
         - Added default DomRepresentation constructor.
