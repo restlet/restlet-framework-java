@@ -100,18 +100,18 @@ public class TemplateDispatcher extends Client {
     public void handle(Request request, Response response) {
         // Associate the response to the current thread
         Response.setCurrent(response);
-
-        final Protocol protocol = request.getProtocol();
+        Protocol protocol = request.getProtocol();
 
         if (protocol == null) {
             throw new UnsupportedOperationException(
                     "Unable to determine the protocol to use for this call.");
         }
-        final String targetUri = request.getResourceRef().toString(true, false);
+
+        String targetUri = request.getResourceRef().toString(true, false);
 
         if (targetUri.contains("{")) {
             // Template URI detected, create the template
-            final Template template = new Template(targetUri);
+            Template template = new Template(targetUri);
 
             // Set the formatted target URI
             request.setResourceRef(template.format(request, response));

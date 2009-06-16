@@ -160,7 +160,7 @@ public abstract class EntityClientHelper extends LocalClientHelper {
                     + decodedVariantEntityName.substring(i);
         }
 
-        return encodedEntityName.substring(0, j - 1);
+        return encodedEntityName.substring(0, j);
     }
 
     /**

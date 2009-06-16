@@ -521,8 +521,7 @@ public class DirectoryTestCase extends RestletTestCase {
         rep = new StringRepresentation("this is test 9a");
         rep.getLanguages().add(Language.FRENCH);
         response = handle(application, this.webSiteURL,
-                this.percentEncodedFileUrl, Method.PUT,
-                rep, "9a");
+                this.percentEncodedFileUrl, Method.PUT, rep, "9a");
         assertEquals(Status.SUCCESS_CREATED, response.getStatus());
 
         // Test 9b : Try to get the representation of the new file

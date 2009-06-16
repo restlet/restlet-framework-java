@@ -452,6 +452,12 @@ public class Variant {
         }
 
         if (!getEncodings().isEmpty()) {
+            if (!first) {
+                sb.append(",");
+            } else {
+                first = false;
+            }
+
             sb.append(getEncodings());
         }
 

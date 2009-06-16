@@ -185,7 +185,7 @@ public class DirectoryResource extends ServerResource {
     }
 
     /**
-     * This constructor aims at answering the following questions:<br>
+     * This initialization method aims at answering the following questions:<br>
      * <ul>
      * <li>does this request target a directory?</li>
      * <li>does this request target a directory, with an index file?</li>
@@ -247,6 +247,7 @@ public class DirectoryResource extends ServerResource {
             } else {
                 // Try to detect the presence of a directory
                 Response contextResponse = getRepresentation(this.targetUri);
+
                 if (contextResponse.getEntity() != null) {
                     // As a convention, underlying client connectors return the
                     // directory listing with the media-type
@@ -281,6 +282,8 @@ public class DirectoryResource extends ServerResource {
                     } else {
                         // Allows underlying helpers that do not support
                         // "content negotiation" to return the targeted file.
+                        // Sometimes we immediately reach the target entity, so
+                        // we return it directly.
                         this.directoryTarget = false;
                         this.fileTarget = true;
                         this.fileContent = contextResponse.getEntity();
@@ -356,66 +359,71 @@ public class DirectoryResource extends ServerResource {
                     }
                 }
 
-                // Try to get the directory content, in case the request does
-                // not target a directory
-                if (!this.directoryTarget) {
-                    final int lastSlashIndex = this.targetUri.lastIndexOf('/');
-                    if (lastSlashIndex == -1) {
-                        this.directoryUri = "";
-                        this.baseName = this.targetUri;
-                    } else {
-                        this.directoryUri = this.targetUri.substring(0,
-                                lastSlashIndex + 1);
-                        this.baseName = this.targetUri
-                                .substring(lastSlashIndex + 1);
+                if (!fileTarget || (fileContent == null)
+                        || !getRequest().getMethod().isSafe()) {
+                    // Try to get the directory content, in case the request
+                    // does not target a directory
+                    if (!this.directoryTarget) {
+                        final int lastSlashIndex = this.targetUri
+                                .lastIndexOf('/');
+                        if (lastSlashIndex == -1) {
+                            this.directoryUri = "";
+                            this.baseName = this.targetUri;
+                        } else {
+                            this.directoryUri = this.targetUri.substring(0,
+                                    lastSlashIndex + 1);
+                            this.baseName = this.targetUri
+                                    .substring(lastSlashIndex + 1);
+                        }
+
+                        contextResponse = getRepresentation(this.directoryUri);
+                        if ((contextResponse.getEntity() != null)
+                                && MediaType.TEXT_URI_LIST
+                                        .equals(contextResponse.getEntity()
+                                                .getMediaType())) {
+                            this.directoryContent = new ReferenceList(
+                                    contextResponse.getEntity());
+                        }
                     }
 
-                    contextResponse = getRepresentation(this.directoryUri);
-                    if ((contextResponse.getEntity() != null)
-                            && MediaType.TEXT_URI_LIST.equals(contextResponse
-                                    .getEntity().getMediaType())) {
-                        this.directoryContent = new ReferenceList(
-                                contextResponse.getEntity());
-                    }
-                }
+                    if (this.baseName != null) {
+                        // Remove the extensions from the base name
+                        final int firstDotIndex = this.baseName.indexOf('.');
+                        if (firstDotIndex != -1) {
+                            // Store the set of extensions
+                            this.baseExtensions = getExtensions(this.baseName);
 
-                if (this.baseName != null) {
-                    // Remove the extensions from the base name
-                    final int firstDotIndex = this.baseName.indexOf('.');
-                    if (firstDotIndex != -1) {
-                        // Store the set of extensions
-                        this.baseExtensions = getExtensions(this.baseName);
+                            // Remove stored extensions from the base name
+                            this.baseName = this.baseName.substring(0,
+                                    firstDotIndex);
+                        }
 
-                        // Remove stored extensions from the base name
-                        this.baseName = this.baseName.substring(0,
-                                firstDotIndex);
                     }
 
+                    // Check if the resource exists or not.
+                    final List<Variant> variants = getVariants(Method.GET);
+                    if ((variants == null) || (variants.isEmpty())) {
+                        setExisting(false);
+                    }
+
+                    // Check if the resource is located in a sub directory.
+                    if (isExisting() && !this.directory.isDeeplyAccessible()) {
+                        // Count the number of "/" character.
+                        int index = this.relativePart.indexOf("/");
+                        if (index != -1) {
+                            index = this.relativePart.indexOf("/", index);
+                            setExisting((index == -1));
+                        }
+                    }
                 }
             }
+
+            // Log results
+            getLogger().info("Converted target URI: " + this.targetUri);
+            getLogger().fine("Converted base name : " + this.baseName);
         } catch (IOException ioe) {
             throw new ResourceException(ioe);
         }
-
-        // Check if the resource exists or not.
-        final List<Variant> variants = getVariants(Method.GET);
-        if ((variants == null) || (variants.isEmpty())) {
-            setExisting(false);
-        }
-
-        // Check if the resource is located in a sub directory.
-        if (isExisting() && !this.directory.isDeeplyAccessible()) {
-            // Count the number of "/" character.
-            int index = this.relativePart.indexOf("/");
-            if (index != -1) {
-                index = this.relativePart.indexOf("/", index);
-                setExisting((index == -1));
-            }
-        }
-
-        // Log results
-        getLogger().info("Converted target URI: " + this.targetUri);
-        getLogger().fine("Converted base name : " + this.baseName);
     }
 
     /**
