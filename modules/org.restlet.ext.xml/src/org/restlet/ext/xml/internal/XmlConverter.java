@@ -38,7 +38,6 @@ import org.restlet.engine.converter.ConverterHelper;
 import org.restlet.engine.resource.VariantInfo;
 import org.restlet.ext.xml.DomRepresentation;
 import org.restlet.ext.xml.SaxRepresentation;
-import org.restlet.ext.xml.XmlRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.UniformResource;
@@ -61,30 +60,27 @@ public class XmlConverter extends ConverterHelper {
             MediaType.TEXT_XML);
 
     @Override
-    public List<Class<?>> getObjectClasses(Variant variant) {
+    public List<Class<?>> getObjectClasses(Variant source) {
         List<Class<?>> result = null;
 
-        if (variant.getMediaType() != null) {
-            MediaType mediaType = variant.getMediaType();
-
-            if (MediaType.APPLICATION_ALL_XML.isCompatible(mediaType)
-                    || MediaType.APPLICATION_XML.isCompatible(mediaType)
-                    || MediaType.TEXT_XML.isCompatible(mediaType)) {
-                result = addObjectClass(result, Document.class);
-                result = addObjectClass(result, XmlRepresentation.class);
-            }
+        if (VARIANT_APPLICATION_ALL_XML.isCompatible(source)
+                || VARIANT_APPLICATION_XML.isCompatible(source)
+                || VARIANT_TEXT_XML.isCompatible(source)) {
+            result = addObjectClass(result, Document.class);
+            result = addObjectClass(result, DomRepresentation.class);
+            result = addObjectClass(result, SaxRepresentation.class);
         }
 
         return result;
     }
 
     @Override
-    public List<VariantInfo> getVariants(Class<?> objectClass) {
+    public List<VariantInfo> getVariants(Class<?> source) {
         List<VariantInfo> result = null;
 
-        if (Document.class.isAssignableFrom(objectClass)
-                || DomRepresentation.class.isAssignableFrom(objectClass)
-                || SaxRepresentation.class.isAssignableFrom(objectClass)) {
+        if (Document.class.isAssignableFrom(source)
+                || DomRepresentation.class.isAssignableFrom(source)
+                || SaxRepresentation.class.isAssignableFrom(source)) {
             result = addVariant(result, VARIANT_APPLICATION_ALL_XML);
             result = addVariant(result, VARIANT_APPLICATION_XML);
             result = addVariant(result, VARIANT_TEXT_XML);
@@ -93,64 +89,78 @@ public class XmlConverter extends ConverterHelper {
         return result;
     }
 
+    @Override
+    public float score(Object source, Variant target, UniformResource resource) {
+        float result = -1.0F;
+
+        if (source instanceof Document) {
+            if (MediaType.APPLICATION_ALL_XML.isCompatible(target
+                    .getMediaType())) {
+                result = 1.0F;
+            } else if (MediaType.APPLICATION_XML.isCompatible(target
+                    .getMediaType())) {
+                result = 1.0F;
+            } else if (MediaType.TEXT_XML.isCompatible(target.getMediaType())) {
+                result = 1.0F;
+            } else {
+                result = 0.5F;
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public <T> float score(Representation source, Class<T> target,
+            UniformResource resource) {
+        float result = -1.0F;
+
+        if (Document.class.isAssignableFrom(target)
+                || DomRepresentation.class.isAssignableFrom(target)
+                || SaxRepresentation.class.isAssignableFrom(target)) {
+            if (MediaType.APPLICATION_ALL_XML.isCompatible(source
+                    .getMediaType())) {
+                result = 1.0F;
+            } else if (MediaType.APPLICATION_XML.isCompatible(source
+                    .getMediaType())) {
+                result = 1.0F;
+            } else if (MediaType.TEXT_XML.isCompatible(source.getMediaType())) {
+                result = 1.0F;
+            } else {
+                result = 0.5F;
+            }
+        }
+
+        return result;
+    }
+
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T toObject(Representation representation, Class<T> targetClass,
+    public <T> T toObject(Representation source, Class<T> target,
             UniformResource resource) throws IOException {
         Object result = null;
 
-        if (representation != null) {
-            if (targetClass != null) {
-                if (targetClass.isAssignableFrom(representation.getClass())) {
-                    result = (T) representation;
-                } else {
-                    if (Document.class.isAssignableFrom(targetClass)) {
-                        result = new DomRepresentation(representation)
-                                .getDocument();
-                    } else if (DomRepresentation.class
-                            .isAssignableFrom(targetClass)) {
-                        result = new DomRepresentation(representation);
-                    } else if (SaxRepresentation.class
-                            .isAssignableFrom(targetClass)) {
-                        result = new SaxRepresentation(representation);
-                    }
-                }
-            }
-
-            if (result instanceof Representation) {
-                Representation resultRepresentation = (Representation) result;
-
-                // Copy the variant metadata
-                resultRepresentation.setCharacterSet(representation
-                        .getCharacterSet());
-                resultRepresentation
-                        .setMediaType(representation.getMediaType());
-                resultRepresentation
-                        .setEncodings(representation.getEncodings());
-                resultRepresentation
-                        .setLanguages(representation.getLanguages());
-            }
+        if (Document.class.isAssignableFrom(target)) {
+            result = new DomRepresentation(source).getDocument();
+        } else if (DomRepresentation.class.isAssignableFrom(target)) {
+            result = new DomRepresentation(source);
+        } else if (SaxRepresentation.class.isAssignableFrom(target)) {
+            result = new SaxRepresentation(source);
         }
 
         return (T) result;
     }
 
     @Override
-    public Representation toRepresentation(Object object,
-            Variant targetVariant, UniformResource resource) throws IOException {
+    public Representation toRepresentation(Object source, Variant target,
+            UniformResource resource) throws IOException {
         Representation result = null;
 
-        if (object instanceof Document) {
-            result = new DomRepresentation(targetVariant == null ? null
-                    : targetVariant.getMediaType(), (Document) object);
-        }
-
-        if ((result != null) && (targetVariant != null)) {
-            // Copy the variant metadata
-            result.setCharacterSet(targetVariant.getCharacterSet());
-            result.setMediaType(targetVariant.getMediaType());
-            result.setEncodings(targetVariant.getEncodings());
-            result.setLanguages(targetVariant.getLanguages());
+        if (source instanceof Document) {
+            result = new DomRepresentation(target.getMediaType(),
+                    (Document) source);
+        } else if (source instanceof Representation) {
+            result = (Representation) source;
         }
 
         return result;

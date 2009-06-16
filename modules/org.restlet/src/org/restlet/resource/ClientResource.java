@@ -1004,7 +1004,7 @@ public class ClientResource extends UniformResource {
             try {
                 ConverterService cs = getConverterService();
                 result = cs.toObject(sourceRepresentation, targetClass, this);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 throw new ResourceException(e);
             }
         }

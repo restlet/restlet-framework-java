@@ -54,12 +54,38 @@ public class GwtConverter extends ConverterHelper {
             MediaType.APPLICATION_JAVA_OBJECT_GWT);
 
     @Override
-    public List<Class<?>> getObjectClasses(Variant variant) {
+    public List<Class<?>> getObjectClasses(Variant source) {
         List<Class<?>> result = null;
 
-        if (variant != null) {
-            if (VARIANT_GWT.isCompatible(variant)) {
-                result = addObjectClass(result, Object.class);
+        if (VARIANT_GWT.isCompatible(source)) {
+            result = addObjectClass(result, Serializable.class);
+            result = addObjectClass(result, ObjectRepresentation.class);
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<VariantInfo> getVariants(Class<?> source) {
+        List<VariantInfo> result = null;
+
+        if (Serializable.class.isAssignableFrom(source)) {
+            result = addVariant(result, VARIANT_GWT);
+        }
+
+        return result;
+    }
+
+    @Override
+    public float score(Object source, Variant target, UniformResource resource) {
+        float result = -1.0F;
+
+        if (source instanceof Serializable) {
+            if (MediaType.APPLICATION_JAVA_OBJECT_GWT.isCompatible(target
+                    .getMediaType())) {
+                result = 1.0F;
+            } else {
+                result = 0.5F;
             }
         }
 
@@ -67,21 +93,31 @@ public class GwtConverter extends ConverterHelper {
     }
 
     @Override
-    public List<VariantInfo> getVariants(Class<?> objectClass) {
-        return addVariant(null, VARIANT_GWT);
+    public <T> float score(Representation source, Class<T> target,
+            UniformResource resource) {
+        float result = -1.0F;
+
+        if (Serializable.class.isAssignableFrom(target)) {
+            if (MediaType.APPLICATION_JAVA_OBJECT_GWT.isCompatible(source
+                    .getMediaType())) {
+                result = 1.0F;
+            } else {
+                result = 0.5F;
+            }
+        }
+
+        return result;
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T toObject(Representation representation, Class<T> targetClass,
+    public <T> T toObject(Representation source, Class<T> target,
             UniformResource resource) throws IOException {
         Object result = null;
-        ObjectRepresentation<?> objectRepresentation;
 
-        if (VARIANT_GWT.isCompatible(representation)) {
-            objectRepresentation = new ObjectRepresentation(representation
-                    .getText(), targetClass);
-            result = objectRepresentation.getObject();
+        if (Serializable.class.isAssignableFrom(target)) {
+            result = new ObjectRepresentation(source.getText(), target)
+                    .getObject();
         }
 
         return (T) result;
@@ -89,14 +125,16 @@ public class GwtConverter extends ConverterHelper {
 
     @SuppressWarnings("unchecked")
     @Override
-    public Representation toRepresentation(Object object,
-            Variant targetVariant, UniformResource resource) {
-        if (targetVariant == null) {
-            targetVariant = new Variant(MediaType.APPLICATION_JAVA_OBJECT_GWT);
+    public Representation toRepresentation(Object source, Variant target,
+            UniformResource resource) {
+        Representation result = null;
+
+        if (source instanceof Serializable) {
+            result = new ObjectRepresentation((Serializable) source);
+        } else if (source instanceof Representation) {
+            result = (Representation) source;
         }
 
-        ObjectRepresentation objectRepresentation = new ObjectRepresentation(
-                (Serializable) object);
-        return objectRepresentation;
+        return result;
     }
 }

@@ -31,7 +31,6 @@
 package org.restlet.ext.xstream.internal;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.data.MediaType;
@@ -64,65 +63,107 @@ public class XstreamConverter extends ConverterHelper {
             MediaType.TEXT_XML);
 
     @Override
-    public List<Class<?>> getObjectClasses(Variant variant) {
+    public List<Class<?>> getObjectClasses(Variant source) {
         List<Class<?>> result = null;
 
-        if (variant != null) {
-            if (VARIANT_JSON.isCompatible(variant)
-                    || VARIANT_APPLICATION_ALL_XML.isCompatible(variant)
-                    || VARIANT_APPLICATION_XML.isCompatible(variant)
-                    || VARIANT_TEXT_XML.isCompatible(variant)) {
-                if (result == null) {
-                    result = new ArrayList<Class<?>>();
-                }
+        if (VARIANT_JSON.isCompatible(source)
+                || VARIANT_APPLICATION_ALL_XML.isCompatible(source)
+                || VARIANT_APPLICATION_XML.isCompatible(source)
+                || VARIANT_TEXT_XML.isCompatible(source)) {
+            result = addObjectClass(result, Object.class);
+            result = addObjectClass(result, XstreamRepresentation.class);
+        }
 
-                result.add(Object.class);
+        return result;
+    }
+
+    @Override
+    public List<VariantInfo> getVariants(Class<?> source) {
+        List<VariantInfo> result = null;
+
+        if (Object.class.isAssignableFrom(source)) {
+            result = addVariant(result, VARIANT_JSON);
+            result = addVariant(result, VARIANT_APPLICATION_ALL_XML);
+            result = addVariant(result, VARIANT_APPLICATION_XML);
+            result = addVariant(result, VARIANT_TEXT_XML);
+        }
+
+        return result;
+    }
+
+    @Override
+    public float score(Object source, Variant target, UniformResource resource) {
+        float result = -1.0F;
+
+        if (source instanceof XstreamRepresentation) {
+            result = 1.0F;
+        } else if (source instanceof Object) {
+            result = 0.8F;
+        } else {
+            result = 0.5F;
+        }
+
+        return result;
+    }
+
+    @Override
+    public <T> float score(Representation source, Class<T> target,
+            UniformResource resource) {
+        float result = -1.0F;
+
+        if (Object.class.isAssignableFrom(target)) {
+            if (VARIANT_JSON.isCompatible(source)) {
+                result = 0.8F;
+            } else if (VARIANT_APPLICATION_ALL_XML.isCompatible(source)
+                    || VARIANT_APPLICATION_XML.isCompatible(source)
+                    || VARIANT_TEXT_XML.isCompatible(source)) {
+                result = 0.8F;
+            } else {
+                result = 0.5F;
             }
         }
 
         return result;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public List<VariantInfo> getVariants(Class<?> objectClass) {
-        List<VariantInfo> result = addVariant(null, VARIANT_JSON);
-        addVariant(result, VARIANT_APPLICATION_ALL_XML);
-        addVariant(result, VARIANT_APPLICATION_XML);
-        addVariant(result, VARIANT_TEXT_XML);
-        return result;
-    }
-
-    @Override
-    public <T> T toObject(Representation representation, Class<T> targetClass,
+    public <T> T toObject(Representation source, Class<T> target,
             UniformResource resource) throws IOException {
-        T result = null;
+        Object result = null;
         XstreamRepresentation<T> xstreamRepresentation;
 
-        if (VARIANT_JSON.isCompatible(representation)) {
-            xstreamRepresentation = new XstreamRepresentation<T>(representation);
+        if (VARIANT_JSON.isCompatible(source)) {
+            xstreamRepresentation = new XstreamRepresentation<T>(source);
             xstreamRepresentation
                     .setJsonDriverClass(JettisonMappedXmlDriver.class);
             result = xstreamRepresentation.getObject();
-        } else if (VARIANT_APPLICATION_ALL_XML.isCompatible(representation)
-                || VARIANT_APPLICATION_XML.isCompatible(representation)
-                || VARIANT_TEXT_XML.isCompatible(representation)) {
-            xstreamRepresentation = new XstreamRepresentation<T>(representation);
+        } else if (VARIANT_APPLICATION_ALL_XML.isCompatible(source)
+                || VARIANT_APPLICATION_XML.isCompatible(source)
+                || VARIANT_TEXT_XML.isCompatible(source)) {
+            xstreamRepresentation = new XstreamRepresentation<T>(source);
             result = xstreamRepresentation.getObject();
         }
 
-        return result;
+        return (T) result;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Representation toRepresentation(Object object,
-            Variant targetVariant, UniformResource resource) {
-        if (targetVariant == null) {
-            targetVariant = new Variant(MediaType.APPLICATION_JSON);
+    public Representation toRepresentation(Object source, Variant target,
+            UniformResource resource) {
+        Representation result = null;
+
+        if (source instanceof XstreamRepresentation) {
+            result = (XstreamRepresentation) source;
+        } else if (source instanceof Object) {
+            XstreamRepresentation<Object> xstreamRepresentation = new XstreamRepresentation<Object>(
+                    target.getMediaType(), source);
+            xstreamRepresentation
+                    .setJsonDriverClass(JettisonMappedXmlDriver.class);
+            result = xstreamRepresentation;
         }
 
-        XstreamRepresentation<Object> xstreamRepresentation = new XstreamRepresentation<Object>(
-                targetVariant.getMediaType(), object);
-        xstreamRepresentation.setJsonDriverClass(JettisonMappedXmlDriver.class);
-        return xstreamRepresentation;
+        return result;
     }
 }

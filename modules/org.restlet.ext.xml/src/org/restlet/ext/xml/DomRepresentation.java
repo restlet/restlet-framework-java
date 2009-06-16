@@ -68,6 +68,13 @@ public class DomRepresentation extends XmlRepresentation {
     private volatile Representation xmlRepresentation;
 
     /**
+     * Default constructor. Uses the {@link MediaType#TEXT_XML} media type.
+     */
+    public DomRepresentation() throws IOException {
+        this(MediaType.TEXT_XML);
+    }
+
+    /**
      * Constructor for an empty document.
      * 
      * @param mediaType

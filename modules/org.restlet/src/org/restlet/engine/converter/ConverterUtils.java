@@ -35,6 +35,7 @@ import java.util.List;
 
 import org.restlet.engine.Engine;
 import org.restlet.engine.resource.VariantInfo;
+import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.UniformResource;
 
@@ -83,37 +84,30 @@ public class ConverterUtils {
     /**
      * Returns the best converter helper matching the given parameters.
      * 
-     * @param sourceObject
+     * @param source
      *            The object to convert to a representation.
-     * @param targetVariant
+     * @param target
      *            The target representation variant.
      * @param resource
      *            The optional parent resource.
      * @return The matched converter helper or null.
      */
-    public static ConverterHelper getHelper(Object sourceObject,
-            Variant targetVariant, UniformResource resource) {
+    public static ConverterHelper getBestHelper(Object source, Variant target,
+            UniformResource resource) {
+        ConverterHelper result = null;
+        float bestScore = -1.0F;
+        float currentScore;
 
-        List<VariantInfo> variants;
         for (ConverterHelper ch : Engine.getInstance()
                 .getRegisteredConverters()) {
+            currentScore = ch.score(source, target, resource);
 
-            variants = ch.getVariants(sourceObject.getClass());
-
-            if (variants != null) {
-                if (targetVariant != null) {
-                    for (Variant variant : variants) {
-                        if (variant.isCompatible(targetVariant)) {
-                            return ch;
-                        }
-                    }
-                } else {
-                    return ch;
-                }
+            if (currentScore > bestScore) {
+                result = ch;
             }
         }
 
-        return null;
+        return result;
     }
 
     /**
@@ -121,37 +115,30 @@ public class ConverterUtils {
      * 
      * @param <T>
      *            The target class.
-     * @param sourceVariant
+     * @param source
      *            The source representation variant.
-     * @param targetClass
+     * @param target
      *            The target class.
      * @param resource
      *            The parent resource.
      * @return The matched converter helper or null.
      */
-    public static <T> ConverterHelper getHelper(Variant sourceVariant,
-            Class<T> targetClass, UniformResource resource) {
+    public static <T> ConverterHelper getBestHelper(Representation source,
+            Class<T> target, UniformResource resource) {
+        ConverterHelper result = null;
+        float bestScore = -1.0F;
+        float currentScore;
 
-        List<Class<?>> classes;
         for (ConverterHelper ch : Engine.getInstance()
                 .getRegisteredConverters()) {
+            currentScore = ch.score(source, target, resource);
 
-            classes = ch.getObjectClasses(sourceVariant);
-
-            if (classes != null) {
-                if (targetClass != null) {
-                    for (Class<?> clazz : classes) {
-                        if (clazz.isAssignableFrom(targetClass)) {
-                            return ch;
-                        }
-                    }
-                } else {
-                    return ch;
-                }
+            if (currentScore > bestScore) {
+                result = ch;
             }
         }
 
-        return null;
+        return result;
     }
 
     /**

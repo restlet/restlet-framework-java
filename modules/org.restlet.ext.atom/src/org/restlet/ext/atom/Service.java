@@ -116,6 +116,17 @@ public class Service extends SaxRepresentation {
     /**
      * Constructor.
      * 
+     * @param xmlService
+     *            The XML introspection document.
+     * @throws IOException
+     */
+    public Service(Representation xmlService) throws IOException {
+        this(null, null, xmlService);
+    }
+
+    /**
+     * Constructor.
+     * 
      * @param clientDispatcher
      *            The client HTTP dispatcher.
      */
@@ -154,7 +165,8 @@ public class Service extends SaxRepresentation {
             Representation xmlService) throws IOException {
         super(xmlService);
         this.clientDispatcher = clientDispatcher;
-        this.reference = new Reference(serviceUri);
+        this.reference = (serviceUri == null) ? null
+                : new Reference(serviceUri);
         parse(new ServiceContentReader(this));
     }
 

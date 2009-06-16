@@ -58,6 +58,10 @@ import org.restlet.resource.UniformResource;
  */
 public class DefaultConverter extends ConverterHelper {
 
+    /** Neutral variant. */
+    private static final VariantInfo VARIANT_ALL = new VariantInfo(
+            MediaType.ALL);
+
     /** Web form variant. */
     private static final VariantInfo VARIANT_FORM = new VariantInfo(
             MediaType.APPLICATION_WWW_FORM);
@@ -70,16 +74,12 @@ public class DefaultConverter extends ConverterHelper {
     private static final VariantInfo VARIANT_OBJECT_XML = new VariantInfo(
             MediaType.APPLICATION_JAVA_OBJECT_XML);
 
-    /** Neutral variant. */
-    private static final VariantInfo VARIANT_ALL = new VariantInfo(
-            MediaType.ALL);
-
     /** Plain text variant. */
     private static final VariantInfo VARIANT_TEXT = new VariantInfo(
             MediaType.TEXT_PLAIN);
 
     @Override
-    public List<Class<?>> getObjectClasses(Variant variant) {
+    public List<Class<?>> getObjectClasses(Variant source) {
         List<Class<?>> result = null;
 
         result = addObjectClass(result, String.class);
@@ -87,8 +87,8 @@ public class DefaultConverter extends ConverterHelper {
         result = addObjectClass(result, Reader.class);
         result = addObjectClass(result, ReadableByteChannel.class);
 
-        if (variant.getMediaType() != null) {
-            MediaType mediaType = variant.getMediaType();
+        if (source.getMediaType() != null) {
+            MediaType mediaType = source.getMediaType();
 
             if (MediaType.APPLICATION_JAVA_OBJECT.equals(mediaType)
                     || MediaType.APPLICATION_JAVA_OBJECT_XML.equals(mediaType)) {
@@ -102,28 +102,26 @@ public class DefaultConverter extends ConverterHelper {
     }
 
     @Override
-    public List<VariantInfo> getVariants(Class<?> objectClass) {
+    public List<VariantInfo> getVariants(Class<?> source) {
         List<VariantInfo> result = null;
 
-        if (String.class.isAssignableFrom(objectClass)
-                || StringRepresentation.class.isAssignableFrom(objectClass)) {
+        if (String.class.isAssignableFrom(source)
+                || StringRepresentation.class.isAssignableFrom(source)) {
             result = addVariant(result, VARIANT_TEXT);
-        } else if (File.class.isAssignableFrom(objectClass)
-                || FileRepresentation.class.isAssignableFrom(objectClass)) {
+        } else if (File.class.isAssignableFrom(source)
+                || FileRepresentation.class.isAssignableFrom(source)) {
             result = addVariant(result, VARIANT_ALL);
-        } else if (InputStream.class.isAssignableFrom(objectClass)
-                || InputRepresentation.class.isAssignableFrom(objectClass)) {
+        } else if (InputStream.class.isAssignableFrom(source)
+                || InputRepresentation.class.isAssignableFrom(source)) {
             result = addVariant(result, VARIANT_ALL);
-        } else if (Reader.class.isAssignableFrom(objectClass)
-                || ReaderRepresentation.class.isAssignableFrom(objectClass)) {
+        } else if (Reader.class.isAssignableFrom(source)
+                || ReaderRepresentation.class.isAssignableFrom(source)) {
             result = addVariant(result, VARIANT_TEXT);
-        } else if (Representation.class.isAssignableFrom(objectClass)) {
+        } else if (Representation.class.isAssignableFrom(source)) {
             result = addVariant(result, VARIANT_ALL);
-        } else if (Form.class.isAssignableFrom(objectClass)) {
+        } else if (Form.class.isAssignableFrom(source)) {
             result = addVariant(result, VARIANT_FORM);
-        }
-
-        if (Serializable.class.isAssignableFrom(objectClass)) {
+        } else if (Serializable.class.isAssignableFrom(source)) {
             result = addVariant(result, VARIANT_OBJECT);
             result = addVariant(result, VARIANT_OBJECT_XML);
         }
@@ -131,70 +129,127 @@ public class DefaultConverter extends ConverterHelper {
         return result;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <T> T toObject(Representation representation, Class<T> targetClass,
-            UniformResource resource) throws IOException {
-        Object result = null;
+    public float score(Object source, Variant target, UniformResource resource) {
+        float result = -1.0F;
 
-        if (representation != null) {
-            if (targetClass != null) {
-                if (targetClass.isAssignableFrom(representation.getClass())) {
-                    result = (T) representation;
-                } else {
-                    if (String.class.isAssignableFrom(targetClass)) {
-                        result = representation.getText();
-                    } else if (StringRepresentation.class
-                            .isAssignableFrom(targetClass)) {
-                        result = new StringRepresentation(representation
-                                .getText(), representation.getMediaType());
-                    } else if (EmptyRepresentation.class
-                            .isAssignableFrom(targetClass)) {
-                        result = null;
-                    } else if (File.class.isAssignableFrom(targetClass)) {
-                        if (representation instanceof FileRepresentation) {
-                            result = ((FileRepresentation) representation)
-                                    .getFile();
-                        }
-                    } else if (Form.class.isAssignableFrom(targetClass)) {
-                        result = new Form(representation);
-                    } else if (InputStream.class.isAssignableFrom(targetClass)) {
-                        result = representation.getStream();
-                    } else if (InputRepresentation.class
-                            .isAssignableFrom(targetClass)) {
-                        result = new InputRepresentation(representation
-                                .getStream());
-                    } else if (Reader.class.isAssignableFrom(targetClass)) {
-                        result = representation.getReader();
-                    } else if (ReaderRepresentation.class
-                            .isAssignableFrom(targetClass)) {
-                        result = new ReaderRepresentation(representation
-                                .getReader());
-                    } else if (Serializable.class.isAssignableFrom(targetClass)) {
-                        try {
-                            result = new ObjectRepresentation(representation)
-                                    .getObject();
-                        } catch (Exception e) {
-                            IOException ioe = new IOException(
-                                    "Unable to create the Object representation");
-                            ioe.initCause(e);
-                        }
+        if (source instanceof String) {
+            result = 1.0F;
+        } else if (source instanceof File) {
+            result = 1.0F;
+        } else if (source instanceof Form) {
+            if (MediaType.APPLICATION_WWW_FORM.isCompatible(target
+                    .getMediaType())) {
+                result = 1.0F;
+            } else {
+                result = 0.5F;
+            }
+        } else if (source instanceof InputStream) {
+            result = 1.0F;
+        } else if (source instanceof Reader) {
+            result = 1.0F;
+        } else if (source instanceof Representation) {
+            result = 1.0F;
+        } else if (source instanceof Serializable) {
+            if (MediaType.APPLICATION_JAVA_OBJECT.isCompatible(target
+                    .getMediaType())) {
+                result = 1.0F;
+            } else if (MediaType.APPLICATION_JAVA_OBJECT_XML
+                    .isCompatible(target.getMediaType())) {
+                result = 1.0F;
+            } else {
+                result = 0.5F;
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public <T> float score(Representation source, Class<T> target,
+            UniformResource resource) {
+        float result = -1.0F;
+
+        if (source != null) {
+            if (target != null) {
+                if (String.class.isAssignableFrom(target)) {
+                    result = 1.0F;
+                } else if (StringRepresentation.class.isAssignableFrom(target)) {
+                    result = 1.0F;
+                } else if (EmptyRepresentation.class.isAssignableFrom(target)) {
+                    result = 1.0F;
+                } else if (File.class.isAssignableFrom(target)) {
+                    if (source instanceof FileRepresentation) {
+                        result = 1.0F;
+                    }
+                } else if (Form.class.isAssignableFrom(target)) {
+                    if (MediaType.APPLICATION_WWW_FORM.isCompatible(source
+                            .getMediaType())) {
+                        result = 1.0F;
+                    } else {
+                        result = 0.5F;
+                    }
+                } else if (InputStream.class.isAssignableFrom(target)) {
+                    result = 1.0F;
+                } else if (InputRepresentation.class.isAssignableFrom(target)) {
+                    result = 1.0F;
+                } else if (Reader.class.isAssignableFrom(target)) {
+                    result = 1.0F;
+                } else if (ReaderRepresentation.class.isAssignableFrom(target)) {
+                    result = 1.0F;
+                } else if (Serializable.class.isAssignableFrom(target)) {
+                    if (MediaType.APPLICATION_JAVA_OBJECT.isCompatible(source
+                            .getMediaType())) {
+                        result = 1.0F;
+                    } else if (MediaType.APPLICATION_JAVA_OBJECT_XML
+                            .isCompatible(source.getMediaType())) {
+                        result = 1.0F;
+                    } else {
+                        result = 0.5F;
                     }
                 }
             }
+        }
 
-            if (result instanceof Representation) {
-                Representation resultRepresentation = (Representation) result;
+        return result;
+    }
 
-                // Copy the variant metadata
-                resultRepresentation.setCharacterSet(representation
-                        .getCharacterSet());
-                resultRepresentation
-                        .setMediaType(representation.getMediaType());
-                resultRepresentation
-                        .setEncodings(representation.getEncodings());
-                resultRepresentation
-                        .setLanguages(representation.getLanguages());
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> T toObject(Representation source, Class<T> target,
+            UniformResource resource) throws IOException {
+        Object result = null;
+
+        if (target.isAssignableFrom(source.getClass())) {
+            result = (T) source;
+        } else if (String.class.isAssignableFrom(target)) {
+            result = source.getText();
+        } else if (StringRepresentation.class.isAssignableFrom(target)) {
+            result = new StringRepresentation(source.getText(), source
+                    .getMediaType());
+        } else if (EmptyRepresentation.class.isAssignableFrom(target)) {
+            result = null;
+        } else if (File.class.isAssignableFrom(target)) {
+            if (source instanceof FileRepresentation) {
+                result = ((FileRepresentation) source).getFile();
+            }
+        } else if (Form.class.isAssignableFrom(target)) {
+            result = new Form(source);
+        } else if (InputStream.class.isAssignableFrom(target)) {
+            result = source.getStream();
+        } else if (InputRepresentation.class.isAssignableFrom(target)) {
+            result = new InputRepresentation(source.getStream());
+        } else if (Reader.class.isAssignableFrom(target)) {
+            result = source.getReader();
+        } else if (ReaderRepresentation.class.isAssignableFrom(target)) {
+            result = new ReaderRepresentation(source.getReader());
+        } else if (Serializable.class.isAssignableFrom(target)) {
+            try {
+                result = new ObjectRepresentation(source).getObject();
+            } catch (Exception e) {
+                IOException ioe = new IOException(
+                        "Unable to create the Object representation");
+                ioe.initCause(e);
             }
         }
 
@@ -202,38 +257,29 @@ public class DefaultConverter extends ConverterHelper {
     }
 
     @Override
-    public Representation toRepresentation(Object object,
-            Variant targetVariant, UniformResource resource) throws IOException {
+    public Representation toRepresentation(Object source, Variant target,
+            UniformResource resource) throws IOException {
         Representation result = null;
 
-        if (object instanceof String) {
-            result = new StringRepresentation((String) object,
-                    targetVariant == null ? null : targetVariant.getMediaType());
-        } else if (object instanceof File) {
-            result = new FileRepresentation((File) object,
-                    targetVariant == null ? null : targetVariant.getMediaType());
-        } else if (object instanceof Form) {
-            result = ((Form) object).getWebRepresentation();
-        } else if (object instanceof InputStream) {
-            result = new InputRepresentation((InputStream) object,
-                    targetVariant == null ? null : targetVariant.getMediaType());
-        } else if (object instanceof Reader) {
-            result = new ReaderRepresentation((Reader) object,
-                    targetVariant == null ? null : targetVariant.getMediaType());
-        } else if (object instanceof Representation) {
-            result = (Representation) object;
-        } else if (object instanceof Serializable) {
+        if (source instanceof String) {
+            result = new StringRepresentation((String) source, target
+                    .getMediaType());
+        } else if (source instanceof File) {
+            result = new FileRepresentation((File) source, target
+                    .getMediaType());
+        } else if (source instanceof Form) {
+            result = ((Form) source).getWebRepresentation();
+        } else if (source instanceof InputStream) {
+            result = new InputRepresentation((InputStream) source, target
+                    .getMediaType());
+        } else if (source instanceof Reader) {
+            result = new ReaderRepresentation((Reader) source, target
+                    .getMediaType());
+        } else if (source instanceof Representation) {
+            result = (Representation) source;
+        } else if (source instanceof Serializable) {
             result = new ObjectRepresentation<Serializable>(
-                    (Serializable) object, targetVariant == null ? null
-                            : targetVariant.getMediaType());
-        }
-
-        if ((result != null) && (targetVariant != null)) {
-            // Copy the variant metadata
-            result.setCharacterSet(targetVariant.getCharacterSet());
-            result.setMediaType(targetVariant.getMediaType());
-            result.setEncodings(targetVariant.getEncodings());
-            result.setLanguages(targetVariant.getLanguages());
+                    (Serializable) source, target.getMediaType());
         }
 
         return result;

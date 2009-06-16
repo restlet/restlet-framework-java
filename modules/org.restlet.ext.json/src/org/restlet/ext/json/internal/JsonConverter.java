@@ -31,7 +31,6 @@
 package org.restlet.ext.json.internal;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -42,6 +41,7 @@ import org.restlet.data.MediaType;
 import org.restlet.engine.converter.ConverterHelper;
 import org.restlet.engine.resource.VariantInfo;
 import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.UniformResource;
 
@@ -56,18 +56,54 @@ public class JsonConverter extends ConverterHelper {
             MediaType.APPLICATION_JSON);
 
     @Override
-    public List<Class<?>> getObjectClasses(Variant variant) {
+    public List<Class<?>> getObjectClasses(Variant source) {
         List<Class<?>> result = null;
 
-        if (variant != null) {
-            if (VARIANT_JSON.isCompatible(variant)) {
-                if (result == null) {
-                    result = new ArrayList<Class<?>>();
-                }
+        if (VARIANT_JSON.isCompatible(source)) {
+            result = addObjectClass(result, JSONArray.class);
+            result = addObjectClass(result, JSONObject.class);
+            result = addObjectClass(result, JSONTokener.class);
+        }
 
-                result.add(JSONArray.class);
-                result.add(JSONObject.class);
-                result.add(JSONTokener.class);
+        return result;
+    }
+
+    @Override
+    public List<VariantInfo> getVariants(Class<?> source) {
+        List<VariantInfo> result = null;
+
+        if (JSONArray.class.isAssignableFrom(source)) {
+            result = addVariant(result, VARIANT_JSON);
+        } else if (JSONObject.class.isAssignableFrom(source)) {
+            result = addVariant(result, VARIANT_JSON);
+        } else if (JSONTokener.class.isAssignableFrom(source)) {
+            result = addVariant(result, VARIANT_JSON);
+        }
+
+        return result;
+    }
+
+    @Override
+    public float score(Object source, Variant target, UniformResource resource) {
+        float result = -1.0F;
+
+        if (source instanceof JSONArray) {
+            if (MediaType.APPLICATION_JSON.isCompatible(target.getMediaType())) {
+                result = 1.0F;
+            } else {
+                result = 0.5F;
+            }
+        } else if (source instanceof JSONObject) {
+            if (MediaType.APPLICATION_JSON.isCompatible(target.getMediaType())) {
+                result = 1.0F;
+            } else {
+                result = 0.5F;
+            }
+        } else if (source instanceof JSONTokener) {
+            if (MediaType.APPLICATION_JSON.isCompatible(target.getMediaType())) {
+                result = 1.0F;
+            } else {
+                result = 0.5F;
             }
         }
 
@@ -75,40 +111,76 @@ public class JsonConverter extends ConverterHelper {
     }
 
     @Override
-    public List<VariantInfo> getVariants(Class<?> objectClass) {
-        return addVariant(null, VARIANT_JSON);
+    public <T> float score(Representation source, Class<T> target,
+            UniformResource resource) {
+        float result = -1.0F;
+
+        if (JSONArray.class.isAssignableFrom(target)) {
+            if (MediaType.APPLICATION_JSON.isCompatible(source.getMediaType())) {
+                result = 1.0F;
+            } else {
+                result = 0.5F;
+            }
+        } else if (JSONObject.class.isAssignableFrom(target)) {
+            if (MediaType.APPLICATION_JSON.isCompatible(source.getMediaType())) {
+                result = 1.0F;
+            } else {
+                result = 0.5F;
+            }
+        } else if (JSONTokener.class.isAssignableFrom(target)) {
+            if (MediaType.APPLICATION_JSON.isCompatible(source.getMediaType())) {
+                result = 1.0F;
+            } else {
+                result = 0.5F;
+            }
+        }
+
+        return result;
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T toObject(Representation representation, Class<T> targetClass,
+    public <T> T toObject(Representation source, Class<T> target,
             UniformResource resource) throws IOException {
-        T result = null;
+        Object result = null;
 
-        if (VARIANT_JSON.isCompatible(representation)) {
+        if (JSONArray.class.isAssignableFrom(target)) {
             try {
-                if (JSONArray.class.isAssignableFrom(targetClass)) {
-                    result = (T) new JSONArray(representation.getText());
-                } else if (JSONObject.class.isAssignableFrom(targetClass)) {
-                    result = (T) new JSONObject(representation.getText());
-                } else if (JSONTokener.class.isAssignableFrom(targetClass)) {
-                    result = (T) new JSONTokener(representation.getText());
-                }
+                result = new JSONArray(source.getText());
             } catch (JSONException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                IOException ioe = new IOException(
+                        "Unable to convert to JSON array");
+                ioe.initCause(e);
             }
-
+        } else if (JSONObject.class.isAssignableFrom(target)) {
+            try {
+                result = new JSONObject(source.getText());
+            } catch (JSONException e) {
+                IOException ioe = new IOException(
+                        "Unable to convert to JSON object");
+                ioe.initCause(e);
+            }
+        } else if (JSONTokener.class.isAssignableFrom(target)) {
+            result = new JSONTokener(source.getText());
         }
 
-        return result;
+        return (T) result;
     }
 
     @Override
-    public Representation toRepresentation(Object object,
-            Variant targetVariant, UniformResource resource) {
+    public Representation toRepresentation(Object source, Variant target,
+            UniformResource resource) {
         Representation result = null;
 
+        if (source instanceof JSONArray) {
+            result = new StringRepresentation(((JSONArray) source).toString());
+        } else if (source instanceof JSONObject) {
+            result = new StringRepresentation(((JSONObject) source).toString());
+        } else if (source instanceof JSONTokener) {
+            result = new StringRepresentation(((JSONTokener) source).toString());
+        }
+
         return result;
+
     }
 }

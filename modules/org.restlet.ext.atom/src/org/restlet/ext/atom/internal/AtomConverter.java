@@ -59,14 +59,47 @@ public class AtomConverter extends ConverterHelper {
     // MediaType.APPLICATION_ATOMPUB_CATEGORY);
 
     @Override
-    public List<Class<?>> getObjectClasses(Variant variant) {
+    public List<Class<?>> getObjectClasses(Variant source) {
         List<Class<?>> result = null;
 
-        if (variant != null) {
-            if (VARIANT_ATOM.isCompatible(variant)) {
-                result = addObjectClass(result, Feed.class);
-            } else if (VARIANT_ATOMPUB_SERVICE.isCompatible(variant)) {
-                result = addObjectClass(result, Service.class);
+        if (VARIANT_ATOM.isCompatible(source)) {
+            result = addObjectClass(result, Feed.class);
+        } else if (VARIANT_ATOMPUB_SERVICE.isCompatible(source)) {
+            result = addObjectClass(result, Service.class);
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<VariantInfo> getVariants(Class<?> source) {
+        List<VariantInfo> result = null;
+
+        if (Feed.class.isAssignableFrom(source)) {
+            result = addVariant(result, VARIANT_ATOM);
+        } else if (Service.class.isAssignableFrom(source)) {
+            result = addVariant(result, VARIANT_ATOMPUB_SERVICE);
+        }
+
+        return result;
+    }
+
+    @Override
+    public float score(Object source, Variant target, UniformResource resource) {
+        float result = -1.0F;
+
+        if (source instanceof Feed) {
+            if (MediaType.APPLICATION_ATOM.isCompatible(target.getMediaType())) {
+                result = 1.0F;
+            } else {
+                result = 0.5F;
+            }
+        } else if (source instanceof Service) {
+            if (MediaType.APPLICATION_ATOMPUB_SERVICE.isCompatible(target
+                    .getMediaType())) {
+                result = 1.0F;
+            } else {
+                result = 0.5F;
             }
         }
 
@@ -74,13 +107,23 @@ public class AtomConverter extends ConverterHelper {
     }
 
     @Override
-    public List<VariantInfo> getVariants(Class<?> objectClass) {
-        List<VariantInfo> result = null;
+    public <T> float score(Representation source, Class<T> target,
+            UniformResource resource) {
+        float result = -1.0F;
 
-        if (Feed.class.isAssignableFrom(objectClass)) {
-            result = addVariant(result, VARIANT_ATOM);
-        } else if (Service.class.isAssignableFrom(objectClass)) {
-            result = addVariant(result, VARIANT_ATOMPUB_SERVICE);
+        if (Feed.class.isAssignableFrom(target)) {
+            if (MediaType.APPLICATION_ATOM.isCompatible(source.getMediaType())) {
+                result = 1.0F;
+            } else {
+                result = 0.5F;
+            }
+        } else if (Service.class.isAssignableFrom(target)) {
+            if (MediaType.APPLICATION_ATOMPUB_SERVICE.isCompatible(source
+                    .getMediaType())) {
+                result = 1.0F;
+            } else {
+                result = 0.5F;
+            }
         }
 
         return result;
@@ -88,35 +131,31 @@ public class AtomConverter extends ConverterHelper {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T toObject(Representation representation, Class<T> targetClass,
+    public <T> T toObject(Representation source, Class<T> target,
             UniformResource resource) throws IOException {
-        T result = null;
+        Object result = null;
 
-        if (representation != null) {
-            if (VARIANT_ATOM.isCompatible(representation)) {
-                result = (T) new Feed(representation);
-            }
-
-            // if (VARIANT_ATOMPUB_SERVICE.isCompatible(representation)) {
-            // result = (T) new Service(representation);
-            // }
+        if (Feed.class.isAssignableFrom(target)) {
+            result = new Feed(source);
+        } else if (Service.class.isAssignableFrom(target)) {
+            result = new Service(source);
         }
 
-        return result;
+        return (T) result;
     }
 
     @Override
-    public Representation toRepresentation(Object object,
-            Variant targetVariant, UniformResource resource) {
+    public Representation toRepresentation(Object source, Variant target,
+            UniformResource resource) {
         Representation result = null;
 
-        if ((object instanceof Feed)
-                && ((targetVariant == null) || targetVariant
-                        .isCompatible(VARIANT_ATOM))) {
-            Feed feed = (Feed) object;
-            result = feed;
+        if (source instanceof Feed) {
+            result = (Feed) source;
+        } else if (source instanceof Service) {
+            result = (Service) source;
         }
 
         return result;
     }
+
 }

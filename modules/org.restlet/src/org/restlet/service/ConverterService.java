@@ -75,17 +75,17 @@ public class ConverterService extends Service {
      * Returns the list of object classes that can be converted from a given
      * variant.
      * 
-     * @param sourceVariant
+     * @param source
      *            The source variant.
      * @return The list of object class that can be converted.
      */
-    public List<Class<?>> getObjectClasses(Variant sourceVariant) {
+    public List<Class<?>> getObjectClasses(Variant source) {
         List<Class<?>> result = null;
         List<Class<?>> helperObjectClasses = null;
 
         for (ConverterHelper ch : Engine.getInstance()
                 .getRegisteredConverters()) {
-            helperObjectClasses = ch.getObjectClasses(sourceVariant);
+            helperObjectClasses = ch.getObjectClasses(source);
 
             if (helperObjectClasses != null) {
                 if (result == null) {
@@ -103,28 +103,26 @@ public class ConverterService extends Service {
      * Returns the list of variants that can be converted from a given object
      * class.
      * 
-     * @param sourceClass
+     * @param source
      *            The source class.
-     * @param targetVariant
+     * @param target
      *            The expected representation metadata.
      * @return The list of variants that can be converted.
      */
-    public List<? extends Variant> getVariants(Class<?> sourceClass,
-            Variant targetVariant) {
-        return ConverterUtils.getVariants(sourceClass, targetVariant);
+    public List<? extends Variant> getVariants(Class<?> source, Variant target) {
+        return ConverterUtils.getVariants(source, target);
     }
 
     /**
      * Converts a Representation into a regular Java object.
      * 
-     * @param sourceRepresentation
+     * @param source
      *            The source representation to convert.
      * @return The converted Java object.
      * @throws IOException
      */
-    public Object toObject(Representation sourceRepresentation)
-            throws IOException {
-        return toObject(sourceRepresentation, null, null);
+    public Object toObject(Representation source) throws IOException {
+        return toObject(source, null, null);
     }
 
     /**
@@ -132,39 +130,42 @@ public class ConverterService extends Service {
      * 
      * @param <T>
      *            The expected class of the Java object.
-     * @param sourceRepresentation
+     * @param source
      *            The source representation to convert.
-     * @param targetClass
+     * @param target
      *            The target class of the Java object.
      * @param resource
      *            The parent resource.
      * @return The converted Java object.
      * @throws IOException
      */
-    @SuppressWarnings("unchecked")
-    public <T> T toObject(Representation sourceRepresentation,
-            Class<T> targetClass, UniformResource resource) throws IOException {
+    public <T> T toObject(Representation source, Class<T> target,
+            UniformResource resource) throws IOException {
         T result = null;
 
-        if ((sourceRepresentation != null)
-                && sourceRepresentation.isAvailable()) {
-            ConverterHelper ch = ConverterUtils.getHelper(sourceRepresentation,
-                    targetClass, resource);
+        if ((source != null) && source.isAvailable()) {
+            ConverterHelper ch = ConverterUtils.getBestHelper(source, target,
+                    resource);
 
             if (ch != null) {
-                result = ch.toObject(sourceRepresentation, targetClass,
-                        resource);
-            } else {
-                // TODO there is no converter for Representation ->
-                // Representation
-                if (targetClass.isAssignableFrom(sourceRepresentation
-                        .getClass())) {
-                    result = (T) sourceRepresentation;
-                } else {
-                    Context.getCurrentLogger().warning(
-                            "Unable to find a converter for this representation : "
-                                    + sourceRepresentation);
+                result = ch.toObject(source, target, resource);
+
+                if (result instanceof Representation) {
+                    Representation resultRepresentation = (Representation) result;
+
+                    // Copy the variant metadata
+                    resultRepresentation.setCharacterSet(source
+                            .getCharacterSet());
+                    resultRepresentation.setMediaType(source.getMediaType());
+                    resultRepresentation.getEncodings().addAll(
+                            source.getEncodings());
+                    resultRepresentation.getLanguages().addAll(
+                            source.getLanguages());
                 }
+            } else {
+                Context.getCurrentLogger().warning(
+                        "Unable to find a converter for this representation : "
+                                + source);
             }
         }
 
@@ -174,43 +175,53 @@ public class ConverterService extends Service {
     /**
      * Converts a regular Java object into a Representation.
      * 
-     * @param sourceObject
+     * @param source
      *            The source object to convert.
      * @return The converted representation.
      */
-    public Representation toRepresentation(Object sourceObject) {
-        return toRepresentation(sourceObject, null, null);
+    public Representation toRepresentation(Object source) {
+        return toRepresentation(source, null, null);
     }
 
     /**
      * Converts a regular Java object into a Representation.
      * 
-     * @param sourceObject
+     * @param source
      *            The source object to convert.
-     * @param targetVariant
+     * @param target
      *            The target representation variant.
      * @param resource
      *            The parent resource.
      * @return The converted representation.
      */
-    public Representation toRepresentation(Object sourceObject,
-            Variant targetVariant, UniformResource resource) {
+    public Representation toRepresentation(Object source, Variant target,
+            UniformResource resource) {
         Representation result = null;
-        ConverterHelper ch = ConverterUtils.getHelper(sourceObject,
-                targetVariant, resource);
+        ConverterHelper ch = ConverterUtils.getBestHelper(source, target,
+                resource);
 
         if (ch != null) {
             try {
-                result = ch.toRepresentation(sourceObject, targetVariant,
-                        resource);
+                if (target == null) {
+                    target = new Variant();
+                }
+
+                result = ch.toRepresentation(source, target, resource);
+
+                if (result != null) {
+                    // Copy the variant metadata
+                    result.setCharacterSet(target.getCharacterSet());
+                    result.setMediaType(target.getMediaType());
+                    result.getEncodings().addAll(target.getEncodings());
+                    result.getLanguages().addAll(target.getLanguages());
+                }
             } catch (IOException e) {
                 Context.getCurrentLogger().log(Level.WARNING,
                         "Unable to convert object to a representation", e);
             }
         } else {
             Context.getCurrentLogger().warning(
-                    "Unable to find a converter for this object : "
-                            + sourceObject);
+                    "Unable to find a converter for this object : " + source);
         }
 
         return result;

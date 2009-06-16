@@ -35,6 +35,7 @@ Changes log
           Reported by Fabian Mandelbaum.
         - Added implementation of the "exhaust" method in 
           DigesterRepresentation class.
+        - Added default DomRepresentation constructor.
     - Enhancements
         - Upgraded Jetty library to version 6.1.18.
         - SpringServerServlet nows gets its component fully configured,
@@ -62,6 +63,8 @@ Changes log
         - Improved metadata handling for local entities (files, zip,
           clap, etc.).  
         - Added Variant#includes() method.
+        - Significantly improved converter service implementation. Now
+          converter helpers support affinity scoring.
     - Breaking changes
         - The default language, defined in MetadataService is now based
           on the JVM's default locale, instead of English/US.
