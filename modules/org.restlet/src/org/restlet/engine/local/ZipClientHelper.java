@@ -202,8 +202,8 @@ public class ZipClientHelper extends LocalClientHelper {
                     output = entity.getRepresentation(metadataService
                             .getDefaultMediaType(), getTimeToLive());
                     output.setIdentifier(request.getResourceRef());
-                    Entity.updateMetadata(metadataService, entity.getName(),
-                            output);
+                    Entity.updateMetadata(entity.getName(), output, true,
+                            getMetadataService());
                 }
 
                 response.setStatus(Status.SUCCESS_OK);

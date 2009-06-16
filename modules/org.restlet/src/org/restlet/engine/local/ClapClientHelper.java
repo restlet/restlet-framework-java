@@ -184,7 +184,8 @@ public class ClapClientHelper extends LocalClientHelper {
                     // Update the metadata based on file extensions
                     final String name = path
                             .substring(path.lastIndexOf('/') + 1);
-                    Entity.updateMetadata(metadataService, name, output);
+                    Entity.updateMetadata(name, output, true,
+                            getMetadataService());
 
                     // Update the response
                     response.setEntity(output);

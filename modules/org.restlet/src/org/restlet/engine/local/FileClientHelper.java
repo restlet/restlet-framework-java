@@ -149,7 +149,7 @@ public class FileClientHelper extends EntityClientHelper {
         boolean result = true;
         if (representation != null) {
             Variant var = new Variant();
-            Entity.updateMetadata(metadataService, fileName, var);
+            Entity.updateMetadata(fileName, var, true, metadataService);
 
             // "var" contains the theoretical correct metadata
             if (!var.getLanguages().isEmpty()
@@ -344,8 +344,8 @@ public class FileClientHelper extends EntityClientHelper {
                     // between the file name space and the target resource (URI
                     // completed by default metadata)
                     Variant variant = new Variant();
-                    Entity.updateMetadata(metadataService, file.getName(),
-                            variant);
+                    Entity.updateMetadata(file.getName(), variant, true,
+                            metadataService);
                     Collection<String> extensions = Entity.getExtensions(
                             variant, metadataService);
 
@@ -378,8 +378,8 @@ public class FileClientHelper extends EntityClientHelper {
                     } else {
                         // This resource does not exist, yet.
                         // Complete it with the default metadata
-                        Entity.updateMetadata(metadataService, file.getName(),
-                                request.getEntity());
+                        Entity.updateMetadata(file.getName(), request
+                                .getEntity(), true, getMetadataService());
                         if (request.getEntity().getLanguages().isEmpty()) {
                             if (metadataService.getDefaultLanguage() != null) {
                                 request.getEntity().getLanguages().add(

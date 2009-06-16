@@ -209,8 +209,8 @@ public class XdbServletWarClientHelper extends ServletWarClientHelper {
                             output = new InputRepresentation(is,
                                     metadataService.getDefaultMediaType());
                             output.setIdentifier(request.getResourceRef());
-                            Entity.updateMetadata(metadataService, entry,
-                                    output);
+                            Entity.updateMetadata(entry, output, true,
+                                    getMetadataService());
 
                             // See if the Servlet context specified
                             // a particular MIME Type

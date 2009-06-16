@@ -302,8 +302,8 @@ public abstract class EntityClientHelper extends LocalClientHelper {
                     output = entity.getRepresentation(metadataService
                             .getDefaultMediaType(), getTimeToLive());
                     output.setIdentifier(request.getResourceRef());
-                    Entity.updateMetadata(metadataService, entity.getName(),
-                            output);
+                    Entity.updateMetadata(entity.getName(), output, true,
+                            getMetadataService());
                 }
             } else {
                 // We look for the possible variant which has the same
@@ -341,8 +341,8 @@ public abstract class EntityClientHelper extends LocalClientHelper {
                     output = uniqueVariant.getRepresentation(metadataService
                             .getDefaultMediaType(), getTimeToLive());
                     output.setIdentifier(request.getResourceRef());
-                    Entity.updateMetadata(metadataService, entity.getName(),
-                            output);
+                    Entity.updateMetadata(entity.getName(), output, true,
+                            getMetadataService());
                 }
             }
         }

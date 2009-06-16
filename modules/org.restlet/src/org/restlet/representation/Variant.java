@@ -331,15 +331,15 @@ public class Variant {
         // Compare the character set
         if (result) {
             result = ((getCharacterSet() == null)
-                    && (otherVariant.getCharacterSet() == null) || getCharacterSet()
-                    .equals(otherVariant.getCharacterSet()));
+                    && (otherVariant.getCharacterSet() == null) || (getCharacterSet() != null)
+                    && getCharacterSet().equals(otherVariant.getCharacterSet()));
         }
 
         // Compare the media type
         if (result) {
             result = ((getMediaType() == null)
-                    && (otherVariant.getMediaType() == null) || getMediaType()
-                    .equals(otherVariant.getMediaType()));
+                    && (otherVariant.getMediaType() == null) || (getMediaType() != null)
+                    && getMediaType().equals(otherVariant.getMediaType()));
         }
 
         // Compare the languages
@@ -356,26 +356,25 @@ public class Variant {
     }
 
     /**
-     * Indicates if the current variant is compatible with the given variant.
+     * Indicates if the current variant includes the given variant.
      * 
      * @param other
      *            The other variant.
      * @return True if the current variant includes the other.
      */
-    public boolean isCompatible(Variant other) {
+    public boolean includes(Variant other) {
         boolean result = other != null;
 
         // Compare the character set
         if (result) {
             result = (getCharacterSet() == null)
-                    || getCharacterSet().equals(CharacterSet.ALL)
-                    || getCharacterSet().equals(other.getCharacterSet());
+                    || getCharacterSet().includes(other.getCharacterSet());
         }
 
         // Compare the media type
         if (result) {
             result = (getMediaType() == null)
-                    || getMediaType().isCompatible(other.getMediaType());
+                    || getMediaType().includes(other.getMediaType());
         }
 
         // Compare the languages
@@ -393,6 +392,17 @@ public class Variant {
         }
 
         return result;
+    }
+
+    /**
+     * Indicates if the current variant is compatible with the given variant.
+     * 
+     * @param other
+     *            The other variant.
+     * @return True if the current variant is compatible with the other.
+     */
+    public boolean isCompatible(Variant other) {
+        return (other != null) && (includes(other) || other.includes(this));
     }
 
     /**

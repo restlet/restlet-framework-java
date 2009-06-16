@@ -147,15 +147,17 @@ public abstract class Entity {
      * Updates some variant metadata based on a given entry name with
      * extensions.
      * 
-     * @param metadataService
-     *            The parent metadata service.
      * @param entryName
      *            The entry name with extensions.
      * @param variant
      *            The variant to update.
+     * @param applyDefault
+     *            Indicate if default metadata must be applied.
+     * @param metadataService
+     *            The parent metadata service.
      */
-    public static void updateMetadata(MetadataService metadataService,
-            String entryName, Variant variant) {
+    public static void updateMetadata(String entryName, Variant variant,
+            boolean applyDefault, MetadataService metadataService) {
         if (variant != null) {
             final String[] tokens = entryName.split("\\.");
             Metadata current;
@@ -192,47 +194,49 @@ public abstract class Entity {
                 }
             }
 
-            // If no language is defined, take the default one
-            if (variant.getLanguages().isEmpty()) {
-                final Language defaultLanguage = metadataService
-                        .getDefaultLanguage();
+            if (applyDefault) {
+                // If no language is defined, take the default one
+                if (variant.getLanguages().isEmpty()) {
+                    final Language defaultLanguage = metadataService
+                            .getDefaultLanguage();
 
-                if ((defaultLanguage != null)
-                        && !defaultLanguage.equals(Language.ALL)) {
-                    variant.getLanguages().add(defaultLanguage);
+                    if ((defaultLanguage != null)
+                            && !defaultLanguage.equals(Language.ALL)) {
+                        variant.getLanguages().add(defaultLanguage);
+                    }
                 }
-            }
 
-            // If no media type is defined, take the default one
-            if (variant.getMediaType() == null) {
-                final MediaType defaultMediaType = metadataService
-                        .getDefaultMediaType();
+                // If no media type is defined, take the default one
+                if (variant.getMediaType() == null) {
+                    final MediaType defaultMediaType = metadataService
+                            .getDefaultMediaType();
 
-                if ((defaultMediaType != null)
-                        && !defaultMediaType.equals(MediaType.ALL)) {
-                    variant.setMediaType(defaultMediaType);
+                    if ((defaultMediaType != null)
+                            && !defaultMediaType.equals(MediaType.ALL)) {
+                        variant.setMediaType(defaultMediaType);
+                    }
                 }
-            }
 
-            // If no encoding is defined, take the default one
-            if (variant.getEncodings().isEmpty()) {
-                final Encoding defaultEncoding = metadataService
-                        .getDefaultEncoding();
+                // If no encoding is defined, take the default one
+                if (variant.getEncodings().isEmpty()) {
+                    final Encoding defaultEncoding = metadataService
+                            .getDefaultEncoding();
 
-                if ((defaultEncoding != null)
-                        && !defaultEncoding.equals(Encoding.ALL)) {
-                    variant.getEncodings().add(defaultEncoding);
+                    if ((defaultEncoding != null)
+                            && !defaultEncoding.equals(Encoding.ALL)) {
+                        variant.getEncodings().add(defaultEncoding);
+                    }
                 }
-            }
 
-            // If no character set is defined, take the default one
-            if (variant.getCharacterSet() == null) {
-                final CharacterSet defaultCharacterSet = metadataService
-                        .getDefaultCharacterSet();
+                // If no character set is defined, take the default one
+                if (variant.getCharacterSet() == null) {
+                    final CharacterSet defaultCharacterSet = metadataService
+                            .getDefaultCharacterSet();
 
-                if ((defaultCharacterSet != null)
-                        && !defaultCharacterSet.equals(CharacterSet.ALL)) {
-                    variant.setCharacterSet(defaultCharacterSet);
+                    if ((defaultCharacterSet != null)
+                            && !defaultCharacterSet.equals(CharacterSet.ALL)) {
+                        variant.setCharacterSet(defaultCharacterSet);
+                    }
                 }
             }
         }
@@ -323,7 +327,7 @@ public abstract class Entity {
      */
     public Variant getVariant() {
         Variant result = new Variant();
-        updateMetadata(getMetadataService(), getName(), result);
+        updateMetadata(getName(), result, true, getMetadataService());
         return result;
     }
 

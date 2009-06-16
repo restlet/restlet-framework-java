@@ -70,6 +70,9 @@ public class DirectoryResource extends ServerResource {
     /** The base variant. */
     private Variant baseVariant;
 
+    /** The prototype variant. */
+    private Variant protoVariant;
+
     /**
      * The local base name of the resource. For example, "foo.en" and
      * "foo.en-GB.html" return "foo".
@@ -135,7 +138,6 @@ public class DirectoryResource extends ServerResource {
                             contextResponse);
                 } else {
                     // Check if there is only one representation
-
                     // Try to get the unique representation of the resource
                     ReferenceList references = getVariantsReferences();
                     if (!references.isEmpty()) {
@@ -369,10 +371,13 @@ public class DirectoryResource extends ServerResource {
                     }
 
                     if (this.baseName != null) {
-                        // Store the set of extensions
+                        // Analyze extensions
                         this.baseVariant = new Variant();
-                        Entity.updateMetadata(getMetadataService(),
-                                this.baseName, this.baseVariant);
+                        Entity.updateMetadata(this.baseName, this.baseVariant,
+                                true, getMetadataService());
+                        this.protoVariant = new Variant();
+                        Entity.updateMetadata(this.baseName, this.protoVariant,
+                                false, getMetadataService());
 
                         // Remove stored extensions from the base name
                         this.baseName = Entity.getBaseName(this.baseName,
@@ -698,9 +703,11 @@ public class DirectoryResource extends ServerResource {
      * @return The list of variants references
      */
     private ReferenceList getVariantsReferences() {
-        this.uniqueReference = null;
         ReferenceList result = new ReferenceList(0);
+
         try {
+            this.uniqueReference = null;
+
             // Ask for the list of all variants of this resource
             Response contextResponse = getRepresentation(this.targetUri,
                     MediaType.TEXT_URI_LIST);
@@ -733,23 +740,19 @@ public class DirectoryResource extends ServerResource {
 
                         // Check if the current file is a valid variant
                         if (baseEntryName.equals(this.baseName)) {
-                            boolean validVariant = true;
-
+                            // Test if the variant is included in the base
+                            // prototype variant
                             Variant variant = new Variant();
-                            Entity.updateMetadata(getMetadataService(),
-                                    fullEntryName, variant);
-
-                            validVariant = this.baseVariant
-                                    .isCompatible(variant);
-
-                            if (validVariant
-                                    && this.baseVariant.equals(variant)) {
-                                // The unique reference has been found.
-                                this.uniqueReference = ref;
+                            Entity.updateMetadata(fullEntryName, variant, true,
+                                    getMetadataService());
+                            if (this.protoVariant.includes(variant)) {
+                                result.add(ref);
                             }
 
-                            if (validVariant) {
-                                result.add(ref);
+                            // Test if the variant is equal to the base variant
+                            if (this.baseVariant.equals(variant)) {
+                                // The unique reference has been found.
+                                this.uniqueReference = ref;
                             }
                         }
                     }
