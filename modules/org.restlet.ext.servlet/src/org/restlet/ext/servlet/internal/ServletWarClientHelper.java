@@ -38,7 +38,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.engine.local.Entity;
 import org.restlet.engine.local.EntityClientHelper;
-
+import org.restlet.service.MetadataService;
 
 /**
  * Client connector based on a Servlet context (JEE Web application context).
@@ -85,8 +85,9 @@ public class ServletWarClientHelper extends EntityClientHelper {
     }
 
     @Override
-    public Entity getEntity(String decodedPath) {
-        return new ServletWarEntity(getServletContext(), decodedPath);
+    public Entity getEntity(String decodedPath, MetadataService metadataService) {
+        return new ServletWarEntity(getServletContext(), decodedPath,
+                metadataService);
     }
 
     /**

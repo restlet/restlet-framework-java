@@ -43,6 +43,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
+import org.restlet.representation.Variant;
 import org.restlet.service.MetadataService;
 
 /**
@@ -97,9 +98,12 @@ public abstract class EntityClientHelper extends LocalClientHelper {
      * 
      * @param path
      *            The path of the entity.
+     * @param metadataService
+     *            The metadata service to use.
      * @return A local entity for the given path.
      */
-    public abstract Entity getEntity(String path);
+    public abstract Entity getEntity(String path,
+            MetadataService metadataService);
 
     /**
      * Percent-encodes the given percent-decoded variant name of a resource
@@ -175,9 +179,9 @@ public abstract class EntityClientHelper extends LocalClientHelper {
         String path = request.getResourceRef().getPath();
 
         // As the path may be percent-encoded, it has to be percent-decoded.
-        // Then, all generated uris must be encoded.
-        final String decodedPath = Reference.decode(path);
-        final MetadataService metadataService = getMetadataService(request);
+        // Then, all generated URIs must be encoded.
+        String decodedPath = Reference.decode(path);
+        MetadataService metadataService = getMetadataService(request);
 
         // Finally, actually handle the call
         handleEntity(request, response, path, decodedPath, metadataService);
@@ -199,12 +203,11 @@ public abstract class EntityClientHelper extends LocalClientHelper {
      *            The metadataService.
      */
     protected void handleEntity(Request request, Response response,
-            String path, final String decodedPath,
-            final MetadataService metadataService) {
+            String path, String decodedPath, MetadataService metadataService) {
         if (Method.GET.equals(request.getMethod())
                 || Method.HEAD.equals(request.getMethod())) {
-            handleEntityGet(request, response, path, getEntity(decodedPath),
-                    metadataService);
+            handleEntityGet(request, response, path, getEntity(decodedPath,
+                    metadataService), metadataService);
         } else {
             response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
             response.getAllowedMethods().add(Method.GET);
@@ -227,15 +230,15 @@ public abstract class EntityClientHelper extends LocalClientHelper {
      *            The metadata service.
      */
     protected void handleEntityGet(Request request, Response response,
-            String path, Entity entity, final MetadataService metadataService) {
+            String path, Entity entity, MetadataService metadataService) {
         Representation output = null;
 
         // Get variants for a resource
         boolean found = false;
-        final Iterator<Preference<MediaType>> iterator = request
-                .getClientInfo().getAcceptedMediaTypes().iterator();
+        Iterator<Preference<MediaType>> iterator = request.getClientInfo()
+                .getAcceptedMediaTypes().iterator();
         while (iterator.hasNext() && !found) {
-            final Preference<MediaType> pref = iterator.next();
+            Preference<MediaType> pref = iterator.next();
             found = pref.getMetadata().equals(MediaType.TEXT_URI_LIST);
         }
 
@@ -243,24 +246,24 @@ public abstract class EntityClientHelper extends LocalClientHelper {
             // Try to list all variants of this resource
             // 1- set up base name as the longest part of the name without known
             // extensions (beginning from the left)
-            final String baseName = entity.getBaseName(metadataService);
+            String baseName = entity.getBaseName();
 
             // 2- looking for resources with the same base name
             Entity parent = entity.getParent();
 
             if (parent != null) {
-                final Collection<Entity> entities = parent.getChildren();
+                Collection<Entity> entities = parent.getChildren();
 
                 if (entities != null) {
-                    final ReferenceList rl = new ReferenceList(entities.size());
-                    final String scheme = request.getResourceRef().getScheme();
-                    final String encodedParentDirectoryURI = path.substring(0,
-                            path.lastIndexOf("/"));
-                    final String encodedEntityName = path.substring(path
+                    ReferenceList rl = new ReferenceList(entities.size());
+                    String scheme = request.getResourceRef().getScheme();
+                    String encodedParentDirectoryURI = path.substring(0, path
+                            .lastIndexOf("/"));
+                    String encodedEntityName = path.substring(path
                             .lastIndexOf("/") + 1);
 
-                    for (final Entity entry : entities) {
-                        if (baseName.equals(entry.getBaseName(metadataService))) {
+                    for (Entity entry : entities) {
+                        if (baseName.equals(entry.getBaseName())) {
                             rl.add(createReference(scheme,
                                     encodedParentDirectoryURI,
                                     encodedEntityName, entry.getName()));
@@ -274,8 +277,8 @@ public abstract class EntityClientHelper extends LocalClientHelper {
             if (entity.exists()) {
                 if (entity.isDirectory()) {
                     // Return the directory listing
-                    final Collection<Entity> children = entity.getChildren();
-                    final ReferenceList rl = new ReferenceList(children.size());
+                    Collection<Entity> children = entity.getChildren();
+                    ReferenceList rl = new ReferenceList(children.size());
                     String directoryUri = request.getResourceRef().toString();
 
                     // Ensures that the directory URI ends with a slash
@@ -283,7 +286,7 @@ public abstract class EntityClientHelper extends LocalClientHelper {
                         directoryUri += "/";
                     }
 
-                    for (final Entity entry : children) {
+                    for (Entity entry : children) {
                         if (entry.isDirectory()) {
                             rl.add(directoryUri
                                     + Reference.encode(entry.getName()) + "/");
@@ -299,34 +302,31 @@ public abstract class EntityClientHelper extends LocalClientHelper {
                     output = entity.getRepresentation(metadataService
                             .getDefaultMediaType(), getTimeToLive());
                     output.setIdentifier(request.getResourceRef());
-                    updateMetadata(metadataService, entity.getName(), output);
+                    Entity.updateMetadata(metadataService, entity.getName(),
+                            output);
                 }
             } else {
                 // We look for the possible variant which has the same
-                // extensions in a distinct order.
-
+                // metadata based on extensions (in a distinct order) and
+                // default metadata.
                 Entity uniqueVariant = null;
 
                 // 1- set up base name as the longest part of the name without
                 // known extensions (beginning from the left)
-                final String baseName = entity.getBaseName(metadataService);
-                final Collection<String> extensions = entity
-                        .getExtensions(metadataService);
+                String baseName = entity.getBaseName();
+                Variant entityVariant = entity.getVariant();
 
-                // 2- loooking for resources with the same base name
+                // 2- looking for resources with the same base name
                 Entity parent = entity.getParent();
                 if (parent != null) {
-                    final Collection<Entity> files = parent.getChildren();
+                    Collection<Entity> files = parent.getChildren();
 
                     if (files != null) {
-                        for (final Entity entry : files) {
-                            if (baseName.equals(entry
-                                    .getBaseName(metadataService))) {
-                                final Collection<String> entryExtensions = entry
-                                        .getExtensions(metadataService);
-                                if (entryExtensions.containsAll(extensions)
-                                        && extensions
-                                                .containsAll(entryExtensions)) {
+                        for (Entity entry : files) {
+                            if (baseName.equals(entry.getBaseName())) {
+                                Variant entryVariant = entry.getVariant();
+
+                                if (entityVariant.isCompatible(entryVariant)) {
                                     // The right representation has been found.
                                     uniqueVariant = entry;
                                     break;
@@ -341,7 +341,8 @@ public abstract class EntityClientHelper extends LocalClientHelper {
                     output = uniqueVariant.getRepresentation(metadataService
                             .getDefaultMediaType(), getTimeToLive());
                     output.setIdentifier(request.getResourceRef());
-                    updateMetadata(metadataService, entity.getName(), output);
+                    Entity.updateMetadata(metadataService, entity.getName(),
+                            output);
                 }
             }
         }

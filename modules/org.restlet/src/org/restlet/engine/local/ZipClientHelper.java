@@ -172,7 +172,8 @@ public class ZipClientHelper extends LocalClientHelper {
                 return;
             }
 
-            Entity entity = new ZipEntryEntity(zipFile, entryName);
+            Entity entity = new ZipEntryEntity(zipFile, entryName,
+                    metadataService);
             if (entity.exists()) {
                 final Representation output;
 
@@ -201,8 +202,10 @@ public class ZipClientHelper extends LocalClientHelper {
                     output = entity.getRepresentation(metadataService
                             .getDefaultMediaType(), getTimeToLive());
                     output.setIdentifier(request.getResourceRef());
-                    updateMetadata(metadataService, entity.getName(), output);
+                    Entity.updateMetadata(metadataService, entity.getName(),
+                            output);
                 }
+
                 response.setStatus(Status.SUCCESS_OK);
                 response.setEntity(output);
                 return;

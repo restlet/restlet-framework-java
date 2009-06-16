@@ -44,6 +44,7 @@ import org.restlet.data.MediaType;
 import org.restlet.engine.local.Entity;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
+import org.restlet.service.MetadataService;
 
 /**
  * Local entity based on a Servlet context's resource file.
@@ -77,9 +78,13 @@ public class ServletWarEntity extends Entity {
      *            The parent Servlet context.
      * @param path
      *            The entity path.
+     * @param metadataService
+     *            The metadata service to use.
      */
     @SuppressWarnings("unchecked")
-    public ServletWarEntity(ServletContext servletContext, String path) {
+    public ServletWarEntity(ServletContext servletContext, String path,
+            MetadataService metadataService) {
+        super(metadataService);
         this.children = null;
         this.servletContext = servletContext;
         this.path = path;
@@ -95,7 +100,8 @@ public class ServletWarEntity extends Entity {
                 for (Object childPath : childPaths) {
                     if (!childPath.equals(this.path)) {
                         this.children.add(new ServletWarEntity(
-                                this.servletContext, (String) childPath));
+                                this.servletContext, (String) childPath,
+                                metadataService));
                     }
                 }
             }
@@ -110,7 +116,8 @@ public class ServletWarEntity extends Entity {
                 for (Object childPath : childPaths) {
                     if (!childPath.equals(this.path)) {
                         this.children.add(new ServletWarEntity(
-                                this.servletContext, (String) childPath));
+                                this.servletContext, (String) childPath,
+                                metadataService));
                     }
                 }
             } else {
@@ -158,7 +165,7 @@ public class ServletWarEntity extends Entity {
 
         if (index != -1) {
             result = new ServletWarEntity(getServletContext(), this.fullName
-                    .substring(0, index + 1));
+                    .substring(0, index + 1), getMetadataService());
         }
 
         return result;

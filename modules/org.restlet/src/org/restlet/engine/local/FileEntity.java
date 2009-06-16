@@ -37,6 +37,7 @@ import java.util.List;
 import org.restlet.data.MediaType;
 import org.restlet.representation.FileRepresentation;
 import org.restlet.representation.Representation;
+import org.restlet.service.MetadataService;
 
 /**
  * Local entity based on a regular {@link File}.
@@ -51,8 +52,11 @@ public class FileEntity extends Entity {
      * 
      * @param file
      *            The underlying file.
+     * @param metadataService
+     *            The metadata service to use.
      */
-    public FileEntity(File file) {
+    public FileEntity(File file, MetadataService metadataService) {
+        super(metadataService);
         this.file = file;
     }
 
@@ -69,7 +73,7 @@ public class FileEntity extends Entity {
             result = new ArrayList<Entity>();
 
             for (File f : getFile().listFiles()) {
-                result.add(new FileEntity(f));
+                result.add(new FileEntity(f, getMetadataService()));
             }
         }
 
@@ -93,7 +97,8 @@ public class FileEntity extends Entity {
     @Override
     public Entity getParent() {
         File parentFile = getFile().getParentFile();
-        return (parentFile == null) ? null : new FileEntity(parentFile);
+        return (parentFile == null) ? null : new FileEntity(parentFile,
+                getMetadataService());
     }
 
     @Override

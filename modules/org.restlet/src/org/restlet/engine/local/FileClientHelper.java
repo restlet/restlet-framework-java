@@ -47,9 +47,11 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.restlet.Client;
+import org.restlet.data.CharacterSet;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
 import org.restlet.data.LocalReference;
+import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
@@ -118,9 +120,9 @@ public class FileClientHelper extends EntityClientHelper {
             MetadataService metadataService) {
         boolean knownExtension = true;
 
-        final Collection<String> set = Entity.getExtensions(file.getName(),
+        Collection<String> set = Entity.getExtensions(file.getName(),
                 metadataService);
-        final Iterator<String> iterator = set.iterator();
+        Iterator<String> iterator = set.iterator();
         while (iterator.hasNext() && knownExtension) {
             knownExtension = metadataService.getMetadata(iterator.next()) != null;
         }
@@ -146,9 +148,10 @@ public class FileClientHelper extends EntityClientHelper {
             MetadataService metadataService, Representation representation) {
         boolean result = true;
         if (representation != null) {
-            final Variant var = new Variant();
-            updateMetadata(metadataService, fileName, var);
-            // "var" contains the theorical correct metadata
+            Variant var = new Variant();
+            Entity.updateMetadata(metadataService, fileName, var);
+
+            // "var" contains the theoretical correct metadata
             if (!var.getLanguages().isEmpty()
                     && !representation.getLanguages().isEmpty()
                     && !var.getLanguages().containsAll(
@@ -172,10 +175,11 @@ public class FileClientHelper extends EntityClientHelper {
     }
 
     @Override
-    public Entity getEntity(String decodedPath) {
+    public Entity getEntity(String decodedPath, MetadataService metadataService) {
         // Take care of the file separator.
         return new FileEntity(
-                new File(LocalReference.localizePath(decodedPath)));
+                new File(LocalReference.localizePath(decodedPath)),
+                metadataService);
     }
 
     /**
@@ -198,7 +202,7 @@ public class FileClientHelper extends EntityClientHelper {
      */
     @Override
     public void handle(Request request, Response response) {
-        final String scheme = request.getResourceRef().getScheme();
+        String scheme = request.getResourceRef().getScheme();
         if (Protocol.FILE.getSchemeName().equalsIgnoreCase(scheme)) {
             super.handle(request, response);
         } else {
@@ -214,8 +218,8 @@ public class FileClientHelper extends EntityClientHelper {
             String path, String decodedPath, MetadataService metadataService) {
         if (Method.GET.equals(request.getMethod())
                 || Method.HEAD.equals(request.getMethod())) {
-            handleEntityGet(request, response, path, getEntity(decodedPath),
-                    metadataService);
+            handleEntityGet(request, response, path, getEntity(decodedPath,
+                    metadataService), metadataService);
         } else if (Method.PUT.equals(request.getMethod())) {
             handleFilePut(request, response, decodedPath,
                     new File(decodedPath), metadataService);
@@ -329,10 +333,10 @@ public class FileClientHelper extends EntityClientHelper {
                                         .getName(), metadataService));
                     }
                 };
-                final File[] files = file.getParentFile().listFiles(filter);
+                File[] files = file.getParentFile().listFiles(filter);
 
                 File uniqueVariant = null;
-                final List<File> variantsList = new ArrayList<File>();
+                List<File> variantsList = new ArrayList<File>();
                 if (files != null) {
                     // Set the list of extensions, due to the file name and the
                     // default metadata.
@@ -340,12 +344,13 @@ public class FileClientHelper extends EntityClientHelper {
                     // between the file name space and the target resource (URI
                     // completed by default metadata)
                     Variant variant = new Variant();
-                    updateMetadata(metadataService, file.getName(), variant);
-                    final Collection<String> extensions = Entity.getExtensions(
+                    Entity.updateMetadata(metadataService, file.getName(),
+                            variant);
+                    Collection<String> extensions = Entity.getExtensions(
                             variant, metadataService);
 
-                    for (final File entry : files) {
-                        final Collection<String> entryExtensions = Entity
+                    for (File entry : files) {
+                        Collection<String> entryExtensions = Entity
                                 .getExtensions(entry.getName(), metadataService);
                         if (entryExtensions.containsAll(extensions)) {
                             variantsList.add(entry);
@@ -373,8 +378,8 @@ public class FileClientHelper extends EntityClientHelper {
                     } else {
                         // This resource does not exist, yet.
                         // Complete it with the default metadata
-                        updateMetadata(metadataService, file.getName(), request
-                                .getEntity());
+                        Entity.updateMetadata(metadataService, file.getName(),
+                                request.getEntity());
                         if (request.getEntity().getLanguages().isEmpty()) {
                             if (metadataService.getDefaultLanguage() != null) {
                                 request.getEntity().getLanguages().add(
@@ -393,21 +398,22 @@ public class FileClientHelper extends EntityClientHelper {
                                         metadataService.getDefaultEncoding());
                             }
                         }
+
                         // Update the URI
-                        final StringBuilder fileName = new StringBuilder(
-                                baseName);
+                        StringBuilder fileName = new StringBuilder(baseName);
                         updateFileExtension(fileName, request.getEntity()
                                 .getMediaType(), metadataService);
-                        for (final Language language : request.getEntity()
+                        for (Language language : request.getEntity()
                                 .getLanguages()) {
                             updateFileExtension(fileName, language,
                                     metadataService);
                         }
-                        for (final Encoding encoding : request.getEntity()
+                        for (Encoding encoding : request.getEntity()
                                 .getEncodings()) {
                             updateFileExtension(fileName, encoding,
                                     metadataService);
                         }
+
                         file = new File(file.getParentFile(), fileName
                                 .toString());
                     }
@@ -446,9 +452,9 @@ public class FileClientHelper extends EntityClientHelper {
 
                                 if (!tmp.exists()) {
                                     // Copy the target file.
-                                    final BufferedReader br = new BufferedReader(
+                                    BufferedReader br = new BufferedReader(
                                             new FileReader(file));
-                                    final BufferedWriter wr = new BufferedWriter(
+                                    BufferedWriter wr = new BufferedWriter(
                                             new FileWriter(tmp));
                                     String s;
                                     while ((s = br.readLine()) != null) {
@@ -570,9 +576,9 @@ public class FileClientHelper extends EntityClientHelper {
                                 // move a file from one file system to another.
                                 if (tmp.exists()) {
                                     try {
-                                        final BufferedReader br = new BufferedReader(
+                                        BufferedReader br = new BufferedReader(
                                                 new FileReader(tmp));
-                                        final BufferedWriter wr = new BufferedWriter(
+                                        BufferedWriter wr = new BufferedWriter(
                                                 new FileWriter(file));
                                         String s;
                                         while ((s = br.readLine()) != null) {
@@ -610,7 +616,7 @@ public class FileClientHelper extends EntityClientHelper {
                         }
                     } else {
                         // The file does not exist yet.
-                        final File parent = file.getParentFile();
+                        File parent = file.getParentFile();
                         if ((parent != null) && !parent.exists()) {
                             // Create the parent directories then the new file
                             if (!parent.mkdirs()) {
@@ -757,13 +763,39 @@ public class FileClientHelper extends EntityClientHelper {
      */
     private void updateFileExtension(StringBuilder fileName, Metadata metadata,
             MetadataService metadataService) {
-        String extension = metadataService.getExtension(metadata);
-        if (extension != null) {
-            fileName.append("." + extension);
-        } else {
-            if (metadata.getParent() != null) {
-                updateFileExtension(fileName, metadata.getParent(),
-                        metadataService);
+        boolean defaultMetadata = true;
+
+        if (metadataService != null) {
+            if (metadata instanceof Language) {
+                Language language = (Language) metadata;
+                defaultMetadata = language.equals(metadataService
+                        .getDefaultLanguage());
+            } else if (metadata instanceof MediaType) {
+                MediaType mediaType = (MediaType) metadata;
+                defaultMetadata = mediaType.equals(metadataService
+                        .getDefaultMediaType());
+            } else if (metadata instanceof CharacterSet) {
+                CharacterSet characterSet = (CharacterSet) metadata;
+                defaultMetadata = characterSet.equals(metadataService
+                        .getDefaultCharacterSet());
+            } else if (metadata instanceof Encoding) {
+                Encoding encoding = (Encoding) metadata;
+                defaultMetadata = encoding.equals(metadataService
+                        .getDefaultEncoding());
+            }
+        }
+
+        // We only add extension for metadata that differ from default ones
+        if (!defaultMetadata) {
+            String extension = metadataService.getExtension(metadata);
+
+            if (extension != null) {
+                fileName.append("." + extension);
+            } else {
+                if (metadata.getParent() != null) {
+                    updateFileExtension(fileName, metadata.getParent(),
+                            metadataService);
+                }
             }
         }
     }

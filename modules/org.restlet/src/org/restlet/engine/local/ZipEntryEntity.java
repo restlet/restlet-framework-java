@@ -38,6 +38,7 @@ import java.util.zip.ZipFile;
 
 import org.restlet.data.MediaType;
 import org.restlet.representation.Representation;
+import org.restlet.service.MetadataService;
 
 /**
  * Local entity based on an entry in a Zip archive.
@@ -59,8 +60,12 @@ public class ZipEntryEntity extends Entity {
      *            The Zip file.
      * @param entryName
      *            The Zip entry name.
+     * @param metadataService
+     *            The metadata service to use.
      */
-    public ZipEntryEntity(ZipFile zipFile, String entryName) {
+    public ZipEntryEntity(ZipFile zipFile, String entryName,
+            MetadataService metadataService) {
+        super(metadataService);
         this.zipFile = zipFile;
         ZipEntry entry = zipFile.getEntry(entryName);
         if (entry == null)
@@ -81,9 +86,13 @@ public class ZipEntryEntity extends Entity {
      * @param zipFile
      *            The Zip file.
      * @param entry
-     *            The Zip entry
+     *            The Zip entry.
+     * @param metadataService
+     *            The metadata service to use.
      */
-    public ZipEntryEntity(ZipFile zipFile, ZipEntry entry) {
+    public ZipEntryEntity(ZipFile zipFile, ZipEntry entry,
+            MetadataService metadataService) {
+        super(metadataService);
         this.zipFile = zipFile;
         this.entry = entry;
     }
@@ -111,7 +120,8 @@ public class ZipEntryEntity extends Entity {
                 ZipEntry e = entries.nextElement();
                 if (e.getName().startsWith(n)
                         && e.getName().length() != n.length())
-                    result.add(new ZipEntryEntity(zipFile, e));
+                    result.add(new ZipEntryEntity(zipFile, e,
+                            getMetadataService()));
             }
         }
 
@@ -130,7 +140,8 @@ public class ZipEntryEntity extends Entity {
         else {
             String n = entry.getName();
             String pn = n.substring(0, n.lastIndexOf('/') + 1);
-            return new ZipEntryEntity(zipFile, zipFile.getEntry(pn));
+            return new ZipEntryEntity(zipFile, zipFile.getEntry(pn),
+                    getMetadataService());
         }
     }
 

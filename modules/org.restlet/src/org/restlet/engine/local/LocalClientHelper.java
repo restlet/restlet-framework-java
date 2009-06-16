@@ -32,14 +32,9 @@ package org.restlet.engine.local;
 
 import org.restlet.Application;
 import org.restlet.Client;
-import org.restlet.data.CharacterSet;
-import org.restlet.data.Encoding;
 import org.restlet.data.Language;
-import org.restlet.data.MediaType;
-import org.restlet.data.Metadata;
 import org.restlet.data.Request;
 import org.restlet.engine.ClientHelper;
-import org.restlet.representation.Variant;
 import org.restlet.service.MetadataService;
 
 /**
@@ -134,75 +129,4 @@ public class LocalClientHelper extends ClientHelper {
                 "timeToLive", "600"));
     }
 
-    /**
-     * Updates some variant metadata based on a given entry name with
-     * extensions.
-     * 
-     * @param metadataService
-     *            The parent metadata service.
-     * @param entryName
-     *            The entry name with extensions.
-     * @param variant
-     *            The variant to update.
-     */
-    public void updateMetadata(MetadataService metadataService,
-            String entryName, Variant variant) {
-        if (variant != null) {
-            final String[] tokens = entryName.split("\\.");
-            Metadata current;
-
-            // We found a potential variant
-            for (int j = 1; j < tokens.length; j++) {
-                current = metadataService.getMetadata(tokens[j]);
-                if (current != null) {
-                    // Metadata extension detected
-                    if (current instanceof MediaType) {
-                        variant.setMediaType((MediaType) current);
-                    } else if (current instanceof CharacterSet) {
-                        variant.setCharacterSet((CharacterSet) current);
-                    } else if (current instanceof Encoding) {
-                        variant.getEncodings().add((Encoding) current);
-                    } else if (current instanceof Language) {
-                        variant.getLanguages().add((Language) current);
-                    }
-                }
-
-                final int dashIndex = tokens[j].indexOf('-');
-                if (dashIndex != -1) {
-                    // We found a language extension with a region area
-                    // specified.
-                    // Try to find a language matching the primary part of the
-                    // extension.
-                    final String primaryPart = tokens[j]
-                            .substring(0, dashIndex);
-                    current = metadataService.getMetadata(primaryPart);
-                    if (current instanceof Language) {
-                        variant.getLanguages().add((Language) current);
-                    }
-                }
-            }
-
-            // If no language is defined, take the default one
-            if (variant.getLanguages().isEmpty()) {
-                final Language defaultLanguage = metadataService
-                        .getDefaultLanguage();
-
-                if ((defaultLanguage != null)
-                        && !defaultLanguage.equals(Language.ALL)) {
-                    variant.getLanguages().add(defaultLanguage);
-                }
-            }
-
-            // If no media type is defined, take the default one
-            if (variant.getMediaType() == null) {
-                final MediaType defaultMediaType = metadataService
-                        .getDefaultMediaType();
-
-                if ((defaultMediaType != null)
-                        && !defaultMediaType.equals(MediaType.ALL)) {
-                    variant.setMediaType(defaultMediaType);
-                }
-            }
-        }
-    }
 }

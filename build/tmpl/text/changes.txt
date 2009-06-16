@@ -58,7 +58,9 @@ Changes log
         - SpringRouter and SpringBeanRouter now support the creation of 
           resources based on ServerResource.
         - Refactored content negotiation to take into account all 
-          dimensions (language, media type, character set and encoding). 
+          dimensions (language, media type, character set and encoding).
+        - Improved metadata handling for local entities (files, zip,
+          clap, etc.). 
     - Breaking changes
         - The default language, defined in MetadataService is now based
           on the JVM's default locale, instead of English/US.

@@ -36,9 +36,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.restlet.data.CharacterSet;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
+import org.restlet.data.Metadata;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.service.MetadataService;
@@ -47,6 +49,7 @@ import org.restlet.service.MetadataService;
  * Represents a local entity, for example a regular file or a directory.
  * 
  * @author Thierry Boileau
+ * @author Jerome Louvel
  */
 public abstract class Entity {
 
@@ -141,6 +144,113 @@ public abstract class Entity {
     }
 
     /**
+     * Updates some variant metadata based on a given entry name with
+     * extensions.
+     * 
+     * @param metadataService
+     *            The parent metadata service.
+     * @param entryName
+     *            The entry name with extensions.
+     * @param variant
+     *            The variant to update.
+     */
+    public static void updateMetadata(MetadataService metadataService,
+            String entryName, Variant variant) {
+        if (variant != null) {
+            final String[] tokens = entryName.split("\\.");
+            Metadata current;
+
+            // We found a potential variant
+            for (int j = 1; j < tokens.length; j++) {
+                current = metadataService.getMetadata(tokens[j]);
+                if (current != null) {
+                    // Metadata extension detected
+                    if (current instanceof MediaType) {
+                        variant.setMediaType((MediaType) current);
+                    } else if (current instanceof CharacterSet) {
+                        variant.setCharacterSet((CharacterSet) current);
+                    } else if (current instanceof Encoding) {
+                        variant.getEncodings().add((Encoding) current);
+                    } else if (current instanceof Language) {
+                        variant.getLanguages().add((Language) current);
+                    }
+                }
+
+                final int dashIndex = tokens[j].indexOf('-');
+                if (dashIndex != -1) {
+                    // We found a language extension with a region area
+                    // specified.
+                    // Try to find a language matching the primary part of the
+                    // extension.
+                    final String primaryPart = tokens[j]
+                            .substring(0, dashIndex);
+                    current = metadataService.getMetadata(primaryPart);
+                    if (current instanceof Language) {
+                        variant.getLanguages().add((Language) current);
+                    }
+                }
+            }
+
+            // If no language is defined, take the default one
+            if (variant.getLanguages().isEmpty()) {
+                final Language defaultLanguage = metadataService
+                        .getDefaultLanguage();
+
+                if ((defaultLanguage != null)
+                        && !defaultLanguage.equals(Language.ALL)) {
+                    variant.getLanguages().add(defaultLanguage);
+                }
+            }
+
+            // If no media type is defined, take the default one
+            if (variant.getMediaType() == null) {
+                final MediaType defaultMediaType = metadataService
+                        .getDefaultMediaType();
+
+                if ((defaultMediaType != null)
+                        && !defaultMediaType.equals(MediaType.ALL)) {
+                    variant.setMediaType(defaultMediaType);
+                }
+            }
+
+            // If no encoding is defined, take the default one
+            if (variant.getEncodings().isEmpty()) {
+                final Encoding defaultEncoding = metadataService
+                        .getDefaultEncoding();
+
+                if ((defaultEncoding != null)
+                        && !defaultEncoding.equals(Encoding.ALL)) {
+                    variant.getEncodings().add(defaultEncoding);
+                }
+            }
+
+            // If no character set is defined, take the default one
+            if (variant.getCharacterSet() == null) {
+                final CharacterSet defaultCharacterSet = metadataService
+                        .getDefaultCharacterSet();
+
+                if ((defaultCharacterSet != null)
+                        && !defaultCharacterSet.equals(CharacterSet.ALL)) {
+                    variant.setCharacterSet(defaultCharacterSet);
+                }
+            }
+        }
+    }
+
+    /** The metadata service to use. */
+    private MetadataService metadataService;
+
+    /**
+     * Constructor.
+     * 
+     * @param metadataService
+     *            The metadata service to use.
+     */
+    public Entity(MetadataService metadataService) {
+        this.metadataService = metadataService;
+    }
+
+    /**
      * Indicates if the entity does exist.
      * 
      * @return True if the entity does exists.
@@ -151,12 +261,10 @@ public abstract class Entity {
      * Return the base name of this entity that is to say the longest part of
      * the name without known extensions (beginning from the left).
      * 
-     * @param metadataService
-     *            Service that holds the known extensions.
      * @return The base name of this entity.
      */
-    public String getBaseName(MetadataService metadataService) {
-        return Entity.getBaseName(this.getName(), metadataService);
+    public String getBaseName() {
+        return getBaseName(getName(), getMetadataService());
     }
 
     /**
@@ -170,12 +278,19 @@ public abstract class Entity {
     /**
      * Returns the list of known extensions.
      * 
-     * @param metadataService
-     *            Service that maps extension names to metadata.
      * @return The list of known extensions taken from the entity name.
      */
-    public Collection<String> getExtensions(MetadataService metadataService) {
-        return Entity.getExtensions(this.getName(), metadataService);
+    public Collection<String> getExtensions() {
+        return getExtensions(getName(), getMetadataService());
+    }
+
+    /**
+     * Returns the metadata service to use.
+     * 
+     * @return The metadata service to use.
+     */
+    public MetadataService getMetadataService() {
+        return metadataService;
     }
 
     /**
@@ -195,14 +310,21 @@ public abstract class Entity {
     /**
      * Returns a representation of this local entity.
      * 
-     * @param defaultMediaType
-     *            The default media type
-     * @param timeToLive
-     *            the time to live of this representation
      * @return A representation of this entity.
      */
     public abstract Representation getRepresentation(
             MediaType defaultMediaType, int timeToLive);
+
+    /**
+     * Returns a variant corresponding to the extensions of this entity.
+     * 
+     * @return A variant corresponding to the extensions of this entity.
+     */
+    public Variant getVariant() {
+        Variant result = new Variant();
+        updateMetadata(getMetadataService(), getName(), result);
+        return result;
+    }
 
     /**
      * Indicates if the entity is a directory.
