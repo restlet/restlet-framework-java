@@ -30,6 +30,11 @@
 
 package org.restlet.test;
 
+import org.restlet.Application;
+import org.restlet.Context;
+import org.restlet.data.Response;
+import org.restlet.routing.VirtualHost;
+
 import junit.framework.TestCase;
 
 /**
@@ -52,5 +57,27 @@ public abstract class RestletTestCase extends TestCase {
         }
 
         return DEFAULT_TEST_PORT;
+    }
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+
+        // Reset the thread local variables
+        Response.setCurrent(null);
+        Context.setCurrent(null);
+        VirtualHost.setCurrent(-1);
+        Application.setCurrent(null);
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
+
+        // Reset the thread local variables
+        Response.setCurrent(null);
+        Context.setCurrent(null);
+        VirtualHost.setCurrent(-1);
+        Application.setCurrent(null);
     }
 }

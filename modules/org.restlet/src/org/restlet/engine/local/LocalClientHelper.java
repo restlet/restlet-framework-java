@@ -65,7 +65,7 @@ import org.restlet.service.MetadataService;
  * <td></td>
  * <td>When no metadata service is available (simple client connector with no
  * parent application), falls back on this default language. To indicate that no
- * default language should be set, "*" or "" can be used.</td>
+ * default language should be set, "" can be used.</td>
  * </tr>
  * </table>
  * 
@@ -105,13 +105,18 @@ public class LocalClientHelper extends ClientHelper {
      */
     public MetadataService getMetadataService(Request request) {
         MetadataService result = null;
-        final Application application = Application.getCurrent();
+        Application application = Application.getCurrent();
 
         if (application != null) {
             result = application.getMetadataService();
         } else {
             result = new MetadataService();
-            result.setDefaultLanguage(Language.valueOf(getDefaultLanguage()));
+
+            if ((getDefaultLanguage() != null)
+                    && !getDefaultLanguage().equals("")) {
+                result.setDefaultLanguage(Language
+                        .valueOf(getDefaultLanguage()));
+            }
         }
 
         return result;

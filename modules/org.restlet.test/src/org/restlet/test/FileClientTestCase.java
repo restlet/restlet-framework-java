@@ -34,6 +34,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.restlet.Client;
+import org.restlet.data.Language;
 import org.restlet.data.LocalReference;
 import org.restlet.data.Protocol;
 import org.restlet.data.Response;
@@ -50,20 +51,20 @@ public class FileClientTestCase extends RestletTestCase {
     public void testFileClient() throws IOException {
         final String text = "Test content\r\nLine 2\r\nLine2";
         final Client fc = new Client(Protocol.FILE);
-        final LocalReference fr = LocalReference.createFileReference(File
-                .createTempFile("Restlet", ".txt"));
+        final LocalReference fr = LocalReference
+                .createFileReference(File.createTempFile("Restlet", ".txt."
+                        + Language.DEFAULT.getName()));
 
-        // Write the text to temporary file
+        // Update the text of the temporary file
         Response response = fc.put(fr, new StringRepresentation(text));
-        assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
 
         // Get the text and compare to the original
         response = fc.get(fr);
-        assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
 
         // Delete the file
         response = fc.delete(fr);
-        assertTrue(response.getStatus().equals(Status.SUCCESS_NO_CONTENT));
+        assertEquals(Status.SUCCESS_NO_CONTENT, response.getStatus());
     }
-
 }

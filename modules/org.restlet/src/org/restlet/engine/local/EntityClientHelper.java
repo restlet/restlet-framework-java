@@ -72,7 +72,8 @@ public abstract class EntityClientHelper extends LocalClientHelper {
      * @param scheme
      *            The scheme of the requested resource.
      * @param encodedParentDirPath
-     *            The encoded path of the parent dir of the requested resource.
+     *            The encoded path of the parent directory of the requested
+     *            resource.
      * @param encodedEntityName
      *            The encoded name of the requested resource.
      * @param decodedVariantName
