@@ -474,6 +474,11 @@ public class ReferenceTestCase extends RestletTestCase {
 
         Form queryForm = ref1.getQueryAsForm();
         assertEquals("anythingelse%", queryForm.getFirstValue("q"));
+
+        Form extJsQuery = new Form(
+                "&_dc=1244741620627&callback=stcCallback1001");
+        assertEquals("1244741620627", extJsQuery.getFirstValue("_dc"));
+        assertEquals("stcCallback1001", extJsQuery.getFirstValue("callback"));
     }
 
     /**

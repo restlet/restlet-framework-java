@@ -198,7 +198,7 @@ public class Validator extends Filter {
      * @param format
      *            Format of the attribute value, using Regex pattern syntax.
      */
-    public void validate(String attribute, boolean required, String format) {
+    protected void validate(String attribute, boolean required, String format) {
         getValidations().add(new ValidateInfo(attribute, required, format));
     }
 }

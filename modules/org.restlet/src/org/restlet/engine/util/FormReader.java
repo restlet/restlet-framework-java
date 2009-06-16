@@ -236,8 +236,10 @@ public class FormReader {
                         } else if (nextChar == -1) {
                             // Do nothing return null preference
                         } else {
-                            throw new IOException(
-                                    "Empty parameter name detected. Please check your form data");
+                            Context
+                                    .getCurrentLogger()
+                                    .fine(
+                                            "Empty parameter name detected. Please check your form data");
                         }
                     } else {
                         nameBuffer.append((char) nextChar);

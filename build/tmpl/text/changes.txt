@@ -36,6 +36,8 @@ Changes log
         - Added implementation of the "exhaust" method in 
           DigesterRepresentation class.
         - Added default DomRepresentation constructor.
+        - Form now accepts extra "&" characters in query strings.
+          Reported by Andrew Moore.
     - Enhancements
         - Upgraded Jetty library to version 6.1.18.
         - SpringServerServlet nows gets its component fully configured,
