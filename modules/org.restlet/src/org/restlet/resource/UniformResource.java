@@ -55,6 +55,7 @@ import org.restlet.data.Response;
 import org.restlet.data.ServerInfo;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
+import org.restlet.service.MetadataService;
 import org.restlet.util.Series;
 
 /**
@@ -259,6 +260,25 @@ public abstract class UniformResource {
      */
     public Form getMatrix() {
         return getReference().getMatrixAsForm();
+    }
+
+    /**
+     * Returns the metadata service. If the parent application doesn't exist, a
+     * new instance is created.
+     * 
+     * @return The metadata service.
+     */
+    public MetadataService getMetadataService() {
+        MetadataService result = null;
+        Application application = Application.getCurrent();
+
+        if (application != null) {
+            result = application.getMetadataService();
+        } else {
+            result = new MetadataService();
+        }
+
+        return result;
     }
 
     /**

@@ -30,7 +30,6 @@
 
 package org.restlet.resource;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.net.URI;
@@ -326,6 +325,34 @@ public class ClientResource extends UniformResource {
     }
 
     /**
+     * Deletes the target resource and all its representations.<br>
+     * <br>
+     * If a success status is not returned, then a resource exception is thrown.
+     * 
+     * @param <T>
+     *            The expected type for the response entity.
+     * @param resultClass
+     *            The expected class for the response entity object.
+     * @return The response entity object.
+     */
+    public <T> T delete(Class<T> resultClass) throws ResourceException {
+        T result = null;
+
+        // Save the current client info
+        ClientInfo currentClientInfo = getClientInfo();
+
+        try {
+            updateClientInfo(resultClass);
+            result = toObject(delete(), resultClass);
+        } finally {
+            // Restore the current client info
+            setClientInfo(currentClientInfo);
+        }
+
+        return result;
+    }
+
+    /**
      * Calls the {@link #release()}.
      */
     @Override
@@ -365,7 +392,7 @@ public class ClientResource extends UniformResource {
      * 
      * @param <T>
      *            The expected type for the response entity.
-     * @param responseClass
+     * @param resultClass
      *            The expected class for the response entity object.
      * @return The response entity object.
      * @throws ResourceException
@@ -373,27 +400,15 @@ public class ClientResource extends UniformResource {
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.3">HTTP
      *      GET method</a>
      */
-    public <T> T get(Class<T> responseClass) throws ResourceException {
+    public <T> T get(Class<T> resultClass) throws ResourceException {
         T result = null;
 
         // Save the current client info
         ClientInfo currentClientInfo = getClientInfo();
 
-        // Create a fresh one for this request
-        ClientInfo newClientInfo = new ClientInfo();
-        ConverterService cs = getConverterService();
-        List<? extends Variant> variants = cs.getVariants(responseClass, null);
-
-        for (Variant variant : variants) {
-            newClientInfo.getAcceptedMediaTypes().add(
-                    new Preference<MediaType>(variant.getMediaType()));
-        }
-        setClientInfo(newClientInfo);
-
         try {
-            result = cs.toObject(get(), responseClass, this);
-        } catch (IOException e) {
-            throw new ResourceException(e);
+            updateClientInfo(resultClass);
+            result = toObject(get(), resultClass);
         } finally {
             // Restore the current client info
             setClientInfo(currentClientInfo);
@@ -698,7 +713,20 @@ public class ClientResource extends UniformResource {
      */
     public <T> T post(Object entity, Class<T> resultClass)
             throws ResourceException {
-        return toObject(post(toRepresentation(entity)), resultClass);
+        T result = null;
+
+        // Save the current client info
+        ClientInfo currentClientInfo = getClientInfo();
+
+        try {
+            updateClientInfo(resultClass);
+            result = toObject(post(toRepresentation(entity)), resultClass);
+        } finally {
+            // Restore the current client info
+            setClientInfo(currentClientInfo);
+        }
+
+        return result;
     }
 
     /**
@@ -751,7 +779,20 @@ public class ClientResource extends UniformResource {
      */
     public <T> T put(Object entity, Class<T> resultClass)
             throws ResourceException {
-        return toObject(put(toRepresentation(entity)), resultClass);
+        T result = null;
+
+        // Save the current client info
+        ClientInfo currentClientInfo = getClientInfo();
+
+        try {
+            updateClientInfo(resultClass);
+            result = toObject(put(toRepresentation(entity)), resultClass);
+        } finally {
+            // Restore the current client info
+            setClientInfo(currentClientInfo);
+        }
+
+        return result;
     }
 
     /**
@@ -989,21 +1030,21 @@ public class ClientResource extends UniformResource {
      * 
      * @param <T>
      *            The expected class of the Java object.
-     * @param sourceRepresentation
+     * @param source
      *            The source representation to convert.
-     * @param targetClass
+     * @param target
      *            The target class of the Java object.
      * @return The converted Java object.
      * @throws ResourceException
      */
-    protected <T> T toObject(Representation sourceRepresentation,
-            Class<T> targetClass) throws ResourceException {
+    protected <T> T toObject(Representation source, Class<T> target)
+            throws ResourceException {
         T result = null;
 
-        if (sourceRepresentation != null) {
+        if (source != null) {
             try {
                 ConverterService cs = getConverterService();
-                result = cs.toObject(sourceRepresentation, targetClass, this);
+                result = cs.toObject(source, target, this);
             } catch (Exception e) {
                 throw new ResourceException(e);
             }
@@ -1015,23 +1056,54 @@ public class ClientResource extends UniformResource {
     /**
      * Converts an object into a representation based on client preferences.
      * 
-     * @param object
+     * @param source
      *            The object to convert.
      * @return The wrapper representation.
      */
-    protected Representation toRepresentation(Object object) {
+    protected Representation toRepresentation(Object source) {
         Representation result = null;
         ConverterService cs = getConverterService();
 
         if (getClientInfo().getAcceptedMediaTypes().size() > 0) {
             Variant targetVariant = new Variant(getClientInfo()
                     .getAcceptedMediaTypes().get(0).getMetadata());
-            result = cs.toRepresentation(object, targetVariant, null);
+            result = cs.toRepresentation(source, targetVariant, null);
         } else {
-            result = cs.toRepresentation(object);
+            result = cs.toRepresentation(source);
         }
 
         return result;
+    }
+
+    /**
+     * Update the client preferences to match the given response class.
+     * 
+     * @param resultClass
+     *            The result class to match.
+     */
+    private <T> void updateClientInfo(Class<T> resultClass) {
+        ConverterService cs = getConverterService();
+        updateClientInfo(cs.getVariants(resultClass, null));
+    }
+
+    /**
+     * Update the client preferences to match the given response class.
+     * 
+     * @param resultClass
+     *            The result class to match.
+     */
+    private <T> void updateClientInfo(List<? extends Variant> variants) {
+        // Create a fresh one for this request
+        ClientInfo newClientInfo = new ClientInfo();
+
+        if (variants != null) {
+            for (Variant variant : variants) {
+                newClientInfo.getAcceptedMediaTypes().add(
+                        new Preference<MediaType>(variant.getMediaType()));
+            }
+        }
+
+        setClientInfo(newClientInfo);
     }
 
     /**
@@ -1060,19 +1132,36 @@ public class ClientResource extends UniformResource {
                         annotations, javaMethod);
 
                 if (annotation != null) {
-                    // The Java method was annotated
-                    setMethod(annotation.getRestletMethod());
+                    // Save the current client info
+                    ClientInfo currentClientInfo = getClientInfo();
 
-                    if ((args != null) && args.length > 0) {
-                        Representation entity = toRepresentation(args[0]);
-                        getRequest().setEntity(entity);
-                    }
+                    try {
+                        List<Variant> responseVariants = annotation
+                                .getResponseVariants(getMetadataService());
 
-                    handle();
+                        if (responseVariants != null) {
+                            updateClientInfo(responseVariants);
+                        } else if (annotation.getJavaReturnType() != null) {
+                            updateClientInfo(annotation.getJavaReturnType());
+                        }
 
-                    if (annotation.getJavaReturnType() != null) {
-                        result = toObject(getResponseEntity(), annotation
-                                .getJavaReturnType());
+                        // The Java method was annotated
+                        setMethod(annotation.getRestletMethod());
+
+                        if ((args != null) && args.length > 0) {
+                            Representation entity = toRepresentation(args[0]);
+                            getRequest().setEntity(entity);
+                        }
+
+                        handle();
+
+                        if (annotation.getJavaReturnType() != null) {
+                            result = toObject(getResponseEntity(), annotation
+                                    .getJavaReturnType());
+                        }
+                    } finally {
+                        // Restore the current client info
+                        setClientInfo(currentClientInfo);
                     }
                 }
 
@@ -1085,5 +1174,4 @@ public class ClientResource extends UniformResource {
         return (T) Proxy.newProxyInstance(Engine.getClassLoader(),
                 new Class<?>[] { resourceInterface }, h);
     }
-
 }

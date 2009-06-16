@@ -30,7 +30,13 @@
 
 package org.restlet.engine.resource;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.restlet.data.MediaType;
 import org.restlet.data.Method;
+import org.restlet.representation.Variant;
+import org.restlet.service.MetadataService;
 
 /**
  * Descriptor for method annotations.
@@ -38,11 +44,11 @@ import org.restlet.data.Method;
  * @author Jerome Louvel
  */
 public class AnnotationInfo {
-    /** The matching Restlet method. */
-    private Method restletMethod;
-
     /** The annotated Java method. */
     private java.lang.reflect.Method javaMethod;
+
+    /** The matching Restlet method. */
+    private Method restletMethod;
 
     /** The annotation value. */
     private String value;
@@ -90,6 +96,90 @@ public class AnnotationInfo {
      */
     public Class<?> getJavaReturnType() {
         return getJavaMethod().getReturnType();
+    }
+
+    /**
+     * Returns a list of request variants based on the annotation value.
+     * 
+     * @param metadataService
+     *            The metadata service to use.
+     * @return A list of response variants.
+     */
+    public List<Variant> getRequestVariants(MetadataService metadataService) {
+        List<Variant> result = null;
+        String value = getValue();
+
+        if (value != null) {
+            int colonIndex = value.indexOf(':');
+
+            if (colonIndex == -1) {
+                if ((getJavaParameterTypes() == null)
+                        || (getJavaParameterTypes().length == 0)) {
+                    value = null;
+                }
+            } else {
+                value = getValue().substring(0, colonIndex);
+            }
+
+            if (value != null) {
+                List<MediaType> mediaTypes = metadataService
+                        .getAllMediaTypes(value);
+
+                if (mediaTypes != null) {
+                    if (result == null) {
+                        result = new ArrayList<Variant>();
+                    }
+
+                    for (MediaType mediaType : mediaTypes) {
+                        result.add(new Variant(mediaType));
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns a list of response variants based on the annotation value.
+     * 
+     * @param metadataService
+     *            The metadata service to use.
+     * @return A list of response variants.
+     */
+    public List<Variant> getResponseVariants(MetadataService metadataService) {
+        List<Variant> result = null;
+        String value = getValue();
+
+        if (value != null) {
+            int colonIndex = value.indexOf(':');
+
+            if (colonIndex == -1) {
+                if ((getJavaReturnType() == null)
+                        || ((getJavaParameterTypes() != null) && (getJavaParameterTypes().length > 0))) {
+                    value = null;
+                }
+            } else {
+                value = getValue().substring(colonIndex + 1);
+            }
+
+            if (value != null) {
+                List<MediaType> mediaTypes = metadataService
+                        .getAllMediaTypes(value);
+
+                if (mediaTypes != null) {
+                    if (result == null) {
+                        result = new ArrayList<Variant>();
+                    }
+
+                    for (MediaType mediaType : mediaTypes) {
+                        result.add(new Variant(mediaType));
+                    }
+                }
+            }
+        }
+
+        return result;
     }
 
     /**
