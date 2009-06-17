@@ -173,9 +173,27 @@ public abstract class Entity {
                     } else if (current instanceof CharacterSet) {
                         variant.setCharacterSet((CharacterSet) current);
                     } else if (current instanceof Encoding) {
-                        variant.getEncodings().add((Encoding) current);
+                        // Do we need to add this metadata?
+                        boolean found = false;
+                        for (int i = 0; !found
+                                && i < variant.getEncodings().size(); i++) {
+                            found = current.includes(variant.getEncodings()
+                                    .get(i));
+                        }
+                        if (!found) {
+                            variant.getEncodings().add((Encoding) current);
+                        }
                     } else if (current instanceof Language) {
-                        variant.getLanguages().add((Language) current);
+                        // Do we need to add this metadata?
+                        boolean found = false;
+                        for (int i = 0; !found
+                                && i < variant.getLanguages().size(); i++) {
+                            found = current.includes(variant.getLanguages()
+                                    .get(i));
+                        }
+                        if (!found) {
+                            variant.getLanguages().add((Language) current);
+                        }
                     }
                 }
 
@@ -223,7 +241,8 @@ public abstract class Entity {
                             .getDefaultEncoding();
 
                     if ((defaultEncoding != null)
-                            && !defaultEncoding.equals(Encoding.ALL)) {
+                            && !defaultEncoding.equals(Encoding.ALL)
+                            && !defaultEncoding.equals(Encoding.IDENTITY)) {
                         variant.getEncodings().add(defaultEncoding);
                     }
                 }

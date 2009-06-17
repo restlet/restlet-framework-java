@@ -337,7 +337,7 @@ public class FileClientHelper extends EntityClientHelper {
 
                 File uniqueVariant = null;
                 List<File> variantsList = new ArrayList<File>();
-                if (files != null) {
+                if (files != null && files.length > 0) {
                     // Set the list of extensions, due to the file name and the
                     // default metadata.
                     // TODO It seems we may handle more clearly the equivalence
@@ -380,24 +380,6 @@ public class FileClientHelper extends EntityClientHelper {
                         // Complete it with the default metadata
                         Entity.updateMetadata(file.getName(), request
                                 .getEntity(), true, getMetadataService());
-                        if (request.getEntity().getLanguages().isEmpty()) {
-                            if (metadataService.getDefaultLanguage() != null) {
-                                request.getEntity().getLanguages().add(
-                                        metadataService.getDefaultLanguage());
-                            }
-                        }
-                        if (request.getEntity().getMediaType() == null) {
-                            request.getEntity().setMediaType(
-                                    metadataService.getDefaultMediaType());
-                        }
-                        if (request.getEntity().getEncodings().isEmpty()) {
-                            if ((metadataService.getDefaultEncoding() != null)
-                                    && !metadataService.getDefaultEncoding()
-                                            .equals(Encoding.IDENTITY)) {
-                                request.getEntity().getEncodings().add(
-                                        metadataService.getDefaultEncoding());
-                            }
-                        }
 
                         // Update the URI
                         StringBuilder fileName = new StringBuilder(baseName);
@@ -785,7 +767,7 @@ public class FileClientHelper extends EntityClientHelper {
             }
         }
 
-        // We only add extension for metadata that differ from default ones
+        // We only add extension for metadata that differs from default ones
         if (!defaultMetadata) {
             String extension = metadataService.getExtension(metadata);
 
