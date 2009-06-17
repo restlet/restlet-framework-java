@@ -35,7 +35,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.restlet.data.Reference;
 import org.restlet.ext.rdf.Graph;
@@ -91,10 +90,11 @@ public class RdfTurtleWriter extends GraphHandler {
         prefixes.put("http://purl.org/dc/elements/1.1/", "dc");
         prefixes.put("http://www.w3.org/2001/XMLSchema#", "type");
 
-        for (Entry<String, String> entry : prefixes.entrySet()) {
-            this.bw.append("@prefix ").append(entry.getValue()).append(": ")
-                    .append(entry.getKey()).append(".\n");
+        for (String key : prefixes.keySet()) {
+            this.bw.append("@prefix ").append(prefixes.get(key)).append(": ")
+                    .append(key).append(".\n");
         }
+
         this.bw.append("@keywords a, is, of, has.\n");
     }
 
@@ -312,12 +312,12 @@ public class RdfTurtleWriter extends GraphHandler {
             this.bw.write(uri);
         } else {
             boolean found = false;
-            for (Entry<String, String> entry : prefixes.entrySet()) {
-                if (uri.startsWith(entry.getKey())) {
+            for (String key : prefixes.keySet()) {
+                if (uri.startsWith(key)) {
                     found = true;
-                    this.bw.append(entry.getValue());
+                    this.bw.append(prefixes.get(key));
                     this.bw.append(":");
-                    this.bw.append(uri.substring(entry.getKey().length()));
+                    this.bw.append(uri.substring(key.length()));
                     break;
                 }
             }
