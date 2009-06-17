@@ -30,11 +30,6 @@
 
 package org.restlet.test.jaxrs.services.resources;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Map.Entry;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -88,11 +83,10 @@ public class ContextsTestService {
     @Produces("text/plain")
     @Path("lastPathSegm")
     public String getPathSegm(@Context PathSegment lastPathSegment) {
-        Set<Entry<String, List<String>>> entries;
-        entries = lastPathSegment.getMatrixParameters().entrySet();
         final StringBuilder stb = new StringBuilder();
-        for (final Map.Entry<String, List<String>> entry : entries) {
-            stb.append(entry.getKey() + " : " + entry.getValue() + "\n");
+        for (String key : lastPathSegment.getMatrixParameters().keySet()) {
+            stb.append(key + " : "
+                    + lastPathSegment.getMatrixParameters().get(key) + "\n");
         }
         return stb.toString();
     }
