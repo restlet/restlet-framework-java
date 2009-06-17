@@ -67,7 +67,6 @@ public class AwsTest {
         // header and use it
         // for authentication.
         // extraHeaders.add("X-Amz-Date", "Thu, 17 Nov 2005 18:49:58 GMT");
-
         request.getAttributes().put("org.restlet.http.headers", extraHeaders);
 
         // Handle it using an HTTP client connector
