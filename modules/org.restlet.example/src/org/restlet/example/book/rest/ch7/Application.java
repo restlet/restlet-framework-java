@@ -35,8 +35,8 @@ import java.io.File;
 import org.restlet.Component;
 import org.restlet.Restlet;
 import org.restlet.data.Protocol;
-import org.restlet.routing.Route;
 import org.restlet.routing.Router;
+import org.restlet.routing.TemplateRoute;
 import org.restlet.util.Variable;
 
 import com.db4o.Db4o;
@@ -84,7 +84,7 @@ public class Application extends org.restlet.Application {
         router.attach("/users/{username}/bookmarks", BookmarksResource.class);
 
         // Add a route for bookmark resources
-        final Route uriRoute = router.attach(
+        final TemplateRoute uriRoute = router.attach(
                 "/users/{username}/bookmarks/{URI}", BookmarkResource.class);
         uriRoute.getTemplate().getVariables().put("URI",
                 new Variable(Variable.TYPE_URI_ALL));
