@@ -33,7 +33,6 @@ package org.restlet.test.data;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Product;
@@ -131,8 +130,8 @@ public class ProductTokenTestCase extends RestletTestCase {
         clientInfo = new ClientInfo();
         clientInfo.setAgent(userAgent7);
         final Map<String, String> map = clientInfo.getAgentAttributes();
-        for (final Entry<String, String> entry : map.entrySet()) {
-            System.out.println(entry);
+        for (String key : map.keySet()) {
+            System.out.println("[" + key + "," + map.get(key) + "]");
         }
     }
 
@@ -203,8 +202,7 @@ public class ProductTokenTestCase extends RestletTestCase {
         products.add(new Product("Product", "1.2", null));
         products.add(new Product("Nre", "1.1m4", "This is a comment"));
 
-        list = UserAgentUtils.parse(UserAgentUtils
-                .format(products));
+        list = UserAgentUtils.parse(UserAgentUtils.format(products));
         assertEquals(2, list.size());
         assertEquals("Product", list.get(0).getName());
         assertEquals("1.2", list.get(0).getVersion());
