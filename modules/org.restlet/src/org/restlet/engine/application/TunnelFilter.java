@@ -38,7 +38,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.restlet.Context;
 import org.restlet.data.CharacterSet;
@@ -521,13 +520,14 @@ public class TunnelFilter extends Filter {
                 for (AcceptReplacer acceptReplacer : this.acceptReplacers) {
                     // Check the conditions
                     boolean checked = true;
-                    for (Entry<String, String> entry : acceptReplacer
-                            .getAgentAttributes().entrySet()) {
-                        final String attribute = agentAttributes.get(entry
-                                .getKey());
+                    for (String key : acceptReplacer.getAgentAttributes()
+                            .keySet()) {
+                        final String attribute = agentAttributes.get(key);
                         checked = checked
-                                && (attribute != null && attribute.equals(entry
-                                        .getValue()));
+                                && (attribute != null && attribute
+                                        .equals(acceptReplacer
+                                                .getAgentAttributes().get(key)));
+
                     }
                     if (checked) {
                         if (acceptOld == null) {
