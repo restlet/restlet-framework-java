@@ -36,7 +36,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.restlet.ext.xml.XmlWriter;
 import org.xml.sax.SAXException;
@@ -345,8 +344,8 @@ public class ApplicationInfo extends DocumentedInfo {
     public void writeElement(XmlWriter writer) throws SAXException {
         updateNamespaces(getNamespaces());
 
-        for (Entry<String, String> entry : getNamespaces().entrySet()) {
-            writer.forceNSDecl(entry.getKey(), entry.getValue());
+        for (String key : getNamespaces().keySet()) {
+            writer.forceNSDecl(key, getNamespaces().get(key));
         }
 
         writer.startElement(APP_NAMESPACE, "application");
