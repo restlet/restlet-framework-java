@@ -73,7 +73,7 @@ public class ClientRouter extends Router {
                 Client client = ((ClientRoute) route).getClient();
 
                 getLogger().fine(
-                        "This client was selected: \"" + client.getProtocols());
+                        "This client was selected: \"" + client.getProtocols() + "\"");
             } else {
                 super.logRoute(route);
             }
