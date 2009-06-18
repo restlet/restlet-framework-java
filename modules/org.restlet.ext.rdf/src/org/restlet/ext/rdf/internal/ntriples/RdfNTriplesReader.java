@@ -38,7 +38,7 @@ import java.util.List;
 
 import org.restlet.data.Reference;
 import org.restlet.ext.rdf.GraphHandler;
-import org.restlet.ext.rdf.LinkReference;
+import org.restlet.ext.rdf.Link;
 import org.restlet.ext.rdf.Literal;
 import org.restlet.ext.rdf.internal.RdfReader;
 import org.restlet.representation.Representation;
@@ -281,7 +281,7 @@ public class RdfNTriplesReader extends RdfReader {
                 lexicalUnits.add(new Reference(parseUri()));
                 break;
             case '_':
-                lexicalUnits.add(LinkReference.createBlank(parseToken()));
+                lexicalUnits.add(Link.createBlankRef(parseToken()));
                 break;
             case '"':
                 int c = step();

@@ -39,7 +39,7 @@ import org.restlet.data.CharacterSet;
 import org.restlet.data.Reference;
 import org.restlet.ext.rdf.Graph;
 import org.restlet.ext.rdf.GraphHandler;
-import org.restlet.ext.rdf.LinkReference;
+import org.restlet.ext.rdf.Link;
 import org.restlet.ext.rdf.Literal;
 import org.restlet.ext.rdf.internal.RdfConstants;
 import org.restlet.ext.xml.XmlWriter;
@@ -227,7 +227,7 @@ public class RdfXmlWriter extends GraphHandler {
      */
     private void writeNode(Reference reference, boolean subject) {
         AttributesImpl atts = new AttributesImpl();
-        if (LinkReference.isBlank(reference)) {
+        if (Link.isBlankRef(reference)) {
             atts.addAttribute(RDF_SYNTAX, "NodeId", "rdf:NodeId", "text",
                     reference.getTargetRef().toString(true, true));
         } else {

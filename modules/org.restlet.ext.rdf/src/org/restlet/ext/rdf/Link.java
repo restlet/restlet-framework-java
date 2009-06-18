@@ -45,6 +45,28 @@ import org.restlet.data.Reference;
  */
 public class Link {
 
+    /**
+     * Creates a reference to a blank node.
+     * 
+     * @param identifier
+     *            The blank node identifier.
+     * @return A reference to a blank node.
+     */
+    public static Reference createBlankRef(String identifier) {
+        return new Reference("_:" + identifier);
+    }
+
+    /**
+     * Indicates if a reference is identifying a blank node.
+     * 
+     * @param reference
+     *            The reference to test.
+     * @return True if a reference is identifying a blank node.
+     */
+    public static boolean isBlankRef(Reference reference) {
+        return ((reference != null) && ("_".equals(reference.getScheme())));
+    }
+
     /** The source or subject. */
     private Object source;
 

@@ -200,7 +200,7 @@ public class RdfRepresentation extends OutputRepresentation {
      */
     private void discoverNamespaces(Reference reference,
             GraphHandler graphHandler) {
-        if (!LinkReference.isBlank(reference)) {
+        if (!Link.isBlankRef(reference)) {
             graphHandler.startPrefixMapping(null, reference);
         }
     }

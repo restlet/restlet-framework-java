@@ -35,7 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.data.Reference;
-import org.restlet.ext.rdf.LinkReference;
+import org.restlet.ext.rdf.Link;
 
 /**
  * Represents a blank node inside a RDF N3 document. Contains all the logic to
@@ -65,8 +65,8 @@ public class BlankNodeToken extends LexicalUnit {
      *            The context used to resolved references.
      * @throws IOException
      */
-    public BlankNodeToken(RdfTurtleReader contentHandler,
-            Context context) throws IOException {
+    public BlankNodeToken(RdfTurtleReader contentHandler, Context context)
+            throws IOException {
         super(contentHandler, context);
         lexicalUnits = new ArrayList<LexicalUnit>();
         this.setValue("_:" + contentHandler.newBlankNodeId());
@@ -103,7 +103,7 @@ public class BlankNodeToken extends LexicalUnit {
             if (getValue().startsWith("_:")) {
                 return new Reference(getValue());
             } else {
-                return LinkReference.createBlank(getValue());
+                return Link.createBlankRef(getValue());
             }
         } else {
             org.restlet.Context.getCurrentLogger().warning(

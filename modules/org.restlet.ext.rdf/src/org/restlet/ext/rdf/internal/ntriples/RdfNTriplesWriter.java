@@ -38,7 +38,7 @@ import java.io.OutputStreamWriter;
 import org.restlet.data.Reference;
 import org.restlet.ext.rdf.Graph;
 import org.restlet.ext.rdf.GraphHandler;
-import org.restlet.ext.rdf.LinkReference;
+import org.restlet.ext.rdf.Link;
 import org.restlet.ext.rdf.Literal;
 
 /**
@@ -135,7 +135,7 @@ public class RdfNTriplesWriter extends GraphHandler {
      */
     private void write(Reference reference) throws IOException {
         String uri = reference.toString();
-        if (LinkReference.isBlank(reference)) {
+        if (Link.isBlankRef(reference)) {
             this.bw.write(uri);
         } else {
             this.bw.append("<");

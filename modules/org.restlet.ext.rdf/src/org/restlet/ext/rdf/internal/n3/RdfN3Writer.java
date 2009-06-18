@@ -40,7 +40,6 @@ import org.restlet.data.Reference;
 import org.restlet.ext.rdf.Graph;
 import org.restlet.ext.rdf.GraphHandler;
 import org.restlet.ext.rdf.Link;
-import org.restlet.ext.rdf.LinkReference;
 import org.restlet.ext.rdf.Literal;
 import org.restlet.ext.rdf.internal.RdfConstants;
 import org.restlet.ext.rdf.internal.turtle.Context;
@@ -300,7 +299,7 @@ public class RdfN3Writer extends GraphHandler {
     private void write(Reference reference, Map<String, String> prefixes)
             throws IOException {
         String uri = reference.toString();
-        if (LinkReference.isBlank(reference)) {
+        if (Link.isBlankRef(reference)) {
             this.bw.write(uri);
         } else {
             boolean found = false;

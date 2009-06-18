@@ -38,7 +38,7 @@ import java.util.Map;
 import org.restlet.data.Language;
 import org.restlet.data.Reference;
 import org.restlet.ext.rdf.GraphHandler;
-import org.restlet.ext.rdf.LinkReference;
+import org.restlet.ext.rdf.Link;
 import org.restlet.ext.rdf.Literal;
 import org.restlet.ext.rdf.RdfRepresentation;
 import org.restlet.ext.rdf.internal.RdfConstants;
@@ -388,7 +388,7 @@ class ContentReader extends DefaultHandler {
                 result = resolve(attributes.getValue(i), false);
             } else if (checkRdfQName("nodeID", qName)) {
                 found = true;
-                result = LinkReference.createBlank(attributes.getValue(i));
+                result = Link.createBlankRef(attributes.getValue(i));
             } else if (checkRdfQName("ID", qName)) {
                 found = true;
                 result = resolve(attributes.getValue(i), true);
@@ -405,7 +405,7 @@ class ContentReader extends DefaultHandler {
         }
         if (!found) {
             // Blank node with no given ID
-            result = LinkReference.createBlank(ContentReader.newBlankNodeId());
+            result = Link.createBlankRef(ContentReader.newBlankNodeId());
         }
 
         // Create the available statements
@@ -605,7 +605,7 @@ class ContentReader extends DefaultHandler {
                     } else if ("Resource".equals(value)) {
                         this.consumeContent = false;
                         // Create a new blank node
-                        currentObject = LinkReference.createBlank(ContentReader
+                        currentObject = Link.createBlankRef(ContentReader
                                 .newBlankNodeId());
                         popState();
                         pushState(State.SUBJECT);
@@ -616,8 +616,7 @@ class ContentReader extends DefaultHandler {
                     }
                 } else if (checkRdfQName("nodeID", qName)) {
                     this.consumeContent = false;
-                    currentObject = LinkReference.createBlank(attributes
-                            .getValue(i));
+                    currentObject = Link.createBlankRef(attributes.getValue(i));
                     popState();
                     pushState(State.SUBJECT);
                     pushSubject(currentObject);
@@ -644,7 +643,7 @@ class ContentReader extends DefaultHandler {
                 // current statement.
 
                 boolean found = false;
-                Reference blankNode = LinkReference.createBlank(ContentReader
+                Reference blankNode = Link.createBlankRef(ContentReader
                         .newBlankNodeId());
                 for (String[] arc : arcs) {
                     Reference pRef = resolve(null, arc[0]);

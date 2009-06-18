@@ -115,6 +115,8 @@ Changes log
           David Fogel.
         - Implemented Variant#equals() method and improved the 
           implementation of isCompatible() method.
+        - Moved static methods of LinkReference to Link. Removed the
+          LinkReference class.
      - Misc
         - Exceptions thrown in the internal HTTP client are not logged
           with a FINE level instead of a WARNING level.
