@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.net;
+package org.restlet.ext.net.internal;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -53,9 +53,9 @@ import org.restlet.engine.http.HttpClientCall;
 import org.restlet.engine.http.HttpsUtils;
 import org.restlet.engine.security.SslContextFactory;
 import org.restlet.engine.util.SystemUtils;
+import org.restlet.ext.net.HttpClientHelper;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
-import org.restlet.util.WrapperRepresentation;
 
 /**
  * HTTP client connector call based on JDK's java.net.HttpURLConnection class.
@@ -63,41 +63,6 @@ import org.restlet.util.WrapperRepresentation;
  * @author Jerome Louvel
  */
 public class HttpUrlConnectionCall extends HttpClientCall {
-
-    /**
-     * Representation that wraps another representation and closes the parent
-     * HttpURLConnection when the representation is released.
-     * 
-     * @author Kevin Conaway
-     */
-    private static class ConnectionClosingRepresentation extends
-            WrapperRepresentation {
-
-        /** The parent connection. */
-        private final HttpURLConnection connection;
-
-        /**
-         * Default constructor.
-         * 
-         * @param wrappedRepresentation
-         *            The wrapped representation.
-         * @param connection
-         *            The parent connection.
-         */
-        public ConnectionClosingRepresentation(
-                Representation wrappedRepresentation,
-                HttpURLConnection connection) {
-            super(wrappedRepresentation);
-            this.connection = connection;
-        }
-
-        @Override
-        public void release() {
-            this.connection.disconnect();
-            super.release();
-        }
-
-    }
 
     /** The wrapped HTTP URL connection. */
     private final HttpURLConnection connection;
@@ -124,13 +89,13 @@ public class HttpUrlConnectionCall extends HttpClientCall {
         super(helper, method, requestUri);
 
         if (requestUri.startsWith("http")) {
-            final URL url = new URL(requestUri);
+            URL url = new URL(requestUri);
             this.connection = (HttpURLConnection) url.openConnection();
 
             // These properties can only be used with Java 1.5 and upper
             // releases
-            final int majorVersionNumber = SystemUtils.getJavaMajorVersion();
-            final int minorVersionNumber = SystemUtils.getJavaMinorVersion();
+            int majorVersionNumber = SystemUtils.getJavaMajorVersion();
+            int minorVersionNumber = SystemUtils.getJavaMinorVersion();
             if ((majorVersionNumber > 1)
                     || ((majorVersionNumber == 1) && (minorVersionNumber >= 5))) {
                 this.connection.setConnectTimeout(getHelper()
@@ -148,8 +113,8 @@ public class HttpUrlConnectionCall extends HttpClientCall {
 
             if (this.connection instanceof HttpsURLConnection) {
                 setConfidential(true);
-                final HttpsURLConnection https = (HttpsURLConnection) this.connection;
-                final SslContextFactory sslContextFactory = HttpsUtils
+                HttpsURLConnection https = (HttpsURLConnection) this.connection;
+                SslContextFactory sslContextFactory = HttpsUtils
                         .getSslContextFactory(getHelper());
                 if (sslContextFactory != null) {
                     try {
@@ -164,7 +129,7 @@ public class HttpUrlConnectionCall extends HttpClientCall {
                     }
                 }
 
-                final HostnameVerifier verifier = helper.getHostnameVerifier();
+                HostnameVerifier verifier = helper.getHostnameVerifier();
 
                 if (verifier != null) {
                     https.setHostnameVerifier(verifier);
@@ -211,7 +176,7 @@ public class HttpUrlConnectionCall extends HttpClientCall {
 
     @Override
     protected Representation getRepresentation(InputStream stream) {
-        final Representation r = super.getRepresentation(stream);
+        Representation r = super.getRepresentation(stream);
         return new ConnectionClosingRepresentation(r, getConnection());
     }
 
@@ -273,7 +238,7 @@ public class HttpUrlConnectionCall extends HttpClientCall {
      */
     @Override
     public Series<Parameter> getResponseHeaders() {
-        final Series<Parameter> result = super.getResponseHeaders();
+        Series<Parameter> result = super.getResponseHeaders();
 
         if (!this.responseHeadersAdded) {
             // Read the response headers
@@ -330,14 +295,12 @@ public class HttpUrlConnectionCall extends HttpClientCall {
 
         try {
             if (request.isEntityAvailable()) {
-                final Representation entity = request.getEntity();
+                Representation entity = request.getEntity();
 
                 // These properties can only be used with Java 1.5 and upper
                 // releases
-                final int majorVersionNumber = SystemUtils
-                        .getJavaMajorVersion();
-                final int minorVersionNumber = SystemUtils
-                        .getJavaMinorVersion();
+                int majorVersionNumber = SystemUtils.getJavaMajorVersion();
+                int minorVersionNumber = SystemUtils.getJavaMinorVersion();
                 if ((majorVersionNumber > 1)
                         || ((majorVersionNumber == 1) && (minorVersionNumber >= 5))) {
                     // Adjust the streaming mode
@@ -363,7 +326,7 @@ public class HttpUrlConnectionCall extends HttpClientCall {
             getConnection().setRequestMethod(getMethod());
 
             // Set the request headers
-            for (final Parameter header : getRequestHeaders()) {
+            for (Parameter header : getRequestHeaders()) {
                 getConnection().addRequestProperty(header.getName(),
                         header.getValue());
             }

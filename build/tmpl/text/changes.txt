@@ -70,6 +70,11 @@ Changes log
         - HTTPS connectors now reuses the keystore password as the key
           password if no specific one is defined. Supports keystore
           default behavior.
+        - Added FTP client connector based on JDK's URLConnection in 
+          our existing "org.restlet.ext.net" extension. This connector
+          supports login/password setting via ChallengeResponse and the
+          new ChallengeScheme.FTP_PLAIN. This connector is only capable 
+          to handling GET methods.
     - Breaking changes
         - The default language, defined in MetadataService is now based
           on the JVM's default locale, instead of English/US.

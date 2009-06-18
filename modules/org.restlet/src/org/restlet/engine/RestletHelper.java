@@ -34,12 +34,14 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
+import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.service.MetadataService;
 import org.restlet.util.Series;
 
 /**
@@ -101,16 +103,6 @@ public abstract class RestletHelper<T extends Restlet> extends Helper {
     }
 
     /**
-     * Returns the helped Restlet logger.
-     * 
-     * @return The helped Restlet logger.
-     */
-    public Logger getLogger() {
-        return (getHelped().getContext() != null) ? getHelped().getContext()
-                .getLogger() : Context.getCurrentLogger();
-    }
-
-    /**
      * Returns the helped Restlet parameters.
      * 
      * @return The helped Restlet parameters.
@@ -122,6 +114,35 @@ public abstract class RestletHelper<T extends Restlet> extends Helper {
             result = getHelped().getContext().getParameters();
         } else {
             result = new Form();
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the helped Restlet logger.
+     * 
+     * @return The helped Restlet logger.
+     */
+    public Logger getLogger() {
+        return (getHelped().getContext() != null) ? getHelped().getContext()
+                .getLogger() : Context.getCurrentLogger();
+    }
+
+    /**
+     * Returns the metadata service. If the parent application doesn't exist, a
+     * new instance is created.
+     * 
+     * @return The metadata service.
+     */
+    public MetadataService getMetadataService() {
+        MetadataService result = null;
+        Application application = getHelped().getApplication();
+
+        if (application != null) {
+            result = application.getMetadataService();
+        } else {
+            result = new MetadataService();
         }
 
         return result;

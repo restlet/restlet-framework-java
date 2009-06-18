@@ -267,7 +267,7 @@ public abstract class UniformResource {
      */
     public MetadataService getMetadataService() {
         MetadataService result = null;
-        Application application = Application.getCurrent();
+        Application application = getApplication();
 
         if (application != null) {
             result = application.getMetadataService();

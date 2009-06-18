@@ -87,6 +87,10 @@ public final class ChallengeScheme {
     public static final ChallengeScheme SMTP_PLAIN = new ChallengeScheme(
             "SMTP_PLAIN", "PLAIN", "Plain SMTP authentication");
 
+    /** Plain FTP scheme. */
+    public static final ChallengeScheme FTP_PLAIN = new ChallengeScheme(
+            "FTP_PLAIN", "PLAIN", "Plain FTP authentication");
+
     /**
      * Returns the challenge scheme associated to a scheme name. If an existing
      * constant exists then it is returned, otherwise a new instance is created.
