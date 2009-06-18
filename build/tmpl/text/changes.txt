@@ -75,6 +75,8 @@ Changes log
           supports login/password setting via ChallengeResponse and the
           new ChallengeScheme.FTP_PLAIN. This connector is only capable 
           to handling GET methods.
+        - Added RdfClientResource that can easily navigate the Web of
+          data. Can follow linked resources and linked literals.
     - Breaking changes
         - The default language, defined in MetadataService is now based
           on the JVM's default locale, instead of English/US.
