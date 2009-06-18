@@ -245,28 +245,6 @@ public abstract class HttpClientCall extends HttpCall {
     }
 
     /**
-     * Returns the representation wrapping the given stream.
-     * 
-     * @param stream
-     *            The response input stream.
-     * @return The wrapping representation.
-     */
-    protected Representation getRepresentation(InputStream stream) {
-        return new InputRepresentation(stream, null);
-    }
-
-    /**
-     * Returns the representation wrapping the given channel.
-     * 
-     * @param channel
-     *            The response channel.
-     * @return The wrapping representation.
-     */
-    protected Representation getRepresentation(ReadableByteChannel channel) {
-        return new ReadableRepresentation(channel, null);
-    }
-
-    /**
      * Returns the request entity channel if it exists.
      * 
      * @return The request entity channel if it exists.

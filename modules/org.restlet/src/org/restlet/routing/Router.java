@@ -283,7 +283,7 @@ public class Router extends Restlet {
      */
     @SuppressWarnings("deprecation")
     protected Route createRoute(String uriPattern, Restlet target) {
-        final Route result = new Route(this, uriPattern, target);
+        Route result = new Route(this, uriPattern, target);
         result.getTemplate().setMatchingMode(getDefaultMatchingMode());
         result.setMatchQuery(this.defaultMatchQuery);
         return result;

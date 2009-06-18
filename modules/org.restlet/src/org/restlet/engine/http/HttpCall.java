@@ -42,6 +42,7 @@ import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
+import org.restlet.engine.Call;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.representation.Representation;
 import org.restlet.service.ConnectorService;
@@ -52,7 +53,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
-public abstract class HttpCall {
+public abstract class HttpCall extends Call {
 
     /**
      * Formats a date as a header string.

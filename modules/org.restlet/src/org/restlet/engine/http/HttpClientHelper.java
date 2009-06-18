@@ -50,10 +50,10 @@ import org.restlet.engine.ClientHelper;
  * <th>Description</th>
  * </tr>
  * <tr>
- * <td>converter</td>
+ * <td>adapter</td>
  * <td>String</td>
  * <td>org.restlet.engine.http.HttpClientAdapter</td>
- * <td>Class name of the converter of low-level HTTP calls into high level
+ * <td>Class name of the adapter of low-level HTTP calls into high level
  * requests and responses.</td>
  * </tr>
  * </table>
@@ -61,8 +61,8 @@ import org.restlet.engine.ClientHelper;
  * @author Jerome Louvel
  */
 public abstract class HttpClientHelper extends ClientHelper {
-    /** The converter from uniform calls to HTTP calls. */
-    private volatile HttpClientAdapter converter;
+    /** The adapter from uniform calls to HTTP calls. */
+    private volatile HttpClientAdapter adapter;
 
     /**
      * Constructor.
@@ -72,7 +72,7 @@ public abstract class HttpClientHelper extends ClientHelper {
      */
     public HttpClientHelper(Client client) {
         super(client);
-        this.converter = null;
+        this.adapter = null;
     }
 
     /**
@@ -85,27 +85,27 @@ public abstract class HttpClientHelper extends ClientHelper {
     public abstract HttpClientCall create(Request request);
 
     /**
-     * Returns the converter from uniform calls to HTTP calls.
+     * Returns the adapter from uniform calls to HTTP calls.
      * 
-     * @return the converter from uniform calls to HTTP calls.
+     * @return the adapter from uniform calls to HTTP calls.
      */
-    public HttpClientAdapter getConverter() throws Exception {
-        if (this.converter == null) {
-            final String converterClass = getHelpedParameters().getFirstValue(
-                    "converter", "org.restlet.engine.http.HttpClientAdapter");
-            this.converter = (HttpClientAdapter) Class.forName(converterClass)
+    public HttpClientAdapter getAdapter() throws Exception {
+        if (this.adapter == null) {
+            final String adapterClass = getHelpedParameters().getFirstValue(
+                    "adapter", "org.restlet.engine.http.HttpClientAdapter");
+            this.adapter = (HttpClientAdapter) Class.forName(adapterClass)
                     .getConstructor(Context.class).newInstance(getContext());
         }
 
-        return this.converter;
+        return this.adapter;
     }
 
     @Override
     public void handle(Request request, Response response) {
         try {
-            final HttpClientCall httpCall = getConverter().toSpecific(this,
+            final HttpClientCall httpCall = getAdapter().toSpecific(this,
                     request);
-            getConverter().commit(httpCall, request, response);
+            getAdapter().commit(httpCall, request, response);
         } catch (Exception e) {
             getLogger().log(Level.INFO,
                     "Error while handling an HTTP client call", e);
@@ -114,12 +114,12 @@ public abstract class HttpClientHelper extends ClientHelper {
     }
 
     /**
-     * Sets the converter from uniform calls to HTTP calls.
+     * Sets the adapter from uniform calls to HTTP calls.
      * 
-     * @param converter
-     *            The converter to set.
+     * @param adapter
+     *            The adapter to set.
      */
-    public void setConverter(HttpClientAdapter converter) {
-        this.converter = converter;
+    public void setAdapter(HttpClientAdapter adapter) {
+        this.adapter = adapter;
     }
 }

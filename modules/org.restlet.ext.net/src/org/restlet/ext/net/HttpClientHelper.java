@@ -41,10 +41,9 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.engine.http.HttpClientCall;
 
-
 /**
- * HTTP client connector using the HttpUrlConnectionCall. Here is the list of
- * parameters that are supported:
+ * HTTP client connector using the {@link HttpUrlConnectionCall}. Here is the
+ * list of parameters that are supported:
  * <table>
  * <tr>
  * <th>Parameter name</th>
