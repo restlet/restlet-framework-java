@@ -67,7 +67,14 @@ public class ConverterUtils {
 
             if (helperVariants != null) {
                 for (VariantInfo helperVariant : helperVariants) {
-                    if (helperVariant.isCompatible(targetVariant)) {
+                    if (helperVariant.includes(targetVariant)) {
+                        if (result == null) {
+                            result = new ArrayList<VariantInfo>();
+                        }
+                        result
+                                .add(new VariantInfo(targetVariant
+                                        .getMediaType()));
+                    } else if (helperVariant.includes(targetVariant)) {
                         if (result == null) {
                             result = new ArrayList<VariantInfo>();
                         }
