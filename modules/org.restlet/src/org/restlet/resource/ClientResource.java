@@ -53,6 +53,7 @@ import org.restlet.data.Range;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.data.Status;
 import org.restlet.engine.Engine;
 import org.restlet.engine.resource.AnnotationInfo;
 import org.restlet.engine.resource.AnnotationUtils;
@@ -478,6 +479,27 @@ public class ClientResource extends UniformResource {
      */
     public Uniform getNext() {
         return this.next;
+    }
+
+    /**
+     * Returns the parent resource. The parent resource is defined in the sense
+     * of hierarchical URIs. If the resource URI is not hierarchical, then an
+     * exception is thrown.
+     * 
+     * @return The parent resource.
+     */
+    public ClientResource getParent() throws ResourceException {
+        ClientResource result = null;
+
+        if (getReference().isHierarchical()) {
+            Reference parentRef = getReference().getParentRef();
+            result = new ClientResource(parentRef);
+        } else {
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST,
+                    "The resource URI is not hierarchical.");
+        }
+
+        return result;
     }
 
     /**

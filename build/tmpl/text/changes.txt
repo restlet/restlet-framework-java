@@ -122,6 +122,8 @@ Changes log
           implementation of isCompatible() method.
         - Moved static methods of LinkReference to Link. Removed the
           LinkReference class.
+        - Added ClientResource#getParent() to return the parent 
+          resource based on the URI hierarchy.
      - Misc
         - Exceptions thrown in the internal HTTP client are not logged
           with a FINE level instead of a WARNING level.
