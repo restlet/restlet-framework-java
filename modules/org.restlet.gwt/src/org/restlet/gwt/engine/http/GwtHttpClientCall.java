@@ -86,7 +86,9 @@ public class GwtHttpClientCall extends HttpClientCall {
             String requestUri, boolean hasEntity) {
         super(helper, method, requestUri);
 
-        if (requestUri.startsWith("http")) {
+        Reference requestRef = new Reference(requestUri);
+        if (requestRef.isRelative()
+                || requestRef.getScheme().startsWith("http")) {
             this.requestBuilder = new RequestBuilder(method, requestUri) {
             };
             this.requestBuilder.setTimeoutMillis(getHelper().getTimeout());
