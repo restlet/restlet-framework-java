@@ -198,12 +198,9 @@ public class Extractor extends Filter {
      * @param first
      *            Indicates if only the first cookie should be set. Otherwise as
      *            a List instance might be set in the attribute value.
-     * @return The current Filter.
      */
-    public Extractor extractCookie(String attribute, String cookieName,
-            boolean first) {
+    public void extractCookie(String attribute, String cookieName, boolean first) {
         getCookieExtracts().add(new ExtractInfo(attribute, cookieName, first));
-        return this;
     }
 
     /**
@@ -218,10 +215,8 @@ public class Extractor extends Filter {
      *            a List instance might be set in the attribute value.
      * @return The current Filter.
      */
-    public Extractor extractEntity(String attribute, String parameter,
-            boolean first) {
+    public void extractEntity(String attribute, String parameter, boolean first) {
         getEntityExtracts().add(new ExtractInfo(attribute, parameter, first));
-        return this;
     }
 
     /**
@@ -236,10 +231,8 @@ public class Extractor extends Filter {
      *            a List instance might be set in the attribute value.
      * @return The current Filter.
      */
-    public Extractor extractQuery(String attribute, String parameter,
-            boolean first) {
+    public void extractQuery(String attribute, String parameter, boolean first) {
         getQueryExtracts().add(new ExtractInfo(attribute, parameter, first));
-        return this;
     }
 
     /**
