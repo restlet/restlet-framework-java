@@ -74,7 +74,7 @@ public class Token extends LexicalUnit {
     @Override
     public Object resolve() {
         Object result = null;
-        if (getContext().isQName(getValue())) {
+        if ((getContext() != null) && getContext().isQName(getValue())) {
             result = (getContext() != null) ? getContext().resolve(getValue())
                     : getValue();
         } else {

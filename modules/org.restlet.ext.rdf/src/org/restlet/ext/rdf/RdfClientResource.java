@@ -47,6 +47,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
+import org.restlet.util.Couple;
 
 /**
  * Linked client resource. In addition to regular client resources, this class
@@ -56,6 +57,9 @@ import org.restlet.resource.ClientResource;
  * @author Jerome Louvel
  */
 public class RdfClientResource extends ClientResource {
+
+    /** The links cache. */
+    private Graph links;
 
     /**
      * Constructor.
@@ -288,51 +292,59 @@ public class RdfClientResource extends ClientResource {
      * @return The links exposed by this resource.
      */
     public Graph getLinks() {
-        Graph result = null;
-        ClientInfo currentInfo = getClientInfo();
+        Graph result = this.links;
 
-        // Customize the preferences to maximize the chance of getting RDF
-        ClientInfo newInfo = new ClientInfo();
-        newInfo.getAcceptedMediaTypes().add(
-                new Preference<MediaType>(MediaType.APPLICATION_RDF_XML));
-        newInfo.getAcceptedMediaTypes().add(
-                new Preference<MediaType>(MediaType.TEXT_RDF_N3));
-        newInfo.getAcceptedMediaTypes().add(
-                new Preference<MediaType>(MediaType.TEXT_RDF_NTRIPLES));
-        newInfo.getAcceptedMediaTypes().add(
-                new Preference<MediaType>(MediaType.APPLICATION_RDF_TURTLE));
-        newInfo.getAcceptedMediaTypes().add(
-                new Preference<MediaType>(MediaType.TEXT_XML, 0.5F));
-        newInfo.getAcceptedMediaTypes().add(
-                new Preference<MediaType>(MediaType.TEXT_PLAIN, 0.4F));
-        newInfo.getAcceptedMediaTypes().add(
-                new Preference<MediaType>(MediaType.APPLICATION_ALL_XML, 0.3F));
+        if (result == null) {
+            ClientInfo currentInfo = getClientInfo();
 
-        // Attempt to retrieve the RDF representation
-        try {
-            Representation rep = get();
+            // Customize the preferences to maximize the chance of getting RDF
+            ClientInfo newInfo = new ClientInfo();
+            newInfo.getAcceptedMediaTypes().add(
+                    new Preference<MediaType>(MediaType.APPLICATION_RDF_XML));
+            newInfo.getAcceptedMediaTypes().add(
+                    new Preference<MediaType>(MediaType.TEXT_RDF_N3));
+            newInfo.getAcceptedMediaTypes().add(
+                    new Preference<MediaType>(MediaType.TEXT_RDF_NTRIPLES));
+            newInfo.getAcceptedMediaTypes()
+                    .add(
+                            new Preference<MediaType>(
+                                    MediaType.APPLICATION_RDF_TURTLE));
+            newInfo.getAcceptedMediaTypes().add(
+                    new Preference<MediaType>(MediaType.TEXT_XML, 0.5F));
+            newInfo.getAcceptedMediaTypes().add(
+                    new Preference<MediaType>(MediaType.TEXT_PLAIN, 0.4F));
+            newInfo.getAcceptedMediaTypes().add(
+                    new Preference<MediaType>(MediaType.APPLICATION_ALL_XML,
+                            0.3F));
 
-            if (rep != null) {
-                RdfRepresentation rdfRep = new RdfRepresentation(rep);
+            // Attempt to retrieve the RDF representation
+            try {
+                Representation rep = get();
 
-                if (rdfRep != null) {
-                    result = rdfRep.getGraph();
+                if (rep != null) {
+                    RdfRepresentation rdfRep = new RdfRepresentation(rep);
+
+                    if (rdfRep != null) {
+                        this.links = rdfRep.getGraph();
+                        result = this.links;
+                    }
+                } else {
+                    getLogger()
+                            .log(Level.WARNING,
+                                    "Unable to retrieve an RDF representation of this resource.");
                 }
-            } else {
+            } catch (Exception e) {
                 getLogger()
-                        .log(Level.WARNING,
-                                "Unable to retrieve an RDF representation of this resource.");
+                        .log(
+                                Level.WARNING,
+                                "Unable to retrieve an RDF representation of this resource.",
+                                e);
             }
-        } catch (Exception e) {
-            getLogger()
-                    .log(
-                            Level.WARNING,
-                            "Unable to retrieve an RDF representation of this resource.",
-                            e);
+
+            // Restore previous preferences
+            setClientInfo(currentInfo);
         }
 
-        // Restore previous preferences
-        setClientInfo(currentInfo);
         return result;
     }
 
@@ -342,8 +354,25 @@ public class RdfClientResource extends ClientResource {
      * @return All the linked literals.
      * @see #getLinks()
      */
-    public Set<Literal> getLiterals() {
-        return getLiterals((Collection<Reference>) null);
+    public Set<Couple<Reference, Literal>> getLiterals() {
+        Set<Couple<Reference, Literal>> result = null;
+
+        Graph links = getLinks();
+
+        if (links != null) {
+            for (Link link : links) {
+                if (link.hasLiteralTarget()) {
+                    if (result == null) {
+                        result = new HashSet<Couple<Reference, Literal>>();
+                    }
+
+                    result.add(new Couple<Reference, Literal>(
+                            link.getTypeRef(), link.getTargetAsLiteral()));
+                }
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -353,9 +382,9 @@ public class RdfClientResource extends ClientResource {
      * @param typeRef
      *            The type reference of the links to select or null.
      * @return All the linked literals.
-     * @see #getLinks()
+     * @see #getLiterals()
      */
-    public Set<Literal> getLiterals(Collection<Reference> typeRefs) {
+    public Set<Literal> getLiterals(Reference typeRef) {
         Set<Literal> result = null;
 
         Graph links = getLinks();
@@ -364,9 +393,8 @@ public class RdfClientResource extends ClientResource {
             result = new HashSet<Literal>();
 
             for (Link link : links) {
-                if (link.hasReferenceTarget()) {
-                    if ((typeRefs == null)
-                            || typeRefs.contains(link.getTypeRef())) {
+                if (link.hasLiteralTarget()) {
+                    if ((typeRef == null) || typeRef.equals(link.getTypeRef())) {
                         result.add(link.getTargetAsLiteral());
                     }
                 }
@@ -377,15 +405,10 @@ public class RdfClientResource extends ClientResource {
     }
 
     /**
-     * Returns the linked literals, based on the RDF representation exposed. The
-     * type of links to follow can be restricted.
-     * 
-     * @param typeRef
-     *            The type reference of the links to select or null.
-     * @return All the linked literals.
-     * @see #getLinks()
+     * Refreshes the links cache.
      */
-    public Set<Literal> getLiterals(Reference typeRef) {
-        return getLiterals(Collections.singleton(typeRef));
+    public void refresh() {
+        this.links = null;
+        getLinks();
     }
 }
