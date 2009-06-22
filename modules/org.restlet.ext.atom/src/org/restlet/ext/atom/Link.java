@@ -46,6 +46,9 @@ import org.xml.sax.helpers.AttributesImpl;
  */
 public class Link {
 
+    /** Contains or links to the content of the entry. */
+    private volatile Content content;
+
     /** Contains the link's IRI. */
     private volatile Reference href;
 
@@ -68,12 +71,22 @@ public class Link {
      * Constructor.
      */
     public Link() {
+        this.content = null;
         this.href = null;
         this.rel = null;
         this.type = null;
         this.hrefLang = null;
         this.title = null;
         this.length = -1;
+    }
+
+    /**
+     * Returns the content of the entry or links to it.
+     * 
+     * @return The content of the entry or links to it.
+     */
+    public Content getContent() {
+        return this.content;
     }
 
     /**
@@ -128,6 +141,16 @@ public class Link {
      */
     public MediaType getType() {
         return this.type;
+    }
+
+    /**
+     * Sets the content of the entry or links to it.
+     * 
+     * @param content
+     *            The content of the entry or links to it.
+     */
+    public void setContent(Content content) {
+        this.content = content;
     }
 
     /**
@@ -198,7 +221,7 @@ public class Link {
      * @throws SAXException
      */
     public void writeElement(XmlWriter writer) throws SAXException {
-        final AttributesImpl attributes = new AttributesImpl();
+        AttributesImpl attributes = new AttributesImpl();
 
         if ((getHref() != null) && (getHref().toString() != null)) {
             attributes.addAttribute("", "href", null, "atomURI", getHref()
@@ -227,7 +250,14 @@ public class Link {
                     getType().toString());
         }
 
-        writer.emptyElement(ATOM_NAMESPACE, "link", null, attributes);
+        if (getContent() != null) {
+            writer.startElement(ATOM_NAMESPACE, "link", null, attributes);
+            getContent().writeElement(writer);
+            writer.endElement(ATOM_NAMESPACE, "entry");
+        } else {
+            writer.emptyElement(ATOM_NAMESPACE, "link", null, attributes);
+        }
+
     }
 
 }

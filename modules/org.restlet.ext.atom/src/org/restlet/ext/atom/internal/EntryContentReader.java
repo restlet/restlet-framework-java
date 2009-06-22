@@ -66,6 +66,9 @@ public class EntryContentReader extends DefaultHandler {
     /** Buffer for the current text content of the current tag. */
     private StringBuilder contentBuffer;
 
+    /** Mark the Content depth. */
+    private int contentDepth;
+
     /** The currently parsed Category. */
     private Category currentCategory;
 
@@ -104,6 +107,7 @@ public class EntryContentReader extends DefaultHandler {
      */
     public EntryContentReader(Entry entry) {
         this.state = State.NONE;
+        this.contentDepth = -1;
         this.currentEntry = entry;
         this.currentText = null;
         this.currentDate = null;
@@ -118,7 +122,7 @@ public class EntryContentReader extends DefaultHandler {
     @Override
     public void characters(char[] ch, int start, int length)
             throws SAXException {
-        if (this.state == State.FEED_ENTRY_CONTENT) {
+        if (this.contentDepth >= 0) {
             // The content might embed XML elements from various namespaces
             if (this.currentContentWriter != null) {
                 this.currentContentWriter.characters(ch, start, length);
@@ -153,7 +157,13 @@ public class EntryContentReader extends DefaultHandler {
             }
         }
 
-        if (uri.equalsIgnoreCase(Feed.ATOM_NAMESPACE)) {
+        if (contentDepth > 0) {
+            // The content might embed XML elements from various namespaces
+            if (this.currentContentWriter != null) {
+                this.currentContentWriter.endElement(uri, localName, qName);
+            }
+            contentDepth--;
+        } else if (uri.equalsIgnoreCase(Feed.ATOM_NAMESPACE)) {
             if (localName.equals("feed")) {
                 this.state = State.NONE;
             } else if (localName.equals("title")) {
@@ -212,6 +222,22 @@ public class EntryContentReader extends DefaultHandler {
                             this.currentLink);
                     this.state = State.FEED_ENTRY_SOURCE;
                 }
+                // Set the inline content, if any
+                if (Relation.ALTERNATE == this.currentLink.getRel()) {
+                    contentDepth = -1;
+                    if (this.currentLink.getType() != null) {
+                        currentContent
+                                .setInlineContent(new StringRepresentation(
+                                        this.currentContentWriter.getWriter()
+                                                .toString().trim(),
+                                        this.currentLink.getType()));
+                    } else {
+                        currentContent
+                                .setInlineContent(new StringRepresentation(
+                                        this.currentContentWriter.getWriter()
+                                                .toString().trim()));
+                    }
+                }
             } else if (localName.equals("category")) {
                 if (this.state == State.FEED_ENTRY_CATEGORY) {
                     this.currentEntry.getCategories().add(this.currentCategory);
@@ -224,6 +250,7 @@ public class EntryContentReader extends DefaultHandler {
             } else if (localName.equalsIgnoreCase("content")) {
                 if (this.state == State.FEED_ENTRY_CONTENT) {
                     if (!this.currentEntry.getContent().isExternal()) {
+                        contentDepth = -1;
                         currentContent
                                 .setInlineContent(new StringRepresentation(
                                         this.currentContentWriter.getWriter()
@@ -233,15 +260,25 @@ public class EntryContentReader extends DefaultHandler {
                     this.state = State.FEED_ENTRY;
                 }
             }
-        } else if (this.state == State.FEED_ENTRY_CONTENT) {
-            // The content might embed XML elements from various namespaces
-            if (this.currentContentWriter != null) {
-                this.currentContentWriter.endElement(uri, localName, qName);
-            }
+
         }
 
         this.currentText = null;
         this.currentDate = null;
+    }
+
+    /**
+     * Initiates the parsing of a mixed content part of the current document.
+     */
+    private void initiateInlineMixedContent() {
+        this.contentDepth = 0;
+        StringWriter sw = new StringWriter();
+        currentContentWriter = new XmlWriter(sw);
+
+        for (String prefix : this.prefixMappings.keySet()) {
+            currentContentWriter.forceNSDecl(this.prefixMappings.get(prefix),
+                    prefix);
+        }
     }
 
     @Override
@@ -284,7 +321,14 @@ public class EntryContentReader extends DefaultHandler {
             Attributes attrs) throws SAXException {
         this.contentBuffer.delete(0, this.contentBuffer.length() + 1);
 
-        if (uri.equalsIgnoreCase(Feed.ATOM_NAMESPACE)) {
+        if (this.contentDepth >= 0) {
+            // The content might embed XML elements from various namespaces
+            if (this.currentContentWriter != null) {
+                this.currentContentWriter.startElement(uri, localName, qName,
+                        attrs);
+            }
+            this.contentDepth++;
+        } else if (uri.equalsIgnoreCase(Feed.ATOM_NAMESPACE)) {
             if (localName.equals("title")) {
                 startTextElement(attrs);
 
@@ -333,8 +377,10 @@ public class EntryContentReader extends DefaultHandler {
                         "href")));
                 this.currentLink.setRel(Relation.parse(attrs
                         .getValue("", "rel")));
-                this.currentLink.setType(new MediaType(attrs.getValue("",
-                        "type")));
+                if ("".equals(attrs.getValue("", "type"))) {
+                    this.currentLink.setType(new MediaType(attrs
+                            .getValue("type")));
+                }
                 this.currentLink.setHrefLang(new Language(attrs.getValue("",
                         "hreflang")));
                 this.currentLink.setTitle(attrs.getValue("", "title"));
@@ -346,6 +392,13 @@ public class EntryContentReader extends DefaultHandler {
                     this.state = State.FEED_ENTRY_LINK;
                 } else if (this.state == State.FEED_ENTRY_SOURCE) {
                     this.state = State.FEED_ENTRY_SOURCE_LINK;
+                }
+                // Glean the content if the link's type is ALTERNATE
+                if (Relation.ALTERNATE == this.currentLink.getRel()) {
+                    this.currentContent = new Content();
+                    // Content available inline
+                    initiateInlineMixedContent();
+                    this.currentLink.setContent(currentContent);
                 }
             } else if (localName.equalsIgnoreCase("entry")) {
                 this.state = State.FEED_ENTRY;
@@ -370,13 +423,7 @@ public class EntryContentReader extends DefaultHandler {
 
                     if (srcAttr == null) {
                         // Content available inline
-                        StringWriter sw = new StringWriter();
-                        currentContentWriter = new XmlWriter(sw);
-
-                        for (String prefix : this.prefixMappings.keySet()) {
-                            currentContentWriter.forceNSDecl(
-                                    this.prefixMappings.get(prefix), prefix);
-                        }
+                        initiateInlineMixedContent();
                     } else {
                         // Content available externally
                         this.currentContent.setExternalRef(new Reference(
@@ -387,12 +434,6 @@ public class EntryContentReader extends DefaultHandler {
                     this.currentEntry.setContent(currentContent);
                     this.state = State.FEED_ENTRY_CONTENT;
                 }
-            }
-        } else if (this.state == State.FEED_ENTRY_CONTENT) {
-            // The content might embed XML elements from various namespaces
-            if (this.currentContentWriter != null) {
-                this.currentContentWriter.startElement(uri, localName, qName,
-                        attrs);
             }
         }
     }
