@@ -5,125 +5,127 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Bugs fixed
-       - Fixed bug in Template class when the pattern is updated.
-       - Fixed bug when a Restlet application is deployed in Weblogic 
-         10 listening on port 80. Reported by Sondre Eikanger Kvalø.
-       - Fixed bug with the type of the content tag of Atom documents.
-       - Fixed bug regarding reading of WriterRepresentation.
-         Patch contributed by Bruno Dumon.
+        - Fixed bug in Template class when the pattern is updated.
+        - Fixed bug when a Restlet application is deployed in Weblogic 
+          10 listening on port 80. Reported by Sondre Eikanger Kvalø.
+        - Fixed bug with the type of the content tag of Atom documents.
+        - Fixed bug regarding reading of WriterRepresentation.
+          Patch contributed by Bruno Dumon.
+        - GWT client now accepts relative HTTP URIs.
+          Reported by Wish Gandhi and fixed by Bruno Harbulot. 
     - Misc
-       - Upgraded Grizzly to version 1.9.16.
-       - Removed console traces when Restlet-GWT starts and stops the
-         HTTP client. Reported by Frank Rousseau.
+        - Upgraded Grizzly to version 1.9.16.
+        - Removed console traces when Restlet-GWT starts and stops the
+          HTTP client. Reported by Frank Rousseau.
 
 - 1.1.5 (2009-05-26)
     - Bugs fixed
-       - Fixed bug in Directory AlphaNumComparator. 
-         Reported and fixed by Rob Heittman.
-       - Fixed bug in S3 authentication algorithm when bucket name was
-         specified in the host name. Reported by Matt J. Watson.
-       - Fixed potential NPE with Reference#getMatrix. Reported by Tal 
-         Liron.
-       - Fixed matching of Firefox2 for Windows agent name. Reported by
-         Peter Childs.
-       - Fixed jSSLutils Maven group ID. Reported by John Wismar.
-       - Fixed innacurate warnings in logs for 304 (Not modified) 
-         statuses with empty response entities. 
-         Reported by Nicholas Brown.
-       - Fixed bug in ReaderRepresentation causing some issues while
-         writing itself. Reported by Nicolas Rinaudo.
-       - Fixed bug regarding the resolution of relative URI used in 
-         IncludeInfo. Reported by Jerome Bernard.
-       - Fixed potential NPE in FreeMarker's TemplateRepresentation.
-         Reported by Matt J. Watson.
-       - Fixed MediaType.APPLICATION_W3C_XSLT value to 
-         application/xslt+xml (was application/xsd+xml).
-         Reported by Jean-Yves Cronier.
-       - ObjectRepresentation was closing the outputstream too early 
-         instead of simply flushing.
-       - Fixed potential IllegalStateException when updating the allowed 
-         methods on Resource subclasses. Reported by Micah Whitacre.
-       - Fixed issue between Tomcat and Servlet adapter when the 
-         response could be sent too early due to "Content-Length" 
-         header triggering the sending too early. 
-         Reported by Stephen Colebourne. 
-       - Fixed potential NPE in DomRepresentation when creating the 
-         transformer. Reported by Micah Whitacre.
-       - Fixed bug preventing the TunnelService to process full media
-         types passed in query parameter. Reported by Michael Berman.
-       - Fixed flushing bug with HTTP server connectors.
-       - Fixed parsing bug in Atom extension for inline content.
-       - Fixed flushing bug with HTTP server connectors when the client
-         party closes its connection at shutdown stage. Reported and 
-         contributed by Attila Babo.
+        - Fixed bug in Directory AlphaNumComparator. 
+          Reported and fixed by Rob Heittman.
+        - Fixed bug in S3 authentication algorithm when bucket name was
+          specified in the host name. Reported by Matt J. Watson.
+        - Fixed potential NPE with Reference#getMatrix. Reported by Tal 
+          Liron.
+        - Fixed matching of Firefox2 for Windows agent name. Reported by
+          Peter Childs.
+        - Fixed jSSLutils Maven group ID. Reported by John Wismar.
+        - Fixed innacurate warnings in logs for 304 (Not modified) 
+          statuses with empty response entities. 
+          Reported by Nicholas Brown.
+        - Fixed bug in ReaderRepresentation causing some issues while
+          writing itself. Reported by Nicolas Rinaudo.
+        - Fixed bug regarding the resolution of relative URI used in 
+          IncludeInfo. Reported by Jerome Bernard.
+        - Fixed potential NPE in FreeMarker's TemplateRepresentation.
+          Reported by Matt J. Watson.
+        - Fixed MediaType.APPLICATION_W3C_XSLT value to 
+          application/xslt+xml (was application/xsd+xml).
+          Reported by Jean-Yves Cronier.
+        - ObjectRepresentation was closing the outputstream too early 
+          instead of simply flushing.
+        - Fixed potential IllegalStateException when updating the allowed 
+          methods on Resource subclasses. Reported by Micah Whitacre.
+        - Fixed issue between Tomcat and Servlet adapter when the 
+          response could be sent too early due to "Content-Length" 
+          header triggering the sending too early. 
+          Reported by Stephen Colebourne. 
+        - Fixed potential NPE in DomRepresentation when creating the 
+          transformer. Reported by Micah Whitacre.
+        - Fixed bug preventing the TunnelService to process full media
+          types passed in query parameter. Reported by Michael Berman.
+        - Fixed flushing bug with HTTP server connectors.
+        - Fixed parsing bug in Atom extension for inline content.
+        - Fixed flushing bug with HTTP server connectors when the client
+          party closes its connection at shutdown stage. Reported and 
+          contributed by Attila Babo.
     - Misc
-       - The Template implementation now uses "\\d" as a regex for the
-         Variable.TYPE_DIGIT constant.
-       - The "com.noelios.restlet" OSGi bundle is now lazily activated.
-         Suggested by Micah Whitacre.
+        - The Template implementation now uses "\\d" as a regex for the
+          Variable.TYPE_DIGIT constant.
+        - The "com.noelios.restlet" OSGi bundle is now lazily activated.
+          Suggested by Micah Whitacre.
          
 - 1.1.4 (2009-04-06)
     - Bugs fixed
-       - Fixed issue in JettyHandler mixing HTTP and HTTPS requests.
-         Reported by Albert Boehmler.
-       - When updating a file via the FILE connector, some deletion
-         issue could occur on Windows due to JVM integration issues
-         with the OS. A workaround to reduce this was to invoke the
-         garbage collection. Reported by Kevin Conaway.
-       - The CLAP connector didn't set the expiration date based on
-         its 'timeToLive' parameter. Reported by Peter Becker.
-       - Added dependencies to the fileupload and dbcp modules for 
-         OSGi runtime. Reported by Rob Heittman.
-       - Fixed "Content-location" header value set by the 
-         DirectoryResource when files are served from a CLAP connector. 
-         Reported by David Fogel.
-       - Fixed starting issue with the range service.
-       - Fixed POM generation issue with dependencies release version.
-         Reported by Paul Austin. 
-       - Fixed selector exhaustion issue with Grizzly connector.
-         Reported by Bruce Lee.
-       - Fixed content negotiation bug in JAX-RS extension.
-         Reported by Fabio Mancinelli.
-       - Fixed bug in TunnelService preventing the replacement of 
-         client preferences if the HTTP header was "Accept" and not
-         "accept".
-       - Fixed flushing bug with WriterRepresentation and 
-         SaxRepresentation classes. Reported by Tal Liron.
+        - Fixed issue in JettyHandler mixing HTTP and HTTPS requests.
+          Reported by Albert Boehmler.
+        - When updating a file via the FILE connector, some deletion
+          issue could occur on Windows due to JVM integration issues
+          with the OS. A workaround to reduce this was to invoke the
+          garbage collection. Reported by Kevin Conaway.
+        - The CLAP connector didn't set the expiration date based on
+          its 'timeToLive' parameter. Reported by Peter Becker.
+        - Added dependencies to the fileupload and dbcp modules for 
+          OSGi runtime. Reported by Rob Heittman.
+        - Fixed "Content-location" header value set by the 
+          DirectoryResource when files are served from a CLAP connector. 
+          Reported by David Fogel.
+        - Fixed starting issue with the range service.
+        - Fixed POM generation issue with dependencies release version.
+          Reported by Paul Austin. 
+        - Fixed selector exhaustion issue with Grizzly connector.
+          Reported by Bruce Lee.
+        - Fixed content negotiation bug in JAX-RS extension.
+          Reported by Fabio Mancinelli.
+        - Fixed bug in TunnelService preventing the replacement of 
+          client preferences if the HTTP header was "Accept" and not
+          "accept".
+        - Fixed flushing bug with WriterRepresentation and 
+          SaxRepresentation classes. Reported by Tal Liron.
     - Misc
-       - Updated DirectoryTestCase (tested directory are made unique).
-         May help fix a bug with Windows and deleted files reported by 
-         Kevin Conaway.
-       - Made several JAX-RS imports optional in the OSGi manifest.
-         Suggested by Hendy Irawan.  
-       - Updated Jetty to version 6.1.15.
-       - JAX-RS extension now dynamically load the default providers
-         to not throw class not found exceptions if they are not
-         available in the classpath (JavaMail, JAXB, etc.)
-       - Updated JAXB to version 2.1.10.
-       - Upgraded Grizzly to version 1.9.10.
+        - Updated DirectoryTestCase (tested directory are made unique).
+          May help fix a bug with Windows and deleted files reported by 
+          Kevin Conaway.
+        - Made several JAX-RS imports optional in the OSGi manifest.
+          Suggested by Hendy Irawan.  
+        - Updated Jetty to version 6.1.15.
+        - JAX-RS extension now dynamically load the default providers
+          to not throw class not found exceptions if they are not
+          available in the classpath (JavaMail, JAXB, etc.)
+        - Updated JAXB to version 2.1.10.
+        - Upgraded Grizzly to version 1.9.10.
     
 - 1.1.3 (2009-02-26)
     - Bugs fixed
-       - Fixed Regex issue in Template with fixed variables. 
-         Contributed by Bruno Dumon.
-       - Fixed bug in ReadableRepresentation preventing channel from
-         closing. Reported by Janne Husberg.
-       - Fixed bug with jSSLutils integration. Reported by Dan Noble 
-         and fixed by Bruno Harbulot.
-       - Handler is now capable of discovering allowed methods, even
-         in protected Handler subclasses. Reported by Leigh Klotz.
-       - Fixed the inclusion test of media types when one contains a 
-         "*+".
-       - Fixed wrong computed "content-length" header when encoding 
-         representations using the Encoder. Reported by Tamas 
-         Cservenak.
-       - Fixed wrong computed "content-location" header generated by 
-         the DirectoryResource. Reported by David Fogel.
-       - Fixed potential bug with EncodeRepresentation when only 
-         Identity applies.
+        - Fixed Regex issue in Template with fixed variables. 
+          Contributed by Bruno Dumon.
+        - Fixed bug in ReadableRepresentation preventing channel from
+          closing. Reported by Janne Husberg.
+        - Fixed bug with jSSLutils integration. Reported by Dan Noble 
+          and fixed by Bruno Harbulot.
+        - Handler is now capable of discovering allowed methods, even
+          in protected Handler subclasses. Reported by Leigh Klotz.
+        - Fixed the inclusion test of media types when one contains a 
+          "*+".
+        - Fixed wrong computed "content-length" header when encoding 
+          representations using the Encoder. Reported by Tamas 
+          Cservenak.
+        - Fixed wrong computed "content-location" header generated by 
+          the DirectoryResource. Reported by David Fogel.
+        - Fixed potential bug with EncodeRepresentation when only 
+          Identity applies.
     - Misc
-         - Upgraded JAXB to version 2.1.9.
-         - Upgraded Grizzly to version 1.9.5.
+        - Upgraded JAXB to version 2.1.9.
+        - Upgraded Grizzly to version 1.9.5.
 
 - 1.1.2 (2009-01-23)
     - Bugs fixed
