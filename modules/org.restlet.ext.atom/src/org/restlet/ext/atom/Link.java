@@ -253,7 +253,7 @@ public class Link {
         if (getContent() != null) {
             writer.startElement(ATOM_NAMESPACE, "link", null, attributes);
             getContent().writeElement(writer);
-            writer.endElement(ATOM_NAMESPACE, "entry");
+            writer.endElement(ATOM_NAMESPACE, "link");
         } else {
             writer.emptyElement(ATOM_NAMESPACE, "link", null, attributes);
         }
