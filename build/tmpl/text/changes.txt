@@ -127,8 +127,9 @@ Changes log
           LinkReference class.
         - Added ClientResource#getParent() to return the parent 
           resource based on the URI hierarchy.
-        - Added org.restlet.util.Couple generic class to store two
-          related objects. Inspired by Tim Peierls's Relation idea.
+        - Added org.restlet.util.Couple and Triple generic classes to 
+          store two or three related objects. 
+          Inspired by Tim Peierls's Relation interface idea.
      - Misc
         - Exceptions thrown in the internal HTTP client are not logged
           with a FINE level instead of a WARNING level.

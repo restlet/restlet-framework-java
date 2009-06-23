@@ -33,7 +33,7 @@ package org.restlet.util;
 import org.restlet.engine.util.SystemUtils;
 
 /**
- * Relationship between two typed objects.
+ * Relationship between three typed objects.
  * 
  * @author Jerome Louvel
  * 
@@ -41,14 +41,19 @@ import org.restlet.engine.util.SystemUtils;
  *            The first object's type.
  * @param <U>
  *            The second object's type.
+ * @param <V>
+ *            The third object's type.
  */
-public class Couple<T, U> {
+public class Triple<T, U, V> {
 
     /** The first object. */
     private volatile T first;
 
     /** The second object. */
     private volatile U second;
+
+    /** The third object. */
+    private volatile V third;
 
     /**
      * Constructor.
@@ -57,10 +62,13 @@ public class Couple<T, U> {
      *            The first object.
      * @param second
      *            The second object.
+     * @param third
+     *            The third object.
      */
-    public Couple(T first, U second) {
+    public Triple(T first, U second, V third) {
         this.first = first;
         this.second = second;
+        this.third = third;
     }
 
     @SuppressWarnings("unchecked")
@@ -68,14 +76,18 @@ public class Couple<T, U> {
     public boolean equals(Object other) {
         boolean result = (this == other);
 
-        if (!result && (other instanceof Couple)) {
-            Couple couple = (Couple) other;
+        if (!result && (other instanceof Triple)) {
+            Triple triple = (Triple) other;
 
-            if (((couple.getFirst() == null) && (getFirst() == null))
+            if (((triple.getFirst() == null) && (getFirst() == null))
                     || ((getFirst() != null) && getFirst().equals(
-                            couple.getFirst()))) {
-                result = (((couple.getSecond() == null) && (getSecond() == null)) || ((getSecond() != null) && getSecond()
-                        .equals(couple.getSecond())));
+                            triple.getFirst()))) {
+                if (((triple.getSecond() == null) && (getSecond() == null))
+                        || ((getSecond() != null) && getSecond().equals(
+                                triple.getSecond()))) {
+                    result = (((triple.getThird() == null) && (getThird() == null)) || ((getThird() != null) && getThird()
+                            .equals(triple.getThird())));
+                }
             }
         }
 
@@ -101,6 +113,21 @@ public class Couple<T, U> {
     }
 
     /**
+     * Returns the third object.
+     * 
+     * @return The third object.
+     */
+    public V getThird() {
+        return third;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int hashCode() {
+        return SystemUtils.hashCode(getFirst(), getSecond(), getThird());
+    }
+
+    /**
      * Sets the first object.
      * 
      * @param first
@@ -120,14 +147,18 @@ public class Couple<T, U> {
         this.second = second;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public int hashCode() {
-        return SystemUtils.hashCode(getFirst(), getSecond());
+    /**
+     * Sets the third object.
+     * 
+     * @param third
+     *            The third object.
+     */
+    public void setThird(V third) {
+        this.third = third;
     }
 
     @Override
     public String toString() {
-        return "(" + getFirst() + "," + getSecond() + ")";
+        return "(" + getFirst() + "," + getSecond() + "," + getThird() + ")";
     }
 }

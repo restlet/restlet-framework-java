@@ -32,7 +32,7 @@ package org.restlet.data;
 
 import java.io.IOException;
 
-import org.restlet.engine.util.SystemUtils;
+import org.restlet.util.Couple;
 
 /**
  * Multi-usage parameter. Note that the name and value properties are thread
@@ -40,12 +40,8 @@ import org.restlet.engine.util.SystemUtils;
  * 
  * @author Jerome Louvel
  */
-public class Parameter implements Comparable<Parameter> {
-    /** The name. */
-    private volatile String name;
-
-    /** The value. */
-    private volatile String value;
+public class Parameter extends Couple<String, String> implements
+        Comparable<Parameter> {
 
     /**
      * Default constructor.
@@ -63,8 +59,7 @@ public class Parameter implements Comparable<Parameter> {
      *            The value.
      */
     public Parameter(String name, String value) {
-        this.name = name;
-        this.value = value;
+        super(name, value);
     }
 
     /**
@@ -115,46 +110,13 @@ public class Parameter implements Comparable<Parameter> {
         return sb.toString();
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public boolean equals(Object obj) {
-        boolean result = (obj == this);
-
-        // if obj == this no need to go further
-        if (!result) {
-            // if obj isn't a parameter or is null don't evaluate further
-            if (obj instanceof Parameter) {
-                final Parameter that = (Parameter) obj;
-
-                if (this.name != null) {
-                    // compare names taking care of nulls
-                    result = (this.name.equals(that.name));
-                } else {
-                    result = (that.name == null);
-                }
-
-                if (result) {
-                    // if names are equal test the values
-                    if (this.value != null) {
-                        // compare values taking care of nulls
-                        result = (this.value.equals(that.value));
-                    } else {
-                        result = (that.value == null);
-                    }
-                }
-            }
-        }
-
-        return result;
-    }
-
     /**
      * Returns the name of this parameter.
      * 
      * @return The name of this parameter.
      */
     public String getName() {
-        return this.name;
+        return getFirst();
     }
 
     /**
@@ -163,13 +125,7 @@ public class Parameter implements Comparable<Parameter> {
      * @return The value.
      */
     public String getValue() {
-        return this.value;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public int hashCode() {
-        return SystemUtils.hashCode(getName(), getValue());
+        return getSecond();
     }
 
     /**
@@ -179,7 +135,7 @@ public class Parameter implements Comparable<Parameter> {
      *            The name.
      */
     public void setName(String name) {
-        this.name = name;
+        setFirst(name);
     }
 
     /**
@@ -189,16 +145,7 @@ public class Parameter implements Comparable<Parameter> {
      *            The value.
      */
     public void setValue(String value) {
-        this.value = value;
+        setSecond(value);
     }
 
-    /**
-     * Returns a string with the name and value of the parameter.
-     * 
-     * @return A string with the name and value of the parameter.
-     */
-    @Override
-    public String toString() {
-        return getName() + ": " + getValue();
-    }
 }

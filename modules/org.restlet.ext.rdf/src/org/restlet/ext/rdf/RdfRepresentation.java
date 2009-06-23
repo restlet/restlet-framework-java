@@ -246,6 +246,10 @@ public class RdfRepresentation extends OutputRepresentation {
             } else if (MediaType.APPLICATION_RDF_TURTLE
                     .equals(rdfRepresentation.getMediaType())) {
                 new RdfTurtleReader(rdfRepresentation, graphHandler).parse();
+            } else if (MediaType.valueOf("text/rdf+n3").equals(
+                    rdfRepresentation.getMediaType())) {
+                // Deprecated media type still in usage
+                new RdfN3Reader(rdfRepresentation, graphHandler).parse();
             }
             // Parsing for other media types goes here.
         }

@@ -31,11 +31,14 @@
 package org.restlet.ext.rdf;
 
 import org.restlet.data.Reference;
+import org.restlet.util.Triple;
 
 /**
- * Link between a source resource and a target resource or literal. This is
- * compatible with the concepts of statement, triple or relationship defined by
- * RDF, the core specification of the Semantic Web.
+ * Link between a source resource and a target resource or literal. This exactly
+ * maps with the concepts of statement, triple or relationship defined by RDF,
+ * the core specification of the Semantic Web. A link is composed of a source
+ * node (or subject in RDF terminology), a type URI reference (or predicate in
+ * RDF terminology) and a target node (or object in RDF terminology).
  * 
  * We use this class in Restlet to enhance resources and make them part of the
  * Web of data (also know as Linked Data and Hyperdata).
@@ -43,10 +46,12 @@ import org.restlet.data.Reference;
  * @author Jerome Louvel
  * @see <a href="http://www.w3.org/TR/rdf-concepts/">RDF concepts</a>
  */
-public class Link {
+public class Link extends Triple<Object, Reference, Object> {
 
     /**
-     * Creates a reference to a blank node.
+     * Creates a reference to a blank node. In this API, we support RDF blank
+     * nodes using the "_" namespace and local identifiers, in a way similar to
+     * the RDF n3 serialization format.
      * 
      * @param identifier
      *            The blank node identifier.
@@ -62,59 +67,52 @@ public class Link {
      * @param reference
      *            The reference to test.
      * @return True if a reference is identifying a blank node.
+     * @see #createBlankRef(String)
      */
     public static boolean isBlankRef(Reference reference) {
         return ((reference != null) && ("_".equals(reference.getScheme())));
     }
 
-    /** The source or subject. */
-    private Object source;
-
-    /** The target or object. */
-    private Object target;
-
-    /** The type reference. */
-    private Reference typeRef;
-
     /**
-     * Constructor.
+     * Constructor. Leverages n3 reification feature where a graph itself can be
+     * the source node of a link.
      * 
      * @param sourceGraph
-     *            The source graph.
+     *            The source graph or subject in RDF terminology.
      * @param typeRef
-     *            The type reference.
+     *            The type reference or predicate in RDF terminology.
      * @param targetLit
-     *            The target literal.
+     *            The target literal or object in RDF terminology.
      */
     public Link(Graph sourceGraph, Reference typeRef, Literal targetLit) {
-        this(sourceGraph, typeRef, (Object) targetLit);
+        this((Object) sourceGraph, typeRef, (Object) targetLit);
     }
 
     /**
-     * Constructor.
+     * Constructor. Leverages n3 reification feature where a graph itself can be
+     * the source node of a link.
      * 
      * @param sourceGraph
-     *            The source graph.
+     *            The source graph or subject in RDF terminology.
      * @param typeRef
-     *            The type reference.
+     *            The type reference or predicate in RDF terminology.
      * @param target
-     *            The target.
+     *            The target node or object in RDF terminology.
      */
     public Link(Graph sourceGraph, Reference typeRef, Object target) {
-        this.source = sourceGraph;
-        this.target = target;
-        this.typeRef = typeRef;
+        this((Object) sourceGraph, typeRef, target);
     }
 
     /**
-     * Constructor.
+     * Constructor. Leverages n3 reification feature where a graph itself can be
+     * the source node of a link.
      * 
      * @param sourceGraph
-     *            The source graph.
+     *            The source graph or subject in RDF terminology.
      * @param typeRef
-     *            The type reference.
+     *            The type reference or predicate in RDF terminology.
      * @param targetRef
-     *            The target reference.
+     *            The target reference or object in RDF terminology.
      */
     public Link(Graph sourceGraph, Reference typeRef, Reference targetRef) {
         this(sourceGraph, typeRef, (Object) targetRef);
@@ -127,34 +125,32 @@ public class Link {
      *            The link to copy from.
      */
     public Link(Link from) {
-        this(from.source, from.typeRef, from.target);
+        this(from.getSource(), from.getTypeRef(), from.getTarget());
     }
 
     /**
      * Constructor.
      * 
      * @param source
-     *            The source.
+     *            The source node or subject in RDF terminology.
      * @param typeRef
-     *            The type reference.
+     *            The type reference or predicate in RDF terminology.
      * @param target
-     *            The target.
+     *            The target node or object in RDF terminology.
      */
     private Link(Object source, Reference typeRef, Object target) {
-        this.source = source;
-        this.target = target;
-        this.typeRef = typeRef;
+        super(source, typeRef, target);
     }
 
     /**
      * Constructor.
      * 
      * @param sourceRef
-     *            The source resource reference.
+     *            The source resource reference or subject in RDF terminology.
      * @param typeRef
-     *            The type reference.
+     *            The type reference or predicate in RDF terminology.
      * @param targetLit
-     *            The target literal.
+     *            The target literal node or object in RDF terminology.
      */
     public Link(Reference sourceRef, Reference typeRef, Literal targetLit) {
         this(sourceRef, typeRef, (Object) targetLit);
@@ -164,48 +160,31 @@ public class Link {
      * Constructor.
      * 
      * @param sourceRef
-     *            The source resource reference.
+     *            The source resource reference or subject in RDF terminology.
      * @param typeRef
-     *            The type reference.
+     *            The type reference or predicate in RDF terminology.
      * @param targetRef
-     *            The target resource reference.
+     *            The target resource reference or object in RDF terminology.
      */
     public Link(Reference sourceRef, Reference typeRef, Reference targetRef) {
         this(sourceRef, typeRef, (Object) targetRef);
     }
 
-    @Override
-    public boolean equals(Object object) {
-        boolean result = false;
-
-        if (object instanceof Link) {
-            Link link = (Link) object;
-
-            result = ((getSourceAsReference() == null) || (getSourceAsReference()
-                    .equals(link.getSourceAsReference())))
-                    && ((getTarget() == null) || (getTarget().equals(link
-                            .getTarget())))
-                    && ((getTypeRef() == null) || (getTypeRef().equals(link
-                            .getTypeRef())));
-        }
-
-        return result;
-    }
-
     /**
      * Returns the source which can be either a reference or a link or a graph
-     * or null.
+     * or null. This maps with the concept of subject in RDF terminology.
      * 
      * @return The source.
      */
     public Object getSource() {
-        return source;
+        return getFirst();
     }
 
     /**
      * Returns the source graph. Supports RDF reification or N3 formulae.
      * 
      * @return The source graph.
+     * @see #getSource()
      */
     public Graph getSourceAsGraph() {
         return hasGraphSource() ? (Graph) getSource() : null;
@@ -215,6 +194,7 @@ public class Link {
      * Returns the source link. Supports RDF reification.
      * 
      * @return The source link.
+     * @see #getSource()
      */
     public Link getSourceAsLink() {
         return hasLinkSource() ? (Link) getSource() : null;
@@ -224,6 +204,7 @@ public class Link {
      * Returns the source resource reference.
      * 
      * @return The source resource reference.
+     * @see #getSource()
      */
     public Reference getSourceAsReference() {
         return hasReferenceSource() ? (Reference) getSource() : null;
@@ -231,18 +212,19 @@ public class Link {
 
     /**
      * Returns the target which can be either a literal or a reference or is
-     * null.
+     * null. This maps with the concept of object in RDF terminology.
      * 
      * @return The target.
      */
     public Object getTarget() {
-        return this.target;
+        return getThird();
     }
 
     /**
      * Returns the target graph.
      * 
      * @return The target graph.
+     * @see #getTarget()
      */
     public Graph getTargetAsGraph() {
         return hasGraphTarget() ? (Graph) getTarget() : null;
@@ -252,6 +234,7 @@ public class Link {
      * Returns the target link.
      * 
      * @return The target link.
+     * @see #getTarget()
      */
     public Link getTargetAsLink() {
         return hasLinkTarget() ? (Link) getTarget() : null;
@@ -261,6 +244,7 @@ public class Link {
      * Returns the target literal.
      * 
      * @return The target literal.
+     * @see #getTarget()
      */
     public Literal getTargetAsLiteral() {
         return hasLiteralTarget() ? (Literal) getTarget() : null;
@@ -270,18 +254,20 @@ public class Link {
      * Returns the target resource reference.
      * 
      * @return The target resource reference.
+     * @see #getTarget()
      */
     public Reference getTargetAsReference() {
         return hasReferenceTarget() ? (Reference) getTarget() : null;
     }
 
     /**
-     * Returns the type reference.
+     * Returns the type reference. This maps with the concept of predicate in
+     * RDF terminology.
      * 
      * @return The type reference.
      */
     public Reference getTypeRef() {
-        return this.typeRef;
+        return getSecond();
     }
 
     /**
@@ -348,83 +334,91 @@ public class Link {
     }
 
     /**
-     * Sets the source as a graph.
+     * Sets the source as a graph. This maps with the concept of subject in RDF
+     * terminology.
      * 
      * @param sourceGraph
      *            The source graph.
      */
     public void setSource(Graph sourceGraph) {
-        this.source = sourceGraph;
+        setFirst(sourceGraph);
     }
 
     /**
-     * Sets the source as a link.
+     * Sets the source as a link. This maps with the concept of subject in RDF
+     * terminology.
      * 
      * @param sourceLink
      *            The source link.
      */
     public void setSource(Link sourceLink) {
-        this.source = sourceLink;
+        setFirst(sourceLink);
     }
 
     /**
-     * Sets the source resource reference.
+     * Sets the source resource reference. This maps with the concept of subject
+     * in RDF terminology.
      * 
      * @param sourceRef
      *            The source resource reference.
      */
     public void setSource(Reference sourceRef) {
-        this.source = sourceRef;
+        setFirst(sourceRef);
     }
 
     /**
-     * Sets the target as a graph.
+     * Sets the target as a graph. This maps with the concept of object in RDF
+     * terminology.
      * 
      * @param targetGraph
      *            The target graph.
      */
     public void setTarget(Graph targetGraph) {
-        this.target = targetGraph;
+        setThird(targetGraph);
     }
 
     /**
-     * Sets the target as a link.
+     * Sets the target as a link. This maps with the concept of object in RDF
+     * terminology.
      * 
      * @param targetLink
      *            The target link.
      */
     public void setTarget(Link targetLink) {
-        this.target = targetLink;
+        setThird(targetLink);
     }
 
     /**
-     * Sets the target literal.
+     * Sets the target literal. This maps with the concept of object in RDF
+     * terminology.
      * 
      * @param targetLit
      *            The target literal.
      */
     public void setTarget(Literal targetLit) {
-        this.target = targetLit;
+        setThird(targetLit);
     }
 
     /**
-     * Sets the target as a resource reference.
+     * Sets the target as a resource reference. This maps with the concept of
+     * object in RDF terminology.
      * 
      * @param targetRef
      *            The target resource reference.
      */
     public void setTarget(Reference targetRef) {
-        this.target = targetRef;
+        setThird(targetRef);
     }
 
     /**
-     * Sets the type reference.
+     * Sets the type reference. This maps with the concept of predicate in RDF
+     * terminology.
      * 
      * @param typeRef
      *            The type reference.
      */
     public void setTypeRef(Reference typeRef) {
-        this.typeRef = typeRef;
+        setSecond(typeRef);
     }
 
 }
