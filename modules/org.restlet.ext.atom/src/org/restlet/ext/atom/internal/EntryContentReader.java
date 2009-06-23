@@ -224,18 +224,22 @@ public class EntryContentReader extends DefaultHandler {
                 }
                 // Set the inline content, if any
                 if (Relation.ALTERNATE == this.currentLink.getRel()) {
+                    String content = this.currentContentWriter.getWriter()
+                            .toString().trim();
                     contentDepth = -1;
-                    if (this.currentLink.getType() != null) {
-                        currentContent
-                                .setInlineContent(new StringRepresentation(
-                                        this.currentContentWriter.getWriter()
-                                                .toString().trim(),
-                                        this.currentLink.getType()));
+
+                    if ("".equals(content)) {
+                        this.currentLink.setContent(null);
                     } else {
-                        currentContent
-                                .setInlineContent(new StringRepresentation(
-                                        this.currentContentWriter.getWriter()
-                                                .toString().trim()));
+                        if (this.currentLink.getType() != null) {
+                            currentContent
+                                    .setInlineContent(new StringRepresentation(
+                                            content, this.currentLink.getType()));
+                        } else {
+                            currentContent
+                                    .setInlineContent(new StringRepresentation(
+                                            content));
+                        }
                     }
                 }
             } else if (localName.equals("category")) {
@@ -250,11 +254,16 @@ public class EntryContentReader extends DefaultHandler {
             } else if (localName.equalsIgnoreCase("content")) {
                 if (this.state == State.FEED_ENTRY_CONTENT) {
                     if (!this.currentEntry.getContent().isExternal()) {
+                        String content = this.currentContentWriter.getWriter()
+                                .toString().trim();
                         contentDepth = -1;
-                        currentContent
-                                .setInlineContent(new StringRepresentation(
-                                        this.currentContentWriter.getWriter()
-                                                .toString().trim()));
+                        if ("".equals(content)) {
+                            this.currentEntry.setContent(null);
+                        } else {
+                            currentContent
+                                    .setInlineContent(new StringRepresentation(
+                                            content));
+                        }
                     }
 
                     this.state = State.FEED_ENTRY;
