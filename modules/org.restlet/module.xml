@@ -41,5 +41,15 @@
       <import excludes="android">org.osgi.framework</import>
       <activator includes="*" excludes="android" />
    </osgi>
-
+   <source edition="gae">
+      <files-sets>
+<![CDATA[
+      <fileset dir="${mods}/org.restlet">
+         <exclude name="src/org/restlet/engine/http/StreamServer*" />
+         <exclude name="src/org/restlet/engine/http/StreamClient*" />
+         <exclude name="src/org/restlet/engine/log/IdentClient.java" />
+      </fileset>
+]]>
+      </files-sets>
+   </source>
 </module>

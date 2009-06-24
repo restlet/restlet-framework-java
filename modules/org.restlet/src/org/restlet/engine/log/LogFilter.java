@@ -179,12 +179,14 @@ public class LogFilter extends Filter {
 
         // Append the user name (via IDENT protocol)
         if (this.logService.isIdentityCheck()) {
+            // [ifndef gae]
             final IdentClient ic = new IdentClient(request.getClientInfo()
                     .getUpstreamAddress(), request.getClientInfo().getPort(),
                     response.getServerInfo().getPort());
             sb.append((ic.getUserIdentifier() == null) ? "-" : ic
                     .getUserIdentifier());
         } else {
+            // [enddef]
             sb.append('-');
         }
         sb.append('\t');

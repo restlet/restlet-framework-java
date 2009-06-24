@@ -521,12 +521,16 @@ public class Engine {
      * Registers the default client and server connectors.
      */
     public void registerDefaultConnectors() {
+        // [ifndef gae]
         getRegisteredClients().add(new StreamClientHelper(null));
+        // [enddef]
         getRegisteredClients().add(new ClapClientHelper(null));
         getRegisteredClients().add(new FileClientHelper(null));
         getRegisteredClients().add(new ZipClientHelper(null));
         getRegisteredClients().add(new RiapClientHelper(null));
+        // [ifndef gae]
         getRegisteredServers().add(new StreamServerHelper(null));
+        // [enddef]
         getRegisteredServers().add(new RiapServerHelper(null));
     }
 
