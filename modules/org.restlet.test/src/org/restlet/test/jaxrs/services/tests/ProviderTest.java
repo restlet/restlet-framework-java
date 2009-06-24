@@ -218,13 +218,11 @@ public class ProviderTest extends JaxRsTestCase {
     }
 
     public void testFormPost() throws Exception {
-        String machin = createForm().getWebRepresentation().getText();
-        System.err.println("MACHIN  " + machin);
         final Response response = post("form", createForm()
                 .getWebRepresentation());
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         final String respEntity = response.getEntity().getText();
-        assertEquals("[firstname: Angela, lastname: Merkel]", respEntity);
+        assertEquals("[(firstname,Angela), (lastname,Merkel)]", respEntity);
     }
 
     public void testInputStreamGet() throws Exception {
@@ -334,7 +332,7 @@ public class ProviderTest extends JaxRsTestCase {
         final MediaType respMediaType = response.getEntity().getMediaType();
         assertEqualMediaType(MediaType.TEXT_PLAIN, respMediaType);
         final String respEntity = response.getEntity().getText();
-        assertEquals("[lastname: Merkel, firstname: Angela]", respEntity);
+        assertEquals("[(firstname,Angela), (lastname,Merkel)]", respEntity);
     }
 
     public void testReaderGet() throws Exception {
