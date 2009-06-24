@@ -34,7 +34,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PushbackInputStream;
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
@@ -52,8 +51,6 @@ import org.restlet.data.Tag;
 import org.restlet.engine.util.Base64;
 import org.restlet.engine.util.RangeUtils;
 import org.restlet.representation.EmptyRepresentation;
-import org.restlet.representation.InputRepresentation;
-import org.restlet.representation.ReadableRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.service.ConnectorService;
 import org.restlet.util.Series;
@@ -171,11 +168,15 @@ public abstract class HttpClientCall extends HttpCall {
      * @return The local IP address or 127.0.0.1 if the resolution fails.
      */
     public static String getLocalAddress() {
+        // [ifndef gae]
         try {
-            return InetAddress.getLocalHost().getHostAddress();
+            return java.net.InetAddress.getLocalHost().getHostAddress();
         } catch (UnknownHostException e) {
+            // [enddef]
             return "127.0.0.1";
+            // [ifndef gae]
         }
+        // [enddef]
     }
 
     /**
