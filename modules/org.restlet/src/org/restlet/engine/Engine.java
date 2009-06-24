@@ -54,8 +54,6 @@ import org.restlet.engine.component.RiapClientHelper;
 import org.restlet.engine.component.RiapServerHelper;
 import org.restlet.engine.converter.ConverterHelper;
 import org.restlet.engine.converter.DefaultConverter;
-import org.restlet.engine.http.StreamClientHelper;
-import org.restlet.engine.http.StreamServerHelper;
 import org.restlet.engine.local.ClapClientHelper;
 import org.restlet.engine.local.FileClientHelper;
 import org.restlet.engine.local.ZipClientHelper;
@@ -522,14 +520,16 @@ public class Engine {
      */
     public void registerDefaultConnectors() {
         // [ifndef gae]
-        getRegisteredClients().add(new StreamClientHelper(null));
+        getRegisteredClients().add(
+                new org.restlet.engine.http.StreamClientHelper(null));
         // [enddef]
         getRegisteredClients().add(new ClapClientHelper(null));
         getRegisteredClients().add(new FileClientHelper(null));
         getRegisteredClients().add(new ZipClientHelper(null));
         getRegisteredClients().add(new RiapClientHelper(null));
         // [ifndef gae]
-        getRegisteredServers().add(new StreamServerHelper(null));
+        getRegisteredServers().add(
+                new org.restlet.engine.http.StreamServerHelper(null));
         // [enddef]
         getRegisteredServers().add(new RiapServerHelper(null));
     }
