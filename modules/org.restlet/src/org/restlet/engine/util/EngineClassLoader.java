@@ -35,6 +35,7 @@ import java.net.URL;
 import java.util.Enumeration;
 import java.util.Vector;
 
+import org.restlet.engine.Edition;
 import org.restlet.engine.Engine;
 
 /**
@@ -150,12 +151,22 @@ public class EngineClassLoader extends ClassLoader {
         Enumeration<URL> allUrls = super.getResources(name);
         Vector<URL> result = new Vector<URL>();
 
-        URL url;
-        while (allUrls.hasMoreElements()) {
-            url = allUrls.nextElement();
+        if (allUrls != null) {
+            try {
+                URL url;
+                while (allUrls.hasMoreElements()) {
+                    url = allUrls.nextElement();
 
-            if (result.indexOf(url) == -1) {
-                result.add(url);
+                    if (result.indexOf(url) == -1) {
+                        result.add(url);
+                    }
+                }
+            } catch (NullPointerException e) {
+                // At this time (june 2009) a NPE is thrown with Dalvik JVM.
+                // Let's throw the NPE for the other editions.
+                if (Edition.CURRENT != Edition.ANDROID) {
+                    throw e;
+                }
             }
         }
 
