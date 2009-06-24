@@ -332,7 +332,7 @@ public class ProviderTest extends JaxRsTestCase {
         final MediaType respMediaType = response.getEntity().getMediaType();
         assertEqualMediaType(MediaType.TEXT_PLAIN, respMediaType);
         final String respEntity = response.getEntity().getText();
-        assertEquals("[(firstname,Angela), (lastname,Merkel)]", respEntity);
+        assertEquals("[(lastname,Merkel), (firstname,Angela)]", respEntity);
     }
 
     public void testReaderGet() throws Exception {
