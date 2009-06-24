@@ -35,8 +35,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.Context;
-import org.w3c.dom.ls.LSInput;
-import org.w3c.dom.ls.LSResourceResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -50,8 +48,11 @@ import org.xml.sax.helpers.DefaultHandler;
  * @author Raif S. Naffah
  * @author Jerome Louvel
  */
-public class DefaultSaxHandler extends DefaultHandler implements
-        LSResourceResolver {
+public class DefaultSaxHandler extends DefaultHandler
+// [ifndef android]
+        implements org.w3c.dom.ls.LSResourceResolver
+// [enddef]
+{
 
     /**
      * A class field set to {@code true} if the the JAXP debug property is
@@ -127,6 +128,7 @@ public class DefaultSaxHandler extends DefaultHandler implements
         return super.resolveEntity(publicId, systemId);
     }
 
+    // [ifndef android]
     /**
      * Allow the application to resolve external resources.
      * <p>
@@ -144,8 +146,9 @@ public class DefaultSaxHandler extends DefaultHandler implements
      *            The absolute base URI of the resource being parsed.
      * @return Always {@code null}.
      */
-    public LSInput resolveResource(String type, String namespaceUri,
-            String publicId, String systemId, String baseUri) {
+    public org.w3c.dom.ls.LSInput resolveResource(String type,
+            String namespaceUri, String publicId, String systemId,
+            String baseUri) {
         if (loggable) {
             logger.config("Resolve resource with type [" + type
                     + "], namespace URI [" + namespaceUri + "], PUBLIC ["
@@ -154,6 +157,8 @@ public class DefaultSaxHandler extends DefaultHandler implements
         }
         return null;
     }
+
+    // [enddef]
 
     @Override
     public void skippedEntity(String name) throws SAXException {
