@@ -63,18 +63,24 @@ public class ConverterUtils {
 
         for (ConverterHelper ch : Engine.getInstance()
                 .getRegisteredConverters()) {
+            // List of variants that can be converted from the source class
             helperVariants = ch.getVariants(sourceClass);
 
             if (helperVariants != null) {
+                // Loop over the variants list
                 for (VariantInfo helperVariant : helperVariants) {
                     if (helperVariant.includes(targetVariant)) {
                         if (result == null) {
                             result = new ArrayList<VariantInfo>();
                         }
+                        // Detected a more generic variant, but still consider
+                        // the conversion is possible to the target variant.
+                        // TODO Add support for the other kind of metadata
                         result
                                 .add(new VariantInfo(targetVariant
                                         .getMediaType()));
-                    } else if (helperVariant.includes(targetVariant)) {
+                    } else if (targetVariant.includes(helperVariant)) {
+                        // Add this variant for content negotiation.
                         if (result == null) {
                             result = new ArrayList<VariantInfo>();
                         }
