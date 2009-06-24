@@ -218,6 +218,8 @@ public class ProviderTest extends JaxRsTestCase {
     }
 
     public void testFormPost() throws Exception {
+        String machin = createForm().getWebRepresentation().getText();
+        System.err.println("MACHIN  " + machin);
         final Response response = post("form", createForm()
                 .getWebRepresentation());
         assertEquals(Status.SUCCESS_OK, response.getStatus());

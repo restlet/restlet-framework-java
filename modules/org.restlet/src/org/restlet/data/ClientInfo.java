@@ -627,7 +627,7 @@ public final class ClientInfo {
      * @see <a
      *      href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache
      *      content negotiation algorithm</a>
-     * @deprecated Used {@link #getPreferredVariant(List, Language)} instead.
+     * @deprecated Used {@link #getPreferredVariant(List, MetadataService)} instead.
      */
     @Deprecated
     public Variant getPreferredVariant(org.restlet.resource.Resource resource,

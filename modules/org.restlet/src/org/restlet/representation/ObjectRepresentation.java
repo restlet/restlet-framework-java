@@ -30,8 +30,6 @@
 
 package org.restlet.representation;
 
-import java.beans.XMLDecoder;
-import java.beans.XMLEncoder;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -76,13 +74,15 @@ public class ObjectRepresentation<T extends Serializable> extends
                     serializedRepresentation.getStream());
             this.object = (T) ois.readObject();
             ois.close();
+            // [ifndef android]
         } else if (serializedRepresentation.getMediaType().equals(
                 MediaType.APPLICATION_JAVA_OBJECT_XML)) {
             setMediaType(MediaType.APPLICATION_JAVA_OBJECT_XML);
-            XMLDecoder decoder = new XMLDecoder(serializedRepresentation
-                    .getStream());
+            java.beans.XMLDecoder decoder = new java.beans.XMLDecoder(
+                    serializedRepresentation.getStream());
             this.object = (T) decoder.readObject();
             decoder.close();
+            // [enddef]
         } else {
             throw new IllegalArgumentException(
                     "The serialized representation must have this media type: "
@@ -156,11 +156,14 @@ public class ObjectRepresentation<T extends Serializable> extends
             ObjectOutputStream oos = new ObjectOutputStream(outputStream);
             oos.writeObject(getObject());
             oos.flush();
+            // [ifndef android]
         } else if (MediaType.APPLICATION_JAVA_OBJECT_XML
                 .isCompatible(getMediaType())) {
-            XMLEncoder encoder = new XMLEncoder(outputStream);
+            java.beans.XMLEncoder encoder = new java.beans.XMLEncoder(
+                    outputStream);
             encoder.writeObject(getObject());
             encoder.flush();
+            // [enddef]
         }
     }
 
