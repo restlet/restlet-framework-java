@@ -30,7 +30,7 @@
 
 package org.restlet.test.gwt.client;
 
-import org.restlet.Callback;
+import org.restlet.Uniform;
 import org.restlet.Client;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
@@ -53,25 +53,18 @@ public class TestClient implements EntryPoint {
         final Button button = new Button("Restlet, Fetch!");
         final Label label = new Label();
 
-        button.addClickListener(new ClickListener() {
-            public void onClick(Widget sender) {
-                new Client(Protocol.HTTP).put(
-                        "http://localhost:8888/demo/hello.txt", "entity",
-                        new Callback() {
-
-                            public void onEvent(Request request,
-                                    Response response) {
-                                try {
-                                    label.setText(response.getEntity()
-                                            .getText());
-                                } catch (Exception ioException) {
-                                    GWT.log("Restlet I/O failed", ioException);
-                                }
-                            }
-
-                        });
-            }
-        });
+        /*
+         * button.addClickListener(new ClickListener() { public void
+         * onClick(Widget sender) { new Client(Protocol.HTTP).put(
+         * "http://localhost:8888/demo/hello.txt", "entity", new Uniform() {
+         * 
+         * public void handle(Request request, Response response, Uniform
+         * callback) { try { label.setText(response.getEntity() .getText()); }
+         * catch (Exception ioException) { GWT.log("Restlet I/O failed",
+         * ioException); } }
+         * 
+         * }); } });
+         */
 
         RootPanel.get("slot1").add(button);
         RootPanel.get("slot2").add(label);
