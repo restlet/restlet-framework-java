@@ -102,7 +102,7 @@ public class Context {
      * 
      * @return A request dispatcher to available client connectors.
      */
-    public Uniform getClientDispatcher() {
+    public Client getClientDispatcher() {
         return null;
     }
 
@@ -131,7 +131,7 @@ public class Context {
      * 
      * @return A request dispatcher to the server connectors' router.
      */
-    public Uniform getServerDispatcher() {
+    public Client getServerDispatcher() {
         return null;
     }
 

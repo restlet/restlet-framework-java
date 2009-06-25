@@ -378,9 +378,10 @@ public class HttpClientConverter extends HttpConverter {
             // Send the request to the client
             httpCall.sendRequest(request, response, new Callback() {
 
-                public void onEvent(Request request, Response response) {
+                public void handle(Request request, Response response,
+                        Callback callback) {
                     updateResponse(response, httpCall);
-                    callback.onEvent(request, response);
+                    callback.handle(request, response, null);
                 }
 
             });

@@ -204,8 +204,8 @@ public class GwtHttpClientCall extends HttpClientCall {
 
     @Override
     public void sendRequest(final org.restlet.data.Request request,
-            final org.restlet.data.Response response,
-            final Callback callback) throws Exception {
+            final org.restlet.data.Response response, final Callback callback)
+            throws Exception {
         final Representation entity = request.isEntityAvailable() ? request
                 .getEntity() : null;
         if (entity != null) {
@@ -226,14 +226,14 @@ public class GwtHttpClientCall extends HttpClientCall {
                 setErrorStatusCode(Status.CONNECTOR_ERROR_INTERNAL.getCode());
                 setErrorReasonPhrase(exception == null ? "Unknown GWT HTTP communication error."
                         : exception.getMessage());
-                callback.onEvent(request, response);
+                callback.handle(request, response, null);
             }
 
             public void onResponseReceived(
                     com.google.gwt.http.client.Request gwtRequest,
                     Response gwtResponse) {
                 setResponse(gwtResponse);
-                callback.onEvent(request, response);
+                callback.handle(request, response, null);
             }
 
         });

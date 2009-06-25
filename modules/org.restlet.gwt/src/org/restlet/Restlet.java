@@ -42,7 +42,7 @@ import org.restlet.data.Status;
  * 
  * @author Jerome Louvel
  */
-public class Restlet extends Uniform {
+public class Restlet {
     /** Error message. */
     private static final String UNABLE_TO_START = "Unable to start the Restlet";
 
@@ -99,7 +99,6 @@ public class Restlet extends Uniform {
      * @param callback
      *            The callback invoked upon request completion.
      */
-    @Override
     public void handle(Request request, Response response, Callback callback) {
         // Check if the Restlet was started
         if (isStopped()) {
