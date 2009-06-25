@@ -46,8 +46,8 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.engine.Engine;
-import org.restlet.util.AuthenticationUtils;
-import org.restlet.util.DateUtils;
+import org.restlet.engine.util.AuthenticationUtils;
+import org.restlet.engine.util.DateUtils;
 import org.restlet.util.Series;
 
 /**

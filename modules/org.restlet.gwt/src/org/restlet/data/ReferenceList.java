@@ -34,11 +34,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.restlet.engine.util.BufferedReader;
+import org.restlet.engine.util.ListUtils;
+import org.restlet.engine.util.StringReader;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
-import org.restlet.util.BufferedReader;
-import org.restlet.util.ListUtils;
-import org.restlet.util.StringReader;
 import org.restlet.util.WrapperList;
 
 /**

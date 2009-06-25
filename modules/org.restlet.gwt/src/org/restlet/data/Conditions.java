@@ -35,8 +35,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import org.restlet.engine.util.DateUtils;
 import org.restlet.representation.Representation;
-import org.restlet.util.DateUtils;
 
 /**
  * Set of conditions applying to a request. This is equivalent to the HTTP

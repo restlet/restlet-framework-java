@@ -39,6 +39,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.restlet.data.Parameter;
+import org.restlet.engine.util.ListUtils;
 
 /**
  * Modifiable list of entries with many helper methods. Note that this class

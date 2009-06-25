@@ -56,9 +56,9 @@ import org.restlet.engine.http.GwtHttpClientHelper;
 import org.restlet.engine.http.HttpClientCall;
 import org.restlet.engine.http.HttpClientConverter;
 import org.restlet.engine.http.HttpUtils;
+import org.restlet.engine.util.FormUtils;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
-import org.restlet.util.FormUtils;
 
 /**
  * Restlet factory supported by the engine.

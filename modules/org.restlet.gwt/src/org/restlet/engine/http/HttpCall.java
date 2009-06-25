@@ -36,8 +36,8 @@ import java.util.Date;
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
+import org.restlet.engine.util.DateUtils;
 import org.restlet.representation.Representation;
-import org.restlet.util.DateUtils;
 import org.restlet.util.Series;
 
 /**

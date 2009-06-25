@@ -28,44 +28,40 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.util;
-
-import org.restlet.data.ChallengeRequest;
-import org.restlet.data.ChallengeScheme;
+package org.restlet.engine.util;
 
 /**
- * Authentication utilities.
+ * String reader.
  * 
  * @author Jerome Louvel
- * @author Ray Waldin (ray@waldin.net)
  */
-public class AuthenticationUtils {
+public class StringReader {
+
+    /** The text to read. */
+    private final String text;
+
+    /** The next position to read. */
+    private int position;
 
     /**
-     * Parses an authenticate header into a challenge request.
+     * Constructor.
      * 
-     * @param header
-     *            The HTTP header value to parse.
-     * @return The parsed challenge request.
+     * @param text
+     *            The source text to read.
      */
-    public static ChallengeRequest parseAuthenticateHeader(String header) {
-        ChallengeRequest result = null;
+    public StringReader(String text) {
+        this.text = text;
+        this.position = 0;
+    }
 
-        if (header != null) {
-            final int space = header.indexOf(' ');
-
-            if (space != -1) {
-                final String scheme = header.substring(0, space);
-                result = new ChallengeRequest(new ChallengeScheme("HTTP_"
-                        + scheme, scheme), null);
-            } else {
-                final String scheme = header.substring(0);
-                result = new ChallengeRequest(new ChallengeScheme("HTTP_"
-                        + scheme, scheme), null);
-            }
-        }
-
-        return result;
+    /**
+     * Reads the next character in the source text.
+     * 
+     * @return The next character or -1 if end of text is reached.
+     */
+    public int read() {
+        return (this.position == this.text.length()) ? -1 : this.text
+                .charAt(this.position++);
     }
 
 }
