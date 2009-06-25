@@ -548,18 +548,20 @@ public class Application extends Restlet {
         for (int i = 0; (i < this.services.size()); i++) {
             service = this.services.get(i);
 
-            if ((service != null)
-                    && service.getClass().isAssignableFrom(
-                            newService.getClass())) {
-                try {
-                    service.stop();
-                } catch (Exception e) {
-                    getLogger().log(Level.WARNING,
-                            "Unable to stop service replaced", e);
-                }
+            if (service != null) {
+                if (service.getClass().isAssignableFrom(newService.getClass())) {
+                    try {
+                        service.stop();
+                    } catch (Exception e) {
+                        getLogger().log(Level.WARNING,
+                                "Unable to stop service replaced", e);
+                    }
 
-                services.add(newService);
-                replaced = true;
+                    services.add(newService);
+                    replaced = true;
+                } else {
+                    services.add(service);
+                }
             }
         }
 
