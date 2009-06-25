@@ -79,7 +79,8 @@ public class ConverterUtils {
                         result
                                 .add(new VariantInfo(targetVariant
                                         .getMediaType()));
-                    } else if (targetVariant.includes(helperVariant)) {
+                    } else if (targetVariant == null
+                            || targetVariant.includes(helperVariant)) {
                         // Add this variant for content negotiation.
                         if (result == null) {
                             result = new ArrayList<VariantInfo>();
