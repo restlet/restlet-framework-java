@@ -1330,7 +1330,7 @@
 			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
 		</javadoc>
 
-		<javadoc packagenames="org.restlet.gwt.*" excludepackagenames="${exclude-packages},*org.restlet.gwt.engine.*" destdir="${docs-gwt}" classpathref="path-all" author="true" version="true" use="true" windowtitle="Restlet-GWT module ${version-full}" doctitle="Restlet-GWT module ${version-full}" overview="${temp}/javadocs/overview-gwt.html" stylesheetfile="${tmpl}/javadocs/stylesheet.css" verbose="${verbose}">
+		<javadoc packagenames="org.restlet.*" excludepackagenames="${exclude-packages},*org.restlet.engine.*" destdir="${docs-gwt}" classpathref="path-all" author="true" version="true" use="true" windowtitle="Restlet-GWT module ${version-full}" doctitle="Restlet-GWT module ${version-full}" overview="${temp}/javadocs/overview-gwt.html" stylesheetfile="${tmpl}/javadocs/stylesheet.css" verbose="${verbose}">
 			<sourcepath>
 				<pathelement path="${mod}/${mod-core-gwt-id}/src/" />
 			</sourcepath>
