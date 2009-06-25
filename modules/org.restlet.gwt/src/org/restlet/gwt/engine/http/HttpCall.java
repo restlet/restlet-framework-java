@@ -36,8 +36,8 @@ import java.util.Date;
 import org.restlet.gwt.data.Form;
 import org.restlet.gwt.data.Parameter;
 import org.restlet.gwt.data.Protocol;
+import org.restlet.gwt.engine.util.DateUtils;
 import org.restlet.gwt.resource.Representation;
-import org.restlet.gwt.util.DateUtils;
 import org.restlet.gwt.util.Series;
 
 /**

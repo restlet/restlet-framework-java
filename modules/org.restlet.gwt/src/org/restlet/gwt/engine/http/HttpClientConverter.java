@@ -47,7 +47,7 @@ import org.restlet.gwt.data.Response;
 import org.restlet.gwt.data.Status;
 import org.restlet.gwt.engine.Engine;
 import org.restlet.gwt.engine.util.AuthenticationUtils;
-import org.restlet.gwt.util.DateUtils;
+import org.restlet.gwt.engine.util.DateUtils;
 import org.restlet.gwt.util.Series;
 
 /**
