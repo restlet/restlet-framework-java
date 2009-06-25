@@ -1081,25 +1081,11 @@
 		<copy todir="${mod}" overwrite="true">
 			<fileset dir="../modules" />
 		</copy>
-		<replace file="${mod}/${mod-core-id}/src/org/restlet/engine/Engine.java" token="@major-number@" value="${major-number}" />
-		<replace file="${mod}/${mod-core-id}/src/org/restlet/engine/Engine.java" token="@minor-number@" value="${minor-number}" />
-		<replace file="${mod}/${mod-core-id}/src/org/restlet/engine/Engine.java" token="@release-type@" value="${release-type}" />
-		<replace file="${mod}/${mod-core-id}/src/org/restlet/engine/Engine.java" token="@release-number@" value="${release-number}" />
-
-		<replace file="${mod}/${mod-core-gae-id}/src/org/restlet/engine/Engine.java" token="@major-number@" value="${major-number}" />
-		<replace file="${mod}/${mod-core-gae-id}/src/org/restlet/engine/Engine.java" token="@minor-number@" value="${minor-number}" />
-		<replace file="${mod}/${mod-core-gae-id}/src/org/restlet/engine/Engine.java" token="@release-type@" value="${release-type}" />
-		<replace file="${mod}/${mod-core-gae-id}/src/org/restlet/engine/Engine.java" token="@release-number@" value="${release-number}" />
-
-		<replace file="${mod}/${mod-core-gwt-id}/src/org/restlet/gwt/util/Engine.java" token="@major-number@" value="${major-number}" />
-		<replace file="${mod}/${mod-core-gwt-id}/src/org/restlet/gwt/util/Engine.java" token="@minor-number@" value="${minor-number}" />
-		<replace file="${mod}/${mod-core-gwt-id}/src/org/restlet/gwt/util/Engine.java" token="@release-type@" value="${release-type}" />
-		<replace file="${mod}/${mod-core-gwt-id}/src/org/restlet/gwt/util/Engine.java" token="@release-number@" value="${release-number}" />
-
-		<replace file="${mod}/${mod-core-android-id}/src/org/restlet/engine/Engine.java" token="@major-number@" value="${major-number}" />
-		<replace file="${mod}/${mod-core-android-id}/src/org/restlet/engine/Engine.java" token="@minor-number@" value="${minor-number}" />
-		<replace file="${mod}/${mod-core-android-id}/src/org/restlet/engine/Engine.java" token="@release-type@" value="${release-type}" />
-		<replace file="${mod}/${mod-core-android-id}/src/org/restlet/engine/Engine.java" token="@release-number@" value="${release-number}" />
+		
+		<replace dir="${mod}" includes="**/Engine.java" token="@major-number@" value="${major-number}" />
+		<replace dir="${mod}" includes="**/Engine.java" token="@minor-number@" value="${minor-number}" />
+		<replace dir="${mod}" includes="**/Engine.java" token="@release-type@" value="${release-type}" />
+		<replace dir="${mod}" includes="**/Engine.java" token="@release-number@" value="${release-number}" />
 
 		<compileModule name="core" />
 		<compileModule name="core-gae" />

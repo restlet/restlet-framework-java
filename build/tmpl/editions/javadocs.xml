@@ -69,7 +69,16 @@
 <#noparse>
 		    <link href="http://www.restlet.org/documentation/${version-minor}/api/" packagelistLoc="${docs-api}" offline="true" />
 		</javadoc>
+</#noparse>
 
+<#list editions[editionKey].modules?sort_by("id") as module>
+<#if ((module.type!"") = "connector") || ((module.type!"") = "integration") || ((module.type!"") = "standard")>
+      <#assign extension>true</#assign>
+</#if>
+</#list>
+
+<#if extension??>
+<#noparse>
 		<javadoc sourcepathref="extensions-source-path"
                  packagenames="org.restlet.ext.*"
                  excludepackagenames="${exclude-packages}"
@@ -105,6 +114,9 @@
 		    <link href="http://www.restlet.org/documentation/${version-minor}/api/" packagelistLoc="${docs-api}" offline="true" />
 		    <link href="http://www.restlet.org/documentation/${version-minor}/engine/" packagelistLoc="${docs-engine}" offline="true" />
 		</javadoc>
+</#noparse>
+</#if>
+<#noparse>
 
 	</target>
 	

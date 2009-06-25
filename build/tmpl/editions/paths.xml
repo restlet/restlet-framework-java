@@ -1,11 +1,14 @@
 ﻿<?xml version="1.0"?>
 
-<!-- ===============================================================
-     Restlet paths script - Copyright 2005-2009 Noelios Technologies
-     =============================================================== -->
+   <!--
+      ===============================================================
+      Restlet paths script - Copyright 2005-2009 Noelios Technologies
+      ===============================================================
+   -->
 
 <project name="Restlet-paths">
-
+   
+   <!-- Defines one path property by module  -->
 <#list editions[editionKey].modules?sort_by("dependencyLevel") as module>
 	<path id="mod-${module.id}-path">
 <#if module.modDependencies?size = 0>
@@ -28,6 +31,7 @@
 		<pathelement location="$ {tools}/retrotranslator/retrotranslator-transformer-1.2.7.jar" />
 -->
 
+   <!-- Defines one path property for the whole set of modules  -->
 	<path id="path-all">
 <#list editions[editionKey].modules?sort_by("id") as module>
 		<#noparse><pathelement path="${classes}/${mod-</#noparse>${module.id}-id}" />
@@ -35,7 +39,7 @@
 </#list>
 	</path>
 
-
+   <!-- Defines one path property for the source code of the core module  -->
    <path id="core-source-path">
 <#list editions[editionKey].modules?sort_by("id") as module>
 <#if ((module.type!"") = "core")>
@@ -44,7 +48,7 @@
 </#list>
    </path>
 
-
+   <!-- Defines one path property for the source code of the extension module  -->
    <path id="extensions-source-path">
 <#list editions[editionKey].modules?sort_by("id") as module>
 <#if ((module.type!"") = "connector") || ((module.type!"") = "integration") || ((module.type!"") = "standard")>
