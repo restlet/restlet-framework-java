@@ -33,7 +33,7 @@ package org.restlet.engine;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.restlet.Callback;
+import org.restlet.Uniform;
 import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.data.Form;
@@ -129,7 +129,7 @@ public abstract class Helper<T extends Restlet> {
      * @param callback
      *            The callback invoked upon request completion.
      */
-    public void handle(Request request, Response response, Callback callback) {
+    public void handle(Request request, Response response, Uniform callback) {
 
     }
 

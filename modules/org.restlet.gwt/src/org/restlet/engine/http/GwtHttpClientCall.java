@@ -30,7 +30,7 @@
 
 package org.restlet.engine.http;
 
-import org.restlet.Callback;
+import org.restlet.Uniform;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
@@ -204,7 +204,7 @@ public class GwtHttpClientCall extends HttpClientCall {
 
     @Override
     public void sendRequest(final org.restlet.data.Request request,
-            final org.restlet.data.Response response, final Callback callback)
+            final org.restlet.data.Response response, final Uniform callback)
             throws Exception {
         final Representation entity = request.isEntityAvailable() ? request
                 .getEntity() : null;

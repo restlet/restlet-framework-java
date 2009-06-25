@@ -127,7 +127,7 @@ public class Client extends Connector {
      * @param callback
      *            The callback invoked upon request completion.
      */
-    public final void delete(Reference resourceRef, Callback callback) {
+    public final void delete(Reference resourceRef, Uniform callback) {
         handle(new Request(Method.DELETE, resourceRef), callback);
     }
 
@@ -139,7 +139,7 @@ public class Client extends Connector {
      * @param callback
      *            The callback invoked upon request completion.
      */
-    public final void delete(String resourceUri, Callback callback) {
+    public final void delete(String resourceUri, Uniform callback) {
         handle(new Request(Method.DELETE, resourceUri), callback);
     }
 
@@ -151,7 +151,7 @@ public class Client extends Connector {
      * @param callback
      *            The callback invoked upon request completion.
      */
-    public final void get(Reference resourceRef, Callback callback) {
+    public final void get(Reference resourceRef, Uniform callback) {
         handle(new Request(Method.GET, resourceRef), callback);
     }
 
@@ -163,7 +163,7 @@ public class Client extends Connector {
      * @param callback
      *            The callback invoked upon request completion.
      */
-    public final void get(String resourceUri, Callback callback) {
+    public final void get(String resourceUri, Uniform callback) {
         handle(new Request(Method.GET, resourceUri), callback);
     }
 
@@ -193,7 +193,7 @@ public class Client extends Connector {
      * @param callback
      *            The callback invoked upon request completion.
      */
-    public final void handle(Request request, Callback callback) {
+    public final void handle(Request request, Uniform callback) {
         final Response response = new Response(request);
         handle(request, response, callback);
     }
@@ -208,7 +208,7 @@ public class Client extends Connector {
      * @param callback
      *            The callback invoked upon request completion.
      */
-    public void handle(Request request, Response response, Callback callback) {
+    public void handle(Request request, Response response, Uniform callback) {
         super.handle(request, response, callback);
 
         if (getHelper() != null) {
@@ -224,7 +224,7 @@ public class Client extends Connector {
      * @param callback
      *            The callback invoked upon request completion.
      */
-    public final void head(Reference resourceRef, Callback callback) {
+    public final void head(Reference resourceRef, Uniform callback) {
         handle(new Request(Method.HEAD, resourceRef), callback);
     }
 
@@ -236,7 +236,7 @@ public class Client extends Connector {
      * @param callback
      *            The callback invoked upon request completion.
      */
-    public final void head(String resourceUri, Callback callback) {
+    public final void head(String resourceUri, Uniform callback) {
         handle(new Request(Method.HEAD, resourceUri), callback);
     }
 
@@ -248,7 +248,7 @@ public class Client extends Connector {
      * @param callback
      *            The callback invoked upon request completion.
      */
-    public final void options(Reference resourceRef, Callback callback) {
+    public final void options(Reference resourceRef, Uniform callback) {
         handle(new Request(Method.OPTIONS, resourceRef), callback);
     }
 
@@ -260,7 +260,7 @@ public class Client extends Connector {
      * @param callback
      *            The callback invoked upon request completion.
      */
-    public final void options(String resourceUri, Callback callback) {
+    public final void options(String resourceUri, Uniform callback) {
         handle(new Request(Method.OPTIONS, resourceUri), callback);
     }
 
@@ -275,7 +275,7 @@ public class Client extends Connector {
      *            The callback invoked upon request completion.
      */
     public final void post(Reference resourceRef, Representation entity,
-            Callback callback) {
+            Uniform callback) {
         handle(new Request(Method.POST, resourceRef, entity), callback);
     }
 
@@ -290,7 +290,7 @@ public class Client extends Connector {
      *            The callback invoked upon request completion.
      */
     public final void post(String resourceUri, Representation entity,
-            Callback callback) {
+            Uniform callback) {
         handle(new Request(Method.POST, resourceUri, entity), callback);
     }
 
@@ -304,7 +304,7 @@ public class Client extends Connector {
      * @param callback
      *            The callback invoked upon request completion.
      */
-    public final void post(String resourceUri, String entity, Callback callback) {
+    public final void post(String resourceUri, String entity, Uniform callback) {
         post(resourceUri, new StringRepresentation(entity), callback);
     }
 
@@ -319,7 +319,7 @@ public class Client extends Connector {
      *            The callback invoked upon request completion.
      */
     public final void put(Reference resourceRef, Representation entity,
-            Callback callback) {
+            Uniform callback) {
         handle(new Request(Method.PUT, resourceRef, entity), callback);
     }
 
@@ -334,7 +334,7 @@ public class Client extends Connector {
      *            The callback invoked upon request completion.
      */
     public final void put(String resourceUri, Representation entity,
-            Callback callback) {
+            Uniform callback) {
         handle(new Request(Method.PUT, resourceUri, entity), callback);
     }
 
@@ -348,7 +348,7 @@ public class Client extends Connector {
      * @param callback
      *            The callback invoked upon request completion.
      */
-    public final void put(String resourceUri, String entity, Callback callback) {
+    public final void put(String resourceUri, String entity, Uniform callback) {
         put(resourceUri, new StringRepresentation(entity), callback);
     }
 

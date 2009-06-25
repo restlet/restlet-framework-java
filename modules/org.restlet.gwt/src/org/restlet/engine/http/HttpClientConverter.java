@@ -32,7 +32,7 @@ package org.restlet.engine.http;
 
 import java.util.Set;
 
-import org.restlet.Callback;
+import org.restlet.Uniform;
 import org.restlet.Context;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ClientInfo;
@@ -373,13 +373,13 @@ public class HttpClientConverter extends HttpConverter {
      * @throws Exception
      */
     public void commit(final HttpClientCall httpCall, Request request,
-            Response response, final Callback callback) throws Exception {
+            Response response, final Uniform callback) throws Exception {
         if (httpCall != null) {
             // Send the request to the client
-            httpCall.sendRequest(request, response, new Callback() {
+            httpCall.sendRequest(request, response, new Uniform() {
 
                 public void handle(Request request, Response response,
-                        Callback callback) {
+                        Uniform callback) {
                     updateResponse(response, httpCall);
                     callback.handle(request, response, null);
                 }

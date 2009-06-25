@@ -30,7 +30,7 @@
 
 package org.restlet.engine.http;
 
-import org.restlet.Callback;
+import org.restlet.Uniform;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
@@ -309,7 +309,7 @@ public abstract class HttpClientCall extends HttpCall {
      *            The callback invoked upon request completion.
      */
     public abstract void sendRequest(Request request, Response response,
-            Callback callback) throws Exception;
+            Uniform callback) throws Exception;
 
     /**
      * Indicates if the request entity should be chunked.

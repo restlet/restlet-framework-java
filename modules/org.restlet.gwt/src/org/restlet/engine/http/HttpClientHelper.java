@@ -30,7 +30,7 @@
 
 package org.restlet.engine.http;
 
-import org.restlet.Callback;
+import org.restlet.Uniform;
 import org.restlet.Client;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -96,7 +96,7 @@ public abstract class HttpClientHelper extends ClientHelper {
     }
 
     @Override
-    public void handle(Request request, Response response, Callback callback) {
+    public void handle(Request request, Response response, Uniform callback) {
         try {
             final HttpClientCall httpCall = getConverter().toSpecific(this,
                     request);

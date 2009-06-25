@@ -99,7 +99,7 @@ public class Restlet {
      * @param callback
      *            The callback invoked upon request completion.
      */
-    public void handle(Request request, Response response, Callback callback) {
+    public void handle(Request request, Response response, Uniform callback) {
         // Check if the Restlet was started
         if (isStopped()) {
             try {

@@ -34,14 +34,14 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 
 /**
- * Callback associated to the uniform interface. This abstract class is
+ * Uniform associated to the uniform interface. This abstract class is
  * typically sub-classed and instantiated by the user applications. It contains
  * a single method called by the Restlet-GWT library when a request has been
  * processed.
  * 
  * @author Jerome Louvel
  */
-public interface Callback {
+public interface Uniform {
 
     /**
      * Handles a call.
@@ -53,6 +53,6 @@ public interface Callback {
      * @param callback
      *            The callback invoked upon request completion.
      */
-    public void handle(Request request, Response response, Callback callback);
+    public void handle(Request request, Response response, Uniform callback);
 
 }
