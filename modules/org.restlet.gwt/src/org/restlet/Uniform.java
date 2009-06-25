@@ -34,10 +34,9 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 
 /**
- * Uniform associated to the uniform interface. This abstract class is
- * typically sub-classed and instantiated by the user applications. It contains
- * a single method called by the Restlet-GWT library when a request has been
- * processed.
+ * Uniform associated to the uniform interface. This abstract class is typically
+ * sub-classed and instantiated by the user applications. It contains a single
+ * method called by the Restlet-GWT library when a request has been processed.
  * 
  * @author Jerome Louvel
  */
