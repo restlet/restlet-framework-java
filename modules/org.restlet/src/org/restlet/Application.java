@@ -342,7 +342,7 @@ public class Application extends Restlet {
      * @return The matched service instance.
      */
     @SuppressWarnings("unchecked")
-    protected <T extends Service> T getService(Class<T> clazz) {
+    public <T extends Service> T getService(Class<T> clazz) {
         for (Service service : getServices()) {
             if (clazz.isAssignableFrom(service.getClass())) {
                 return (T) service;

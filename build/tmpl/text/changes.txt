@@ -130,6 +130,8 @@ Changes log
         - Added org.restlet.util.Couple and Triple generic classes to 
           store two or three related objects. 
           Inspired by Tim Peierls's Relation interface idea.
+        - Made Application#getService(Class<T>) public.
+          Suggested by Bruno Harbulot.
      - Misc
         - Exceptions thrown in the internal HTTP client are not logged
           with a FINE level instead of a WARNING level.
