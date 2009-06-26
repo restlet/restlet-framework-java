@@ -93,16 +93,16 @@ public class XdbServletWarClientHelper extends ServletWarClientHelper {
     private volatile ServletConfig config;
 
     /**
+     * SQL Connection to XMLDB repository
+     */
+    private volatile Connection conn = null;
+
+    /**
      * Efective user who is running XdbServerServlet for example SCOTT or
      * ANONYMOUS if is a Servlet running with PUBLIC grants (no http
      * auhtorization is required)
      */
     private volatile String connectedUser;
-
-    /**
-     * SQL Connection to XMLDB repository
-     */
-    private volatile Connection conn = null;
 
     /**
      * Constructor.
@@ -131,7 +131,8 @@ public class XdbServletWarClientHelper extends ServletWarClientHelper {
     }
 
     @Override
-    public void handle(Request request, Response response) {
+    public void handleLocal(Request request, Response response,
+            String decodedPath) {
         PreparedStatement stmt = null;
         ResultSet rset = null;
 

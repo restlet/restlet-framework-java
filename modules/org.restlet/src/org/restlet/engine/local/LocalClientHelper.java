@@ -31,6 +31,7 @@
 package org.restlet.engine.local;
 
 import org.restlet.Client;
+import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.engine.ClientHelper;
@@ -66,7 +67,7 @@ import org.restlet.engine.ClientHelper;
  * @author Jerome Louvel
  * @author Thierry Boileau
  */
-public class LocalClientHelper extends ClientHelper {
+public abstract class LocalClientHelper extends ClientHelper {
     /**
      * Constructor. Note that the common list of metadata associations based on
      * extensions is added, see the addCommonExtensions() method.
@@ -102,7 +103,8 @@ public class LocalClientHelper extends ClientHelper {
     }
 
     /**
-     * Handles a call.
+     * Handles a call. Note that this implementation will systematically
+     * normalize and URI-decode the resource reference.
      * 
      * @param request
      *            The request to handle.
@@ -110,10 +112,30 @@ public class LocalClientHelper extends ClientHelper {
      *            The response to update.
      */
     @Override
-    public void handle(Request request, Response response) {
+    public final void handle(Request request, Response response) {
         // Ensure that all ".." and "." are normalized into the path
         // to prevent unauthorized access to user directories.
         request.getResourceRef().normalize();
+
+        // As the path may be percent-encoded, it has to be percent-decoded.
+        // Then, all generated URIs must be encoded.
+        String path = request.getResourceRef().getPath();
+        String decodedPath = Reference.decode(path);
+
+        // Continue the local handling
+        handleLocal(request, response, decodedPath);
     }
 
+    /**
+     * Handles a local call.
+     * 
+     * @param request
+     *            The request to handle.
+     * @param response
+     *            The response to update.
+     * @param decodedPath
+     *            The decoded local path.
+     */
+    protected abstract void handleLocal(Request request, Response response,
+            String decodedPath);
 }

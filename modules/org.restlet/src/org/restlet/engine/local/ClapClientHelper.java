@@ -70,49 +70,6 @@ public class ClapClientHelper extends LocalClientHelper {
     }
 
     /**
-     * Handles a call.
-     * 
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The response to update.
-     */
-    @Override
-    public void handle(Request request, Response response) {
-        super.handle(request, response);
-
-        String scheme = request.getResourceRef().getScheme();
-        if (scheme.equalsIgnoreCase(Protocol.CLAP.getSchemeName())) {
-            final LocalReference cr = new LocalReference(request
-                    .getResourceRef());
-            ClassLoader classLoader = null;
-
-            if (cr.getClapAuthorityType() == LocalReference.CLAP_CLASS) {
-                // Sometimes, a specific class loader needs to be used,
-                // make sure that it can be provided as a request's attribute
-                final Object classLoaderAttribute = request.getAttributes()
-                        .get("org.restlet.clap.classloader");
-                if (classLoaderAttribute != null) {
-                    classLoader = (ClassLoader) classLoaderAttribute;
-                } else {
-                    classLoader = getClass().getClassLoader();
-                }
-            } else if (cr.getClapAuthorityType() == LocalReference.CLAP_SYSTEM) {
-                classLoader = ClassLoader.getSystemClassLoader();
-            } else if (cr.getClapAuthorityType() == LocalReference.CLAP_THREAD) {
-                classLoader = Thread.currentThread().getContextClassLoader();
-            }
-
-            handleClassLoader(request, response, classLoader);
-        } else {
-            throw new IllegalArgumentException(
-                    "Protocol \""
-                            + scheme
-                            + "\" not supported by the connector. Only CLAP is supported.");
-        }
-    }
-
-    /**
      * Handles a call with a given class loader.
      * 
      * @param request
@@ -200,6 +157,41 @@ public class ClapClientHelper extends LocalClientHelper {
             response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
             response.getAllowedMethods().add(Method.GET);
             response.getAllowedMethods().add(Method.HEAD);
+        }
+    }
+
+    @Override
+    protected void handleLocal(Request request, Response response,
+            String decodedPath) {
+        String scheme = request.getResourceRef().getScheme();
+
+        if (scheme.equalsIgnoreCase(Protocol.CLAP.getSchemeName())) {
+            final LocalReference cr = new LocalReference(request
+                    .getResourceRef());
+            ClassLoader classLoader = null;
+
+            if (cr.getClapAuthorityType() == LocalReference.CLAP_CLASS) {
+                // Sometimes, a specific class loader needs to be used,
+                // make sure that it can be provided as a request's attribute
+                final Object classLoaderAttribute = request.getAttributes()
+                        .get("org.restlet.clap.classloader");
+                if (classLoaderAttribute != null) {
+                    classLoader = (ClassLoader) classLoaderAttribute;
+                } else {
+                    classLoader = getClass().getClassLoader();
+                }
+            } else if (cr.getClapAuthorityType() == LocalReference.CLAP_SYSTEM) {
+                classLoader = ClassLoader.getSystemClassLoader();
+            } else if (cr.getClapAuthorityType() == LocalReference.CLAP_THREAD) {
+                classLoader = Thread.currentThread().getContextClassLoader();
+            }
+
+            handleClassLoader(request, response, classLoader);
+        } else {
+            throw new IllegalArgumentException(
+                    "Protocol \""
+                            + scheme
+                            + "\" not supported by the connector. Only CLAP is supported.");
         }
     }
 }

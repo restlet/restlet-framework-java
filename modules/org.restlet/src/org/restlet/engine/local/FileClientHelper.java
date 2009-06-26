@@ -186,19 +186,12 @@ public class FileClientHelper extends EntityClientHelper {
         return getHelpedParameters().getFirstValue("temporaryExtension", "tmp");
     }
 
-    /**
-     * Handles a call.
-     * 
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The response to update.
-     */
     @Override
-    public void handle(Request request, Response response) {
+    protected void handleLocal(Request request, Response response,
+            String decodedPath) {
         String scheme = request.getResourceRef().getScheme();
         if (Protocol.FILE.getSchemeName().equalsIgnoreCase(scheme)) {
-            super.handle(request, response);
+            handleFile(request, response, decodedPath);
         } else {
             throw new IllegalArgumentException(
                     "Protocol \""
@@ -207,12 +200,11 @@ public class FileClientHelper extends EntityClientHelper {
         }
     }
 
-    @Override
-    protected void handleEntity(Request request, Response response,
-            String path, String decodedPath) {
+    protected void handleFile(Request request, Response response,
+            String decodedPath) {
         if (Method.GET.equals(request.getMethod())
                 || Method.HEAD.equals(request.getMethod())) {
-            handleEntityGet(request, response, path, getEntity(decodedPath));
+            handleEntityGet(request, response, getEntity(decodedPath));
         } else if (Method.PUT.equals(request.getMethod())) {
             handleFilePut(request, response, decodedPath, new File(decodedPath));
         } else if (Method.DELETE.equals(request.getMethod())) {

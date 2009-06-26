@@ -99,11 +99,12 @@ public class ServletWarClientHelper extends EntityClientHelper {
     }
 
     @Override
-    public void handle(Request request, Response response) {
+    public void handleLocal(Request request, Response response,
+            String decodedPath) {
         String scheme = request.getResourceRef().getScheme();
 
         if (Protocol.WAR.getSchemeName().equalsIgnoreCase(scheme)) {
-            super.handle(request, response);
+            super.handleLocal(request, response, decodedPath);
         } else {
             throw new IllegalArgumentException(
                     "Protocol \""

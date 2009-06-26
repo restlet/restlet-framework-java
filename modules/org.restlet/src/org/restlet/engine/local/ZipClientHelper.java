@@ -46,7 +46,6 @@ import org.restlet.Client;
 import org.restlet.data.LocalReference;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
-import org.restlet.data.Reference;
 import org.restlet.data.ReferenceList;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -78,19 +77,6 @@ public class ZipClientHelper extends LocalClientHelper {
         getProtocols().add(Protocol.JAR);
     }
 
-    @Override
-    public void handle(Request request, Response response) {
-        super.handle(request, response);
-
-        // As the path may be percent-encoded, it has to be percent-decoded.
-        // Then, all generated URIs must be encoded.
-        String path = request.getResourceRef().getHierarchicalPart();
-        String decodedPath = Reference.decode(path);
-
-        // Finally, actually handle the call
-        handleEntity(request, response, path, decodedPath);
-    }
-
     /**
      * Handles a call for a local entity. By default, only GET and HEAD methods
      * are implemented.
@@ -99,13 +85,12 @@ public class ZipClientHelper extends LocalClientHelper {
      *            The request to handle.
      * @param response
      *            The response to update.
-     * @param path
-     *            The entity path.
      * @param decodedPath
      *            The URL decoded entity path.
      */
-    protected void handleEntity(Request request, Response response,
-            String path, final String decodedPath) {
+    @Override
+    protected void handleLocal(Request request, Response response,
+            String decodedPath) {
         int spi = decodedPath.indexOf("!/");
         String fileUri;
         String entryName;

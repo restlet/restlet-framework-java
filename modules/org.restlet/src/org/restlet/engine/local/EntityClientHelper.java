@@ -160,65 +160,17 @@ public abstract class EntityClientHelper extends LocalClientHelper {
     }
 
     /**
-     * Handles a call.
-     * 
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The response to update.
-     */
-    @Override
-    public void handle(Request request, Response response) {
-        super.handle(request, response);
-
-        // As the path may be percent-encoded, it has to be percent-decoded.
-        // Then, all generated URIs must be encoded.
-        String path = request.getResourceRef().getPath();
-        String decodedPath = Reference.decode(path);
-
-        // Finally, actually handle the call
-        handleEntity(request, response, path, decodedPath);
-    }
-
-    /**
-     * Handles a call for a local entity. By default, only GET and HEAD methods
-     * are implemented.
-     * 
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The response to update.
-     * @param path
-     *            The entity path.
-     * @param decodedPath
-     *            The URL decoded entity path.
-     */
-    protected void handleEntity(Request request, Response response,
-            String path, String decodedPath) {
-        if (Method.GET.equals(request.getMethod())
-                || Method.HEAD.equals(request.getMethod())) {
-            handleEntityGet(request, response, path, getEntity(decodedPath));
-        } else {
-            response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-            response.getAllowedMethods().add(Method.GET);
-            response.getAllowedMethods().add(Method.HEAD);
-        }
-    }
-
-    /**
      * Handles a GET call.
      * 
      * @param request
      *            The request to answer.
      * @param response
      *            The response to update.
-     * @param path
-     *            The encoded path of the requested entity.
      * @param entity
      *            The requested entity (normal or directory).
      */
     protected void handleEntityGet(Request request, Response response,
-            String path, Entity entity) {
+            Entity entity) {
         Representation output = null;
 
         // Get variants for a resource
@@ -245,6 +197,7 @@ public abstract class EntityClientHelper extends LocalClientHelper {
                 if (entities != null) {
                     ReferenceList rl = new ReferenceList(entities.size());
                     String scheme = request.getResourceRef().getScheme();
+                    String path = request.getResourceRef().getPath();
                     String encodedParentDirectoryURI = path.substring(0, path
                             .lastIndexOf("/"));
                     String encodedEntityName = path.substring(path
@@ -342,6 +295,19 @@ public abstract class EntityClientHelper extends LocalClientHelper {
             output.setIdentifier(request.getResourceRef());
             response.setEntity(output);
             response.setStatus(Status.SUCCESS_OK);
+        }
+    }
+
+    @Override
+    protected void handleLocal(Request request, Response response,
+            String decodedPath) {
+        if (Method.GET.equals(request.getMethod())
+                || Method.HEAD.equals(request.getMethod())) {
+            handleEntityGet(request, response, getEntity(decodedPath));
+        } else {
+            response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+            response.getAllowedMethods().add(Method.GET);
+            response.getAllowedMethods().add(Method.HEAD);
         }
     }
 }
