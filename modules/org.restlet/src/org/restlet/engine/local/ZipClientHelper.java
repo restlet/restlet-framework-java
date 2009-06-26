@@ -66,34 +66,29 @@ import org.restlet.service.MetadataService;
  */
 public class ZipClientHelper extends LocalClientHelper {
 
+    /**
+     * Constructor.
+     * 
+     * @param client
+     *            The helped client.
+     */
     public ZipClientHelper(Client client) {
         super(client);
         getProtocols().add(Protocol.ZIP);
         getProtocols().add(Protocol.JAR);
     }
 
-    /**
-     * Handles a call.
-     * 
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The response to update.
-     */
     @Override
     public void handle(Request request, Response response) {
-        // Ensure that all ".." and "." are normalized into the path
-        // to prevent unauthorized access to user directories.
-        request.getResourceRef().normalize();
-        String path = request.getResourceRef().getHierarchicalPart();
+        super.handle(request, response);
 
         // As the path may be percent-encoded, it has to be percent-decoded.
         // Then, all generated URIs must be encoded.
-        final String decodedPath = Reference.decode(path);
-        final MetadataService metadataService = getMetadataService();
+        String path = request.getResourceRef().getHierarchicalPart();
+        String decodedPath = Reference.decode(path);
 
         // Finally, actually handle the call
-        handleEntity(request, response, path, decodedPath, metadataService);
+        handleEntity(request, response, path, decodedPath);
     }
 
     /**
@@ -108,12 +103,9 @@ public class ZipClientHelper extends LocalClientHelper {
      *            The entity path.
      * @param decodedPath
      *            The URL decoded entity path.
-     * @param metadataService
-     *            The metadataService.
      */
     protected void handleEntity(Request request, Response response,
-            String path, final String decodedPath,
-            final MetadataService metadataService) {
+            String path, final String decodedPath) {
         int spi = decodedPath.indexOf("!/");
         String fileUri;
         String entryName;
@@ -130,7 +122,8 @@ public class ZipClientHelper extends LocalClientHelper {
             final File file = fileRef.getFile();
             if (Method.GET.equals(request.getMethod())
                     || Method.HEAD.equals(request.getMethod())) {
-                handleGet(request, response, file, entryName, metadataService);
+                handleGet(request, response, file, entryName,
+                        getMetadataService());
             } else if (Method.PUT.equals(request.getMethod())) {
                 handlePut(request, response, file, entryName);
             } else {
@@ -216,26 +209,18 @@ public class ZipClientHelper extends LocalClientHelper {
         response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
     }
 
-    private boolean writeEntityStream(Representation entity,
-            ZipOutputStream out, String entryName) throws IOException {
-        if (entity != null && !entryName.endsWith("/")) {
-            ZipEntry entry = new ZipEntry(entryName);
-            if (entity.getModificationDate() != null)
-                entry.setTime(entity.getModificationDate().getTime());
-            else {
-                entry.setTime(System.currentTimeMillis());
-            }
-            out.putNextEntry(entry);
-            ByteUtils.write(new BufferedInputStream(entity.getStream()), out);
-            out.closeEntry();
-            return true;
-        } else {
-            out.putNextEntry(new ZipEntry(entryName));
-            out.closeEntry();
-        }
-        return false;
-    }
-
+    /**
+     * Handles a PUT call.
+     * 
+     * @param request
+     *            The request to answer.
+     * @param response
+     *            The response to update.
+     * @param file
+     *            The Zip archive file.
+     * @param entryName
+     *            The Zip archive entry name.
+     */
     protected void handlePut(Request request, Response response, File file,
             String entryName) {
         boolean zipExists = file.exists();
@@ -366,5 +351,38 @@ public class ZipClientHelper extends LocalClientHelper {
             response.setStatus(Status.SERVER_ERROR_INTERNAL, e);
             return;
         }
+    }
+
+    /**
+     * Writes an entity to a given ZIP output stream with a given ZIP entry
+     * name.
+     * 
+     * @param entity
+     *            The entity to write.
+     * @param out
+     *            The ZIP output stream.
+     * @param entryName
+     *            The ZIP entry name.
+     * @return True if the writing was successful.
+     * @throws IOException
+     */
+    private boolean writeEntityStream(Representation entity,
+            ZipOutputStream out, String entryName) throws IOException {
+        if (entity != null && !entryName.endsWith("/")) {
+            ZipEntry entry = new ZipEntry(entryName);
+            if (entity.getModificationDate() != null)
+                entry.setTime(entity.getModificationDate().getTime());
+            else {
+                entry.setTime(System.currentTimeMillis());
+            }
+            out.putNextEntry(entry);
+            ByteUtils.write(new BufferedInputStream(entity.getStream()), out);
+            out.closeEntry();
+            return true;
+        } else {
+            out.putNextEntry(new ZipEntry(entryName));
+            out.closeEntry();
+        }
+        return false;
     }
 }

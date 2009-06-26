@@ -137,12 +137,15 @@ public abstract class RestletHelper<T extends Restlet> extends Helper {
      */
     public MetadataService getMetadataService() {
         MetadataService result = null;
-        Application application = getHelped().getApplication();
 
-        if (application != null) {
-            result = application.getMetadataService();
-        } else {
-            result = new MetadataService();
+        if (getHelped() != null) {
+            Application application = getHelped().getApplication();
+
+            if (application != null) {
+                result = application.getMetadataService();
+            } else {
+                result = new MetadataService();
+            }
         }
 
         return result;

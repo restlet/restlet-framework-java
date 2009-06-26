@@ -79,12 +79,9 @@ public class ClapClientHelper extends LocalClientHelper {
      */
     @Override
     public void handle(Request request, Response response) {
-        final String scheme = request.getResourceRef().getScheme();
+        super.handle(request, response);
 
-        // Ensure that all ".." and "." are normalized into the path
-        // to preven unauthorized access to user directories.
-        request.getResourceRef().normalize();
-
+        String scheme = request.getResourceRef().getScheme();
         if (scheme.equalsIgnoreCase(Protocol.CLAP.getSchemeName())) {
             final LocalReference cr = new LocalReference(request
                     .getResourceRef());

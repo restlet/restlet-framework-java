@@ -44,7 +44,6 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
-import org.restlet.service.MetadataService;
 
 /**
  * Connector to the local entities. That connector supports the content
@@ -98,12 +97,9 @@ public abstract class EntityClientHelper extends LocalClientHelper {
      * 
      * @param path
      *            The path of the entity.
-     * @param metadataService
-     *            The metadata service to use.
      * @return A local entity for the given path.
      */
-    public abstract Entity getEntity(String path,
-            MetadataService metadataService);
+    public abstract Entity getEntity(String path);
 
     /**
      * Percent-encodes the given percent-decoded variant name of a resource
@@ -173,18 +169,15 @@ public abstract class EntityClientHelper extends LocalClientHelper {
      */
     @Override
     public void handle(Request request, Response response) {
-        // Ensure that all ".." and "." are normalized into the path
-        // to prevent unauthorized access to user directories.
-        request.getResourceRef().normalize();
-        String path = request.getResourceRef().getPath();
+        super.handle(request, response);
 
         // As the path may be percent-encoded, it has to be percent-decoded.
         // Then, all generated URIs must be encoded.
+        String path = request.getResourceRef().getPath();
         String decodedPath = Reference.decode(path);
-        MetadataService metadataService = getMetadataService();
 
         // Finally, actually handle the call
-        handleEntity(request, response, path, decodedPath, metadataService);
+        handleEntity(request, response, path, decodedPath);
     }
 
     /**
@@ -199,15 +192,12 @@ public abstract class EntityClientHelper extends LocalClientHelper {
      *            The entity path.
      * @param decodedPath
      *            The URL decoded entity path.
-     * @param metadataService
-     *            The metadataService.
      */
     protected void handleEntity(Request request, Response response,
-            String path, String decodedPath, MetadataService metadataService) {
+            String path, String decodedPath) {
         if (Method.GET.equals(request.getMethod())
                 || Method.HEAD.equals(request.getMethod())) {
-            handleEntityGet(request, response, path, getEntity(decodedPath,
-                    metadataService), metadataService);
+            handleEntityGet(request, response, path, getEntity(decodedPath));
         } else {
             response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
             response.getAllowedMethods().add(Method.GET);
@@ -226,11 +216,9 @@ public abstract class EntityClientHelper extends LocalClientHelper {
      *            The encoded path of the requested entity.
      * @param entity
      *            The requested entity (normal or directory).
-     * @param metadataService
-     *            The metadata service.
      */
     protected void handleEntityGet(Request request, Response response,
-            String path, Entity entity, MetadataService metadataService) {
+            String path, Entity entity) {
         Representation output = null;
 
         // Get variants for a resource
@@ -299,7 +287,7 @@ public abstract class EntityClientHelper extends LocalClientHelper {
                     output = rl.getTextRepresentation();
                 } else {
                     // Return the file content
-                    output = entity.getRepresentation(metadataService
+                    output = entity.getRepresentation(getMetadataService()
                             .getDefaultMediaType(), getTimeToLive());
                     output.setIdentifier(request.getResourceRef());
                     Entity.updateMetadata(entity.getName(), output, true,
@@ -338,8 +326,9 @@ public abstract class EntityClientHelper extends LocalClientHelper {
 
                 if (uniqueVariant != null) {
                     // Return the file content
-                    output = uniqueVariant.getRepresentation(metadataService
-                            .getDefaultMediaType(), getTimeToLive());
+                    output = uniqueVariant.getRepresentation(
+                            getMetadataService().getDefaultMediaType(),
+                            getTimeToLive());
                     output.setIdentifier(request.getResourceRef());
                     Entity.updateMetadata(entity.getName(), output, true,
                             getMetadataService());

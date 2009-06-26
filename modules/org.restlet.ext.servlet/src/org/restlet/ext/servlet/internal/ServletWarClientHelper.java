@@ -38,7 +38,6 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.engine.local.Entity;
 import org.restlet.engine.local.EntityClientHelper;
-import org.restlet.service.MetadataService;
 
 /**
  * Client connector based on a Servlet context (JEE Web application context).
@@ -85,9 +84,9 @@ public class ServletWarClientHelper extends EntityClientHelper {
     }
 
     @Override
-    public Entity getEntity(String decodedPath, MetadataService metadataService) {
+    public Entity getEntity(String decodedPath) {
         return new ServletWarEntity(getServletContext(), decodedPath,
-                metadataService);
+                getMetadataService());
     }
 
     /**
@@ -101,7 +100,8 @@ public class ServletWarClientHelper extends EntityClientHelper {
 
     @Override
     public void handle(Request request, Response response) {
-        final String scheme = request.getResourceRef().getScheme();
+        String scheme = request.getResourceRef().getScheme();
+
         if (Protocol.WAR.getSchemeName().equalsIgnoreCase(scheme)) {
             super.handle(request, response);
         } else {

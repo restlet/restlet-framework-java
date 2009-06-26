@@ -62,7 +62,6 @@ import org.restlet.data.Status;
 import org.restlet.engine.io.ByteUtils;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
-import org.restlet.service.MetadataService;
 
 /**
  * Connector to the file resources accessible. Here is the list of parameters
@@ -111,20 +110,17 @@ public class FileClientHelper extends EntityClientHelper {
      * 
      * @param file
      *            The file whose extensions are checked.
-     * @param metadataService
-     *            The metadata service.
      * @return True if all extensions of the file are known by the metadata
      *         service.
      */
-    protected boolean checkExtensionsConsistency(File file,
-            MetadataService metadataService) {
+    protected boolean checkExtensionsConsistency(File file) {
         boolean knownExtension = true;
 
         Collection<String> set = Entity.getExtensions(file.getName(),
-                metadataService);
+                getMetadataService());
         Iterator<String> iterator = set.iterator();
         while (iterator.hasNext() && knownExtension) {
-            knownExtension = metadataService.getMetadata(iterator.next()) != null;
+            knownExtension = getMetadataService().getMetadata(iterator.next()) != null;
         }
 
         return knownExtension;
@@ -137,19 +133,17 @@ public class FileClientHelper extends EntityClientHelper {
      * 
      * @param fileName
      *            The name of the resource
-     * @param metadataService
-     *            metadata helper
      * @param representation
-     *            the provided representation
-     * @return true if the metadata of the representation are compatible with
+     *            The provided representation.
+     * @return True if the metadata of the representation are compatible with
      *         the metadata extracted from the filename
      */
     private boolean checkMetadataConsistency(String fileName,
-            MetadataService metadataService, Representation representation) {
+            Representation representation) {
         boolean result = true;
         if (representation != null) {
             Variant var = new Variant();
-            Entity.updateMetadata(fileName, var, true, metadataService);
+            Entity.updateMetadata(fileName, var, true, getMetadataService());
 
             // "var" contains the theoretical correct metadata
             if (!var.getLanguages().isEmpty()
@@ -175,11 +169,11 @@ public class FileClientHelper extends EntityClientHelper {
     }
 
     @Override
-    public Entity getEntity(String decodedPath, MetadataService metadataService) {
+    public Entity getEntity(String decodedPath) {
         // Take care of the file separator.
         return new FileEntity(
                 new File(LocalReference.localizePath(decodedPath)),
-                metadataService);
+                getMetadataService());
     }
 
     /**
@@ -215,14 +209,12 @@ public class FileClientHelper extends EntityClientHelper {
 
     @Override
     protected void handleEntity(Request request, Response response,
-            String path, String decodedPath, MetadataService metadataService) {
+            String path, String decodedPath) {
         if (Method.GET.equals(request.getMethod())
                 || Method.HEAD.equals(request.getMethod())) {
-            handleEntityGet(request, response, path, getEntity(decodedPath,
-                    metadataService), metadataService);
+            handleEntityGet(request, response, path, getEntity(decodedPath));
         } else if (Method.PUT.equals(request.getMethod())) {
-            handleFilePut(request, response, decodedPath,
-                    new File(decodedPath), metadataService);
+            handleFilePut(request, response, decodedPath, new File(decodedPath));
         } else if (Method.DELETE.equals(request.getMethod())) {
             handleFileDelete(response, new File(decodedPath));
         } else {
@@ -276,11 +268,9 @@ public class FileClientHelper extends EntityClientHelper {
      *            The encoded path of the requested file or directory.
      * @param file
      *            The requested file or directory.
-     * @param metadataService
-     *            The metadata service.
      */
     protected void handleFilePut(Request request, Response response,
-            String path, File file, final MetadataService metadataService) {
+            String path, File file) {
 
         // Deals with directory
         boolean isDirectory = false;
@@ -312,8 +302,7 @@ public class FileClientHelper extends EntityClientHelper {
             // Several checks : first the consistency of the metadata and
             // the filename
             boolean partialPut = !request.getRanges().isEmpty();
-            if (!checkMetadataConsistency(file.getName(), metadataService,
-                    request.getEntity())) {
+            if (!checkMetadataConsistency(file.getName(), request.getEntity())) {
                 // ask the client to reiterate properly its request
                 response.setStatus(new Status(Status.REDIRECTION_SEE_OTHER,
                         "The metadata are not consistent with the URI"));
@@ -323,14 +312,14 @@ public class FileClientHelper extends EntityClientHelper {
                 // Set up base name as the longest part of the name
                 // without known extensions (beginning from the left)
                 final String baseName = Entity.getBaseName(file.getName(),
-                        metadataService);
+                        getMetadataService());
 
                 // Look for resources with the same base name
                 FileFilter filter = new FileFilter() {
                     public boolean accept(File file) {
                         return file.isFile()
                                 && baseName.equals(Entity.getBaseName(file
-                                        .getName(), metadataService));
+                                        .getName(), getMetadataService()));
                     }
                 };
                 File[] files = file.getParentFile().listFiles(filter);
@@ -345,13 +334,14 @@ public class FileClientHelper extends EntityClientHelper {
                     // completed by default metadata)
                     Variant variant = new Variant();
                     Entity.updateMetadata(file.getName(), variant, true,
-                            metadataService);
+                            getMetadataService());
                     Collection<String> extensions = Entity.getExtensions(
-                            variant, metadataService);
+                            variant, getMetadataService());
 
                     for (File entry : files) {
                         Collection<String> entryExtensions = Entity
-                                .getExtensions(entry.getName(), metadataService);
+                                .getExtensions(entry.getName(),
+                                        getMetadataService());
                         if (entryExtensions.containsAll(extensions)) {
                             variantsList.add(entry);
                             if (extensions.containsAll(entryExtensions)) {
@@ -384,16 +374,14 @@ public class FileClientHelper extends EntityClientHelper {
                         // Update the URI
                         StringBuilder fileName = new StringBuilder(baseName);
                         updateFileExtension(fileName, request.getEntity()
-                                .getMediaType(), metadataService);
+                                .getMediaType());
                         for (Language language : request.getEntity()
                                 .getLanguages()) {
-                            updateFileExtension(fileName, language,
-                                    metadataService);
+                            updateFileExtension(fileName, language);
                         }
                         for (Encoding encoding : request.getEntity()
                                 .getEncodings()) {
-                            updateFileExtension(fileName, encoding,
-                                    metadataService);
+                            updateFileExtension(fileName, encoding);
                         }
 
                         file = new File(file.getParentFile(), fileName
@@ -403,7 +391,7 @@ public class FileClientHelper extends EntityClientHelper {
 
                 // Before putting the file representation, we check that all
                 // the extensions are known
-                if (!checkExtensionsConsistency(file, metadataService)) {
+                if (!checkExtensionsConsistency(file)) {
                     response
                             .setStatus(new Status(
                                     Status.SERVER_ERROR_INTERNAL,
@@ -740,43 +728,39 @@ public class FileClientHelper extends EntityClientHelper {
      *            The file name to complete.
      * @param metadata
      *            The metadata.
-     * @param metadataService
-     *            The metadataService that manages metadata and extensions.
      */
-    private void updateFileExtension(StringBuilder fileName, Metadata metadata,
-            MetadataService metadataService) {
+    private void updateFileExtension(StringBuilder fileName, Metadata metadata) {
         boolean defaultMetadata = true;
 
-        if (metadataService != null) {
+        if (getMetadataService() != null) {
             if (metadata instanceof Language) {
                 Language language = (Language) metadata;
-                defaultMetadata = language.equals(metadataService
+                defaultMetadata = language.equals(getMetadataService()
                         .getDefaultLanguage());
             } else if (metadata instanceof MediaType) {
                 MediaType mediaType = (MediaType) metadata;
-                defaultMetadata = mediaType.equals(metadataService
+                defaultMetadata = mediaType.equals(getMetadataService()
                         .getDefaultMediaType());
             } else if (metadata instanceof CharacterSet) {
                 CharacterSet characterSet = (CharacterSet) metadata;
-                defaultMetadata = characterSet.equals(metadataService
+                defaultMetadata = characterSet.equals(getMetadataService()
                         .getDefaultCharacterSet());
             } else if (metadata instanceof Encoding) {
                 Encoding encoding = (Encoding) metadata;
-                defaultMetadata = encoding.equals(metadataService
+                defaultMetadata = encoding.equals(getMetadataService()
                         .getDefaultEncoding());
             }
         }
 
         // We only add extension for metadata that differs from default ones
         if (!defaultMetadata) {
-            String extension = metadataService.getExtension(metadata);
+            String extension = getMetadataService().getExtension(metadata);
 
             if (extension != null) {
                 fileName.append("." + extension);
             } else {
                 if (metadata.getParent() != null) {
-                    updateFileExtension(fileName, metadata.getParent(),
-                            metadataService);
+                    updateFileExtension(fileName, metadata.getParent());
                 }
             }
         }

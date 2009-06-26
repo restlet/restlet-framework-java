@@ -30,11 +30,10 @@
 
 package org.restlet.engine.local;
 
-import org.restlet.Application;
 import org.restlet.Client;
-import org.restlet.data.Language;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 import org.restlet.engine.ClientHelper;
-import org.restlet.service.MetadataService;
 
 /**
  * Connector to the local resources accessible via file system, class loaders
@@ -91,30 +90,6 @@ public class LocalClientHelper extends ClientHelper {
     }
 
     /**
-     * Returns the metadata service.
-     * 
-     * @return The metadata service.
-     */
-    public MetadataService getMetadataService() {
-        MetadataService result = null;
-        Application application = Application.getCurrent();
-
-        if (application != null) {
-            result = application.getMetadataService();
-        } else {
-            result = new MetadataService();
-
-            if ((getDefaultLanguage() != null)
-                    && !getDefaultLanguage().equals("")) {
-                result.setDefaultLanguage(Language
-                        .valueOf(getDefaultLanguage()));
-            }
-        }
-
-        return result;
-    }
-
-    /**
      * Returns the time to live for a file representation before it expires (in
      * seconds).
      * 
@@ -124,6 +99,21 @@ public class LocalClientHelper extends ClientHelper {
     public int getTimeToLive() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
                 "timeToLive", "600"));
+    }
+
+    /**
+     * Handles a call.
+     * 
+     * @param request
+     *            The request to handle.
+     * @param response
+     *            The response to update.
+     */
+    @Override
+    public void handle(Request request, Response response) {
+        // Ensure that all ".." and "." are normalized into the path
+        // to prevent unauthorized access to user directories.
+        request.getResourceRef().normalize();
     }
 
 }
