@@ -214,7 +214,6 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
 
     @Override
     public void setUp() {
-        super.setUp();
         this.checkedForChunkedResponse = true;
     }
 

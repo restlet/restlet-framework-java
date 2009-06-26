@@ -75,6 +75,8 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
         final Engine nre = new Engine(false);
         nre.getRegisteredServers().add(server);
         nre.getRegisteredClients().add(client);
+        nre.registerDefaultAuthentications();
+        nre.registerDefaultConverters();
         org.restlet.engine.Engine.setInstance(nre);
 
         final String uri = start();
@@ -83,12 +85,6 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
         } finally {
             stop();
         }
-    }
-
-    @Override
-    public void setUp() {
-        // Restore a clean engine
-        org.restlet.engine.Engine.setInstance(new Engine());
     }
 
     private String start() throws Exception {

@@ -33,18 +33,14 @@ package org.restlet.test.engine;
 import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
-import org.restlet.Context;
 import org.restlet.Restlet;
-import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
-import org.restlet.representation.Variant;
-import org.restlet.resource.Resource;
+import org.restlet.resource.Get;
+import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
 
 /**
@@ -54,16 +50,10 @@ import org.restlet.routing.Router;
  */
 public class GetTestCase extends BaseConnectorsTestCase {
 
-    public static class GetTestResource extends Resource {
-
-        public GetTestResource(Context ctx, Request request, Response response) {
-            super(ctx, request, response);
-            getVariants().add(new Variant(MediaType.TEXT_PLAIN));
-        }
-
-        @Override
-        public Representation represent(Variant variant) {
-            return new StringRepresentation("Hello world", MediaType.TEXT_PLAIN);
+    public static class GetTestResource extends ServerResource {
+        @Get
+        public String toString() {
+            return "Hello world";
         }
     }
 

@@ -138,11 +138,6 @@ public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
     }
 
     @Override
-    public void setUp() {
-        super.setUp();
-    }
-
-    @Override
     public void testGrizzlyAndApache() throws Exception {
         super.testGrizzlyAndApache();
     }
@@ -199,8 +194,8 @@ public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
 
     @Override
     public void testSimpleAndJdkNet() throws Exception {
-    	// TODO to be fixed
-    	//super.testSimpleAndJdkNet();
+        // TODO to be fixed
+        // super.testSimpleAndJdkNet();
     }
 
 }
