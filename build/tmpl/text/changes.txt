@@ -131,7 +131,7 @@ Changes log
           store two or three related objects. 
           Inspired by Tim Peierls's Relation interface idea.
         - Made Application#getService(Class<T>) public.
-          Suggested by Bruno Harbulot.
+          Suggested by Remi Dewitte.
      - Misc
         - Exceptions thrown in the internal HTTP client are not logged
           with a FINE level instead of a WARNING level.
