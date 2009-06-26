@@ -104,7 +104,8 @@ public final class LocalReference extends Reference {
      * 
      * @param file
      *            The file whose path must be used.
-     * 
+     * @return The new local reference.
+     * @see #createFileReference(String)
      */
     public static LocalReference createFileReference(File file) {
         return createFileReference(file.getAbsolutePath());
@@ -115,6 +116,7 @@ public final class LocalReference extends Reference {
      * 
      * @param filePath
      *            The local file path.
+     * @see #createFileReference(String, String)
      */
     public static LocalReference createFileReference(String filePath) {
         return createFileReference("", filePath);
