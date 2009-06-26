@@ -38,7 +38,9 @@ Changes log
         - Added default DomRepresentation constructor.
         - Form now accepts extra "&" characters in query strings.
           Reported by Andrew Moore.
-    - Enhancements
+        - Fixed encoding and decoding of LocalReference#normalizePath() 
+          and localizePath() methods. Contributed by Bruno Harbulot.
+     - Enhancements
         - Upgraded Jetty library to version 6.1.18.
         - SpringServerServlet nows gets its component fully configured,
           with a default WAR client and parameters copied.

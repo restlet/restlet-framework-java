@@ -30,6 +30,8 @@
 
 package org.restlet.test.data;
 
+import java.io.File;
+
 import org.restlet.data.LocalReference;
 import org.restlet.test.RestletTestCase;
 
@@ -41,13 +43,17 @@ import org.restlet.test.RestletTestCase;
 public class FileReferenceTestCase extends RestletTestCase {
 
     public void testCreation() {
-        final String path = "D:\\Restlet\\build.xml";
-        final LocalReference fr = LocalReference.createFileReference(path);
+        String path = "D:\\Restlet\\build.xml";
+        LocalReference fr = LocalReference.createFileReference(path);
         fr.getFile();
 
         assertEquals("file", fr.getScheme());
         assertEquals("", fr.getAuthority());
-        assertEquals("/D:/Restlet/build.xml", fr.getPath());
-    }
 
+        if (File.separatorChar == '\\') {
+            assertEquals("/D%3A/Restlet/build.xml", fr.getPath());
+        } else {
+            assertEquals("/D%3A%5CRestlet%5Cbuild.xml", fr.getPath());
+        }
+    }
 }

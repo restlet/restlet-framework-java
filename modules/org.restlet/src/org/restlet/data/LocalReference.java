@@ -213,7 +213,7 @@ public final class LocalReference extends Reference {
 
     /**
      * Localize a path by converting all the separator characters to the
-     * system-dependant separator character.
+     * system-dependent separator character.
      * 
      * @param path
      *            The path to localize.
@@ -224,9 +224,9 @@ public final class LocalReference extends Reference {
         char nextChar;
         for (int i = 0; i < path.length(); i++) {
             nextChar = path.charAt(i);
-            if ((nextChar == '/') || (nextChar == '\\')) {
-                // Convert the URI separator to the system dependent path
-                // separator
+            if (nextChar == '/') {
+                // Convert the URI separator to
+                // the system dependent path separator
                 result.append(File.separatorChar);
             } else {
                 result.append(nextChar);
@@ -237,7 +237,7 @@ public final class LocalReference extends Reference {
     }
 
     /**
-     * Normalize a path by converting all the system-dependant separator
+     * Normalize a path by converting all the system-dependent separator
      * characters to the standard '/' separator character.
      * 
      * @param path
@@ -249,11 +249,11 @@ public final class LocalReference extends Reference {
         char nextChar;
         for (int i = 0; i < path.length(); i++) {
             nextChar = path.charAt(i);
-            if ((nextChar == '\\')) {
-                // Convert the Windows style path separator to the standard path
-                // separator
+            if ((nextChar == File.separatorChar)) {
+                // Convert the Windows style path separator
+                // to the standard path separator
                 result.append('/');
-            } else if (!isValid(nextChar)) {
+            } else if (!isUnreserved(nextChar)) {
                 result.append(Reference.encode("" + nextChar));
             } else {
                 result.append(nextChar);
