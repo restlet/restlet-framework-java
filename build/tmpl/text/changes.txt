@@ -12,7 +12,9 @@ Changes log
         - Fixed bug regarding reading of WriterRepresentation.
           Patch contributed by Bruno Dumon.
         - GWT client now accepts relative HTTP URIs.
-          Reported by Wish Gandhi and fixed by Bruno Harbulot. 
+          Reported by Wish Gandhi and fixed by Bruno Harbulot.
+        - Fixed potential NPE in ContentType class.
+          Reported by Eric Runquist. 
     - Misc
         - Upgraded Grizzly to version 1.9.16.
         - Removed console traces when Restlet-GWT starts and stops the

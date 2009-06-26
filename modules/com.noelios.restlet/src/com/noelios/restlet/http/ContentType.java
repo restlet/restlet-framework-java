@@ -51,7 +51,7 @@ public class ContentType {
         final PreferenceReader<MediaType> pr = new PreferenceReader<MediaType>(
                 PreferenceReader.TYPE_MEDIA_TYPE, headerValue);
         final Preference<MediaType> pref = pr.readPreference();
-        return pref.getMetadata();
+        return (pref == null) ? null : pref.getMetadata();
     }
 
     /**
