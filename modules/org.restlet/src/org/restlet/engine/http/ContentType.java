@@ -97,8 +97,11 @@ public class ContentType {
         try {
             ContentTypeReader ctr = new ContentTypeReader(headerValue);
             ContentType ct = ctr.readContentType();
-            this.mediaType = ct.getMediaType();
-            this.characterSet = ct.getCharacterSet();
+
+            if (ct != null) {
+                this.mediaType = ct.getMediaType();
+                this.characterSet = ct.getCharacterSet();
+            }
         } catch (IOException ioe) {
             throw new IllegalArgumentException(
                     "The Content Type could not be read.", ioe);
