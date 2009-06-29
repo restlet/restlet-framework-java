@@ -645,7 +645,11 @@ public abstract class ServerResource extends UniformResource {
      * @return The annotation descriptor.
      */
     private AnnotationInfo getAnnotation(Method method) {
-        return AnnotationUtils.getAnnotation(getAnnotations(), method);
+        if (isAnnotated() && !isIntrospected()) {
+            return AnnotationUtils.getAnnotation(getAnnotations(), method);
+        } else {
+            return null;
+        }
     }
 
     /**

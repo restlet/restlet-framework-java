@@ -82,9 +82,11 @@ public class AnnotationUtils {
     public static AnnotationInfo getAnnotation(
             List<AnnotationInfo> annotations,
             java.lang.reflect.Method javaMethod) {
-        for (AnnotationInfo annotationInfo : annotations) {
-            if (annotationInfo.getJavaMethod().equals(javaMethod)) {
-                return annotationInfo;
+        if (annotations != null) {
+            for (AnnotationInfo annotationInfo : annotations) {
+                if (annotationInfo.getJavaMethod().equals(javaMethod)) {
+                    return annotationInfo;
+                }
             }
         }
 
@@ -103,9 +105,11 @@ public class AnnotationUtils {
      */
     public static AnnotationInfo getAnnotation(
             List<AnnotationInfo> annotations, Method restletMethod) {
-        for (AnnotationInfo annotationInfo : annotations) {
-            if (annotationInfo.getRestletMethod().equals(restletMethod)) {
-                return annotationInfo;
+        if (annotations != null) {
+            for (AnnotationInfo annotationInfo : annotations) {
+                if (annotationInfo.getRestletMethod().equals(restletMethod)) {
+                    return annotationInfo;
+                }
             }
         }
 
