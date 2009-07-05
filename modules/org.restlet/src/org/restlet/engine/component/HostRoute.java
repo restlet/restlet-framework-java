@@ -74,6 +74,8 @@ public class HostRoute extends Route {
      */
     @Override
     protected int beforeHandle(Request request, Response response) {
+        request.getResourceRef().setBaseRef(request.getHostRef());
+
         if (getLogger().isLoggable(Level.FINE)) {
             getLogger().fine(
                     "New base URI: " + request.getResourceRef().getBaseRef());

@@ -30,8 +30,6 @@
 
 package org.restlet.engine.application;
 
-import java.util.logging.Level;
-
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
@@ -271,14 +269,7 @@ public class StatusFilter extends Filter {
      */
     public Status getStatus(Throwable throwable, Request request,
             Response response) {
-        Status result = getStatusService().getStatus(throwable, request,
-                response);
-        if (result == null) {
-            getLogger().log(Level.SEVERE,
-                    "Unhandled exception or error intercepted", throwable);
-            result = new Status(Status.SERVER_ERROR_INTERNAL, throwable);
-        }
-        return result;
+        return getStatusService().getStatus(throwable, request, response);
     }
 
     /**

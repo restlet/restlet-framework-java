@@ -34,7 +34,7 @@ import org.restlet.Client;
 import org.restlet.Component;
 import org.restlet.data.Protocol;
 import org.restlet.data.Response;
-import org.restlet.representation.StringRepresentation;
+import org.restlet.representation.AppendableRepresentation;
 
 /**
  * Unit test case for the configuration of a component with an XML file.
@@ -48,26 +48,26 @@ public class ComponentXmlTestCase extends RestletTestCase {
     private final int port2 = port + 1;
 
     public void testComponentXMLConfig() throws Exception {
-        final StringBuilder builder = new StringBuilder();
-        builder.append("<?xml version=\"1.0\"?>");
-        builder.append("<component>");
-        builder.append("<server protocol=\"HTTP\" port=\"" + this.port
+        AppendableRepresentation config = new AppendableRepresentation();
+        config.append("<?xml version=\"1.0\"?>");
+        config.append("<component>");
+        config
+                .append("<server protocol=\"HTTP\" port=\"" + this.port
+                        + "\" />");
+        config.append("<server protocol=\"HTTP\" port=\"" + this.port2
                 + "\" />");
-        builder.append("<server protocol=\"HTTP\" port=\"" + this.port2
-                + "\" />");
-        builder.append("<defaultHost hostPort=\"" + this.port2 + "\">");
-        builder
+        config.append("<defaultHost hostPort=\"" + this.port2 + "\">");
+        config
                 .append("<attach uriPattern=\"/abcd\" targetClass=\"org.restlet.test.HelloWorldApplication\" /> ");
-        builder.append("</defaultHost>");
-        builder.append("<host hostPort=\"" + this.port + "\">");
-        builder
+        config.append("</defaultHost>");
+        config.append("<host hostPort=\"" + this.port + "\">");
+        config
                 .append("<attach uriPattern=\"/efgh\" targetClass=\"org.restlet.test.HelloWorldApplication\" /> ");
-        builder.append("</host>");
+        config.append("</host>");
 
-        builder.append("</component>");
+        config.append("</component>");
 
-        final Component component = new Component(new StringRepresentation(
-                builder.toString()));
+        final Component component = new Component(config);
         component.start();
 
         final Client client = new Client(Protocol.HTTP);

@@ -55,7 +55,7 @@ import org.restlet.data.Response;
 import org.restlet.data.ServerInfo;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
-import org.restlet.service.MetadataService;
+import org.restlet.service.StatusService;
 import org.restlet.util.Series;
 
 /**
@@ -121,12 +121,14 @@ public abstract class UniformResource {
     }
 
     /**
-     * Returns the parent application if it exists, or null.
+     * Returns the parent application if it exists, or instantiate a new one if
+     * needed.
      * 
-     * @return The parent application if it exists, or null.
+     * @return The parent application if it exists, or a new one.
      */
     public Application getApplication() {
-        return Application.getCurrent();
+        Application result = Application.getCurrent();
+        return (result == null) ? new Application(getContext()) : result;
     }
 
     /**
@@ -257,25 +259,6 @@ public abstract class UniformResource {
      */
     public Form getMatrix() {
         return getReference().getMatrixAsForm();
-    }
-
-    /**
-     * Returns the metadata service. If the parent application doesn't exist, a
-     * new instance is created.
-     * 
-     * @return The metadata service.
-     */
-    public MetadataService getMetadataService() {
-        MetadataService result = null;
-        Application application = getApplication();
-
-        if (application != null) {
-            result = application.getMetadataService();
-        } else {
-            result = new MetadataService();
-        }
-
-        return result;
     }
 
     /**
@@ -436,6 +419,18 @@ public abstract class UniformResource {
     }
 
     /**
+     * Returns a status associated to the given throwable exception or error.
+     * 
+     * @param throwable
+     *            The exception or error caught.
+     * @return The representation of the given status.
+     * @see StatusService#getStatus(Throwable, UniformResource)
+     */
+    protected Status getStatus(Throwable throwable) {
+        return getApplication().getStatusService().getStatus(throwable, this);
+    }
+
+    /**
      * Handles the call composed of the current context, request and response.
      * 
      * @return The optional response entity.
@@ -461,9 +456,9 @@ public abstract class UniformResource {
 
         try {
             doInit();
-        } catch (ResourceException e) {
+        } catch (Throwable t) {
             if (getResponse() != null) {
-                getResponse().setStatus(e.getStatus());
+                getResponse().setStatus(getStatus(t));
             }
         }
     }
@@ -490,9 +485,9 @@ public abstract class UniformResource {
     public final void release() {
         try {
             doRelease();
-        } catch (ResourceException e) {
+        } catch (Throwable t) {
             if (getResponse() != null) {
-                getResponse().setStatus(e.getStatus());
+                getResponse().setStatus(getStatus(t));
             }
         }
     }

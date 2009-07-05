@@ -144,12 +144,10 @@ public class HttpRequest extends Request {
             if (getResourceRef().isRelative()) {
                 // Take care of the "/" between the host part and the segments.
                 if (!httpCall.getRequestUri().startsWith("/")) {
-                    setResourceRef(new Reference(getHostRef(), getHostRef()
-                            .toString()
-                            + "/" + httpCall.getRequestUri()));
+                    setResourceRef(new Reference(getHostRef().toString() + "/"
+                            + httpCall.getRequestUri()));
                 } else {
-                    setResourceRef(new Reference(getHostRef(), getHostRef()
-                            .toString()
+                    setResourceRef(new Reference(getHostRef().toString()
                             + httpCall.getRequestUri()));
                 }
             }

@@ -52,6 +52,7 @@ import org.restlet.representation.Variant;
 import org.restlet.resource.Directory;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
+import org.restlet.service.MetadataService;
 
 /**
  * Resource supported by a set of context representations (from file system,
@@ -67,17 +68,14 @@ import org.restlet.resource.ServerResource;
  */
 public class DirectoryResource extends ServerResource {
 
-    /** The base variant. */
-    private Variant baseVariant;
-
-    /** The prototype variant. */
-    private Variant protoVariant;
-
     /**
      * The local base name of the resource. For example, "foo.en" and
      * "foo.en-GB.html" return "foo".
      */
     private String baseName;
+
+    /** The base variant. */
+    private Variant baseVariant;
 
     /** The parent directory handler. */
     private Directory directory;
@@ -108,6 +106,9 @@ public class DirectoryResource extends ServerResource {
 
     /** The original target URI, in case of extensions tunneling. */
     private Reference originalRef;
+
+    /** The prototype variant. */
+    private Variant protoVariant;
 
     /** The resource path relative to the directory URI. */
     private String relativePart;
@@ -410,6 +411,45 @@ public class DirectoryResource extends ServerResource {
         }
     }
 
+    @Override
+    protected Representation get() throws ResourceException {
+        // Content negotiation has been disabled
+        // The variant that may need to meet the request conditions
+        Representation result = null;
+
+        List<Variant> variants = getVariants(Method.GET);
+        if ((variants == null) || (variants.isEmpty())) {
+            // Resource not found
+            getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+        } else {
+            if (variants.size() == 1) {
+                result = (Representation) variants.get(0);
+            } else {
+                ReferenceList variantRefs = new ReferenceList();
+
+                for (Variant variant : variants) {
+                    if (variant.getIdentifier() != null) {
+                        variantRefs.add(variant.getIdentifier());
+                    } else {
+                        getLogger()
+                                .warning(
+                                        "A resource with multiple variants should provide an identifier for each variant when content negotiation is turned off");
+                    }
+                }
+
+                if (variantRefs.size() > 0) {
+                    // Return the list of variants
+                    setStatus(Status.REDIRECTION_MULTIPLE_CHOICES);
+                    result = variantRefs.getTextRepresentation();
+                } else {
+                    setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+                }
+            }
+        }
+
+        return result;
+    }
+
     /**
      * Returns the local base name of the file. For example, "foo.en" and
      * "foo.en-GB.html" return "foo".
@@ -455,6 +495,15 @@ public class DirectoryResource extends ServerResource {
      */
     public String getDirectoryUri() {
         return this.directoryUri;
+    }
+
+    /**
+     * Returns the metadata service.
+     * 
+     * @return The metadata service.
+     */
+    protected MetadataService getMetadataService() {
+        return getApplication().getMetadataService();
     }
 
     /**
@@ -529,45 +578,6 @@ public class DirectoryResource extends ServerResource {
      */
     public String getTargetUri() {
         return this.targetUri;
-    }
-
-    @Override
-    protected Representation get() throws ResourceException {
-        // Content negotiation has been disabled
-        // The variant that may need to meet the request conditions
-        Representation result = null;
-
-        List<Variant> variants = getVariants(Method.GET);
-        if ((variants == null) || (variants.isEmpty())) {
-            // Resource not found
-            getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
-        } else {
-            if (variants.size() == 1) {
-                result = (Representation) variants.get(0);
-            } else {
-                ReferenceList variantRefs = new ReferenceList();
-
-                for (Variant variant : variants) {
-                    if (variant.getIdentifier() != null) {
-                        variantRefs.add(variant.getIdentifier());
-                    } else {
-                        getLogger()
-                                .warning(
-                                        "A resource with multiple variants should provide an identifier for each variant when content negotiation is turned off");
-                    }
-                }
-
-                if (variantRefs.size() > 0) {
-                    // Return the list of variants
-                    setStatus(Status.REDIRECTION_MULTIPLE_CHOICES);
-                    result = variantRefs.getTextRepresentation();
-                } else {
-                    setStatus(Status.CLIENT_ERROR_NOT_FOUND);
-                }
-            }
-        }
-
-        return result;
     }
 
     /**

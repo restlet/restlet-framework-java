@@ -30,6 +30,8 @@
 
 package org.restlet.service;
 
+import java.util.logging.Level;
+
 import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
@@ -37,6 +39,8 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.engine.application.StatusFilter;
 import org.restlet.representation.Representation;
+import org.restlet.resource.ResourceException;
+import org.restlet.resource.UniformResource;
 import org.restlet.routing.Filter;
 
 /**
@@ -135,8 +139,11 @@ public class StatusService extends Service {
     }
 
     /**
-     * Returns a status for a given exception or error. By default it returns an
-     * {@link Status#SERVER_ERROR_INTERNAL} status and logs a severe message.<br>
+     * Returns a status for a given exception or error. By default it unwraps
+     * the status of {@link ResourceException}. For other exceptions or errors,
+     * it returns an {@link Status#SERVER_ERROR_INTERNAL} status and logs a
+     * severe message.<br>
+     * <br>
      * In order to customize the default behavior, this method can be
      * overridden.
      * 
@@ -150,7 +157,36 @@ public class StatusService extends Service {
      */
     public Status getStatus(Throwable throwable, Request request,
             Response response) {
-        return null;
+        Status result = null;
+
+        if (throwable instanceof ResourceException) {
+            ResourceException re = (ResourceException) throwable;
+            result = re.getStatus();
+        } else {
+            Context.getCurrentLogger().log(Level.SEVERE,
+                    "Unhandled exception or error intercepted", throwable);
+            result = new Status(Status.SERVER_ERROR_INTERNAL, throwable);
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns a status for a given exception or error. By default it returns an
+     * {@link Status#SERVER_ERROR_INTERNAL} status and logs a severe message.<br>
+     * In order to customize the default behavior, this method can be
+     * overridden.
+     * 
+     * @param throwable
+     *            The exception or error caught.
+     * @param resource
+     *            The parent resource.
+     * @return The representation of the given status.
+     */
+    public Status getStatus(Throwable throwable, UniformResource resource) {
+        return getStatus(throwable, (resource == null) ? null : resource
+                .getRequest(), (resource == null) ? null : resource
+                .getResponse());
     }
 
     /**

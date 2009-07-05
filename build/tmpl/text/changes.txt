@@ -82,7 +82,10 @@ Changes log
         - Added RdfClientResource that can easily navigate the Web of
           data. Can follow linked resources and linked literals.
         - Added support of inline content for link tags.
-    - Breaking changes
+        - Added getStatus(Throwable, UniformResource) method to 
+          StatusService.
+        - Added getStatus(Throwable) method to UniformResource.
+     - Breaking changes
         - The default language, defined in MetadataService is now based
           on the JVM's default locale, instead of English/US.
     - API changes

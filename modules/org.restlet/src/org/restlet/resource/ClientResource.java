@@ -1156,7 +1156,8 @@ public class ClientResource extends UniformResource {
 
                     try {
                         List<Variant> responseVariants = annotation
-                                .getResponseVariants(getMetadataService());
+                                .getResponseVariants(getApplication()
+                                        .getMetadataService());
 
                         if (responseVariants != null) {
                             updateClientInfo(responseVariants);

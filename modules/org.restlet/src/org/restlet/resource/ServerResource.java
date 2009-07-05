@@ -422,7 +422,6 @@ public abstract class ServerResource extends UniformResource {
      *            The response variant expected.
      * @return The response entity.
      * @throws ResourceException
-     * @throws ResourceException
      */
     private Representation doHandle(AnnotationInfo annotationInfo,
             Variant variant) throws ResourceException {
@@ -935,8 +934,8 @@ public abstract class ServerResource extends UniformResource {
             if (Status.CLIENT_ERROR_METHOD_NOT_ALLOWED.equals(getStatus())) {
                 updateAllowedMethods();
             }
-        } catch (ResourceException re) {
-            setStatus(re.getStatus(), re.getCause(), re.getLocalizedMessage());
+        } catch (Throwable t) {
+            setStatus(getStatus(t));
         }
 
         return result;

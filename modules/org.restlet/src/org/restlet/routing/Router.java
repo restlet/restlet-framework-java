@@ -499,7 +499,7 @@ public class Router extends Restlet {
     public void handle(Request request, Response response) {
         super.handle(request, response);
 
-        final Restlet next = getNext(request, response);
+        Restlet next = getNext(request, response);
         if (next != null) {
             next.handle(request, response);
         } else {
