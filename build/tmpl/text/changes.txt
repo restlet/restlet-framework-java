@@ -151,6 +151,8 @@ Changes log
         - Made Application#getService(Class<T>) public.
           Suggested by Remi Dewitte.
         - Marked Restlet class as abstract.
+        - Moved "name", "description", "owner" and "author" properties
+          from Application to Restlet.
      - Misc
         - Exceptions thrown in the internal HTTP client are not logged
           with a FINE level instead of a WARNING level.

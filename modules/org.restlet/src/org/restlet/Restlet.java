@@ -55,8 +55,20 @@ public abstract class Restlet implements Uniform {
     /** Error message. */
     private static final String UNABLE_TO_START = "Unable to start the Restlet";
 
+    /** The author(s). */
+    private volatile String author;
+
     /** The context. */
     private volatile Context context;
+
+    /** The description. */
+    private volatile String description;
+
+    /** The display name. */
+    private volatile String name;
+
+    /** The owner(s). */
+    private volatile String owner;
 
     /** Indicates if the restlet was started. */
     private volatile boolean started;
@@ -82,6 +94,10 @@ public abstract class Restlet implements Uniform {
     public Restlet(Context context) {
         this.context = context;
         this.started = false;
+        this.name = null;
+        this.description = null;
+        this.author = null;
+        this.owner = null;
 
         if (Engine.getInstance() == null) {
             Context
@@ -105,12 +121,30 @@ public abstract class Restlet implements Uniform {
     }
 
     /**
+     * Returns the author(s).
+     * 
+     * @return The author(s).
+     */
+    public String getAuthor() {
+        return this.author;
+    }
+
+    /**
      * Returns the context.
      * 
      * @return The context.
      */
     public Context getContext() {
         return this.context;
+    }
+
+    /**
+     * Returns the description.
+     * 
+     * @return The description
+     */
+    public String getDescription() {
+        return this.description;
     }
 
     /**
@@ -139,6 +173,24 @@ public abstract class Restlet implements Uniform {
         }
 
         return result;
+    }
+
+    /**
+     * Returns the display name.
+     * 
+     * @return The display name.
+     */
+    public String getName() {
+        return this.name;
+    }
+
+    /**
+     * Returns the owner(s).
+     * 
+     * @return The owner(s).
+     */
+    public String getOwner() {
+        return this.owner;
     }
 
     /**
@@ -216,6 +268,16 @@ public abstract class Restlet implements Uniform {
     }
 
     /**
+     * Sets the author(s).
+     * 
+     * @param author
+     *            The author(s).
+     */
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+    /**
      * Sets the context.
      * 
      * @param context
@@ -224,6 +286,36 @@ public abstract class Restlet implements Uniform {
     public void setContext(Context context) {
         this.context = context;
         ChildContext.fireContextChanged(this, context);
+    }
+
+    /**
+     * Sets the description.
+     * 
+     * @param description
+     *            The description.
+     */
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    /**
+     * Sets the display name.
+     * 
+     * @param name
+     *            The display name.
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * Sets the owner(s).
+     * 
+     * @param owner
+     *            The owner(s).
+     */
+    public void setOwner(String owner) {
+        this.owner = owner;
     }
 
     /** Starts the Restlet. */

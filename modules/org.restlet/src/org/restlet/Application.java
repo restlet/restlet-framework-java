@@ -109,23 +109,11 @@ public class Application extends Restlet {
         CURRENT.set(application);
     }
 
-    /** The author(s). */
-    private volatile String author;
-
-    /** The description. */
-    private volatile String description;
-
     /** Finder class to instantiate. */
     private volatile Class<? extends Finder> finderClass;
 
     /** The helper provided by the implementation. */
     private volatile RestletHelper<Application> helper;
-
-    /** The display name. */
-    private volatile String name;
-
-    /** The owner(s). */
-    private volatile String owner;
 
     /** The modifiable list of roles. */
     private List<Role> roles;
@@ -163,13 +151,8 @@ public class Application extends Restlet {
             this.helper = new ApplicationHelper(this);
         }
 
-        this.name = null;
-        this.description = null;
-        this.author = null;
-        this.owner = null;
         this.roles = new CopyOnWriteArrayList<Role>();
         this.root = null;
-
         this.services = new CopyOnWriteArrayList<Service>();
         this.services.add(new TunnelService(true, true));
         this.services.add(new StatusService());
@@ -211,15 +194,6 @@ public class Application extends Restlet {
     }
 
     /**
-     * Returns the author(s).
-     * 
-     * @return The author(s).
-     */
-    public String getAuthor() {
-        return this.author;
-    }
-
-    /**
      * Returns the connector service. The service is enabled by default.
      * 
      * @return The connector service.
@@ -247,15 +221,6 @@ public class Application extends Restlet {
     }
 
     /**
-     * Returns the description.
-     * 
-     * @return The description
-     */
-    public String getDescription() {
-        return this.description;
-    }
-
-    /**
      * Returns the finder class to instantiate.
      * 
      * @return the finder class to instantiate.
@@ -280,24 +245,6 @@ public class Application extends Restlet {
      */
     public MetadataService getMetadataService() {
         return getService(MetadataService.class);
-    }
-
-    /**
-     * Returns the display name.
-     * 
-     * @return The display name.
-     */
-    public String getName() {
-        return this.name;
-    }
-
-    /**
-     * Returns the owner(s).
-     * 
-     * @return The owner(s).
-     */
-    public String getOwner() {
-        return this.owner;
     }
 
     /**
@@ -399,16 +346,6 @@ public class Application extends Restlet {
     }
 
     /**
-     * Sets the author(s).
-     * 
-     * @param author
-     *            The author(s).
-     */
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    /**
      * Sets the connector service.
      * 
      * @param connectorService
@@ -439,16 +376,6 @@ public class Application extends Restlet {
     }
 
     /**
-     * Sets the description.
-     * 
-     * @param description
-     *            The description.
-     */
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    /**
      * Sets the finder class to instantiate.
      * 
      * @param finderClass
@@ -466,26 +393,6 @@ public class Application extends Restlet {
      */
     public void setMetadataService(MetadataService metadataService) {
         setService(metadataService);
-    }
-
-    /**
-     * Sets the display name.
-     * 
-     * @param name
-     *            The display name.
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    /**
-     * Sets the owner(s).
-     * 
-     * @param owner
-     *            The owner(s).
-     */
-    public void setOwner(String owner) {
-        this.owner = owner;
     }
 
     /**
