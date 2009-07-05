@@ -76,11 +76,11 @@ public class RestletXmlTestCase extends TestCase {
             + "<component>\n" + XML_BODY;
 
     private static final String XML_WITH_XMLNS = "<?xml version=\"1.0\"?>\n"
-            + "<component xmlns=\"http://www.restlet.org/schemas/1.2/Component\">\n"
+            + "<component xmlns=\"http://www.restlet.org/schemas/2.0/Component\">\n"
             + XML_BODY;
 
     private static final String BAD_XML = "<?xml version=\"1.0\"?>\n"
-            + "<component xmlns=\"http://www.restlet.org/schemas/1.2/Component\">\n"
+            + "<component xmlns=\"http://www.restlet.org/schemas/2.0/Component\">\n"
             + "<bad-element bad-attribute=\"some-value\">abcd</bad-element>"
             + XML_BODY;
 
