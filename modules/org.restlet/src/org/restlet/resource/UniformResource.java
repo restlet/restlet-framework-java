@@ -457,9 +457,7 @@ public abstract class UniformResource {
         try {
             doInit();
         } catch (Throwable t) {
-            if (getResponse() != null) {
-                getResponse().setStatus(getStatus(t));
-            }
+            onError(t);
         }
     }
 
@@ -475,6 +473,20 @@ public abstract class UniformResource {
     }
 
     /**
+     * Invoked when an error is caught during initialization, handling or
+     * releasing. By default, updates the responses's status with the result of
+     * {@link #getStatus(Throwable)}.
+     * 
+     * @param throwable
+     *            The caught error or exception.
+     */
+    protected void onError(Throwable throwable) {
+        if (getResponse() != null) {
+            getResponse().setStatus(getStatus(throwable));
+        }
+    }
+
+    /**
      * Releases the resource. First calls the {@link #doRelease()} method then
      * {@link Request#release()} and finally {@link Response#release()}.
      * 
@@ -486,9 +498,7 @@ public abstract class UniformResource {
         try {
             doRelease();
         } catch (Throwable t) {
-            if (getResponse() != null) {
-                getResponse().setStatus(getStatus(t));
-            }
+            onError(t);
         }
     }
 
