@@ -18,5 +18,7 @@ Import-Package: org.restlet,
  org.restlet.representation,
  org.restlet.resource,
  org.restlet.service,
- org.restlet.util
+ org.restlet.util,
+ org.xml.sax,
+ org.xml.sax.helpers
 Bundle-RequiredExecutionEnvironment: J2SE-1.5

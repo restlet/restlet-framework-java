@@ -42,6 +42,8 @@ Changes log
           and localizePath() methods. Contributed by Bruno Harbulot.
         - Fixed potential NPE in ServerResource and AnnotationUtils. 
           Reported by Schley Andrew Kutz.
+        - Fixed OSGi imports for org.restlet.ext.xml.
+          Reported by Nicolas Janicaud.
      - Enhancements
         - Upgraded Jetty library to version 6.1.18.
         - SpringServerServlet nows gets its component fully configured,
