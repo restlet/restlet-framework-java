@@ -82,7 +82,6 @@ Changes log
         - Added RdfClientResource that can easily navigate the Web of
           data. Can follow linked resources and linked literals.
         - Added support of inline content for link tags.
-        - Added getStatus(Throwable) method to UniformResource.
         - Added getStatus(Throwable, UniformResource) method to 
           StatusService. Suggested by John Logdson.
         - Added onError(Throwable) method to UniformResource.

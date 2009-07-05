@@ -55,7 +55,6 @@ import org.restlet.data.Response;
 import org.restlet.data.ServerInfo;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
-import org.restlet.service.StatusService;
 import org.restlet.util.Series;
 
 /**
@@ -419,18 +418,6 @@ public abstract class UniformResource {
     }
 
     /**
-     * Returns a status associated to the given throwable exception or error.
-     * 
-     * @param throwable
-     *            The exception or error caught.
-     * @return The representation of the given status.
-     * @see StatusService#getStatus(Throwable, UniformResource)
-     */
-    protected Status getStatus(Throwable throwable) {
-        return getApplication().getStatusService().getStatus(throwable, this);
-    }
-
-    /**
      * Handles the call composed of the current context, request and response.
      * 
      * @return The optional response entity.
@@ -482,7 +469,9 @@ public abstract class UniformResource {
      */
     protected void onError(Throwable throwable) {
         if (getResponse() != null) {
-            getResponse().setStatus(getStatus(throwable));
+            getResponse().setStatus(
+                    getApplication().getStatusService().getStatus(throwable,
+                            this));
         }
     }
 
