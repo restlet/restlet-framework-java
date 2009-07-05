@@ -51,7 +51,7 @@ import org.restlet.engine.component.ChildContext;
  * 
  * @author Jerome Louvel
  */
-public class Restlet implements Uniform {
+public abstract class Restlet implements Uniform {
     /** Error message. */
     private static final String UNABLE_TO_START = "Unable to start the Restlet";
 
