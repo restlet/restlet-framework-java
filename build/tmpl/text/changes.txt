@@ -87,7 +87,15 @@ Changes log
         - Added getStatus(Throwable, UniformResource) method to 
           StatusService. Suggested by John Logdson.
         - Added onError(Throwable) method to UniformResource.
-          Suggested by Schley Andrew Kutz.        
+          Suggested by Schley Andrew Kutz.       
+        - Added CharacterSet#WINDOWS_1252 and MACINTOSH constants.
+        - Added new extensions to MetadataService:
+           - "ascii" for CharacterSet#US_ASCII)
+           - "latin1" for  CharacterSet#ISO_8858_1 
+           - "mac" for CharacterSet#MACINTOSH
+           - "utf8" for CharacterSet#UTF_8
+           - "utf16" for CharacterSet#UTF_16
+           - "win" for CharacterSet#WINDOWS_1252
      - Breaking changes
         - The default language, defined in MetadataService is now based
           on the JVM's default locale, instead of English/US.

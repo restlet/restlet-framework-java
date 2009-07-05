@@ -51,12 +51,21 @@ public final class CharacterSet extends Metadata {
             .defaultCharset());
 
     /**
-     * The ISO/IEC 8859-1 or Latin 1 character set.
+     * The ISO/IEC 8859-1 (Latin 1) character set.
      * 
      * @see <a href="http://en.wikipedia.org/wiki/ISO_8859-1">Wikipedia page</a>
      */
     public static final CharacterSet ISO_8859_1 = new CharacterSet(
             "ISO-8859-1", "ISO/IEC 8859-1 or Latin 1 character set");
+
+    /**
+     * The Macintosh ("Mac OS Roman") character set.
+     * 
+     * @see <a href="http://en.wikipedia.org/wiki/Mac_OS_Roman">Wikipedia
+     *      page</a>
+     */
+    public static final CharacterSet MACINTOSH = new CharacterSet("macintosh",
+            "Mac OS Roman character set");
 
     /**
      * The US-ASCII character set.
@@ -83,6 +92,16 @@ public final class CharacterSet extends Metadata {
             "UTF 8 character set");
 
     /**
+     * The Windows-1252 ('ANSI') character set.
+     * 
+     * @see <a href="http://en.wikipedia.org/wiki/Windows-1252">Wikipedia
+     *      page</a>
+     * 
+     */
+    public static final CharacterSet WINDOWS_1252 = new CharacterSet(
+            "windows-1252", "Windows 1232 character set");
+
+    /**
      * Returns the character set associated to a name. If an existing constant
      * exists then it is returned, otherwise a new instance is created.
      * 
@@ -104,6 +123,10 @@ public final class CharacterSet extends Metadata {
                 result = UTF_8;
             } else if (name.equalsIgnoreCase(UTF_16.getName())) {
                 result = UTF_16;
+            } else if (name.equalsIgnoreCase(WINDOWS_1252.getName())) {
+                result = WINDOWS_1252;
+            } else if (name.equalsIgnoreCase(MACINTOSH.getName())) {
+                result = MACINTOSH;
             } else {
                 result = new CharacterSet(name);
             }

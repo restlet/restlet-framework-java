@@ -213,6 +213,7 @@ public class MetadataService extends Service {
         ext(dm, "fr", Language.FRENCH);
 
         ext(dm, "ai", MediaType.APPLICATION_POSTSCRIPT);
+        ext(dm, "ascii", CharacterSet.US_ASCII);
         ext(dm, "atom", MediaType.APPLICATION_ATOM);
         ext(dm, "atomcat", MediaType.APPLICATION_ATOMPUB_CATEGORY);
         ext(dm, "atomsvc", MediaType.APPLICATION_ATOMPUB_SERVICE);
@@ -251,6 +252,8 @@ public class MetadataService extends Service {
         ext(dm, "json", MediaType.APPLICATION_JSON);
         ext(dm, "kar", MediaType.AUDIO_MIDI);
         ext(dm, "latex", MediaType.APPLICATION_LATEX);
+        ext(dm, "latin1", CharacterSet.ISO_8859_1);
+        ext(dm, "mac", CharacterSet.MACINTOSH);
         ext(dm, "man", MediaType.APPLICATION_TROFF_MAN);
         ext(dm, "mathml", MediaType.APPLICATION_MATHML);
         ext(dm, "mid", MediaType.AUDIO_MIDI);
@@ -315,11 +318,14 @@ public class MetadataService extends Service {
         ext(dm, "tsv", MediaType.TEXT_TSV);
         ext(dm, "txt", MediaType.TEXT_PLAIN, true);
         ext(dm, "ulw", MediaType.AUDIO_BASIC);
+        ext(dm, "utf16", CharacterSet.UTF_16);
+        ext(dm, "utf8", CharacterSet.UTF_8);
         ext(dm, "vm", Encoding.VELOCITY);
         ext(dm, "vrml", MediaType.MODEL_VRML);
         ext(dm, "vxml", MediaType.APPLICATION_VOICEXML);
         ext(dm, "wadl", MediaType.APPLICATION_WADL);
         ext(dm, "wav", MediaType.AUDIO_WAV);
+        ext(dm, "win", CharacterSet.WINDOWS_1252);
         ext(dm, "wrl", MediaType.MODEL_VRML);
         ext(dm, "xht", MediaType.APPLICATION_XHTML);
         ext(dm, "xhtml", MediaType.APPLICATION_XHTML);
