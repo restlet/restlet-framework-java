@@ -368,12 +368,12 @@ public class HttpClientConverter extends HttpConverter {
      *            The high-level request.
      * @param response
      *            The high-level response.
-     * @param callback
+     * @param userCallback
      *            The callback invoked upon request completion.
      * @throws Exception
      */
     public void commit(final HttpClientCall httpCall, Request request,
-            Response response, final Uniform callback) throws Exception {
+            Response response, final Uniform userCallback) throws Exception {
         if (httpCall != null) {
             // Send the request to the client
             httpCall.sendRequest(request, response, new Uniform() {
@@ -381,7 +381,7 @@ public class HttpClientConverter extends HttpConverter {
                 public void handle(Request request, Response response,
                         Uniform callback) {
                     updateResponse(response, httpCall);
-                    callback.handle(request, response, null);
+                    userCallback.handle(request, response, null);
                 }
 
             });
