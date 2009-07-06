@@ -57,7 +57,7 @@ public class FileClientTestCase extends RestletTestCase {
 
         // Update the text of the temporary file
         Response response = fc.put(fr, new StringRepresentation(text));
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals(Status.SUCCESS_CREATED, response.getStatus());
 
         // Get the text and compare to the original
         response = fc.get(fr);
