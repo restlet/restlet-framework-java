@@ -48,6 +48,8 @@ Changes log
           Reported by Matt J. Watson.
         - Fixed bug in XstreamRepresentation failing to use the DOM
           XML driver. Reported by Florian Georg.
+        - Fixed bug in converter helper selection algorithms.
+          Reported by John Logsdon.
      - Enhancements
         - Upgraded Jetty library to version 6.1.18.
         - SpringServerServlet nows gets its component fully configured,

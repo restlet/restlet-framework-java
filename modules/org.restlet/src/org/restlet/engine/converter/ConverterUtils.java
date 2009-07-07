@@ -117,6 +117,7 @@ public class ConverterUtils {
             currentScore = ch.score(source, target, resource);
 
             if (currentScore > bestScore) {
+                bestScore = currentScore;
                 result = ch;
             }
         }
@@ -148,6 +149,7 @@ public class ConverterUtils {
             currentScore = ch.score(source, target, resource);
 
             if (currentScore > bestScore) {
+                bestScore = currentScore;
                 result = ch;
             }
         }
