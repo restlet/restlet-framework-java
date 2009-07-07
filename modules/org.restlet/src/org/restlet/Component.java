@@ -196,7 +196,8 @@ public class Component extends Restlet {
 
                     @Override
                     @SuppressWarnings("deprecation")
-                    public org.restlet.routing.Route attach(String uriPattern, Restlet target) {
+                    public org.restlet.routing.Route attach(String uriPattern,
+                            Restlet target) {
                         if (target.getContext() == null) {
                             target
                                     .setContext(getContext()
@@ -208,7 +209,8 @@ public class Component extends Restlet {
 
                     @Override
                     @SuppressWarnings("deprecation")
-                    public org.restlet.routing.Route attachDefault(Restlet defaultTarget) {
+                    public org.restlet.routing.Route attachDefault(
+                            Restlet defaultTarget) {
                         if (defaultTarget.getContext() == null) {
                             defaultTarget.setContext(getContext()
                                     .createChildContext());
@@ -318,7 +320,9 @@ public class Component extends Restlet {
     }
 
     /**
-     * Returns the modifiable list of virtual hosts.
+     * Returns the modifiable list of virtual hosts. Note that the order of
+     * virtual hosts in this list will be used to check the first one that
+     * matches.
      * 
      * @return The modifiable list of virtual hosts.
      */
@@ -426,7 +430,8 @@ public class Component extends Restlet {
     }
 
     /**
-     * Sets the modifiable list of virtual hosts.
+     * Sets the modifiable list of virtual hosts. Note that the order of virtual
+     * hosts in this list will be used to check the first one that matches.
      * 
      * @param hosts
      *            The modifiable list of virtual hosts.
