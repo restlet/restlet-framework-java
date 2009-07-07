@@ -86,7 +86,7 @@ Changes log
         - Added support of inline content for link tags.
         - Added getStatus(Throwable, UniformResource) method to 
           StatusService. Suggested by John Logdson.
-        - Added onError(Throwable) method to UniformResource.
+        - Added doCatch(Throwable) method to UniformResource.
           Suggested by Schley Andrew Kutz.       
         - Added CharacterSet#WINDOWS_1252 and MACINTOSH constants.
         - Added new extensions to MetadataService:

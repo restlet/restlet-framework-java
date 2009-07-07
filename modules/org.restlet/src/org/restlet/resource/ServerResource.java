@@ -935,7 +935,7 @@ public abstract class ServerResource extends UniformResource {
                 updateAllowedMethods();
             }
         } catch (Throwable t) {
-            onError(t);
+            doCatch(t);
         }
 
         return result;

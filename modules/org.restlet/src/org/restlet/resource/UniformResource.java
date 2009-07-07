@@ -91,6 +91,22 @@ public abstract class UniformResource {
     private volatile Response response;
 
     /**
+     * Invoked when an error or an exception is caught during initialization,
+     * handling or releasing. By default, updates the responses's status with
+     * the result of {@link #getStatus(Throwable)}.
+     * 
+     * @param throwable
+     *            The caught error or exception.
+     */
+    protected void doCatch(Throwable throwable) {
+        if (getResponse() != null) {
+            getResponse().setStatus(
+                    getApplication().getStatusService().getStatus(throwable,
+                            this));
+        }
+    }
+
+    /**
      * Set-up method that can be overridden in order to initialize the state of
      * the resource. By default it does nothing.
      * 
@@ -444,7 +460,7 @@ public abstract class UniformResource {
         try {
             doInit();
         } catch (Throwable t) {
-            onError(t);
+            doCatch(t);
         }
     }
 
@@ -460,22 +476,6 @@ public abstract class UniformResource {
     }
 
     /**
-     * Invoked when an error is caught during initialization, handling or
-     * releasing. By default, updates the responses's status with the result of
-     * {@link #getStatus(Throwable)}.
-     * 
-     * @param throwable
-     *            The caught error or exception.
-     */
-    protected void onError(Throwable throwable) {
-        if (getResponse() != null) {
-            getResponse().setStatus(
-                    getApplication().getStatusService().getStatus(throwable,
-                            this));
-        }
-    }
-
-    /**
      * Releases the resource. First calls the {@link #doRelease()} method then
      * {@link Request#release()} and finally {@link Response#release()}.
      * 
@@ -487,7 +487,7 @@ public abstract class UniformResource {
         try {
             doRelease();
         } catch (Throwable t) {
-            onError(t);
+            doCatch(t);
         }
     }
 
