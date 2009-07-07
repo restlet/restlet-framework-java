@@ -46,6 +46,8 @@ Changes log
           Reported by Nicolas Janicaud.
         - Fixed potential NPE in ComponentHelper#checkVirtualHost.
           Reported by Matt J. Watson.
+        - Fixed bug in XstreamRepresentation failing to use the DOM
+          XML driver. Reported by Florian Georg.
      - Enhancements
         - Upgraded Jetty library to version 6.1.18.
         - SpringServerServlet nows gets its component fully configured,

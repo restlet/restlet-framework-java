@@ -118,7 +118,7 @@ public class XstreamRepresentation<T> extends OutputRepresentation {
                 result = new XStream(getJsonDriverClass().newInstance());
                 result.setMode(XStream.NO_REFERENCES);
             } else {
-                result = new XStream(getJsonDriverClass().newInstance());
+                result = new XStream(getXmlDriverClass().newInstance());
             }
         } catch (Exception e) {
             Context.getCurrentLogger().log(Level.WARNING,
