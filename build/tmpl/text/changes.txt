@@ -100,7 +100,8 @@ Changes log
            - "utf8" for CharacterSet#UTF_8
            - "utf16" for CharacterSet#UTF_16
            - "win" for CharacterSet#WINDOWS_1252
-     - Breaking changes
+        - Added converter selection traces. Suggested by John Logdson.
+      - Breaking changes
         - The default language, defined in MetadataService is now based
           on the JVM's default locale, instead of English/US.
     - API changes

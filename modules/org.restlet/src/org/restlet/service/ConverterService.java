@@ -148,6 +148,10 @@ public class ConverterService extends Service {
                     resource);
 
             if (ch != null) {
+                Context.getCurrentLogger().fine(
+                        "The following converter was selected for the "
+                                + source + " representation: " + ch);
+
                 result = ch.toObject(source, target, resource);
 
                 if (result instanceof Representation) {
@@ -202,6 +206,10 @@ public class ConverterService extends Service {
 
         if (ch != null) {
             try {
+                Context.getCurrentLogger().fine(
+                        "The following converter was selected for the "
+                                + source + " object: " + ch);
+
                 if (target == null) {
                     target = new Variant();
                 }
