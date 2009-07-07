@@ -40,14 +40,16 @@ import org.restlet.data.Response;
 import org.restlet.representation.Representation;
 
 /**
- * Amazon S3 client. Support class handling authorized requests.
+ * Amazon S3 client. Support class handling authorized requests. Remember to
+ * replace the access key id and secret below with your own values. For this you
+ * need to sign-up with Amazon Web Services *and* with the S3 service.
  * 
  * @author Jerome Louvel
  */
 public class S3Authorized {
-    public final static String PUBLIC_KEY = "0F9DBXKB5274JKTJ8DG2";
+    public final static String ACCESS_KEY_ID = "<REPLACE WITH YOUR OWN ID>";
 
-    public final static String PRIVATE_KEY = "GuUHQ086WawbwvVl3JPl9JIk4VOtLcllkvIb0b7w";
+    public final static String SECRET_ACCESS_KEY = "<REPLACE WITH YOUR OWN KEY>";
 
     public final static String HOST = "https://s3.amazonaws.com/";
 
@@ -72,7 +74,7 @@ public class S3Authorized {
         // Send an authenticated request
         final Request request = new Request(method, uri, entity);
         request.setChallengeResponse(new ChallengeResponse(
-                ChallengeScheme.HTTP_AWS_S3, PUBLIC_KEY, PRIVATE_KEY));
+                ChallengeScheme.HTTP_AWS_S3, ACCESS_KEY_ID, SECRET_ACCESS_KEY));
         return new Client(Protocol.HTTPS).handle(request);
     }
 }

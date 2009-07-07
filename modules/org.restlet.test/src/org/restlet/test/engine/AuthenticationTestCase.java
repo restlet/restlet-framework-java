@@ -85,8 +85,6 @@ public class AuthenticationTestCase extends RestletTestCase {
         helper.formatCredentials(sb, challenge, request, httpHeaders);
         assertEquals("0PN5J17HBGZHT7JJ3X82:hcicpDDvL9SsO6AkvxqmIWkmOuQ=", sb
                 .toString());
-        
-        
     }
 
     /**

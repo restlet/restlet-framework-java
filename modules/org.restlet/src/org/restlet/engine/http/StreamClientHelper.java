@@ -176,7 +176,7 @@ public class StreamClientHelper extends HttpClientHelper {
 
         // Initialize a key store
         InputStream keystoreInputStream = null;
-        if (keystorePath != null) {
+        if ((keystorePath != null) && (new File(keystorePath).exists())) {
             keystoreInputStream = new FileInputStream(keystorePath);
         }
 
@@ -206,16 +206,19 @@ public class StreamClientHelper extends HttpClientHelper {
 
         // Initialize the trust store
         InputStream truststoreInputStream = null;
-        if (truststorePath != null) {
+        if ((truststorePath != null) && (new File(truststorePath).exists())) {
             truststoreInputStream = new FileInputStream(truststorePath);
         }
 
         KeyStore truststore = null;
         if (truststoreType != null) {
             truststore = KeyStore.getInstance(truststoreType);
-            truststore.load(truststoreInputStream,
-                    truststorePassword == null ? null : truststorePassword
-                            .toCharArray());
+
+            if (truststoreInputStream != null) {
+                truststore.load(truststoreInputStream,
+                        truststorePassword == null ? null : truststorePassword
+                                .toCharArray());
+            }
         }
 
         TrustManager[] trustManagers = null;
