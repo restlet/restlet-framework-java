@@ -79,63 +79,77 @@ public class ComponentHelper extends ChainHelper<Component> {
         boolean result = true;
 
         if (host != null) {
-            for (final Route route : host.getRoutes()) {
-                final Restlet next = route.getNext();
+            for (Route route : host.getRoutes()) {
+                Restlet next = route.getNext();
 
                 if (next instanceof Application) {
-                    final Application application = (Application) next;
+                    Application application = (Application) next;
 
-                    for (final Protocol clientProtocol : application
-                            .getConnectorService().getClientProtocols()) {
-                        boolean clientFound = false;
+                    if (application.getConnectorService() != null) {
+                        if (application.getConnectorService()
+                                .getClientProtocols() != null) {
+                            for (Protocol clientProtocol : application
+                                    .getConnectorService().getClientProtocols()) {
+                                boolean clientFound = false;
 
-                        // Try to find a client connector matching the client
-                        // protocol
-                        Client client;
-                        for (final Iterator<Client> iter = getHelped()
-                                .getClients().iterator(); !clientFound
-                                && iter.hasNext();) {
-                            client = iter.next();
-                            clientFound = client.getProtocols().contains(
-                                    clientProtocol);
+                                // Try to find a client connector matching the
+                                // client
+                                // protocol
+                                Client client;
+                                for (Iterator<Client> iter = getHelped()
+                                        .getClients().iterator(); !clientFound
+                                        && iter.hasNext();) {
+                                    client = iter.next();
+                                    clientFound = client.getProtocols()
+                                            .contains(clientProtocol);
+                                }
+
+                                if (!clientFound) {
+                                    getLogger()
+                                            .severe(
+                                                    "Unable to start the application \""
+                                                            + application
+                                                                    .getName()
+                                                            + "\". Client connector for protocol "
+                                                            + clientProtocol
+                                                                    .getName()
+                                                            + " is missing.");
+                                    result = false;
+                                }
+                            }
                         }
 
-                        if (!clientFound) {
-                            getLogger()
-                                    .severe(
-                                            "Unable to start the application \""
-                                                    + application.getName()
-                                                    + "\". Client connector for protocol "
-                                                    + clientProtocol.getName()
-                                                    + " is missing.");
-                            result = false;
-                        }
-                    }
+                        if (application.getConnectorService()
+                                .getServerProtocols() != null) {
+                            for (Protocol serverProtocol : application
+                                    .getConnectorService().getServerProtocols()) {
+                                boolean serverFound = false;
 
-                    for (final Protocol serverProtocol : application
-                            .getConnectorService().getServerProtocols()) {
-                        boolean serverFound = false;
+                                // Try to find a server connector matching the
+                                // server
+                                // protocol
+                                Server server;
+                                for (Iterator<Server> iter = getHelped()
+                                        .getServers().iterator(); !serverFound
+                                        && iter.hasNext();) {
+                                    server = iter.next();
+                                    serverFound = server.getProtocols()
+                                            .contains(serverProtocol);
+                                }
 
-                        // Try to find a server connector matching the server
-                        // protocol
-                        Server server;
-                        for (final Iterator<Server> iter = getHelped()
-                                .getServers().iterator(); !serverFound
-                                && iter.hasNext();) {
-                            server = iter.next();
-                            serverFound = server.getProtocols().contains(
-                                    serverProtocol);
-                        }
-
-                        if (!serverFound) {
-                            getLogger()
-                                    .severe(
-                                            "Unable to start the application \""
-                                                    + application.getName()
-                                                    + "\". Server connector for protocol "
-                                                    + serverProtocol.getName()
-                                                    + " is missing.");
-                            result = false;
+                                if (!serverFound) {
+                                    getLogger()
+                                            .severe(
+                                                    "Unable to start the application \""
+                                                            + application
+                                                                    .getName()
+                                                            + "\". Server connector for protocol "
+                                                            + serverProtocol
+                                                                    .getName()
+                                                            + " is missing.");
+                                    result = false;
+                                }
+                            }
                         }
                     }
 
@@ -181,8 +195,9 @@ public class ComponentHelper extends ChainHelper<Component> {
     public synchronized void start() throws Exception {
         // Checking if all applications have proper connectors
         boolean success = checkVirtualHost(getHelped().getDefaultHost());
+
         if (success) {
-            for (final VirtualHost host : getHelped().getHosts()) {
+            for (VirtualHost host : getHelped().getHosts()) {
                 success = success && checkVirtualHost(host);
             }
         }
@@ -215,7 +230,8 @@ public class ComponentHelper extends ChainHelper<Component> {
 
         // Stop all applications
         stopVirtualHostApplications(getHelped().getDefaultHost());
-        for (final VirtualHost host : getHelped().getHosts()) {
+
+        for (VirtualHost host : getHelped().getHosts()) {
             stopVirtualHostApplications(host);
         }
     }
@@ -227,7 +243,7 @@ public class ComponentHelper extends ChainHelper<Component> {
      * @throws Exception
      */
     private void stopVirtualHostApplications(VirtualHost host) throws Exception {
-        for (final Route route : host.getRoutes()) {
+        for (Route route : host.getRoutes()) {
             if (route.getNext().isStarted()) {
                 route.getNext().stop();
             }
@@ -241,7 +257,7 @@ public class ComponentHelper extends ChainHelper<Component> {
     @Override
     public void update() throws Exception {
         // Note the old router to be able to stop it at the end
-        final ServerRouter oldRouter = getServerRouter();
+        ServerRouter oldRouter = getServerRouter();
 
         // Set the new server router that will compute the new routes when the
         // first request will be received (automatic start).
