@@ -50,6 +50,9 @@ Changes log
           XML driver. Reported by Florian Georg.
         - Fixed bug in converter helper selection algorithms.
           Reported by John Logsdon.
+        - Fixed bug causing subsequent requests to annotated 
+          ServerResource subclasses to be forbidden.
+          Reported by John Logsdon.
      - Enhancements
         - Upgraded Jetty library to version 6.1.18.
         - SpringServerServlet nows gets its component fully configured,
