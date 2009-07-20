@@ -59,6 +59,79 @@ public final class CharacterSet extends Metadata {
             "ISO-8859-1", "ISO/IEC 8859-1 or Latin 1 character set");
 
     /**
+     * The ISO/IEC 8859-2 (Latin 2) character set.
+     * 
+     * @see <a href="http://en.wikipedia.org/wiki/ISO_8859-2">Wikipedia page</a>
+     */
+    public static final CharacterSet ISO_8859_2 = new CharacterSet(
+            "ISO-8859-2", "ISO/IEC 8859-2 or Latin 2 character set");
+
+    /**
+     * The ISO/IEC 8859-3 (Latin 3) character set.
+     * 
+     * @see <a href="http://en.wikipedia.org/wiki/ISO_8859-3">Wikipedia page</a>
+     */
+    public static final CharacterSet ISO_8859_3 = new CharacterSet(
+            "ISO-8859-3", "ISO/IEC 8859-3 or Latin 3 character set");
+
+    /**
+     * The ISO/IEC 8859-4 (Latin 4) character set.
+     * 
+     * @see <a href="http://en.wikipedia.org/wiki/ISO_8859-4">Wikipedia page</a>
+     */
+    public static final CharacterSet ISO_8859_4 = new CharacterSet(
+            "ISO-8859-4", "ISO/IEC 8859-4 or Latin 4 character set");
+
+    /**
+     * The ISO/IEC 8859-5 (Cyrillic) character set.
+     * 
+     * @see <a href="http://en.wikipedia.org/wiki/ISO_8859-5">Wikipedia page</a>
+     */
+    public static final CharacterSet ISO_8859_5 = new CharacterSet(
+            "ISO-8859-5", "ISO/IEC 8859-5 or Cyrillic character set");
+
+    /**
+     * The ISO/IEC 8859-6 (Arabic) character set.
+     * 
+     * @see <a href="http://en.wikipedia.org/wiki/ISO_8859-6">Wikipedia page</a>
+     */
+    public static final CharacterSet ISO_8859_6 = new CharacterSet(
+            "ISO-8859-6", "ISO/IEC 8859-6 or Arabic character set");
+
+    /**
+     * The ISO/IEC 8859-7 (Greek) character set.
+     * 
+     * @see <a href="http://en.wikipedia.org/wiki/ISO_8859-7">Wikipedia page</a>
+     */
+    public static final CharacterSet ISO_8859_7 = new CharacterSet(
+            "ISO-8859-7", "ISO/IEC 8859-7 or Greek character set");
+
+    /**
+     * The ISO/IEC 8859-8 (Hebrew) character set.
+     * 
+     * @see <a href="http://en.wikipedia.org/wiki/ISO_8859-8">Wikipedia page</a>
+     */
+    public static final CharacterSet ISO_8859_8 = new CharacterSet(
+            "ISO-8859-8", "ISO/IEC 8859-8 or Hebrew character set");
+
+    /**
+     * The ISO/IEC 8859-9 (Latin 5) character set.
+     * 
+     * @see <a href="http://en.wikipedia.org/wiki/ISO_8859-9">Wikipedia page</a>
+     */
+    public static final CharacterSet ISO_8859_9 = new CharacterSet(
+            "ISO-8859-9", "ISO/IEC 8859-9 or Latin 5 character set");
+
+    /**
+     * The ISO/IEC 8859-10 (Latin 6) character set.
+     * 
+     * @see <a href="http://en.wikipedia.org/wiki/ISO_8859-10">Wikipedia
+     *      page</a>
+     */
+    public static final CharacterSet ISO_8859_10 = new CharacterSet(
+            "ISO-8859-10", "ISO/IEC 8859-10 or Latin 6 character set");
+
+    /**
      * The Macintosh ("Mac OS Roman") character set.
      * 
      * @see <a href="http://en.wikipedia.org/wiki/Mac_OS_Roman">Wikipedia
@@ -102,6 +175,49 @@ public final class CharacterSet extends Metadata {
             "windows-1252", "Windows 1232 character set");
 
     /**
+     * Handles mapping between Java character set names and IANA preferred name.
+     * For example, "MACROMAN" is not an official IANA name and "ISO-8859-6" is
+     * preferred over "arabic".
+     * 
+     * @param name
+     *            The character set name.
+     * @return The IANA character set name.
+     */
+    private static String getIanaName(String name) {
+        if (name != null) {
+            name = name.toUpperCase();
+
+            if (name.equalsIgnoreCase("MACROMAN")) {
+                name = MACINTOSH.getName();
+            } else if (name.equalsIgnoreCase("ASCII")) {
+                name = US_ASCII.getName();
+            } else if (name.equalsIgnoreCase("latin1")) {
+                name = ISO_8859_1.getName();
+            } else if (name.equalsIgnoreCase("latin2")) {
+                name = ISO_8859_2.getName();
+            } else if (name.equalsIgnoreCase("latin3")) {
+                name = ISO_8859_3.getName();
+            } else if (name.equalsIgnoreCase("latin4")) {
+                name = ISO_8859_4.getName();
+            } else if (name.equalsIgnoreCase("cyrillic")) {
+                name = ISO_8859_5.getName();
+            } else if (name.equalsIgnoreCase("arabic")) {
+                name = ISO_8859_6.getName();
+            } else if (name.equalsIgnoreCase("greek")) {
+                name = ISO_8859_7.getName();
+            } else if (name.equalsIgnoreCase("hebrew")) {
+                name = ISO_8859_8.getName();
+            } else if (name.equalsIgnoreCase("latin5")) {
+                name = ISO_8859_9.getName();
+            } else if (name.equalsIgnoreCase("latin6")) {
+                name = ISO_8859_10.getName();
+            }
+        }
+
+        return name;
+    }
+
+    /**
      * Returns the character set associated to a name. If an existing constant
      * exists then it is returned, otherwise a new instance is created.
      * 
@@ -109,8 +225,9 @@ public final class CharacterSet extends Metadata {
      *            The name.
      * @return The associated character set.
      */
-    public static CharacterSet valueOf(final String name) {
+    public static CharacterSet valueOf(String name) {
         CharacterSet result = null;
+        name = getIanaName(name);
 
         if ((name != null) && !name.equals("")) {
             if (name.equalsIgnoreCase(ALL.getName())) {
@@ -151,7 +268,7 @@ public final class CharacterSet extends Metadata {
      * @param name
      *            The name.
      */
-    public CharacterSet(final String name) {
+    public CharacterSet(String name) {
         this(name == null ? null : name.toUpperCase(),
                 "Character set or range of character sets");
     }
@@ -164,13 +281,13 @@ public final class CharacterSet extends Metadata {
      * @param description
      *            The description.
      */
-    public CharacterSet(final String name, final String description) {
-        super(name == null ? null : name.toUpperCase(), description);
+    public CharacterSet(String name, String description) {
+        super(getIanaName(name), description);
     }
 
     /** {@inheritDoc} */
     @Override
-    public boolean equals(final Object object) {
+    public boolean equals(Object object) {
         return (object instanceof CharacterSet)
                 && getName()
                         .equalsIgnoreCase(((CharacterSet) object).getName());

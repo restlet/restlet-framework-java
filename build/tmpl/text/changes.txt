@@ -53,6 +53,10 @@ Changes log
         - Fixed bug causing subsequent requests to annotated 
           ServerResource subclasses to be forbidden.
           Reported by John Logsdon.
+        - Fixed issue with Macintosh character set. Java returns it as
+          MACROMAN, while IANA only accepts MAC or MACINTOSH. Added
+          translation logic to CharacterSet class. 
+          Reported by Bruce Cooper.
      - Enhancements
         - Upgraded Jetty library to version 6.1.18.
         - SpringServerServlet nows gets its component fully configured,
@@ -97,7 +101,8 @@ Changes log
           StatusService. Suggested by John Logdson.
         - Added doCatch(Throwable) method to UniformResource.
           Suggested by Schley Andrew Kutz.       
-        - Added CharacterSet#WINDOWS_1252 and MACINTOSH constants.
+        - Added CharacterSet#WINDOWS_1252, MACINTOSH and many
+          ISO_8859_* constants.
         - Added new extensions to MetadataService:
            - "ascii" for CharacterSet#US_ASCII)
            - "latin1" for  CharacterSet#ISO_8858_1 
