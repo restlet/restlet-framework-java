@@ -57,6 +57,8 @@ Changes log
           MACROMAN, while IANA only accepts MAC or MACINTOSH. Added
           translation logic to CharacterSet class. 
           Reported by Bruce Cooper.
+        - Fixed bug in ClientResource#options() method not issuing an
+          OPTIONS HTTP request. Reported by Bob Resendes.
      - Enhancements
         - Upgraded Jetty library to version 6.1.18.
         - SpringServerServlet nows gets its component fully configured,

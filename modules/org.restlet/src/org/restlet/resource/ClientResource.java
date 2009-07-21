@@ -667,7 +667,7 @@ public class ClientResource extends UniformResource {
      *      OPTIONS method</a>
      */
     public Representation options() throws ResourceException {
-        setMethod(Method.HEAD);
+        setMethod(Method.OPTIONS);
         return handle();
     }
 

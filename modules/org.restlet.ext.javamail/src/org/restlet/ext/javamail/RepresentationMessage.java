@@ -68,46 +68,47 @@ public class RepresentationMessage extends MimeMessage {
     public RepresentationMessage(Representation xmlMessage, Session session)
             throws IOException, AddressException, MessagingException {
         super(session);
-        final DomRepresentation dom = new DomRepresentation(xmlMessage);
-        final Document email = dom.getDocument();
-        final Element root = (Element) email.getElementsByTagName("email")
-                .item(0);
-        final Element header = (Element) root.getElementsByTagName("head")
-                .item(0);
-        final String subject = header.getElementsByTagName("subject").item(0)
+        DomRepresentation dom = new DomRepresentation(xmlMessage);
+        Document email = dom.getDocument();
+        Element root = (Element) email.getElementsByTagName("email").item(0);
+        Element header = (Element) root.getElementsByTagName("head").item(0);
+        String subject = header.getElementsByTagName("subject").item(0)
                 .getTextContent();
-        final String from = header.getElementsByTagName("from").item(0)
+        String from = header.getElementsByTagName("from").item(0)
                 .getTextContent();
 
-        final NodeList toList = header.getElementsByTagName("to");
-        final String[] to = new String[toList.getLength()];
+        NodeList toList = header.getElementsByTagName("to");
+        String[] to = new String[toList.getLength()];
+
         for (int i = 0; i < toList.getLength(); i++) {
             to[i] = toList.item(i).getTextContent();
         }
 
-        final NodeList ccList = header.getElementsByTagName("cc");
-        final String[] cc = new String[ccList.getLength()];
+        NodeList ccList = header.getElementsByTagName("cc");
+        String[] cc = new String[ccList.getLength()];
+
         for (int i = 0; i < ccList.getLength(); i++) {
             cc[i] = ccList.item(i).getTextContent();
         }
 
-        final NodeList bccList = header.getElementsByTagName("bcc");
-        final String[] bcc = new String[bccList.getLength()];
+        NodeList bccList = header.getElementsByTagName("bcc");
+        String[] bcc = new String[bccList.getLength()];
+
         for (int i = 0; i < bccList.getLength(); i++) {
             bcc[i] = bccList.item(i).getTextContent();
         }
 
-        final String text = root.getElementsByTagName("body").item(0)
+        String text = root.getElementsByTagName("body").item(0)
                 .getTextContent();
 
         // Set the FROM and TO fields
         setFrom(new InternetAddress(from));
 
-        for (final String element : to) {
+        for (String element : to) {
             addRecipient(Message.RecipientType.TO, new InternetAddress(element));
         }
 
-        for (final String element : cc) {
+        for (String element : cc) {
             addRecipient(Message.RecipientType.CC, new InternetAddress(element));
         }
 
