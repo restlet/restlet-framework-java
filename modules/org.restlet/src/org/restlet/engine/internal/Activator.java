@@ -92,7 +92,7 @@ public class Activator implements BundleActivator {
     @SuppressWarnings("unchecked")
     private void registerHelper(final Bundle bundle, List helpers,
             Class constructorClass, URL descriptorUrl) {
-        Engine.getInstance().registerHelper(new ClassLoader() {
+        Engine.getInstance().registerHelpers(new ClassLoader() {
             @Override
             public Class<?> loadClass(String name)
                     throws ClassNotFoundException {

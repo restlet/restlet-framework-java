@@ -554,7 +554,40 @@ public class Engine {
      *            The constructor parameter class to look for.
      */
     @SuppressWarnings("unchecked")
-    public void registerHelper(ClassLoader classLoader, URL configUrl,
+    public void registerHelper(ClassLoader classLoader, String provider,
+            List helpers, Class constructorClass) {
+        if ((provider != null) && (!provider.equals(""))) {
+            // Instantiate the factory
+            try {
+                Class providerClass = classLoader.loadClass(provider);
+
+                if (constructorClass == null) {
+                    helpers.add(providerClass.newInstance());
+                } else {
+                    helpers.add(providerClass.getConstructor(constructorClass)
+                            .newInstance(constructorClass.cast(null)));
+                }
+            } catch (Exception e) {
+                Context.getCurrentLogger().log(Level.INFO,
+                        "Unable to register the helper " + provider, e);
+            }
+        }
+    }
+
+    /**
+     * Registers a helper.
+     * 
+     * @param classLoader
+     *            The classloader to use.
+     * @param configUrl
+     *            Configuration URL to parse
+     * @param helpers
+     *            The list of helpers to update.
+     * @param constructorClass
+     *            The constructor parameter class to look for.
+     */
+    @SuppressWarnings("unchecked")
+    public void registerHelpers(ClassLoader classLoader, URL configUrl,
             List helpers, Class constructorClass) {
         try {
             BufferedReader reader = null;
@@ -564,30 +597,8 @@ public class Engine {
                 String line = reader.readLine();
 
                 while (line != null) {
-                    final String provider = getProviderClassName(line);
-
-                    if ((provider != null) && (!provider.equals(""))) {
-                        // Instantiate the factory
-                        try {
-                            final Class providerClass = classLoader
-                                    .loadClass(provider);
-
-                            if (constructorClass == null) {
-                                helpers.add(providerClass.newInstance());
-                            } else {
-                                helpers.add(providerClass.getConstructor(
-                                        constructorClass).newInstance(
-                                        constructorClass.cast(null)));
-                            }
-                        } catch (Exception e) {
-                            Context.getCurrentLogger()
-                                    .log(
-                                            Level.SEVERE,
-                                            "Unable to register the helper "
-                                                    + provider, e);
-                        }
-                    }
-
+                    registerHelper(classLoader, getProviderClassName(line),
+                            helpers, constructorClass);
                     line = reader.readLine();
                 }
             } catch (IOException e) {
@@ -627,7 +638,7 @@ public class Engine {
         if (configUrls != null) {
             for (final Enumeration<URL> configEnum = configUrls; configEnum
                     .hasMoreElements();) {
-                registerHelper(classLoader, configEnum.nextElement(), helpers,
+                registerHelpers(classLoader, configEnum.nextElement(), helpers,
                         constructorClass);
             }
         }
