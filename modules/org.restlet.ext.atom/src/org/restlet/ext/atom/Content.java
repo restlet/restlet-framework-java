@@ -57,6 +57,9 @@ public class Content {
     /** Representation for inline content. */
     private volatile Representation inlineContent;
 
+    /** Must the content be encoded or not? */
+    private boolean toEncode;
+
     /**
      * Constructor.
      */
@@ -64,6 +67,7 @@ public class Content {
         this.inlineContent = null;
         this.externalRef = null;
         this.externalType = null;
+        this.toEncode = true;
     }
 
     /**
@@ -112,6 +116,15 @@ public class Content {
     }
 
     /**
+     * Returns true if the content is to be encoded.
+     * 
+     * @return True if the content is to be encoded.
+     */
+    public boolean isToEncode() {
+        return toEncode;
+    }
+
+    /**
      * Sets the reference to the external representation.
      * 
      * @param externalRef
@@ -139,6 +152,16 @@ public class Content {
      */
     public void setInlineContent(Representation inlineContent) {
         this.inlineContent = inlineContent;
+    }
+
+    /**
+     * Indicates if the content is to be encoded.
+     * 
+     * @param toEncode
+     *            True if the content is to be encoded.
+     */
+    public void setToEncode(boolean toEncode) {
+        this.toEncode = toEncode;
     }
 
     /**
@@ -194,9 +217,20 @@ public class Content {
         if (strContent == null) {
             writer.emptyElement(ATOM_NAMESPACE, "content", null, attributes);
         } else {
-            writer.dataElement(ATOM_NAMESPACE, "content", null, attributes,
-                    strContent);
+            if (isToEncode()) {
+                writer.dataElement(ATOM_NAMESPACE, "content", null, attributes,
+                        strContent);
+            } else {
+                writer
+                        .startElement(ATOM_NAMESPACE, "content", null,
+                                attributes);
+                try {
+                    writer.getWriter().write(strContent);
+                } catch (IOException e) {
+                    throw new SAXException(e);
+                }
+                writer.endElement(ATOM_NAMESPACE, "content", null);
+            }
         }
     }
-
 }
