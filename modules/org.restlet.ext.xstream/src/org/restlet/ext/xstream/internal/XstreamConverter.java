@@ -81,7 +81,15 @@ public class XstreamConverter extends ConverterHelper {
     public List<VariantInfo> getVariants(Class<?> source) {
         List<VariantInfo> result = null;
 
-        if (Object.class.isAssignableFrom(source)) {
+        if (Object.class.isAssignableFrom(source)
+                || boolean.class.isAssignableFrom(source)
+                || byte.class.isAssignableFrom(source)
+                || char.class.isAssignableFrom(source)
+                || double.class.isAssignableFrom(source)
+                || float.class.isAssignableFrom(source)
+                || int.class.isAssignableFrom(source)
+                || long.class.isAssignableFrom(source)
+                || short.class.isAssignableFrom(source)) {
             result = addVariant(result, VARIANT_JSON);
             result = addVariant(result, VARIANT_APPLICATION_ALL_XML);
             result = addVariant(result, VARIANT_APPLICATION_XML);
@@ -95,7 +103,7 @@ public class XstreamConverter extends ConverterHelper {
     public float score(Object source, Variant target, UniformResource resource) {
         float result = -1.0F;
 
-        if (source instanceof XstreamRepresentation) {
+        if (source instanceof XstreamRepresentation<?>) {
             result = 1.0F;
         } else if (source instanceof Object) {
             result = 0.8F;
@@ -111,7 +119,15 @@ public class XstreamConverter extends ConverterHelper {
             UniformResource resource) {
         float result = -1.0F;
 
-        if (Object.class.isAssignableFrom(target)) {
+        if (Object.class.isAssignableFrom(target)
+                || boolean.class.isAssignableFrom(target)
+                || byte.class.isAssignableFrom(target)
+                || char.class.isAssignableFrom(target)
+                || double.class.isAssignableFrom(target)
+                || float.class.isAssignableFrom(target)
+                || int.class.isAssignableFrom(target)
+                || long.class.isAssignableFrom(target)
+                || short.class.isAssignableFrom(target)) {
             if (VARIANT_JSON.isCompatible(source)) {
                 result = 0.8F;
             } else if (VARIANT_APPLICATION_ALL_XML.isCompatible(source)
@@ -133,7 +149,9 @@ public class XstreamConverter extends ConverterHelper {
         Object result = null;
         XstreamRepresentation<T> xstreamRepresentation;
 
-        if (VARIANT_JSON.isCompatible(source)) {
+        if (source instanceof XstreamRepresentation) {
+            result = ((XstreamRepresentation) source).getObject();
+        } else if (VARIANT_JSON.isCompatible(source)) {
             xstreamRepresentation = new XstreamRepresentation<T>(source);
             xstreamRepresentation
                     .setJsonDriverClass(JettisonMappedXmlDriver.class);
@@ -156,12 +174,24 @@ public class XstreamConverter extends ConverterHelper {
 
         if (source instanceof XstreamRepresentation) {
             result = (XstreamRepresentation) source;
-        } else if (source instanceof Object) {
-            XstreamRepresentation<Object> xstreamRepresentation = new XstreamRepresentation<Object>(
-                    target.getMediaType(), source);
-            xstreamRepresentation
-                    .setJsonDriverClass(JettisonMappedXmlDriver.class);
-            result = xstreamRepresentation;
+        } else {
+            if (target.getMediaType() == null) {
+                target.setMediaType(MediaType.TEXT_XML);
+            }
+
+            if (VARIANT_JSON.isCompatible(target)) {
+                XstreamRepresentation<Object> xstreamRepresentation = new XstreamRepresentation<Object>(
+                        target.getMediaType(), source);
+                xstreamRepresentation
+                        .setJsonDriverClass(JettisonMappedXmlDriver.class);
+                result = xstreamRepresentation;
+            } else if (VARIANT_APPLICATION_ALL_XML.isCompatible(target)
+                    || VARIANT_APPLICATION_XML.isCompatible(target)
+                    || VARIANT_TEXT_XML.isCompatible(target)) {
+                XstreamRepresentation<Object> xstreamRepresentation = new XstreamRepresentation<Object>(
+                        target.getMediaType(), source);
+                result = xstreamRepresentation;
+            }
         }
 
         return result;

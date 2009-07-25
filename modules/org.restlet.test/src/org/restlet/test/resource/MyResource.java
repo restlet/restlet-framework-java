@@ -50,7 +50,7 @@ public interface MyResource {
     public String store(MyBean bean);
 
     @Post
-    public String accept(MyBean bean);
+    public boolean accept(MyBean bean);
 
     @Delete
     public String remove();

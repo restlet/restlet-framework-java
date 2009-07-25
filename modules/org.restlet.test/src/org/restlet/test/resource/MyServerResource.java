@@ -36,15 +36,13 @@ import org.restlet.resource.ServerResource;
  * Sample server resource.
  * 
  * @author Jerome Louvel
- * 
  */
 public class MyServerResource extends ServerResource implements MyResource {
 
-    private static volatile MyBean myBean = new MyBean("myName",
-            "myDescription");
+    private volatile MyBean myBean = new MyBean("myName", "myDescription");
 
-    public String accept(MyBean bean) {
-        return Boolean.toString(bean.equals(myBean));
+    public boolean accept(MyBean bean) {
+        return bean.equals(myBean);
     }
 
     public String describe() {

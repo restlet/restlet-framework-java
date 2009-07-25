@@ -59,7 +59,7 @@ Changes log
           Reported by Bruce Cooper.
         - Fixed bug in ClientResource#options() method not issuing an
           OPTIONS HTTP request. Reported by Bob Resendes.
-        - 
+        - Fixed issues in Xstream converter with primitive types.
      - Enhancements
         - Upgraded Jetty library to version 6.1.18.
         - SpringServerServlet nows gets its component fully configured,

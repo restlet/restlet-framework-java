@@ -32,7 +32,9 @@ package org.restlet.engine.converter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
+import org.restlet.Context;
 import org.restlet.engine.Engine;
 import org.restlet.engine.resource.VariantInfo;
 import org.restlet.representation.Representation;
@@ -114,11 +116,18 @@ public class ConverterUtils {
 
         for (ConverterHelper ch : Engine.getInstance()
                 .getRegisteredConverters()) {
-            currentScore = ch.score(source, target, resource);
+            try {
+                currentScore = ch.score(source, target, resource);
 
-            if (currentScore > bestScore) {
-                bestScore = currentScore;
-                result = ch;
+                if (currentScore > bestScore) {
+                    bestScore = currentScore;
+                    result = ch;
+                }
+            } catch (Exception e) {
+                Context.getCurrentLogger().log(
+                        Level.SEVERE,
+                        "Unable get the score of the " + ch
+                                + " converter helper.", e);
             }
         }
 

@@ -71,12 +71,11 @@ public class AnnotatedResourceTestCase extends TestCase {
         MyBean newBean = new MyBean("newName", "newDescription");
         String result = myResource.store(newBean);
         assertEquals("Done", result);
+    }
 
-        // Check put was done by getting it
-        MyBean remoteNewBean = myResource.represent();
-        assertNotNull(remoteNewBean);
-        assertEquals("newName", remoteNewBean.getName());
-        assertEquals("newDescription", remoteNewBean.getDescription());
+    public void testPost() {
+        MyBean myBean = new MyBean("myName", "myDescription");
+        assertTrue(myResource.accept(myBean));
     }
 
 }

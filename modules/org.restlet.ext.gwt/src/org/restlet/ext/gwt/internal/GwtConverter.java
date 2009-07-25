@@ -81,8 +81,9 @@ public class GwtConverter extends ConverterHelper {
         float result = -1.0F;
 
         if (source instanceof Serializable) {
-            if (MediaType.APPLICATION_JAVA_OBJECT_GWT.isCompatible(target
-                    .getMediaType())) {
+            if ((target != null)
+                    && MediaType.APPLICATION_JAVA_OBJECT_GWT
+                            .isCompatible(target.getMediaType())) {
                 result = 0.7F;
             } else {
                 result = 0.5F;
@@ -98,8 +99,9 @@ public class GwtConverter extends ConverterHelper {
         float result = -1.0F;
 
         if (Serializable.class.isAssignableFrom(target)) {
-            if (MediaType.APPLICATION_JAVA_OBJECT_GWT.isCompatible(source
-                    .getMediaType())) {
+            if ((target != null)
+                    && MediaType.APPLICATION_JAVA_OBJECT_GWT
+                            .isCompatible(source.getMediaType())) {
                 result = 0.7F;
             } else {
                 result = 0.5F;
