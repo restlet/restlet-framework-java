@@ -411,23 +411,22 @@ public abstract class HttpServerCall extends HttpCall {
      */
     public void sendResponse(Response response) throws IOException {
         if (response != null) {
-
             // Get the connector service to callback
-            final Representation entity = response.getEntity();
-            final ConnectorService connectorService = getConnectorService(response
+            Representation responseEntity = response.getEntity();
+            ConnectorService connectorService = getConnectorService(response
                     .getRequest());
             if (connectorService != null) {
-                connectorService.beforeSend(entity);
+                connectorService.beforeSend(responseEntity);
             }
 
             try {
                 writeResponseHead(response);
 
-                if (entity != null) {
+                if (responseEntity != null) {
 
-                    final WritableByteChannel responseEntityChannel = getResponseEntityChannel();
-                    final OutputStream responseEntityStream = getResponseEntityStream();
-                    writeResponseBody(entity, responseEntityChannel,
+                    WritableByteChannel responseEntityChannel = getResponseEntityChannel();
+                    OutputStream responseEntityStream = getResponseEntityStream();
+                    writeResponseBody(responseEntity, responseEntityChannel,
                             responseEntityStream);
 
                     if (responseEntityStream != null) {
@@ -446,12 +445,12 @@ public abstract class HttpServerCall extends HttpCall {
                     }
                 }
             } finally {
-                if (entity != null) {
-                    entity.release();
+                if (responseEntity != null) {
+                    responseEntity.release();
                 }
 
                 if (connectorService != null) {
-                    connectorService.afterSend(entity);
+                    connectorService.afterSend(responseEntity);
                 }
             }
         }

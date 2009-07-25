@@ -320,7 +320,7 @@ public abstract class Representation extends RepresentationInfo {
     }
 
     /**
-     * Exhauts the content of the representation by reading it and silently
+     * Exhaust the content of the representation by reading it and silently
      * discarding anything read.
      * 
      * @return The number of bytes consumed or -1 if unknown.
