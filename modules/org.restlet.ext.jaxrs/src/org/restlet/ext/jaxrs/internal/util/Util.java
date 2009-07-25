@@ -548,7 +548,7 @@ public class Util {
         if (genCompType.equals(Boolean.TYPE)) {
             return (new boolean[0]).getClass();
         }
-        if (genCompType instanceof Class) {
+        if (genCompType instanceof Class<?>) {
             return Array.newInstance((Class<?>) genCompType, 0).getClass();
         }
         throw new ImplementationException("Sorry, could not handle a "
@@ -609,12 +609,15 @@ public class Util {
             throw new NoSuchElementException(
                     "The Collection is empty; you can't get the first element of it.");
         }
-        if (coll instanceof LinkedList) {
+
+        if (coll instanceof LinkedList<?>) {
             return ((LinkedList<A>) coll).getFirst();
         }
-        if (coll instanceof List) {
+
+        if (coll instanceof List<?>) {
             return ((List<A>) coll).get(0);
         }
+
         return coll.iterator().next();
     }
 
@@ -630,12 +633,14 @@ public class Util {
      */
     public static <A> A getFirstElement(Iterable<A> coll)
             throws NoSuchElementException {
-        if (coll instanceof LinkedList) {
+        if (coll instanceof LinkedList<?>) {
             return ((LinkedList<A>) coll).getFirst();
         }
-        if (coll instanceof List) {
+
+        if (coll instanceof List<?>) {
             return ((List<A>) coll).get(0);
         }
+
         return coll.iterator().next();
     }
 
@@ -655,9 +660,11 @@ public class Util {
             throw new IndexOutOfBoundsException(
                     "The Collection is empty; you can't get the first element of it.");
         }
-        if (list instanceof LinkedList) {
+
+        if (list instanceof LinkedList<?>) {
             return ((LinkedList<A>) list).getFirst();
         }
+
         return list.get(0);
     }
 
@@ -671,25 +678,28 @@ public class Util {
      *         empty.
      */
     public static <A> A getFirstElementOrNull(Iterable<A> coll) {
-        if (coll instanceof LinkedList) {
+        if (coll instanceof LinkedList<?>) {
             final LinkedList<A> linkedList = ((LinkedList<A>) coll);
             if (linkedList.isEmpty()) {
                 return null;
             }
             return linkedList.getFirst();
         }
-        if (coll instanceof List) {
+
+        if (coll instanceof List<?>) {
             final List<A> list = ((List<A>) coll);
             if (list.isEmpty()) {
                 return null;
             }
             return list.get(0);
         }
-        if (coll instanceof Collection) {
+
+        if (coll instanceof Collection<?>) {
             if (((Collection<A>) coll).isEmpty()) {
                 return null;
             }
         }
+
         return coll.iterator().next();
     }
 
@@ -775,12 +785,12 @@ public class Util {
             if (atps == null || atps.length == 0)
                 continue;
             final Type atp = atps[0];
-            if (atp instanceof Class) {
+            if (atp instanceof Class<?>) {
                 return (Class<?>) atp;
             }
             if (atp instanceof ParameterizedType) {
                 final Type rawType = ((ParameterizedType) atp).getRawType();
-                if (rawType instanceof Class) {
+                if (rawType instanceof Class<?>) {
                     return (Class<?>) rawType;
                 }
             }
@@ -800,13 +810,13 @@ public class Util {
                         continue;
                     if (tv2Name.equals(name)) {
                         Type gsatpn = gsatp[i];
-                        if (gsatpn instanceof Class) {
+                        if (gsatpn instanceof Class<?>) {
                             return (Class<?>) gsatpn;
                         }
                         if (gsatpn instanceof ParameterizedType) {
                             final Type rawType = ((ParameterizedType) gsatpn)
                                     .getRawType();
-                            if (rawType instanceof Class)
+                            if (rawType instanceof Class<?>)
                                 return (Class<?>) rawType;
                             throw new ImplementationException(
                                     "Sorry, don't know how to return the class here");
@@ -831,7 +841,7 @@ public class Util {
         }
         Class<?> superClass = clazz.getSuperclass();
         Type genericSuperClass = clazz.getGenericSuperclass();
-        if (genericSuperClass instanceof Class) {
+        if (genericSuperClass instanceof Class<?>) {
             return null;
         }
         if (gsatp == null) {
@@ -856,15 +866,15 @@ public class Util {
         }
         final ParameterizedType pt = (ParameterizedType) genericType;
         Type[] actualTypeArguments = pt.getActualTypeArguments();
-        if(actualTypeArguments == null || actualTypeArguments.length == 0)
+        if (actualTypeArguments == null || actualTypeArguments.length == 0)
             return null;
         final Type atp = actualTypeArguments[0];
-        if (atp instanceof Class) {
+        if (atp instanceof Class<?>) {
             return (Class<?>) atp;
         }
         if (atp instanceof ParameterizedType) {
             final Type rawType = ((ParameterizedType) atp).getRawType();
-            if (rawType instanceof Class) {
+            if (rawType instanceof Class<?>) {
                 return (Class<?>) rawType;
             } else {
                 return null;
@@ -940,13 +950,15 @@ public class Util {
      */
     public static <A> A getLastElement(Iterable<A> iterable)
             throws IndexOutOfBoundsException, NoSuchElementException {
-        if (iterable instanceof LinkedList) {
+        if (iterable instanceof LinkedList<?>) {
             return ((LinkedList<A>) iterable).getLast();
         }
-        if (iterable instanceof List) {
+
+        if (iterable instanceof List<?>) {
             final List<A> list = ((List<A>) iterable);
             return list.get(list.size() - 1);
         }
+
         return getLastElement(iterable.iterator());
     }
 
@@ -981,9 +993,10 @@ public class Util {
      */
     public static <A> A getLastElement(List<A> list)
             throws IndexOutOfBoundsException {
-        if (list instanceof LinkedList) {
+        if (list instanceof LinkedList<?>) {
             return ((LinkedList<A>) list).getLast();
         }
+
         return list.get(list.size() - 1);
     }
 
@@ -997,25 +1010,28 @@ public class Util {
      *         is empty.
      */
     public static <A> A getLastElementOrNull(Iterable<A> iterable) {
-        if (iterable instanceof LinkedList) {
+        if (iterable instanceof LinkedList<?>) {
             final LinkedList<A> linkedList = ((LinkedList<A>) iterable);
             if (linkedList.isEmpty()) {
                 return null;
             }
             return linkedList.getLast();
         }
-        if (iterable instanceof List) {
+
+        if (iterable instanceof List<?>) {
             final List<A> list = ((List<A>) iterable);
             if (list.isEmpty()) {
                 return null;
             }
             return list.get(list.size() - 1);
         }
-        if (iterable instanceof Collection) {
+
+        if (iterable instanceof Collection<?>) {
             if (((Collection<A>) iterable).isEmpty()) {
                 return null;
             }
         }
+
         return getLastElementOrNull(iterable.iterator());
     }
 
@@ -1109,16 +1125,20 @@ public class Util {
         if (list == null) {
             return null;
         }
+
         if (list.isEmpty()) {
             return null;
         }
+
         if (list.size() > 1) {
             throw new IllegalArgumentException(
                     "The list must have exactly one element");
         }
-        if (list instanceof List) {
+
+        if (list instanceof List<?>) {
             return ((List<A>) list).get(0);
         }
+
         return list.iterator().next();
     }
 

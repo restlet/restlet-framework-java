@@ -35,6 +35,7 @@ import java.lang.reflect.Proxy;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 import org.restlet.Client;
 import org.restlet.Context;
@@ -121,6 +122,15 @@ public class ClientResource extends UniformResource {
         return create(null, new Reference(uri), resourceInterface);
     }
 
+    /** Indicates if idempotent requests should be retried on error. */
+    private volatile boolean retryOnError;
+
+    /** Delay in milliseconds between two retry attempts. */
+    private volatile long retryDelay;
+
+    /** Number of retry attempts before reporting an error. */
+    private volatile int retryAttempts;
+
     /** Indicates if redirections are followed. */
     private volatile boolean followRedirects;
 
@@ -150,6 +160,9 @@ public class ClientResource extends UniformResource {
         }
 
         this.followRedirects = true;
+        this.retryOnError = true;
+        this.retryDelay = 1000L;
+        this.retryAttempts = 2;
         init(context, request, response);
     }
 
@@ -503,6 +516,26 @@ public class ClientResource extends UniformResource {
     }
 
     /**
+     * Returns the number of retry attempts before reporting an error. Default
+     * value is 2.
+     * 
+     * @return The number of retry attempts before reporting an error.
+     */
+    public int getRetryAttempts() {
+        return retryAttempts;
+    }
+
+    /**
+     * Returns the delay in milliseconds between two retry attempts. Default
+     * value is 1 second.
+     * 
+     * @return The delay in milliseconds between two retry attempts.
+     */
+    public long getRetryDelay() {
+        return retryDelay;
+    }
+
+    /**
      * Handles the call by invoking the next handler.
      * 
      * @return The optional response entity.
@@ -522,7 +555,7 @@ public class ClientResource extends UniformResource {
         }
 
         if (hasNext()) {
-            handle(getRequest(), getResponse(), null);
+            handle(getRequest(), getResponse(), null, 0);
             result = getResponse().getEntity();
         } else {
             getLogger()
@@ -545,7 +578,7 @@ public class ClientResource extends UniformResource {
      *            loops.
      */
     private void handle(Request request, Response response,
-            List<Reference> references) {
+            List<Reference> references, int retryAttempt) {
         // Actually handle the call
         getNext().handle(request, response);
 
@@ -573,7 +606,31 @@ public class ClientResource extends UniformResource {
                 // to prevent infinite loops
                 references.add(request.getResourceRef());
                 request.setResourceRef(newTargetRef);
-                handle(request, response, references);
+                handle(request, response, references, 0);
+            }
+        } else if (request.getMethod().isIdempotent()
+                && response.getStatus().isRecoverableError()) {
+            if (isRetryOnError() && (retryAttempt < getRetryAttempts())) {
+                if ((getRequestEntity() == null)
+                        || getRequestEntity().isAvailable()) {
+                    getLogger().log(
+                            Level.INFO,
+                            "A recoverable error was detected, attempting again in "
+                                    + getRetryDelay() + " ms.");
+
+                    // Wait before attempting again
+                    if (getRetryDelay() > 0) {
+                        try {
+                            Thread.sleep(getRetryDelay());
+                        } catch (InterruptedException e) {
+                            getLogger().log(Level.FINE,
+                                    "Retry delay sleep was interrupted", e);
+                        }
+                    }
+
+                    // Retry the call
+                    handle(request, response, references, ++retryAttempt);
+                }
             }
         }
     }
@@ -652,6 +709,16 @@ public class ClientResource extends UniformResource {
      */
     public boolean isFollowRedirects() {
         return followRedirects;
+    }
+
+    /**
+     * Indicates if idempotent requests should be retried on error. Default
+     * value is true.
+     * 
+     * @return True if idempotent requests should be retried on error.
+     */
+    public boolean isRetryOnError() {
+        return retryOnError;
     }
 
     /**
@@ -1041,6 +1108,36 @@ public class ClientResource extends UniformResource {
      */
     public void setResourceRef(String resourceUri) {
         getRequest().setResourceRef(resourceUri);
+    }
+
+    /**
+     * Sets the number of retry attempts before reporting an error.
+     * 
+     * @param retryAttempts
+     *            The number of retry attempts before reporting an error.
+     */
+    public void setRetryAttempts(int retryAttempts) {
+        this.retryAttempts = retryAttempts;
+    }
+
+    /**
+     * Sets the delay in milliseconds between two retry attempts.
+     * 
+     * @param retryDelay
+     *            The delay in milliseconds between two retry attempts.
+     */
+    public void setRetryDelay(long retryDelay) {
+        this.retryDelay = retryDelay;
+    }
+
+    /**
+     * Indicates if idempotent requests should be retried on error.
+     * 
+     * @param retryOnError
+     *            True if idempotent requests should be retried on error.
+     */
+    public void setRetryOnError(boolean retryOnError) {
+        this.retryOnError = retryOnError;
     }
 
     /**

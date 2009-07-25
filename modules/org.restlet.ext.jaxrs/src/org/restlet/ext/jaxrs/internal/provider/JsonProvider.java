@@ -162,7 +162,7 @@ public class JsonProvider extends AbstractProvider<Object> {
                     jsonObject = (JSONObject) object;
                 } else if (object instanceof JSONTokener) {
                     jsonObject = new JSONObject((JSONTokener) object);
-                } else if (object instanceof Map) {
+                } else if (object instanceof Map<?, ?>) {
                     jsonObject = new JSONObject((Map<?, ?>) object);
                 } else {
                     jsonObject = new JSONObject(object);

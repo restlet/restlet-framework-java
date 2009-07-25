@@ -142,7 +142,7 @@ public class Context {
      *            The modifiable map of attributes.
      */
     public void setAttributes(Map<String, Object> attributes) {
-        if (attributes instanceof HashMap) {
+        if (attributes instanceof HashMap<?, ?>) {
             this.attributes = attributes;
         } else {
             this.attributes = new HashMap<String, Object>(attributes);

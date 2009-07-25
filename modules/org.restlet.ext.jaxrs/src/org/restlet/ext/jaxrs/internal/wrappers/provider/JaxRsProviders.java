@@ -87,7 +87,7 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
             if (!(crIfType instanceof ParameterizedType))
                 continue;
             Type t = ((ParameterizedType) crIfType).getActualTypeArguments()[0];
-            if (!(t instanceof Class))
+            if (!(t instanceof Class<?>))
                 continue;
             return (Class<?>) t;
         }
@@ -228,7 +228,7 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
      * 
      * @param excMapper
      * @throws NullPointerException
-     *                 if null is given
+     *             if null is given
      */
     @SuppressWarnings("unchecked")
     private void addExcMapper(ProviderWrapper excMapperWrapper) {
@@ -264,11 +264,11 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
      * Otherwise this method returns an Response with an internal server error.
      * 
      * @param cause
-     *                the thrown exception (was wrapped by an
-     *                {@link InvocationTargetException})
+     *            the thrown exception (was wrapped by an
+     *            {@link InvocationTargetException})
      * @return the created Response
      * @throws NullPointerException
-     *                 if <code>null</code> is given
+     *             if <code>null</code> is given
      * @see ExceptionMapper#toResponse(Object)
      */
     @SuppressWarnings("unchecked")
@@ -300,7 +300,7 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
      * @param genericType
      * @param annotations
      * @param mediaType
-     *                The {@link MediaType}, that should be supported.
+     *            The {@link MediaType}, that should be supported.
      * @return the {@link MessageBodyReader}, that best matches the given
      *         criteria, or null if no matching MessageBodyReader could be
      *         found.
@@ -365,7 +365,7 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
             } catch (WebApplicationException e1) {
                 continue;
             }
-            if(cr == null) { // TODO this is a little bit hacky.
+            if (cr == null) { // TODO this is a little bit hacky.
                 continue;
             }
             final Class<?> crClaz = cr.getClass();
@@ -536,7 +536,7 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
      * 
      * @param entityClass
      * @param genericType
-     *                may be null
+     *            may be null
      * @param annotations
      * @param mediaType
      * @return a sub set of message body writers

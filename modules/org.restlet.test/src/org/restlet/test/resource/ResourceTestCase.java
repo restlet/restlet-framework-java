@@ -43,6 +43,7 @@ import org.restlet.test.RestletTestCase;
  * @author Konstantin Laufer (laufer@cs.luc.edu)
  * @author Jerome Louvel
  */
+@SuppressWarnings("deprecation")
 public class ResourceTestCase extends RestletTestCase {
 
     public class AutoDetectResource extends Resource {
@@ -63,40 +64,6 @@ public class ResourceTestCase extends RestletTestCase {
         }
 
     }
-
-//    public void testAutoDetect() throws IOException {
-//        Application.setCurrent(new Application());
-//        Request request = new Request(Method.GET, "http://www.test.com/root");
-//        request.getClientInfo().getAcceptedMediaTypes().add(
-//                new Preference<MediaType>(MediaType.TEXT_XML));
-//        Response response = new Response(request);
-//
-//        Resource target = new AutoDetectResource();
-//        target.init(new Context(), request, response);
-//        target.handleGet();
-//        Representation rep = response.getEntity();
-//
-//        assertNotNull(rep);
-//        assertEquals(MediaType.TEXT_XML, rep.getMediaType());
-//
-//        request.getClientInfo().getAcceptedMediaTypes().add(0,
-//                new Preference<MediaType>(MediaType.TEXT_HTML));
-//        target.handleGet();
-//        rep = response.getEntity();
-//
-//        assertNotNull(rep);
-//        assertEquals(MediaType.TEXT_HTML, rep.getMediaType());
-//        assertEquals("<html>test EN</html>", rep.getText());
-//
-//        request.getClientInfo().getAcceptedLanguages().add(
-//                new Preference<Language>(Language.FRENCH_FRANCE));
-//        target.handleGet();
-//        rep = response.getEntity();
-//
-//        assertNotNull(rep);
-//        assertEquals(MediaType.TEXT_HTML, rep.getMediaType());
-//        assertEquals("<html>test FR</html>", rep.getText());
-//    }
 
     public void testIsAvailable() {
         Resource r = new Resource();

@@ -442,7 +442,7 @@ public abstract class HttpClientCall extends HttpCall {
             getHelper()
                     .getLogger()
                     .log(
-                            Level.WARNING,
+                            Level.FINE,
                             "An error occured during the communication with the remote HTTP server.",
                             ioe);
             result = new Status(Status.CONNECTOR_ERROR_COMMUNICATION, ioe);

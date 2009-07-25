@@ -62,6 +62,10 @@ Changes log
         - Fixed issues in Xstream converter with primitive types.
         - HTTP response where returning duplicate media type 
           parameters. Reported by Evgeny Shepelyuk.
+        - Added Status#isRecoverableError() method.
+        - Added "retryOnError", "retryDelay" and "retryAttempts" 
+          properties on ClientResource to try to recover from some
+          communication errors.
      - Enhancements
         - Upgraded Jetty library to version 6.1.18.
         - SpringServerServlet nows gets its component fully configured,
@@ -116,6 +120,8 @@ Changes log
            - "utf16" for CharacterSet#UTF_16
            - "win" for CharacterSet#WINDOWS_1252
         - Added converter selection traces. Suggested by John Logdson.
+        - Communication error from HTTP clients are now logged at the
+          FINE level instead of WARNING.
       - Breaking changes
         - The default language, defined in MetadataService is now based
           on the JVM's default locale, instead of English/US.

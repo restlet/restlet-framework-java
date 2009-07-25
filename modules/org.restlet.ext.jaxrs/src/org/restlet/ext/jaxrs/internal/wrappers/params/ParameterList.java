@@ -308,11 +308,11 @@ public class ParameterList {
         }
 
         protected <A> Collection<A> unmodifiable(Collection<A> coll) {
-            if (coll instanceof List)
+            if (coll instanceof List<?>)
                 return Collections.unmodifiableList((List<A>) coll);
-            if (coll instanceof SortedSet)
+            if (coll instanceof SortedSet<?>)
                 return Collections.unmodifiableSortedSet((SortedSet<A>) coll);
-            if (coll instanceof Set)
+            if (coll instanceof Set<?>)
                 return Collections.unmodifiableSet((Set<A>) coll);
             return Collections.unmodifiableCollection(coll);
         }

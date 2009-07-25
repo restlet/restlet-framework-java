@@ -1521,6 +1521,22 @@ public final class Status {
     }
 
     /**
+     * Indicates if an error is recoverable, meaning that simply retrying after
+     * a delay could result in a success. Tests {@link #isConnectorError()} and
+     * if the status is {@link #CLIENT_ERROR_REQUEST_TIMEOUT} or
+     * {@link #SERVER_ERROR_GATEWAY_TIMEOUT} or
+     * {@link #SERVER_ERROR_SERVICE_UNAVAILABLE}.
+     * 
+     * @return True if the error is recoverable.
+     */
+    public boolean isRecoverableError() {
+        return isConnectorError()
+                || equals(Status.CLIENT_ERROR_REQUEST_TIMEOUT)
+                || equals(Status.SERVER_ERROR_GATEWAY_TIMEOUT)
+                || equals(Status.SERVER_ERROR_SERVICE_UNAVAILABLE);
+    }
+
+    /**
      * Indicates if the status is a redirection status, meaning "Further action
      * must be taken in order to complete the request".
      * 

@@ -161,7 +161,7 @@ public abstract class ReprEntityGetter implements ParamGetter {
             return null;
         }
         final Type typeArg = typeArgs[0];
-        if (!(typeArg instanceof Class)) {
+        if (!(typeArg instanceof Class<?>)) {
             return null;
         }
         final Class<?> genClass = (Class<?>) typeArg;
@@ -215,7 +215,7 @@ public abstract class ReprEntityGetter implements ParamGetter {
                 return null;
             }
             final Representation entity = request.getEntity();
-            if((entity == null)/* || (entity is not empty)*/) {
+            if ((entity == null)/* || (entity is not empty) */) {
                 return null;
             }
             return createInstance(entity);

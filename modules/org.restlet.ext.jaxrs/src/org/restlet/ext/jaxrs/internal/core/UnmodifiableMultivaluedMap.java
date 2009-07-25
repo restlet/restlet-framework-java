@@ -92,10 +92,10 @@ public class UnmodifiableMultivaluedMap<K, V> implements MultivaluedMap<K, V> {
      */
     public static UnmodifiableMultivaluedMap<String, String> get(
             MultivaluedMap<String, String> mmap, boolean caseSensitive) {
-        if (mmap instanceof UnmodifiableMultivaluedMap) {
+        if (mmap instanceof UnmodifiableMultivaluedMap<?, ?>) {
             return (UnmodifiableMultivaluedMap<String, String>) mmap;
         }
-        if (mmap instanceof MultivaluedMapImpl) {
+        if (mmap instanceof MultivaluedMapImpl<?, ?>) {
             return new UnmodifiableMultivaluedMap<String, String>(
                     (MultivaluedMapImpl<String, String>) mmap, caseSensitive);
         }
@@ -158,7 +158,7 @@ public class UnmodifiableMultivaluedMap<K, V> implements MultivaluedMap<K, V> {
     }
 
     public boolean containsValue(Object value) {
-        if (value instanceof List) {
+        if (value instanceof List<?>) {
             return this.mmap.containsValue(value);
         }
         for (final List<V> vList : this.mmap.values()) {
@@ -178,7 +178,7 @@ public class UnmodifiableMultivaluedMap<K, V> implements MultivaluedMap<K, V> {
         if (anotherObect == this) {
             return true;
         }
-        if (!(anotherObect instanceof MultivaluedMap)) {
+        if (!(anotherObect instanceof MultivaluedMap<?, ?>)) {
             return false;
         }
         return this.mmap.equals(anotherObect);

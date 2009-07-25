@@ -30,10 +30,14 @@
 
 package org.restlet.test.resource;
 
+import java.io.IOException;
+
 import junit.framework.TestCase;
 
+import org.restlet.data.MediaType;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.Finder;
+import org.restlet.resource.ResourceException;
 
 /**
  * Test the annotated resources, client and server sides.
@@ -55,11 +59,34 @@ public class AnnotatedResourceTestCase extends TestCase {
         this.myResource = clientResource.wrap(MyResource.class);
     }
 
-    public void testGet() {
+    public void testDelete() {
+        assertEquals("Done", myResource.remove());
+    }
+
+    public void testGet() throws IOException, ResourceException {
         MyBean myBean = myResource.represent();
         assertNotNull(myBean);
         assertEquals("myName", myBean.getName());
         assertEquals("myDescription", myBean.getDescription());
+
+        String result = clientResource.get(MediaType.TEXT_XML).getText();
+        assertEquals(
+                "<org.restlet.test.resource.MyBean>\n  <name>myName</name>\n  <description>myDescription</description>\n</org.restlet.test.resource.MyBean>",
+                result);
+
+        result = clientResource.get(MediaType.APPLICATION_JSON).getText();
+        assertEquals(
+                "{\"org.restlet.test.resource.MyBean\":{\"name\":\"myName\",\"description\":\"myDescription\"}}",
+                result);
+    }
+
+    public void testOptions() {
+        assertEquals("MyDescription", myResource.describe());
+    }
+
+    public void testPost() {
+        MyBean myBean = new MyBean("myName", "myDescription");
+        assertTrue(myResource.accept(myBean));
     }
 
     public void testPut() {
@@ -71,11 +98,6 @@ public class AnnotatedResourceTestCase extends TestCase {
         MyBean newBean = new MyBean("newName", "newDescription");
         String result = myResource.store(newBean);
         assertEquals("Done", result);
-    }
-
-    public void testPost() {
-        MyBean myBean = new MyBean("myName", "myDescription");
-        assertTrue(myResource.accept(myBean));
     }
 
 }

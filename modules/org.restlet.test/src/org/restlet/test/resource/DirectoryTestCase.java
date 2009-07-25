@@ -62,7 +62,6 @@ public class DirectoryTestCase extends RestletTestCase {
      * @author Thierry Boileau
      */
     private static class MyApplication extends Application {
-        File testDirectory;
 
         Directory directory;
 
@@ -77,7 +76,6 @@ public class DirectoryTestCase extends RestletTestCase {
             this.directory = new Directory(getContext(), LocalReference
                     .createFileReference(testDirectory));
             this.directory.setNegotiateContent(true);
-            this.testDirectory = testDirectory;
         }
 
         @Override
@@ -89,16 +87,7 @@ public class DirectoryTestCase extends RestletTestCase {
             return this.directory;
         }
 
-        public File getTestDirectory() {
-            return this.testDirectory;
-        }
-
-        public void setDirectory(Directory directory) {
-            this.directory = directory;
-        }
-
         public void setTestDirectory(File testDirectory) {
-            this.testDirectory = testDirectory;
             final String rootIdentifier = LocalReference.createFileReference(
                     testDirectory).getIdentifier();
 

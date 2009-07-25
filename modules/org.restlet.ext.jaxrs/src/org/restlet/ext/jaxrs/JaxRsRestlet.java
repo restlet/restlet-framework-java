@@ -74,7 +74,6 @@ import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.RequestHandledException;
 import org.restlet.ext.jaxrs.internal.provider.BufferedReaderProvider;
 import org.restlet.ext.jaxrs.internal.provider.ByteArrayProvider;
-import org.restlet.ext.jaxrs.internal.provider.ConverterProvider;
 import org.restlet.ext.jaxrs.internal.provider.FileProvider;
 import org.restlet.ext.jaxrs.internal.provider.InputStreamProvider;
 import org.restlet.ext.jaxrs.internal.provider.ReaderProvider;
@@ -318,7 +317,7 @@ public class JaxRsRestlet extends Restlet {
         } else if (jaxRsProvider == null)
             throw new IllegalArgumentException(
                     "The JAX-RS object to add must not be null");
-        else if (jaxRsProvider instanceof Class)
+        else if (jaxRsProvider instanceof Class<?>)
             throw new IllegalArgumentException(
                     "The JAX-RS object to add must not be a java.lang.Class");
 
