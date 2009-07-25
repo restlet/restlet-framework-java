@@ -46,6 +46,7 @@ import org.restlet.representation.Representation;
 import org.xml.sax.SAXException;
 
 /**
+ * Collection of {@link Category} entries.
  * 
  * @author Jerome Louvel
  */
@@ -61,6 +62,20 @@ public class Categories extends SaxRepresentation {
 
     /** */
     private Reference scheme;
+
+    /**
+     * Constructor.
+     * 
+     * @param clientDispatcher
+     *            The client HTTP dispatcher.
+     * @param categoriesUri
+     *            The feed URI.
+     * @throws IOException
+     */
+    public Categories(Client clientDispatcher, String categoriesUri)
+            throws IOException {
+        this(clientDispatcher.get(categoriesUri).getEntity());
+    }
 
     /**
      * Constructor.
@@ -99,20 +114,6 @@ public class Categories extends SaxRepresentation {
         this(new Client(new Reference(categoriesUri).getSchemeProtocol()),
                 categoriesUri);
 
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param clientDispatcher
-     *            The client HTTP dispatcher.
-     * @param categoriesUri
-     *            The feed URI.
-     * @throws IOException
-     */
-    public Categories(Client clientDispatcher, String categoriesUri)
-            throws IOException {
-        this(clientDispatcher.get(categoriesUri).getEntity());
     }
 
     /**

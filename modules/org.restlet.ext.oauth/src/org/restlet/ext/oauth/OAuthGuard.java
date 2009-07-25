@@ -40,7 +40,8 @@ import org.restlet.data.Request;
 import org.restlet.security.Guard;
 
 /**
- * Handles authentication using OAuth.<br>
+ * Handles authentication using OAuth. Supports the
+ * {@link ChallengeScheme#HTTP_OAUTH} scheme.<br>
  * <br>
  * Concurrency note: instances of this class or its subclasses can be invoked by
  * several threads at the same time and therefore must be thread-safe. You
