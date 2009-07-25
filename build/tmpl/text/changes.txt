@@ -66,6 +66,8 @@ Changes log
         - Added "retryOnError", "retryDelay" and "retryAttempts" 
           properties on ClientResource to try to recover from some
           communication errors.
+        - ServerResource now rejects unknown entities with a 415 
+          status. Suggested by Sylvain Pajaud. 
      - Enhancements
         - Upgraded Jetty library to version 6.1.18.
         - SpringServerServlet nows gets its component fully configured,

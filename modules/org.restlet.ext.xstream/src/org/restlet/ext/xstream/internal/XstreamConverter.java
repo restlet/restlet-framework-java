@@ -81,15 +81,7 @@ public class XstreamConverter extends ConverterHelper {
     public List<VariantInfo> getVariants(Class<?> source) {
         List<VariantInfo> result = null;
 
-        if (Object.class.isAssignableFrom(source)
-                || boolean.class.isAssignableFrom(source)
-                || byte.class.isAssignableFrom(source)
-                || char.class.isAssignableFrom(source)
-                || double.class.isAssignableFrom(source)
-                || float.class.isAssignableFrom(source)
-                || int.class.isAssignableFrom(source)
-                || long.class.isAssignableFrom(source)
-                || short.class.isAssignableFrom(source)) {
+        if (source != null) {
             result = addVariant(result, VARIANT_JSON);
             result = addVariant(result, VARIANT_APPLICATION_ALL_XML);
             result = addVariant(result, VARIANT_APPLICATION_XML);
@@ -105,10 +97,8 @@ public class XstreamConverter extends ConverterHelper {
 
         if (source instanceof XstreamRepresentation<?>) {
             result = 1.0F;
-        } else if (source instanceof Object) {
-            result = 0.8F;
         } else {
-            result = 0.5F;
+            result = 0.8F;
         }
 
         return result;
@@ -119,23 +109,13 @@ public class XstreamConverter extends ConverterHelper {
             UniformResource resource) {
         float result = -1.0F;
 
-        if (Object.class.isAssignableFrom(target)
-                || boolean.class.isAssignableFrom(target)
-                || byte.class.isAssignableFrom(target)
-                || char.class.isAssignableFrom(target)
-                || double.class.isAssignableFrom(target)
-                || float.class.isAssignableFrom(target)
-                || int.class.isAssignableFrom(target)
-                || long.class.isAssignableFrom(target)
-                || short.class.isAssignableFrom(target)) {
+        if (target != null) {
             if (VARIANT_JSON.isCompatible(source)) {
                 result = 0.8F;
             } else if (VARIANT_APPLICATION_ALL_XML.isCompatible(source)
                     || VARIANT_APPLICATION_XML.isCompatible(source)
                     || VARIANT_TEXT_XML.isCompatible(source)) {
                 result = 0.8F;
-            } else {
-                result = 0.5F;
             }
         }
 

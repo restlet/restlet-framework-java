@@ -434,19 +434,30 @@ public abstract class ServerResource extends UniformResource {
             if ((annotationInfo.getJavaParameterTypes() != null)
                     && (annotationInfo.getJavaParameterTypes().length > 0)) {
                 List<Object> parameters = new ArrayList<Object>();
+                Object parameter = null;
 
                 for (Class<?> param : annotationInfo.getJavaParameterTypes()) {
-                    try {
-                        if (Variant.class.equals(param)) {
-                            parameters.add(variant);
+                    if (Variant.class.equals(param)) {
+                        parameters.add(variant);
+                    } else {
+                        if (getRequestEntity().isAvailable()) {
+                            try {
+                                parameter = cs.toObject(getRequestEntity(),
+                                        param, this);
+
+                            } catch (IOException e) {
+                                parameter = null;
+                            }
+
+                            if (parameter == null) {
+                                throw new ResourceException(
+                                        Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE);
+                            }
                         } else {
-                            parameters.add(cs.toObject(getRequestEntity(),
-                                    param, this));
+                            parameter = null;
                         }
-                    } catch (Throwable e) {
-                        getLogger().log(Level.WARNING,
-                                "Unable to convert the request entity", e);
-                        parameters.add(null);
+
+                        parameters.add(parameter);
                     }
                 }
 

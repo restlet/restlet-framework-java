@@ -35,6 +35,8 @@ import java.io.IOException;
 import junit.framework.TestCase;
 
 import org.restlet.data.MediaType;
+import org.restlet.data.Status;
+import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.Finder;
 import org.restlet.resource.ResourceException;
@@ -89,7 +91,7 @@ public class AnnotatedResourceTestCase extends TestCase {
         assertTrue(myResource.accept(myBean));
     }
 
-    public void testPut() {
+    public void testPut() throws ResourceException {
         // Get current representation
         MyBean myBean = myResource.represent();
         assertNotNull(myBean);
@@ -98,6 +100,11 @@ public class AnnotatedResourceTestCase extends TestCase {
         MyBean newBean = new MyBean("newName", "newDescription");
         String result = myResource.store(newBean);
         assertEquals("Done", result);
-    }
 
+        // Attempt to send an unknown entity
+        clientResource.put(new StringRepresentation("wxyz",
+                MediaType.APPLICATION_GNU_ZIP));
+        assertEquals(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE, clientResource
+                .getStatus());
+    }
 }
