@@ -83,7 +83,7 @@ public class GwtConverter extends ConverterHelper {
         if (source instanceof Serializable) {
             if (MediaType.APPLICATION_JAVA_OBJECT_GWT.isCompatible(target
                     .getMediaType())) {
-                result = 1.0F;
+                result = 0.7F;
             } else {
                 result = 0.5F;
             }
@@ -100,7 +100,7 @@ public class GwtConverter extends ConverterHelper {
         if (Serializable.class.isAssignableFrom(target)) {
             if (MediaType.APPLICATION_JAVA_OBJECT_GWT.isCompatible(source
                     .getMediaType())) {
-                result = 1.0F;
+                result = 0.7F;
             } else {
                 result = 0.5F;
             }

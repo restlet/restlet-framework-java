@@ -54,6 +54,7 @@ import org.restlet.test.ext.xml.TransformerTestCase;
 import org.restlet.test.jaxrs.AllJaxRsTests;
 import org.restlet.test.representation.AppendableTestCase;
 import org.restlet.test.representation.DigestTestCase;
+import org.restlet.test.resource.AnnotatedResourceTestCase;
 import org.restlet.test.resource.DirectoryTestCase;
 import org.restlet.test.resource.FileRepresentationTestCase;
 import org.restlet.test.resource.ResourceTestCase;
@@ -83,6 +84,7 @@ public class RestletTestSuite extends TestSuite {
 
     /** Constructor. */
     public RestletTestSuite() {
+        addTestSuite(AnnotatedResourceTestCase.class);
         addTestSuite(AppendableTestCase.class);
         addTestSuite(AtomTestCase.class);
         addTestSuite(CallTestCase.class);

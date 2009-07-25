@@ -1081,13 +1081,9 @@ public class ClientResource extends UniformResource {
      */
     protected Representation toRepresentation(Object source) {
         Representation result = null;
-        ConverterService cs = getConverterService();
 
-        if (getClientInfo().getAcceptedMediaTypes().size() > 0) {
-            Variant targetVariant = new Variant(getClientInfo()
-                    .getAcceptedMediaTypes().get(0).getMetadata());
-            result = cs.toRepresentation(source, targetVariant, null);
-        } else {
+        if (source != null) {
+            ConverterService cs = getConverterService();
             result = cs.toRepresentation(source);
         }
 

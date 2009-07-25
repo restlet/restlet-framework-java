@@ -153,10 +153,10 @@ public class DefaultConverter extends ConverterHelper {
         } else if (source instanceof Serializable) {
             if (MediaType.APPLICATION_JAVA_OBJECT.isCompatible(target
                     .getMediaType())) {
-                result = 1.0F;
+                result = 0.8F;
             } else if (MediaType.APPLICATION_JAVA_OBJECT_XML
                     .isCompatible(target.getMediaType())) {
-                result = 1.0F;
+                result = 0.8F;
             } else {
                 result = 0.5F;
             }
@@ -200,10 +200,10 @@ public class DefaultConverter extends ConverterHelper {
         } else if (Serializable.class.isAssignableFrom(target)) {
             if (MediaType.APPLICATION_JAVA_OBJECT.isCompatible(source
                     .getMediaType())) {
-                result = 1.0F;
+                result = 0.8F;
             } else if (MediaType.APPLICATION_JAVA_OBJECT_XML
                     .isCompatible(source.getMediaType())) {
-                result = 1.0F;
+                result = 0.8F;
             } else {
                 result = 0.5F;
             }

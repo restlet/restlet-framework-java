@@ -39,6 +39,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.logging.Level;
 
 import org.restlet.Context;
 import org.restlet.Restlet;
@@ -443,7 +444,8 @@ public abstract class ServerResource extends UniformResource {
                                     param, this));
                         }
                     } catch (Throwable e) {
-                        e.printStackTrace();
+                        getLogger().log(Level.WARNING,
+                                "Unable to convert the request entity", e);
                         parameters.add(null);
                     }
                 }
