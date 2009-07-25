@@ -118,12 +118,6 @@ public class HttpServerAdapter extends HttpAdapter {
                             entity.getCharacterSet().getName());
                 }
 
-                for (Parameter parameter : entity.getMediaType()
-                        .getParameters()) {
-                    contentType.append("; ").append(parameter.getName())
-                            .append("=").append(parameter.getValue());
-                }
-
                 responseHeaders.add(HttpConstants.HEADER_CONTENT_TYPE,
                         contentType.toString());
             }

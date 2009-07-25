@@ -864,8 +864,8 @@ public final class MediaType extends Metadata {
                         int index = getName().indexOf(';');
 
                         if (index != -1) {
-                            params = new Form(getName().substring(index + 1),
-                                    ';');
+                            params = new Form(getName().substring(index + 1)
+                                    .trim(), ';');
                         }
                     }
 

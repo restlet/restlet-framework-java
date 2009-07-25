@@ -87,6 +87,11 @@ public class MediaTypeTestCase extends RestletTestCase {
     public void testParameters() {
         MediaType mt = MediaType.valueOf("application/atom+xml;type=entry");
         assertEquals("entry", mt.getParameters().getFirstValue("type"));
+
+        mt = MediaType
+                .valueOf("multipart/x-mixed-replace; boundary=\"My boundary\"");
+        assertEquals("\"My boundary\"", mt.getParameters().getFirstValue(
+                "boundary"));
     }
 
     /**
