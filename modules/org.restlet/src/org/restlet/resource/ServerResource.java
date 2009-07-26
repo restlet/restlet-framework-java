@@ -39,7 +39,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.logging.Level;
 
 import org.restlet.Context;
 import org.restlet.Restlet;
@@ -467,28 +466,7 @@ public abstract class ServerResource extends UniformResource {
                 resultObject = annotationInfo.getJavaMethod().invoke(this);
             }
 
-            if (resultObject != null) {
-                // TODO This is a shortcut in case the resource does not
-                // precise the media-type of the representation. This should be
-                // enhanced, maybe with a media type "unknown" for the
-                // negotiated variant.
-                if (resultObject instanceof Representation) {
-                    result = (Representation) resultObject;
-                    if (variant.getCharacterSet() != null) {
-                        result.setCharacterSet(variant.getCharacterSet());
-                    } else if (variant.getMediaType() != null) {
-                        result.setMediaType(variant.getMediaType());
-                    } else if ((variant.getLanguages() != null)
-                            && !variant.getLanguages().isEmpty()) {
-                        result.setLanguages(variant.getLanguages());
-                    } else if ((variant.getEncodings() != null)
-                            && !variant.getEncodings().isEmpty()) {
-                        result.setEncodings(variant.getEncodings());
-                    }
-                } else {
-                    result = cs.toRepresentation(resultObject, variant, this);
-                }
-            }
+            result = cs.toRepresentation(resultObject, variant, this);
         } catch (IllegalArgumentException e) {
             throw new ResourceException(e);
         } catch (IllegalAccessException e) {

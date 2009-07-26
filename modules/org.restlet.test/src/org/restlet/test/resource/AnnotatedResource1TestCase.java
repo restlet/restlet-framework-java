@@ -46,7 +46,7 @@ import org.restlet.resource.ResourceException;
  * 
  * @author Jerome Louvel
  */
-public class AnnotatedResourceTestCase extends TestCase {
+public class AnnotatedResource1TestCase extends TestCase {
 
     private ClientResource clientResource;
 
@@ -107,4 +107,5 @@ public class AnnotatedResourceTestCase extends TestCase {
         assertEquals(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE, clientResource
                 .getStatus());
     }
+
 }

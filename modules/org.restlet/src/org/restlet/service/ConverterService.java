@@ -217,11 +217,22 @@ public class ConverterService extends Service {
                 result = ch.toRepresentation(source, target, resource);
 
                 if (result != null) {
-                    // Copy the variant metadata
-                    result.setCharacterSet(target.getCharacterSet());
-                    result.setMediaType(target.getMediaType());
-                    result.getEncodings().addAll(target.getEncodings());
-                    result.getLanguages().addAll(target.getLanguages());
+                    // Copy the variant metadata if necessary
+                    if (result.getCharacterSet() == null) {
+                        result.setCharacterSet(target.getCharacterSet());
+                    }
+
+                    if (result.getMediaType() == null) {
+                        result.setMediaType(target.getMediaType());
+                    }
+
+                    if (result.getEncodings().isEmpty()) {
+                        result.getEncodings().addAll(target.getEncodings());
+                    }
+
+                    if (result.getLanguages().isEmpty()) {
+                        result.getLanguages().addAll(target.getLanguages());
+                    }
                 }
             } catch (IOException e) {
                 Context.getCurrentLogger().log(Level.WARNING,
