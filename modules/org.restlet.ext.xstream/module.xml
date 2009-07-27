@@ -1,4 +1,4 @@
-<module id="xstream" includes="jse" type="integration" package="org.restlet.ext.xstream">
+<module id="xstream" excludes="gwt" type="integration" package="org.restlet.ext.xstream">
    <label>Restlet Extension - XStream</label>
    <description>
       Integration with XStream.
@@ -10,6 +10,7 @@
 
    <dependencies>
       <dependency type="library" id="jettison" />
+      <dependency type="library" id="stax" />
       <dependency type="library" id="xstream" />
       <dependency type="module" id="core" />
    </dependencies>
