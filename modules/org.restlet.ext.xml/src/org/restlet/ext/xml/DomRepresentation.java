@@ -33,19 +33,8 @@ package org.restlet.ext.xml;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import javax.xml.namespace.QName;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathFactory;
-
 import org.restlet.data.MediaType;
+import org.restlet.engine.Edition;
 import org.restlet.representation.Representation;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentType;
@@ -110,6 +99,7 @@ public class DomRepresentation extends XmlRepresentation {
         this.xmlRepresentation = xmlRepresentation;
     }
 
+    // [ifndef android] method
     /**
      * Creates a new JAXP Transformer object that will be used to serialize this
      * DOM. This method may be overridden in order to set custom properties on
@@ -117,39 +107,46 @@ public class DomRepresentation extends XmlRepresentation {
      * 
      * @return The transformer to be used for serialization.
      */
-    protected Transformer createTransformer() throws IOException {
+    protected javax.xml.transform.Transformer createTransformer()
+            throws IOException {
         try {
-            final Transformer transformer = TransformerFactory.newInstance()
-                    .newTransformer();
-            transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+            final javax.xml.transform.Transformer transformer = javax.xml.transform.TransformerFactory
+                    .newInstance().newTransformer();
+            transformer.setOutputProperty(
+                    javax.xml.transform.OutputKeys.METHOD, "xml");
 
             DocumentType docType = getDocument().getDoctype();
             if (docType != null) {
                 if (docType.getSystemId() != null) {
-                    transformer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM,
+                    transformer.setOutputProperty(
+                            javax.xml.transform.OutputKeys.DOCTYPE_SYSTEM,
                             getDocument().getDoctype().getSystemId());
                 }
 
                 if (docType.getPublicId() != null) {
-                    transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC,
+                    transformer.setOutputProperty(
+                            javax.xml.transform.OutputKeys.DOCTYPE_PUBLIC,
                             getDocument().getDoctype().getPublicId());
                 }
 
-                transformer.setOutputProperty(OutputKeys.INDENT, Boolean
-                        .toString(isIndent()));
+                transformer.setOutputProperty(
+                        javax.xml.transform.OutputKeys.INDENT, Boolean
+                                .toString(isIndent()));
             }
 
             return transformer;
-        } catch (TransformerConfigurationException tce) {
+        } catch (javax.xml.transform.TransformerConfigurationException tce) {
             throw new IOException("Couldn't write the XML representation: "
                     + tce.getMessage());
         }
     }
 
+    // [ifndef android] method
     @Override
-    public Object evaluate(String expression, QName returnType)
-            throws Exception {
-        final XPath xpath = XPathFactory.newInstance().newXPath();
+    public Object evaluate(String expression,
+            javax.xml.namespace.QName returnType) throws Exception {
+        final javax.xml.xpath.XPath xpath = javax.xml.xpath.XPathFactory
+                .newInstance().newXPath();
         xpath.setNamespaceContext(this);
         return xpath.evaluate(expression, getDocument(), returnType);
     }
@@ -180,14 +177,15 @@ public class DomRepresentation extends XmlRepresentation {
         return this.dom;
     }
 
+    // [ifndef android] method
     /**
      * Returns a DOM source.
      * 
      * @return A DOM source.
      */
     @Override
-    public DOMSource getDomSource() throws IOException {
-        return new DOMSource(getDocument());
+    public javax.xml.transform.dom.DOMSource getDomSource() throws IOException {
+        return new javax.xml.transform.dom.DOMSource(getDocument());
     }
 
     /**
@@ -236,21 +234,29 @@ public class DomRepresentation extends XmlRepresentation {
 
     @Override
     public void write(OutputStream outputStream) throws IOException {
+        if (Edition.CURRENT == Edition.ANDROID) {
+            throw new UnsupportedOperationException(
+                    "Instances of DomRepresentation cannot be written at this time.");
+        }
+        // [ifndef android]
         try {
             if (getDocument() != null) {
-                final Transformer transformer = createTransformer();
-                transformer.transform(new DOMSource(getDocument()),
-                        new StreamResult(outputStream));
+                final javax.xml.transform.Transformer transformer = createTransformer();
+                transformer.transform(new javax.xml.transform.dom.DOMSource(
+                        getDocument()),
+                        new javax.xml.transform.stream.StreamResult(
+                                outputStream));
             }
-        } catch (TransformerConfigurationException tce) {
+        } catch (javax.xml.transform.TransformerConfigurationException tce) {
             throw new IOException("Couldn't write the XML representation: "
                     + tce.getMessage());
-        } catch (TransformerException te) {
+        } catch (javax.xml.transform.TransformerException te) {
             throw new IOException("Couldn't write the XML representation: "
                     + te.getMessage());
-        } catch (TransformerFactoryConfigurationError tfce) {
+        } catch (javax.xml.transform.TransformerFactoryConfigurationError tfce) {
             throw new IOException("Couldn't write the XML representation: "
                     + tfce.getMessage());
         }
+        // [enddef]
     }
 }

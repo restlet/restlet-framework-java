@@ -1,4 +1,4 @@
-<module id="jibx" includes="jse" type="integration" package="org.restlet.ext.jibx">
+<module id="jibx" excludes="android, gwt" type="integration" package="org.restlet.ext.jibx">
    <label>Restlet Extension - JiBX</label>
    <description>
       Integration with JiBX.

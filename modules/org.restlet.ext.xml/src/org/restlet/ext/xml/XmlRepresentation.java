@@ -40,18 +40,9 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import javax.xml.XMLConstants;
-import javax.xml.namespace.NamespaceContext;
-import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Result;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.sax.SAXSource;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-import javax.xml.xpath.XPathConstants;
 
 import org.restlet.Context;
 import org.restlet.data.MediaType;
@@ -71,9 +62,13 @@ import org.xml.sax.SAXException;
  * 
  * @author Jerome Louvel
  */
-public abstract class XmlRepresentation extends OutputRepresentation implements
-        NamespaceContext {
+public abstract class XmlRepresentation extends OutputRepresentation
+// [ifndef android]
+        implements javax.xml.namespace.NamespaceContext
+// [enddef]
+{
 
+    // [ifndef android] method
     /**
      * Returns a SAX source.
      * 
@@ -82,13 +77,13 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
      * @return A SAX source.
      * @throws IOException
      */
-    public static SAXSource getSaxSource(Representation xmlRepresentation)
-            throws IOException {
-        SAXSource result = null;
+    public static javax.xml.transform.sax.SAXSource getSaxSource(
+            Representation xmlRepresentation) throws IOException {
+        javax.xml.transform.sax.SAXSource result = null;
 
         if (xmlRepresentation != null) {
-            result = new SAXSource(new InputSource(xmlRepresentation
-                    .getStream()));
+            result = new javax.xml.transform.sax.SAXSource(new InputSource(
+                    xmlRepresentation.getStream()));
 
             if (xmlRepresentation.getIdentifier() != null) {
                 result.setSystemId(xmlRepresentation.getIdentifier()
@@ -99,20 +94,21 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
         return result;
     }
 
+    // [ifndef android] method
     /**
      * Returns the wrapped schema.
      * 
      * @return The wrapped schema.
      * @throws IOException
      */
-    private static Schema getSchema(Representation schemaRepresentation)
-            throws Exception {
-        Schema result = null;
+    private static javax.xml.validation.Schema getSchema(
+            Representation schemaRepresentation) throws Exception {
+        javax.xml.validation.Schema result = null;
 
         if (schemaRepresentation != null) {
-            final StreamSource streamSource = new StreamSource(
+            final javax.xml.transform.stream.StreamSource streamSource = new javax.xml.transform.stream.StreamSource(
                     schemaRepresentation.getStream());
-            result = SchemaFactory.newInstance(
+            result = javax.xml.validation.SchemaFactory.newInstance(
                     getSchemaLanguageUri(schemaRepresentation)).newSchema(
                     streamSource);
         }
@@ -167,13 +163,14 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
     /** Internal map of namespaces. */
     private volatile Map<String, String> namespaces;
 
+    // [ifndef android] member
     /**
-     * A (compiled) {@link Schema} to use when validating this type of XML
-     * representations.
+     * A (compiled) {@link javax.xml.validation.Schema} to use when validating
+     * this type of XML representations.
      * 
-     * @see DocumentBuilderFactory#setSchema(Schema)
+     * @see DocumentBuilderFactory#setSchema(javax.xml.validation.Schema)
      */
-    private volatile Schema schema;
+    private volatile javax.xml.validation.Schema schema;
 
     /**
      * Indicates the desire for validating this type of XML representations
@@ -217,6 +214,7 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
         this.namespaceAware = false;
     }
 
+    // [ifndef android] member
     /**
      * Evaluates an XPath expression and returns the result as in the given
      * return type.
@@ -227,9 +225,10 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
      * @see javax.xml.xpath.XPathException
      * @see javax.xml.xpath.XPathConstants
      */
-    public abstract Object evaluate(String expression, QName returnType)
-            throws Exception;
+    public abstract Object evaluate(String expression,
+            javax.xml.namespace.QName returnType) throws Exception;
 
+    // [ifndef android] method
     /**
      * Evaluates an XPath expression as a boolean. If the evaluation fails, null
      * will be returned.
@@ -237,7 +236,8 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
      * @return The evaluation result.
      */
     public Boolean getBoolean(String expression) {
-        return (Boolean) internalEval(expression, XPathConstants.BOOLEAN);
+        return (Boolean) internalEval(expression,
+                javax.xml.xpath.XPathConstants.BOOLEAN);
     }
 
     /**
@@ -260,11 +260,12 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
                         "The JAXP parser doesn't support XInclude.", uoe);
             }
 
-            Schema xsd = getSchema();
-
+            // [ifndef android]
+            javax.xml.validation.Schema xsd = getSchema();
             if (xsd != null) {
                 dbf.setSchema(xsd);
             }
+            // [enddef]
 
             result = dbf.newDocumentBuilder();
             result.setEntityResolver(getEntityResolver());
@@ -277,14 +278,15 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
         return result;
     }
 
+    // [ifndef android] method
     /**
      * Returns a DOM source.
      * 
      * @return A DOM source.
      * @throws IOException
      */
-    public DOMSource getDomSource() throws IOException {
-        DOMSource result = null;
+    public javax.xml.transform.dom.DOMSource getDomSource() throws IOException {
+        javax.xml.transform.dom.DOMSource result = null;
         Node document = null;
 
         try {
@@ -295,7 +297,7 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
         }
 
         if (document != null) {
-            result = new DOMSource(document);
+            result = new javax.xml.transform.dom.DOMSource(document);
 
             if (getIdentifier() != null) {
                 result.setSystemId(getIdentifier().getTargetRef().toString());
@@ -343,6 +345,7 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
         return (this.namespaces == null) ? null : this.namespaces.get(prefix);
     }
 
+    // [ifndef android] method
     /**
      * Evaluates an XPath expression as a DOM Node. If the evaluation fails,
      * null will be returned.
@@ -350,9 +353,11 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
      * @return The evaluation result.
      */
     public Node getNode(String expression) {
-        return (Node) internalEval(expression, XPathConstants.NODE);
+        return (Node) internalEval(expression,
+                javax.xml.xpath.XPathConstants.NODE);
     }
 
+    // [ifndef android] method
     /**
      * Evaluates an XPath expression as a DOM NodeList. If the evaluation fails,
      * null will be returned.
@@ -361,10 +366,11 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
      */
     public NodeSet getNodes(String expression) {
         final NodeList nodes = (NodeList) internalEval(expression,
-                XPathConstants.NODESET);
+                javax.xml.xpath.XPathConstants.NODESET);
         return (nodes == null) ? null : new NodeSet(nodes);
     }
 
+    // [ifndef android] method
     /**
      * Evaluates an XPath expression as a number. If the evaluation fails, null
      * will be returned.
@@ -372,7 +378,8 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
      * @return The evaluation result.
      */
     public Double getNumber(String expression) {
-        return (Double) internalEval(expression, XPathConstants.NUMBER);
+        return (Double) internalEval(expression,
+                javax.xml.xpath.XPathConstants.NUMBER);
     }
 
     /**
@@ -414,34 +421,40 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
         return Collections.unmodifiableList(result).iterator();
     }
 
+    // [ifndef android] method
     /**
      * Returns a SAX source.
      * 
      * @return A SAX source.
      * @throws IOException
      */
-    public SAXSource getSaxSource() throws IOException {
+    public javax.xml.transform.sax.SAXSource getSaxSource() throws IOException {
         return getSaxSource(this);
     }
 
+    // [ifndef android] method
     /**
-     * Return the possibly null {@link Schema} to use for this type of XML
-     * representations.
+     * Return the possibly null {@link javax.xml.validation.Schema} to use for
+     * this type of XML representations.
      * 
-     * @return the {@link Schema} object of this type of XML representations.
+     * @return the {@link javax.xml.validation.Schema} object of this type of
+     *         XML representations.
      */
-    public Schema getSchema() {
+    public javax.xml.validation.Schema getSchema() {
         return schema;
     }
 
+    // [ifndef android] method
     /**
      * Returns a stream of XML markup.
      * 
      * @return A stream of XML markup.
      * @throws IOException
      */
-    public StreamSource getStreamSource() throws IOException {
-        final StreamSource result = new StreamSource(getStream());
+    public javax.xml.transform.stream.StreamSource getStreamSource()
+            throws IOException {
+        final javax.xml.transform.stream.StreamSource result = new javax.xml.transform.stream.StreamSource(
+                getStream());
 
         if (getIdentifier() != null) {
             result.setSystemId(getIdentifier().getTargetRef().toString());
@@ -450,15 +463,18 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
         return result;
     }
 
+    // [ifndef android] method
     /**
      * Evaluates an XPath expression as a string.
      * 
      * @return The evaluation result.
      */
     public String getText(String expression) {
-        return (String) internalEval(expression, XPathConstants.STRING);
+        return (String) internalEval(expression,
+                javax.xml.xpath.XPathConstants.STRING);
     }
 
+    // [ifndef android] method
     /**
      * Evaluates an XPath expression and returns the result as in the given
      * return type.
@@ -467,7 +483,8 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
      *            The qualified name of the return type.
      * @return The evaluation result.
      */
-    private Object internalEval(String expression, QName returnType) {
+    private Object internalEval(String expression,
+            javax.xml.namespace.QName returnType) {
         try {
             return evaluate(expression, returnType);
         } catch (RuntimeException e) {
@@ -561,6 +578,7 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
         this.namespaceAware = namespaceAware;
     }
 
+    // [ifndef android] method
     /**
      * Set a schema representation to be compiled and used when parsing and
      * validating this type of XML representations.
@@ -577,14 +595,16 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
         }
     }
 
+    // [ifndef android] method
     /**
-     * Set a (compiled) {@link Schema} to use when parsing and validating this
-     * type of XML representations.
+     * Set a (compiled) {@link javax.xml.validation.Schema} to use when parsing
+     * and validating this type of XML representations.
      * 
      * @param schema
-     *            The (compiled) {@link Schema} object to set.
+     *            The (compiled) {@link javax.xml.validation.Schema} object to
+     *            set.
      */
-    public void setSchema(Schema schema) {
+    public void setSchema(javax.xml.validation.Schema schema) {
         this.schema = schema;
     }
 
@@ -610,6 +630,7 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
         xIncludeAware = includeAware;
     }
 
+    // [ifndef android] method
     /**
      * Validates the XML representation against a given schema.
      * 
@@ -620,6 +641,7 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
         validate(schemaRepresentation, null);
     }
 
+    // [ifndef android] method
     /**
      * Validates the XML representation against a given schema.
      * 
@@ -628,21 +650,23 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
      * @param result
      *            The Result object that receives (possibly augmented) XML.
      */
-    public void validate(Representation schemaRepresentation, Result result)
-            throws Exception {
+    public void validate(Representation schemaRepresentation,
+            javax.xml.transform.Result result) throws Exception {
         validate(getSchema(schemaRepresentation), result);
     }
 
+    // [ifndef android] method
     /**
      * Validates the XML representation against a given schema.
      * 
      * @param schema
      *            The XML schema to use.
      */
-    public void validate(Schema schema) throws Exception {
+    public void validate(javax.xml.validation.Schema schema) throws Exception {
         validate(schema, null);
     }
 
+    // [ifndef android] method
     /**
      * Validates the XML representation against a given schema.
      * 
@@ -651,7 +675,8 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
      * @param result
      *            The Result object that receives (possibly augmented) XML.
      */
-    public void validate(Schema schema, Result result) throws Exception {
+    public void validate(javax.xml.validation.Schema schema,
+            javax.xml.transform.Result result) throws Exception {
         schema.newValidator().validate(getSaxSource(), result);
     }
 

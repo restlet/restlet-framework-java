@@ -1,4 +1,4 @@
-<module id="servlet" includes="jse" type="integration" package="org.restlet.ext.servlet">
+<module id="servlet" includes="jee" type="integration" package="org.restlet.ext.servlet">
    <label>Restlet Extension - Servlet</label>
    <description>
       Integration with Servlet API.

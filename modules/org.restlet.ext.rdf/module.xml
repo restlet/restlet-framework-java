@@ -1,4 +1,4 @@
-<module id="rdf" includes="jse" type="standard" package="org.restlet.ext.rdf">
+<module id="rdf" excludes="gwt" type="standard" package="org.restlet.ext.rdf">
    <label>Restlet Extension - RDF</label>
    <description>
       Support for the RDF parsing and generation.

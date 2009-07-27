@@ -1,4 +1,4 @@
-<module id="freemarker" includes="jse" type="integration" package="org.restlet.ext.freemarker">
+<module id="freemarker" excludes="gwt" type="integration" package="org.restlet.ext.freemarker">
    <label>Restlet Extension - FreeMarker</label>
    <description>
       Integration with FreeMarker.

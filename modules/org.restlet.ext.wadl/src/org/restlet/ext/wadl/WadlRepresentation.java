@@ -38,8 +38,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
-import javax.xml.namespace.QName;
-
 import org.restlet.Context;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
@@ -47,12 +45,12 @@ import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.engine.Engine;
-import org.restlet.representation.InputRepresentation;
-import org.restlet.representation.Representation;
 import org.restlet.ext.xml.DomRepresentation;
 import org.restlet.ext.xml.SaxRepresentation;
 import org.restlet.ext.xml.TransformRepresentation;
 import org.restlet.ext.xml.XmlWriter;
+import org.restlet.representation.InputRepresentation;
+import org.restlet.representation.Representation;
 import org.w3c.dom.Attr;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
@@ -929,9 +927,10 @@ public class WadlRepresentation extends SaxRepresentation {
         resources.getResources().add(resource);
     }
 
+    // [ifndef android] method
     @Override
-    public Object evaluate(String expression, QName returnType)
-            throws Exception {
+    public Object evaluate(String expression,
+            javax.xml.namespace.QName returnType) throws Exception {
         return null;
     }
 

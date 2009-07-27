@@ -1,4 +1,4 @@
-<module id="javamail" includes="jse" type="connector" package="org.restlet.ext.javamail">
+<module id="javamail" excludes="android, gae, gwt" type="connector" package="org.restlet.ext.javamail">
    <label>Restlet Extension - JavaMail</label>
    <description>
       Integration with JavaMail.

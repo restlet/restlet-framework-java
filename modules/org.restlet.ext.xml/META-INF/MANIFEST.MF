@@ -32,3 +32,4 @@ Import-Package: javax.xml,
  org.xml.sax,
  org.xml.sax.helpers
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Require-Bundle: org.restlet
