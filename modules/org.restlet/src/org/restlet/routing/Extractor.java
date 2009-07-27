@@ -121,10 +121,9 @@ public class Extractor extends Filter {
 
     /**
      * Allows filtering before its handling by the target Restlet. By default it
-     * parses the template variable, adjust the base reference, then extracts
-     * the attributes from form parameters (query, cookies, entity) and finally
-     * tries to validates the variables as indicated by the
-     * {@link #validate(String, boolean, String)} method.
+     * extracts the attributes from form parameters (query, cookies, entity) and
+     * finally puts them in the request's attributes (
+     * {@link Request#getAttributes()}).
      * 
      * @param request
      *            The request to filter.
@@ -213,7 +212,6 @@ public class Extractor extends Filter {
      * @param first
      *            Indicates if only the first cookie should be set. Otherwise as
      *            a List instance might be set in the attribute value.
-     * @return The current Filter.
      */
     public void extractEntity(String attribute, String parameter, boolean first) {
         getEntityExtracts().add(new ExtractInfo(attribute, parameter, first));
@@ -229,7 +227,6 @@ public class Extractor extends Filter {
      * @param first
      *            Indicates if only the first cookie should be set. Otherwise as
      *            a List instance might be set in the attribute value.
-     * @return The current Filter.
      */
     public void extractQuery(String attribute, String parameter, boolean first) {
         getQueryExtracts().add(new ExtractInfo(attribute, parameter, first));

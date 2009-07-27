@@ -55,6 +55,7 @@ import org.restlet.data.Response;
 import org.restlet.data.ServerInfo;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
+import org.restlet.service.StatusService;
 import org.restlet.util.Series;
 
 /**
@@ -93,13 +94,14 @@ public abstract class UniformResource {
     /**
      * Invoked when an error or an exception is caught during initialization,
      * handling or releasing. By default, updates the responses's status with
-     * the result of {@link #getStatus(Throwable)}.
+     * the result of {@link StatusService#getStatus(Throwable, UniformResource)}
+     * .
      * 
      * @param throwable
      *            The caught error or exception.
      */
     protected void doCatch(Throwable throwable) {
-        if (getResponse() != null) {
+        if (getResponse() != null && getApplication() != null) {
             getResponse().setStatus(
                     getApplication().getStatusService().getStatus(throwable,
                             this));
@@ -136,7 +138,7 @@ public abstract class UniformResource {
     }
 
     /**
-     * Returns the parent application if it exists, or instantiate a new one if
+     * Returns the parent application if it exists, or instantiates a new one if
      * needed.
      * 
      * @return The parent application if it exists, or a new one.

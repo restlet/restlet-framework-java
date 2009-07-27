@@ -68,7 +68,7 @@ import org.restlet.util.Resolver;
  * <li>The authorize() method is called and if authorization is given the
  * accept() method is invoked, which delegates to the attached Restlet or
  * Resource by default. Otherwise, the forbid method is called, which sets the
- * response status to CLIENT_ERROR_FORBIDDEN (403).</li>
+ * response status to {@link Status#CLIENT_ERROR_FORBIDDEN} (403).</li>
  * </ol>
  * </li>
  * <li>Missing: no credentials could be found, the challenge() method is invoked
@@ -89,7 +89,7 @@ import org.restlet.util.Resolver;
  *      href="http://www.restlet.org/documentation/1.1/tutorial#part09">Tutorial:
  *      Guarding access to sensitive resources</a>
  * @author Jerome Louvel
- * @deprecated Use the {@link ChallengeGuard} class instead.
+ * @deprecated Use the {@link ChallengeAuthenticator} class instead.
  */
 @Deprecated
 public class Guard extends Filter {

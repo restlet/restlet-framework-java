@@ -30,6 +30,7 @@
 
 package org.restlet.representation;
 
+import java.beans.XMLEncoder;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -108,7 +109,7 @@ public class ObjectRepresentation<T extends Serializable> extends
      * or the {@link MediaType#APPLICATION_XML} type. In the first case, the
      * Java Object Serialization mechanism is used, based on
      * {@link ObjectOutputStream}. In the latter case, the JavaBeans XML
-     * serialization is used, based on {@link XMLEncoder}.
+     * serialization is used, based on {@link java.beans.XMLEncoder}.
      * 
      * @param object
      *            The serializable object.

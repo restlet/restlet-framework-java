@@ -113,10 +113,8 @@ public class TemplateRoute extends Filter {
 
     /**
      * Allows filtering before its handling by the target Restlet. By default it
-     * parses the template variable, adjust the base reference, then extracts
-     * the attributes from form parameters (query, cookies, entity) and finally
-     * tries to validates the variables as indicated by the
-     * {@link #validate(String, boolean, String)} method.
+     * parses the template variable, adjust the base reference of the target
+     * resource's reference.
      * 
      * @param request
      *            The request to filter.

@@ -70,34 +70,6 @@
       <mapper classname="mapper.ReplaceStringMapper" classpathref="forge-path" from=".MF.gwt" to=".MF" />
 ]]>
       </files-mappers>
-<!--
-         <exclude name="src/org/restlet/data/ReferenceList.java" />
-         <exclude name="src/org/restlet/engine/http/CookiesReader.java" />
-         <exclude name="src/org/restlet/engine/http/CookiesUtils.java" />
-         <exclude name="src/org/restlet/engine/http/HeaderReader.java" />
-          <exclude name="src/org/restlet/engine/http/HttpClientCall.java" />
-         <exclude name="src/org/restlet/engine/http/HttpClientAdapter.java" />
-         <exclude name="src/org/restlet/engine/http/HttpClientHelper.java" />
-         <exclude name="src/org/restlet/engine/http/HttpUtils.java" />
-         <exclude name="src/org/restlet/engine/http/PreferenceReader.java" />
-         <exclude name="src/org/restlet/engine/http/PreferenceUtils.java" />
-         <exclude name="src/org/restlet/Context.java" />
-         <exclude name="src/org/restlet/engine/util/FormReader.java" />
-         <exclude name="src/org/restlet/engine/util/FormUtils.java" />
-         <exclude name="src/org/restlet/engine/Engine.java" />
-         <exclude name="src/org/restlet/engine/RestletHelper.java" />
-         <exclude name="src/org/restlet/representation/Representation.java" />
-         <exclude name="src/org/restlet/representation/StreamRepresentation.java" />
-         <exclude name="src/org/restlet/representation/StringRepresentation.java" />
-         <exclude name="src/org/restlet/representation/RepresentationInfo.java" />
-         <exclude name="src/org/restlet/engine/Call.java" />
-         <exclude name="src/org/restlet/representation/InputRepresentation.java" />
-         <exclude name="src/org/restlet/engine/http/HttpAdapter.java" />
-         <exclude name="src/org/restlet/engine/Adapter.java" />
-         <exclude name="src/org/restlet/engine/http/HttpClientHelper.java" />
-
--->
-
       <files-sets>
 <![CDATA[
          <exclude name="META-INF/MANIFEST.MF" />

@@ -42,8 +42,8 @@ import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * A Utility class which extends the provided {@link DefaultHandler} and
- * implements the {@link LSResourceResolver} interface. All the methods of this
- * class do nothing besides generating log messages.
+ * implements the {@link org.w3c.dom.ls.LSResourceResolver} interface. All the
+ * methods of this class do nothing besides generating log messages.
  * 
  * @author Raif S. Naffah
  * @author Jerome Louvel

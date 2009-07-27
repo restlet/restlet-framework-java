@@ -164,11 +164,9 @@ public abstract class Restlet implements Uniform {
         Logger result = null;
         Context context = getContext();
 
-        // [ifndef gwt]
         if (context == null) {
             context = Context.getCurrent();
         }
-        // [enddef]
 
         if (context != null) {
             result = context.getLogger();

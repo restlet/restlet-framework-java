@@ -54,7 +54,7 @@ public abstract class Authorizer extends Filter {
     /**
      * Authorizer returning true for all authenticated requests. For
      * unauthenticated requests, it sets the response's status to
-     * {@value Status#CLIENT_ERROR_UNAUTHORIZED} instead of the default
+     * {@link Status#CLIENT_ERROR_UNAUTHORIZED} instead of the default
      * {@link Status#CLIENT_ERROR_FORBIDDEN}.
      * 
      * @see ClientInfo#isAuthenticated()

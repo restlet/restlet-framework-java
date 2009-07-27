@@ -575,8 +575,8 @@ public class Engine {
      * 
      * @param classLoader
      *            The classloader to use.
-     * @param configUrl
-     *            Configuration URL to parse
+     * @param provider
+     *            Bynary name of the helper's class.
      * @param helpers
      *            The list of helpers to update.
      * @param constructorClass
