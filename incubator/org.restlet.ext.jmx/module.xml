@@ -9,6 +9,8 @@
    </distributions>
 
    <dependencies>
+      <dependency type="library" id="dbcp" />
+      <dependency type="library" id="pool" />
       <dependency type="module" id="core" />
    </dependencies>
 </module>

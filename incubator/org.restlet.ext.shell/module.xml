@@ -1,4 +1,4 @@
-<module id="shell" includes="jse" type="integration" package="org.restlet.ext.shell">
+<module id="shell" includes="jee, jse" type="integration" package="org.restlet.ext.shell">
    <label>Interactive shell for Restlet.</label>
    <description>
       Restlet Extension - Shell
@@ -10,8 +10,8 @@
 
    <dependencies>
       <dependency type="library" id="cli" />
-      <dependency type="library" id="jline" />
-      <dependency type="library" id="rhino" />
+      <dependency type="library" id="jruby" />
+      <dependency type="library" id="script" />
       <dependency type="module" id="core" />
    </dependencies>
 </module>

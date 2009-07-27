@@ -1,4 +1,4 @@
-<module id="jaxb" includes="jse" type="integration" package="org.restlet.ext.jaxb">
+<module id="jaxb" excludes="android, gwt" type="integration" package="org.restlet.ext.jaxb">
    <label>Restlet Extension - JAXB</label>
    <description>
       Integration with Java XML Binding.
@@ -10,6 +10,7 @@
 
    <dependencies>
       <dependency type="library" id="jaxb-ri" />
+      <dependency type="library" id="stax" />
       <dependency type="module" id="core" />
       <dependency type="module" id="xml" />
    </dependencies>

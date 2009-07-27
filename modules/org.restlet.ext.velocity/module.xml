@@ -1,4 +1,4 @@
-<module id="velocity" includes="jse" type="integration" package="org.restlet.ext.velocity">
+<module id="velocity" excludes="gwt" type="integration" package="org.restlet.ext.velocity">
    <label>Restlet Extension - Velocity</label>
    <description>
       Integration with Apache Velocity.
@@ -10,6 +10,7 @@
 
    <dependencies>
       <dependency type="library" id="collections" />
+      <dependency type="library" id="lang" />
       <dependency type="library" id="velocity" />
       <dependency type="module" id="core" />
    </dependencies>

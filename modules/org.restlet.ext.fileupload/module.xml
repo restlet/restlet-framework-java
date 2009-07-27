@@ -1,4 +1,4 @@
-<module id="fileupload" includes="jse" type="integration" package="org.restlet.ext.fileupload">
+<module id="fileupload" excludes="gae, gwt" type="integration" package="org.restlet.ext.fileupload">
    <label>Restlet Extension - FileUpload</label>
    <description>
       Integration with Apache FileUpload.

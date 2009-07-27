@@ -1,4 +1,4 @@
-<module id="lucene" includes="jse" type="integration" package="org.restlet.ext.lucene">
+<module id="lucene" excludes="android, gwt" type="integration" package="org.restlet.ext.lucene">
    <label>Restlet Extension - Lucene</label>
    <description>
       Integration with Apache Lucene, Solr and Tika sub-projects.
@@ -9,6 +9,7 @@
    </distributions>
 
    <dependencies>
+      <dependency type="library" id="io" />
       <dependency type="library" id="solr" />
       <dependency type="library" id="tika" />
       <dependency type="module" id="core" />

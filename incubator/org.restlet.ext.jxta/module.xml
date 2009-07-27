@@ -1,4 +1,4 @@
-<module id="jxta" includes="jse" type="integration" package="org.restlet.ext.jxta">
+<module id="jxta" excludes="gae, gwt" type="integration" package="org.restlet.ext.jxta">
    <label>Restlet Extension - JXTA</label>
    <description>
       Integration with JXTA framework.
@@ -9,8 +9,9 @@
    </distributions>
 
    <dependencies>
-      <dependency type="library" id="servlet" />
+      <dependency type="library" id="dbcp" />
       <dependency type="library" id="jxta" />
+      <dependency type="library" id="pool" />
       <dependency type="module" id="core" />
    </dependencies>
 </module>

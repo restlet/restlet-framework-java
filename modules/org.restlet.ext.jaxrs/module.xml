@@ -1,4 +1,4 @@
-<module id="jaxrs" includes="jse" type="standard" package="org.restlet.ext.jaxrs">
+<module id="jaxrs" excludes="gwt" type="standard" package="org.restlet.ext.jaxrs">
    <label>Restlet Extension - JAX-RS</label>
    <description>
       Implementation of JAX-RS (JSR-311)
@@ -9,13 +9,14 @@
    </distributions>
 
    <dependencies>
-      <dependency type="library" id="jaxb-ri" />
-      <dependency type="library" id="fileupload" />
       <dependency type="library" id="activation" />
+      <dependency type="library" id="fileupload" />
       <dependency type="library" id="javamail" />
-      <dependency type="library" id="servlet" />
+      <dependency type="library" id="jaxb-ri" />
       <dependency type="library" id="jaxrs" />
       <dependency type="library" id="json" />
+      <dependency type="library" id="servlet" />
+      <dependency type="library" id="stax" />
       <dependency type="module" id="core" />
    </dependencies>
 </module>

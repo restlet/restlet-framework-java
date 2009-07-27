@@ -1,4 +1,4 @@
-<module id="spring" includes="jse" type="integration" package="org.restlet.ext.spring">
+<module id="spring" includes="jee, jse, gae" type="integration" package="org.restlet.ext.spring">
    <label>Restlet Extension - Spring Framework</label>
    <description>
       Integration with Spring Framework.
@@ -9,9 +9,25 @@
    </distributions>
 
    <dependencies>
-      <dependency type="library" id="servlet" />
+      <dependency type="library" id="cglib" />
+      <dependency type="library" id="logging" />
+      <dependency type="library" id="servlet" includes="jee" />
       <dependency type="library" id="spring" />
       <dependency type="module" id="core" />
-      <dependency type="module" id="servlet" />
+      <dependency type="module" id="servlet" includes="jee" />
    </dependencies>
+   <source edition="jse">
+      <files-sets>
+<![CDATA[
+         <exclude name="src/org/restlet/ext/spring/*Servlet.java" />
+]]>
+      </files-sets>
+   </source>
+   <source edition="gae">
+      <files-sets>
+<![CDATA[
+         <exclude name="src/org/restlet/ext/spring/*Servlet.java" />
+]]>
+      </files-sets>
+   </source>
 </module>

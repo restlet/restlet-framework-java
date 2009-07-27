@@ -9,7 +9,9 @@
    </distributions>
 
    <dependencies>
+      <dependency type="library" id="codec" />
       <dependency type="library" id="httpclient" />
+      <dependency type="library" id="logging" />
       <dependency type="module" id="core" />
    </dependencies>
 </module>

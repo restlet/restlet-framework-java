@@ -1,4 +1,4 @@
-<module id="oauth" includes="jse" type="standard" package="org.restlet.ext.oauth">
+<module id="oauth" excludes="gwt" type="standard" package="org.restlet.ext.oauth">
    <label>Restlet Extension - OAuth</label>
    <description>
       Support for OAuth HTTP authentication.
@@ -10,7 +10,9 @@
 
    <dependencies>
       <dependency type="library" id="codec" />
+      <dependency type="library" id="dbcp" />
       <dependency type="library" id="oauth" />
+      <dependency type="library" id="pool" />
       <dependency type="module" id="core" />
    </dependencies>
 </module>
