@@ -49,8 +49,8 @@ import org.restlet.engine.util.SystemUtils;
 import org.restlet.representation.InputRepresentation;
 
 /**
- * FTP client connector using the {@link FtpUrlConnectionCall}. Here is the list
- * of parameters that are supported:
+ * FTP client connector using the {@link URLConnection}. Here is the list of
+ * parameters that are supported:
  * <table>
  * <tr>
  * <th>Parameter name</th>

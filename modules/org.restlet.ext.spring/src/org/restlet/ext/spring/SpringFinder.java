@@ -140,7 +140,8 @@ public class SpringFinder extends Finder {
      * "targetClass" property. For easier Spring configuration, the default
      * target resource's constructor is invoked. The created instance must be
      * initialized by invoking the
-     * {@link Resource#init(Context, Request, Response)} method on the resource.
+     * {@link org.restlet.resource.Resource#init(Context, Request, Response)}
+     * method on the resource.
      * 
      * @return The created resource or null.
      */

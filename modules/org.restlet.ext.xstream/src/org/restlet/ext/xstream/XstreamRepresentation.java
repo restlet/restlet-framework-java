@@ -104,7 +104,7 @@ public class XstreamRepresentation<T> extends OutputRepresentation {
 
     /**
      * Creates an XStream object based on a media type. By default, it creates a
-     * {@link JsonHierarchicalStreamDriver} or a {@link DomDriver}.
+     * {@link HierarchicalStreamDriver} or a {@link DomDriver}.
      * 
      * @param mediaType
      *            The serialization media type.

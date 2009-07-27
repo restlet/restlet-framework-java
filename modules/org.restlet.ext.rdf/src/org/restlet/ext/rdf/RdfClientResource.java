@@ -246,8 +246,8 @@ public class RdfClientResource extends ClientResource {
      * Returns the linked resources, based on the RDF representation exposed.
      * The type of links to follow can be restricted.
      * 
-     * @param typeRef
-     *            The type reference of the links to select or null.
+     * @param typeRefs
+     *            The set of types references of the links to select or null.
      * @return All the linked resources.
      * @see #getLinks()
      */

@@ -30,6 +30,8 @@
 
 package org.restlet.ext.spring;
 
+import java.util.Map;
+
 import org.restlet.Restlet;
 import org.restlet.resource.Finder;
 import org.restlet.routing.Router;
@@ -42,15 +44,13 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-import java.util.Map;
-
 /**
  * Restlet {@link Router} which behaves like Spring's
  * {@link org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping}. It
- * takes every bean of type {@link Resource} or {@link Restlet} defined in a
- * particular context and examines its aliases (generally speaking, its name and
- * id). If one of the aliases begins with a forward slash, the resource will be
- * attached to that URI.
+ * takes every bean of type {@link org.restlet.resource.Resource} or
+ * {@link Restlet} defined in a particular context and examines its aliases
+ * (generally speaking, its name and id). If one of the aliases begins with a
+ * forward slash, the resource will be attached to that URI.
  * <p>
  * Example:
  * 

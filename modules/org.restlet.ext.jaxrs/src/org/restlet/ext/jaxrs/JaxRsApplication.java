@@ -52,9 +52,9 @@ import org.restlet.security.Authenticator;
  * {@link JaxRsApplication#JaxRsApplication(Context)}.
  * <ul>
  * <li>Add your {@link Application}(s) by calling {@link #add(Application)}.</li>
- * <li>If you need authentication, set a {@link UniformGuard} and perhaps an
- * {@link RoleChecker}, see {@link #setGuard(UniformGuard)} or
- * {@link #setAuthentication(UniformGuard, RoleChecker)}.</li>
+ * <li>If you need authentication, set a {@link Authenticator} and perhaps an
+ * {@link RoleChecker}, see {@link #setGuard(Authenticator)} or
+ * {@link #setAuthentication(Authenticator, RoleChecker)}.</li>
  * </ul>
  * At least add the JaxRsApplication to a {@link Component}.
  * </p>
@@ -234,7 +234,7 @@ public class JaxRsApplication extends org.restlet.Application {
     }
 
     /**
-     * Sets the objects to check the authentication. The {@link UniformGuard}
+     * Sets the objects to check the authentication. The {@link Authenticator}
      * checks the username and password (e.g.), the {@link RoleChecker} manages
      * the role management for the JAX-RS extension.
      * 
@@ -242,7 +242,7 @@ public class JaxRsApplication extends org.restlet.Application {
      *            the Guard to use.
      * @param roleChecker
      *            the RoleChecker to use
-     * @see #setGuard(UniformGuard)
+     * @see #setGuard(Authenticator)
      * @see #setRoleChecker(RoleChecker)
      * @deprecated Use {@link ClientInfo#isInRole(org.restlet.security.Role)}
      *             instead
@@ -260,20 +260,20 @@ public class JaxRsApplication extends org.restlet.Application {
     }
 
     /**
-     * Sets the {@link UniformGuard} to use. It should typically use the
+     * Sets the {@link Authenticator} to use. It should typically use the
      * {@link Context} of this application.<br>
      * The new one is ignored, after the root Restlet is created (see
      * {@link #createRoot()}.
      * 
      * <p>
      * This replaced the guard set via
-     * {@link #setGuard(org.restlet.security.UniformGuard)}.
+     * {@link #setGuard(org.restlet.security.Authenticator)}.
      * 
      * @param guard
      *            the Guard to use.
-     * @see #setAuthentication(UniformGuard, RoleChecker)
-     * @see #setGuard(org.restlet.security.UniformGuard)
-     * @deprecated Use the {@link #setGuard(UniformGuard)} method instead.
+     * @see #setAuthentication(Authenticator, RoleChecker)
+     * @see #setGuard(org.restlet.security.Authenticator)
+     * @deprecated Use the {@link #setGuard(Authenticator)} method instead.
      */
     @Deprecated
     public void setGuard(org.restlet.security.Guard guard) {
@@ -311,8 +311,8 @@ public class JaxRsApplication extends org.restlet.Application {
      * If you give an RoleChecker, you should also give a Guard.
      * 
      * @param roleChecker
-     * @see #setAuthentication(UniformGuard, RoleChecker)
-     * @see #setGuard(UniformGuard)
+     * @see #setAuthentication(Authenticator, RoleChecker)
+     * @see #setGuard(Authenticator)
      * @deprecated Use {@link ClientInfo#isInRole(org.restlet.security.Role)}
      *             instead
      */

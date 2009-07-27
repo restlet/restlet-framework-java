@@ -182,7 +182,7 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
     /**
      * Sets the Simple container server.
      * 
-     * @param containerServer
+     * @param container
      *            The Simple containerServer.
      */
     protected void setContainerServer(ContainerServer container) {
