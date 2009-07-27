@@ -54,7 +54,8 @@ public final class DateUtils {
      * 
      * @author Piyush Purang (ppurang@gmail.com)
      * @see java.util.Date
-     * @see <a href="http://discuss.fogcreek.com/joelonsoftware3/default.asp?cmd=show&ixPost=73959&ixReplies=24"
+     * @see <a
+     *      href="http://discuss.fogcreek.com/joelonsoftware3/default.asp?cmd=show&ixPost=73959&ixReplies=24"
      *      >Immutable Date</a>
      */
     private static final class ImmutableDate extends Date {
