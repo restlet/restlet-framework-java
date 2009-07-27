@@ -40,6 +40,7 @@ import static org.restlet.ext.jaxrs.internal.util.Util.getSupportedCharSet;
 import static org.restlet.ext.jaxrs.internal.util.Util.sortByConcreteness;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.GenericSignatureFormatError;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -125,6 +126,66 @@ import org.restlet.service.MetadataService;
  * @author Stephan Koops
  */
 public class JaxRsRestlet extends Restlet {
+    /**
+     * Structure to return the obtained {@link ResourceObject} and the
+     * identified {@link ResourceMethod}.
+     * 
+     * @author Stephan Koops
+     */
+    class ResObjAndMeth {
+
+        private ResourceObject resourceObject;
+
+        private ResourceMethod resourceMethod;
+
+        ResObjAndMeth(ResourceObject resourceObject,
+                ResourceMethod resourceMethod) {
+            this.resourceObject = resourceObject;
+            this.resourceMethod = resourceMethod;
+        }
+    }
+
+    /**
+     * Structure to return the obtained {@link ResourceObject} and the remaining
+     * path after identifying the object.
+     * 
+     * @author Stephan Koops
+     */
+    class ResObjAndRemPath {
+
+        private ResourceObject resourceObject;
+
+        private RemainingPath u;
+
+        ResObjAndRemPath(ResourceObject resourceObject, RemainingPath u) {
+            this.resourceObject = resourceObject;
+            this.u = u;
+        }
+    }
+
+    /**
+     * Structure to return an instance of the identified
+     * {@link RootResourceClass}, the matched URI path and the remaining path
+     * after identifying the root resource class.
+     * 
+     * @author Stephan Koops
+     */
+    class RroRemPathAndMatchedPath {
+
+        private ResourceObject rootResObj;
+
+        private RemainingPath u;
+
+        private String matchedUriPath;
+
+        RroRemPathAndMatchedPath(ResourceObject rootResObj, RemainingPath u,
+                String matchedUriPath) {
+            this.rootResObj = rootResObj;
+            this.u = u;
+            this.matchedUriPath = matchedUriPath;
+        }
+    }
+
     static {
         javax.ws.rs.ext.RuntimeDelegate
                 .setInstance(new org.restlet.ext.jaxrs.internal.spi.RuntimeDelegateImpl());
@@ -197,38 +258,6 @@ public class JaxRsRestlet extends Restlet {
         this.setRoleChecker(roleChecker);
     }
 
-    private void loadDefaultProviders() {
-        this.addSingleton(new BufferedReaderProvider(), true);
-        this.addSingleton(new ByteArrayProvider(), true);
-        this.addSingleton(
-                "org.restlet.ext.jaxrs.internal.provider.DataSourceProvider",
-                true);
-        this.addSingleton(
-                "org.restlet.ext.jaxrs.internal.provider.FileUploadProvider",
-                true); // not yet tested
-        // this.addSingleton(new ConverterProvider(), true);
-        this.addSingleton(new FileProvider(), true);
-        this.addSingleton(new InputStreamProvider(), true);
-        this.addSingleton(
-                "org.restlet.ext.jaxrs.internal.provider.JaxbElementProvider",
-                true);
-        this.addSingleton(
-                "org.restlet.ext.jaxrs.internal.provider.JaxbProvider", true);
-        this.addSingleton(
-                "org.restlet.ext.jaxrs.internal.provider.JsonProvider", true);
-        this.addSingleton(
-                "org.restlet.ext.jaxrs.internal.provider.MultipartProvider",
-                true); // not yet tested
-        this.addSingleton(new ReaderProvider(), true);
-        this.addSingleton(new StreamingOutputProvider(), true);
-        this.addSingleton(new StringProvider(), true);
-        this.addSingleton(new WwwFormFormProvider(), true);
-        this.addSingleton(new WwwFormMmapProvider(), true);
-        this.addSingleton(new SourceProvider(), true);
-
-        this.addSingleton(new WebAppExcMapper(), true);
-    }
-
     /**
      * Will use the given JAX-RS root resource class.<br>
      * If the given class is not a valid root resource class, a warning is
@@ -263,6 +292,26 @@ public class JaxRsRestlet extends Restlet {
             getLogger().warning(warning);
         }
         return used;
+    }
+
+    /**
+     * Adds the provider object as default provider to this JaxRsRestlet.
+     * 
+     * @param jaxRsProvider
+     *            The provider object or class name.
+     * @return true, if the provider is ok and added, otherwise false.
+     * @throws IllegalArgumentException
+     *             if null was given
+     * @see {@link javax.ws.rs.ext.Provider}
+     */
+    private boolean addDefaultProvider(Object jaxRsProvider) {
+        try {
+            return addSingleton(jaxRsProvider, true);
+        } catch (GenericSignatureFormatError e) {
+            getLogger().warning(
+                    "Unable to add default provider class : " + jaxRsProvider);
+        }
+        return false;
     }
 
     /**
@@ -340,6 +389,8 @@ public class JaxRsRestlet extends Restlet {
         return used;
     }
 
+    // now methods for the daily work
+
     /**
      * Sets the Restlet that is called, if no (root) resource class or method
      * could be found.
@@ -356,381 +407,6 @@ public class JaxRsRestlet extends Restlet {
         this.setNoRootResClHandler(notMatchedRestlet);
         this.setNoResourceClHandler(notMatchedRestlet);
         this.setNoResMethodHandler(notMatchedRestlet);
-    }
-
-    @Override
-    public void start() throws Exception {
-        providers.initAll();
-        super.start();
-    }
-
-    // now methods for the daily work
-
-    /**
-     * Handles a call by looking for the resource metod to call, call it and
-     * return the result.
-     * 
-     * @param request
-     *            The {@link Request} to handle.
-     * @param response
-     *            The {@link Response} to update.
-     */
-    @Override
-    public void handle(Request request, Response response) {
-        super.handle(request, response);
-        ResourceObject resourceObject = null;
-        final Reference baseRef = request.getResourceRef().getBaseRef();
-        request.setRootRef(new Reference(baseRef.toString()));
-        // NICE Normally, the "rootRef" property is set by the VirtualHost, each
-        // time a request is handled by one of its routes.
-        // Email from Jerome, 2008-09-22
-        try {
-            CallContext callContext;
-            callContext = new CallContext(request, response, this.roleChecker);
-            tlContext.set(callContext);
-            try {
-                ResObjAndMeth resObjAndMeth;
-                resObjAndMeth = requestMatching();
-                callContext.setReadOnly();
-                ResourceMethod resourceMethod = resObjAndMeth.resourceMethod;
-                resourceObject = resObjAndMeth.resourceObject;
-                Object result = invokeMethod(resourceMethod, resourceObject);
-                handleResult(result, resourceMethod);
-            } catch (WebApplicationException e) {
-                // the message of the Exception is not used in the
-                // WebApplicationException
-                jaxRsRespToRestletResp(this.providers.convert(e), null);
-                return;
-            }
-        } catch (RequestHandledException e) {
-            // Exception was handled and data were set into the Response.
-        } finally {
-            Representation entity = request.getEntity();
-            if (entity != null)
-                entity.release();
-        }
-    }
-
-    /**
-     * Implementation of algorithm in JAX-RS-Spec (2008-04-16), Section 3.7.2
-     * "Request Matching"
-     * 
-     * @return (Sub)Resource Method
-     * @throws RequestHandledException
-     * @throws WebApplicationException
-     */
-    private ResObjAndMeth requestMatching() throws RequestHandledException,
-            WebApplicationException {
-        Request restletRequest = tlContext.get().getRequest();
-        // Part 1
-        RemainingPath u = new RemainingPath(restletRequest.getResourceRef()
-                .getRemainingPart());
-        RroRemPathAndMatchedPath rrm = identifyRootResource(u);
-        // Part 2
-        ResObjAndRemPath resourceObjectAndPath = obtainObject(rrm);
-        Representation entity = restletRequest.getEntity();
-        // Part 3
-        MediaType givenMediaType;
-        if (entity != null)
-            givenMediaType = entity.getMediaType();
-        else
-            givenMediaType = null;
-        ResObjAndMeth method = identifyMethod(resourceObjectAndPath,
-                givenMediaType);
-        return method;
-    }
-
-    /**
-     * Identifies the root resource class, see JAX-RS-Spec (2008-04-16), section
-     * 3.7.2 "Request Matching", Part 1: "Identify the root resource class"
-     * 
-     * @param u
-     *            the remaining path after the base ref
-     * @return The identified root resource object, the remaining path after
-     *         identifying and the matched template parameters; see
-     *         {@link RroRemPathAndMatchedPath}.
-     * @throws WebApplicationException
-     * @throws RequestHandledException
-     */
-    private RroRemPathAndMatchedPath identifyRootResource(RemainingPath u)
-            throws WebApplicationException, RequestHandledException {
-        // 1. Identify the root resource class:
-        // (a)
-        // c: Set<Class>: root resource classes
-        // e: Set<RegExp>
-        // Map<UriTemplateRegExp, Class> eAndCs = new HashMap();
-        Collection<RootResourceClass> eAndCs = new ArrayList<RootResourceClass>();
-        // (a) and (b) and (c) Filter E
-        for (RootResourceClass rootResourceClass : this.resourceClasses.roots()) {
-            // Map.Entry<UriTemplateRegExp, Class> eAndC = eAndCIter.next();
-            // UriTemplateRegExp regExp = eAndC.getKey();
-            // Class clazz = eAndC.getValue();
-            PathRegExp rrcPathRegExp = rootResourceClass.getPathRegExp();
-            MatchingResult matchingResult = rrcPathRegExp.match(u);
-            if (matchingResult == null)
-                continue; // doesn't match
-            if (matchingResult.getFinalCapturingGroup().isEmptyOrSlash())
-                eAndCs.add(rootResourceClass);
-            else if (rootResourceClass.hasSubResourceMethodsOrLocators())
-                eAndCs.add(rootResourceClass);
-        }
-        // (d)
-        if (eAndCs.isEmpty())
-            excHandler.rootResourceNotFound();
-        // (e) and (f)
-        RootResourceClass tClass = getFirstByNoOfLiteralCharsNoOfCapturingGroups(eAndCs);
-        // (f)
-        PathRegExp rMatch = tClass.getPathRegExp();
-        MatchingResult matchResult = rMatch.match(u);
-        u = matchResult.getFinalCapturingGroup();
-        addPathVarsToMap(matchResult, tlContext.get());
-        ResourceObject o = instantiateRrc(tClass);
-        return new RroRemPathAndMatchedPath(o, u, matchResult.getMatched());
-    }
-
-    /**
-     * Obtains the object that will handle the request, see JAX-RS-Spec
-     * (2008-04-16), section 3.7.2 "Request Matching", Part 2: "btain the object
-     * that will handle the request"
-     * 
-     * @param rroRemPathAndMatchedPath
-     * @throws WebApplicationException
-     * @throws RequestHandledException
-     * @throws RuntimeException
-     */
-    private ResObjAndRemPath obtainObject(
-            RroRemPathAndMatchedPath rroRemPathAndMatchedPath)
-            throws WebApplicationException, RequestHandledException {
-        ResourceObject o = rroRemPathAndMatchedPath.rootResObj;
-        RemainingPath u = rroRemPathAndMatchedPath.u;
-        ResourceClass resClass = o.getResourceClass();
-        CallContext callContext = tlContext.get();
-        callContext.addForMatched(o.getJaxRsResourceObject(),
-                rroRemPathAndMatchedPath.matchedUriPath);
-        // Part 2
-        for (;;) // (j)
-        {
-            // (a) If U is null or '/' go to step 3
-            if (u.isEmptyOrSlash()) {
-                return new ResObjAndRemPath(o, u);
-            }
-            // (b) Set C = class ofO,E = {}
-            Collection<ResourceMethodOrLocator> eWithMethod = new ArrayList<ResourceMethodOrLocator>();
-            // (c) and (d) Filter E: remove members do not match U or final
-            // match not empty
-            for (ResourceMethodOrLocator methodOrLocator : resClass
-                    .getResourceMethodsAndLocators()) {
-                PathRegExp pathRegExp = methodOrLocator.getPathRegExp();
-                MatchingResult matchingResult = pathRegExp.match(u);
-                if (matchingResult == null)
-                    continue;
-                if (matchingResult.getFinalCapturingGroup().isEmptyOrSlash())
-                    eWithMethod.add(methodOrLocator);
-                // the following is added by Stephan (is not in spec 2008-03-06)
-                else if (methodOrLocator instanceof SubResourceLocator)
-                    eWithMethod.add(methodOrLocator);
-            }
-            // (e) If E is empty -> HTTP 404
-            if (eWithMethod.isEmpty())
-                excHandler.resourceNotFound();// NICE (o.getClass(), u);
-            // (f) and (g) sort E, use first member of E
-            ResourceMethodOrLocator firstMeth = getFirstByNoOfLiteralCharsNoOfCapturingGroups(eWithMethod);
-
-            PathRegExp rMatch = firstMeth.getPathRegExp();
-            MatchingResult matchingResult = rMatch.match(u);
-
-            addPathVarsToMap(matchingResult, callContext);
-
-            // (h) When Method is resource method
-            if (firstMeth instanceof ResourceMethod)
-                return new ResObjAndRemPath(o, u);
-            String matchedUriPart = matchingResult.getMatched();
-            Object jaxRsResObj = o.getJaxRsResourceObject();
-            callContext.addForMatched(jaxRsResObj, matchedUriPart);
-
-            // (g) and (i)
-            u = matchingResult.getFinalCapturingGroup();
-            SubResourceLocator subResourceLocator = (SubResourceLocator) firstMeth;
-            o = createSubResource(o, subResourceLocator, callContext);
-            resClass = o.getResourceClass();
-            // (j) Go to step 2a (repeat for)
-        }
-    }
-
-    /**
-     * Identifies the method that will handle the request, see JAX-RS-Spec
-     * (2008-04-16), section 3.7.2 "Request Matching", Part 3: Identify the
-     * method that will handle the request:"
-     * 
-     * @return Resource Object and Method, that handle the request.
-     * @throws RequestHandledException
-     *             for example if the method was OPTIONS, but no special
-     *             Resource Method for OPTIONS is available.
-     * @throws ResourceMethodNotFoundException
-     */
-    private ResObjAndMeth identifyMethod(ResObjAndRemPath resObjAndRemPath,
-            MediaType givenMediaType) throws RequestHandledException {
-        CallContext callContext = tlContext.get();
-        org.restlet.data.Method httpMethod = callContext.getRequest()
-                .getMethod();
-        // 3. Identify the method that will handle the request:
-        // (a)
-        ResourceObject resObj = resObjAndRemPath.resourceObject;
-        RemainingPath u = resObjAndRemPath.u;
-        // (a) 1
-        ResourceClass resourceClass = resObj.getResourceClass();
-        Collection<ResourceMethod> resourceMethods = resourceClass
-                .getMethodsForPath(u);
-        if (resourceMethods.isEmpty())
-            excHandler.resourceMethodNotFound();// NICE (resourceClass, u);
-        // (a) 2: remove methods not support the given method
-        boolean alsoGet = httpMethod.equals(Method.HEAD);
-        removeNotSupportedHttpMethod(resourceMethods, httpMethod, alsoGet);
-        if (resourceMethods.isEmpty()) {
-            Set<Method> allowedMethods = resourceClass.getAllowedMethods(u);
-            if (httpMethod.equals(Method.OPTIONS)) {
-                callContext.getResponse().getAllowedMethods().addAll(
-                        allowedMethods);
-                throw new RequestHandledException();
-            }
-            excHandler.methodNotAllowed(allowedMethods);
-        }
-        // (a) 3
-        if (givenMediaType != null) {
-            Collection<ResourceMethod> supporting = resourceMethods;
-            resourceMethods = new ArrayList<ResourceMethod>();
-            for (ResourceMethod resourceMethod : supporting) {
-                if (resourceMethod.isGivenMediaTypeSupported(givenMediaType))
-                    resourceMethods.add(resourceMethod);
-            }
-            if (resourceMethods.isEmpty())
-                excHandler.unsupportedMediaType(supporting);
-        }
-        // (a) 4
-        SortedMetadata<MediaType> accMediaTypes = callContext
-                .getAccMediaTypes();
-        Collection<ResourceMethod> supporting = resourceMethods;
-        resourceMethods = new ArrayList<ResourceMethod>();
-        for (ResourceMethod resourceMethod : supporting) {
-            if (resourceMethod.isAcceptedMediaTypeSupported(accMediaTypes))
-                resourceMethods.add(resourceMethod);
-        }
-        if (resourceMethods.isEmpty()) {
-            excHandler.noResourceMethodForAccMediaTypes(supporting);
-        }
-        // (b) and (c)
-        ResourceMethod bestResourceMethod = getBestMethod(resourceMethods,
-                givenMediaType, accMediaTypes, httpMethod);
-        MatchingResult mr = bestResourceMethod.getPathRegExp().match(u);
-        addPathVarsToMap(mr, callContext);
-        String matchedUriPart = mr.getMatched();
-        if (matchedUriPart.length() > 0) {
-            Object jaxRsResObj = resObj.getJaxRsResourceObject();
-            callContext.addForMatched(jaxRsResObj, matchedUriPart);
-        }
-        return new ResObjAndMeth(resObj, bestResourceMethod);
-    }
-
-    /**
-     * Invokes the (sub) resource method. Handles / converts also occuring
-     * exceptions.
-     * 
-     * @param resourceMethod
-     *            the (sub) resource method to invoke
-     * @param resourceObject
-     *            the resource object to invoke the method on.
-     * @return the object returned by the (sub) resource method.
-     * @throws RequestHandledException
-     *             if the request is already handled
-     * @throws WebApplicationException
-     *             if a JAX-RS class throws an WebApplicationException
-     */
-    private Object invokeMethod(ResourceMethod resourceMethod,
-            ResourceObject resourceObject) throws WebApplicationException,
-            RequestHandledException {
-        Object result;
-        try {
-            result = resourceMethod.invoke(resourceObject);
-        } catch (WebApplicationException e) {
-            throw e;
-        } catch (InvocationTargetException ite) {
-            throw handleInvocationTargetExc(ite);
-        } catch (RuntimeException e) {
-            throw excHandler.runtimeExecption(e, resourceMethod, tlContext
-                    .get(), "Can not invoke the resource method");
-        } catch (MethodInvokeException e) {
-            throw excHandler.methodInvokeException(e, tlContext.get(),
-                    "Can not invoke the resource method");
-        } catch (ConvertRepresentationException e) {
-            throw excHandler.convertRepresentationExc(e);
-        }
-        return result;
-    }
-
-    /**
-     * Sets the result of the resource method invocation into the response. Do
-     * necessary converting.
-     * 
-     * @param result
-     *            the object returned by the resource method
-     * @param resourceMethod
-     *            the resource method; it is needed for the conversion. Could be
-     *            null, if an exception is handled, e.g. a
-     *            {@link WebApplicationException}.
-     */
-    private void handleResult(Object result, ResourceMethod resourceMethod) {
-        Response restletResponse = tlContext.get().getResponse();
-        if (result instanceof javax.ws.rs.core.Response) {
-            jaxRsRespToRestletResp((javax.ws.rs.core.Response) result,
-                    resourceMethod);
-        } else if (result instanceof ResponseBuilder) {
-            String warning = "the method " + resourceMethod
-                    + " returnef a ResponseBuilder. You should "
-                    + "call responseBuilder.build() in the resource method";
-            getLogger().warning(warning);
-            jaxRsRespToRestletResp(((ResponseBuilder) result).build(),
-                    resourceMethod);
-        } else {
-            if (result == null) // no representation
-                restletResponse.setStatus(Status.SUCCESS_NO_CONTENT);
-            else
-                restletResponse.setStatus(Status.SUCCESS_OK);
-            SortedMetadata<MediaType> accMediaTypes;
-            accMediaTypes = tlContext.get().getAccMediaTypes();
-            restletResponse.setEntity(convertToRepresentation(result,
-                    resourceMethod, null, null, accMediaTypes));
-        }
-    }
-
-    /**
-     * Converts the given JAX-RS {@link javax.ws.rs.core.Response} to a Restlet
-     * {@link Response}.
-     * 
-     * @param jaxRsResponse
-     *            The response returned by the resource method, perhaps as
-     *            attribute of a {@link WebApplicationException}.
-     * @param resourceMethod
-     *            The resource method creating the response. Could be null, if
-     *            an exception is handled, e.g. a
-     *            {@link WebApplicationException}.
-     */
-    private void jaxRsRespToRestletResp(
-            javax.ws.rs.core.Response jaxRsResponse,
-            ResourceMethod resourceMethod) {
-        Response restletResponse = tlContext.get().getResponse();
-        restletResponse.setStatus(Status.valueOf(jaxRsResponse.getStatus()));
-        MultivaluedMap<String, Object> httpHeaders = jaxRsResponse
-                .getMetadata();
-        MediaType respMediaType = getMediaType(httpHeaders);
-        Object jaxRsEntity = jaxRsResponse.getEntity();
-        SortedMetadata<MediaType> accMediaType;
-        if (respMediaType != null)
-            accMediaType = SortedMetadata.get(respMediaType);
-        else
-            accMediaType = tlContext.get().getAccMediaTypes();
-        restletResponse.setEntity(convertToRepresentation(jaxRsEntity,
-                resourceMethod, respMediaType, httpHeaders, accMediaType));
-        copyResponseHeaders(httpHeaders, restletResponse);
     }
 
     /**
@@ -831,6 +507,40 @@ public class JaxRsRestlet extends Restlet {
     }
 
     /**
+     * @param o
+     * @param subResourceLocator
+     * @param callContext
+     * @return
+     * @throws WebApplicationException
+     * @throws RequestHandledException
+     */
+    private ResourceObject createSubResource(ResourceObject o,
+            SubResourceLocator subResourceLocator, CallContext callContext)
+            throws WebApplicationException, RequestHandledException {
+        try {
+            o = subResourceLocator.createSubResource(o, resourceClasses,
+                    getLogger());
+        } catch (WebApplicationException e) {
+            throw e;
+        } catch (RuntimeException e) {
+            throw excHandler.runtimeExecption(e, subResourceLocator,
+                    callContext,
+                    "Could not create new instance of resource class");
+        } catch (MissingAnnotationException e) {
+            throw excHandler.missingAnnotation(e, callContext,
+                    "Could not create new instance of resource class");
+        } catch (InstantiateException e) {
+            throw excHandler.instantiateExecption(e, callContext,
+                    "Could not create new instance of resource class");
+        } catch (InvocationTargetException e) {
+            throw handleInvocationTargetExc(e);
+        } catch (ConvertRepresentationException e) {
+            throw excHandler.convertRepresentationExc(e);
+        }
+        return o;
+    }
+
+    /**
      * Determines the MediaType for a response, see JAX-RS-Spec (2008-08-27),
      * section 3.8 "Determining the MediaType of Responses"
      * 
@@ -903,6 +613,133 @@ public class JaxRsRestlet extends Restlet {
     }
 
     /**
+     * Returns the Restlet that is called, if no resource method class could be
+     * found.
+     * 
+     * @return the Restlet that is called, if no resource method class could be
+     *         found.
+     * @see #setNoResMethodHandler(Restlet)
+     */
+    public Restlet getNoResMethodHandler() {
+        return excHandler.getNoResMethodHandler();
+    }
+
+    /**
+     * Returns the Restlet that is called, if no resource class could be found.
+     * 
+     * @return the Restlet that is called, if no resource class could be found.
+     */
+    public Restlet getNoResourceClHandler() {
+        return excHandler.getNoResourceClHandler();
+    }
+
+    /**
+     * Returns the Restlet that is called, if no root resource class could be
+     * found. You could remove a given Restlet by set null here.<br>
+     * If no Restlet is given here, status 404 will be returned.
+     * 
+     * @return the Restlet that is called, if no root resource class could be
+     *         found.
+     * @see #setNoRootResClHandler(Restlet)
+     */
+    public Restlet getNoRootResClHandler() {
+        return excHandler.getNoRootResClHandler();
+    }
+
+    /**
+     * Returns the ObjectFactory for root resource class and provider
+     * instantiation, if given.
+     * 
+     * @return the ObjectFactory for root resource class and provider
+     *         instantiation, if given.
+     */
+    public ObjectFactory getObjectFactory() {
+        return this.objectFactory;
+    }
+
+    /**
+     * Gets the currently used {@link RoleChecker}.
+     * 
+     * @return the currently used RoleChecker.
+     * @see #setRoleChecker(RoleChecker)
+     * @deprecated Use {@link ClientInfo#isInRole(org.restlet.security.Role)}
+     *             instead
+     */
+    @Deprecated
+    public RoleChecker getRoleChecker() {
+        return roleChecker;
+    }
+
+    /**
+     * Returns an unmodifiable set with the attached root resource classes.
+     * 
+     * @return an unmodifiable set with the attached root resource classes.
+     */
+    public Set<Class<?>> getRootResourceClasses() {
+        Set<Class<?>> rrcs = new HashSet<Class<?>>();
+        for (RootResourceClass rootResourceClass : this.resourceClasses.roots())
+            rrcs.add(rootResourceClass.getJaxRsClass());
+        return Collections.unmodifiableSet(rrcs);
+    }
+
+    /**
+     * Returns a Collection with all root uris attached to this JaxRsRestlet.
+     * 
+     * @return a Collection with all root uris attached to this JaxRsRestlet.
+     */
+    public Collection<String> getRootUris() {
+        List<String> uris = new ArrayList<String>();
+        for (RootResourceClass rrc : this.resourceClasses.roots())
+            uris.add(rrc.getPathRegExp().getPathTemplateEnc());
+        return Collections.unmodifiableCollection(uris);
+    }
+
+    /**
+     * Handles a call by looking for the resource metod to call, call it and
+     * return the result.
+     * 
+     * @param request
+     *            The {@link Request} to handle.
+     * @param response
+     *            The {@link Response} to update.
+     */
+    @Override
+    public void handle(Request request, Response response) {
+        super.handle(request, response);
+        ResourceObject resourceObject = null;
+        final Reference baseRef = request.getResourceRef().getBaseRef();
+        request.setRootRef(new Reference(baseRef.toString()));
+        // NICE Normally, the "rootRef" property is set by the VirtualHost, each
+        // time a request is handled by one of its routes.
+        // Email from Jerome, 2008-09-22
+        try {
+            CallContext callContext;
+            callContext = new CallContext(request, response, this.roleChecker);
+            tlContext.set(callContext);
+            try {
+                ResObjAndMeth resObjAndMeth;
+                resObjAndMeth = requestMatching();
+                callContext.setReadOnly();
+                ResourceMethod resourceMethod = resObjAndMeth.resourceMethod;
+                resourceObject = resObjAndMeth.resourceObject;
+                Object result = invokeMethod(resourceMethod, resourceObject);
+                handleResult(result, resourceMethod);
+            } catch (WebApplicationException e) {
+                // the message of the Exception is not used in the
+                // WebApplicationException
+                jaxRsRespToRestletResp(this.providers.convert(e), null);
+                return;
+            }
+        } catch (RequestHandledException e) {
+            // Exception was handled and data were set into the Response.
+        } finally {
+            Representation entity = request.getEntity();
+            if (entity != null)
+                entity.release();
+        }
+    }
+
+    /**
      * Handles the given Exception, catched by an invoke of a resource method or
      * a creation if a sub resource object.
      * 
@@ -926,6 +763,163 @@ public class JaxRsRestlet extends Restlet {
             jaxRsRespToRestletResp(jaxRsResp, null);
         }
         throw new RequestHandledException();
+    }
+
+    /**
+     * Sets the result of the resource method invocation into the response. Do
+     * necessary converting.
+     * 
+     * @param result
+     *            the object returned by the resource method
+     * @param resourceMethod
+     *            the resource method; it is needed for the conversion. Could be
+     *            null, if an exception is handled, e.g. a
+     *            {@link WebApplicationException}.
+     */
+    private void handleResult(Object result, ResourceMethod resourceMethod) {
+        Response restletResponse = tlContext.get().getResponse();
+        if (result instanceof javax.ws.rs.core.Response) {
+            jaxRsRespToRestletResp((javax.ws.rs.core.Response) result,
+                    resourceMethod);
+        } else if (result instanceof ResponseBuilder) {
+            String warning = "the method " + resourceMethod
+                    + " returnef a ResponseBuilder. You should "
+                    + "call responseBuilder.build() in the resource method";
+            getLogger().warning(warning);
+            jaxRsRespToRestletResp(((ResponseBuilder) result).build(),
+                    resourceMethod);
+        } else {
+            if (result == null) // no representation
+                restletResponse.setStatus(Status.SUCCESS_NO_CONTENT);
+            else
+                restletResponse.setStatus(Status.SUCCESS_OK);
+            SortedMetadata<MediaType> accMediaTypes;
+            accMediaTypes = tlContext.get().getAccMediaTypes();
+            restletResponse.setEntity(convertToRepresentation(result,
+                    resourceMethod, null, null, accMediaTypes));
+        }
+    }
+
+    /**
+     * Identifies the method that will handle the request, see JAX-RS-Spec
+     * (2008-04-16), section 3.7.2 "Request Matching", Part 3: Identify the
+     * method that will handle the request:"
+     * 
+     * @return Resource Object and Method, that handle the request.
+     * @throws RequestHandledException
+     *             for example if the method was OPTIONS, but no special
+     *             Resource Method for OPTIONS is available.
+     * @throws ResourceMethodNotFoundException
+     */
+    private ResObjAndMeth identifyMethod(ResObjAndRemPath resObjAndRemPath,
+            MediaType givenMediaType) throws RequestHandledException {
+        CallContext callContext = tlContext.get();
+        org.restlet.data.Method httpMethod = callContext.getRequest()
+                .getMethod();
+        // 3. Identify the method that will handle the request:
+        // (a)
+        ResourceObject resObj = resObjAndRemPath.resourceObject;
+        RemainingPath u = resObjAndRemPath.u;
+        // (a) 1
+        ResourceClass resourceClass = resObj.getResourceClass();
+        Collection<ResourceMethod> resourceMethods = resourceClass
+                .getMethodsForPath(u);
+        if (resourceMethods.isEmpty())
+            excHandler.resourceMethodNotFound();// NICE (resourceClass, u);
+        // (a) 2: remove methods not support the given method
+        boolean alsoGet = httpMethod.equals(Method.HEAD);
+        removeNotSupportedHttpMethod(resourceMethods, httpMethod, alsoGet);
+        if (resourceMethods.isEmpty()) {
+            Set<Method> allowedMethods = resourceClass.getAllowedMethods(u);
+            if (httpMethod.equals(Method.OPTIONS)) {
+                callContext.getResponse().getAllowedMethods().addAll(
+                        allowedMethods);
+                throw new RequestHandledException();
+            }
+            excHandler.methodNotAllowed(allowedMethods);
+        }
+        // (a) 3
+        if (givenMediaType != null) {
+            Collection<ResourceMethod> supporting = resourceMethods;
+            resourceMethods = new ArrayList<ResourceMethod>();
+            for (ResourceMethod resourceMethod : supporting) {
+                if (resourceMethod.isGivenMediaTypeSupported(givenMediaType))
+                    resourceMethods.add(resourceMethod);
+            }
+            if (resourceMethods.isEmpty())
+                excHandler.unsupportedMediaType(supporting);
+        }
+        // (a) 4
+        SortedMetadata<MediaType> accMediaTypes = callContext
+                .getAccMediaTypes();
+        Collection<ResourceMethod> supporting = resourceMethods;
+        resourceMethods = new ArrayList<ResourceMethod>();
+        for (ResourceMethod resourceMethod : supporting) {
+            if (resourceMethod.isAcceptedMediaTypeSupported(accMediaTypes))
+                resourceMethods.add(resourceMethod);
+        }
+        if (resourceMethods.isEmpty()) {
+            excHandler.noResourceMethodForAccMediaTypes(supporting);
+        }
+        // (b) and (c)
+        ResourceMethod bestResourceMethod = getBestMethod(resourceMethods,
+                givenMediaType, accMediaTypes, httpMethod);
+        MatchingResult mr = bestResourceMethod.getPathRegExp().match(u);
+        addPathVarsToMap(mr, callContext);
+        String matchedUriPart = mr.getMatched();
+        if (matchedUriPart.length() > 0) {
+            Object jaxRsResObj = resObj.getJaxRsResourceObject();
+            callContext.addForMatched(jaxRsResObj, matchedUriPart);
+        }
+        return new ResObjAndMeth(resObj, bestResourceMethod);
+    }
+
+    /**
+     * Identifies the root resource class, see JAX-RS-Spec (2008-04-16), section
+     * 3.7.2 "Request Matching", Part 1: "Identify the root resource class"
+     * 
+     * @param u
+     *            the remaining path after the base ref
+     * @return The identified root resource object, the remaining path after
+     *         identifying and the matched template parameters; see
+     *         {@link RroRemPathAndMatchedPath}.
+     * @throws WebApplicationException
+     * @throws RequestHandledException
+     */
+    private RroRemPathAndMatchedPath identifyRootResource(RemainingPath u)
+            throws WebApplicationException, RequestHandledException {
+        // 1. Identify the root resource class:
+        // (a)
+        // c: Set<Class>: root resource classes
+        // e: Set<RegExp>
+        // Map<UriTemplateRegExp, Class> eAndCs = new HashMap();
+        Collection<RootResourceClass> eAndCs = new ArrayList<RootResourceClass>();
+        // (a) and (b) and (c) Filter E
+        for (RootResourceClass rootResourceClass : this.resourceClasses.roots()) {
+            // Map.Entry<UriTemplateRegExp, Class> eAndC = eAndCIter.next();
+            // UriTemplateRegExp regExp = eAndC.getKey();
+            // Class clazz = eAndC.getValue();
+            PathRegExp rrcPathRegExp = rootResourceClass.getPathRegExp();
+            MatchingResult matchingResult = rrcPathRegExp.match(u);
+            if (matchingResult == null)
+                continue; // doesn't match
+            if (matchingResult.getFinalCapturingGroup().isEmptyOrSlash())
+                eAndCs.add(rootResourceClass);
+            else if (rootResourceClass.hasSubResourceMethodsOrLocators())
+                eAndCs.add(rootResourceClass);
+        }
+        // (d)
+        if (eAndCs.isEmpty())
+            excHandler.rootResourceNotFound();
+        // (e) and (f)
+        RootResourceClass tClass = getFirstByNoOfLiteralCharsNoOfCapturingGroups(eAndCs);
+        // (f)
+        PathRegExp rMatch = tClass.getPathRegExp();
+        MatchingResult matchResult = rMatch.match(u);
+        u = matchResult.getFinalCapturingGroup();
+        addPathVarsToMap(matchResult, tlContext.get());
+        ResourceObject o = instantiateRrc(tClass);
+        return new RroRemPathAndMatchedPath(o, u, matchResult.getMatched());
     }
 
     /**
@@ -961,190 +955,210 @@ public class JaxRsRestlet extends Restlet {
     }
 
     /**
-     * @param o
-     * @param subResourceLocator
-     * @param callContext
-     * @return
-     * @throws WebApplicationException
+     * Invokes the (sub) resource method. Handles / converts also occuring
+     * exceptions.
+     * 
+     * @param resourceMethod
+     *            the (sub) resource method to invoke
+     * @param resourceObject
+     *            the resource object to invoke the method on.
+     * @return the object returned by the (sub) resource method.
      * @throws RequestHandledException
+     *             if the request is already handled
+     * @throws WebApplicationException
+     *             if a JAX-RS class throws an WebApplicationException
      */
-    private ResourceObject createSubResource(ResourceObject o,
-            SubResourceLocator subResourceLocator, CallContext callContext)
-            throws WebApplicationException, RequestHandledException {
+    private Object invokeMethod(ResourceMethod resourceMethod,
+            ResourceObject resourceObject) throws WebApplicationException,
+            RequestHandledException {
+        Object result;
         try {
-            o = subResourceLocator.createSubResource(o, resourceClasses,
-                    getLogger());
+            result = resourceMethod.invoke(resourceObject);
         } catch (WebApplicationException e) {
             throw e;
+        } catch (InvocationTargetException ite) {
+            throw handleInvocationTargetExc(ite);
         } catch (RuntimeException e) {
-            throw excHandler.runtimeExecption(e, subResourceLocator,
-                    callContext,
-                    "Could not create new instance of resource class");
-        } catch (MissingAnnotationException e) {
-            throw excHandler.missingAnnotation(e, callContext,
-                    "Could not create new instance of resource class");
-        } catch (InstantiateException e) {
-            throw excHandler.instantiateExecption(e, callContext,
-                    "Could not create new instance of resource class");
-        } catch (InvocationTargetException e) {
-            throw handleInvocationTargetExc(e);
+            throw excHandler.runtimeExecption(e, resourceMethod, tlContext
+                    .get(), "Can not invoke the resource method");
+        } catch (MethodInvokeException e) {
+            throw excHandler.methodInvokeException(e, tlContext.get(),
+                    "Can not invoke the resource method");
         } catch (ConvertRepresentationException e) {
             throw excHandler.convertRepresentationExc(e);
         }
-        return o;
+        return result;
     }
 
     /**
-     * Structure to return an instance of the identified
-     * {@link RootResourceClass}, the matched URI path and the remaining path
-     * after identifying the root resource class.
+     * Converts the given JAX-RS {@link javax.ws.rs.core.Response} to a Restlet
+     * {@link Response}.
      * 
-     * @author Stephan Koops
+     * @param jaxRsResponse
+     *            The response returned by the resource method, perhaps as
+     *            attribute of a {@link WebApplicationException}.
+     * @param resourceMethod
+     *            The resource method creating the response. Could be null, if
+     *            an exception is handled, e.g. a
+     *            {@link WebApplicationException}.
      */
-    class RroRemPathAndMatchedPath {
+    private void jaxRsRespToRestletResp(
+            javax.ws.rs.core.Response jaxRsResponse,
+            ResourceMethod resourceMethod) {
+        Response restletResponse = tlContext.get().getResponse();
+        restletResponse.setStatus(Status.valueOf(jaxRsResponse.getStatus()));
+        MultivaluedMap<String, Object> httpHeaders = jaxRsResponse
+                .getMetadata();
+        MediaType respMediaType = getMediaType(httpHeaders);
+        Object jaxRsEntity = jaxRsResponse.getEntity();
+        SortedMetadata<MediaType> accMediaType;
+        if (respMediaType != null)
+            accMediaType = SortedMetadata.get(respMediaType);
+        else
+            accMediaType = tlContext.get().getAccMediaTypes();
+        restletResponse.setEntity(convertToRepresentation(jaxRsEntity,
+                resourceMethod, respMediaType, httpHeaders, accMediaType));
+        copyResponseHeaders(httpHeaders, restletResponse);
+    }
 
-        private ResourceObject rootResObj;
+    private void loadDefaultProviders() {
+        addDefaultProvider(new BufferedReaderProvider());
+        addDefaultProvider(new ByteArrayProvider());
+        addDefaultProvider("org.restlet.ext.jaxrs.internal.provider.DataSourceProvider");
 
-        private RemainingPath u;
+        // not yet tested
+        addDefaultProvider("org.restlet.ext.jaxrs.internal.provider.FileUploadProvider");
 
-        private String matchedUriPath;
+        // addDefaultProvider(new ConverterProvider());
+        addDefaultProvider(new FileProvider());
+        addDefaultProvider(new InputStreamProvider());
+        addDefaultProvider("org.restlet.ext.jaxrs.internal.provider.JaxbElementProvider");
+        addDefaultProvider("org.restlet.ext.jaxrs.internal.provider.JaxbProvider");
+        addDefaultProvider("org.restlet.ext.jaxrs.internal.provider.JsonProvider");
 
-        RroRemPathAndMatchedPath(ResourceObject rootResObj, RemainingPath u,
-                String matchedUriPath) {
-            this.rootResObj = rootResObj;
-            this.u = u;
-            this.matchedUriPath = matchedUriPath;
+        // not yet tested
+        addDefaultProvider("org.restlet.ext.jaxrs.internal.provider.MultipartProvider");
+
+        addDefaultProvider(new ReaderProvider());
+        addDefaultProvider(new StreamingOutputProvider());
+        addDefaultProvider(new StringProvider());
+        addDefaultProvider(new WwwFormFormProvider());
+        addDefaultProvider(new WwwFormMmapProvider());
+        addDefaultProvider(new SourceProvider());
+        addDefaultProvider(new WebAppExcMapper());
+    }
+
+    /**
+     * Obtains the object that will handle the request, see JAX-RS-Spec
+     * (2008-04-16), section 3.7.2 "Request Matching", Part 2: "btain the object
+     * that will handle the request"
+     * 
+     * @param rroRemPathAndMatchedPath
+     * @throws WebApplicationException
+     * @throws RequestHandledException
+     * @throws RuntimeException
+     */
+    private ResObjAndRemPath obtainObject(
+            RroRemPathAndMatchedPath rroRemPathAndMatchedPath)
+            throws WebApplicationException, RequestHandledException {
+        ResourceObject o = rroRemPathAndMatchedPath.rootResObj;
+        RemainingPath u = rroRemPathAndMatchedPath.u;
+        ResourceClass resClass = o.getResourceClass();
+        CallContext callContext = tlContext.get();
+        callContext.addForMatched(o.getJaxRsResourceObject(),
+                rroRemPathAndMatchedPath.matchedUriPath);
+        // Part 2
+        for (;;) // (j)
+        {
+            // (a) If U is null or '/' go to step 3
+            if (u.isEmptyOrSlash()) {
+                return new ResObjAndRemPath(o, u);
+            }
+            // (b) Set C = class ofO,E = {}
+            Collection<ResourceMethodOrLocator> eWithMethod = new ArrayList<ResourceMethodOrLocator>();
+            // (c) and (d) Filter E: remove members do not match U or final
+            // match not empty
+            for (ResourceMethodOrLocator methodOrLocator : resClass
+                    .getResourceMethodsAndLocators()) {
+                PathRegExp pathRegExp = methodOrLocator.getPathRegExp();
+                MatchingResult matchingResult = pathRegExp.match(u);
+                if (matchingResult == null)
+                    continue;
+                if (matchingResult.getFinalCapturingGroup().isEmptyOrSlash())
+                    eWithMethod.add(methodOrLocator);
+                // the following is added by Stephan (is not in spec 2008-03-06)
+                else if (methodOrLocator instanceof SubResourceLocator)
+                    eWithMethod.add(methodOrLocator);
+            }
+            // (e) If E is empty -> HTTP 404
+            if (eWithMethod.isEmpty())
+                excHandler.resourceNotFound();// NICE (o.getClass(), u);
+            // (f) and (g) sort E, use first member of E
+            ResourceMethodOrLocator firstMeth = getFirstByNoOfLiteralCharsNoOfCapturingGroups(eWithMethod);
+
+            PathRegExp rMatch = firstMeth.getPathRegExp();
+            MatchingResult matchingResult = rMatch.match(u);
+
+            addPathVarsToMap(matchingResult, callContext);
+
+            // (h) When Method is resource method
+            if (firstMeth instanceof ResourceMethod)
+                return new ResObjAndRemPath(o, u);
+            String matchedUriPart = matchingResult.getMatched();
+            Object jaxRsResObj = o.getJaxRsResourceObject();
+            callContext.addForMatched(jaxRsResObj, matchedUriPart);
+
+            // (g) and (i)
+            u = matchingResult.getFinalCapturingGroup();
+            SubResourceLocator subResourceLocator = (SubResourceLocator) firstMeth;
+            o = createSubResource(o, subResourceLocator, callContext);
+            resClass = o.getResourceClass();
+            // (j) Go to step 2a (repeat for)
         }
     }
 
     /**
-     * Structure to return the obtained {@link ResourceObject} and the remaining
-     * path after identifying the object.
+     * Implementation of algorithm in JAX-RS-Spec (2008-04-16), Section 3.7.2
+     * "Request Matching"
      * 
-     * @author Stephan Koops
+     * @return (Sub)Resource Method
+     * @throws RequestHandledException
+     * @throws WebApplicationException
      */
-    class ResObjAndRemPath {
-
-        private ResourceObject resourceObject;
-
-        private RemainingPath u;
-
-        ResObjAndRemPath(ResourceObject resourceObject, RemainingPath u) {
-            this.resourceObject = resourceObject;
-            this.u = u;
-        }
+    private ResObjAndMeth requestMatching() throws RequestHandledException,
+            WebApplicationException {
+        Request restletRequest = tlContext.get().getRequest();
+        // Part 1
+        RemainingPath u = new RemainingPath(restletRequest.getResourceRef()
+                .getRemainingPart());
+        RroRemPathAndMatchedPath rrm = identifyRootResource(u);
+        // Part 2
+        ResObjAndRemPath resourceObjectAndPath = obtainObject(rrm);
+        Representation entity = restletRequest.getEntity();
+        // Part 3
+        MediaType givenMediaType;
+        if (entity != null)
+            givenMediaType = entity.getMediaType();
+        else
+            givenMediaType = null;
+        ResObjAndMeth method = identifyMethod(resourceObjectAndPath,
+                givenMediaType);
+        return method;
     }
 
     /**
-     * Structure to return the obtained {@link ResourceObject} and the
-     * identified {@link ResourceMethod}.
+     * Sets the Restlet that will handle the {@link Request}s, if no resource
+     * method could be found.
      * 
-     * @author Stephan Koops
-     */
-    class ResObjAndMeth {
-
-        private ResourceObject resourceObject;
-
-        private ResourceMethod resourceMethod;
-
-        ResObjAndMeth(ResourceObject resourceObject,
-                ResourceMethod resourceMethod) {
-            this.resourceObject = resourceObject;
-            this.resourceMethod = resourceMethod;
-        }
-    }
-
-    /**
-     * Gets the currently used {@link RoleChecker}.
-     * 
-     * @return the currently used RoleChecker.
-     * @see #setRoleChecker(RoleChecker)
-     * @deprecated Use {@link ClientInfo#isInRole(org.restlet.security.Role)}
-     *             instead
-     */
-    @Deprecated
-    public RoleChecker getRoleChecker() {
-        return roleChecker;
-    }
-
-    /**
-     * Sets the {@link RoleChecker} to use.
-     * 
-     * @param roleChecker
-     *            the roleChecker to set. Can be null, in which case the normal
-     *            Restlet security API will be used.
-     * @see RoleChecker
-     * @see #getRoleChecker()
-     * @deprecated Use {@link ClientInfo#isInRole(org.restlet.security.Role)}
-     *             instead
-     */
-    @Deprecated
-    public void setRoleChecker(RoleChecker roleChecker) {
-        this.roleChecker = roleChecker;
-    }
-
-    /**
-     * Returns an unmodifiable set with the attached root resource classes.
-     * 
-     * @return an unmodifiable set with the attached root resource classes.
-     */
-    public Set<Class<?>> getRootResourceClasses() {
-        Set<Class<?>> rrcs = new HashSet<Class<?>>();
-        for (RootResourceClass rootResourceClass : this.resourceClasses.roots())
-            rrcs.add(rootResourceClass.getJaxRsClass());
-        return Collections.unmodifiableSet(rrcs);
-    }
-
-    /**
-     * Returns a Collection with all root uris attached to this JaxRsRestlet.
-     * 
-     * @return a Collection with all root uris attached to this JaxRsRestlet.
-     */
-    public Collection<String> getRootUris() {
-        List<String> uris = new ArrayList<String>();
-        for (RootResourceClass rrc : this.resourceClasses.roots())
-            uris.add(rrc.getPathRegExp().getPathTemplateEnc());
-        return Collections.unmodifiableCollection(uris);
-    }
-
-    /**
-     * Returns the ObjectFactory for root resource class and provider
-     * instantiation, if given.
-     * 
-     * @return the ObjectFactory for root resource class and provider
-     *         instantiation, if given.
-     */
-    public ObjectFactory getObjectFactory() {
-        return this.objectFactory;
-    }
-
-    /**
-     * Sets the ObjectFactory for root resource class and provider
-     * instantiation.
-     * 
-     * @param objectFactory
-     *            the ObjectFactory for root resource class and provider
-     *            instantiation.
-     */
-    public void setObjectFactory(ObjectFactory objectFactory) {
-        this.objectFactory = objectFactory;
-        this.providers.setObjectFactory(objectFactory);
-    }
-
-    /**
-     * Sets the Restlet that is called, if no root resource class could be
-     * found. You could remove a given Restlet by set null here.<br>
-     * If no Restlet is given here, status 404 will be returned.
-     * 
-     * @param noRootResClHandler
-     *            the Restlet to call, if no root resource class could be found.
-     * @see #getNoRootResClHandler()
+     * @param noResMethodHandler
+     *            the noResMethodHandler to set
+     * @see #getNoResMethodHandler()
      * @see #setNoResourceClHandler(Restlet)
-     * @see #setNoResMethodHandler(Restlet)
+     * @see #setNoRootResClHandler(Restlet)
      * @see #attachDefault(Restlet)
      */
-    public void setNoRootResClHandler(Restlet noRootResClHandler) {
-        excHandler.setNoRootResClHandler(noRootResClHandler);
+    public void setNoResMethodHandler(Restlet noResMethodHandler) {
+        excHandler.setNoResMethodHandler(noResMethodHandler);
     }
 
     /**
@@ -1164,51 +1178,53 @@ public class JaxRsRestlet extends Restlet {
     }
 
     /**
-     * Sets the Restlet that will handle the {@link Request}s, if no resource
-     * method could be found.
-     * 
-     * @param noResMethodHandler
-     *            the noResMethodHandler to set
-     * @see #getNoResMethodHandler()
-     * @see #setNoResourceClHandler(Restlet)
-     * @see #setNoRootResClHandler(Restlet)
-     * @see #attachDefault(Restlet)
-     */
-    public void setNoResMethodHandler(Restlet noResMethodHandler) {
-        excHandler.setNoResMethodHandler(noResMethodHandler);
-    }
-
-    /**
-     * Returns the Restlet that is called, if no root resource class could be
+     * Sets the Restlet that is called, if no root resource class could be
      * found. You could remove a given Restlet by set null here.<br>
      * If no Restlet is given here, status 404 will be returned.
      * 
-     * @return the Restlet that is called, if no root resource class could be
-     *         found.
-     * @see #setNoRootResClHandler(Restlet)
-     */
-    public Restlet getNoRootResClHandler() {
-        return excHandler.getNoRootResClHandler();
-    }
-
-    /**
-     * Returns the Restlet that is called, if no resource class could be found.
-     * 
-     * @return the Restlet that is called, if no resource class could be found.
-     */
-    public Restlet getNoResourceClHandler() {
-        return excHandler.getNoResourceClHandler();
-    }
-
-    /**
-     * Returns the Restlet that is called, if no resource method class could be
-     * found.
-     * 
-     * @return the Restlet that is called, if no resource method class could be
-     *         found.
+     * @param noRootResClHandler
+     *            the Restlet to call, if no root resource class could be found.
+     * @see #getNoRootResClHandler()
+     * @see #setNoResourceClHandler(Restlet)
      * @see #setNoResMethodHandler(Restlet)
+     * @see #attachDefault(Restlet)
      */
-    public Restlet getNoResMethodHandler() {
-        return excHandler.getNoResMethodHandler();
+    public void setNoRootResClHandler(Restlet noRootResClHandler) {
+        excHandler.setNoRootResClHandler(noRootResClHandler);
+    }
+
+    /**
+     * Sets the ObjectFactory for root resource class and provider
+     * instantiation.
+     * 
+     * @param objectFactory
+     *            the ObjectFactory for root resource class and provider
+     *            instantiation.
+     */
+    public void setObjectFactory(ObjectFactory objectFactory) {
+        this.objectFactory = objectFactory;
+        this.providers.setObjectFactory(objectFactory);
+    }
+
+    /**
+     * Sets the {@link RoleChecker} to use.
+     * 
+     * @param roleChecker
+     *            the roleChecker to set. Can be null, in which case the normal
+     *            Restlet security API will be used.
+     * @see RoleChecker
+     * @see #getRoleChecker()
+     * @deprecated Use {@link ClientInfo#isInRole(org.restlet.security.Role)}
+     *             instead
+     */
+    @Deprecated
+    public void setRoleChecker(RoleChecker roleChecker) {
+        this.roleChecker = roleChecker;
+    }
+
+    @Override
+    public void start() throws Exception {
+        providers.initAll();
+        super.start();
     }
 }

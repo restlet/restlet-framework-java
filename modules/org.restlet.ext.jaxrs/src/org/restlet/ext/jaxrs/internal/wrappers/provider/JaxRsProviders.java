@@ -507,6 +507,11 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
                         + provider.getClassName() + " could not be used", e
                         .getCause());
                 this.remove(provider);
+            } catch (SecurityException e) {
+                localLogger.log(Level.WARNING, "The provider "
+                        + provider.getClassName() + " could not be used", e
+                        .getCause());
+                this.remove(provider);
             }
         }
     }

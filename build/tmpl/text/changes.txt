@@ -126,6 +126,8 @@ Changes log
         - Added converter selection traces. Suggested by John Logdson.
         - Communication error from HTTP clients are now logged at the
           FINE level instead of WARNING.
+        - The JAX-RS extension now works on Google App Engine.
+          Fixes contributed by Martin Krasser.
       - Breaking changes
         - The default language, defined in MetadataService is now based
           on the JVM's default locale, instead of English/US.
