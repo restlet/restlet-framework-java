@@ -331,9 +331,9 @@ public abstract class Representation extends RepresentationInfo {
         if (isAvailable()) {
             result = ByteUtils.exhaust(getStream());
         }
+        // [enddef]
 
         return result;
-        // [enddef]
     }
 
     /**
