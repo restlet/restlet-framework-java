@@ -53,6 +53,7 @@ import org.restlet.data.Response;
  */
 public interface Uniform {
 
+    // [ifndef gwt] member
     /**
      * Handles a uniform call. It is important to realize that this interface
      * can be used either on the client-side or on the server-side.
@@ -64,4 +65,16 @@ public interface Uniform {
      */
     public void handle(Request request, Response response);
 
+    // [ifdef gwt] member
+    /**
+     * Handles a call. Used only by the GWT module.
+     * 
+     * @param request
+     *            The request to handle.
+     * @param response
+     *            The response to update.
+     * @param callback
+     *            The callback invoked upon request completion.
+     */
+    public void handle(Request request, Response response, Uniform callback);
 }

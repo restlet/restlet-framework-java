@@ -1,7 +1,8 @@
-<module id="core" includes="jse, android, gae, jee, gwt" type="core" package="org.restlet">
+<module id="core" type="core" package="org.restlet">
    <label>Restlet API</label>
    <description>
-      Restlet API is a Java framework for the REST architectural style.
+      Restlet API is a Java framework for the REST architectural
+      style.
 	</description>
    <distributions>
       <distribution id="classic" />
@@ -9,7 +10,8 @@
    </distributions>
 
    <dependencies>
-      <dependency excludes="android" type="library" id="osgi" />
+      <dependency excludes="android, gae, gwt" type="library" id="osgi" />
+      <dependency includes="gwt" type="library" id="gwt" />
    </dependencies>
    <osgi>
       <export>org.restlet</export>
@@ -41,15 +43,167 @@
       <import excludes="android">org.osgi.framework</import>
       <activator includes="*" excludes="android" />
    </osgi>
-   <source edition="gae">
+   <source edition="android">
       <files-sets>
 <![CDATA[
-      <fileset dir="${mods}/org.restlet">
-         <exclude name="src/org/restlet/engine/http/StreamServer*" />
-         <exclude name="src/org/restlet/engine/http/StreamClient*" />
-         <exclude name="src/org/restlet/engine/log/IdentClient.java" />
-      </fileset>
+         <exclude name="src/com/**" />
+         <exclude name="src/org/restlet/engine/internal/Activator.java" />
+         <exclude name="src/org/restlet/security/JaasVerifier.java" />
 ]]>
       </files-sets>
    </source>
+   <source edition="gae">
+      <files-sets>
+<![CDATA[
+         <exclude name="src/com/**" />
+         <exclude name="src/org/restlet/engine/internal/Activator.java" />
+         <exclude name="src/org/restlet/engine/http/StreamServer*" />
+         <exclude name="src/org/restlet/engine/http/StreamClient*" />
+         <exclude name="src/org/restlet/engine/log/IdentClient.java" />
+]]>
+      </files-sets>
+   </source>
+   <source edition="gwt">
+      <files-mappers>
+<![CDATA[
+      <mapper classname="mapper.ReplaceStringMapper" classpathref="forge-path" from=".java.gwt" to=".java" />
+      <mapper classname="mapper.ReplaceStringMapper" classpathref="forge-path" from=".MF.gwt" to=".MF" />
+]]>
+      </files-mappers>
+<!--
+         <exclude name="src/org/restlet/data/ReferenceList.java" />
+         <exclude name="src/org/restlet/engine/http/CookiesReader.java" />
+         <exclude name="src/org/restlet/engine/http/CookiesUtils.java" />
+         <exclude name="src/org/restlet/engine/http/HeaderReader.java" />
+          <exclude name="src/org/restlet/engine/http/HttpClientCall.java" />
+         <exclude name="src/org/restlet/engine/http/HttpClientAdapter.java" />
+         <exclude name="src/org/restlet/engine/http/HttpClientHelper.java" />
+         <exclude name="src/org/restlet/engine/http/HttpUtils.java" />
+         <exclude name="src/org/restlet/engine/http/PreferenceReader.java" />
+         <exclude name="src/org/restlet/engine/http/PreferenceUtils.java" />
+         <exclude name="src/org/restlet/Context.java" />
+         <exclude name="src/org/restlet/engine/util/FormReader.java" />
+         <exclude name="src/org/restlet/engine/util/FormUtils.java" />
+         <exclude name="src/org/restlet/engine/Engine.java" />
+         <exclude name="src/org/restlet/engine/RestletHelper.java" />
+         <exclude name="src/org/restlet/representation/Representation.java" />
+         <exclude name="src/org/restlet/representation/StreamRepresentation.java" />
+         <exclude name="src/org/restlet/representation/StringRepresentation.java" />
+         <exclude name="src/org/restlet/representation/RepresentationInfo.java" />
+         <exclude name="src/org/restlet/engine/Call.java" />
+         <exclude name="src/org/restlet/representation/InputRepresentation.java" />
+         <exclude name="src/org/restlet/engine/http/HttpAdapter.java" />
+         <exclude name="src/org/restlet/engine/Adapter.java" />
+         <exclude name="src/org/restlet/engine/http/HttpClientHelper.java" />
+
+-->
+
+      <files-sets>
+<![CDATA[
+         <exclude name="META-INF/MANIFEST.MF" />
+         <custom classname="selector.EditionFileSelector" classpathref="forge-path">
+            <param name="edition" value="gwt"/>
+         </custom>
+         <exclude name="src/com/**" />
+         <exclude name="src/org/restlet/Application.java" />
+         <exclude name="src/org/restlet/Component.java" />
+         <exclude name="src/org/restlet/Component.xsd" />
+         <exclude name="src/org/restlet/data/agent.properties" />
+         <exclude name="src/org/restlet/data/Digest.java" />
+         <exclude name="src/org/restlet/data/LocalReference.java" />
+         <exclude name="src/org/restlet/data/Range.java" />
+         <exclude name="src/org/restlet/engine/ChainHelper.java" />
+         <exclude name="src/org/restlet/engine/component/**" />
+         <exclude name="src/org/restlet/engine/converter/**" />
+         <exclude name="src/org/restlet/engine/http/ChunkedInputStream.java" />
+         <exclude name="src/org/restlet/engine/http/ChunkedOutputStream.java" />
+         <exclude name="src/org/restlet/engine/http/HttpRequest.java" />
+         <exclude name="src/org/restlet/engine/http/HttpResponse*.java" />
+         <exclude name="src/org/restlet/engine/http/HttpServer*.java" />
+         <exclude name="src/org/restlet/engine/http/HttpsUtils.java" />
+         <exclude name="src/org/restlet/engine/http/StreamServer*" />
+         <exclude name="src/org/restlet/engine/http/StreamClient*" />
+         <exclude name="src/org/restlet/engine/internal/**" />
+         <exclude name="src/org/restlet/engine/local/**" />
+         <exclude name="src/org/restlet/engine/log/**" />
+         <exclude name="src/org/restlet/engine/resource/**" />
+         <exclude name="src/org/restlet/engine/Method.java" />
+         <exclude name="src/org/restlet/engine/ServerHelper.java" />
+         <exclude name="src/org/restlet/engine/security/**" />
+         <exclude name="src/org/restlet/engine/TemplateDispatcher.java" />
+         <exclude name="src/org/restlet/engine/util/Conneg.java" />
+         <exclude name="src/org/restlet/engine/util/ConnegUtils.java" />
+         <exclude name="src/org/restlet/engine/util/DefaultSaxHandler.java" />
+         <exclude name="src/org/restlet/engine/util/DigestUtils.java" />
+         <exclude name="src/org/restlet/engine/util/EngineClassLoader.java" />
+         <exclude name="src/org/restlet/engine/util/RangeUtils.java" />
+         <exclude name="src/org/restlet/engine/util/AlphabeticalComparator.java" />
+         <exclude name="src/org/restlet/engine/util/AlphaNumericComparator.java" />
+         <exclude name="src/org/restlet/engine/util/Base64.java" />
+         <exclude name="src/org/restlet/representation/AppendableRepresentation.java" />
+         <exclude name="src/org/restlet/representation/ChannelRepresentation.java" />
+         <exclude name="src/org/restlet/representation/CharacterRepresentation.java" />
+         <exclude name="src/org/restlet/representation/DigesterRepresentation.java" />
+         <exclude name="src/org/restlet/representation/DigestRepresentation.java" />
+         <exclude name="src/org/restlet/representation/FileRepresentation.java" />
+         <exclude name="src/org/restlet/representation/OutputRepresentation.java" />
+         <exclude name="src/org/restlet/representation/ReadableRepresentation.java" />
+         <exclude name="src/org/restlet/representation/ReaderRepresentation.java" />
+         <exclude name="src/org/restlet/representation/XmlRepresentation.java" />
+         <exclude name="src/org/restlet/representation/WritableRepresentation.java" />
+         <exclude name="src/org/restlet/representation/WriterRepresentation.java" />
+         <exclude name="src/org/restlet/resource/**" />
+         <exclude name="src/org/restlet/routing/**" />
+         <exclude name="src/org/restlet/security/**" />
+         <exclude name="src/org/restlet/Server.java" />
+         <exclude name="src/org/restlet/service/accept.properties" />
+         <exclude name="src/org/restlet/service/ConnectorService.java" />
+         <exclude name="src/org/restlet/service/ConverterService.java" />
+         <exclude name="src/org/restlet/service/DecoderService.java" />
+         <exclude name="src/org/restlet/service/LogService.java" />
+         <exclude name="src/org/restlet/service/RangeService.java" />
+         <exclude name="src/org/restlet/service/RealmService.java" />
+         <exclude name="src/org/restlet/service/StatusService.java" />
+         <exclude name="src/org/restlet/service/TaskService.java" />
+         <exclude name="src/org/restlet/service/TunnelService.java" />
+         <exclude name="src/org/restlet/util/Resolver.java" />
+         <exclude name="src/org/restlet/util/RouteList.java" />
+         <exclude name="src/org/restlet/util/ServerHelper.java" />
+         <exclude name="src/org/restlet/util/ServerList.java" />
+         <exclude name="src/org/restlet/util/Template.java" />
+         <exclude name="src/org/restlet/util/TemplateDispatcher.java" />
+         <exclude name="src/org/restlet/util/Variable.java" />
+         <exclude name="target/**" />
+]]>
+      </files-sets>
+   </source>
+   <source edition="jee">
+      <files-sets>
+<![CDATA[
+         <exclude name="src/com/**" />
+]]>
+      </files-sets>
+   </source>
+   <source edition="jse">
+      <files-sets>
+<![CDATA[
+         <exclude name="src/com/**" />
+]]>
+      </files-sets>
+   </source>
+
+   <stage edition="gwt">
+      <filters>
+<![CDATA[
+      <tokenfilter>
+          <replacestring from="com.google.gwt.emul." to=""/>
+      </tokenfilter>
+]]>
+      </filters>
+      <files-sets>
+<![CDATA[
+         <include name="src/com/**" />
+]]>
+      </files-sets>
+   </stage>
 </module>

@@ -35,6 +35,7 @@ import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 
+// [excludes=gwt]
 /**
  * Utility methods for NIO processing.
  * 

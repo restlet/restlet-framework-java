@@ -31,10 +31,8 @@
 package org.restlet.engine;
 
 import java.io.InputStream;
-import java.nio.channels.ReadableByteChannel;
 
 import org.restlet.representation.InputRepresentation;
-import org.restlet.representation.ReadableRepresentation;
 import org.restlet.representation.Representation;
 
 /**
@@ -55,6 +53,7 @@ public abstract class Call {
         return new InputRepresentation(stream, null);
     }
 
+    // [ifndef gwt] method
     /**
      * Returns the representation wrapping the given channel.
      * 
@@ -62,8 +61,9 @@ public abstract class Call {
      *            The response channel.
      * @return The wrapping representation.
      */
-    protected Representation getRepresentation(ReadableByteChannel channel) {
-        return new ReadableRepresentation(channel, null);
+    protected Representation getRepresentation(
+            java.nio.channels.ReadableByteChannel channel) {
+        return new org.restlet.representation.ReadableRepresentation(channel,
+                null);
     }
-
 }

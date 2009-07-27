@@ -33,13 +33,8 @@ package org.restlet.engine.http;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PushbackInputStream;
-import java.net.UnknownHostException;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.WritableByteChannel;
 import java.util.logging.Level;
 
-import org.restlet.data.Digest;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
 import org.restlet.data.Method;
@@ -48,11 +43,8 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
-import org.restlet.engine.util.Base64;
-import org.restlet.engine.util.RangeUtils;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.Representation;
-import org.restlet.service.ConnectorService;
 import org.restlet.util.Series;
 
 /**
@@ -142,13 +134,20 @@ public abstract class HttpClientCall extends HttpCall {
                 entityHeaderFound = true;
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_CONTENT_RANGE)) {
-                RangeUtils.parseContentRange(header.getValue(), result);
+                // [ifndef gwt]
+                org.restlet.engine.util.RangeUtils.parseContentRange(header
+                        .getValue(), result);
                 entityHeaderFound = true;
+                // [enddef]
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_CONTENT_MD5)) {
-                result.setDigest(new Digest(Digest.ALGORITHM_MD5, Base64
-                        .decode(header.getValue())));
+                // [ifndef gwt]
+                result.setDigest(new org.restlet.data.Digest(
+                        org.restlet.data.Digest.ALGORITHM_MD5,
+                        org.restlet.engine.util.Base64
+                                .decode(header.getValue())));
                 entityHeaderFound = true;
+                // [enddef]
             }
 
         }
@@ -168,13 +167,13 @@ public abstract class HttpClientCall extends HttpCall {
      * @return The local IP address or 127.0.0.1 if the resolution fails.
      */
     public static String getLocalAddress() {
-        // [ifndef gae]
+        // [ifndef gae,gwt]
         try {
             return java.net.InetAddress.getLocalHost().getHostAddress();
-        } catch (UnknownHostException e) {
+        } catch (java.net.UnknownHostException e) {
             // [enddef]
             return "127.0.0.1";
-            // [ifndef gae]
+            // [ifndef gae,gwt]
         }
         // [enddef]
     }
@@ -245,13 +244,15 @@ public abstract class HttpClientCall extends HttpCall {
         return this.helper;
     }
 
+    // [ifndef gwt] member
     /**
      * Returns the request entity channel if it exists.
      * 
      * @return The request entity channel if it exists.
      */
-    public abstract WritableByteChannel getRequestEntityChannel();
+    public abstract java.nio.channels.WritableByteChannel getRequestEntityChannel();
 
+    // [ifndef gwt] member
     /**
      * Returns the request entity stream if it exists.
      * 
@@ -259,6 +260,15 @@ public abstract class HttpClientCall extends HttpCall {
      */
     public abstract OutputStream getRequestEntityStream();
 
+    // [ifdef gwt] member uncomment
+    // /**
+    // * Returns the request entity string if it exists.
+    // *
+    // * @return The request entity string if it exists.
+    // */
+    // public abstract String getRequestEntityString();
+
+    // [ifndef gwt] member
     /**
      * Returns the request head stream if it exists.
      * 
@@ -299,7 +309,10 @@ public abstract class HttpClientCall extends HttpCall {
             // Make sure that an InputRepresentation will not be instantiated
             // while the stream is closed.
             final InputStream stream = getUnClosedResponseEntityStream(getResponseEntityStream(size));
-            final ReadableByteChannel channel = getResponseEntityChannel(size);
+            // [ifndef gwt] line
+            final java.nio.channels.ReadableByteChannel channel = getResponseEntityChannel(size);
+            // [ifdef gwt] line uncomment
+            // final InputStream channel = null;
 
             if (stream != null) {
                 result = getRepresentation(stream);
@@ -326,6 +339,7 @@ public abstract class HttpClientCall extends HttpCall {
         return result;
     }
 
+    // [ifndef gwt] member
     /**
      * Returns the response channel if it exists.
      * 
@@ -333,7 +347,8 @@ public abstract class HttpClientCall extends HttpCall {
      *            The expected entity size or -1 if unknown.
      * @return The response channel if it exists.
      */
-    public abstract ReadableByteChannel getResponseEntityChannel(long size);
+    public abstract java.nio.channels.ReadableByteChannel getResponseEntityChannel(
+            long size);
 
     /**
      * Returns the response entity stream if it exists.
@@ -361,13 +376,15 @@ public abstract class HttpClientCall extends HttpCall {
                 if (inputStream.available() > 0) {
                     result = inputStream;
                 } else {
-                    final PushbackInputStream is = new PushbackInputStream(
+                    // [ifndef gwt]
+                    final java.io.PushbackInputStream is = new java.io.PushbackInputStream(
                             inputStream);
                     final int i = is.read();
                     if (i >= 0) {
                         is.unread(i);
                         result = is;
                     }
+                    // [enddef]
                 }
             } catch (IOException ioe) {
                 getLogger().log(Level.FINER, "End of response entity stream.",
@@ -390,6 +407,7 @@ public abstract class HttpClientCall extends HttpCall {
         return (header == null) || !header.equalsIgnoreCase("close");
     }
 
+    // [ifndef gwt] method
     /**
      * Sends the request to the client. Commits the request line, headers and
      * optional entity and send them over the network.
@@ -404,7 +422,7 @@ public abstract class HttpClientCall extends HttpCall {
                 .getEntity() : null;
 
         // Get the connector service to callback
-        final ConnectorService connectorService = getConnectorService(request);
+        final org.restlet.service.ConnectorService connectorService = getConnectorService(request);
         if (connectorService != null) {
             connectorService.beforeSend(entity);
         }
@@ -419,7 +437,7 @@ public abstract class HttpClientCall extends HttpCall {
                 // "insufficient data sent" exceptions will occur in
                 // "fixedLengthMode"
                 final OutputStream requestStream = getRequestEntityStream();
-                final WritableByteChannel wbc = getRequestEntityChannel();
+                final java.nio.channels.WritableByteChannel wbc = getRequestEntityChannel();
 
                 if (wbc != null) {
                     entity.write(wbc);
@@ -459,6 +477,21 @@ public abstract class HttpClientCall extends HttpCall {
 
         return result;
     }
+
+    // [ifdef gwt] method uncomment
+    // /**
+    // * Sends the request to the client. Commits the request line, headers and
+    // * optional entity and send them over the network.
+    // *
+    // * @param request
+    // * The high-level request.
+    // * @param response
+    // * The high-level response.
+    // * @param callback
+    // * The callback invoked upon request completion.
+    // */
+    // public abstract void sendRequest(Request request, Response response,
+    // org.restlet.Uniform callback) throws Exception;
 
     /**
      * Indicates if the request entity should be chunked.

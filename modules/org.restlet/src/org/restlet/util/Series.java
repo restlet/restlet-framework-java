@@ -31,7 +31,6 @@
 package org.restlet.util;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -41,6 +40,7 @@ import java.util.Set;
 
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
+import org.restlet.engine.Edition;
 
 /**
  * Modifiable list of entries with many helper methods. Note that this class
@@ -71,9 +71,16 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      *            The series for which an unmodifiable view should be returned.
      * @return The unmodifiable view of the specified series.
      */
+    @SuppressWarnings("unchecked")
     public static Series<? extends Parameter> unmodifiableSeries(
             Series<? extends Parameter> series) {
-        return new Form(Collections.unmodifiableList(series.getDelegate()));
+        if (Edition.CURRENT != Edition.GWT) {
+            return new Form(java.util.Collections.unmodifiableList(series
+                    .getDelegate()));
+        } else {
+            // TODO is this correct?
+            return new Form((List<Parameter>) series.getDelegate());
+        }
     }
 
     /**
@@ -551,7 +558,12 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      */
     @Override
     public Series<E> subList(int fromIndex, int toIndex) {
-        return createSeries(getDelegate().subList(fromIndex, toIndex));
+        if (Edition.CURRENT != Edition.GWT) {
+            return createSeries(getDelegate().subList(fromIndex, toIndex));
+        } else {
+            return createSeries(org.restlet.engine.util.ListUtils.copySubList(
+                    getDelegate(), fromIndex, toIndex));
+        }
     }
 
     /**

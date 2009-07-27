@@ -34,7 +34,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Level;
 
@@ -208,16 +207,17 @@ public class StringRepresentation extends StreamRepresentation {
         }
     }
 
+    // [ifndef gwt] method
     @Override
     public void write(OutputStream outputStream) throws IOException {
         if (getText() != null) {
-            OutputStreamWriter osw = null;
+            java.io.OutputStreamWriter osw = null;
 
             if (getCharacterSet() != null) {
-                osw = new OutputStreamWriter(outputStream, getCharacterSet()
-                        .getName());
+                osw = new java.io.OutputStreamWriter(outputStream,
+                        getCharacterSet().getName());
             } else {
-                osw = new OutputStreamWriter(outputStream);
+                osw = new java.io.OutputStreamWriter(outputStream);
             }
 
             osw.write(getText());

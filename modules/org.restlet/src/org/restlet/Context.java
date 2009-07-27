@@ -38,8 +38,7 @@ import java.util.logging.Logger;
 
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
-import org.restlet.security.Enroler;
-import org.restlet.security.Verifier;
+import org.restlet.engine.Edition;
 import org.restlet.util.Series;
 
 /**
@@ -57,6 +56,7 @@ import org.restlet.util.Series;
  */
 public class Context {
 
+    // [ifndef gwt] member
     private static final ThreadLocal<Context> CURRENT = new ThreadLocal<Context>();
 
     /**
@@ -77,7 +77,10 @@ public class Context {
      * @return The current context.
      */
     public static Context getCurrent() {
+        // [ifndef gwt] line
         return CURRENT.get();
+        // [ifdef gwt] line uncomment
+        // return new Context();
     }
 
     /**
@@ -86,11 +89,16 @@ public class Context {
      * @return The current context's logger.
      */
     public static Logger getCurrentLogger() {
-        return (Context.getCurrent() != null) ? Context.getCurrent()
-                .getLogger() : Logger.getLogger(Context.class
-                .getCanonicalName());
+        if (Edition.CURRENT != Edition.GWT) {
+            return (Context.getCurrent() != null) ? Context.getCurrent()
+                    .getLogger() : Logger.getLogger(Context.class
+                    .getCanonicalName());
+        } else {
+            return Logger.getLogger(Context.class.getCanonicalName());
+        }
     }
 
+    // [ifndef gwt] method
     /**
      * Sets the context to associated with the current thread.
      * 
@@ -104,6 +112,7 @@ public class Context {
     /** The client dispatcher. */
     private volatile Client clientDispatcher;
 
+    // [ifndef gwt] member
     /** The server dispatcher. */
     private volatile Client serverDispatcher;
 
@@ -116,17 +125,19 @@ public class Context {
     /** The modifiable series of parameters. */
     private final Series<Parameter> parameters;
 
+    // [ifndef gwt] member
     /**
      * The enroler that can add the user roles based on Restlet default
      * authorization model.
      */
-    private volatile Enroler enroler;
+    private volatile org.restlet.security.Enroler enroler;
 
+    // [ifndef gwt] member
     /**
      * The verifier that can check the validity of user/secret couples based on
      * Restlet default authorization model.
      */
-    private volatile Verifier verifier;
+    private volatile org.restlet.security.Verifier verifier;
 
     /**
      * Constructor. Writes log messages to "org.restlet".
@@ -143,12 +154,15 @@ public class Context {
      */
     public Context(Logger logger) {
         this.attributes = new ConcurrentHashMap<String, Object>();
-        this.enroler = null;
         this.logger = logger;
         this.parameters = new Form(new CopyOnWriteArrayList<Parameter>());
-        this.verifier = null;
         this.clientDispatcher = null;
         this.serverDispatcher = null;
+
+        // [ifndef gwt]
+        this.enroler = null;
+        this.verifier = null;
+        // [enddef]
     }
 
     /**
@@ -217,13 +231,14 @@ public class Context {
         return this.clientDispatcher;
     }
 
+    // [ifndef gwt] method
     /**
      * Returns an enroler that can add the user roles based on authenticated
      * user principals.
      * 
      * @return An enroler.
      */
-    public Enroler getEnroler() {
+    public org.restlet.security.Enroler getEnroler() {
         return enroler;
     }
 
@@ -248,6 +263,7 @@ public class Context {
         return this.parameters;
     }
 
+    // [ifndef gwt] method
     /**
      * Returns a request dispatcher to component's virtual hosts. This is mostly
      * useful for application that want to optimize calls to other applications
@@ -264,13 +280,14 @@ public class Context {
         return this.serverDispatcher;
     }
 
+    // [ifndef gwt] method
     /**
      * Returns a verifier that can check the validity of the credentials
      * associated to a request.
      * 
      * @return A verifier.
      */
-    public Verifier getVerifier() {
+    public org.restlet.security.Verifier getVerifier() {
         return this.verifier;
     }
 
@@ -295,6 +312,7 @@ public class Context {
         this.clientDispatcher = clientDispatcher;
     }
 
+    // [ifndef gwt] method
     /**
      * Sets an enroler that can add the user roles based on authenticated user
      * principals.
@@ -302,7 +320,7 @@ public class Context {
      * @param enroler
      *            An enroler.
      */
-    public void setEnroler(Enroler enroler) {
+    public void setEnroler(org.restlet.security.Enroler enroler) {
         this.enroler = enroler;
     }
 
@@ -340,6 +358,7 @@ public class Context {
         }
     }
 
+    // [ifndef gwt] method
     /**
      * Sets the server dispatcher.
      * 
@@ -350,6 +369,7 @@ public class Context {
         this.serverDispatcher = serverDispatcher;
     }
 
+    // [ifndef gwt] method
     /**
      * Sets a local verifier that can check the validity of user/secret couples
      * based on Restlet default authorization model.
@@ -357,7 +377,7 @@ public class Context {
      * @param verifier
      *            A local verifier.
      */
-    public void setVerifier(Verifier verifier) {
+    public void setVerifier(org.restlet.security.Verifier verifier) {
         this.verifier = verifier;
     }
 

@@ -34,10 +34,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLStreamHandler;
-import java.net.URLStreamHandlerFactory;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -46,25 +42,9 @@ import java.util.logging.Level;
 
 import org.restlet.Client;
 import org.restlet.Context;
-import org.restlet.Server;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
 import org.restlet.data.Response;
-import org.restlet.engine.component.RiapClientHelper;
-import org.restlet.engine.component.RiapServerHelper;
-import org.restlet.engine.converter.ConverterHelper;
-import org.restlet.engine.converter.DefaultConverter;
-import org.restlet.engine.local.ClapClientHelper;
-import org.restlet.engine.local.FileClientHelper;
-import org.restlet.engine.local.ZipClientHelper;
-import org.restlet.engine.security.AuthenticatorHelper;
-import org.restlet.engine.security.HttpAwsS3Helper;
-import org.restlet.engine.security.HttpBasicHelper;
-import org.restlet.engine.security.HttpDigestHelper;
-import org.restlet.engine.security.HttpMsSharedKeyHelper;
-import org.restlet.engine.security.HttpMsSharedKeyLiteHelper;
-import org.restlet.engine.security.SmtpPlainHelper;
-import org.restlet.engine.util.EngineClassLoader;
 
 /**
  * Engine supporting the Restlet API.
@@ -73,8 +53,9 @@ import org.restlet.engine.util.EngineClassLoader;
  */
 public class Engine {
 
+    // [ifndef gwt]
     /** Engine class loader to use for dynamic class loading. */
-    private static volatile ClassLoader classLoader = new EngineClassLoader();
+    private static volatile ClassLoader classLoader = new org.restlet.engine.util.EngineClassLoader();
 
     public static final String DESCRIPTOR = "META-INF/services";
 
@@ -98,6 +79,8 @@ public class Engine {
     public static final String DESCRIPTOR_SERVER_PATH = DESCRIPTOR + "/"
             + DESCRIPTOR_SERVER;
 
+    // [enddef]
+
     /** The registered engine. */
     private static volatile Engine instance = null;
 
@@ -110,6 +93,7 @@ public class Engine {
     /** Release number. */
     public static final String RELEASE_NUMBER = "@release-type@@release-number@";
 
+    // [ifndef gwt] member
     /** User class loader to use for dynamic class loading. */
     private static volatile ClassLoader userClassLoader;
 
@@ -120,6 +104,7 @@ public class Engine {
     /** Complete version header. */
     public static final String VERSION_HEADER = "Noelios-Restlet/" + VERSION;
 
+    // [ifndef gwt] method
     /**
      * Returns the engine class loader. It uses the delegation model with the
      * Engine class's class loader as a parent. If this parent doesn't find a
@@ -128,7 +113,7 @@ public class Engine {
      * {@link Thread#getContextClassLoader()}.
      * 
      * @return The engine class loader.
-     * @see EngineClassLoader
+     * @see org.restlet.engine.util.EngineClassLoader
      */
     public static ClassLoader getClassLoader() {
         return classLoader;
@@ -149,6 +134,7 @@ public class Engine {
         return result;
     }
 
+    // [ifndef gwt] method
     /**
      * Returns the class loader specified by the user and that should be used in
      * priority.
@@ -159,6 +145,7 @@ public class Engine {
         return userClassLoader;
     }
 
+    // [ifndef gwt] method
     /**
      * Returns the class object for the given name using the engine classloader.
      * 
@@ -204,6 +191,7 @@ public class Engine {
         instance = engine;
     }
 
+    // [ifndef gwt] method
     /**
      * Sets the user class loader that should used in priority.
      * 
@@ -214,15 +202,18 @@ public class Engine {
         userClassLoader = newClassLoader;
     }
 
+    // [ifndef gwt] member
     /** List of available authenticator helpers. */
-    private final List<AuthenticatorHelper> registeredAuthenticators;
+    private final List<org.restlet.engine.security.AuthenticatorHelper> registeredAuthenticators;
 
     /** List of available client connectors. */
     private final List<ClientHelper> registeredClients;
 
+    // [ifndef gwt] member
     /** List of available converter helpers. */
-    private final List<ConverterHelper> registeredConverters;
+    private final List<org.restlet.engine.converter.ConverterHelper> registeredConverters;
 
+    // [ifndef gwt] member
     /** List of available server connectors. */
     private final List<ServerHelper> registeredServers;
 
@@ -241,15 +232,19 @@ public class Engine {
      */
     public Engine(boolean discoverHelpers) {
         this.registeredClients = new CopyOnWriteArrayList<ClientHelper>();
+        // [ifndef gwt]
         this.registeredServers = new CopyOnWriteArrayList<ServerHelper>();
-        this.registeredAuthenticators = new CopyOnWriteArrayList<AuthenticatorHelper>();
-        this.registeredConverters = new CopyOnWriteArrayList<ConverterHelper>();
+        this.registeredAuthenticators = new CopyOnWriteArrayList<org.restlet.engine.security.AuthenticatorHelper>();
+        this.registeredConverters = new CopyOnWriteArrayList<org.restlet.engine.converter.ConverterHelper>();
+        // [enddef]
 
         if (discoverHelpers) {
             try {
                 discoverConnectors();
+                // [ifndef gwt]
                 discoverAuthenticators();
                 discoverConverters();
+                // [enddef]
             } catch (IOException e) {
                 Context
                         .getCurrentLogger()
@@ -318,6 +313,7 @@ public class Engine {
         return result;
     }
 
+    // [ifndef gwt] method
     /**
      * Creates a new helper for a given server connector.
      * 
@@ -327,7 +323,8 @@ public class Engine {
      *            Optional helper class name.
      * @return The new helper.
      */
-    public ServerHelper createHelper(Server server, String helperClass) {
+    public ServerHelper createHelper(org.restlet.Server server,
+            String helperClass) {
         ServerHelper result = null;
 
         if (server.getProtocols().size() > 0) {
@@ -343,7 +340,8 @@ public class Engine {
                             server.getProtocols())) {
                         try {
                             result = connector.getClass().getConstructor(
-                                    Server.class).newInstance(server);
+                                    org.restlet.Server.class).newInstance(
+                                    server);
                         } catch (Exception e) {
                             Context
                                     .getCurrentLogger()
@@ -376,6 +374,7 @@ public class Engine {
         return result;
     }
 
+    // [ifndef gwt] method
     /**
      * Discovers the authenticator helpers and register the default helpers.
      * 
@@ -394,13 +393,16 @@ public class Engine {
      * @throws IOException
      */
     private void discoverConnectors() throws IOException {
+        // [ifndef gwt]
         registerHelpers(DESCRIPTOR_CLIENT_PATH, getRegisteredClients(),
                 Client.class);
         registerHelpers(DESCRIPTOR_SERVER_PATH, getRegisteredServers(),
-                Server.class);
+                org.restlet.Server.class);
+        // [enddef]
         registerDefaultConnectors();
     }
 
+    // [ifndef gwt] method
     /**
      * Discovers the converter helpers and register the default helpers.
      * 
@@ -412,16 +414,18 @@ public class Engine {
         registerDefaultConverters();
     }
 
+    // [ifndef gwt] method
     /**
      * Finds the converter helper supporting the given conversion.
      * 
-     * @return The authenticator helper or null.
+     * @return The converter helper or null.
      */
-    public ConverterHelper findHelper() {
+    public org.restlet.engine.converter.ConverterHelper findHelper() {
 
         return null;
     }
 
+    // [ifndef gwt] method
     /**
      * Finds the authenticator helper supporting the given scheme.
      * 
@@ -433,11 +437,12 @@ public class Engine {
      *            Indicates if server side support is required.
      * @return The authenticator helper or null.
      */
-    public AuthenticatorHelper findHelper(ChallengeScheme challengeScheme,
-            boolean clientSide, boolean serverSide) {
-        AuthenticatorHelper result = null;
-        final List<AuthenticatorHelper> helpers = getRegisteredAuthenticators();
-        AuthenticatorHelper current;
+    public org.restlet.engine.security.AuthenticatorHelper findHelper(
+            ChallengeScheme challengeScheme, boolean clientSide,
+            boolean serverSide) {
+        org.restlet.engine.security.AuthenticatorHelper result = null;
+        final List<org.restlet.engine.security.AuthenticatorHelper> helpers = getRegisteredAuthenticators();
+        org.restlet.engine.security.AuthenticatorHelper current;
 
         for (int i = 0; (result == null) && (i < helpers.size()); i++) {
             current = helpers.get(i);
@@ -467,12 +472,13 @@ public class Engine {
         return line.trim();
     }
 
+    // [ifndef gwt] method
     /**
      * Returns the list of available authentication helpers.
      * 
      * @return The list of available authentication helpers.
      */
-    public List<AuthenticatorHelper> getRegisteredAuthenticators() {
+    public List<org.restlet.engine.security.AuthenticatorHelper> getRegisteredAuthenticators() {
         return this.registeredAuthenticators;
     }
 
@@ -485,15 +491,17 @@ public class Engine {
         return this.registeredClients;
     }
 
+    // [ifndef gwt] method
     /**
      * Returns the list of available converters.
      * 
      * @return The list of available converters.
      */
-    public List<ConverterHelper> getRegisteredConverters() {
+    public List<org.restlet.engine.converter.ConverterHelper> getRegisteredConverters() {
         return registeredConverters;
     }
 
+    // [ifndef gwt] method
     /**
      * Returns the list of available server connectors.
      * 
@@ -503,44 +511,63 @@ public class Engine {
         return this.registeredServers;
     }
 
+    // [ifndef gwt] method
     /**
      * Registers the default authentication helpers.
      */
     public void registerDefaultAuthentications() {
-        getRegisteredAuthenticators().add(new HttpBasicHelper());
-        getRegisteredAuthenticators().add(new HttpDigestHelper());
-        getRegisteredAuthenticators().add(new SmtpPlainHelper());
-        getRegisteredAuthenticators().add(new HttpAwsS3Helper());
-        getRegisteredAuthenticators().add(new HttpMsSharedKeyHelper());
-        getRegisteredAuthenticators().add(new HttpMsSharedKeyLiteHelper());
+        getRegisteredAuthenticators().add(
+                new org.restlet.engine.security.HttpBasicHelper());
+        getRegisteredAuthenticators().add(
+                new org.restlet.engine.security.HttpDigestHelper());
+        getRegisteredAuthenticators().add(
+                new org.restlet.engine.security.HttpAwsS3Helper());
+        getRegisteredAuthenticators().add(
+                new org.restlet.engine.security.HttpMsSharedKeyHelper());
+        getRegisteredAuthenticators().add(
+                new org.restlet.engine.security.HttpMsSharedKeyLiteHelper());
+        getRegisteredAuthenticators().add(
+                new org.restlet.engine.security.SmtpPlainHelper());
     }
 
     /**
      * Registers the default client and server connectors.
      */
     public void registerDefaultConnectors() {
-        // [ifndef gae]
+        // [ifndef gae, gwt]
         getRegisteredClients().add(
                 new org.restlet.engine.http.StreamClientHelper(null));
         // [enddef]
-        getRegisteredClients().add(new ClapClientHelper(null));
-        getRegisteredClients().add(new FileClientHelper(null));
-        getRegisteredClients().add(new ZipClientHelper(null));
-        getRegisteredClients().add(new RiapClientHelper(null));
-        // [ifndef gae]
+        getRegisteredClients().add(
+                new org.restlet.engine.local.ClapClientHelper(null));
+        getRegisteredClients().add(
+                new org.restlet.engine.local.FileClientHelper(null));
+        getRegisteredClients().add(
+                new org.restlet.engine.local.ZipClientHelper(null));
+        getRegisteredClients().add(
+                new org.restlet.engine.component.RiapClientHelper(null));
+        // [ifndef gae, gwt]
         getRegisteredServers().add(
                 new org.restlet.engine.http.StreamServerHelper(null));
         // [enddef]
-        getRegisteredServers().add(new RiapServerHelper(null));
+        getRegisteredServers().add(
+                new org.restlet.engine.component.RiapServerHelper(null));
+        // [ifdef gwt] uncomment
+        // getRegisteredClients().add(
+        // new org.restlet.engine.http.GwtHttpClientHelper(null));
+        // [enddef]
     }
 
+    // [ifndef gwt] method
     /**
      * Registers the default converters.
      */
     public void registerDefaultConverters() {
-        getRegisteredConverters().add(new DefaultConverter());
+        getRegisteredConverters().add(
+                new org.restlet.engine.converter.DefaultConverter());
     }
 
+    // [ifndef gwt] method
     /**
      * Registers a helper.
      * 
@@ -574,6 +601,7 @@ public class Engine {
         }
     }
 
+    // [ifndef gwt] method
     /**
      * Registers a helper.
      * 
@@ -587,8 +615,8 @@ public class Engine {
      *            The constructor parameter class to look for.
      */
     @SuppressWarnings("unchecked")
-    public void registerHelpers(ClassLoader classLoader, URL configUrl,
-            List helpers, Class constructorClass) {
+    public void registerHelpers(ClassLoader classLoader,
+            java.net.URL configUrl, List helpers, Class constructorClass) {
         try {
             BufferedReader reader = null;
             try {
@@ -617,6 +645,7 @@ public class Engine {
         }
     }
 
+    // [ifndef gwt] method
     /**
      * Registers a list of helpers.
      * 
@@ -633,10 +662,11 @@ public class Engine {
             Class constructorClass) throws IOException {
         final ClassLoader classLoader = org.restlet.engine.Engine
                 .getClassLoader();
-        Enumeration<URL> configUrls = classLoader.getResources(descriptorPath);
+        Enumeration<java.net.URL> configUrls = classLoader
+                .getResources(descriptorPath);
 
         if (configUrls != null) {
-            for (final Enumeration<URL> configEnum = configUrls; configEnum
+            for (final Enumeration<java.net.URL> configEnum = configUrls; configEnum
                     .hasMoreElements();) {
                 registerHelpers(classLoader, configEnum.nextElement(), helpers,
                         constructorClass);
@@ -644,62 +674,69 @@ public class Engine {
         }
     }
 
+    // [ifndef gwt] method
     /**
      * Registers a factory that is used by the URL class to create the
-     * {@link URLConnection} instances when the {@link URL#openConnection()} or
-     * {@link URL#openStream()} methods are invoked.
+     * {@link java.net.URLConnection} instances when the
+     * {@link java.net.URL#openConnection()} or
+     * {@link java.net.URL#openStream()} methods are invoked.
      * <p>
      * The implementation is based on the client dispatcher of the current
      * context, as provided by {@link Context#getCurrent()} method.
      */
     public void registerUrlFactory() {
-        // Set up an URLStreamHandlerFactory for
+        // Set up an java.net.URLStreamHandlerFactory for
         // proper creation of java.net.URL instances
-        URL.setURLStreamHandlerFactory(new URLStreamHandlerFactory() {
-            public URLStreamHandler createURLStreamHandler(String protocol) {
-                final URLStreamHandler result = new URLStreamHandler() {
-
-                    @Override
-                    protected URLConnection openConnection(URL url)
-                            throws IOException {
-                        return new URLConnection(url) {
+        java.net.URL
+                .setURLStreamHandlerFactory(new java.net.URLStreamHandlerFactory() {
+                    public java.net.URLStreamHandler createURLStreamHandler(
+                            String protocol) {
+                        final java.net.URLStreamHandler result = new java.net.URLStreamHandler() {
 
                             @Override
-                            public void connect() throws IOException {
-                            }
+                            protected java.net.URLConnection openConnection(
+                                    java.net.URL url) throws IOException {
+                                return new java.net.URLConnection(url) {
 
-                            @Override
-                            public InputStream getInputStream()
-                                    throws IOException {
-                                InputStream result = null;
-
-                                // Retrieve the current context
-                                final Context context = Context.getCurrent();
-
-                                if (context != null) {
-                                    final Response response = context
-                                            .getClientDispatcher().get(
-                                                    this.url.toString());
-
-                                    if (response.getStatus().isSuccess()) {
-                                        result = response.getEntity()
-                                                .getStream();
+                                    @Override
+                                    public void connect() throws IOException {
                                     }
-                                }
 
-                                return result;
+                                    @Override
+                                    public InputStream getInputStream()
+                                            throws IOException {
+                                        InputStream result = null;
+
+                                        // Retrieve the current context
+                                        final Context context = Context
+                                                .getCurrent();
+
+                                        if (context != null) {
+                                            final Response response = context
+                                                    .getClientDispatcher()
+                                                    .get(this.url.toString());
+
+                                            if (response.getStatus()
+                                                    .isSuccess()) {
+                                                result = response.getEntity()
+                                                        .getStream();
+                                            }
+                                        }
+
+                                        return result;
+                                    }
+                                };
                             }
+
                         };
+
+                        return result;
                     }
 
-                };
-
-                return result;
-            }
-
-        });
+                });
     }
 
+    // [ifndef gwt] method
     /**
      * Sets the list of available authentication helpers.
      * 
@@ -707,7 +744,7 @@ public class Engine {
      *            The list of available authentication helpers.
      */
     public void setRegisteredAuthenticators(
-            List<AuthenticatorHelper> registeredAuthenticators) {
+            List<org.restlet.engine.security.AuthenticatorHelper> registeredAuthenticators) {
         synchronized (this.registeredAuthenticators) {
             this.registeredAuthenticators.clear();
 
@@ -733,6 +770,7 @@ public class Engine {
         }
     }
 
+    // [ifndef gwt] method
     /**
      * Sets the list of available converter helpers.
      * 
@@ -740,7 +778,7 @@ public class Engine {
      *            The list of available converter helpers.
      */
     public void setRegisteredConverters(
-            List<ConverterHelper> registeredConverters) {
+            List<org.restlet.engine.converter.ConverterHelper> registeredConverters) {
         synchronized (this.registeredConverters) {
             this.registeredConverters.clear();
 
@@ -750,6 +788,7 @@ public class Engine {
         }
     }
 
+    // [ifndef gwt] method
     /**
      * Sets the list of available server helpers.
      * 

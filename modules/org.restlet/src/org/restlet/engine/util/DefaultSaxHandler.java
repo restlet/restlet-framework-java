@@ -128,7 +128,7 @@ public class DefaultSaxHandler extends DefaultHandler
         return super.resolveEntity(publicId, systemId);
     }
 
-    // [ifndef android]
+    // [ifndef android] method
     /**
      * Allow the application to resolve external resources.
      * <p>
@@ -157,8 +157,6 @@ public class DefaultSaxHandler extends DefaultHandler
         }
         return null;
     }
-
-    // [enddef]
 
     @Override
     public void skippedEntity(String name) throws SAXException {

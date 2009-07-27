@@ -39,6 +39,7 @@ import org.restlet.data.Response;
 import org.restlet.representation.Representation;
 import org.restlet.routing.Filter;
 
+// [excludes=gwt]
 /**
  * Filter decompressing entities.
  * 

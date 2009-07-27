@@ -35,7 +35,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.restlet.Context;
 import org.restlet.representation.Representation;
-import org.restlet.service.TunnelService;
 import org.restlet.util.Series;
 
 /**
@@ -88,6 +87,7 @@ public class Request extends Message {
         }
     }
 
+    // [ifndef gwt] method
     /**
      * Returns the request associated to the current thread. This is reusing the
      * {@link Response#getCurrent()} method.
@@ -106,6 +106,7 @@ public class Request extends Message {
     /** The authentication response sent by a client to an origin server. */
     private volatile ChallengeResponse challengeResponse;
 
+    // [ifndef gwt] member
     /** The authentication response sent by a client to a proxy. */
     private volatile ChallengeResponse proxyChallengeResponse;
 
@@ -127,8 +128,9 @@ public class Request extends Message {
     /** The original reference. */
     private volatile Reference originalRef;
 
+    // [ifndef gwt] member
     /** The ranges to return from the target resource's representation. */
-    private volatile List<Range> ranges;
+    private volatile List<org.restlet.data.Range> ranges;
 
     /** The referrer reference. */
     private volatile Reference referrerRef;
@@ -324,6 +326,7 @@ public class Request extends Message {
         return result;
     }
 
+    // [ifndef gwt] method
     /**
      * Returns the authentication response sent by a client to a proxy.
      * 
@@ -333,19 +336,20 @@ public class Request extends Message {
         return this.proxyChallengeResponse;
     }
 
+    // [ifndef gwt] method
     /**
      * Returns the ranges to return from the target resource's representation.
      * 
      * @return The ranges to return.
      */
-    public List<Range> getRanges() {
+    public List<org.restlet.data.Range> getRanges() {
         // Lazy initialization with double-check.
-        List<Range> r = this.ranges;
+        List<org.restlet.data.Range> r = this.ranges;
         if (r == null) {
             synchronized (this) {
                 r = this.ranges;
                 if (r == null) {
-                    this.ranges = r = new CopyOnWriteArrayList<Range>();
+                    this.ranges = r = new CopyOnWriteArrayList<org.restlet.data.Range>();
                 }
             }
         }
@@ -373,10 +377,11 @@ public class Request extends Message {
      * note that beside the update of its base property, the resource reference
      * can be modified during the request processing.
      * 
-     * For example, the {@link TunnelService} associated to an application can
-     * extract some special extensions or query parameters and replace them by
-     * semantically equivalent properties on the request object. Therefore, the
-     * resource reference can become different from the original reference.
+     * For example, the {@link org.restlet.service.TunnelService} associated to
+     * an application can extract some special extensions or query parameters
+     * and replace them by semantically equivalent properties on the request
+     * object. Therefore, the resource reference can become different from the
+     * original reference.
      * 
      * Finally, when sending out requests via a dispatcher such as
      * {@link Context#getClientDispatcher()} or
@@ -508,6 +513,7 @@ public class Request extends Message {
         this.originalRef = originalRef;
     }
 
+    // [ifndef gwt] method
     /**
      * Sets the authentication response sent by a client to a proxy.
      * 
@@ -518,13 +524,14 @@ public class Request extends Message {
         this.proxyChallengeResponse = challengeResponse;
     }
 
+    // [ifndef gwt] method
     /**
      * Sets the ranges to return from the target resource's representation.
      * 
      * @param ranges
      *            The ranges.
      */
-    public void setRanges(List<Range> ranges) {
+    public void setRanges(List<org.restlet.data.Range> ranges) {
         this.ranges = ranges;
     }
 

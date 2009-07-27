@@ -30,8 +30,6 @@
 
 package org.restlet.data;
 
-import java.nio.charset.Charset;
-
 /**
  * Character set used to encode characters in textual representations.
  * 
@@ -42,13 +40,18 @@ public final class CharacterSet extends Metadata {
     public static final CharacterSet ALL = new CharacterSet("*",
             "All character sets");
 
+    // [ifndef gwt] member
     /**
      * The default character set of the JVM.
      * 
-     * @see Charset#defaultCharset()
+     * @see java.nio.charset.Charset#defaultCharset()
      */
-    public static final CharacterSet DEFAULT = new CharacterSet(Charset
-            .defaultCharset());
+    public static final CharacterSet DEFAULT = new CharacterSet(
+            java.nio.charset.Charset.defaultCharset());
+
+    // [ifdef gwt] member uncomment
+    // public static final CharacterSet DEFAULT = new CharacterSet("ISO-8859-1",
+    // "ISO/IEC 8859-1 or Latin 1 character set");
 
     /**
      * The ISO/IEC 8859-1 (Latin 1) character set.
@@ -252,13 +255,14 @@ public final class CharacterSet extends Metadata {
         return result;
     }
 
+    // [ifndef gwt] method
     /**
      * Constructor.
      * 
      * @param charset
      *            The character set.
      */
-    public CharacterSet(final Charset charset) {
+    public CharacterSet(final java.nio.charset.Charset charset) {
         this(charset.name(), charset.displayName());
     }
 
@@ -326,12 +330,13 @@ public final class CharacterSet extends Metadata {
         return equals(ALL) || (included == null) || equals(included);
     }
 
+    // [ifndef gwt] method
     /**
      * Returns the NIO charset matching the character set name.
      * 
      * @return The NIO charset.
      */
-    public Charset toCharset() {
-        return Charset.forName(getName());
+    public java.nio.charset.Charset toCharset() {
+        return java.nio.charset.Charset.forName(getName());
     }
 }

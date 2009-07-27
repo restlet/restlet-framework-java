@@ -35,11 +35,11 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import org.restlet.Context;
+import org.restlet.Uniform;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
-import org.restlet.data.Digest;
 import org.restlet.data.Dimension;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -49,10 +49,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.engine.Engine;
-import org.restlet.engine.security.AuthenticatorUtils;
-import org.restlet.engine.util.Base64;
 import org.restlet.engine.util.DateUtils;
-import org.restlet.engine.util.RangeUtils;
 import org.restlet.util.Series;
 
 /**
@@ -91,14 +88,18 @@ public class HttpClientAdapter extends HttpAdapter {
                 }
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_WWW_AUTHENTICATE)) {
-                final ChallengeRequest request = AuthenticatorUtils
+                // [ifndef gwt]
+                final ChallengeRequest request = org.restlet.engine.security.AuthenticatorUtils
                         .parseAuthenticateHeader(header.getValue());
                 response.getChallengeRequests().add(request);
+                // [enddef]
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_PROXY_AUTHENTICATE)) {
-                final ChallengeRequest request = AuthenticatorUtils
+                // [ifndef gwt]
+                final ChallengeRequest request = org.restlet.engine.security.AuthenticatorUtils
                         .parseAuthenticateHeader(header.getValue());
                 response.getProxyChallengeRequests().add(request);
+                // [enddef]
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_SERVER)) {
                 response.getServerInfo().setAgent(header.getValue());
@@ -302,11 +303,15 @@ public class HttpClientAdapter extends HttpAdapter {
                             "Unable to format the HTTP Accept header", ioe);
                 }
             }
+
+            // [ifndef gwt]
             // Add Range header
             if (!request.getRanges().isEmpty()) {
-                requestHeaders.add(HttpConstants.HEADER_RANGE, RangeUtils
-                        .formatRanges(request.getRanges()));
+                requestHeaders.add(HttpConstants.HEADER_RANGE,
+                        org.restlet.engine.util.RangeUtils.formatRanges(request
+                                .getRanges()));
             }
+            // [enddef]
 
             // Add entity headers
             if (request.isEntityAvailable()) {
@@ -360,13 +365,14 @@ public class HttpClientAdapter extends HttpAdapter {
                     requestHeaders.add(HttpConstants.HEADER_CONTENT_LENGTH,
                             String.valueOf(request.getEntity().getSize()));
                 }
-
+                // [ifndef gwt]
                 if (request.getEntity().getRange() != null) {
                     try {
                         requestHeaders.add(HttpConstants.HEADER_CONTENT_RANGE,
-                                RangeUtils.formatContentRange(request
-                                        .getEntity().getRange(), request
-                                        .getEntity().getSize()));
+                                org.restlet.engine.util.RangeUtils
+                                        .formatContentRange(request.getEntity()
+                                                .getRange(), request
+                                                .getEntity().getSize()));
                     } catch (Exception e) {
                         getLogger()
                                 .log(
@@ -375,14 +381,20 @@ public class HttpClientAdapter extends HttpAdapter {
                                         e);
                     }
                 }
+                // [enddef]
+
+                // [ifndef gwt]
                 // Add Checksum
                 if (request.getEntity().getDigest() != null
-                        && Digest.ALGORITHM_MD5.equals(request.getEntity()
-                                .getDigest().getAlgorithm())) {
-                    requestHeaders.add(HttpConstants.HEADER_CONTENT_MD5, Base64
-                            .encode(request.getEntity().getDigest().getValue(),
-                                    false));
+                        && org.restlet.data.Digest.ALGORITHM_MD5.equals(request
+                                .getEntity().getDigest().getAlgorithm())) {
+                    requestHeaders
+                            .add(HttpConstants.HEADER_CONTENT_MD5,
+                                    org.restlet.engine.util.Base64.encode(
+                                            request.getEntity().getDigest()
+                                                    .getValue(), false));
                 }
+                // [enddef]
             }
 
             // Add user-defined extension headers
@@ -390,26 +402,30 @@ public class HttpClientAdapter extends HttpAdapter {
                     .getAttributes().get(HttpConstants.ATTRIBUTE_HEADERS);
             addAdditionalHeaders(requestHeaders, additionalHeaders);
 
+            // [ifndef gwt]
             // Add the security headers. NOTE: This must stay at the end because
             // the AWS challenge scheme requires access to all HTTP headers
             final ChallengeResponse challengeResponse = request
                     .getChallengeResponse();
             if (challengeResponse != null) {
                 requestHeaders.add(HttpConstants.HEADER_AUTHORIZATION,
-                        AuthenticatorUtils.format(challengeResponse, request,
-                                requestHeaders));
+                        org.restlet.engine.security.AuthenticatorUtils.format(
+                                challengeResponse, request, requestHeaders));
             }
 
             final ChallengeResponse proxyChallengeResponse = request
                     .getProxyChallengeResponse();
             if (proxyChallengeResponse != null) {
                 requestHeaders.add(HttpConstants.HEADER_PROXY_AUTHORIZATION,
-                        AuthenticatorUtils.format(proxyChallengeResponse,
-                                request, requestHeaders));
+                        org.restlet.engine.security.AuthenticatorUtils
+                                .format(proxyChallengeResponse, request,
+                                        requestHeaders));
             }
+            // [enddef]
         }
     }
 
+    // [ifndef gwt] method
     /**
      * Commits the changes to a handled HTTP client call back into the original
      * uniform call. The default implementation first invokes the
@@ -461,6 +477,27 @@ public class HttpClientAdapter extends HttpAdapter {
                 }
             }
         }
+    }
+
+    // [ifdef gwt] method
+    /**
+     * Commits the changes to a handled HTTP client call back into the original
+     * uniform call. The default implementation first invokes the
+     * "addResponseHeaders" then asks the "htppCall" to send the response back
+     * to the client.
+     * 
+     * @param httpCall
+     *            The original HTTP call.
+     * @param request
+     *            The high-level request.
+     * @param response
+     *            The high-level response.
+     * @param callback
+     *            The callback invoked upon request completion.
+     */
+    public void commit(HttpClientCall httpCall, Request request,
+            Response response, Uniform callback) {
+
     }
 
     /**

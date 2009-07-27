@@ -14,7 +14,8 @@ public class FirstStepsMain {
             component.getServers().add(Protocol.HTTP, 8182);
 
             // Attach the sample application.
-            component.getDefaultHost().attach(new FirstStepsApplication());
+            component.getDefaultHost().attach("/firstSteps",
+                    new FirstStepsApplication());
 
             // Start the component.
             component.start();

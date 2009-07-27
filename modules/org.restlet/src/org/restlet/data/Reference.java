@@ -31,16 +31,12 @@
 package org.restlet.data;
 
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
 import org.restlet.Context;
+import org.restlet.engine.Edition;
 
 /**
  * Reference to a Uniform Resource Identifier (URI). Contrary to the
@@ -136,8 +132,9 @@ public class Reference {
         String result = null;
 
         if (toDecode != null) {
+            // [ifndef gwt]
             try {
-                result = URLDecoder.decode(toDecode, "UTF-8");
+                result = java.net.URLDecoder.decode(toDecode, "UTF-8");
             } catch (UnsupportedEncodingException uee) {
                 Context
                         .getCurrentLogger()
@@ -146,6 +143,17 @@ public class Reference {
                                 "Unable to decode the string with the UTF-8 character set.",
                                 uee);
             }
+            // [enddef]
+
+            // [ifdef gwt] uncomment
+            // try {
+            // result = com.google.gwt.http.client.URL.decode(toDecode);
+            // } catch (NullPointerException npe) {
+            // System.err
+            // .println("Unable to decode the string with the UTF-8 character set.");
+            // }
+            // [enddef]
+
         }
 
         return result;
@@ -167,11 +175,17 @@ public class Reference {
      *         supported.
      */
     public static String decode(String toDecode, CharacterSet characterSet) {
+        if (Edition.CURRENT == Edition.GWT) {
+            if (!CharacterSet.UTF_8.equals(characterSet)) {
+                throw new IllegalArgumentException(
+                        "Only UTF-8 URL encoding is supported under GWT");
+            }
+        }
         String result = null;
-
+        // [ifndef gwt]
         try {
-            result = (characterSet == null) ? toDecode : URLDecoder.decode(
-                    toDecode, characterSet.getName());
+            result = (characterSet == null) ? toDecode : java.net.URLDecoder
+                    .decode(toDecode, characterSet.getName());
         } catch (UnsupportedEncodingException uee) {
             Context
                     .getCurrentLogger()
@@ -180,6 +194,18 @@ public class Reference {
                             "Unable to decode the string with the UTF-8 character set.",
                             uee);
         }
+        // [enddef]
+
+        // [ifdef gwt] uncomment
+        // try {
+        // result = (characterSet == null) ? toDecode :
+        // com.google.gwt.http.client.URL.decode(toDecode);
+        // } catch (NullPointerException npe) {
+        // System.err
+        // .println("Unable to decode the string with the UTF-8 character set.");
+        // }
+
+        // [enddef]
 
         return result;
     }
@@ -196,8 +222,9 @@ public class Reference {
         String result = null;
 
         if (toEncode != null) {
+            // [ifndef gwt]
             try {
-                result = URLEncoder.encode(toEncode, "UTF-8");
+                result = java.net.URLEncoder.encode(toEncode, "UTF-8");
             } catch (UnsupportedEncodingException uee) {
                 Context
                         .getCurrentLogger()
@@ -206,6 +233,17 @@ public class Reference {
                                 "Unable to encode the string with the UTF-8 character set.",
                                 uee);
             }
+            // [enddef]
+
+            // [ifdef gwt] uncomment
+            // try {
+            // result = com.google.gwt.http.client.URL.encode(toEncode);
+            // } catch (NullPointerException npe) {
+            // System.err
+            // .println("Unable to encode the string with the UTF-8 character set.");
+            // }
+            // [enddef]
+
         }
 
         return result;
@@ -228,11 +266,19 @@ public class Reference {
      *         supported.
      */
     public static String encode(String toEncode, CharacterSet characterSet) {
+        if (Edition.CURRENT == Edition.GWT) {
+            if (!CharacterSet.UTF_8.equals(characterSet)) {
+                throw new IllegalArgumentException(
+                        "Only UTF-8 URL encoding is supported under GWT");
+            }
+        }
+
         String result = null;
 
+        // [ifndef gwt]
         try {
-            result = (characterSet == null) ? toEncode : URLEncoder.encode(
-                    toEncode, characterSet.getName());
+            result = (characterSet == null) ? toEncode : java.net.URLEncoder
+                    .encode(toEncode, characterSet.getName());
         } catch (UnsupportedEncodingException uee) {
             Context
                     .getCurrentLogger()
@@ -241,6 +287,17 @@ public class Reference {
                             "Unable to encode the string with the UTF-8 character set.",
                             uee);
         }
+        // [enddef]
+
+        // [ifdef gwt] uncomment
+        // try {
+        // result = (characterSet == null) ? toEncode :
+        // com.google.gwt.http.client.URL.encode(toEncode);
+        // } catch (NullPointerException npe) {
+        // System.err
+        // .println("Unable to encode the string with the UTF-8 character set.");
+        // }
+        // [enddef]
 
         return result;
     }
@@ -488,6 +545,28 @@ public class Reference {
         this((Reference) null, (String) null);
     }
 
+    // [ifndef gwt] method
+    /**
+     * Constructor from an {@link java.net.URI} instance.
+     * 
+     * @param uri
+     *            The {@link java.net.URI} instance.
+     */
+    public Reference(java.net.URI uri) {
+        this(uri.toString());
+    }
+
+    // [ifndef gwt] method
+    /**
+     * Constructor from an {@link java.net.URL} instance.
+     * 
+     * @param url
+     *            The {@link java.net.URL} instance.
+     */
+    public Reference(java.net.URL url) {
+        this(url.toString());
+    }
+
     /**
      * Constructor for a protocol and host name. Uses the default port for the
      * given protocol.
@@ -611,26 +690,6 @@ public class Reference {
     public Reference(String scheme, String hostName, int hostPort, String path,
             String query, String fragment) {
         this(toString(scheme, hostName, hostPort, path, query, fragment));
-    }
-
-    /**
-     * Constructor from an {@link URI} instance.
-     * 
-     * @param uri
-     *            The {@link URI} instance.
-     */
-    public Reference(URI uri) {
-        this(uri.toString());
-    }
-
-    /**
-     * Constructor from an {@link URL} instance.
-     * 
-     * @param url
-     *            The {@link URL} instance.
-     */
-    public Reference(URL url) {
-        this(url.toString());
     }
 
     /**
@@ -2910,28 +2969,32 @@ public class Reference {
         return this.internalRef;
     }
 
+    // [ifndef gwt] method
     /**
-     * Converts to a {@link URI} instance. Note that relative references are
-     * resolved before conversion using the {@link #getTargetRef()} method.
+     * Converts to a {@link java.net.URI} instance. Note that relative
+     * references are resolved before conversion using the
+     * {@link #getTargetRef()} method.
      * 
-     * @return A {@link URI} instance.
+     * @return A {@link java.net.URI} instance.
      */
-    public URI toUri() {
-        return URI.create(getTargetRef().toString());
+    public java.net.URI toUri() {
+        return java.net.URI.create(getTargetRef().toString());
     }
 
+    // [ifndef gwt] method
     /**
-     * Converts to a {@link URL} instance. Note that relative references are
-     * resolved before conversion using the {@link #getTargetRef()} method.
+     * Converts to a {@link java.net.URL} instance. Note that relative
+     * references are resolved before conversion using the
+     * {@link #getTargetRef()} method.
      * 
-     * @return A {@link URL} instance.
+     * @return A {@link java.net.URL} instance.
      */
-    public URL toUrl() {
-        URL result = null;
+    public java.net.URL toUrl() {
+        java.net.URL result = null;
 
         try {
-            result = new URL(getTargetRef().toString());
-        } catch (MalformedURLException e) {
+            result = new java.net.URL(getTargetRef().toString());
+        } catch (java.net.MalformedURLException e) {
             throw new IllegalArgumentException("Malformed URL exception", e);
         }
 

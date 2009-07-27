@@ -202,6 +202,7 @@ public class WrapperRequest extends Request {
         return getWrappedRequest().getProtocol();
     }
 
+    // [ifndef gwt] method
     /**
      * Returns the authentication response sent by a client to a proxy.
      * 
@@ -343,6 +344,7 @@ public class WrapperRequest extends Request {
         getWrappedRequest().setMethod(method);
     }
 
+    // [ifndef gwt] method
     /**
      * Sets the authentication response sent by a client to a proxy.
      * 

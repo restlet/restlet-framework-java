@@ -34,7 +34,6 @@ import java.io.IOException;
 
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
-import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.callback.UnsupportedCallbackException;
 
@@ -88,8 +87,8 @@ public class DefaultJaasCallbackHandler implements CallbackHandler {
 
     /**
      * Handles a callback. The default implementation automatically sets the
-     * identifier on {@link NameCallback} instances and the secret on
-     * {@link PasswordCallback}.
+     * identifier on {@link javax.security.auth.callback.NameCallback} instances
+     * and the secret on {@link PasswordCallback}.
      * 
      * @param callback
      *            The callback to handle.
@@ -97,10 +96,13 @@ public class DefaultJaasCallbackHandler implements CallbackHandler {
      */
     protected void handle(Callback callback)
             throws UnsupportedCallbackException {
-        if (callback instanceof NameCallback) {
-            NameCallback nc = (NameCallback) callback;
+        // [ifndef android]
+        if (callback instanceof javax.security.auth.callback.NameCallback) {
+            javax.security.auth.callback.NameCallback nc = (javax.security.auth.callback.NameCallback) callback;
             nc.setName(getRequest().getChallengeResponse().getIdentifier());
-        } else if (callback instanceof PasswordCallback) {
+        } else
+        // [enddef]
+        if (callback instanceof PasswordCallback) {
             PasswordCallback pc = (PasswordCallback) callback;
             pc.setPassword(getRequest().getChallengeResponse().getSecret());
         } else {

@@ -45,12 +45,13 @@ import org.restlet.data.Response;
 import org.restlet.representation.Representation;
 import org.restlet.routing.Filter;
 
+// [excludes=gwt]
 /**
  * Filter compressing entities. The best encoding is automatically selected
  * based on the preferences of the client and on the encoding supported by NRE:
  * GZip, Zip and Deflate.<br>
- * If the {@link org.restlet.representation.Representation} has an unknown size, it
- * will always be a candidate for encoding. Candidate representations need to
+ * If the {@link org.restlet.representation.Representation} has an unknown size,
+ * it will always be a candidate for encoding. Candidate representations need to
  * respect media type criteria by the lists of accepted and ignored media types.
  * 
  * Concurrency note: instances of this class or its subclasses can be invoked by

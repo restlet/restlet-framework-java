@@ -27,12 +27,11 @@
  * 
  * Restlet is a registered trademark of Noelios Technologies.
  */
- 
- package org.restlet.util;
+
+package org.restlet.util;
 
 import java.util.logging.Logger;
 
-import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.data.Request;
@@ -62,8 +61,9 @@ public class WrapperRestlet extends Restlet {
         this.wrappedRestlet = wrappedRestlet;
     }
 
+    // [ifndef gwt] method
     @Override
-    public Application getApplication() {
+    public org.restlet.Application getApplication() {
         return wrappedRestlet.getApplication();
     }
 
@@ -77,10 +77,18 @@ public class WrapperRestlet extends Restlet {
         return wrappedRestlet.getLogger();
     }
 
+    // [ifndef gwt] method
     @Override
     public void handle(Request request, Response response) {
         wrappedRestlet.handle(request, response);
     }
+
+    // [ifdef gwt] method uncomment
+    // @Override
+    // public void handle(Request request, Response response,
+    // org.restlet.Uniform callback) {
+    // wrappedRestlet.handle(request, response, callback);
+    // }
 
     @Override
     public boolean isStarted() {

@@ -61,6 +61,7 @@ import org.restlet.service.MetadataService;
 import org.restlet.service.TunnelService;
 import org.restlet.util.Series;
 
+// [excludes=gwt]
 /**
  * Filter tunneling browser calls into full REST calls. The request method can
  * be changed (via POST requests only) as well as the accepted media types,

@@ -30,24 +30,15 @@
 
 package org.restlet.representation;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
-import java.io.Writer;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.WritableByteChannel;
-import java.security.DigestInputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.logging.Level;
 
 import org.restlet.Context;
-import org.restlet.data.Digest;
 import org.restlet.data.MediaType;
-import org.restlet.data.Range;
 import org.restlet.data.Tag;
 import org.restlet.engine.io.ByteUtils;
 import org.restlet.engine.util.DateUtils;
@@ -96,10 +87,11 @@ public abstract class Representation extends RepresentationInfo {
     /** Indicates if the representation's content is available. */
     private volatile boolean available;
 
+    // [ifndef gwt] member
     /**
      * The representation digest if any.
      */
-    private volatile Digest digest;
+    private volatile org.restlet.data.Digest digest;
 
     /** Indicates if the representation is downloadable. */
     private volatile boolean downloadable;
@@ -116,11 +108,12 @@ public abstract class Representation extends RepresentationInfo {
     /** Indicates if the representation's content is transient. */
     private volatile boolean isTransient;
 
+    // [ifndef gwt] member
     /**
      * Indicates where in the full content the partial content available should
      * be applied.
      */
-    private volatile Range range;
+    private volatile org.restlet.data.Range range;
 
     /**
      * The expected size. Dynamic representations can have any size, but
@@ -146,13 +139,15 @@ public abstract class Representation extends RepresentationInfo {
     public Representation(MediaType mediaType) {
         super(mediaType);
         this.available = true;
-        this.digest = null;
         this.downloadable = false;
         this.downloadName = null;
         this.isTransient = false;
-        this.range = null;
         this.size = UNKNOWN_SIZE;
         this.expirationDate = null;
+        // [ifndef gwt]
+        this.digest = null;
+        this.range = null;
+        // [enddef]
     }
 
     /**
@@ -237,6 +232,7 @@ public abstract class Representation extends RepresentationInfo {
         this(variant, null, tag);
     }
 
+    // [ifndef gwt] method
     /**
      * Check that the digest computed from the representation content and the
      * digest declared by the representation are the same.<br>
@@ -255,6 +251,7 @@ public abstract class Representation extends RepresentationInfo {
         return (getDigest() != null && checkDigest(getDigest().getAlgorithm()));
     }
 
+    // [ifndef gwt] method
     /**
      * Check that the digest computed from the representation content and the
      * digest declared by the representation are the same. It also first checks
@@ -268,13 +265,13 @@ public abstract class Representation extends RepresentationInfo {
      * 
      * @param algorithm
      *            The algorithm used to compute the digest to compare with. See
-     *            constant values in {@link Digest}.
+     *            constant values in {@link org.restlet.data.Digest}.
      * @return True if both digests are not null and equals.
      * @deprecated Use {@link Representation#getDigester()} instead.
      */
     @Deprecated
     public boolean checkDigest(String algorithm) {
-        Digest digest = getDigest();
+        org.restlet.data.Digest digest = getDigest();
         if (digest != null) {
             if (algorithm.equals(digest.getAlgorithm())) {
                 return digest.equals(computeDigest(algorithm));
@@ -283,6 +280,7 @@ public abstract class Representation extends RepresentationInfo {
         return false;
     }
 
+    // [ifndef gwt] method
     /**
      * Compute the representation digest according to the given algorithm.<br>
      * Since this method reads entirely the representation's stream, user must
@@ -293,21 +291,23 @@ public abstract class Representation extends RepresentationInfo {
      * 
      * @param algorithm
      *            The algorithm used to compute the digest. See constant values
-     *            in {@link Digest}.
+     *            in {@link org.restlet.data.Digest}.
      * @return The computed digest or null if the digest cannot be computed.
      * @deprecated Use {@link Representation#getDigester()} instead.
      */
     @Deprecated
-    public Digest computeDigest(String algorithm) {
-        Digest result = null;
+    public org.restlet.data.Digest computeDigest(String algorithm) {
+        org.restlet.data.Digest result = null;
 
         if (isAvailable()) {
             try {
-                MessageDigest md = MessageDigest.getInstance(algorithm);
-                DigestInputStream dis = new DigestInputStream(getStream(), md);
-                ByteUtils.exhaust(dis);
-                result = new Digest(algorithm, md.digest());
-            } catch (NoSuchAlgorithmException e) {
+                java.security.MessageDigest md = java.security.MessageDigest
+                        .getInstance(algorithm);
+                java.security.DigestInputStream dis = new java.security.DigestInputStream(
+                        getStream(), md);
+                org.restlet.engine.io.ByteUtils.exhaust(dis);
+                result = new org.restlet.data.Digest(algorithm, md.digest());
+            } catch (java.security.NoSuchAlgorithmException e) {
                 Context.getCurrentLogger().log(Level.WARNING,
                         "Unable to check the digest of the representation.", e);
             } catch (IOException e) {
@@ -327,12 +327,13 @@ public abstract class Representation extends RepresentationInfo {
      */
     public long exhaust() throws IOException {
         long result = -1L;
-
+        // [ifndef gwt]
         if (isAvailable()) {
             result = ByteUtils.exhaust(getStream());
         }
 
         return result;
+        // [enddef]
     }
 
     /**
@@ -351,17 +352,18 @@ public abstract class Representation extends RepresentationInfo {
     /**
      * Returns the size effectively available. This returns the same value as
      * {@link #getSize()} if no range is defined, otherwise it returns the size
-     * of the range using {@link Range#getSize()}.
+     * of the range using {@link org.restlet.data.Range#getSize()}.
      * 
      * @return The available size.
      */
     public long getAvailableSize() {
+        // [ifndef gwt]
         if (getRange() == null) {
             return getSize();
-        } else if (getRange().getSize() != Range.SIZE_MAX) {
+        } else if (getRange().getSize() != org.restlet.data.Range.SIZE_MAX) {
             return getRange().getSize();
         } else if (getSize() != Representation.UNKNOWN_SIZE) {
-            if (getRange().getIndex() != Range.INDEX_LAST) {
+            if (getRange().getIndex() != org.restlet.data.Range.INDEX_LAST) {
                 return getSize() - getRange().getIndex();
             } else {
                 return getSize();
@@ -369,8 +371,12 @@ public abstract class Representation extends RepresentationInfo {
         }
 
         return Representation.UNKNOWN_SIZE;
+        // [enddef]
+        // [ifdef gwt] line uncomment
+        // return getSize();
     }
 
+    // [ifndef gwt] member
     /**
      * Returns a channel with the representation's content.<br>
      * If it is supported by a file, a read-only instance of FileChannel is
@@ -381,21 +387,24 @@ public abstract class Representation extends RepresentationInfo {
      * @return A channel with the representation's content.
      * @throws IOException
      */
-    public abstract ReadableByteChannel getChannel() throws IOException;
+    public abstract java.nio.channels.ReadableByteChannel getChannel()
+            throws IOException;
 
+    // [ifndef gwt] method
     /**
      * Returns the representation digest if any.
      * 
      * @return The representation digest or null.
      */
-    public Digest getDigest() {
+    public org.restlet.data.Digest getDigest() {
         return this.digest;
     }
 
+    // [ifndef gwt] method
     /**
      * Return a Digester representation that wraps the current representation
      * and helps computing its digest value. By default, the instance relies on
-     * the {@link Digest#ALGORITHM_MD5} digest algorithm.
+     * the {@link org.restlet.data.Digest#ALGORITHM_MD5} digest algorithm.
      * 
      * @return A Digester representation that wraps the current representation.
      */
@@ -404,7 +413,7 @@ public abstract class Representation extends RepresentationInfo {
 
         try {
             result = new DigesterRepresentation(this);
-        } catch (NoSuchAlgorithmException e) {
+        } catch (java.security.NoSuchAlgorithmException e) {
             Context.getCurrentLogger().log(Level.WARNING,
                     "Unable to get the digester representation", e);
         }
@@ -412,6 +421,7 @@ public abstract class Representation extends RepresentationInfo {
         return result;
     }
 
+    // [ifndef gwt] method
     /**
      * Return a Digester representation that wraps the current representation
      * and helps computing its digest value according to the given algorithm.
@@ -426,7 +436,7 @@ public abstract class Representation extends RepresentationInfo {
 
         try {
             result = new DigesterRepresentation(this, algorithm);
-        } catch (NoSuchAlgorithmException e) {
+        } catch (java.security.NoSuchAlgorithmException e) {
             Context.getCurrentLogger().log(Level.WARNING,
                     "Unable to get the digester representation", e);
         }
@@ -457,13 +467,14 @@ public abstract class Representation extends RepresentationInfo {
         return this.expirationDate;
     }
 
+    // [ifndef gwt] method
     /**
      * Returns the range where in the full content the partial content available
      * should be applied.
      * 
      * @return The content range or null if the full content is available.
      */
-    public Range getRange() {
+    public org.restlet.data.Range getRange() {
         return this.range;
     }
 
@@ -498,6 +509,7 @@ public abstract class Representation extends RepresentationInfo {
      */
     public abstract InputStream getStream() throws IOException;
 
+    // [ifndef gwt] method
     /**
      * Converts the representation to a string value. Be careful when using this
      * method as the conversion of large content to a string fully stored in
@@ -509,7 +521,7 @@ public abstract class Representation extends RepresentationInfo {
         String result = null;
 
         if (isAvailable()) {
-            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            final java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
             write(baos);
 
             if (getCharacterSet() != null) {
@@ -521,6 +533,16 @@ public abstract class Representation extends RepresentationInfo {
 
         return result;
     }
+
+    // [ifdef gwt] method uncomment
+    // /**
+    // * Converts the representation to a string value. Be careful when using
+    // * this method as the conversion of large content to a string fully
+    // * stored in memory can result in OutOfMemoryErrors being thrown.
+    // *
+    // * @return The representation as a string value.
+    // */
+    // public abstract String getText() throws IOException;
 
     /**
      * Indicates if some fresh content is available, without having to actually
@@ -579,13 +601,14 @@ public abstract class Representation extends RepresentationInfo {
         this.available = available;
     }
 
+    // [ifndef gwt] method
     /**
      * Sets the representation digest.
      * 
      * @param digest
      *            The representation digest.
      */
-    public void setDigest(Digest digest) {
+    public void setDigest(org.restlet.data.Digest digest) {
         this.digest = digest;
     }
 
@@ -623,6 +646,7 @@ public abstract class Representation extends RepresentationInfo {
         this.expirationDate = DateUtils.unmodifiable(expirationDate);
     }
 
+    // [ifndef gwt] method
     /**
      * Sets the range where in the full content the partial content available
      * should be applied.
@@ -630,7 +654,7 @@ public abstract class Representation extends RepresentationInfo {
      * @param range
      *            The content range.
      */
-    public void setRange(Range range) {
+    public void setRange(org.restlet.data.Range range) {
         this.range = range;
     }
 
@@ -654,6 +678,7 @@ public abstract class Representation extends RepresentationInfo {
         this.isTransient = isTransient;
     }
 
+    // [ifndef gwt] member
     /**
      * Writes the representation to a byte stream. This method is ensured to
      * write the full content for each invocation unless it is a transient
@@ -669,6 +694,7 @@ public abstract class Representation extends RepresentationInfo {
      */
     public abstract void write(OutputStream outputStream) throws IOException;
 
+    // [ifndef gwt] member
     /**
      * Writes the representation to a byte channel. This method is ensured to
      * write the full content for each invocation unless it is a transient
@@ -678,22 +704,24 @@ public abstract class Representation extends RepresentationInfo {
      *            A writable byte channel.
      * @throws IOException
      */
-    public abstract void write(WritableByteChannel writableChannel)
+    public abstract void write(
+            java.nio.channels.WritableByteChannel writableChannel)
             throws IOException;
 
+    // [ifndef gwt] member
     /**
      * Writes the representation to a characters writer. This method is ensured
      * to write the full content for each invocation unless it is a transient
      * representation, in which case an exception is thrown.<br>
      * <br>
      * Note that the class implementing this method shouldn't flush or close the
-     * given {@link Writer} after writing to it as this will be handled by the
-     * Restlet connectors automatically.
+     * given {@link java.io.Writer} after writing to it as this will be handled
+     * by the Restlet connectors automatically.
      * 
      * @param writer
      *            The characters writer.
      * @throws IOException
      */
-    public abstract void write(Writer writer) throws IOException;
+    public abstract void write(java.io.Writer writer) throws IOException;
 
 }

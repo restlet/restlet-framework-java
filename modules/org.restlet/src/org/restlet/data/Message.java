@@ -51,6 +51,14 @@ public abstract class Message {
     /** The payload of the message. */
     private volatile Representation entity;
 
+    // [ifdef gwt] member uncomment
+    // /** The optional cached JSON representation. */
+    // private org.restlet.representation.JsonRepresentation jsonRepresentation;
+
+    // [ifdef gwt] member uncomment
+    // /** The optional cached XML representation. */
+    // private org.restlet.representation.XmlRepresentation xmlRepresentation;
+
     /** The optional cached Form. */
     private volatile Form entityForm;
 
@@ -154,6 +162,45 @@ public abstract class Message {
         return this.entityForm;
     }
 
+    // [ifdef gwt] method uncomment
+    // /**
+    // * Returns the entity as a JSON representation.<br>
+    // * This method can be called several times and will always return the same
+    // * representation instance. Note that if the entity is large this method
+    // * can result in important memory consumption.
+    // *
+    // * @return The entity as a JSON representation.
+    // */
+    // public org.restlet.representation.JsonRepresentation getEntityAsJson() {
+    // if (this.jsonRepresentation == null) {
+    // this.jsonRepresentation = (getEntity() == null) ? null
+    // : new org.restlet.representation.JsonRepresentation(
+    // getEntity());
+    // }
+    //
+    // return this.jsonRepresentation;
+    // }
+
+    // [ifdef gwt] method uncomment
+    // /**
+    // * Returns the entity as a XML DOM representation.<br>
+    // * This method can be called several times and will always return the same
+    // * representation instance. Note that if the entity is large this method
+    // * can result in important memory consumption.
+    // *
+    // * @return The entity as a XML DOM representation.
+    // */
+    // public org.restlet.representation.XmlRepresentation getEntityAsXml() {
+    // if (this.xmlRepresentation == null) {
+    // this.xmlRepresentation = (getEntity() == null) ? null
+    // : new org.restlet.representation.XmlRepresentation(
+    // getEntity());
+    // }
+    //
+    // return this.xmlRepresentation;
+    // }
+
+    // [ifndef gwt] method
     /**
      * Returns the entity as text.<br>
      * This method can be called several times and will always return the same

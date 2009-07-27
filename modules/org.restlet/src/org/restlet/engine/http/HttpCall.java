@@ -34,9 +34,6 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.logging.Logger;
 
-import javax.security.auth.Subject;
-
-import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
@@ -45,7 +42,6 @@ import org.restlet.data.Request;
 import org.restlet.engine.Call;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.representation.Representation;
-import org.restlet.service.ConnectorService;
 import org.restlet.util.Series;
 
 /**
@@ -131,8 +127,9 @@ public abstract class HttpCall extends Call {
     /** The status code. */
     private volatile int statusCode;
 
+    // [ifndef gwt] member
     /** The security subject. */
-    private volatile Subject subject;
+    private volatile javax.security.auth.Subject subject;
 
     /** The protocol version. */
     private volatile String version;
@@ -155,6 +152,7 @@ public abstract class HttpCall extends Call {
         this.serverAddress = null;
         this.serverPort = -1;
         this.statusCode = 200;
+        // [ifndef gwt] line
         this.subject = null;
         this.version = null;
     }
@@ -179,6 +177,7 @@ public abstract class HttpCall extends Call {
         return this.clientPort;
     }
 
+    // [ifndef gwt] method
     /**
      * Returns the connector service associated to a request.
      * 
@@ -186,14 +185,16 @@ public abstract class HttpCall extends Call {
      *            The request to lookup.
      * @return The connector service associated to a request.
      */
-    public ConnectorService getConnectorService(Request request) {
-        ConnectorService result = null;
-        final Application application = Application.getCurrent();
+    public org.restlet.service.ConnectorService getConnectorService(
+            Request request) {
+        org.restlet.service.ConnectorService result = null;
+        final org.restlet.Application application = org.restlet.Application
+                .getCurrent();
 
         if (application != null) {
             result = application.getConnectorService();
         } else {
-            result = new ConnectorService();
+            result = new org.restlet.service.ConnectorService();
         }
 
         return result;
@@ -337,12 +338,13 @@ public abstract class HttpCall extends Call {
         return this.statusCode;
     }
 
+    // [ifndef gwt] method
     /**
      * Returns the security subject.
      * 
      * @return The security subject.
      */
-    public Subject getSubject() {
+    public javax.security.auth.Subject getSubject() {
         return this.subject;
     }
 
@@ -559,13 +561,14 @@ public abstract class HttpCall extends Call {
         this.statusCode = code;
     }
 
+    // [ifndef gwt] method
     /**
      * Sets the security subject.
      * 
      * @param subject
      *            The security subject.
      */
-    public void setSubject(Subject subject) {
+    public void setSubject(javax.security.auth.Subject subject) {
         this.subject = subject;
     }
 

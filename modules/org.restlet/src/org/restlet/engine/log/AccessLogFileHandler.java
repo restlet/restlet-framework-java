@@ -31,11 +31,11 @@
 package org.restlet.engine.log;
 
 import java.io.IOException;
-import java.util.logging.FileHandler;
 
 /**
  * Log file handler that uses the {@link AccessLogFormatter} by default. Also
- * useful in configuration files to differentiate from the {@link FileHandler}.
+ * useful in configuration files to differentiate from the
+ * {@link java.util.logging.FileHandler}.
  * 
  * @author Jerome Louvel
  */

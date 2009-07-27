@@ -212,7 +212,13 @@ public class ReferenceList extends WrapperList<Reference> {
      */
     @Override
     public ReferenceList subList(int fromIndex, int toIndex) {
+        // [ifndef gwt] line
         return new ReferenceList(getDelegate().subList(fromIndex, toIndex));
+        // [ifdef gwt] uncomment
+        // return new
+        // ReferenceList(org.restlet.engine.util.ListUtils.copySubList(getDelegate(),
+        // fromIndex, toIndex));
+        // [enddef]
     }
 
 }

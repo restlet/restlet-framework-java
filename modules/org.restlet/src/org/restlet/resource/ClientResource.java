@@ -74,6 +74,7 @@ import org.restlet.util.Series;
  */
 public class ClientResource extends UniformResource {
 
+    // [ifndef gwt] method
     /**
      * Creates a client resource that proxy calls to the given Java interface
      * into Restlet method calls.
@@ -93,6 +94,7 @@ public class ClientResource extends UniformResource {
         return clientResource.wrap(resourceInterface);
     }
 
+    // [ifndef gwt] method
     /**
      * Creates a client resource that proxy calls to the given Java interface
      * into Restlet method calls.
@@ -107,6 +109,7 @@ public class ClientResource extends UniformResource {
         return create(null, reference, resourceInterface);
     }
 
+    // [ifndef gwt] method
     /**
      * Creates a client resource that proxy calls to the given Java interface
      * into Restlet method calls.
@@ -494,6 +497,7 @@ public class ClientResource extends UniformResource {
         return this.next;
     }
 
+    // [ifndef gwt] method
     /**
      * Returns the parent resource. The parent resource is defined in the sense
      * of hierarchical URIs. If the resource URI is not hierarchical, then an

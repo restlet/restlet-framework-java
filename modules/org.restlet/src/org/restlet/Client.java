@@ -142,6 +142,7 @@ public class Client extends Connector {
         this(Protocol.valueOf(protocolName));
     }
 
+    // [ifndef gwt] method
     /**
      * Deletes the resource and all its representations at the target URI
      * reference.
@@ -154,6 +155,20 @@ public class Client extends Connector {
         return handle(new Request(Method.DELETE, resourceRef));
     }
 
+    // [ifdef gwt] method
+    /**
+     * Deletes the identified resource.
+     * 
+     * @param resourceRef
+     *            The reference of the resource to delete.
+     * @param callback
+     *            The callback invoked upon request completion.
+     */
+    public final void delete(Reference resourceRef, Uniform callback) {
+        handle(new Request(Method.DELETE, resourceRef), callback);
+    }
+
+    // [ifndef gwt] method
     /**
      * Deletes the resource and all its representations at the target URI.
      * 
@@ -165,6 +180,20 @@ public class Client extends Connector {
         return handle(new Request(Method.DELETE, resourceUri));
     }
 
+    // [ifdef gwt] method
+    /**
+     * Deletes the identified resource.
+     * 
+     * @param resourceUri
+     *            The URI of the resource to delete.
+     * @param callback
+     *            The callback invoked upon request completion.
+     */
+    public final void delete(String resourceUri, Uniform callback) {
+        handle(new Request(Method.DELETE, resourceUri), callback);
+    }
+
+    // [ifndef gwt] method
     /**
      * Gets the identified resource.
      * 
@@ -179,6 +208,20 @@ public class Client extends Connector {
         return handle(new Request(Method.GET, resourceRef));
     }
 
+    // [ifdef gwt] method
+    /**
+     * Gets the identified resource.
+     * 
+     * @param resourceRef
+     *            The reference of the resource to get.
+     * @param callback
+     *            The callback invoked upon request completion.
+     */
+    public final void get(Reference resourceRef, Uniform callback) {
+        handle(new Request(Method.GET, resourceRef), callback);
+    }
+
+    // [ifndef gwt] method
     /**
      * Gets the identified resource.
      * 
@@ -191,6 +234,19 @@ public class Client extends Connector {
      */
     public final Response get(String resourceUri) {
         return handle(new Request(Method.GET, resourceUri));
+    }
+
+    // [ifdef gwt] method
+    /**
+     * Gets the identified resource.
+     * 
+     * @param resourceUri
+     *            The URI of the resource to get.
+     * @param callback
+     *            The callback invoked upon request completion.
+     */
+    public final void get(String resourceUri, Uniform callback) {
+        handle(new Request(Method.GET, resourceUri), callback);
     }
 
     /**
@@ -211,6 +267,7 @@ public class Client extends Connector {
         return this.helper;
     }
 
+    // [ifndef gwt] method
     @Override
     public void handle(Request request, Response response) {
         super.handle(request, response);
@@ -228,6 +285,40 @@ public class Client extends Connector {
         }
     }
 
+    // [ifdef gwt] method
+    /**
+     * Handles a call.
+     * 
+     * @param request
+     *            The request to handle.
+     * @param response
+     *            The response to update.
+     * @param callback
+     *            The callback invoked upon request completion.
+     */
+    public void handle(Request request, Response response, Uniform callback) {
+        super.handle(request, response, callback);
+
+        if (getHelper() != null) {
+            getHelper().handle(request, response, callback);
+        }
+    }
+
+    // [ifdef gwt] method
+    /**
+     * Handles a call.
+     * 
+     * @param request
+     *            The request to handle.
+     * @param callback
+     *            The callback invoked upon request completion.
+     */
+    public final void handle(Request request, Uniform callback) {
+        final Response response = new Response(request);
+        handle(request, response, callback);
+    }
+
+    // [ifndef gwt] method
     /**
      * Gets the identified resource without its representation's content.
      * 
@@ -242,6 +333,20 @@ public class Client extends Connector {
         return handle(new Request(Method.HEAD, resourceRef));
     }
 
+    // [ifdef gwt] method
+    /**
+     * Gets the identified resource without its representation's content.
+     * 
+     * @param resourceRef
+     *            The reference of the resource to get.
+     * @param callback
+     *            The callback invoked upon request completion.
+     */
+    public final void head(Reference resourceRef, Uniform callback) {
+        handle(new Request(Method.HEAD, resourceRef), callback);
+    }
+
+    // [ifndef gwt] method
     /**
      * Gets the identified resource without its representation's content.
      * 
@@ -256,6 +361,19 @@ public class Client extends Connector {
         return handle(new Request(Method.HEAD, resourceUri));
     }
 
+    // [ifdef gwt] method
+    /**
+     * Gets the identified resource without its representation's content.
+     * 
+     * @param resourceUri
+     *            The URI of the resource to get.
+     * @param callback
+     *            The callback invoked upon request completion.
+     */
+    public final void head(String resourceUri, Uniform callback) {
+        handle(new Request(Method.HEAD, resourceUri), callback);
+    }
+
     /**
      * Indicates the underlying connector helper is available.
      * 
@@ -266,6 +384,7 @@ public class Client extends Connector {
         return getHelper() != null;
     }
 
+    // [ifndef gwt] method
     /**
      * Gets the options for the identified resource.
      * 
@@ -280,6 +399,20 @@ public class Client extends Connector {
         return handle(new Request(Method.OPTIONS, resourceRef));
     }
 
+    // [ifdef gwt] method
+    /**
+     * Gets the options for the identified resource.
+     * 
+     * @param resourceRef
+     *            The reference of the resource to get.
+     * @param callback
+     *            The callback invoked upon request completion.
+     */
+    public final void options(Reference resourceRef, Uniform callback) {
+        handle(new Request(Method.OPTIONS, resourceRef), callback);
+    }
+
+    // [ifndef gwt] method
     /**
      * Gets the options for the identified resource.
      * 
@@ -294,6 +427,20 @@ public class Client extends Connector {
         return handle(new Request(Method.OPTIONS, resourceUri));
     }
 
+    // [ifdef gwt] method
+    /**
+     * Gets the options for the identified resource.
+     * 
+     * @param resourceUri
+     *            The URI of the resource to get.
+     * @param callback
+     *            The callback invoked upon request completion.
+     */
+    public final void options(String resourceUri, Uniform callback) {
+        handle(new Request(Method.OPTIONS, resourceUri), callback);
+    }
+
+    // [ifndef gwt] method
     /**
      * Posts a representation to the resource at the target URI reference.
      * 
@@ -310,6 +457,26 @@ public class Client extends Connector {
         return handle(new Request(Method.POST, resourceRef, entity));
     }
 
+    // [ifdef gwt] method
+    /**
+     * Posts a representation to the resource at the target URI reference.
+     * 
+     * @param resourceRef
+     *            The reference of the resource to post to.
+     * @param entity
+     *            The posted entity.
+     * @param callback
+     *            The callback invoked upon request completion.
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.5">HTTP
+     *      POST method</a>
+     */
+    public final void post(Reference resourceRef, Representation entity,
+            Uniform callback) {
+        handle(new Request(Method.POST, resourceRef, entity), callback);
+    }
+
+    // [ifndef gwt] method
     /**
      * Posts a representation to the resource at the target URI.
      * 
@@ -326,6 +493,26 @@ public class Client extends Connector {
         return handle(new Request(Method.POST, resourceUri, entity));
     }
 
+    // [ifdef gwt] method
+    /**
+     * Posts a representation to the resource at the target URI.
+     * 
+     * @param resourceUri
+     *            The URI of the resource to post to.
+     * @param entity
+     *            The entity to post.
+     * @param callback
+     *            The callback invoked upon request completion.
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.5">HTTP
+     *      POST method</a>
+     */
+    public final void post(String resourceUri, Representation entity,
+            Uniform callback) {
+        handle(new Request(Method.POST, resourceUri, entity), callback);
+    }
+
+    // [ifndef gwt] method
     /**
      * Creates or updates a resource at the target URI reference with the given
      * representation as new state to be stored.
@@ -344,6 +531,27 @@ public class Client extends Connector {
         return handle(new Request(Method.PUT, resourceRef, representation));
     }
 
+    // [ifdef gwt] method
+    /**
+     * Creates or updates a resource at the target URI reference with the given
+     * representation as new state to be stored.
+     * 
+     * @param resourceRef
+     *            The reference of the resource to modify.
+     * @param representation
+     *            The representation to store.
+     * @param callback
+     *            The callback invoked upon request completion.
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6">HTTP
+     *      PUT method</a>
+     */
+    public final void put(Reference resourceRef, Representation representation,
+            Uniform callback) {
+        handle(new Request(Method.PUT, resourceRef, representation), callback);
+    }
+
+    // [ifndef gwt] method
     /**
      * Creates or updates a resource at the target URI with the given
      * representation as new state to be stored.
@@ -359,6 +567,26 @@ public class Client extends Connector {
      */
     public final Response put(String resourceUri, Representation representation) {
         return handle(new Request(Method.PUT, resourceUri, representation));
+    }
+
+    // [ifdef gwt] method
+    /**
+     * Creates or updates a resource at the target URI with the given
+     * representation as new state to be stored.
+     * 
+     * @param resourceUri
+     *            The URI of the resource to modify.
+     * @param representation
+     *            The representation to store.
+     * @param callback
+     *            The callback invoked upon request completion.
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6">HTTP
+     *      PUT method</a>
+     */
+    public final void put(String resourceUri, Representation representation,
+            Uniform callback) {
+        handle(new Request(Method.PUT, resourceUri, representation), callback);
     }
 
     /**

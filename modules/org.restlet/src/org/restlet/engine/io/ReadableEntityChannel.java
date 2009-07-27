@@ -39,6 +39,7 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.spi.SelectorProvider;
 
+// [excludes=gwt]
 /**
  * Readable byte channel based on a source socket channel that must only be
  * partially read.

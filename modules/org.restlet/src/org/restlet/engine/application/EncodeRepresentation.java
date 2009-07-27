@@ -50,6 +50,7 @@ import org.restlet.representation.Representation;
 import org.restlet.util.WrapperList;
 import org.restlet.util.WrapperRepresentation;
 
+// [excludes=gwt]
 /**
  * Content that encodes a wrapped content. Allows to apply only one encoding.
  * 

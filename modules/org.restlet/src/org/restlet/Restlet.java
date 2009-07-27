@@ -37,7 +37,6 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.engine.Engine;
-import org.restlet.engine.component.ChildContext;
 
 /**
  * Uniform class that provides a context and life cycle support. It has many
@@ -99,6 +98,7 @@ public abstract class Restlet implements Uniform {
         this.author = null;
         this.owner = null;
 
+        // [ifndef gwt]
         if (Engine.getInstance() == null) {
             Context
                     .getCurrentLogger()
@@ -107,10 +107,18 @@ public abstract class Restlet implements Uniform {
             throw new RuntimeException(
                     "Unable to fully initialize the Restlet. No Restlet engine available.");
         } else {
-            ChildContext.fireContextChanged(this, context);
+            org.restlet.engine.component.ChildContext.fireContextChanged(this,
+                    context);
         }
+        // [enddef]
+        // [ifdef gwt]
+        if (context == null) {
+            this.context = new Context();
+        }
+        // [enddef]
     }
 
+    // [ifndef gwt] method
     /**
      * Returns the parent application if it exists, or null.
      * 
@@ -156,9 +164,11 @@ public abstract class Restlet implements Uniform {
         Logger result = null;
         Context context = getContext();
 
+        // [ifndef gwt]
         if (context == null) {
             context = Context.getCurrent();
         }
+        // [enddef]
 
         if (context != null) {
             result = context.getLogger();
@@ -193,6 +203,7 @@ public abstract class Restlet implements Uniform {
         return this.owner;
     }
 
+    // [ifndef gwt] method
     /**
      * Handles a call.
      * 
@@ -206,6 +217,7 @@ public abstract class Restlet implements Uniform {
         return response;
     }
 
+    // [ifndef gwt] method
     /**
      * Handles a call. The default behavior is to initialize the Restlet by
      * setting the current context using the {@link Context#setCurrent(Context)}
@@ -237,6 +249,38 @@ public abstract class Restlet implements Uniform {
             } catch (Exception e) {
                 // Occurred while starting the Restlet
                 getContext().getLogger().log(Level.WARNING, UNABLE_TO_START, e);
+                response.setStatus(Status.SERVER_ERROR_INTERNAL);
+            }
+
+            if (!isStarted()) {
+                // No exception raised but the Restlet somehow couldn't be
+                // started
+                getContext().getLogger().log(Level.WARNING, UNABLE_TO_START);
+                response.setStatus(Status.SERVER_ERROR_INTERNAL);
+            }
+        }
+    }
+
+    // [ifdef gwt] method
+    /**
+     * Handles a call. Subclasses overriding this method should make sure that
+     * they call super.handle(request, response) before adding their own logic.
+     * 
+     * @param request
+     *            The request to handle.
+     * @param response
+     *            The response to update.
+     * @param callback
+     *            The callback invoked upon request completion.
+     */
+    public void handle(Request request, Response response, Uniform callback) {
+        // Check if the Restlet was started
+        if (isStopped()) {
+            try {
+                start();
+            } catch (Exception e) {
+                // Occurred while starting the Restlet
+                getContext().getLogger().log(Level.WARNING, UNABLE_TO_START);
                 response.setStatus(Status.SERVER_ERROR_INTERNAL);
             }
 
@@ -285,7 +329,10 @@ public abstract class Restlet implements Uniform {
      */
     public void setContext(Context context) {
         this.context = context;
-        ChildContext.fireContextChanged(this, context);
+        // [ifndef gwt]
+        org.restlet.engine.component.ChildContext.fireContextChanged(this,
+                context);
+        // [enddef]
     }
 
     /**

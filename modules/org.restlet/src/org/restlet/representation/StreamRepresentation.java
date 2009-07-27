@@ -32,9 +32,6 @@ package org.restlet.representation;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.io.Writer;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.WritableByteChannel;
 
 import org.restlet.data.MediaType;
 import org.restlet.engine.io.ByteUtils;
@@ -56,8 +53,10 @@ public abstract class StreamRepresentation extends Representation {
         super(mediaType);
     }
 
+    // [ifndef gwt] method
     @Override
-    public ReadableByteChannel getChannel() throws IOException {
+    public java.nio.channels.ReadableByteChannel getChannel()
+            throws IOException {
         return ByteUtils.getChannel(getStream());
     }
 
@@ -66,13 +65,16 @@ public abstract class StreamRepresentation extends Representation {
         return ByteUtils.getReader(getStream(), getCharacterSet());
     }
 
+    // [ifndef gwt] method
     @Override
-    public void write(WritableByteChannel writableChannel) throws IOException {
+    public void write(java.nio.channels.WritableByteChannel writableChannel)
+            throws IOException {
         write(ByteUtils.getStream(writableChannel));
     }
 
+    // [ifndef gwt] method
     @Override
-    public void write(Writer writer) throws IOException {
+    public void write(java.io.Writer writer) throws IOException {
         write(ByteUtils.getStream(writer));
     }
 

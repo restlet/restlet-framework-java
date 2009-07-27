@@ -22,5 +22,6 @@
       <dependency type="module" id="rdf" />
       <dependency type="module" id="spring" />
       <dependency type="module" id="velocity" />
+      <dependency type="module" id="xml" />
    </dependencies>
 </module>

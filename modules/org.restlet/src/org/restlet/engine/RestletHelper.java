@@ -34,9 +34,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
-import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Restlet;
+import org.restlet.Uniform;
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.data.Request;
@@ -138,19 +138,23 @@ public abstract class RestletHelper<T extends Restlet> extends Helper {
     public MetadataService getMetadataService() {
         MetadataService result = null;
 
+        // [ifndef gwt]
         if (getHelped() != null) {
-            Application application = getHelped().getApplication();
+            org.restlet.Application application = getHelped().getApplication();
 
             if (application != null) {
                 result = application.getMetadataService();
-            } else {
-                result = new MetadataService();
             }
+        }
+        // [enddef]
+        if (result == null) {
+            result = new MetadataService();
         }
 
         return result;
     }
 
+    // [ifndef gwt] method
     /**
      * Handles a call.
      * 
@@ -167,6 +171,21 @@ public abstract class RestletHelper<T extends Restlet> extends Helper {
         if (getContext() != null) {
             Context.setCurrent(getContext());
         }
+    }
+
+    // [ifdef gwt] method
+    /**
+     * Handles a call.
+     * 
+     * @param request
+     *            The request to handle.
+     * @param response
+     *            The response to update.
+     * @param callback
+     *            The callback invoked upon request completion.
+     */
+    public void handle(Request request, Response response, Uniform callback) {
+
     }
 
     /**

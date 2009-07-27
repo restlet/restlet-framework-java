@@ -36,6 +36,8 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Vector;
 
+import org.restlet.engine.Edition;
+
 /**
  * List wrapper. Modifiable list that delegates all methods to a wrapped list.
  * This allows an easy sub-classing. By default, it wraps a thread-safe
@@ -329,7 +331,12 @@ public class WrapperList<E> implements List<E> {
      * @return The sub-list.
      */
     public List<E> subList(int fromIndex, int toIndex) {
-        return new WrapperList<E>(getDelegate().subList(fromIndex, toIndex));
+        if (Edition.CURRENT != Edition.GWT) {
+            return new WrapperList<E>(getDelegate().subList(fromIndex, toIndex));
+        } else {
+            return org.restlet.engine.util.ListUtils.copySubList(this,
+                    fromIndex, toIndex);
+        }
     }
 
     /**

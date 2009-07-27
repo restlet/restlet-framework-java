@@ -34,18 +34,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
-import java.io.Writer;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.WritableByteChannel;
 import java.util.Date;
 import java.util.List;
 
 import org.restlet.data.CharacterSet;
-import org.restlet.data.Digest;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
-import org.restlet.data.Range;
 import org.restlet.data.Reference;
 import org.restlet.data.Tag;
 import org.restlet.representation.Representation;
@@ -72,21 +67,24 @@ public class WrapperRepresentation extends Representation {
         this.wrappedRepresentation = wrappedRepresentation;
     }
 
+    // [ifndef gwt] method
     @Override
     @Deprecated
     public boolean checkDigest() {
         return getWrappedRepresentation().checkDigest();
     }
 
+    // [ifndef gwt] method
     @Override
     @Deprecated
     public boolean checkDigest(String algorithm) {
         return getWrappedRepresentation().checkDigest(algorithm);
     }
 
+    // [ifndef gwt] method
     @Override
     @Deprecated
-    public Digest computeDigest(String algorithm) {
+    public org.restlet.data.Digest computeDigest(String algorithm) {
         return getWrappedRepresentation().computeDigest(algorithm);
     }
 
@@ -100,8 +98,10 @@ public class WrapperRepresentation extends Representation {
         return getWrappedRepresentation().getAvailableSize();
     }
 
+    // [ifndef gwt] method
     @Override
-    public ReadableByteChannel getChannel() throws IOException {
+    public java.nio.channels.ReadableByteChannel getChannel()
+            throws IOException {
         return getWrappedRepresentation().getChannel();
     }
 
@@ -110,8 +110,9 @@ public class WrapperRepresentation extends Representation {
         return getWrappedRepresentation().getCharacterSet();
     }
 
+    // [ifndef gwt] method
     @Override
-    public Digest getDigest() {
+    public org.restlet.data.Digest getDigest() {
         return getWrappedRepresentation().getDigest();
     }
 
@@ -150,8 +151,9 @@ public class WrapperRepresentation extends Representation {
         return getWrappedRepresentation().getModificationDate();
     }
 
+    // [ifndef gwt] method
     @Override
-    public Range getRange() {
+    public org.restlet.data.Range getRange() {
         return getWrappedRepresentation().getRange();
     }
 
@@ -219,8 +221,9 @@ public class WrapperRepresentation extends Representation {
         getWrappedRepresentation().setCharacterSet(characterSet);
     }
 
+    // [ifndef gwt] method
     @Override
-    public void setDigest(Digest digest) {
+    public void setDigest(org.restlet.data.Digest digest) {
         getWrappedRepresentation().setDigest(digest);
     }
 
@@ -269,8 +272,9 @@ public class WrapperRepresentation extends Representation {
         getWrappedRepresentation().setModificationDate(modificationDate);
     }
 
+    // [ifndef gwt] method
     @Override
-    public void setRange(Range range) {
+    public void setRange(org.restlet.data.Range range) {
         getWrappedRepresentation().setRange(range);
     }
 
@@ -289,19 +293,22 @@ public class WrapperRepresentation extends Representation {
         getWrappedRepresentation().setTransient(isTransient);
     }
 
+    // [ifndef gwt] method
     @Override
     public void write(OutputStream outputStream) throws IOException {
         getWrappedRepresentation().write(outputStream);
     }
 
+    // [ifndef gwt] method
     @Override
-    public void write(WritableByteChannel writableChannel)
+    public void write(java.nio.channels.WritableByteChannel writableChannel)
             throws IOException {
         getWrappedRepresentation().write(writableChannel);
     }
 
+    // [ifndef gwt] method
     @Override
-    public void write(Writer writer) throws IOException {
+    public void write(java.io.Writer writer) throws IOException {
         getWrappedRepresentation().write(writer);
     }
 }

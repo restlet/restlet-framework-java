@@ -31,7 +31,6 @@
 package org.restlet.service;
 
 import org.restlet.Context;
-import org.restlet.routing.Filter;
 
 /**
  * Generic service associated to a component or an application. The life cycle
@@ -67,6 +66,7 @@ public abstract class Service {
         this.enabled = enabled;
     }
 
+    // [ifndef gwt] method
     /**
      * Create the filter that should be invoked for incoming calls.
      * 
@@ -74,10 +74,11 @@ public abstract class Service {
      *            The current context.
      * @return The new filter or null.
      */
-    public Filter createInboundFilter(Context context) {
+    public org.restlet.routing.Filter createInboundFilter(Context context) {
         return null;
     }
 
+    // [ifndef gwt] method
     /**
      * Create the filter that should be invoked for outgoing calls.
      * 
@@ -86,7 +87,7 @@ public abstract class Service {
      * @return The new filter or null.
      * @see Context#getClientDispatcher()
      */
-    public Filter createOutboundFilter(Context context) {
+    public org.restlet.routing.Filter createOutboundFilter(Context context) {
         return null;
     }
 

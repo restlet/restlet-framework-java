@@ -33,25 +33,14 @@ package org.restlet.data;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.URL;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.security.auth.Subject;
-
 import org.restlet.Context;
 import org.restlet.engine.Engine;
-import org.restlet.engine.http.UserAgentUtils;
-import org.restlet.engine.util.ConnegUtils;
 import org.restlet.representation.Variant;
-import org.restlet.security.Role;
-import org.restlet.security.RolePrincipal;
-import org.restlet.service.MetadataService;
-import org.restlet.util.Template;
-import org.restlet.util.Variable;
 
 /**
  * Client specific data related to a call. When extracted from a request, most
@@ -140,6 +129,7 @@ import org.restlet.util.Variable;
  */
 public final class ClientInfo {
 
+    // [ifndef gwt] member
     /**
      * List of user-agent templates defined in "agent.properties" file.<br>
      * 
@@ -147,6 +137,7 @@ public final class ClientInfo {
      */
     private static List<String> userAgentTemplates = null;
 
+    // [ifndef gwt] method
     /**
      * Returns the list of user-agent templates defined in "agent.properties"
      * file.
@@ -163,8 +154,9 @@ public final class ClientInfo {
                 u = ClientInfo.userAgentTemplates;
                 if (u == null) {
                     // Load from the "agent.properties" file
-                    final URL userAgentPropertiesUrl = Engine.getClassLoader()
-                            .getResource("org/restlet/data/agent.properties");
+                    final java.net.URL userAgentPropertiesUrl = Engine
+                            .getClassLoader().getResource(
+                                    "org/restlet/data/agent.properties");
                     if (userAgentPropertiesUrl != null) {
                         BufferedReader reader;
                         try {
@@ -221,15 +213,19 @@ public final class ClientInfo {
     /** The agent name. */
     private volatile String agent;
 
+    // [ifndef gwt] member
     /** The attributes data taken from the agent name. */
     private volatile Map<String, String> agentAttributes;
 
+    // [ifndef gwt] member
     /** The main product data taken from the agent name. */
     private volatile Product agentMainProduct;
 
+    // [ifndef gwt] member
     /** The list of product tokens taken from the agent name. */
     private volatile List<Product> agentProducts;
 
+    // [ifndef gwt] member
     /**
      * Indicates if the subject has been authenticated. The application is
      * responsible for updating this property, relying on
@@ -243,8 +239,9 @@ public final class ClientInfo {
     /** The port number. */
     private volatile int port;
 
+    // [ifndef gwt] member
     /** The subject containing security related information. */
-    private volatile Subject subject;
+    private volatile javax.security.auth.Subject subject;
 
     /**
      * Constructor.
@@ -257,9 +254,11 @@ public final class ClientInfo {
         this.acceptedEncodings = null;
         this.acceptedLanguages = null;
         this.acceptedMediaTypes = null;
-        this.agentProducts = null;
         this.forwardedAddresses = null;
-        this.subject = new Subject();
+        // [ifndef gwt]
+        this.agentProducts = null;
+        this.subject = new javax.security.auth.Subject();
+        // [enddef]
     }
 
     /**
@@ -383,6 +382,7 @@ public final class ClientInfo {
         return this.agent;
     }
 
+    // [ifndef gwt] method
     /**
      * Returns a list of attributes taken from the name of the user agent.
      * 
@@ -402,17 +402,21 @@ public final class ClientInfo {
             // version and facultative comment. Respectively, these
             // variables are called "agentName", "agentVersion" and
             // "agentComment".
-            Template template = null;
+            org.restlet.util.Template template = null;
             // Predefined variables.
-            final Variable agentName = new Variable(Variable.TYPE_TOKEN);
-            final Variable agentVersion = new Variable(Variable.TYPE_TOKEN);
-            final Variable agentComment = new Variable(Variable.TYPE_COMMENT);
-            final Variable agentCommentAttribute = new Variable(
-                    Variable.TYPE_COMMENT_ATTRIBUTE);
-            final Variable facultativeData = new Variable(Variable.TYPE_ALL,
-                    null, false, false);
+            final org.restlet.util.Variable agentName = new org.restlet.util.Variable(
+                    org.restlet.util.Variable.TYPE_TOKEN);
+            final org.restlet.util.Variable agentVersion = new org.restlet.util.Variable(
+                    org.restlet.util.Variable.TYPE_TOKEN);
+            final org.restlet.util.Variable agentComment = new org.restlet.util.Variable(
+                    org.restlet.util.Variable.TYPE_COMMENT);
+            final org.restlet.util.Variable agentCommentAttribute = new org.restlet.util.Variable(
+                    org.restlet.util.Variable.TYPE_COMMENT_ATTRIBUTE);
+            final org.restlet.util.Variable facultativeData = new org.restlet.util.Variable(
+                    org.restlet.util.Variable.TYPE_ALL, null, false, false);
             for (String string : ClientInfo.getUserAgentTemplates()) {
-                template = new Template(string, Template.MODE_EQUALS);
+                template = new org.restlet.util.Template(string,
+                        org.restlet.util.Template.MODE_EQUALS);
                 // Update the predefined variables.
                 template.getVariables().put("agentName", agentName);
                 template.getVariables().put("agentVersion", agentVersion);
@@ -434,6 +438,7 @@ public final class ClientInfo {
         return this.agentAttributes;
     }
 
+    // [ifndef gwt] method
     /**
      * Returns the name of the user agent.
      * 
@@ -448,6 +453,7 @@ public final class ClientInfo {
         return null;
     }
 
+    // [ifndef gwt] method
     /**
      * Returns the list of product tokens from the user agent name.
      * 
@@ -455,11 +461,13 @@ public final class ClientInfo {
      */
     public List<Product> getAgentProducts() {
         if (this.agentProducts == null) {
-            this.agentProducts = UserAgentUtils.parse(getAgent());
+            this.agentProducts = org.restlet.engine.http.UserAgentUtils
+                    .parse(getAgent());
         }
         return this.agentProducts;
     }
 
+    // [ifndef gwt] method
     /**
      * Returns the version of the user agent.
      * 
@@ -512,6 +520,7 @@ public final class ClientInfo {
         return a;
     }
 
+    // [ifndef gwt] method
     /**
      * Returns a Product object based on the name of the user agent.
      * 
@@ -539,6 +548,7 @@ public final class ClientInfo {
         return this.port;
     }
 
+    // [ifndef gwt] method
     /**
      * Returns the preferred character set among a list of supported ones, based
      * on the client preferences.
@@ -548,10 +558,11 @@ public final class ClientInfo {
      * @return The preferred character set.
      */
     public CharacterSet getPreferredCharacterSet(List<CharacterSet> supported) {
-        return ConnegUtils.getPreferredMetadata(supported,
-                getAcceptedCharacterSets());
+        return org.restlet.engine.util.ConnegUtils.getPreferredMetadata(
+                supported, getAcceptedCharacterSets());
     }
 
+    // [ifndef gwt] method
     /**
      * Returns the preferred encoding among a list of supported ones, based on
      * the client preferences.
@@ -561,10 +572,11 @@ public final class ClientInfo {
      * @return The preferred encoding.
      */
     public Encoding getPreferredEncoding(List<Encoding> supported) {
-        return ConnegUtils.getPreferredMetadata(supported,
-                getAcceptedEncodings());
+        return org.restlet.engine.util.ConnegUtils.getPreferredMetadata(
+                supported, getAcceptedEncodings());
     }
 
+    // [ifndef gwt] method
     /**
      * Returns the preferred language among a list of supported ones, based on
      * the client preferences.
@@ -574,10 +586,11 @@ public final class ClientInfo {
      * @return The preferred language.
      */
     public Language getPreferredLanguage(List<Language> supported) {
-        return ConnegUtils.getPreferredMetadata(supported,
-                getAcceptedLanguages());
+        return org.restlet.engine.util.ConnegUtils.getPreferredMetadata(
+                supported, getAcceptedLanguages());
     }
 
+    // [ifndef gwt] method
     /**
      * Returns the preferred media type among a list of supported ones, based on
      * the client preferences.
@@ -587,10 +600,11 @@ public final class ClientInfo {
      * @return The preferred media type.
      */
     public MediaType getPreferredMediaType(List<MediaType> supported) {
-        return ConnegUtils.getPreferredMetadata(supported,
-                getAcceptedMediaTypes());
+        return org.restlet.engine.util.ConnegUtils.getPreferredMetadata(
+                supported, getAcceptedMediaTypes());
     }
 
+    // [ifndef gwt] method
     /**
      * Returns the best variant for a given resource according the the client
      * preferences: accepted languages, accepted character sets, accepted media
@@ -608,10 +622,12 @@ public final class ClientInfo {
      *      content negotiation algorithm</a>
      */
     public Variant getPreferredVariant(List<Variant> variants,
-            MetadataService metadataService) {
-        return ConnegUtils.getPreferredVariant(this, variants, metadataService);
+            org.restlet.service.MetadataService metadataService) {
+        return org.restlet.engine.util.ConnegUtils.getPreferredVariant(this,
+                variants, metadataService);
     }
 
+    // [ifndef gwt] method
     /**
      * Returns the best variant for a given resource according the the client
      * preferences.<br>
@@ -627,24 +643,28 @@ public final class ClientInfo {
      * @see <a
      *      href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache
      *      content negotiation algorithm</a>
-     * @deprecated Used {@link #getPreferredVariant(List, MetadataService)} instead.
+     * @deprecated Used
+     *             {@link #getPreferredVariant(List, org.restlet.service.MetadataService)}
+     *             instead.
      */
     @Deprecated
     public Variant getPreferredVariant(org.restlet.resource.Resource resource,
-            MetadataService metadataService) {
+            org.restlet.service.MetadataService metadataService) {
         return getPreferredVariant(resource.getVariants(), metadataService);
     }
 
+    // [ifndef gwt] method
     /**
      * Returns the subject containing security related information. Typically,
      * it contains principals and credentials.
      * 
      * @return The subject containing security related information.
      */
-    public Subject getSubject() {
+    public javax.security.auth.Subject getSubject() {
         return subject;
     }
 
+    // [ifndef gwt] method
     /**
      * Returns the IP address of the upstream client component. In general this
      * will correspond the the user agent IP address. This is useful if there
@@ -670,6 +690,7 @@ public final class ClientInfo {
         return this.forwardedAddresses.get(0);
     }
 
+    // [ifndef gwt] method
     /**
      * Indicates if the identifier or principal has been authenticated. The
      * application is responsible for updating this property, relying on a
@@ -681,6 +702,7 @@ public final class ClientInfo {
         return this.authenticated;
     }
 
+    // [ifndef gwt] method
     /**
      * Indicates if the subject has been granted a specific role in the current
      * context. The context contains a mapping between user and groups defined
@@ -690,12 +712,12 @@ public final class ClientInfo {
      *            The role that should have been granted.
      * @return True if the user has been granted the specific role.
      */
-    public boolean isInRole(Role role) {
-        RolePrincipal rolePrincipal;
+    public boolean isInRole(org.restlet.security.Role role) {
+        org.restlet.security.RolePrincipal rolePrincipal;
 
-        for (Principal principal : getSubject().getPrincipals()) {
-            if (principal instanceof RolePrincipal) {
-                rolePrincipal = (RolePrincipal) principal;
+        for (java.security.Principal principal : getSubject().getPrincipals()) {
+            if (principal instanceof org.restlet.security.RolePrincipal) {
+                rolePrincipal = (org.restlet.security.RolePrincipal) principal;
 
                 if (rolePrincipal.matches(role)) {
                     return true;
@@ -782,6 +804,7 @@ public final class ClientInfo {
         this.agent = agent;
     }
 
+    // [ifndef gwt] method
     /**
      * Indicates if the identifier or principal has been authenticated. The
      * application is responsible for updating this property, relying on a
@@ -814,13 +837,14 @@ public final class ClientInfo {
         this.port = port;
     }
 
+    // [ifndef gwt] method
     /**
      * Sets the subject containing security related information.
      * 
      * @param subject
      *            The subject containing security related information.
      */
-    public void setSubject(Subject subject) {
+    public void setSubject(javax.security.auth.Subject subject) {
         this.subject = subject;
     }
 

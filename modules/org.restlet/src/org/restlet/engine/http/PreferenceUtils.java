@@ -31,10 +31,8 @@
 package org.restlet.engine.http;
 
 import java.io.IOException;
-import java.text.NumberFormat;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 
 import org.restlet.data.CharacterSet;
 import org.restlet.data.ClientInfo;
@@ -148,10 +146,12 @@ public class PreferenceUtils {
             throw new IllegalArgumentException(
                     "Invalid quality value detected. Value must be between 0 and 1.");
         } else {
-            final NumberFormat formatter = NumberFormat
-                    .getNumberInstance(Locale.US);
+            // [ifndef gwt]
+            final java.text.NumberFormat formatter = java.text.NumberFormat
+                    .getNumberInstance(java.util.Locale.US);
             formatter.setMaximumFractionDigits(2);
             destination.append(formatter.format(quality));
+            // [enddef]
         }
     }
 

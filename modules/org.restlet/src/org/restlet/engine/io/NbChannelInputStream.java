@@ -38,6 +38,7 @@ import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 
+// [excludes=gwt]
 /**
  * Input stream connected to a non-blocking readable channel.
  * 

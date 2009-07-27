@@ -129,6 +129,7 @@ public class InputRepresentation extends StreamRepresentation {
         setAvailable(stream != null);
     }
 
+    // [ifndef gwt] method
     @Override
     public void write(OutputStream outputStream) throws IOException {
         ByteUtils.write(getStream(), outputStream);

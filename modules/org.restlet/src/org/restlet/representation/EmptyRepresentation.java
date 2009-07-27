@@ -34,9 +34,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
-import java.io.Writer;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.WritableByteChannel;
 
 /**
  * Empty representation with no content.
@@ -54,8 +51,10 @@ public class EmptyRepresentation extends Representation {
         setSize(0);
     }
 
+    // [ifndef gwt] method
     @Override
-    public ReadableByteChannel getChannel() throws IOException {
+    public java.nio.channels.ReadableByteChannel getChannel()
+            throws IOException {
         return null;
     }
 
@@ -69,18 +68,28 @@ public class EmptyRepresentation extends Representation {
         return null;
     }
 
+    // [ifdef gwt] method uncomment
+    // @Override
+    // public String getText() throws IOException {
+    // return "";
+    // }
+
+    // [ifndef gwt] method
+    @Override
+    public void write(java.io.Writer writer) throws IOException {
+        // Do nothing
+    }
+
+    // [ifndef gwt] method
+    @Override
+    public void write(java.nio.channels.WritableByteChannel writableChannel)
+            throws IOException {
+        // Do nothing
+    }
+
+    // [ifndef gwt] method
     @Override
     public void write(OutputStream outputStream) throws IOException {
-        // Do nothing
-    }
-
-    @Override
-    public void write(WritableByteChannel writableChannel) throws IOException {
-        // Do nothing
-    }
-
-    @Override
-    public void write(Writer writer) throws IOException {
         // Do nothing
     }
 }

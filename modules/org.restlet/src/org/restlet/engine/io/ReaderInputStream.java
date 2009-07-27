@@ -40,6 +40,7 @@ import java.io.Reader;
 
 import org.restlet.data.CharacterSet;
 
+// [excludes=gwt]
 /**
  * Input stream based on a reader.
  * 
