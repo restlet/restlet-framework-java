@@ -1,5 +1,26 @@
 <editions>
+   <edition id="android">
+      <description>Restlet Edition for the Android platform 1.5.</description>
+      <javadocs>
+         <link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
+      </javadocs>
+      <distributions>
+         <distribution id="classic" />
+         <distribution id="maven" />
+      </distributions>
+   </edition>
+   <edition id="jee">
+      <description>Restlet Edition for Java Entreprise Edition 5.</description>
+      <javadocs>
+         <link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
+      </javadocs>
+      <distributions>
+         <distribution id="classic" />
+         <distribution id="maven" />
+      </distributions>
+   </edition>
    <edition id="jse">
+      <description>Restlet Edition for Java Standard Edition 5.</description>
       <javadocs>
          <link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
       </javadocs>
@@ -9,6 +30,7 @@
       </distributions>
    </edition>
    <edition id="gae">
+      <description>Restlet Edition for Google App Engine.</description>
       <javadocs>
          <link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
       </javadocs>
@@ -18,18 +40,10 @@
       </distributions>
    </edition>
    <edition id="gwt">
+      <description>Restlet Edition for Google Web Toolkit.</description>
       <javadocs>
          <link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
          <link href="http://google-web-toolkit.googlecode.com/svn/javadoc/1.5/" />
-      </javadocs>
-      <distributions>
-         <distribution id="classic" />
-         <distribution id="maven" />
-      </distributions>
-   </edition>
-   <edition id="android">
-      <javadocs>
-         <link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
       </javadocs>
       <distributions>
          <distribution id="classic" />
