@@ -538,6 +538,7 @@ public class Engine {
         getRegisteredClients().add(
                 new org.restlet.engine.http.StreamClientHelper(null));
         // [enddef]
+        // [ifndef gwt]
         getRegisteredClients().add(
                 new org.restlet.engine.local.ClapClientHelper(null));
         getRegisteredClients().add(
@@ -546,12 +547,13 @@ public class Engine {
                 new org.restlet.engine.local.ZipClientHelper(null));
         getRegisteredClients().add(
                 new org.restlet.engine.component.RiapClientHelper(null));
+        getRegisteredServers().add(
+                new org.restlet.engine.component.RiapServerHelper(null));
+        // [enddef]
         // [ifndef gae, gwt]
         getRegisteredServers().add(
                 new org.restlet.engine.http.StreamServerHelper(null));
         // [enddef]
-        getRegisteredServers().add(
-                new org.restlet.engine.component.RiapServerHelper(null));
         // [ifdef gwt] uncomment
         // getRegisteredClients().add(
         // new org.restlet.engine.http.GwtHttpClientHelper(null));

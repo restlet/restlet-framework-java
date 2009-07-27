@@ -157,10 +157,10 @@ public class Context {
         this.logger = logger;
         this.parameters = new Form(new CopyOnWriteArrayList<Parameter>());
         this.clientDispatcher = null;
-        this.serverDispatcher = null;
 
         // [ifndef gwt]
         this.enroler = null;
+        this.serverDispatcher = null;
         this.verifier = null;
         // [enddef]
     }
