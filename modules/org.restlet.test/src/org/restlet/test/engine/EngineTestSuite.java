@@ -52,29 +52,33 @@ public class EngineTestSuite extends TestSuite {
     /** Constructor. */
     public EngineTestSuite() {
         addTestSuite(AlphaNumericComparatorTestCase.class);
-        addTestSuite(AuthenticationTestCase.class);
         addTestSuite(Base64TestCase.class);
         addTestSuite(ByteUtilsTestCase.class);
-        addTestSuite(ChunkedEncodingPutTestCase.class);
-        addTestSuite(ChunkedEncodingTestCase.class);
-        addTestSuite(ChunkedInputStreamTestCase.class);
-        addTestSuite(ChunkedOutputStreamTestCase.class);
         addTestSuite(CookiesTestCase.class);
         addTestSuite(FormTestCase.class);
-        addTestSuite(GetTestCase.class);
-        addTestSuite(GetChunkedTestCase.class);
         addTestSuite(HeaderTestCase.class);
         addTestSuite(HttpCallTestCase.class);
         addTestSuite(ImmutableDateTestCase.class);
         addTestSuite(InputEntityStreamTestCase.class);
         addTestSuite(KeepAliveInputStreamTestCase.class);
         addTestSuite(KeepAliveOutputStreamTestCase.class);
-        addTestSuite(PostPutTestCase.class);
         addTestSuite(PreferencesTestCase.class);
+        // Tests based on HTTP client connectors are not supported by the GAE
+        // edition.
+        // [ifndef gae]
+        addTestSuite(AuthenticationTestCase.class);
+        addTestSuite(ChunkedEncodingPutTestCase.class);
+        addTestSuite(ChunkedEncodingTestCase.class);
+        addTestSuite(ChunkedInputStreamTestCase.class);
+        addTestSuite(ChunkedOutputStreamTestCase.class);
+        addTestSuite(GetTestCase.class);
+        addTestSuite(GetChunkedTestCase.class);
+        addTestSuite(PostPutTestCase.class);
         addTestSuite(RemoteClientAddressTestCase.class);
         addTestSuite(SslGetTestCase.class);
         addTestSuite(SslClientContextGetTestCase.class);
         addTestSuite(TunnelFilterTestCase.class);
         addTestSuite(UserAgentTunnelFilterTestCase.class);
+        // [enddef]
     }
 }

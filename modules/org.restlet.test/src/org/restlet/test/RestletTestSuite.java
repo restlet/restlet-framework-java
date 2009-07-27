@@ -62,8 +62,8 @@ import org.restlet.test.resource.ResourceTestCase;
 import org.restlet.test.routing.FilterTestCase;
 import org.restlet.test.routing.RedirectTestCase;
 import org.restlet.test.routing.RouteListTestCase;
-import org.restlet.test.security.HttpBasicTestCase;
 import org.restlet.test.security.DigestVerifierTestCase;
+import org.restlet.test.security.HttpBasicTestCase;
 import org.restlet.test.security.SecurityTestCase;
 import org.restlet.test.util.TemplateTestCase;
 
@@ -91,23 +91,16 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(AtomTestCase.class);
         addTestSuite(CallTestCase.class);
         addTestSuite(ComponentXmlConfigTestCase.class);
-        addTestSuite(ComponentXmlTestCase.class);
         addTestSuite(CookieTestCase.class);
         addTestSuite(ConnegTestCase.class);
-        addTestSuite(DigestTestCase.class);
         addTestSuite(DirectoryTestCase.class);
         addTestSuite(FileClientTestCase.class);
         addTestSuite(FileReferenceTestCase.class);
-        addTestSuite(FileRepresentationTestCase.class);
         addTestSuite(FilterTestCase.class);
         addTestSuite(FreeMarkerTestCase.class);
-        addTestSuite(HeaderTestCase.class);
-        addTestSuite(HttpBasicTestCase.class);
         addTestSuite(LanguageTestCase.class);
         addTestSuite(MediaTypeTestCase.class);
         addTestSuite(ProductTokenTestCase.class);
-        addTestSuite(RangeTestCase.class);
-        addTestSuite(RedirectTestCase.class);
         addTestSuite(ReferenceTestCase.class);
         addTestSuite(ResolvingTransformerTestCase.class);
         addTestSuite(ResourceTestCase.class);
@@ -115,19 +108,31 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(RestletXmlTestCase.class);
         addTestSuite(RiapTestCase.class);
         addTestSuite(RouteListTestCase.class);
-        addTestSuite(SecurityTestCase.class);
         addTestSuite(DigestVerifierTestCase.class);
         addTestSuite(StatusTestCase.class);
-        addTestSuite(TemplateFilterTestCase.class);
         addTestSuite(TemplateTestCase.class);
         addTestSuite(TransformerTestCase.class);
         addTestSuite(VelocityTestCase.class);
         addTestSuite(WadlTestCase.class);
         addTestSuite(ZipClientTestCase.class);
 
+        // Tests based on HTTP client connectors are not supported by the GAE
+        // edition.
+        // [ifndef gae]
+        addTestSuite(ComponentXmlTestCase.class);
+        addTestSuite(DigestTestCase.class);
+        addTestSuite(FileRepresentationTestCase.class);
+        addTestSuite(HeaderTestCase.class);
+        addTestSuite(HttpBasicTestCase.class);
+        addTestSuite(RangeTestCase.class);
+        addTestSuite(RedirectTestCase.class);
+        addTestSuite(SecurityTestCase.class);
+        addTestSuite(TemplateFilterTestCase.class);
+
         addTest(EngineTestSuite.suite());
         addTest(AllJaxRsTests.suite());
         addTest(AllSpringTests.suite());
+        // [enddef]
     }
 
 }

@@ -1,4 +1,4 @@
-<module includes="jse,gwt" id="test" package="org.restlet.test">
+<module includes="jse" id="core-test" package="org.restlet.test">
    <label>Restlet Unit Tests</label>
    <description>
       All Restlet unit tests.
@@ -26,26 +26,57 @@
       <dependency type="module" id="velocity" />
       <dependency type="module" id="wadl" />
    </dependencies>
-   <source edition="jse">
+   <source edition="android">
       <files-sets>
 <![CDATA[
-      <fileset dir="${mods}/org.restlet.test">
          <exclude name="tomcat/**" />
          <exclude name="target/**" />
          <exclude name="src/org/restlet/test/gwt/**" />
-      </fileset>
+]]>
+      </files-sets>
+   </source>
+   <source edition="gae">
+      <files-sets>
+<![CDATA[
+         <exclude name="tomcat/**" />
+         <exclude name="target/**" />
+         <exclude name="src/org/restlet/test/gwt/**" />
+         <exclude name="src/org/restlet/test/engine/BaseConnectorsTestCase.java" />
+         <exclude name="src/org/restlet/test/engine/ChunkedEncodingPutTestCase.java" />
+         <exclude name="src/org/restlet/test/engine/ChunkedEncodingTestCase.java" />         
+         <exclude name="src/org/restlet/test/engine/GetTestCase.java" />
+         <exclude name="src/org/restlet/test/engine/GetChunkedTestCase.java" />
+         <exclude name="src/org/restlet/test/engine/PostPutTestCase.java" />
+         <exclude name="src/org/restlet/test/engine/RemoteClientAddressTestCase.java" />
 ]]>
       </files-sets>
    </source>
    <source edition="gwt">
       <files-sets>
 <![CDATA[
-      <fileset dir="${mods}/org.restlet.test">
          <include name="tomcat/**" />
          <include name="target/**" />
          <include name="src/org/restlet/test/gwt/**" />
-      </fileset>
 ]]>
       </files-sets>
    </source>
+   <source edition="jee">
+      <files-sets>
+<![CDATA[
+         <exclude name="tomcat/**" />
+         <exclude name="target/**" />
+         <exclude name="src/org/restlet/test/gwt/**" />
+]]>
+      </files-sets>
+   </source>
+   <source edition="jse">
+      <files-sets>
+<![CDATA[
+         <exclude name="tomcat/**" />
+         <exclude name="target/**" />
+         <exclude name="src/org/restlet/test/gwt/**" />
+]]>
+      </files-sets>
+   </source>
+
 </module>

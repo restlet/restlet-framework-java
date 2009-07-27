@@ -117,7 +117,7 @@ public class CookiesTestCase extends RestletTestCase {
     }
 
     /**
-     * Tests the cookies parsing.
+     * Tests the parsing of cookies.
      */
     public void testParsing() throws IOException {
         // Netscape speficiation
