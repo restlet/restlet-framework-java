@@ -1,14 +1,5 @@
-﻿<?xml version="1.0"?>
-
-<!-- ==================================================================
-     Restlet javadocs script - Copyright 2005-${currentYear} Noelios Technologies
-     ================================================================== -->
-
+﻿JAVADOC target -->
 <#noparse>
-<project name="Restlet-javadocs">
-
-   <!-- JAVADOC target -->
-	<target name="generate-javadocs" if="do-javadoc" depends="generate-classes" description="Generate the Javadocs.">
 		<delete includeEmptyDirs="true" verbose="false" quiet="true">
 			<fileset dir="${docs-api}" excludes="**/.svn" />
 			<fileset dir="${docs-engine}" excludes="**/.svn" />
@@ -36,7 +27,7 @@
 				<package name="org.restlet*" />
 			</group>
 </#noparse>
-<#list editions[editionKey].javadocsLinks as link>
+<#list edition.javadocsLinks as link>
 			${link}
 </#list>
 <#noparse>
@@ -63,7 +54,7 @@
 				<package name="org.restlet.engine*" />
 			</group>
 </#noparse>
-<#list editions[editionKey].javadocsLinks as link>
+<#list edition.javadocsLinks as link>
 			${link}
 </#list>
 <#noparse>
@@ -71,7 +62,7 @@
 		</javadoc>
 </#noparse>
 
-<#list editions[editionKey].modules?sort_by("id") as module>
+<#list edition.modules?sort_by("id") as module>
 <#if ((module.type!"") = "connector") || ((module.type!"") = "integration") || ((module.type!"") = "standard")>
       <#assign extension>true</#assign>
 </#if>
@@ -100,11 +91,11 @@
 			<group title="${restlet-ext-connectors}" packages="${connectors-packages}" />
 			<group title="${restlet-ext-integrations}" packages="${integrations-packages}" />
 </#noparse>
-<#list editions[editionKey].javadocsLinks as link>
+<#list edition.javadocsLinks as link>
 			${link}
 </#list>
-<#list editions[editionKey].modules?sort_by("id") as module>
-   <#list module.libDependencies as library>
+<#list edition.modules?sort_by("id") as module>
+   <#list module.neededLibraries as library>
       <#list library.javadocsLinks as link>
 			${link}
       </#list>
@@ -116,9 +107,4 @@
 		</javadoc>
 </#noparse>
 </#if>
-<#noparse>
-
-	</target>
-	
-</project>
-</#noparse>
+<!--

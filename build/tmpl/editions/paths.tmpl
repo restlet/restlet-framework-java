@@ -1,31 +1,31 @@
-﻿<?xml version="1.0"?>
-
-   <!--
-      ===============================================================
-      Restlet paths script - Copyright 2005-2009 Noelios Technologies
-      ===============================================================
-   -->
-
-<project name="Restlet-paths">
-   
-   <!-- Defines one path property by module  -->
-<#list editions[editionKey].modules?sort_by("dependencyLevel") as module>
+﻿Defines one path property by module  -->
+<#list edition.modules?sort_by("dependencyLevel") as module>
 	<path id="mod-${module.id}-path">
-<#if module.modDependencies?size = 0>
+<#if module.id = "core-test">
+<#assign mod_test="true" />
+</#if>
+<#if module.neededModules?size = 0>
 		<#noparse><pathelement path="${classes}/</#noparse>${module.package}" />
 <#else>
-	<#list module.modDependencies as dependency>
+	<#list module.neededModules as dependency>
 		<path refid="mod-${dependency.id}-path" />
 		<#noparse><pathelement path="${classes}/${mod-</#noparse>${dependency.id}-id}" />
+        <#if mod_test??>
+		<path refid="mod-${dependency.id}-path" />
+		<#noparse><pathelement path="${mod}/${mod-</#noparse>${dependency.id}-id}/src" />
+        </#if>
 	</#list>
 </#if>
-	<#list module.libDependencies as dependency>
+	<#list module.neededLibraries as dependency>
 		<#noparse><fileset dir="${libs}/${lib-</#noparse>${dependency.id}-id}" includes="*.jar" />
 	</#list>
+        <#if mod_test??>
+		<#noparse><pathelement path="${mod}/${mod-</#noparse>${module.id}-id}/src" />
+		<#noparse><pathelement path="${classes}/${mod-</#noparse>${module.id}-id}" />
+        </#if>
 	</path>
 </#list>
-	
-		<!-- retrotranslator 1.2 Pour le module de tests
+<!-- retrotranslator 1.2 Pour le module de tests
 		<pathelement location="$ {tools}/retrotranslator/backport-util-concurrent-3.1.jar" />
 		<pathelement location="$ {tools}/retrotranslator/retrotranslator-runtime-1.2.7.jar" />
 		<pathelement location="$ {tools}/retrotranslator/retrotranslator-transformer-1.2.7.jar" />
@@ -33,7 +33,7 @@
 
    <!-- Defines one path property for the whole set of modules  -->
 	<path id="path-all">
-<#list editions[editionKey].modules?sort_by("id") as module>
+<#list edition.modules?sort_by("id") as module>
 		<#noparse><pathelement path="${classes}/${mod-</#noparse>${module.id}-id}" />
 		<path refid="mod-${module.id}-path" />
 </#list>
@@ -41,7 +41,7 @@
 
    <!-- Defines one path property for the source code of the core module  -->
    <path id="core-source-path">
-<#list editions[editionKey].modules?sort_by("id") as module>
+<#list edition.modules?sort_by("id") as module>
 <#if ((module.type!"") = "core")>
       <#noparse><pathelement path="${mod}/${mod-</#noparse>${module.id}-id}/src/" />
 </#if>
@@ -50,11 +50,10 @@
 
    <!-- Defines one path property for the source code of the extension module  -->
    <path id="extensions-source-path">
-<#list editions[editionKey].modules?sort_by("id") as module>
+<#list edition.modules?sort_by("id") as module>
 <#if ((module.type!"") = "connector") || ((module.type!"") = "integration") || ((module.type!"") = "standard")>
       <#noparse><pathelement path="${mod}/${mod-</#noparse>${module.id}-id}/src/" />
 </#if>
 </#list>
    </path>
-
-</project>
+<!--
