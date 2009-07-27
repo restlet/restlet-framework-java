@@ -1,4 +1,4 @@
-<library id="gwt" includes="gwt">
+<library id="gwt">
    <package name="com.google.gwt" />
    <version>1.6</version>
    <release>4</release>
