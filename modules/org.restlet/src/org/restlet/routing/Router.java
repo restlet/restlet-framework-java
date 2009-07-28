@@ -306,6 +306,22 @@ public class Router extends Restlet {
     }
 
     /**
+     * Effectively handles the call using the selected next {@link Restlet},
+     * typically the selected {@link Route}. By default, it just invokes the
+     * next Restlet.
+     * 
+     * @param next
+     *            The next Restlet to invoke.
+     * @param request
+     *            The request.
+     * @param response
+     *            The response.
+     */
+    protected void doHandle(Restlet next, Request request, Response response) {
+        next.handle(request, response);
+    }
+
+    /**
      * Returns the matched route according to a custom algorithm. To use in
      * combination of the {@link #CUSTOM} option. The default implementation (to
      * be overridden), returns null.
@@ -501,7 +517,7 @@ public class Router extends Restlet {
 
         Restlet next = getNext(request, response);
         if (next != null) {
-            next.handle(request, response);
+            doHandle(next, request, response);
         } else {
             response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
         }

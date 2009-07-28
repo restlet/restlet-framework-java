@@ -128,6 +128,9 @@ Changes log
           FINE level instead of WARNING.
         - The JAX-RS extension now works on Google App Engine.
           Fixes contributed by Martin Krasser.
+        - Added doHandle(Restlet next, Request, Response) method on the
+          Router class that can be overriden to do some processing that
+          is common to any route selected. Suggested by John Logdson.
       - Breaking changes
         - The default language, defined in MetadataService is now based
           on the JVM's default locale, instead of English/US.
