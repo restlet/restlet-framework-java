@@ -36,6 +36,7 @@ import java.util.logging.Logger;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.engine.Edition;
 import org.restlet.engine.Engine;
 
 /**
@@ -174,7 +175,12 @@ public abstract class Restlet implements Uniform {
         }
 
         if (result == null) {
-            result = Logger.getLogger(getClass().getCanonicalName());
+            if(Edition.CURRENT == Edition.GWT){
+                result = Logger.getLogger(getClass().getCanonicalName());                
+            } else {
+                result = Logger.getLogger(getClass().getName());                
+            }
+
         }
 
         if (result == null) {

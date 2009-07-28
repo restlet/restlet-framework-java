@@ -42,7 +42,7 @@ public class BufferedReader extends Reader {
     /** The next saved character. */
     private int savedNextChar;
 
-    private StringReader source;
+    private Reader source;
 
     /**
      * Constructor.
@@ -50,7 +50,7 @@ public class BufferedReader extends Reader {
      * @param source
      *            The source reader.
      */
-    public BufferedReader(StringReader source) {
+    public BufferedReader(Reader source) {
         this.source = source;
         this.savedNextChar = -2;
     }
@@ -60,7 +60,7 @@ public class BufferedReader extends Reader {
      * 
      * @return The source reader.
      */
-    private StringReader getSource() {
+    private Reader getSource() {
         return source;
     }
 
@@ -69,8 +69,9 @@ public class BufferedReader extends Reader {
      * source reader.
      * 
      * @return The next character.
+     * @throws IOException
      */
-    private int read() {
+    public int read() throws IOException {
         int result = -1;
 
         if (this.savedNextChar != -2) {
@@ -120,7 +121,10 @@ public class BufferedReader extends Reader {
         return (sb == null) ? null : sb.toString();
     }
 
-    public void close() {
+    /**
+     * 
+     */
+    public void close() throws IOException {
 
     }
 

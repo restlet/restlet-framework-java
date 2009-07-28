@@ -117,7 +117,7 @@ public class XmlRepresentation extends Representation {
 
 	@Override
 	public InputStream getStream() throws IOException {
-		return new ByteArrayInputStream(getText().getBytes());
+		return new ByteArrayInputStream(getText());
 	}
 
 	@Override

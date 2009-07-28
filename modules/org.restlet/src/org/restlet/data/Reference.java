@@ -749,6 +749,7 @@ public class Reference {
         return this;
     }
 
+    // [ifndef gwt] method
     @Override
     public Reference clone() {
         final Reference newRef = new Reference();

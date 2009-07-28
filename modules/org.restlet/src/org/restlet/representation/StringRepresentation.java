@@ -135,11 +135,17 @@ public class StringRepresentation extends StreamRepresentation {
     public InputStream getStream() throws IOException {
         if (getText() != null) {
             if (getCharacterSet() != null) {
+                // [ifndef gwt] line
                 return new ByteArrayInputStream(getText().getBytes(
                         getCharacterSet().getName()));
+                // [ifdef gwt] line uncomment
+                // return new ByteArrayInputStream(getText());
             }
 
+            // [ifndef gwt] line
             return new ByteArrayInputStream(getText().getBytes());
+            // [ifdef gwt] line uncomment
+            // return new ByteArrayInputStream(getText());
         }
 
         return null;

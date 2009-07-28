@@ -256,6 +256,7 @@ public class Engine {
         }
     }
 
+    // [ifndef gwt] method
     /**
      * Creates a new helper for a given client connector.
      * 

@@ -495,6 +495,7 @@ public class HttpUtils {
         return result;
     }
 
+    // [ifndef gwt] method
     /**
      * Writes a new line.
      * 
@@ -507,6 +508,7 @@ public class HttpUtils {
         os.write(10); // LF
     }
 
+    // [ifndef gwt] method
     /**
      * Writes a header line.
      * 

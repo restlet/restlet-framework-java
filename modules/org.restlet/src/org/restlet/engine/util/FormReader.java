@@ -94,7 +94,10 @@ public class FormReader {
      */
     public FormReader(String parametersString, char separator) {
         this.decode = false;
+        // [ifndef gwt] line
         this.stream = new ByteArrayInputStream(parametersString.getBytes());
+        // [ifdef gwt] line uncomment
+        // this.stream = new ByteArrayInputStream(parametersString);
         this.characterSet = null;
         this.separator = separator;
     }
@@ -111,7 +114,10 @@ public class FormReader {
     public FormReader(String parametersString, CharacterSet characterSet,
             char separator) {
         this.decode = true;
+        // [ifndef gwt] line
         this.stream = new ByteArrayInputStream(parametersString.getBytes());
+        // [ifdef gwt] line uncomment
+        // this.stream = new ByteArrayInputStream(parametersString);
         this.characterSet = characterSet;
         this.separator = separator;
     }
