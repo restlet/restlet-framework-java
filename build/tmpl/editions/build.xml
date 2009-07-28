@@ -345,7 +345,7 @@
 						<fileset dir="${classes}/${mod-@{name}-id}" />
 						<fileset dir="${mod}/${mod-@{name}-id}/src" excludes="**/package.html" />
 						<fileset dir="${temp}/jar/" />
-						<fileset dir="${temp}/jar-extras/@${name}" />
+						<fileset dir="${temp}/jar-extras/@{name}" />
 					</jar>
 				</then>
 				<else>
@@ -353,6 +353,7 @@
 						<fileset dir="${classes}/${mod-@{name}-id}" />
 						<fileset dir="${mod}/${mod-@{name}-id}/src" excludes="**/package.html, **/*.java" />
 						<fileset dir="${temp}/jar/" />
+						<fileset dir="${temp}/jar-extras/@{name}" />
 					</jar>
 				</else>
 			</if>
@@ -809,14 +810,10 @@
 		</for>
 
 		<!-- Package modules -->
+
 		<!-- Complete the jar file with extra files -->
 		<!-- @stage-extras@ -->
-
-		<for param="module" delimiter=" " list="${modules}">
-			<sequential>
-				<stageModule name="@{module}" />
-			</sequential>
-		</for>
+		<!-- @stage-modules@ -->
 
 		<!-- Copy the POM files -->
 		<!-- 
