@@ -89,13 +89,13 @@ public class Context {
      * @return The current context's logger.
      */
     public static Logger getCurrentLogger() {
-        if (Edition.CURRENT != Edition.GWT) {
-            return (Context.getCurrent() != null) ? Context.getCurrent()
-                    .getLogger() : Logger.getLogger(Context.class
-                    .getCanonicalName());
-        } else {
-            return Logger.getLogger(Context.class.getCanonicalName());
-        }
+        // [ifndef gwt] instruction
+        return (Context.getCurrent() != null) ? Context.getCurrent()
+                .getLogger() : Logger.getLogger(Context.class
+                .getCanonicalName());
+
+        // [ifdef gwt] instruction uncomment
+        // return Logger.getLogger(Context.class.getName());
     }
 
     // [ifndef gwt] method

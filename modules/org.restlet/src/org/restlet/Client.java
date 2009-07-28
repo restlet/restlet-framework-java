@@ -75,7 +75,6 @@ public class Client extends Connector {
         this(context, protocols, null);
     }
 
-    // [ifndef gwt] method
     /**
      * Constructor.
      * 

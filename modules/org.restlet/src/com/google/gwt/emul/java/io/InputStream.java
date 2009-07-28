@@ -49,13 +49,23 @@ public class InputStream {
         super();
     }
 
+    /**
+     * Constructor.
+     * 
+     * @param text
+     */
     public InputStream(String text) {
         super();
         this.position = 0;
         this.text = text;
     }
 
-    public int available() {
+    /**
+     * 
+     * @return
+     * @throws IOException
+     */
+    public int available() throws IOException {
         if (text != null) {
             return text.length();
         }
@@ -84,6 +94,16 @@ public class InputStream {
     public int read() throws IOException {
         return (this.position == this.text.length()) ? -1 : this.text
                 .charAt(this.position++);
+    }
+
+    /**
+     * 
+     * @param cbuf
+     * @return
+     * @throws IOException
+     */
+    public int read(char[] cbuf) throws IOException {
+        return read(cbuf, 0, cbuf.length);
     }
 
     /**

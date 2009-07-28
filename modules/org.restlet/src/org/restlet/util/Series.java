@@ -558,12 +558,12 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      */
     @Override
     public Series<E> subList(int fromIndex, int toIndex) {
-        if (Edition.CURRENT != Edition.GWT) {
-            return createSeries(getDelegate().subList(fromIndex, toIndex));
-        } else {
-            return createSeries(org.restlet.engine.util.ListUtils.copySubList(
-                    getDelegate(), fromIndex, toIndex));
-        }
+        // [ifndef gwt] instruction
+        return createSeries(getDelegate().subList(fromIndex, toIndex));
+        // [ifdef gwt] instruction uncomment
+        // return
+        // createSeries(org.restlet.engine.util.ListUtils.copySubList(
+        // getDelegate(), fromIndex, toIndex));
     }
 
     /**

@@ -97,7 +97,7 @@ public class FormReader {
         // [ifndef gwt] line
         this.stream = new ByteArrayInputStream(parametersString.getBytes());
         // [ifdef gwt] line uncomment
-        // this.stream = new ByteArrayInputStream(parametersString);
+        // this.stream = new java.io.StringBufferInputStream(parametersString);
         this.characterSet = null;
         this.separator = separator;
     }
@@ -117,7 +117,7 @@ public class FormReader {
         // [ifndef gwt] line
         this.stream = new ByteArrayInputStream(parametersString.getBytes());
         // [ifdef gwt] line uncomment
-        // this.stream = new ByteArrayInputStream(parametersString);
+        // this.stream = new java.io.StringBufferInputStream(parametersString);
         this.characterSet = characterSet;
         this.separator = separator;
     }

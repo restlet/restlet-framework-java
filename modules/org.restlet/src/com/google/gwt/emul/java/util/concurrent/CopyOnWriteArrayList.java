@@ -50,6 +50,12 @@ public class CopyOnWriteArrayList<E> implements List<E> {
         list = new ArrayList<E>();
     }
 
+    public CopyOnWriteArrayList(List<E> list) {
+        super();
+        this.list = new ArrayList<E>();
+        this.list.addAll(list);
+    }
+
     public boolean add(E o) {
         return list.add(o);
     }

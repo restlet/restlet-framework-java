@@ -375,8 +375,8 @@ public abstract class HttpClientCall extends HttpCall {
             try {
                 if (inputStream.available() > 0) {
                     result = inputStream;
-                } else {
                     // [ifndef gwt]
+                } else {
                     final java.io.PushbackInputStream is = new java.io.PushbackInputStream(
                             inputStream);
                     final int i = is.read();
@@ -390,6 +390,7 @@ public abstract class HttpClientCall extends HttpCall {
                 getLogger().log(Level.FINER, "End of response entity stream.",
                         ioe);
             }
+
         }
 
         return result;

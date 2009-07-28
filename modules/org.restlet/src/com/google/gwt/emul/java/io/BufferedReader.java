@@ -56,6 +56,13 @@ public class BufferedReader extends Reader {
     }
 
     /**
+     * 
+     */
+    public void close() throws IOException {
+
+    }
+
+    /**
      * Returns the source reader.
      * 
      * @return The source reader.
@@ -82,6 +89,11 @@ public class BufferedReader extends Reader {
         }
 
         return result;
+    }
+
+    @Override
+    public int read(char[] cbuf, int off, int len) throws IOException {
+        return source.read(cbuf, off, len);
     }
 
     /**
@@ -120,17 +132,4 @@ public class BufferedReader extends Reader {
 
         return (sb == null) ? null : sb.toString();
     }
-
-    /**
-     * 
-     */
-    public void close() throws IOException {
-
-    }
-
-    @Override
-    public int read(char[] cbuf, int off, int len) throws IOException {
-        return source.read(cbuf, off, len);
-    }
-
 }

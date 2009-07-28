@@ -92,10 +92,14 @@ public abstract class HttpClientHelper extends ClientHelper {
      */
     public HttpClientAdapter getAdapter() throws Exception {
         if (this.adapter == null) {
+            // [ifndef gwt]
             final String adapterClass = getHelpedParameters().getFirstValue(
                     "adapter", "org.restlet.engine.http.HttpClientAdapter");
             this.adapter = (HttpClientAdapter) Class.forName(adapterClass)
                     .getConstructor(Context.class).newInstance(getContext());
+            // [enddef]
+            // [ifdef gwt] instruction uncomment
+            // this.adapter = new HttpClientAdapter(getContext());
         }
 
         return this.adapter;

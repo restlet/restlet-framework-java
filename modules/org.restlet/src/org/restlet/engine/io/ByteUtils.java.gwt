@@ -31,15 +31,11 @@
 package org.restlet.engine.io;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
-import java.util.logging.Level;
 
-import org.restlet.Context;
 import org.restlet.data.CharacterSet;
 
 /**
@@ -48,31 +44,6 @@ import org.restlet.data.CharacterSet;
  * @author Jerome Louvel
  */
 public final class ByteUtils {
-
-    /**
-     * Exhauts the content of the representation by reading it and silently
-     * discarding anything read.
-     * 
-     * @param input
-     *            The input stream to exhaust.
-     * @return The number of bytes consumed or -1 if unknown.
-     */
-    public static long exhaust(InputStream input) throws IOException {
-        long result = -1L;
-
-        if (input != null) {
-            final byte[] buf = new byte[4096];
-            int read = input.read(buf);
-            result = (read == -1) ? -1 : 0;
-
-            while (read != -1) {
-                result += read;
-                read = input.read(buf);
-            }
-        }
-
-        return result;
-    }
 
     /**
      * Returns a reader from an input stream and a character set.
@@ -88,7 +59,7 @@ public final class ByteUtils {
     public static Reader getReader(InputStream stream, CharacterSet characterSet)
             throws UnsupportedEncodingException {
         if (characterSet != null) {
-            return new InputStreamReader(stream, characterSet.getName());
+            return new InputStreamReader(stream);
         }
 
         return new InputStreamReader(stream);
@@ -131,8 +102,7 @@ public final class ByteUtils {
         if (inputStream != null) {
             try {
                 if (characterSet != null) {
-                    result = toString(new InputStreamReader(inputStream,
-                            characterSet.getName()));
+                    result = toString(new InputStreamReader(inputStream));
                 } else {
                     result = toString(new InputStreamReader(inputStream));
                 }
@@ -178,26 +148,6 @@ public final class ByteUtils {
         }
 
         return result;
-    }
-
-    /**
-     * Writes an input stream to an output stream. When the reading is done, the
-     * input stream is closed.
-     * 
-     * @param inputStream
-     *            The input stream.
-     * @param outputStream
-     *            The output stream.
-     * @throws IOException
-     */
-    public static void write(InputStream inputStream, OutputStream outputStream)
-            throws IOException {
-        int bytesRead;
-        final byte[] buffer = new byte[4096];
-        while ((bytesRead = inputStream.read(buffer)) > 0) {
-            outputStream.write(buffer, 0, bytesRead);
-        }
-        inputStream.close();
     }
 
     /**

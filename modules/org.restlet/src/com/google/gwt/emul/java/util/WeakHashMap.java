@@ -28,17 +28,17 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package com.google.gwt.emul.java.util.concurrent;
+package com.google.gwt.emul.java.util;
+
+import java.util.HashMap;
 
 /**
- * Emulate the ConcurrentHashMap class, especially for the GWT module.
+ * Emulate the WeakHashMap class, especially for the GWT module.
  * 
  * @author Thierry Boileau
+ * 
  */
-public class ConcurrentHashMap<K, V> extends ConcurrentMap<K, V> {
-
-    public ConcurrentHashMap() {
-        super();
-    }
+@SuppressWarnings("serial")
+public class WeakHashMap<K, V> extends HashMap<K, V> {
 
 }

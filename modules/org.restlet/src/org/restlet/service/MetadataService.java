@@ -499,7 +499,16 @@ public class MetadataService extends Service {
      * @return The character set associated to this extension.
      */
     public CharacterSet getCharacterSet(String extension) {
+        // [ifndef gwt] instruction
         return getMetadata(extension, CharacterSet.class);
+        // [ifdef gwt] uncomment
+        // Metadata metadata = getMetadata(extension);
+        // if (metadata instanceof CharacterSet) {
+        // return (CharacterSet) metadata;
+        // } else {
+        // return null;
+        // }
+        // [enddef]
     }
 
     /**
@@ -549,7 +558,16 @@ public class MetadataService extends Service {
      * @return The encoding associated to this extension.
      */
     public Encoding getEncoding(String extension) {
+        // [ifndef gwt] instruction
         return getMetadata(extension, Encoding.class);
+        // [ifdef gwt] uncomment
+        // Metadata metadata = getMetadata(extension);
+        // if (metadata instanceof Encoding) {
+        // return (Encoding) metadata;
+        // } else {
+        // return null;
+        // }
+        // [enddef]
     }
 
     /**
@@ -582,7 +600,16 @@ public class MetadataService extends Service {
      * @return The language associated to this extension.
      */
     public Language getLanguage(String extension) {
+        // [ifndef gwt] instruction
         return getMetadata(extension, Language.class);
+        // [ifdef gwt] uncomment
+        // Metadata metadata = getMetadata(extension);
+        // if (metadata instanceof Language) {
+        // return (Language) metadata;
+        // } else {
+        // return null;
+        // }
+        // [enddef]
     }
 
     /**
@@ -598,7 +625,16 @@ public class MetadataService extends Service {
      * @return The media type associated to this extension.
      */
     public MediaType getMediaType(String extension) {
+        // [ifndef gwt] instruction
         return getMetadata(extension, MediaType.class);
+        // [ifdef gwt] uncomment
+        // Metadata metadata = getMetadata(extension);
+        // if (metadata instanceof MediaType) {
+        // return (MediaType) metadata;
+        // } else {
+        // return null;
+        // }
+        // [enddef]
     }
 
     /**
@@ -624,6 +660,7 @@ public class MetadataService extends Service {
         return null;
     }
 
+    // [ifndef gwt] method
     /**
      * Returns the metadata associated to this extension. It returns null if the
      * extension was not declared or is not of the target metadata type.

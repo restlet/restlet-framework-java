@@ -30,7 +30,7 @@
 
 package org.restlet.representation;
 
-import java.io.ByteArrayInputStream;
+import java.io.StringBufferInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
@@ -99,7 +99,7 @@ public class JsonRepresentation extends Representation {
 
 	@Override
 	public InputStream getStream() throws IOException {
-		return new ByteArrayInputStream(getValue().toString().getBytes());
+		return new StringBufferInputStream(getValue().toString());
 	}
 
 	@Override

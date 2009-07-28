@@ -30,7 +30,7 @@
 
 package org.restlet.representation;
 
-import java.io.ByteArrayInputStream;
+import java.io.StringBufferInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
@@ -47,106 +47,106 @@ import com.google.gwt.xml.client.XMLParser;
  * @author Jerome Louvel
  */
 public class XmlRepresentation extends Representation {
-	/** The wrapped DOM document. */
-	private Document dom;
+    /** The wrapped DOM document. */
+    private Document dom;
 
-	/** The source XML representation. */
-	private Representation xmlRepresentation;
+    /** The source XML representation. */
+    private Representation xmlRepresentation;
 
-	/**
-	 * Constructor for an empty document.
-	 * 
-	 * @param mediaType
-	 *            The representation's media type.
-	 */
-	public XmlRepresentation(MediaType mediaType) {
-		super(mediaType);
-		this.dom = XMLParser.createDocument();
-	}
+    /**
+     * Constructor for an empty document.
+     * 
+     * @param mediaType
+     *            The representation's media type.
+     */
+    public XmlRepresentation(MediaType mediaType) {
+        super(mediaType);
+        this.dom = XMLParser.createDocument();
+    }
 
-	/**
-	 * Constructor from an existing DOM document.
-	 * 
-	 * @param mediaType
-	 *            The representation's media type.
-	 * @param xmlDocument
-	 *            The source DOM document.
-	 */
-	public XmlRepresentation(MediaType mediaType, Document xmlDocument) {
-		super(mediaType);
-		this.dom = xmlDocument;
-	}
+    /**
+     * Constructor from an existing DOM document.
+     * 
+     * @param mediaType
+     *            The representation's media type.
+     * @param xmlDocument
+     *            The source DOM document.
+     */
+    public XmlRepresentation(MediaType mediaType, Document xmlDocument) {
+        super(mediaType);
+        this.dom = xmlDocument;
+    }
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param xmlRepresentation
-	 *            A source XML representation to parse.
-	 */
-	public XmlRepresentation(Representation xmlRepresentation) {
-		super((xmlRepresentation == null) ? null : xmlRepresentation
-				.getMediaType());
-		this.xmlRepresentation = xmlRepresentation;
-	}
+    /**
+     * Constructor.
+     * 
+     * @param xmlRepresentation
+     *            A source XML representation to parse.
+     */
+    public XmlRepresentation(Representation xmlRepresentation) {
+        super((xmlRepresentation == null) ? null : xmlRepresentation
+                .getMediaType());
+        this.xmlRepresentation = xmlRepresentation;
+    }
 
-	/**
-	 * Returns the wrapped DOM document. If no document is defined yet, it
-	 * attempts to parse the XML representation eventually given at construction
-	 * time. Otherwise, it just creates a new document.
-	 * 
-	 * @return The wrapped DOM document.
-	 * @throws IOException
-	 */
-	public Document getDocument() throws IOException {
-		if (this.dom == null) {
-			if (this.xmlRepresentation != null) {
-				this.dom = XMLParser.parse(this.xmlRepresentation.getText());
-			} else {
-				this.dom = XMLParser.createDocument();
-			}
-		}
+    /**
+     * Returns the wrapped DOM document. If no document is defined yet, it
+     * attempts to parse the XML representation eventually given at construction
+     * time. Otherwise, it just creates a new document.
+     * 
+     * @return The wrapped DOM document.
+     * @throws IOException
+     */
+    public Document getDocument() throws IOException {
+        if (this.dom == null) {
+            if (this.xmlRepresentation != null) {
+                this.dom = XMLParser.parse(this.xmlRepresentation.getText());
+            } else {
+                this.dom = XMLParser.createDocument();
+            }
+        }
 
-		return this.dom;
-	}
+        return this.dom;
+    }
 
-	@Override
-	public Reader getReader() throws IOException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public Reader getReader() throws IOException {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Override
-	public InputStream getStream() throws IOException {
-		return new ByteArrayInputStream(getText());
-	}
+    @Override
+    public InputStream getStream() throws IOException {
+        return new StringBufferInputStream(getText());
+    }
 
-	@Override
-	public String getText() throws IOException {
-		return (getDocument() != null) ? getDocument().toString() : null;
-	}
+    @Override
+    public String getText() throws IOException {
+        return (getDocument() != null) ? getDocument().toString() : null;
+    }
 
-	/**
-	 * Releases the wrapped DOM document and the source XML representation if
-	 * they have been defined.
-	 */
-	@Override
-	public void release() {
-		setDocument(null);
+    /**
+     * Releases the wrapped DOM document and the source XML representation if
+     * they have been defined.
+     */
+    @Override
+    public void release() {
+        setDocument(null);
 
-		if (this.xmlRepresentation != null) {
-			this.xmlRepresentation.release();
-		}
+        if (this.xmlRepresentation != null) {
+            this.xmlRepresentation.release();
+        }
 
-		super.release();
-	}
+        super.release();
+    }
 
-	/**
-	 * Sets the wrapped DOM document.
-	 * 
-	 * @param dom
-	 *            The wrapped DOM document.
-	 */
-	public void setDocument(Document dom) {
-		this.dom = dom;
-	}
+    /**
+     * Sets the wrapped DOM document.
+     * 
+     * @param dom
+     *            The wrapped DOM document.
+     */
+    public void setDocument(Document dom) {
+        this.dom = dom;
+    }
 }

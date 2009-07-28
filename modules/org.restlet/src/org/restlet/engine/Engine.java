@@ -256,7 +256,6 @@ public class Engine {
         }
     }
 
-    // [ifndef gwt] method
     /**
      * Creates a new helper for a given client connector.
      * 
@@ -276,6 +275,7 @@ public class Engine {
                 connector = iter.next();
 
                 if (connector.getProtocols().containsAll(client.getProtocols())) {
+                    // [ifndef gwt]
                     if ((helperClass == null)
                             || connector.getClass().getCanonicalName().equals(
                                     helperClass)) {
@@ -291,6 +291,10 @@ public class Engine {
                                             e);
                         }
                     }
+                    // [enddef]
+                    // [ifdef gwt] instruction uncomment
+                    // result = new
+                    // org.restlet.engine.http.GwtHttpClientHelper(client);
                 }
             }
 

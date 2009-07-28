@@ -135,17 +135,17 @@ public class StringRepresentation extends StreamRepresentation {
     public InputStream getStream() throws IOException {
         if (getText() != null) {
             if (getCharacterSet() != null) {
-                // [ifndef gwt] line
+                // [ifndef gwt] instruction
                 return new ByteArrayInputStream(getText().getBytes(
                         getCharacterSet().getName()));
                 // [ifdef gwt] line uncomment
-                // return new ByteArrayInputStream(getText());
+                // return new java.io.StringBufferInputStream(getText());
             }
 
             // [ifndef gwt] line
             return new ByteArrayInputStream(getText().getBytes());
             // [ifdef gwt] line uncomment
-            // return new ByteArrayInputStream(getText());
+            // return new java.io.StringBufferInputStream(getText());
         }
 
         return null;
@@ -197,6 +197,7 @@ public class StringRepresentation extends StreamRepresentation {
      */
     protected void updateSize() {
         if (getText() != null) {
+            // [ifndef gwt]
             try {
                 if (getCharacterSet() != null) {
                     setSize(getText().getBytes(getCharacterSet().getName()).length);
@@ -208,6 +209,9 @@ public class StringRepresentation extends StreamRepresentation {
                         "Unable to update size", e);
                 setSize(UNKNOWN_SIZE);
             }
+            // [enddef]
+            // [ifdef gwt] instruction uncomment
+            // setSize(getText().length());
         } else {
             setSize(UNKNOWN_SIZE);
         }
