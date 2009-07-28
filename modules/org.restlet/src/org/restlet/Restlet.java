@@ -111,6 +111,7 @@ public abstract class Restlet implements Uniform {
                     context);
         }
         // [enddef]
+
         // [ifdef gwt]
         if (context == null) {
             this.context = new Context();

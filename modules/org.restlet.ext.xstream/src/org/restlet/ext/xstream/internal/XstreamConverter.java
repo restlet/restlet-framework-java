@@ -41,8 +41,6 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.UniformResource;
 
-import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
-
 /**
  * Converter between the XML/JSON and Representation classes based on XStream.
  * 
@@ -61,6 +59,32 @@ public class XstreamConverter extends ConverterHelper {
 
     private static final VariantInfo VARIANT_TEXT_XML = new VariantInfo(
             MediaType.TEXT_XML);
+
+    /**
+     * Creates the marshaling {@link XstreamRepresentation}.
+     * 
+     * @param <T>
+     * @param mediaType
+     *            The target media type.
+     * @param source
+     *            The source object to marshal.
+     * @return The marshaling {@link XstreamRepresentation}.
+     */
+    protected <T> XstreamRepresentation<T> create(MediaType mediaType, T source) {
+        return new XstreamRepresentation<T>(mediaType, source);
+    }
+
+    /**
+     * Creates the unmarshaling {@link XstreamRepresentation}.
+     * 
+     * @param <T>
+     * @param source
+     *            The source representation to unmarshal.
+     * @return The unmarshaling {@link XstreamRepresentation}.
+     */
+    protected <T> XstreamRepresentation<T> create(Representation source) {
+        return new XstreamRepresentation<T>(source);
+    }
 
     @Override
     public List<Class<?>> getObjectClasses(Variant source) {
@@ -127,20 +151,15 @@ public class XstreamConverter extends ConverterHelper {
     public <T> T toObject(Representation source, Class<T> target,
             UniformResource resource) throws IOException {
         Object result = null;
-        XstreamRepresentation<T> xstreamRepresentation;
 
         if (source instanceof XstreamRepresentation) {
             result = ((XstreamRepresentation) source).getObject();
         } else if (VARIANT_JSON.isCompatible(source)) {
-            xstreamRepresentation = new XstreamRepresentation<T>(source);
-            xstreamRepresentation
-                    .setJsonDriverClass(JettisonMappedXmlDriver.class);
-            result = xstreamRepresentation.getObject();
+            result = create(source).getObject();
         } else if (VARIANT_APPLICATION_ALL_XML.isCompatible(source)
                 || VARIANT_APPLICATION_XML.isCompatible(source)
                 || VARIANT_TEXT_XML.isCompatible(source)) {
-            xstreamRepresentation = new XstreamRepresentation<T>(source);
-            result = xstreamRepresentation.getObject();
+            result = create(source).getObject();
         }
 
         return (T) result;
@@ -160,17 +179,13 @@ public class XstreamConverter extends ConverterHelper {
             }
 
             if (VARIANT_JSON.isCompatible(target)) {
-                XstreamRepresentation<Object> xstreamRepresentation = new XstreamRepresentation<Object>(
+                XstreamRepresentation<Object> xstreamRepresentation = create(
                         target.getMediaType(), source);
-                xstreamRepresentation
-                        .setJsonDriverClass(JettisonMappedXmlDriver.class);
                 result = xstreamRepresentation;
             } else if (VARIANT_APPLICATION_ALL_XML.isCompatible(target)
                     || VARIANT_APPLICATION_XML.isCompatible(target)
                     || VARIANT_TEXT_XML.isCompatible(target)) {
-                XstreamRepresentation<Object> xstreamRepresentation = new XstreamRepresentation<Object>(
-                        target.getMediaType(), source);
-                result = xstreamRepresentation;
+                result = create(target.getMediaType(), source);
             }
         }
 

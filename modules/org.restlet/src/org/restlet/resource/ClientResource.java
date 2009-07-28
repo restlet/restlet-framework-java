@@ -619,7 +619,9 @@ public class ClientResource extends UniformResource {
                         || getRequestEntity().isAvailable()) {
                     getLogger().log(
                             Level.INFO,
-                            "A recoverable error was detected, attempting again in "
+                            "A recoverable error was detected ("
+                                    + response.getStatus().getCode()
+                                    + "), attempting again in "
                                     + getRetryDelay() + " ms.");
 
                     // Wait before attempting again
