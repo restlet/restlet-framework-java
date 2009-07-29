@@ -1,4 +1,4 @@
-<module id="velocity" excludes="gwt" type="integration" package="org.restlet.ext.velocity">
+<module id="velocity" excludes="android,gwt" type="integration" package="org.restlet.ext.velocity">
    <label>Restlet Extension - Velocity</label>
    <description>
       Integration with Apache Velocity.

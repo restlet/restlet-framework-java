@@ -1,4 +1,4 @@
-<module id="xstream" excludes="gwt" type="integration" package="org.restlet.ext.xstream">
+<module id="xstream" excludes="android,gwt" type="integration" package="org.restlet.ext.xstream">
    <label>Restlet Extension - XStream</label>
    <description>
       Integration with XStream.
