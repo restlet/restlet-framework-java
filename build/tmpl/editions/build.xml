@@ -28,10 +28,10 @@
 	<property name="author" value="Jerome Louvel" />
 	<property name="vendor" value="Noelios Technologies" />
 	<property name="excludes" value="**/.emptyDir **/package.html **/overview.html" />
-	<property name="mod-maven-groupId" value="org.restlet.${restlet-edition}" />
+	<property name="mod-maven-groupId" value="org.restlet.${edition}" />
 
 	<!-- Miscellaneous Maven properties -->
-	<property name="parent-maven-groupId" value="org.restlet.${restlet-edition}" />
+	<property name="parent-maven-groupId" value="org.restlet.${edition}" />
 	<property name="parent-maven-artifactId" value="org.restlet.parent" />
 	<property name="parent-maven-version" value="${version-maven}" />
 
@@ -60,9 +60,9 @@
 	<property name="uml-reports" location="${temp}/uml-reports" />
 	<property name="uml-reports-api" location="${uml-reports}/api" />
 	<property name="icons" location="${images}/ico" />
-	<property name="final-dist-classic" location="${dist-base}/classic/${dist-path}/${restlet-edition}" />
-	<property name="final-dist-eclipse" location="${dist-base}/eclipse/${dist-path}/${restlet-edition}" />
-	<property name="final-dist-maven2" location="${dist-base}/maven2/${dist-path}/${restlet-edition}" />
+	<property name="final-dist-classic" location="${final-dist-base}/classic/${dist-path}/${edition}" />
+	<property name="final-dist-eclipse" location="${final-dist-base}/eclipse/${dist-path}/${edition}" />
+	<property name="final-dist-maven2" location="${final-dist-base}/maven2/${dist-path}/${edition}" />
 
 	<!-- Boot classpath propertiesLoad system specific paths -->
 	<pathconvert property="defaultbootclasspath">
@@ -103,14 +103,11 @@
 		license-dir: ${dist-classic}
 		dist: ${dist-classic}
 		dist-base: ${dist-base}
-		restlet-edition: ${restlet-edition}
-		restlet-edition-label: ${restlet-edition-label}
-		restlet-api: ${restlet-api}
-		restlet-engine: ${restlet-engine}
-		restlet-ext: ${restlet-ext}
-		restlet-ext-standards: ${restlet-ext-standards}
-		restlet-ext-connectors: ${restlet-ext-connectors}
-		restlet-ext-integrations: ${restlet-ext-integrations}
+		edition: ${edition}
+		edition-full-label: ${edition-full-label}
+		restlet-edition: ${edition}
+		restlet-edition-label: Restlet for the ${edition-medium-label} edition
+		restlet-engine: Restlet Engine for the ${edition-medium-label} edition
 		parent-group-id: ${parent-maven-groupId}
 		parent-artifact-id: ${parent-maven-artifactId}
 		parent-version: ${parent-maven-version}
@@ -519,9 +516,9 @@
 			</condition>
 			<property name="lib-pom-@{name}-artifactId" value="org.restlet.lib.${lib-@{name}-package}" />
 
-			<!-- sets the final pom group id: "org.restlet.${restlet-edition}" -->
+			<!-- sets the final pom group id: "org.restlet.${edition}" -->
 			<property name="lib-@{name}-maven-groupId" value="${lib-@{name}-package}" />
-			<property name="lib-pom-@{name}-maven-groupId" value="org.restlet.${restlet-edition}" />
+			<property name="lib-pom-@{name}-maven-groupId" value="org.restlet.${edition}" />
 
 			<propertyregex property="lib-dir-@{name}-maven-groupId" input="${lib-pom-@{name}-maven-groupId}" regexp="\." replace="/" global="true" casesensitive="false" defaultvalue="${lib-@{name}-maven-groupId}" />
 			<property name="lib-dir-@{name}-maven2" value="${dist-maven2}/${lib-dir-@{name}-maven-groupId}/${lib-pom-@{name}-artifactId}/${lib-pom-@{name}-version}" />
@@ -681,7 +678,7 @@
 
 			<bottom>Copyright &#169; 2005-2009 Noelios Technologies</bottom>
 
-			<group title="${restlet-api}">
+			<group title="Restlet API">
 				<package name="org.restlet*" />
 			</group>
 
@@ -873,20 +870,24 @@
 	</target>
 
 	<!-- PACKAGE target -->
-	<target name="package" if="do-package" depends="package-classic" description="Generate the distribution." />
-
-	<target name="package-classic" if="do-package" depends="package-classic-zip, package-classic-nsis" description="Generate the classic distributions.">
+	<target name="package" if="do-package" depends="package-classic" description="Generate the distribution.">
 		<!-- copy final artifacts to the final distribution directory -->
-		<move file="${dist-base}/restlet-${restlet-edition}-${version-compact}.zip" todir="${final-dist-base}" />
-		<move file="${dist-base}/restlet-${restlet-edition}-${version-compact}.exe" todir="${final-dist-base}" />
-		<move dir="${dist-maven2}" todir="${final-dist-maven2}" />
-		<move dir="${dist-classic}" todir="${final-dist-classic}" />
+		<move file="${dist-base}/restlet-${edition}-${version-compact}.zip" todir="${final-dist-base}" />
+		<move file="${dist-base}/restlet-${edition}-${version-compact}.exe" todir="${final-dist-base}" />
+		<move todir="${final-dist-maven2}">
+			<fileset dir="${dist-maven2}" />
+		</move>
+		<move todir="${final-dist-classic}">
+			<fileset dir="${dist-classic}" />
+		</move>
 	</target>
+
+	<target name="package-classic" if="do-package" depends="package-classic-zip, package-classic-nsis" description="Generate the classic distributions." />
 
 	<!-- PACKAGE-ZIP target (generation of final Zip file) -->
 	<target name="package-classic-zip" if="do-package" description="Generate the final zip file for the classic distribution.">
-		<delete file="${dist-base}/restlet-${restlet-edition}-${version-compact}.zip" />
-		<zip destfile="${dist-base}/restlet-${restlet-edition}-${version-compact}.zip" basedir="${dist-base}/classic" includes="restlet-${restlet-edition}-${version-compact}/**/*" />
+		<delete file="${dist-base}/restlet-${edition}-${version-compact}.zip" />
+		<zip destfile="${dist-base}/restlet-${edition}-${version-compact}.zip" basedir="${dist-base}/classic" includes="${dist-path}/**/*" />
 	</target>
 
 	<!-- PACKAGE-NSIS target (generation of Windows installer) -->

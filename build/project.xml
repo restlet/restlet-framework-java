@@ -1,6 +1,12 @@
 <editions>
    <edition id="android">
-      <description>Restlet Edition for the Android platform 1.5.</description>
+      <label>
+         <full>Android</full>
+         <medium>Android</medium>
+         <short>Android</short>
+      </label>
+      <description>Restlet Edition for the Android platform 1.5.
+      </description>
       <javadocs>
          <link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
       </javadocs>
@@ -10,7 +16,13 @@
       </distributions>
    </edition>
    <edition id="jee">
-      <description>Restlet Edition for Java Entreprise Edition 5.</description>
+      <label>
+         <full>Java Entreprise Edition</full>
+         <medium>Java EE</medium>
+         <short>JEE</short>
+      </label>
+      <description>Restlet Edition for Java Entreprise Edition 5.
+      </description>
       <javadocs>
          <link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
       </javadocs>
@@ -20,7 +32,13 @@
       </distributions>
    </edition>
    <edition id="jse">
-      <description>Restlet Edition for Java Standard Edition 5.</description>
+      <label>
+         <full>Java Standard Edition</full>
+         <medium>Java SE</medium>
+         <short>JSE</short>
+      </label>
+      <description>Restlet Edition for Java Standard Edition 5.
+      </description>
       <javadocs>
          <link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
       </javadocs>
@@ -30,6 +48,11 @@
       </distributions>
    </edition>
    <edition id="gae">
+      <label>
+         <full>Google App Engine</full>
+         <medium>GAE</medium>
+         <short>GAE</short>
+      </label>
       <description>Restlet Edition for Google App Engine.</description>
       <javadocs>
          <link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
@@ -40,6 +63,11 @@
       </distributions>
    </edition>
    <edition id="gwt">
+      <label>
+         <full>Google Web Toolkit</full>
+         <medium>GWT</medium>
+         <short>GWT</short>
+      </label>
       <description>Restlet Edition for Google Web Toolkit.</description>
       <javadocs>
          <link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
