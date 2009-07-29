@@ -14,8 +14,8 @@
                  author="true"
                  version="true"
                  use="true"
-                 windowtitle="${restlet-api} ${version-full}"
-                 doctitle="${restlet-api} ${version-full}"
+                 windowtitle="Restlet API ${version-full} - ${edition-short-label}"
+                 doctitle="Restlet API ${version-full} - ${edition-short-label}"
                  overview="${temp}/javadocs/overview-api.html"
                  stylesheetfile="${tmpl}/javadocs/stylesheet.css"
                  verbose="${verbose}">
@@ -23,7 +23,7 @@
 				<![CDATA[<i>Copyright &#169; 2005-${current-year} <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
 			</bottom>
 
-			<group title="${restlet-api}">
+			<group title="Restlet API for the ${edition-full-label} edition">
 				<package name="org.restlet*" />
 			</group>
 </#noparse>
@@ -41,8 +41,8 @@
                  author="true"
                  version="true"
                  use="true"
-                 windowtitle="Restlet Engine ${version-full}"
-                 doctitle="Restlet Engine ${version-full}"
+                 windowtitle="Restlet Engine ${version-full} - ${edition-short-label}"
+                 doctitle="Restlet Engine ${version-full} - ${edition-short-label}"
                  overview="${temp}/javadocs/overview-engine.html"
                  stylesheetfile="${tmpl}/javadocs/stylesheet.css"
                  verbose="${verbose}">
@@ -50,7 +50,7 @@
 				<![CDATA[<i>Copyright &#169; 2005-${current-year} <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
 			</bottom>
 
-			<group title="${restlet-engine}">
+			<group title="Restlet Engine for the ${edition-full-label} edition">
 				<package name="org.restlet.engine*" />
 			</group>
 </#noparse>
@@ -78,8 +78,8 @@
                  author="true"
                  version="true"
                  use="true"
-                 windowtitle="Restlet Extensions ${version-full}"
-                 doctitle="Restlet Extensions ${version-full}"
+                 windowtitle="Restlet Extensions ${version-full} - ${edition-short-label}"
+                 doctitle="Restlet Extensions ${version-full} - ${edition-short-label}"
                  overview="${temp}/javadocs/overview-ext.html"
                  stylesheetfile="${tmpl}/javadocs/stylesheet.css"
                  verbose="${verbose}">
@@ -87,9 +87,9 @@
 				<![CDATA[<i>Copyright &#169; 2005-${current-year} <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
 			</bottom>
 
-			<group title="${restlet-ext-standards}" packages="${standards-packages}" />
-			<group title="${restlet-ext-connectors}" packages="${connectors-packages}" />
-			<group title="${restlet-ext-integrations}" packages="${integrations-packages}" />
+			<group title="Standards support for the ${edition-full-label} edition" packages="${standards-packages}" />
+			<group title="Pluggable connectors for the ${edition-full-label} edition" packages="${connectors-packages}" />
+			<group title="Third-party integrations for the ${edition-full-label} edition" packages="${integrations-packages}" />
 </#noparse>
 <#list edition.javadocsLinks as link>
 			${link}
