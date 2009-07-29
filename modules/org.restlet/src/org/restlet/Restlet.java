@@ -36,7 +36,6 @@ import java.util.logging.Logger;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.engine.Edition;
 import org.restlet.engine.Engine;
 
 /**
@@ -92,31 +91,30 @@ public abstract class Restlet implements Uniform {
      * 
      */
     public Restlet(Context context) {
+        // [ifndef gwt] instruction
         this.context = context;
+        // [ifdef gwt] instruction uncomment
+        // this.context = (context != null) ? context : new Context();
+        // [enddef]
         this.started = false;
         this.name = null;
         this.description = null;
         this.author = null;
         this.owner = null;
 
-        if (Edition.CURRENT != Edition.GWT) {
-            if (Engine.getInstance() == null) {
-                Context
-                        .getCurrentLogger()
-                        .severe(
-                                "Unable to fully initialize the Restlet. No Restlet engine available.");
-                throw new RuntimeException(
-                        "Unable to fully initialize the Restlet. No Restlet engine available.");
-            } else {
-                org.restlet.engine.component.ChildContext.fireContextChanged(
-                        this, context);
-            }
-
+        // [ifndef gwt]
+        if (Engine.getInstance() == null) {
+            Context
+                    .getCurrentLogger()
+                    .severe(
+                            "Unable to fully initialize the Restlet. No Restlet engine available.");
+            throw new RuntimeException(
+                    "Unable to fully initialize the Restlet. No Restlet engine available.");
         } else {
-            if (context == null) {
-                this.context = new Context();
-            }
+            org.restlet.engine.component.ChildContext.fireContextChanged(this,
+                    context);
         }
+        // [enddef]
     }
 
     // [ifndef gwt] method
