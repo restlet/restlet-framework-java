@@ -63,7 +63,7 @@
 	<property name="icons" location="${images}/ico" />
 	<property name="final-dist-classic" location="${final-dist-base}/classic/${dist-path}/${edition}" />
 	<property name="final-dist-eclipse" location="${final-dist-base}/eclipse/${dist-path}/${edition}" />
-	<property name="final-dist-maven2" location="${final-dist-base}/maven2/${dist-path}/${edition}" />
+	<property name="final-dist-maven2" location="${final-dist-base}/maven2/${dist-path}" />
 
 	<!-- Boot classpath propertiesLoad system specific paths -->
 	<pathconvert property="defaultbootclasspath">
