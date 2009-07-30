@@ -124,12 +124,10 @@
 	</macrodef>
 
 	<target name="prepare-stage-maven" if="do-prepare-stage-maven" description="Prepare the generation of the maven distributions.">
-		<echo message="${svn.revision}" />
 		<!-- Svn revision number -->
 		<xmlproperty file="${temp}/svninfo.xml" collapseattributes="true" />
 		<property name="svn.revision" value="${info.entry.revision}" />
 
-		<echo message="${svn.revision}" />
 		<!-- Snapshot? -->
 		<condition property="is.snapshot" else="false">
 			<contains string="${version-maven}" substring="-SNAPSHOT" />
