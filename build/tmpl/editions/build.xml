@@ -83,11 +83,6 @@
 		<format property="release-date" pattern="yyyy-MM-dd" />
 	</tstamp>
 
-	<!-- Maven time stamp -->
-	<tstamp>
-		<format property="maven-snapshot-timestamp" pattern="yyyyMMdd.HHmmss" />
-	</tstamp>
-
 	<!-- Current year -->
 	<tstamp>
 		<format property="current-year" pattern="yyyy" />
@@ -824,20 +819,7 @@
  		-->
 	</target>
 
-	<target name="prepare-stage-maven" if="do-prepare-stage-maven" description="Prepare the generation of the maven distributions.">
-		<!-- Svn revision number -->
-		<xmlproperty file="${temp-base}/svninfo.xml" collapseattributes="true" />
-		<property name="svn.revision" value="${info.entry.revision}" />
-
-		<!-- Snapshot? -->
-		<condition property="is.snapshot" else="false">
-			<contains string="${version-maven}" substring="-SNAPSHOT" />
-		</condition>
-		<echo message="maven-timestamp:${maven-snapshot-timestamp}${line.separator}" file="${temp}/snapshot.properties" append="false" />
-		<echo message="svn-revision:${svn.revision}${line.separator}" file="${temp}/snapshot.properties" append="true" />
-	</target>
-
-	<target name="stage-maven" depends="stage-classic, prepare-stage-maven, stage-maven-2" if="do-maven" description="Generate the maven distributions." />
+	<target name="stage-maven" depends="stage-classic, stage-maven-2" if="do-maven" description="Generate the maven distributions." />
 
 	<!-- STAGE-MAVEN-2 target -->
 	<target name="stage-maven-2" if="do-maven" description="Generate the maven-2.x distributions.">

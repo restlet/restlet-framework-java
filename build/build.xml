@@ -9,10 +9,21 @@
 	<!-- ===  Properties setting  === -->
 	<!-- ============================ -->
 
+	<!-- Load system specific properties -->
+	<property file="custom.properties" />
+
+	<!-- Load default properties -->
+	<property file="build.properties" />
+
 	<!-- General properties -->
 	<!-- Current year -->
 	<tstamp>
 		<format property="current-year" pattern="yyyy" />
+	</tstamp>
+
+	<!-- Maven time stamp -->
+	<tstamp>
+		<format property="maven-snapshot-timestamp" pattern="yyyyMMdd.HHmmss" />
 	</tstamp>
 
 	<!-- Location properties -->
@@ -112,14 +123,29 @@
 		</sequential>
 	</macrodef>
 
-	<target name="build">
+	<target name="prepare-stage-maven" if="do-prepare-stage-maven" description="Prepare the generation of the maven distributions.">
+		<echo message="${svn.revision}" />
+		<!-- Svn revision number -->
+		<xmlproperty file="${temp}/svninfo.xml" collapseattributes="true" />
+		<property name="svn.revision" value="${info.entry.revision}" />
+
+		<echo message="${svn.revision}" />
+		<!-- Snapshot? -->
+		<condition property="is.snapshot" else="false">
+			<contains string="${version-maven}" substring="-SNAPSHOT" />
+		</condition>
+		<echo message="maven-timestamp:${maven-snapshot-timestamp}${line.separator}" file="${temp}/snapshot.properties" append="false" />
+		<echo message="svn-revision:${svn.revision}${line.separator}" file="${temp}/snapshot.properties" append="true" />
+	</target>
+
+	<target name="build" depends="prepare-stage-maven">
 		<generate-edition edition="android" />
 		<generate-edition edition="gae" />
 		<generate-edition edition="gwt" />
 		<generate-edition edition="jee" />
 		<generate-edition edition="jse" />
 	</target>
-	<target name="rebuild">
+	<target name="rebuild" depends="prepare-stage-maven">
 		<generate-edition edition="android" target="rebuild" />
 		<generate-edition edition="gae" target="rebuild" />
 		<generate-edition edition="gwt" target="rebuild" />
