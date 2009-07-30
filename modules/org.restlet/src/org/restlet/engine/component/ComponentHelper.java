@@ -93,8 +93,7 @@ public class ComponentHelper extends ChainHelper<Component> {
                                 boolean clientFound = false;
 
                                 // Try to find a client connector matching the
-                                // client
-                                // protocol
+                                // client protocol
                                 Client client;
                                 for (Iterator<Client> iter = getHelped()
                                         .getClients().iterator(); !clientFound
