@@ -30,10 +30,6 @@
 		<fileset dir="tools/fmpp" includes="**/*.jar" />
 	</path>
 
-	<exec executable="svn" output="${temp}/svninfo.xml">
-		<arg line="info --xml" />
-	</exec>
-	
 	<!-- =================== -->
 	<!-- ===  Ant Tasks  === -->
 	<!-- =================== -->
@@ -60,6 +56,10 @@
 		<attribute name="edition" />
 		<attribute name="target" default="build" />
 		<sequential>
+			<exec executable="svn" output="${temp}/svninfo.xml">
+				<arg line="info --xml" />
+			</exec>
+
 			<fmpp sourceroot="${tmpl}/editions" outputroot="${temp}/@{edition}" dataroot="${basedir}" includes="*.properties">
 				<data expandproperties="true">
     				editions: dataLoader.ForgeLoader("${basedir}/project.xml", "${basedir}/../modules", "${basedir}/../libraries")
@@ -118,32 +118,24 @@
 		<generate-edition edition="jse" />
 	</target>
 	<target name="rebuild">
-		<!--
 		<generate-edition edition="android" target="rebuild" />
 		<generate-edition edition="gae" target="rebuild" />
 		<generate-edition edition="gwt" target="rebuild" />
 		<generate-edition edition="jee" target="rebuild" />
 		<generate-edition edition="jse" target="rebuild" />
--->
 	</target>
 	<target name="generate">
-		<!--
 		<generate-edition edition="android" target="generate" />
 		<generate-edition edition="gae" target="generate" />
 		<generate-edition edition="gwt" target="generate" />
 		<generate-edition edition="jee" target="generate" />
 		<generate-edition edition="jse" target="generate" />
--->
-		<generate-edition edition="jse" target="generate" />
 	</target>
 	<target name="regenerate">
-		<!--
 		<generate-edition edition="android" target="clean generate" />
 		<generate-edition edition="gae" target="clean generate" />
 		<generate-edition edition="gwt" target="clean generate" />
 		<generate-edition edition="jee" target="clean generate" />
 		<generate-edition edition="jse" target="clean generate" />
--->
-		<generate-edition edition="gwt" target="clean generate" />
 	</target>
 </project>
