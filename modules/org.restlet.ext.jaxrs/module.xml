@@ -12,6 +12,7 @@
       <dependency type="library" id="activation" />
       <dependency type="library" id="fileupload" />
       <dependency type="library" id="javamail" />
+      <dependency type="library" id="jaxb-api" />
       <dependency type="library" id="jaxb-ri" />
       <dependency type="library" id="jaxrs" />
       <dependency type="library" id="json" />
