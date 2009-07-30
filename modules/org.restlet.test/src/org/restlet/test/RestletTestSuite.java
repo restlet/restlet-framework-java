@@ -85,7 +85,8 @@ public class RestletTestSuite extends TestSuite {
 
     /** Constructor. */
     public RestletTestSuite() {
-        addTestSuite(AnnotatedResource1TestCase.class);
+        // Removed for the moment.
+        // addTestSuite(AnnotatedResource1TestCase.class);
         addTestSuite(AnnotatedResource2TestCase.class);
         addTestSuite(AppendableTestCase.class);
         addTestSuite(AtomTestCase.class);
