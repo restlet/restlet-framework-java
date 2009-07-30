@@ -137,31 +137,31 @@
 	</target>
 
 	<target name="build" depends="prepare-stage-maven">
+		<generate-edition edition="jse" />
+		<generate-edition edition="jee" />
 		<generate-edition edition="android" />
 		<generate-edition edition="gae" />
 		<generate-edition edition="gwt" />
-		<generate-edition edition="jee" />
-		<generate-edition edition="jse" />
 	</target>
 	<target name="rebuild" depends="prepare-stage-maven">
+		<generate-edition edition="jse" target="rebuild" />
+		<generate-edition edition="jee" target="rebuild" />
 		<generate-edition edition="android" target="rebuild" />
 		<generate-edition edition="gae" target="rebuild" />
 		<generate-edition edition="gwt" target="rebuild" />
-		<generate-edition edition="jee" target="rebuild" />
-		<generate-edition edition="jse" target="rebuild" />
 	</target>
 	<target name="generate">
+		<generate-edition edition="jse" target="generate" />
+		<generate-edition edition="jee" target="generate" />
 		<generate-edition edition="android" target="generate" />
 		<generate-edition edition="gae" target="generate" />
 		<generate-edition edition="gwt" target="generate" />
-		<generate-edition edition="jee" target="generate" />
-		<generate-edition edition="jse" target="generate" />
 	</target>
 	<target name="regenerate">
+		<generate-edition edition="jse" target="clean generate" />
+		<generate-edition edition="jee" target="clean generate" />
 		<generate-edition edition="android" target="clean generate" />
 		<generate-edition edition="gae" target="clean generate" />
 		<generate-edition edition="gwt" target="clean generate" />
-		<generate-edition edition="jee" target="clean generate" />
-		<generate-edition edition="jse" target="clean generate" />
 	</target>
 </project>

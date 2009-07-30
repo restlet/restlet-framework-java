@@ -26,6 +26,7 @@
       </copy>
 </#list>
 <#noparse>
+      <replace dir="${mod}" includes="**/MANIFEST.MF*" token="Bundle-Version: ${version-minor}" value="Bundle-Version: ${version-compact}" />
       <replace dir="${mod}" includes="**/Engine.java" token="@major-number@" value="${major-number}" />
       <replace dir="${mod}" includes="**/Engine.java" token="@minor-number@" value="${minor-number}" />
       <replace dir="${mod}" includes="**/Engine.java" token="@release-type@" value="${release-type}" />
