@@ -42,6 +42,7 @@
 	<property name="libs" location="../../../libraries" />
 	<property name="mods" location="../../../modules" />
 	<property name="temp" location="${basedir}/temp" />
+	<property name="temp-base" location="../temp" />
 	<property name="dist-base" location="dist" />
 	<property name="final-dist-base" location="../../dist" />
 	<property name="dist-path" value="restlet-${version-compact}" />
@@ -826,10 +827,7 @@
 	<target name="prepare-stage-maven" if="do-prepare-stage-maven" description="Prepare the generation of the maven distributions.">
 		<!-- Svn revision number -->
 		<mkdir dir="${temp}" />
-		<exec executable="svn" output="${temp}/svninfo.xml">
-			<arg line="info --xml" />
-		</exec>
-		<xmlproperty file="${temp}/svninfo.xml" collapseattributes="true" />
+		<xmlproperty file="${temp-base}/svninfo.xml" collapseattributes="true" />
 		<property name="svn.revision" value="${info.entry.revision}" />
 
 		<!-- Snapshot? -->

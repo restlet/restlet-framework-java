@@ -30,6 +30,10 @@
 		<fileset dir="tools/fmpp" includes="**/*.jar" />
 	</path>
 
+	<exec executable="svn" output="${temp}/svninfo.xml">
+		<arg line="info --xml" />
+	</exec>
+	
 	<!-- =================== -->
 	<!-- ===  Ant Tasks  === -->
 	<!-- =================== -->
