@@ -103,6 +103,7 @@
 
 			<copy file="build.properties" todir="${temp}/@{edition}" overwrite="true" />
 			<copy file="custom.properties" todir="${temp}/@{edition}" overwrite="true" />
+			<ant antfile="build.xml" target="generate-sources" dir="${temp}/@{edition}/" inheritall="false" />
 			<for param="task" delimiter=" " list="@{target}">
 				<sequential>
 					<ant antfile="build.xml" target="@{task}" dir="${temp}/@{edition}/" inheritall="false" />

@@ -595,7 +595,7 @@
 	</target>
 
 	<!-- GENERATE target -->
-	<target name="generate" depends="generate-sources, generate-classes, generate-backport, generate-templates, generate-javadocs" description="Generate files." />
+	<target name="generate" depends="generate-classes, generate-backport, generate-templates, generate-javadocs" description="Generate files." />
 
 	<target name="generate-sources" description="Generate the sources.">
 		<!-- @generate-sources@ -->
@@ -826,7 +826,6 @@
 
 	<target name="prepare-stage-maven" if="do-prepare-stage-maven" description="Prepare the generation of the maven distributions.">
 		<!-- Svn revision number -->
-		<mkdir dir="${temp}" />
 		<xmlproperty file="${temp-base}/svninfo.xml" collapseattributes="true" />
 		<property name="svn.revision" value="${info.entry.revision}" />
 
