@@ -96,6 +96,7 @@
          <exclude name="src/org/restlet/engine/http/StreamServer*" />
          <exclude name="src/org/restlet/engine/http/StreamClient*" />
          <exclude name="src/org/restlet/engine/internal/**" />
+         <exclude name="src/org/restlet/engine/io/ByteUtils.java" />
          <exclude name="src/org/restlet/engine/local/**" />
          <exclude name="src/org/restlet/engine/log/**" />
          <exclude name="src/org/restlet/engine/resource/**" />
