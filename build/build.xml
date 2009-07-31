@@ -67,11 +67,6 @@
 		<attribute name="edition" />
 		<attribute name="target" default="build" />
 		<sequential>
-			<mkdir dir="${temp}" />
-			<exec executable="svn" output="${temp}/svninfo.xml">
-				<arg line="info --xml" />
-			</exec>
-
 			<fmpp sourceroot="${tmpl}/editions" outputroot="${temp}/@{edition}" dataroot="${basedir}" includes="*.properties">
 				<data expandproperties="true">
     				editions: dataLoader.ForgeLoader("${basedir}/project.xml", "${basedir}/../modules", "${basedir}/../libraries")
@@ -134,6 +129,10 @@
 
 	<target name="prepare-stage-maven" if="do-prepare-stage-maven" description="Prepare the generation of the maven distributions.">
 		<!-- Svn revision number -->
+		<mkdir dir="${temp}" />
+		<exec executable="svn" output="${temp}/svninfo.xml">
+			<arg line="info --xml" />
+		</exec>
 		<xmlproperty file="${temp}/svninfo.xml" collapseattributes="true" />
 		<property name="svn.revision" value="${info.entry.revision}" />
 
