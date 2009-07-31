@@ -911,6 +911,13 @@ public abstract class ServerResource extends UniformResource {
     public Representation handle() {
         Representation result = null;
 
+        // If the resource is not available after initialisation and if this a
+        // retrieval method, then return a "not found" response.
+        if (!existing && getMethod().isSafe()) {
+            setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+            return result;
+        }
+
         try {
             if (isConditional()) {
                 result = doConditionalHandle();
