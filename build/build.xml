@@ -69,7 +69,7 @@
 		<sequential>
 			<fmpp sourceroot="${tmpl}/editions" outputroot="${temp}/@{edition}" dataroot="${basedir}" includes="*.properties">
 				<data expandproperties="true">
-    				editions: dataLoader.ForgeLoader("${basedir}/project.xml", "${basedir}/../modules", "${basedir}/../libraries")
+    				editions: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
     				editionKey: @{edition}
     				edition: get(editions, @{edition})
 					currentYear: ${current-year}
@@ -78,7 +78,7 @@
 
 			<fmpp sourceroot="${tmpl}/text" outputroot="${temp}/@{edition}/temp" dataroot="${basedir}" includes="dependencies.txt">
 				<data expandproperties="true">
-    				editions: dataLoader.ForgeLoader("${basedir}/project.xml", "${basedir}/../modules", "${basedir}/../libraries")
+    				editions: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
     				editionKey: @{edition}
     				edition: get(editions, @{edition})
 					currentYear: ${current-year}
@@ -106,7 +106,7 @@
 			<!-- Process it as a Freemarker template. -->
 			<fmpp sourcefile="${temp}/@{edition}/build.tmpl" outputfile="${temp}/@{edition}/build.xml" dataroot="${basedir}" expert="true">
 				<data expandproperties="true">
-    				editions: dataLoader.ForgeLoader("${basedir}/project.xml", "${basedir}/../modules", "${basedir}/../libraries")
+    				editions: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
     				editionKey: @{edition}
     				edition: get(editions, @{edition})
 					currentYear: ${current-year}
