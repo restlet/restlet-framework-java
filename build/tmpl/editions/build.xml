@@ -34,6 +34,9 @@
 	<property name="parent-maven-groupId" value="org.restlet.${edition}" />
 	<property name="parent-maven-artifactId" value="org.restlet.parent" />
 	<property name="parent-maven-version" value="${version-maven}" />
+	<property name="dist-path" value="restlet-${edition}-${version-compact}" />
+	<property name="final-dist-path" value="restlet-${version-compact}" />
+	<property name="jdk1.4-home" value="jdk1.4-home" />
 
 	<!-- Location properties -->
 	<property name="tools" location="../../tools" />
@@ -45,9 +48,7 @@
 	<property name="temp-base" location="../temp" />
 	<property name="dist-base" location="dist" />
 	<property name="final-dist-base" location="../../dist" />
-	<property name="dist-path" value="restlet-${version-compact}" />
 	<property name="images" location="../../images" />
-	<property name="jdk1.4-home" value="jdk1.4-home" />
 
 	<property name="dist-classic" location="${dist-base}/classic/${dist-path}" />
 	<property name="dist-eclipse" location="${dist-base}/eclipse/${dist-path}" />
@@ -61,9 +62,9 @@
 	<property name="uml-reports" location="${temp}/uml-reports" />
 	<property name="uml-reports-api" location="${uml-reports}/api" />
 	<property name="icons" location="${images}/ico" />
-	<property name="final-dist-classic" location="${final-dist-base}/classic/${dist-path}/${edition}" />
-	<property name="final-dist-eclipse" location="${final-dist-base}/eclipse/${dist-path}/${edition}" />
-	<property name="final-dist-maven2" location="${final-dist-base}/maven2/${dist-path}" />
+	<property name="final-dist-classic" location="${final-dist-base}/classic/${final-dist-path}/${edition}" />
+	<property name="final-dist-eclipse" location="${final-dist-base}/eclipse/${final-dist-path}/${edition}" />
+	<property name="final-dist-maven2" location="${final-dist-base}/maven2/${final-dist-path}" />
 
 	<!-- Boot classpath propertiesLoad system specific paths -->
 	<pathconvert property="defaultbootclasspath">
@@ -786,7 +787,7 @@
 		<!-- Copy text notes -->
 		<copy file="${docs}/changes.txt" tofile="${dist-classic}/changes.txt" />
 		<copy file="${tmpl}/text/copyright.txt" tofile="${dist-classic}/copyright.txt" />
-		<copy file="${temp}/text/dependencies.txt" tofile="${dist-classic}/lib/readme.txt">
+		<copy file="${temp}/dependencies.txt" tofile="${dist-classic}/lib/readme.txt">
 			<filterset begintoken="@" endtoken="@" filtersfile="filterset.properties" />
 		</copy>
 		<copy file="${tmpl}/text/docs.txt" tofile="${dist-classic}/docs/readme.txt" />
