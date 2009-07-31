@@ -95,7 +95,6 @@ public abstract class Restlet implements Uniform {
         this.context = context;
         // [ifdef gwt] instruction uncomment
         // this.context = (context != null) ? context : new Context();
-        // [enddef]
         this.started = false;
         this.name = null;
         this.description = null;
