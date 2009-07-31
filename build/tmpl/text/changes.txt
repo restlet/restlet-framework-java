@@ -131,6 +131,9 @@ Changes log
         - Added doHandle(Restlet next, Request, Response) method on the
           Router class that can be overriden to do some processing that
           is common to any route selected. Suggested by John Logdson.
+        - Fixed behaviour of ServerResource. When non existing a 404 
+          status should be returned for safe method. 
+          Reported by Robert Hyerle.
       - Breaking changes
         - The default language, defined in MetadataService is now based
           on the JVM's default locale, instead of English/US.
