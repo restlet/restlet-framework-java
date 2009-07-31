@@ -328,10 +328,9 @@ public abstract class Restlet implements Uniform {
      */
     public void setContext(Context context) {
         this.context = context;
-        // [ifndef gwt]
+        // [ifndef gwt] instruction
         org.restlet.engine.component.ChildContext.fireContextChanged(this,
                 context);
-        // [enddef]
     }
 
     /**
