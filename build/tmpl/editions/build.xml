@@ -786,7 +786,9 @@
 		<!-- Copy text notes -->
 		<copy file="${docs}/changes.txt" tofile="${dist-classic}/changes.txt" />
 		<copy file="${tmpl}/text/copyright.txt" tofile="${dist-classic}/copyright.txt" />
-		<copy file="${tmpl}/text/dependencies.txt" tofile="${dist-classic}/lib/readme.txt" />
+		<copy file="${temp}/text/dependencies.txt" tofile="${dist-classic}/lib/readme.txt">
+			<filterset begintoken="@" endtoken="@" filtersfile="filterset.properties" />
+		</copy>
 		<copy file="${tmpl}/text/docs.txt" tofile="${dist-classic}/docs/readme.txt" />
 		<copy file="${tmpl}/text/src.txt" tofile="${dist-classic}/src/readme.txt" />
 		<copy file="${tmpl}/text/license.txt" tofile="${dist-classic}/license.txt" />

@@ -81,6 +81,15 @@
     			</data>
 			</fmpp>
 
+			<fmpp sourceroot="${tmpl}/text" outputroot="${temp}/@{edition}/temp" dataroot="${basedir}" includes="dependencies.txt">
+				<data expandproperties="true">
+    				editions: dataLoader.ForgeLoader("${basedir}/project.xml", "${basedir}/../modules", "${basedir}/../libraries")
+    				editionKey: @{edition}
+    				edition: get(editions, @{edition})
+					currentYear: ${current-year}
+    			</data>
+			</fmpp>
+
 			<!-- Process the build.xml file. -->
 			<loadfile property="paths" srcFile="${tmpl}/editions/paths.tmpl" />
 			<loadfile property="generate-sources" srcFile="${tmpl}/editions/generate-sources.tmpl" />
