@@ -14,19 +14,21 @@ In addition, you can find many additional documentation on the Restlet Web site
  - Introduction  : http://www.restlet.org/about/introduction
  - General FAQ   : http://www.restlet.org/about/faq
 
- - Screencast    : http://www.restlet.org/documentation/1.2/screencast/
- - First steps   : http://www.restlet.org/documentation/1.2/firstSteps
- - First resource: http://www.restlet.org/documentation/1.2/firstResource
- - Tutorial      : http://www.restlet.org/documentation/1.2/tutorial
- - User FAQ      : http://www.restlet.org/documentation/1.2/faq
+ - Screencast    : http://www.restlet.org/documentation/2.0/screencast/
+ - First steps   : http://www.restlet.org/documentation/2.0/firstSteps
+ - First resource: http://www.restlet.org/documentation/2.0/firstResource
+ - Tutorial      : http://www.restlet.org/documentation/2.0/tutorial
+ - User FAQ      : http://www.restlet.org/documentation/2.0/faq
 
- - User Guide    : http://wiki.restlet.org/docs_1.2/
+ - User Guide    : http://wiki.restlet.org/docs_2.0/
  
 Also, if you need help you can ask questions into our discussion list. See 
 subscription details at http://www.restlet.org/community/lists. You can also 
 report issues (bugs and enhancement requests) using our bugzilla database at 
 http://www.restlet.org/community/issues.
 
-Finally, if you need professional 
-and timely assistance, you can contact Noelios Technologies at 
-http://www.noelios.com/services/.
+Finally, if you need professional and timely assistance, you can  
+Noelios Technologies at http://www.noelios.com/services/.
+
+Best regards,
+The Restlet Team
