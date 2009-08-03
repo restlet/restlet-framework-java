@@ -74,7 +74,7 @@ import org.restlet.data.Request;
  * <tr>
  * <td>keystorePassword</td>
  * <td>String</td>
- * <td></td>
+ * <td>System property "javax.net.ssl.keyStorePassword"</td>
  * <td>SSL keystore password.</td>
  * </tr>
  * <tr>
@@ -86,7 +86,7 @@ import org.restlet.data.Request;
  * <tr>
  * <td>keyPassword</td>
  * <td>String</td>
- * <td></td>
+ * <td>System property "javax.net.ssl.keyStorePassword"</td>
  * <td>SSL key password.</td>
  * </tr>
  * <tr>
@@ -116,7 +116,7 @@ import org.restlet.data.Request;
  * <tr>
  * <td>truststoreType</td>
  * <td>String</td>
- * <td>null</td>
+ * <td>System property "javax.net.ssl.trustStoreType"</td>
  * <td>Trust store type</td>
  * </tr>
  * <tr>
@@ -128,7 +128,7 @@ import org.restlet.data.Request;
  * <tr>
  * <td>truststorePassword</td>
  * <td>String</td>
- * <td>null</td>
+ * <td>System property "javax.net.ssl.trustStorePassword"</td>
  * <td>Trust store password</td>
  * </tr>
  * </table>
@@ -289,7 +289,8 @@ public class StreamClientHelper extends HttpClientHelper {
      * @return The SSL key password.
      */
     public String getKeyPassword() {
-        return getHelpedParameters().getFirstValue("keyPassword", "");
+        return getHelpedParameters().getFirstValue("keyPassword",
+                System.getProperty("javax.net.ssl.keyStorePassword"));
     }
 
     /**
@@ -298,7 +299,8 @@ public class StreamClientHelper extends HttpClientHelper {
      * @return The SSL keystore password.
      */
     public String getKeystorePassword() {
-        return getHelpedParameters().getFirstValue("keystorePassword", "");
+        return getHelpedParameters().getFirstValue("keystorePassword",
+                System.getProperty("javax.net.ssl.keyStorePassword"));
     }
 
     /**
@@ -365,7 +367,8 @@ public class StreamClientHelper extends HttpClientHelper {
      * @return The SSL truststore password.
      */
     public String getTruststorePassword() {
-        return getHelpedParameters().getFirstValue("truststorePassword", "");
+        return getHelpedParameters().getFirstValue("truststorePassword",
+                System.getProperty("javax.net.ssl.keyStorePassword"));
     }
 
     /**
@@ -383,7 +386,8 @@ public class StreamClientHelper extends HttpClientHelper {
      * @return The SSL truststore type.
      */
     public String getTruststoreType() {
-        return getHelpedParameters().getFirstValue("truststoreType", null);
+        return getHelpedParameters().getFirstValue("truststoreType",
+                System.getProperty("javax.net.ssl.trustStoreType"));
     }
 
     @Override

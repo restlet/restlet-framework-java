@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.xml.internal;
+package org.restlet.ext.atom;
 
 import java.io.IOException;
 import java.util.List;
@@ -36,39 +36,34 @@ import java.util.List;
 import org.restlet.data.MediaType;
 import org.restlet.engine.converter.ConverterHelper;
 import org.restlet.engine.resource.VariantInfo;
-import org.restlet.ext.xml.DomRepresentation;
-import org.restlet.ext.xml.SaxRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.UniformResource;
-import org.w3c.dom.Document;
 
 /**
- * Converter between the XML APIs and XML Representation classes.
+ * Converter between the Atom API and Representation classes.
  * 
  * @author Jerome Louvel
  */
-public class XmlConverter extends ConverterHelper {
+public class AtomConverter extends ConverterHelper {
 
-    private static final VariantInfo VARIANT_APPLICATION_ALL_XML = new VariantInfo(
-            MediaType.APPLICATION_ALL_XML);
+    private static final VariantInfo VARIANT_ATOM = new VariantInfo(
+            MediaType.APPLICATION_ATOM);
 
-    private static final VariantInfo VARIANT_APPLICATION_XML = new VariantInfo(
-            MediaType.APPLICATION_XML);
+    private static final VariantInfo VARIANT_ATOMPUB_SERVICE = new VariantInfo(
+            MediaType.APPLICATION_ATOMPUB_SERVICE);
 
-    private static final VariantInfo VARIANT_TEXT_XML = new VariantInfo(
-            MediaType.TEXT_XML);
+    // private static final Variant VARIANT_ATOMPUB_CATEGORY = new Variant(
+    // MediaType.APPLICATION_ATOMPUB_CATEGORY);
 
     @Override
     public List<Class<?>> getObjectClasses(Variant source) {
         List<Class<?>> result = null;
 
-        if (VARIANT_APPLICATION_ALL_XML.isCompatible(source)
-                || VARIANT_APPLICATION_XML.isCompatible(source)
-                || VARIANT_TEXT_XML.isCompatible(source)) {
-            result = addObjectClass(result, Document.class);
-            result = addObjectClass(result, DomRepresentation.class);
-            result = addObjectClass(result, SaxRepresentation.class);
+        if (VARIANT_ATOM.isCompatible(source)) {
+            result = addObjectClass(result, Feed.class);
+        } else if (VARIANT_ATOMPUB_SERVICE.isCompatible(source)) {
+            result = addObjectClass(result, Service.class);
         }
 
         return result;
@@ -78,12 +73,10 @@ public class XmlConverter extends ConverterHelper {
     public List<VariantInfo> getVariants(Class<?> source) {
         List<VariantInfo> result = null;
 
-        if (Document.class.isAssignableFrom(source)
-                || DomRepresentation.class.isAssignableFrom(source)
-                || SaxRepresentation.class.isAssignableFrom(source)) {
-            result = addVariant(result, VARIANT_APPLICATION_ALL_XML);
-            result = addVariant(result, VARIANT_APPLICATION_XML);
-            result = addVariant(result, VARIANT_TEXT_XML);
+        if (Feed.class.isAssignableFrom(source)) {
+            result = addVariant(result, VARIANT_ATOM);
+        } else if (Service.class.isAssignableFrom(source)) {
+            result = addVariant(result, VARIANT_ATOMPUB_SERVICE);
         }
 
         return result;
@@ -93,14 +86,15 @@ public class XmlConverter extends ConverterHelper {
     public float score(Object source, Variant target, UniformResource resource) {
         float result = -1.0F;
 
-        if (source instanceof Document) {
-            if (MediaType.APPLICATION_ALL_XML.isCompatible(target
-                    .getMediaType())) {
+        if (source instanceof Feed) {
+            if (MediaType.APPLICATION_ATOM.isCompatible(target.getMediaType())) {
                 result = 1.0F;
-            } else if (MediaType.APPLICATION_XML.isCompatible(target
+            } else {
+                result = 0.5F;
+            }
+        } else if (source instanceof Service) {
+            if (MediaType.APPLICATION_ATOMPUB_SERVICE.isCompatible(target
                     .getMediaType())) {
-                result = 1.0F;
-            } else if (MediaType.TEXT_XML.isCompatible(target.getMediaType())) {
                 result = 1.0F;
             } else {
                 result = 0.5F;
@@ -115,16 +109,15 @@ public class XmlConverter extends ConverterHelper {
             UniformResource resource) {
         float result = -1.0F;
 
-        if (Document.class.isAssignableFrom(target)
-                || DomRepresentation.class.isAssignableFrom(target)
-                || SaxRepresentation.class.isAssignableFrom(target)) {
-            if (MediaType.APPLICATION_ALL_XML.isCompatible(source
-                    .getMediaType())) {
+        if (Feed.class.isAssignableFrom(target)) {
+            if (MediaType.APPLICATION_ATOM.isCompatible(source.getMediaType())) {
                 result = 1.0F;
-            } else if (MediaType.APPLICATION_XML.isCompatible(source
+            } else {
+                result = 0.5F;
+            }
+        } else if (Service.class.isAssignableFrom(target)) {
+            if (MediaType.APPLICATION_ATOMPUB_SERVICE.isCompatible(source
                     .getMediaType())) {
-                result = 1.0F;
-            } else if (MediaType.TEXT_XML.isCompatible(source.getMediaType())) {
                 result = 1.0F;
             } else {
                 result = 0.5F;
@@ -140,12 +133,10 @@ public class XmlConverter extends ConverterHelper {
             UniformResource resource) throws IOException {
         Object result = null;
 
-        if (Document.class.isAssignableFrom(target)) {
-            result = new DomRepresentation(source).getDocument();
-        } else if (DomRepresentation.class.isAssignableFrom(target)) {
-            result = new DomRepresentation(source);
-        } else if (SaxRepresentation.class.isAssignableFrom(target)) {
-            result = new SaxRepresentation(source);
+        if (Feed.class.isAssignableFrom(target)) {
+            result = new Feed(source);
+        } else if (Service.class.isAssignableFrom(target)) {
+            result = new Service(source);
         }
 
         return (T) result;
@@ -153,16 +144,16 @@ public class XmlConverter extends ConverterHelper {
 
     @Override
     public Representation toRepresentation(Object source, Variant target,
-            UniformResource resource) throws IOException {
+            UniformResource resource) {
         Representation result = null;
 
-        if (source instanceof Document) {
-            result = new DomRepresentation(target.getMediaType(),
-                    (Document) source);
-        } else if (source instanceof Representation) {
-            result = (Representation) source;
+        if (source instanceof Feed) {
+            result = (Feed) source;
+        } else if (source instanceof Service) {
+            result = (Service) source;
         }
 
         return result;
     }
+
 }

@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.xstream.internal;
+package org.restlet.ext.xml;
 
 import java.io.IOException;
 import java.util.List;
@@ -36,17 +36,17 @@ import java.util.List;
 import org.restlet.data.MediaType;
 import org.restlet.engine.converter.ConverterHelper;
 import org.restlet.engine.resource.VariantInfo;
-import org.restlet.ext.xstream.XstreamRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.UniformResource;
+import org.w3c.dom.Document;
 
 /**
- * Converter between the XML/JSON and Representation classes based on XStream.
+ * Converter between the XML APIs and XML Representation classes.
  * 
  * @author Jerome Louvel
  */
-public class XstreamConverter extends ConverterHelper {
+public class XmlConverter extends ConverterHelper {
 
     private static final VariantInfo VARIANT_APPLICATION_ALL_XML = new VariantInfo(
             MediaType.APPLICATION_ALL_XML);
@@ -54,48 +54,19 @@ public class XstreamConverter extends ConverterHelper {
     private static final VariantInfo VARIANT_APPLICATION_XML = new VariantInfo(
             MediaType.APPLICATION_XML);
 
-    private static final VariantInfo VARIANT_JSON = new VariantInfo(
-            MediaType.APPLICATION_JSON);
-
     private static final VariantInfo VARIANT_TEXT_XML = new VariantInfo(
             MediaType.TEXT_XML);
-
-    /**
-     * Creates the marshaling {@link XstreamRepresentation}.
-     * 
-     * @param <T>
-     * @param mediaType
-     *            The target media type.
-     * @param source
-     *            The source object to marshal.
-     * @return The marshaling {@link XstreamRepresentation}.
-     */
-    protected <T> XstreamRepresentation<T> create(MediaType mediaType, T source) {
-        return new XstreamRepresentation<T>(mediaType, source);
-    }
-
-    /**
-     * Creates the unmarshaling {@link XstreamRepresentation}.
-     * 
-     * @param <T>
-     * @param source
-     *            The source representation to unmarshal.
-     * @return The unmarshaling {@link XstreamRepresentation}.
-     */
-    protected <T> XstreamRepresentation<T> create(Representation source) {
-        return new XstreamRepresentation<T>(source);
-    }
 
     @Override
     public List<Class<?>> getObjectClasses(Variant source) {
         List<Class<?>> result = null;
 
-        if (VARIANT_JSON.isCompatible(source)
-                || VARIANT_APPLICATION_ALL_XML.isCompatible(source)
+        if (VARIANT_APPLICATION_ALL_XML.isCompatible(source)
                 || VARIANT_APPLICATION_XML.isCompatible(source)
                 || VARIANT_TEXT_XML.isCompatible(source)) {
-            result = addObjectClass(result, Object.class);
-            result = addObjectClass(result, XstreamRepresentation.class);
+            result = addObjectClass(result, Document.class);
+            result = addObjectClass(result, DomRepresentation.class);
+            result = addObjectClass(result, SaxRepresentation.class);
         }
 
         return result;
@@ -105,8 +76,9 @@ public class XstreamConverter extends ConverterHelper {
     public List<VariantInfo> getVariants(Class<?> source) {
         List<VariantInfo> result = null;
 
-        if (source != null) {
-            result = addVariant(result, VARIANT_JSON);
+        if (Document.class.isAssignableFrom(source)
+                || DomRepresentation.class.isAssignableFrom(source)
+                || SaxRepresentation.class.isAssignableFrom(source)) {
             result = addVariant(result, VARIANT_APPLICATION_ALL_XML);
             result = addVariant(result, VARIANT_APPLICATION_XML);
             result = addVariant(result, VARIANT_TEXT_XML);
@@ -119,10 +91,18 @@ public class XstreamConverter extends ConverterHelper {
     public float score(Object source, Variant target, UniformResource resource) {
         float result = -1.0F;
 
-        if (source instanceof XstreamRepresentation<?>) {
-            result = 1.0F;
-        } else {
-            result = 0.8F;
+        if (source instanceof Document) {
+            if (MediaType.APPLICATION_ALL_XML.isCompatible(target
+                    .getMediaType())) {
+                result = 1.0F;
+            } else if (MediaType.APPLICATION_XML.isCompatible(target
+                    .getMediaType())) {
+                result = 1.0F;
+            } else if (MediaType.TEXT_XML.isCompatible(target.getMediaType())) {
+                result = 1.0F;
+            } else {
+                result = 0.5F;
+            }
         }
 
         return result;
@@ -133,13 +113,19 @@ public class XstreamConverter extends ConverterHelper {
             UniformResource resource) {
         float result = -1.0F;
 
-        if (target != null) {
-            if (VARIANT_JSON.isCompatible(source)) {
-                result = 0.8F;
-            } else if (VARIANT_APPLICATION_ALL_XML.isCompatible(source)
-                    || VARIANT_APPLICATION_XML.isCompatible(source)
-                    || VARIANT_TEXT_XML.isCompatible(source)) {
-                result = 0.8F;
+        if (Document.class.isAssignableFrom(target)
+                || DomRepresentation.class.isAssignableFrom(target)
+                || SaxRepresentation.class.isAssignableFrom(target)) {
+            if (MediaType.APPLICATION_ALL_XML.isCompatible(source
+                    .getMediaType())) {
+                result = 1.0F;
+            } else if (MediaType.APPLICATION_XML.isCompatible(source
+                    .getMediaType())) {
+                result = 1.0F;
+            } else if (MediaType.TEXT_XML.isCompatible(source.getMediaType())) {
+                result = 1.0F;
+            } else {
+                result = 0.5F;
             }
         }
 
@@ -152,41 +138,27 @@ public class XstreamConverter extends ConverterHelper {
             UniformResource resource) throws IOException {
         Object result = null;
 
-        if (source instanceof XstreamRepresentation) {
-            result = ((XstreamRepresentation) source).getObject();
-        } else if (VARIANT_JSON.isCompatible(source)) {
-            result = create(source).getObject();
-        } else if (VARIANT_APPLICATION_ALL_XML.isCompatible(source)
-                || VARIANT_APPLICATION_XML.isCompatible(source)
-                || VARIANT_TEXT_XML.isCompatible(source)) {
-            result = create(source).getObject();
+        if (Document.class.isAssignableFrom(target)) {
+            result = new DomRepresentation(source).getDocument();
+        } else if (DomRepresentation.class.isAssignableFrom(target)) {
+            result = new DomRepresentation(source);
+        } else if (SaxRepresentation.class.isAssignableFrom(target)) {
+            result = new SaxRepresentation(source);
         }
 
         return (T) result;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Representation toRepresentation(Object source, Variant target,
-            UniformResource resource) {
+            UniformResource resource) throws IOException {
         Representation result = null;
 
-        if (source instanceof XstreamRepresentation) {
-            result = (XstreamRepresentation) source;
-        } else {
-            if (target.getMediaType() == null) {
-                target.setMediaType(MediaType.TEXT_XML);
-            }
-
-            if (VARIANT_JSON.isCompatible(target)) {
-                XstreamRepresentation<Object> xstreamRepresentation = create(
-                        target.getMediaType(), source);
-                result = xstreamRepresentation;
-            } else if (VARIANT_APPLICATION_ALL_XML.isCompatible(target)
-                    || VARIANT_APPLICATION_XML.isCompatible(target)
-                    || VARIANT_TEXT_XML.isCompatible(target)) {
-                result = create(target.getMediaType(), source);
-            }
+        if (source instanceof Document) {
+            result = new DomRepresentation(target.getMediaType(),
+                    (Document) source);
+        } else if (source instanceof Representation) {
+            result = (Representation) source;
         }
 
         return result;

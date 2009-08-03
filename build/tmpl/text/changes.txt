@@ -134,6 +134,8 @@ Changes log
         - Fixed behaviour of ServerResource. When non existing a 404 
           status should be returned for safe method. 
           Reported by Robert Hyerle.
+        - The internal HTTP server now looks up system properties for 
+          SSL configuration as a fall-back.
       - Breaking changes
         - The default language, defined in MetadataService is now based
           on the JVM's default locale, instead of English/US.
