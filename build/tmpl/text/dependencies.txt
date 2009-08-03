@@ -1,6 +1,6 @@
-=========================================<#list 1..(edition.fullLabel?length) as i>=</#list>
-Edition ${edition.fullLabel} - dependencies between JAR files
-=========================================<#list 1..(edition.fullLabel?length) as i>=</#list>
+=========================================<#list 1..(edition.mediumLabel?length) as i>=</#list>
+Edition for ${edition.mediumLabel} - dependencies between JAR files
+=========================================<#list 1..(edition.mediumLabel?length) as i>=</#list>
 
 
 Below is a list of the dependencies between Restlet libraries. You need to ensure 
@@ -16,8 +16,8 @@ to the Restlet User Guide: http://wiki.restlet.org/docs_@version-minor@/
 ${module.package} (${module.label})
 <#list 1..(module.package?length) as i>-</#list>
    <#if ((module.neededLibraries??) && (module.neededLibraries?size)>0)>
-      <#list module.neededLibraries as library>
-         <#list library.packages as package>  
+      <#list module.neededLibraries?sort_by("id") as library>
+         <#list library.packages?sort_by("name") as package>  
  - ${package.name}_${library.minorVersion}
          </#list>
       </#list>

@@ -102,9 +102,8 @@
 		dist-base: ${dist-base}
 		edition: ${edition}
 		edition-full-label: ${edition-full-label}
-		restlet-edition: ${edition}
-		restlet-edition-label: Restlet for the ${edition-medium-label} edition
-		restlet-engine: Restlet Engine for the ${edition-medium-label} edition
+		edition-medium-label: ${edition-medium-label}
+		edition-short-label: ${edition-short-label}	
 		parent-group-id: ${parent-maven-groupId}
 		parent-artifact-id: ${parent-maven-artifactId}
 		parent-version: ${parent-maven-version}
