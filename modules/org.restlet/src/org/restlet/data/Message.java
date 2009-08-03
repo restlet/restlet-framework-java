@@ -237,8 +237,11 @@ public abstract class Message {
      * @return True if a content is available and can be sent.
      */
     public boolean isEntityAvailable() {
-        return (getEntity() != null) && (getEntity().getSize() != 0)
+        // The declaration of the "result" variable is a workaround for the GWT
+        // platform.
+        boolean result = (getEntity() != null) && (getEntity().getSize() != 0)
                 && getEntity().isAvailable();
+        return result;
     }
 
     /**

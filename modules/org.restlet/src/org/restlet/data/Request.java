@@ -423,8 +423,12 @@ public class Request extends Message {
      */
     @Override
     public boolean isEntityAvailable() {
-        if (Method.GET.equals(getMethod()) || Method.HEAD.equals(getMethod())
-                || Method.DELETE.equals(getMethod())) {
+        // The declaration of the "result" variable is a workaround for the GWT
+        // platform.
+        boolean result = (Method.GET.equals(getMethod())
+                || Method.HEAD.equals(getMethod()) || Method.DELETE
+                .equals(getMethod()));
+        if (result) {
             return false;
         }
 
