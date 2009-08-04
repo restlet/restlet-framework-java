@@ -1,4 +1,4 @@
-<module id="httpclient" includes="jse" type="connector" package="org.restlet.ext.httpclient">
+<module id="httpclient" includes="jee,jse" type="connector" package="org.restlet.ext.httpclient">
    <label>Restlet Extension - Apache HTTP Client</label>
    <description>
       Integration with Apache Commons HTTP Client.
