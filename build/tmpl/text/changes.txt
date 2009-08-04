@@ -181,9 +181,9 @@ Changes log
           authenticated requests.
         - Deprecated Request#setChallengeRequest(). 
           Use getChallengeRequests() instead.
-        - Added Metadate#getParent() method.
-        - Added Metadate#isCompatible() method.
-        - Added Metadate#includes() method.
+        - Added Metadata#getParent() method.
+        - Added Metadata#isCompatible() method.
+        - Added Metadata#includes() method.
         - Added better Variant#toString() implementation.
         - Added MetadataService#defaultCharacterSet property.
         - Added Conneg class in the engine to support content 
