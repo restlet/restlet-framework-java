@@ -16,6 +16,8 @@ Changes log
         - Fixed potential NPE in ContentType class.
           Reported by Eric Runquist. 
         - Fixed bug with range service and redirections.
+        - The "Location" header must contain an absolute URI.
+          Reported by Simon Reinhardt.
     - Misc
         - Upgraded Grizzly to version 1.9.16.
         - Removed console traces when Restlet-GWT starts and stops the
