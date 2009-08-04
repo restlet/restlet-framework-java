@@ -347,7 +347,7 @@
 			<property name="jar-extras" value="${classes}/${mod-@{name}-id}" />
 
 			<delete failonerror="false" file="${dist-classic}/lib/${mod-@{name}-id}.jar" />
-			<jar destfile="${dist-classic}/lib/${mod-@{name}-id}.jar" filesetmanifest="merge" >
+			<jar destfile="${dist-classic}/lib/${mod-@{name}-id}.jar" filesetmanifest="merge" duplicate="preserve" >
 				<fileset dir="${classes}/${mod-@{name}-id}" />
 				<fileset dir="${temp}/jar/" />
 				<fileset dir="${jar-extras}" />
