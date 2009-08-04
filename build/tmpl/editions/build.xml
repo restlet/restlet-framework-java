@@ -54,7 +54,7 @@
 	<property name="dist-eclipse" location="${dist-base}/eclipse/${dist-path}" />
 	<property name="dist-maven2" location="${dist-base}/maven2/${dist-path}" />
 	<property name="classes" location="${temp}/classes" />
-	<property name="mod" location="${temp}/modules" />
+	<property name="mod" location="modules" />
 	<property name="docs" location="${temp}/docs" />
 	<property name="docs-api" location="${docs}/api" />
 	<property name="docs-engine" location="${docs}/engine" />
