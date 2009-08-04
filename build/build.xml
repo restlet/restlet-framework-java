@@ -168,7 +168,6 @@
 			<fileset dir="${temp}" />
 		</delete>
 	</target>
-
 	<target name="build" depends="prepare-stage-maven" description="Build editions with current source code.">
 		<exec-edition edition="jse" />
 		<exec-edition edition="jee" />
