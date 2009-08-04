@@ -70,6 +70,8 @@ Changes log
           status. Suggested by Sylvain Pajaud.
         - Fixed bug with annotated methods returning a representation.
           Metadata were always overridden. Reported by Joe Nellis.
+        - The "Location" header must contain an absolute URI.
+          Reported by Simon Reinhardt.
      - Enhancements
         - Upgraded Jetty library to version 6.1.18.
         - SpringServerServlet nows gets its component fully configured,

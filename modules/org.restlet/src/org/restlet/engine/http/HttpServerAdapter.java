@@ -216,8 +216,9 @@ public class HttpServerAdapter extends HttpAdapter {
 
         // Set the location URI (for redirections or creations)
         if (response.getLocationRef() != null) {
+            // The location header must contain an absolute URI.
             responseHeaders.add(HttpConstants.HEADER_LOCATION, response
-                    .getLocationRef().toString());
+                    .getLocationRef().getTargetRef().toString());
         }
 
         // Set the security data
