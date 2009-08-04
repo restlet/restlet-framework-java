@@ -27,7 +27,8 @@
 	</tstamp>
 
 	<!-- Location properties -->
-	<property name="temp" value="temp" />
+	<property name="dist" location="dist" />
+	<property name="temp" location="temp" />
 	<property name="tmpl" value="tmpl" />
 
 
@@ -65,7 +66,6 @@
          = = = = = = = = = = = = = = = = = -->
 	<macrodef name="generate-edition">
 		<attribute name="edition" />
-		<attribute name="target" default="build" />
 		<sequential>
 			<fmpp sourceroot="${tmpl}/editions" outputroot="${temp}/@{edition}" dataroot="${basedir}" includes="*.properties">
 				<data expandproperties="true">
@@ -119,6 +119,13 @@
 			<copy file="build.properties" todir="${temp}/@{edition}" overwrite="true" />
 			<copy file="custom.properties" todir="${temp}/@{edition}" overwrite="true" />
 			<ant antfile="build.xml" target="generate-sources" dir="${temp}/@{edition}/" inheritall="false" />
+		</sequential>
+	</macrodef>
+
+	<macrodef name="exec-edition">
+		<attribute name="edition" />
+		<attribute name="target" default="build" />
+		<sequential>
 			<for param="task" delimiter=" " list="@{target}">
 				<sequential>
 					<ant antfile="build.xml" target="@{task}" dir="${temp}/@{edition}/" inheritall="false" />
@@ -144,32 +151,56 @@
 		<echo message="svn-revision:${svn.revision}${line.separator}" file="${temp}/snapshot.properties" append="true" />
 	</target>
 
-	<target name="build" depends="prepare-stage-maven">
+
+	<!-- CLEAN target -->
+	<target name="clean" depends="clean-temp, clean-dist" description="Clean the staging area." />
+
+	<!-- CLEAN-DIST target -->
+	<target name="clean-dist" description="Clean distributions files.">
+		<delete includeEmptyDirs="true" verbose="false" quiet="false" failonerror="false">
+			<fileset dir="${dist}" />
+		</delete>
+	</target>
+
+	<!-- CLEAN-TEMP target -->
+	<target name="clean-temp" description="Clean temporary build files.">
+		<delete includeEmptyDirs="true" verbose="false" quiet="false" failonerror="false">
+			<fileset dir="${temp}" />
+		</delete>
+	</target>
+
+	<target name="build" depends="prepare-stage-maven" description="Build editions with current source code.">
+		<exec-edition edition="jse" />
+		<exec-edition edition="jee" />
+		<exec-edition edition="android" />
+		<exec-edition edition="gae" />
+		<exec-edition edition="gwt" />
+	</target>
+	<target name="rebuild" depends="clean-temp, prepare-stage-maven" description="Regenerate the source code and build the editions.">
 		<generate-edition edition="jse" />
 		<generate-edition edition="jee" />
 		<generate-edition edition="android" />
 		<generate-edition edition="gae" />
 		<generate-edition edition="gwt" />
+
+		<exec-edition edition="jse" target="rebuild" />
+		<exec-edition edition="jee" target="rebuild" />
+		<exec-edition edition="android" target="rebuild" />
+		<exec-edition edition="gae" target="rebuild" />
+		<exec-edition edition="gwt" target="rebuild" />
 	</target>
-	<target name="rebuild" depends="prepare-stage-maven">
-		<generate-edition edition="jse" target="rebuild" />
-		<generate-edition edition="jee" target="rebuild" />
-		<generate-edition edition="android" target="rebuild" />
-		<generate-edition edition="gae" target="rebuild" />
-		<generate-edition edition="gwt" target="rebuild" />
+	<target name="generate" description="Regenerate the source code.">
+		<exec-edition edition="jse" target="generate" />
+		<exec-edition edition="jee" target="generate" />
+		<exec-edition edition="android" target="generate" />
+		<exec-edition edition="gae" target="generate" />
+		<exec-edition edition="gwt" target="generate" />
 	</target>
-	<target name="generate">
-		<generate-edition edition="jse" target="generate" />
-		<generate-edition edition="jee" target="generate" />
-		<generate-edition edition="android" target="generate" />
-		<generate-edition edition="gae" target="generate" />
-		<generate-edition edition="gwt" target="generate" />
-	</target>
-	<target name="regenerate">
-		<generate-edition edition="jse" target="clean generate" />
-		<generate-edition edition="jee" target="clean generate" />
-		<generate-edition edition="android" target="clean generate" />
-		<generate-edition edition="gae" target="clean generate" />
-		<generate-edition edition="gwt" target="clean generate" />
+	<target name="regenerate" depends="clean-temp" description="Clean and regenerate the source code.">
+		<exec-edition edition="jse" target="generate" />
+		<exec-edition edition="jee" target="generate" />
+		<exec-edition edition="android" target="generate" />
+		<exec-edition edition="gae" target="generate" />
+		<exec-edition edition="gwt" target="generate" />
 	</target>
 </project>
