@@ -33,6 +33,7 @@ package org.restlet.resource;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.Application;
@@ -101,6 +102,9 @@ public abstract class UniformResource {
      *            The caught error or exception.
      */
     protected void doCatch(Throwable throwable) {
+        getLogger().log(Level.INFO, "Exception or error caught it resource",
+                throwable);
+
         if (getResponse() != null && getApplication() != null) {
             getResponse().setStatus(
                     getApplication().getStatusService().getStatus(throwable,

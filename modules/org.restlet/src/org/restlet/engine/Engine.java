@@ -601,9 +601,9 @@ public class Engine {
                     helpers.add(providerClass.getConstructor(constructorClass)
                             .newInstance(constructorClass.cast(null)));
                 }
-            } catch (Exception e) {
+            } catch (Throwable t) {
                 Context.getCurrentLogger().log(Level.INFO,
-                        "Unable to register the helper " + provider, e);
+                        "Unable to register the helper " + provider, t);
             }
         }
     }
