@@ -138,9 +138,19 @@ Changes log
           Reported by Robert Hyerle.
         - The internal HTTP server now looks up system properties for 
           SSL configuration as a fall-back.
+        - The engine now catches all exceptions and even throwables
+          (suggested by Marcelo Paternostro) that occur when trying to
+          register helpers.
+        - UniformResource#doCatch now logs at INFO level all exceptions 
+          and errors caught.
       - Breaking changes
         - The default language, defined in MetadataService is now based
           on the JVM's default locale, instead of English/US.
+      - The JAX-RS extension now leverages the new ConverterService.
+        For example you can now leverage the converter of the XStream
+        extension for better serialization to JSON than the existing
+        JSON provider based on the more limited JSON.org library.
+        Reported by Juergen Zimmermann.
     - API changes
         - Added client and server RIAP connectors.
           Suggested by John Logsdon and Nirav Shah.
