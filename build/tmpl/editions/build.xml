@@ -49,12 +49,13 @@
 	<property name="dist-base" location="dist" />
 	<property name="final-dist-base" location="../../dist" />
 	<property name="images" location="../../images" />
+	<property name="pom-mods" location="modules" />
+	<property name="mod" location="modules" />
 
 	<property name="dist-classic" location="${dist-base}/classic/${dist-path}" />
 	<property name="dist-eclipse" location="${dist-base}/eclipse/${dist-path}" />
 	<property name="dist-maven2" location="${dist-base}/maven2/${dist-path}" />
 	<property name="classes" location="${temp}/classes" />
-	<property name="mod" location="modules" />
 	<property name="docs" location="${temp}/docs" />
 	<property name="docs-api" location="${docs}/api" />
 	<property name="docs-engine" location="${docs}/engine" />
@@ -345,13 +346,13 @@
 			</condition>
 			<property name="jar-extras" value="${classes}/${mod-@{name}-id}" />
 
-			<jar destfile="${dist-classic}/lib/${mod-@{name}-id}.jar" filesetmanifest="merge">
+			<delete failonerror="false" file="${dist-classic}/lib/${mod-@{name}-id}.jar" />
+			<jar destfile="${dist-classic}/lib/${mod-@{name}-id}.jar" filesetmanifest="merge" >
 				<fileset dir="${classes}/${mod-@{name}-id}" />
-				<fileset dir="${mod}/${mod-@{name}-id}/src" excludes="${source-exclude-patterns}" />
 				<fileset dir="${temp}/jar/" />
 				<fileset dir="${jar-extras}" />
+				<fileset dir="${mod}/${mod-@{name}-id}/src" excludes="${source-exclude-patterns}" />
 			</jar>
-
 			<!-- Create extension source jar file -->
 			<mkdir dir="${dist-classic}/src" />
 			<copy todir="${dist-classic}/src/${mod-@{name}-id}">
@@ -401,7 +402,7 @@
 			<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@artifact-id@" value="${mod-pom-@{name}-artifactId}" />
 
 			<!-- Generation of the pom.xml file -->
-			<copy file="${temp}/poms/${mod-@{name}-id}.pom" tofile="${mods}/${mod-@{name}-id}/pom.xml" overwrite="true" />
+			<copy file="${temp}/poms/${mod-@{name}-id}.pom" tofile="${pom-mods}/${mod-@{name}-id}/pom.xml" overwrite="true" />
 		</sequential>
 	</macrodef>
 
@@ -619,7 +620,7 @@
 			</data>
 		</fmpp>
 		<!-- Copy it as the parent pom module -->
-		<copy file="${temp}/poms/${parent-maven-artifactId}.pom" tofile="${mods}/pom.xml" overwrite="true" />
+		<copy file="${temp}/poms/${parent-maven-artifactId}.pom" tofile="${pom-mods}/pom.xml" overwrite="true" />
 
 		<for param="package" delimiter=" " list="${packages-maven}">
 			<sequential>
