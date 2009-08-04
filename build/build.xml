@@ -168,14 +168,26 @@
 			<fileset dir="${temp}" />
 		</delete>
 	</target>
-	<target name="build" depends="prepare-stage-maven" description="Build editions with current source code.">
-		<exec-edition edition="jse" />
-		<exec-edition edition="jee" />
-		<exec-edition edition="android" />
-		<exec-edition edition="gae" />
-		<exec-edition edition="gwt" />
+	<target name="build-current" depends="prepare-stage-maven" description="Build the editions with the current source code.">
+		<exec-edition edition="jse" target="build" />
+		<exec-edition edition="jee" target="build" />
+		<exec-edition edition="android" target="build" />
+		<exec-edition edition="gae" target="build" />
+		<exec-edition edition="gwt" target="build" />
 	</target>
-	<target name="rebuild" depends="clean-temp, prepare-stage-maven" description="Regenerate the source code and build the editions.">
+	<target name="build" depends="prepare-stage-maven" description="Regenerate the source code and build the editions.">
+		<generate-edition edition="jse" />
+		<exec-edition edition="jse" target="build" />
+		<generate-edition edition="jee" />
+		<exec-edition edition="jee" target="build" />
+		<generate-edition edition="android" />
+		<exec-edition edition="android" target="build" />
+		<generate-edition edition="gae" />
+		<exec-edition edition="gae" target="build" />
+		<generate-edition edition="gwt" />
+		<exec-edition edition="gwt" target="build" />
+	</target>
+	<target name="rebuild" depends="clean-temp, prepare-stage-maven" description="Clean the temp files, regenerate the source code and build the editions.">
 		<generate-edition edition="jse" />
 		<exec-edition edition="jse" target="build" />
 		<generate-edition edition="jee" />
