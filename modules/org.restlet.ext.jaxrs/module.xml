@@ -1,4 +1,4 @@
-<module id="jaxrs" excludes="android, gae, gwt" type="standard" package="org.restlet.ext.jaxrs">
+<module id="jaxrs" excludes="android, gwt" type="standard" package="org.restlet.ext.jaxrs">
    <label>Restlet Extension - JAX-RS</label>
    <description>
       Implementation of JAX-RS (JSR-311)
