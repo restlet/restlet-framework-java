@@ -155,11 +155,11 @@ public class DefaultConverter extends ConverterHelper {
             if ((target != null)
                     && MediaType.APPLICATION_JAVA_OBJECT.isCompatible(target
                             .getMediaType())) {
-                result = 0.8F;
+                result = 1.0F;
             } else if ((target != null)
                     && MediaType.APPLICATION_JAVA_OBJECT_XML
                             .isCompatible(target.getMediaType())) {
-                result = 0.8F;
+                result = 1.0F;
             } else {
                 result = 0.5F;
             }

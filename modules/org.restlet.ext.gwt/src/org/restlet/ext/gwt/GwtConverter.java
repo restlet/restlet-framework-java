@@ -83,7 +83,7 @@ public class GwtConverter extends ConverterHelper {
             if ((target != null)
                     && MediaType.APPLICATION_JAVA_OBJECT_GWT
                             .isCompatible(target.getMediaType())) {
-                result = 0.7F;
+                result = 1.0F;
             } else {
                 result = 0.5F;
             }
