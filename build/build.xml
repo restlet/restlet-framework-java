@@ -76,7 +76,7 @@
     			</data>
 			</fmpp>
 
-			<fmpp sourceroot="${tmpl}/text" outputroot="${temp}/@{edition}/temp" dataroot="${basedir}" includes="dependencies.txt">
+			<fmpp sourceroot="${tmpl}/text" outputroot="${temp}/@{edition}" dataroot="${basedir}" includes="dependencies.txt">
 				<data expandproperties="true">
     				editions: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
     				editionKey: @{edition}
@@ -178,16 +178,15 @@
 	</target>
 	<target name="rebuild" depends="clean-temp, prepare-stage-maven" description="Regenerate the source code and build the editions.">
 		<generate-edition edition="jse" />
+		<exec-edition edition="jse" target="build" />
 		<generate-edition edition="jee" />
+		<exec-edition edition="jee" target="build" />
 		<generate-edition edition="android" />
+		<exec-edition edition="android" target="build" />
 		<generate-edition edition="gae" />
+		<exec-edition edition="gae" target="build" />
 		<generate-edition edition="gwt" />
-
-		<exec-edition edition="jse" target="rebuild" />
-		<exec-edition edition="jee" target="rebuild" />
-		<exec-edition edition="android" target="rebuild" />
-		<exec-edition edition="gae" target="rebuild" />
-		<exec-edition edition="gwt" target="rebuild" />
+		<exec-edition edition="gwt" target="build" />
 	</target>
 	<target name="generate" description="Regenerate the source code.">
 		<exec-edition edition="jse" target="generate" />
@@ -196,11 +195,5 @@
 		<exec-edition edition="gae" target="generate" />
 		<exec-edition edition="gwt" target="generate" />
 	</target>
-	<target name="regenerate" depends="clean-temp" description="Clean and regenerate the source code.">
-		<exec-edition edition="jse" target="generate" />
-		<exec-edition edition="jee" target="generate" />
-		<exec-edition edition="android" target="generate" />
-		<exec-edition edition="gae" target="generate" />
-		<exec-edition edition="gwt" target="generate" />
-	</target>
+	<target name="regenerate" depends="clean-temp, generate" description="Clean and regenerate the source code." />
 </project>

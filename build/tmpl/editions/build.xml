@@ -566,7 +566,7 @@
 
 	<!-- GENERAL targets -->
 	<target name="build" depends="generate, verify, integrate, stage, package" description="Full build." />
-	<target name="rebuild" depends="package" description="Full build from scratch." />
+	<target name="rebuild" depends="clean, generate, verify, integrate, stage, package" description="Full build from scratch." />
 
 	<!-- CLEAN target -->
 	<target name="clean" depends="clean-temp, clean-dist" description="Clean the staging area." />
@@ -786,7 +786,7 @@
 		<!-- Copy text notes -->
 		<copy file="${docs}/changes.txt" tofile="${dist-classic}/changes.txt" />
 		<copy file="${tmpl}/text/copyright.txt" tofile="${dist-classic}/copyright.txt" />
-		<copy file="${temp}/dependencies.txt" tofile="${dist-classic}/lib/readme.txt">
+		<copy file="dependencies.txt" tofile="${dist-classic}/lib/readme.txt">
 			<filterset begintoken="@" endtoken="@" filtersfile="filterset.properties" />
 		</copy>
 		<copy file="${tmpl}/text/docs.txt" tofile="${dist-classic}/docs/readme.txt" />
