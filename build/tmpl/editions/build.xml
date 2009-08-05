@@ -605,13 +605,6 @@
 
 	<target name="generate-sources" description="Generate the sources.">
 		<!-- @generate-sources@ -->
-	</target>
-
-	<target name="generate-templates" description="Generate template-based files.">
-		<!-- Generate the Changes file -->
-		<copy file="${tmpl}/text/changes.txt" todir="${docs}" overwrite="true">
-			<filterset begintoken="@" endtoken="@" filtersfile="filterset.properties" />
-		</copy>
 
 		<!-- Generate the Maven POM files -->
 		<mkdir dir="${temp}/poms" />
@@ -637,6 +630,13 @@
 				<pomLibrary name="@{package}" />
 			</sequential>
 		</for>
+	</target>
+
+	<target name="generate-templates" description="Generate template-based files.">
+		<!-- Generate the Changes file -->
+		<copy file="${tmpl}/text/changes.txt" todir="${docs}" overwrite="true">
+			<filterset begintoken="@" endtoken="@" filtersfile="filterset.properties" />
+		</copy>
 
 		<!-- Generate the NSIS files -->
 		<copy file="${tmpl}/nsis/common.nsh" todir="${temp}" overwrite="true" />
