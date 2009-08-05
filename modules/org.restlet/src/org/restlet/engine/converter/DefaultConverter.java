@@ -179,47 +179,50 @@ public class DefaultConverter extends ConverterHelper {
             UniformResource resource) {
         float result = -1.0F;
 
-        if (Representation.class.isAssignableFrom(target)) {
-            result = 1.0F;
-        } else if (String.class.isAssignableFrom(target)) {
-            result = 1.0F;
-        } else if (StringRepresentation.class.isAssignableFrom(target)) {
-            result = 1.0F;
-        } else if (EmptyRepresentation.class.isAssignableFrom(target)) {
-            result = 1.0F;
-        } else if (File.class.isAssignableFrom(target)) {
-            if (source instanceof FileRepresentation) {
+        if (target != null) {
+            if (Representation.class.isAssignableFrom(target)) {
                 result = 1.0F;
-            }
-        } else if (Form.class.isAssignableFrom(target)) {
-            if (MediaType.APPLICATION_WWW_FORM.isCompatible(source
-                    .getMediaType())) {
+            } else if (String.class.isAssignableFrom(target)) {
                 result = 1.0F;
-            } else {
-                result = 0.5F;
-            }
-        } else if (InputStream.class.isAssignableFrom(target)) {
-            result = 1.0F;
-        } else if (InputRepresentation.class.isAssignableFrom(target)) {
-            result = 1.0F;
-        } else if (Reader.class.isAssignableFrom(target)) {
-            result = 1.0F;
-        } else if (ReaderRepresentation.class.isAssignableFrom(target)) {
-            result = 1.0F;
-        } else if (Serializable.class.isAssignableFrom(target)) {
-            if (MediaType.APPLICATION_JAVA_OBJECT.equals(source.getMediaType())) {
+            } else if (StringRepresentation.class.isAssignableFrom(target)) {
                 result = 1.0F;
-            } else if (MediaType.APPLICATION_JAVA_OBJECT.isCompatible(source
-                    .getMediaType())) {
-                result = 0.6F;
-            } else if (MediaType.APPLICATION_JAVA_OBJECT_XML.equals(source
-                    .getMediaType())) {
+            } else if (EmptyRepresentation.class.isAssignableFrom(target)) {
                 result = 1.0F;
-            } else if (MediaType.APPLICATION_JAVA_OBJECT_XML
-                    .isCompatible(source.getMediaType())) {
-                result = 0.6F;
-            } else {
-                result = 0.5F;
+            } else if (File.class.isAssignableFrom(target)) {
+                if (source instanceof FileRepresentation) {
+                    result = 1.0F;
+                }
+            } else if (Form.class.isAssignableFrom(target)) {
+                if (MediaType.APPLICATION_WWW_FORM.isCompatible(source
+                        .getMediaType())) {
+                    result = 1.0F;
+                } else {
+                    result = 0.5F;
+                }
+            } else if (InputStream.class.isAssignableFrom(target)) {
+                result = 1.0F;
+            } else if (InputRepresentation.class.isAssignableFrom(target)) {
+                result = 1.0F;
+            } else if (Reader.class.isAssignableFrom(target)) {
+                result = 1.0F;
+            } else if (ReaderRepresentation.class.isAssignableFrom(target)) {
+                result = 1.0F;
+            } else if (Serializable.class.isAssignableFrom(target)) {
+                if (MediaType.APPLICATION_JAVA_OBJECT.equals(source
+                        .getMediaType())) {
+                    result = 1.0F;
+                } else if (MediaType.APPLICATION_JAVA_OBJECT
+                        .isCompatible(source.getMediaType())) {
+                    result = 0.6F;
+                } else if (MediaType.APPLICATION_JAVA_OBJECT_XML.equals(source
+                        .getMediaType())) {
+                    result = 1.0F;
+                } else if (MediaType.APPLICATION_JAVA_OBJECT_XML
+                        .isCompatible(source.getMediaType())) {
+                    result = 0.6F;
+                } else {
+                    result = 0.5F;
+                }
             }
         }
 

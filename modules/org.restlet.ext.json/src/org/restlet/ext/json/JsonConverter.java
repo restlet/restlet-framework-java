@@ -115,23 +115,28 @@ public class JsonConverter extends ConverterHelper {
             UniformResource resource) {
         float result = -1.0F;
 
-        if (JSONArray.class.isAssignableFrom(target)) {
-            if (MediaType.APPLICATION_JSON.isCompatible(source.getMediaType())) {
-                result = 1.0F;
-            } else {
-                result = 0.5F;
-            }
-        } else if (JSONObject.class.isAssignableFrom(target)) {
-            if (MediaType.APPLICATION_JSON.isCompatible(source.getMediaType())) {
-                result = 1.0F;
-            } else {
-                result = 0.5F;
-            }
-        } else if (JSONTokener.class.isAssignableFrom(target)) {
-            if (MediaType.APPLICATION_JSON.isCompatible(source.getMediaType())) {
-                result = 1.0F;
-            } else {
-                result = 0.5F;
+        if (target != null) {
+            if (JSONArray.class.isAssignableFrom(target)) {
+                if (MediaType.APPLICATION_JSON.isCompatible(source
+                        .getMediaType())) {
+                    result = 1.0F;
+                } else {
+                    result = 0.5F;
+                }
+            } else if (JSONObject.class.isAssignableFrom(target)) {
+                if (MediaType.APPLICATION_JSON.isCompatible(source
+                        .getMediaType())) {
+                    result = 1.0F;
+                } else {
+                    result = 0.5F;
+                }
+            } else if (JSONTokener.class.isAssignableFrom(target)) {
+                if (MediaType.APPLICATION_JSON.isCompatible(source
+                        .getMediaType())) {
+                    result = 1.0F;
+                } else {
+                    result = 0.5F;
+                }
             }
         }
 

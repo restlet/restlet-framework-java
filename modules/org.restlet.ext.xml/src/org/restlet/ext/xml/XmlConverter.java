@@ -113,9 +113,10 @@ public class XmlConverter extends ConverterHelper {
             UniformResource resource) {
         float result = -1.0F;
 
-        if (Document.class.isAssignableFrom(target)
-                || DomRepresentation.class.isAssignableFrom(target)
-                || SaxRepresentation.class.isAssignableFrom(target)) {
+        if ((target != null)
+                && (Document.class.isAssignableFrom(target)
+                        || DomRepresentation.class.isAssignableFrom(target) || SaxRepresentation.class
+                        .isAssignableFrom(target))) {
             if (MediaType.APPLICATION_ALL_XML.isCompatible(source
                     .getMediaType())) {
                 result = 1.0F;

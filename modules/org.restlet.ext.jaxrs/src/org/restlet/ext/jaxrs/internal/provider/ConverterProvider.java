@@ -134,7 +134,7 @@ public class ConverterProvider extends AbstractProvider<Object> {
         Representation sourceRepresentation = new InputRepresentation(
                 entityStream, new org.restlet.data.MediaType(mediaType
                         .toString()));
-        return getConverterService().toObject(sourceRepresentation);
+        return getConverterService().toObject(sourceRepresentation, type, null);
     }
 
     @Override

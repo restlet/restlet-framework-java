@@ -109,18 +109,21 @@ public class AtomConverter extends ConverterHelper {
             UniformResource resource) {
         float result = -1.0F;
 
-        if (Feed.class.isAssignableFrom(target)) {
-            if (MediaType.APPLICATION_ATOM.isCompatible(source.getMediaType())) {
-                result = 1.0F;
-            } else {
-                result = 0.5F;
-            }
-        } else if (Service.class.isAssignableFrom(target)) {
-            if (MediaType.APPLICATION_ATOMPUB_SERVICE.isCompatible(source
-                    .getMediaType())) {
-                result = 1.0F;
-            } else {
-                result = 0.5F;
+        if (target != null) {
+            if (Feed.class.isAssignableFrom(target)) {
+                if (MediaType.APPLICATION_ATOM.isCompatible(source
+                        .getMediaType())) {
+                    result = 1.0F;
+                } else {
+                    result = 0.5F;
+                }
+            } else if (Service.class.isAssignableFrom(target)) {
+                if (MediaType.APPLICATION_ATOMPUB_SERVICE.isCompatible(source
+                        .getMediaType())) {
+                    result = 1.0F;
+                } else {
+                    result = 0.5F;
+                }
             }
         }
 
