@@ -76,10 +76,25 @@ public class AnnotatedResource1TestCase extends TestCase {
                 "<org.restlet.test.resource.MyBean>\n  <name>myName</name>\n  <description>myDescription</description>\n</org.restlet.test.resource.MyBean>",
                 result);
 
+        result = clientResource.get(MediaType.APPLICATION_XML).getText();
+        assertEquals(
+                "<org.restlet.test.resource.MyBean>\n  <name>myName</name>\n  <description>myDescription</description>\n</org.restlet.test.resource.MyBean>",
+                result);
+
+        result = clientResource.get(MediaType.APPLICATION_ALL_XML).getText();
+        assertEquals(
+                "<org.restlet.test.resource.MyBean>\n  <name>myName</name>\n  <description>myDescription</description>\n</org.restlet.test.resource.MyBean>",
+                result);
+
         result = clientResource.get(MediaType.APPLICATION_JSON).getText();
         assertEquals(
                 "{\"org.restlet.test.resource.MyBean\":{\"name\":\"myName\",\"description\":\"myDescription\"}}",
                 result);
+
+        result = clientResource.get(MediaType.APPLICATION_JAVA_OBJECT_XML)
+                .getText();
+        assertTrue(result
+                .startsWith("<?xml version=\"1.0\" encoding=\"UTF-8\"?> \n<java version=\""));
     }
 
     public void testOptions() {

@@ -30,16 +30,23 @@
 
 package org.restlet.test.resource;
 
+import java.io.Serializable;
+
 /**
  * Test bean to be serialized.
  * 
  * @author Jerome Louvel
  */
-public class MyBean {
+public class MyBean implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private String name;
 
     private String description;
+
+    public MyBean() {
+    }
 
     public MyBean(String name, String description) {
         super();

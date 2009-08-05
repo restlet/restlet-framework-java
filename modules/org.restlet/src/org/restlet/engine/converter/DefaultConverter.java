@@ -152,14 +152,20 @@ public class DefaultConverter extends ConverterHelper {
         } else if (source instanceof Representation) {
             result = 1.0F;
         } else if (source instanceof Serializable) {
-            if ((target != null)
-                    && MediaType.APPLICATION_JAVA_OBJECT.isCompatible(target
-                            .getMediaType())) {
-                result = 1.0F;
-            } else if ((target != null)
-                    && MediaType.APPLICATION_JAVA_OBJECT_XML
-                            .isCompatible(target.getMediaType())) {
-                result = 1.0F;
+            if (target != null) {
+                if (MediaType.APPLICATION_JAVA_OBJECT.equals(target
+                        .getMediaType())) {
+                    result = 1.0F;
+                } else if (MediaType.APPLICATION_JAVA_OBJECT
+                        .isCompatible(target.getMediaType())) {
+                    result = 0.6F;
+                } else if (MediaType.APPLICATION_JAVA_OBJECT_XML.equals(target
+                        .getMediaType())) {
+                    result = 1.0F;
+                } else if (MediaType.APPLICATION_JAVA_OBJECT_XML
+                        .isCompatible(target.getMediaType())) {
+                    result = 0.6F;
+                }
             } else {
                 result = 0.5F;
             }
@@ -201,12 +207,17 @@ public class DefaultConverter extends ConverterHelper {
         } else if (ReaderRepresentation.class.isAssignableFrom(target)) {
             result = 1.0F;
         } else if (Serializable.class.isAssignableFrom(target)) {
-            if (MediaType.APPLICATION_JAVA_OBJECT.isCompatible(source
+            if (MediaType.APPLICATION_JAVA_OBJECT.equals(source.getMediaType())) {
+                result = 1.0F;
+            } else if (MediaType.APPLICATION_JAVA_OBJECT.isCompatible(source
                     .getMediaType())) {
-                result = 0.8F;
+                result = 0.6F;
+            } else if (MediaType.APPLICATION_JAVA_OBJECT_XML.equals(source
+                    .getMediaType())) {
+                result = 1.0F;
             } else if (MediaType.APPLICATION_JAVA_OBJECT_XML
                     .isCompatible(source.getMediaType())) {
-                result = 0.8F;
+                result = 0.6F;
             } else {
                 result = 0.5F;
             }
