@@ -35,7 +35,6 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import org.restlet.Context;
-import org.restlet.Uniform;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ClientInfo;
@@ -425,6 +424,54 @@ public class HttpClientAdapter extends HttpAdapter {
         }
     }
 
+    /**
+     * Updates the response with information from the lower-level HTTP client
+     * call.
+     * 
+     * @param response
+     *            The response to update.
+     * @param status
+     *            The response status to apply.
+     * @param httpCall
+     *            The source HTTP client call.
+     * @throws IOException
+     */
+    public void updateResponse(Response response, Status status,
+            HttpClientCall httpCall) {
+        // Send the request to the client
+        response.setStatus(status);
+
+        // Get the server address
+        response.getServerInfo().setAddress(httpCall.getServerAddress());
+        response.getServerInfo().setPort(httpCall.getServerPort());
+
+        // Read the response headers
+        readResponseHeaders(httpCall, response);
+
+        // Set the entity
+        response.setEntity(httpCall.getResponseEntity(response));
+        // Release the representation's content for some obvious cases
+        if (response.getEntity() != null) {
+            if (response.getEntity().getSize() == 0) {
+                response.getEntity().release();
+            } else if (response.getRequest().getMethod().equals(Method.HEAD)) {
+                response.getEntity().release();
+            } else if (response.getStatus().equals(Status.SUCCESS_NO_CONTENT)) {
+                response.getEntity().release();
+            } else if (response.getStatus()
+                    .equals(Status.SUCCESS_RESET_CONTENT)) {
+                response.getEntity().release();
+                response.setEntity(null);
+            } else if (response.getStatus().equals(
+                    Status.REDIRECTION_NOT_MODIFIED)) {
+                response.getEntity().release();
+            } else if (response.getStatus().isInformational()) {
+                response.getEntity().release();
+                response.setEntity(null);
+            }
+        }
+    }
+
     // [ifndef gwt] method
     /**
      * Commits the changes to a handled HTTP client call back into the original
@@ -442,63 +489,51 @@ public class HttpClientAdapter extends HttpAdapter {
     public void commit(HttpClientCall httpCall, Request request,
             Response response) {
         if (httpCall != null) {
-            // Send the request to the client
-            response.setStatus(httpCall.sendRequest(request));
-
-            // Get the server address
-            response.getServerInfo().setAddress(httpCall.getServerAddress());
-            response.getServerInfo().setPort(httpCall.getServerPort());
-
-            // Read the response headers
-            readResponseHeaders(httpCall, response);
-
-            // Set the entity
-            response.setEntity(httpCall.getResponseEntity(response));
-            // Release the representation's content for some obvious cases
-            if (response.getEntity() != null) {
-                if (response.getEntity().getSize() == 0) {
-                    response.getEntity().release();
-                } else if (response.getRequest().getMethod()
-                        .equals(Method.HEAD)) {
-                    response.getEntity().release();
-                } else if (response.getStatus().equals(
-                        Status.SUCCESS_NO_CONTENT)) {
-                    response.getEntity().release();
-                } else if (response.getStatus().equals(
-                        Status.SUCCESS_RESET_CONTENT)) {
-                    response.getEntity().release();
-                    response.setEntity(null);
-                } else if (response.getStatus().equals(
-                        Status.REDIRECTION_NOT_MODIFIED)) {
-                    response.getEntity().release();
-                } else if (response.getStatus().isInformational()) {
-                    response.getEntity().release();
-                    response.setEntity(null);
-                }
-            }
+            updateResponse(response, httpCall.sendRequest(request), httpCall);
         }
     }
 
-    // [ifdef gwt] method
-    /**
-     * Commits the changes to a handled HTTP client call back into the original
-     * uniform call. The default implementation first invokes the
-     * "addResponseHeaders" then asks the "htppCall" to send the response back
-     * to the client.
-     * 
-     * @param httpCall
-     *            The original HTTP call.
-     * @param request
-     *            The high-level request.
-     * @param response
-     *            The high-level response.
-     * @param callback
-     *            The callback invoked upon request completion.
-     */
-    public void commit(HttpClientCall httpCall, Request request,
-            Response response, Uniform callback) {
-
-    }
+    // [ifdef gwt] method uncomment
+    // /**
+    // * Commits the changes to a handled HTTP client call back into the
+    // original
+    // * uniform call. The default implementation first invokes the
+    // * "addResponseHeaders" then asks the "htppCall" to send the response back
+    // * to the client.
+    // *
+    // * @param httpCall
+    // * The original HTTP call.
+    // * @param request
+    // * The high-level request.
+    // * @param response
+    // * The high-level response.
+    // * @param callback
+    // * The callback invoked upon request completion.
+    // */
+    // public void commit(final HttpClientCall httpCall, Request request,
+    // Response response, final org.restlet.Uniform userCallback) throws Exception{
+    // if (httpCall != null) {
+    // // Send the request to the client
+    // httpCall.sendRequest(request, response, new org.restlet.Uniform() {
+    // public void handle(Request request, Response response,
+    // org.restlet.Uniform callback) {
+    // try {
+    // updateResponse(response, new Status(httpCall
+    // .getStatusCode(), null, httpCall
+    // .getReasonPhrase(), null), httpCall);
+    // userCallback.handle(request, response, null);
+    // } catch (Exception e) {
+    // // Unexpected exception occurred
+    // if ((response.getStatus() == null)
+    // || !response.getStatus().isError()) {
+    // response.setStatus(Status.CONNECTOR_ERROR_INTERNAL,
+    // e);
+    // }
+    // }
+    // }
+    // });
+    // }
+    // }
 
     /**
      * Reads the response headers of a handled HTTP client call to update the
