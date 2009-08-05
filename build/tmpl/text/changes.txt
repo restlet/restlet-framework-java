@@ -210,6 +210,7 @@ Changes log
           with a FINE level instead of a WARNING level.
         - Upgraded Simple to version 4.1.13 which now supports 
           programmatic shutdown. Contributed by Niall Gallagher.
+        - Updated GWT to version 1.7.0.
           
 - 2.0 Milestone 3 (2009-05-27)
     - Breaking changes
