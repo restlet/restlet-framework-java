@@ -199,9 +199,6 @@
 		<exec-edition edition="gwt" target="build" />
 	</target>
 	<target name="build" depends="generate-poms, prepare-stage-maven" description="Regenerate the source code and build the editions.">
-		<generate-edition edition="android" />
-		<exec-edition edition="android" target="build" />
-		<!--
 		<generate-edition edition="jse" />
 		<exec-edition edition="jse" target="build" />
 		<generate-edition edition="jee" />
@@ -212,7 +209,6 @@
 		<exec-edition edition="gae" target="build" />
 		<generate-edition edition="gwt" />
 		<exec-edition edition="gwt" target="build" />
--->
 	</target>
 	<target name="rebuild" depends="clean-temp, generate-poms, prepare-stage-maven" description="Clean the temp files, regenerate the source code and build the editions.">
 		<generate-edition edition="jse" />
@@ -227,11 +223,11 @@
 		<exec-edition edition="gwt" target="build" />
 	</target>
 	<target name="generate" depends="generate-poms" description="Regenerate the source code.">
-		<exec-edition edition="jse" target="generate" />
-		<exec-edition edition="jee" target="generate" />
-		<exec-edition edition="android" target="generate" />
-		<exec-edition edition="gae" target="generate" />
-		<exec-edition edition="gwt" target="generate" />
+		<generate-edition edition="jse" />
+		<generate-edition edition="jee" />
+		<generate-edition edition="android" />
+		<generate-edition edition="gae" />
+		<generate-edition edition="gwt" />
 	</target>
 	<target name="regenerate" depends="clean-temp, generate" description="Clean and regenerate the source code." />
 </project>
