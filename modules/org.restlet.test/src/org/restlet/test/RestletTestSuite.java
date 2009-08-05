@@ -54,11 +54,7 @@ import org.restlet.test.ext.xml.TransformerTestCase;
 import org.restlet.test.jaxrs.AllJaxRsTests;
 import org.restlet.test.representation.AppendableTestCase;
 import org.restlet.test.representation.DigestTestCase;
-import org.restlet.test.resource.AnnotatedResource1TestCase;
-import org.restlet.test.resource.AnnotatedResource2TestCase;
-import org.restlet.test.resource.DirectoryTestCase;
-import org.restlet.test.resource.FileRepresentationTestCase;
-import org.restlet.test.resource.ResourceTestCase;
+import org.restlet.test.resource.ResourceTestSuite;
 import org.restlet.test.routing.FilterTestCase;
 import org.restlet.test.routing.RedirectTestCase;
 import org.restlet.test.routing.RouteListTestCase;
@@ -85,16 +81,13 @@ public class RestletTestSuite extends TestSuite {
 
     /** Constructor. */
     public RestletTestSuite() {
-        // Removed for the moment.
-        // addTestSuite(AnnotatedResource1TestCase.class);
-        addTestSuite(AnnotatedResource2TestCase.class);
+        addTestSuite(ResourceTestSuite.class);
         addTestSuite(AppendableTestCase.class);
         addTestSuite(AtomTestCase.class);
         addTestSuite(CallTestCase.class);
         addTestSuite(ComponentXmlConfigTestCase.class);
         addTestSuite(CookieTestCase.class);
         addTestSuite(ConnegTestCase.class);
-        addTestSuite(DirectoryTestCase.class);
         addTestSuite(FileClientTestCase.class);
         addTestSuite(FileReferenceTestCase.class);
         addTestSuite(FilterTestCase.class);
@@ -104,7 +97,6 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(ProductTokenTestCase.class);
         addTestSuite(ReferenceTestCase.class);
         addTestSuite(ResolvingTransformerTestCase.class);
-        addTestSuite(ResourceTestCase.class);
         addTestSuite(RestartTestCase.class);
         addTestSuite(RestletXmlTestCase.class);
         addTestSuite(RiapTestCase.class);
@@ -122,7 +114,6 @@ public class RestletTestSuite extends TestSuite {
         // [ifndef gae]
         addTestSuite(ComponentXmlTestCase.class);
         addTestSuite(DigestTestCase.class);
-        addTestSuite(FileRepresentationTestCase.class);
         addTestSuite(HeaderTestCase.class);
         addTestSuite(HttpBasicTestCase.class);
         addTestSuite(RangeTestCase.class);

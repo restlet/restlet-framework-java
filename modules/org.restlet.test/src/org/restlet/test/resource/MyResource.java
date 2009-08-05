@@ -46,16 +46,16 @@ public interface MyResource {
     @Get
     public MyBean represent();
 
-    @Put
+    @Put("txt")
     public String store(MyBean bean);
 
     @Post
     public boolean accept(MyBean bean);
 
-    @Delete
+    @Delete("txt")
     public String remove();
 
-    @Options
+    @Options("txt")
     public String describe();
 
 }
