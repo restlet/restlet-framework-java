@@ -29,8 +29,11 @@
 	<!-- Location properties -->
 	<property name="dist" location="dist" />
 	<property name="temp" location="temp" />
-	<property name="tmpl" value="tmpl" />
-
+	<property name="tmpl" location="tmpl" />
+	<property name="modules" location="../modules" />
+	<property name="parent-maven-groupId" value="org.restlet" />
+	<property name="parent-maven-artifactId" value="org.restlet.parent" />
+	<property name="parent-maven-version" value="${version-maven}" />
 
 	<!-- ======================= -->
 	<!-- ===  Paths setting  === -->
@@ -64,12 +67,14 @@
 	<!-- = = = = = = = = = = = = = = = = =
           macrodef: generate-edition          
          = = = = = = = = = = = = = = = = = -->
-	<macrodef name="generate-edition">
+	<macrodef name="generate-edition" description="Generate the source code for a target edition.">
 		<attribute name="edition" />
 		<sequential>
 			<fmpp sourceroot="${tmpl}/editions" outputroot="${temp}/@{edition}" dataroot="${basedir}" includes="*.properties">
 				<data expandproperties="true">
-    				editions: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
+					values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
+					project: get(values, "project")
+					editions: get(values, "editions")
     				editionKey: @{edition}
     				edition: get(editions, @{edition})
 					currentYear: ${current-year}
@@ -78,8 +83,10 @@
 
 			<fmpp sourceroot="${tmpl}/text" outputroot="${temp}/@{edition}" dataroot="${basedir}" includes="dependencies.txt">
 				<data expandproperties="true">
-    				editions: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
-    				editionKey: @{edition}
+					values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
+					project: get(values, "project")
+					editions: get(values, "editions")
+					editionKey: @{edition}
     				edition: get(editions, @{edition})
 					currentYear: ${current-year}
     			</data>
@@ -106,7 +113,9 @@
 			<!-- Process it as a Freemarker template. -->
 			<fmpp sourcefile="${temp}/@{edition}/build.tmpl" outputfile="${temp}/@{edition}/build.xml" dataroot="${basedir}" expert="true">
 				<data expandproperties="true">
-    				editions: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
+					values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
+					project: get(values, "project")
+					editions: get(values, "editions")
     				editionKey: @{edition}
     				edition: get(editions, @{edition})
 					currentYear: ${current-year}
@@ -122,7 +131,11 @@
 		</sequential>
 	</macrodef>
 
-	<macrodef name="exec-edition">
+	
+	<!-- = = = = = = = = = = = = = = = = =
+          macrodef: exec-edition          
+         = = = = = = = = = = = = = = = = = -->
+	<macrodef name="exec-edition" description="Executes a task for a target edition">
 		<attribute name="edition" />
 		<attribute name="target" default="build" />
 		<sequential>
@@ -133,6 +146,16 @@
 			</for>
 		</sequential>
 	</macrodef>
+
+	<target name="generate-poms" description="Generates the pom files">
+		<fmpp sourcefile="${tmpl}/poms/org.restlet.parent.pom.tmpl" outputfile="${modules}/pom.xml" dataroot="${basedir}" expert="true">
+			<data expandproperties="true">
+				values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
+				project: get(values, "project")
+				ant: antProperties()
+			</data>
+		</fmpp>
+	</target>
 
 	<target name="prepare-stage-maven" if="do-prepare-stage-maven" description="Prepare the generation of the maven distributions.">
 		<!-- Svn revision number -->
@@ -168,14 +191,30 @@
 			<fileset dir="${temp}" />
 		</delete>
 	</target>
-	<target name="build-current" depends="prepare-stage-maven" description="Build the editions with the current source code.">
+	<target name="build-current" depends="generate-poms, prepare-stage-maven" description="Build the editions with the current source code.">
 		<exec-edition edition="jse" target="build" />
 		<exec-edition edition="jee" target="build" />
 		<exec-edition edition="android" target="build" />
 		<exec-edition edition="gae" target="build" />
 		<exec-edition edition="gwt" target="build" />
 	</target>
-	<target name="build" depends="prepare-stage-maven" description="Regenerate the source code and build the editions.">
+	<target name="build" depends="generate-poms, prepare-stage-maven" description="Regenerate the source code and build the editions.">
+		<generate-edition edition="android" />
+		<exec-edition edition="android" target="build" />
+		<!--
+		<generate-edition edition="jse" />
+		<exec-edition edition="jse" target="build" />
+		<generate-edition edition="jee" />
+		<exec-edition edition="jee" target="build" />
+		<generate-edition edition="android" />
+		<exec-edition edition="android" target="build" />
+		<generate-edition edition="gae" />
+		<exec-edition edition="gae" target="build" />
+		<generate-edition edition="gwt" />
+		<exec-edition edition="gwt" target="build" />
+-->
+	</target>
+	<target name="rebuild" depends="clean-temp, generate-poms, prepare-stage-maven" description="Clean the temp files, regenerate the source code and build the editions.">
 		<generate-edition edition="jse" />
 		<exec-edition edition="jse" target="build" />
 		<generate-edition edition="jee" />
@@ -187,19 +226,7 @@
 		<generate-edition edition="gwt" />
 		<exec-edition edition="gwt" target="build" />
 	</target>
-	<target name="rebuild" depends="clean-temp, prepare-stage-maven" description="Clean the temp files, regenerate the source code and build the editions.">
-		<generate-edition edition="jse" />
-		<exec-edition edition="jse" target="build" />
-		<generate-edition edition="jee" />
-		<exec-edition edition="jee" target="build" />
-		<generate-edition edition="android" />
-		<exec-edition edition="android" target="build" />
-		<generate-edition edition="gae" />
-		<exec-edition edition="gae" target="build" />
-		<generate-edition edition="gwt" />
-		<exec-edition edition="gwt" target="build" />
-	</target>
-	<target name="generate" description="Regenerate the source code.">
+	<target name="generate" depends="generate-poms" description="Regenerate the source code.">
 		<exec-edition edition="jse" target="generate" />
 		<exec-edition edition="jee" target="generate" />
 		<exec-edition edition="android" target="generate" />
