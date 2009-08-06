@@ -126,7 +126,7 @@
 			<replace file="${temp}/@{edition}/build.xml" token="*DOLLAR*" value="$" />
 
 			<copy file="build.properties" todir="${temp}/@{edition}" overwrite="true" />
-			<copy file="custom.properties" todir="${temp}/@{edition}" overwrite="true" />
+			<copy file="custom.properties" todir="${temp}/@{edition}" overwrite="true" failonerror="false" />
 			<ant antfile="build.xml" target="generate-sources" dir="${temp}/@{edition}/" inheritall="false" />
 		</sequential>
 	</macrodef>
