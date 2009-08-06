@@ -1,4 +1,4 @@
-<module id="net" includes="jee, jse" type="connector" package="org.restlet.ext.net">
+<module id="net" includes="gae, jee, jse" type="connector" package="org.restlet.ext.net">
    <label>Restlet Extension - Net</label>
    <description>
       Integration with java.net.HttpURLConnection class.

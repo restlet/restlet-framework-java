@@ -49,6 +49,7 @@ import javax.net.ssl.SSLContext;
 import org.restlet.data.Parameter;
 import org.restlet.data.Request;
 import org.restlet.data.Status;
+import org.restlet.engine.Edition;
 import org.restlet.engine.http.HttpClientCall;
 import org.restlet.engine.http.HttpsUtils;
 import org.restlet.engine.security.SslContextFactory;
@@ -103,6 +104,7 @@ public class HttpUrlConnectionCall extends HttpClientCall {
                 this.connection.setReadTimeout(getHelper().getReadTimeout());
             }
 
+            // [ifndef gae] instruction
             this.connection.setAllowUserInteraction(getHelper()
                     .isAllowUserInteraction());
             this.connection.setDoOutput(hasEntity);
@@ -248,8 +250,17 @@ public class HttpUrlConnectionCall extends HttpClientCall {
             while (headerName != null) {
                 result.add(headerName, headerValue);
                 i++;
-                headerName = getConnection().getHeaderFieldKey(i);
-                headerValue = getConnection().getHeaderField(i);
+                if (Edition.CURRENT != Edition.GAE) {
+                    headerName = getConnection().getHeaderFieldKey(i);
+                    headerValue = getConnection().getHeaderField(i);
+                } else {
+                    try {
+                        headerName = getConnection().getHeaderFieldKey(i);
+                        headerValue = getConnection().getHeaderField(i);
+                    } catch (java.util.NoSuchElementException e) {
+                        headerName = null;
+                    }
+                }
             }
 
             this.responseHeadersAdded = true;
