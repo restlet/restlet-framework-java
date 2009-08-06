@@ -121,7 +121,13 @@ public class XstreamConverter extends ConverterHelper {
         if (source instanceof XstreamRepresentation<?>) {
             result = 1.0F;
         } else {
-            result = 0.8F;
+            if (VARIANT_JSON.isCompatible(target)) {
+                result = 0.8F;
+            } else if (VARIANT_APPLICATION_ALL_XML.isCompatible(target)
+                    || VARIANT_APPLICATION_XML.isCompatible(target)
+                    || VARIANT_TEXT_XML.isCompatible(target)) {
+                result = 0.8F;
+            }
         }
 
         return result;
