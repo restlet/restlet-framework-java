@@ -295,20 +295,6 @@ public class MemoryRealm extends Realm {
     }
 
     /**
-     * Sets the modifiable list of role mappings.
-     * 
-     * @param roleMappings
-     *            The modifiable list of role mappings.
-     */
-    public void setRoleMappings(List<RoleMapping> roleMappings) {
-        this.roleMappings.clear();
-
-        if (roleMappings != null) {
-            this.roleMappings.addAll(roleMappings);
-        }
-    }
-
-    /**
      * Unmaps a group defined in a component from a role defined in the
      * application.
      * 
