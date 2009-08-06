@@ -1,0 +1,21 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Restlet Extension - FreeMarker
+Bundle-SymbolicName: org.restlet.ext.freemarker
+Bundle-Version: 2.0
+Bundle-Vendor: Noelios Technologies
+Export-Package: org.restlet.ext.freemarker;
+  uses:="freemarker.template,
+   org.restlet,
+   org.restlet.resource,
+   org.restlet.data"
+Import-Package: freemarker.cache,
+ freemarker.template,
+ org.restlet,
+ org.restlet.data,
+ org.restlet.representation,
+ org.restlet.resource,
+ org.restlet.routing,
+ org.restlet.service,
+ org.restlet.util
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

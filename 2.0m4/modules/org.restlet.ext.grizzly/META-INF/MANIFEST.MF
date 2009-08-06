@@ -1,0 +1,29 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Restlet Extension - Grizzly
+Bundle-SymbolicName: org.restlet.ext.grizzly
+Bundle-Version: 2.0
+Bundle-Vendor: Noelios Technologies
+Export-Package: org.restlet.ext.grizzly;
+  uses:="com.sun.grizzly,
+   org.restlet.engine.http,
+   org.restlet,
+   org.restlet.data"
+Import-Package: com.sun.grizzly,
+ com.sun.grizzly.filter,
+ com.sun.grizzly.util,
+ javax.net.ssl,
+ org.restlet,
+ org.restlet.data,
+ org.restlet.engine,
+ org.restlet.engine.application,
+ org.restlet.engine.component,
+ org.restlet.engine.http,
+ org.restlet.engine.io,
+ org.restlet.engine.local,
+ org.restlet.engine.security,
+ org.restlet.engine.util,
+ org.restlet.resource,
+ org.restlet.service,
+ org.restlet.util
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

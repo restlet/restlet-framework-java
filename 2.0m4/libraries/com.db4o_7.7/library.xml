@@ -1,0 +1,24 @@
+<library id="db4o">
+	<package id="db4o" name="com.db4o">
+		<maven>
+			<groupId>com.db4o</groupId>
+		</maven>
+	</package>
+	<package id="db4o-nativequery" name="com.db4o.nativequery">
+		<maven>
+			<groupId>com.db4o</groupId>
+		</maven>
+	</package>
+	<version>7.7</version>
+	<release>67</release>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+	</distributions>
+	<homeUri>
+		http://www.db4o.com/
+	</homeUri>
+	<downloadUri>
+		http://developer.db4o.com/files/
+	</downloadUri>
+</library>

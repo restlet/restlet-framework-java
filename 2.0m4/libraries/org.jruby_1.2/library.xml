@@ -1,0 +1,14 @@
+<library id="jruby">
+	<package name="org.codehaus.jruby" />
+	<package name="com.sun.script.jruby">
+		<maven />
+	</package>
+	<version>1.2</version>
+	<release>0</release>
+	<homeUri>
+		http://jruby.codehaus.org/
+	</homeUri>
+	<downloadUri>
+		http://dist.codehaus.org/jruby/
+	</downloadUri>
+</library>

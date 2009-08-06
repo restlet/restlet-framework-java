@@ -1,0 +1,41 @@
+<module id="net" includes="gae, jee, jse" type="connector" package="org.restlet.ext.net">
+   <label>Restlet Extension - Net</label>
+   <description>
+      Integration with java.net.HttpURLConnection class.
+	</description>
+   <distributions>
+      <distribution id="classic" />
+      <distribution id="maven" />
+   </distributions>
+
+   <dependencies>
+      <dependency type="module" id="core" />
+   </dependencies>
+   <source edition="gae">
+      <files-mappers>
+<![CDATA[
+      <mapper classname="mapper.ReplaceStringMapper" classpathref="forge-path" from=".gae" to="" />
+]]>
+      </files-mappers>
+      <files-sets>
+<![CDATA[
+         <exclude name="src/META-INF/services/org.restlet.engine.ClientHelper" />
+         <exclude name="src/org/restlet/ext/net/FtpClientHelper.java" />
+]]>
+      </files-sets>
+   </source>
+   <source edition="jee">
+      <files-sets>
+<![CDATA[
+         <exclude name="src/META-INF/services/org.restlet.engine.ClientHelper.gae" />
+]]>
+      </files-sets>
+   </source>
+   <source edition="jse">
+      <files-sets>
+<![CDATA[
+         <exclude name="src/META-INF/services/org.restlet.engine.ClientHelper.gae" />
+]]>
+      </files-sets>
+   </source>
+</module>

@@ -1,0 +1,14 @@
+<library id="oauth">
+	<package name="net.oauth">
+		<maven>
+			<version>20090522</version>
+		</maven>
+	</package>
+	<version>1.0</version>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+	<homeUri>
+		http://oauth.net/
+	</homeUri>
+</library>

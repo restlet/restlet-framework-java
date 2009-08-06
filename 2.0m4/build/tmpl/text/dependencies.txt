@@ -1,0 +1,31 @@
+=========================================<#list 1..(edition.mediumLabel?length) as i>=</#list>
+Edition for ${edition.mediumLabel} - dependencies between JAR files
+=========================================<#list 1..(edition.mediumLabel?length) as i>=</#list>
+
+
+Below is a list of the dependencies between Restlet libraries. You need to ensure 
+that all the dependencies of the libraries that you are using are on the classpath
+of your Restlet program, otherwise ClassNotFound exceptions will be thrown.
+
+A minimal Restlet application requires the org.restlet JAR.
+
+To configure connectors such as HTTP server or HTTP client connectors, please refer
+to the Restlet User Guide: http://wiki.restlet.org/docs_@version-minor@/
+<#list edition.modules?sort_by("id") as module>
+
+${module.package} (${module.label})
+<#list 1..(module.package?length) as i>-</#list>
+   <#if ((module.neededLibraries??) && (module.neededLibraries?size)>0)>
+      <#list module.neededLibraries?sort_by("id") as library>
+         <#list library.packages?sort_by("name") as package>  
+ - ${package.name}_${library.minorVersion}
+         </#list>
+      </#list>
+   <#else>
+      <#if module.id == "core">
+ - J2SE 5.0
+      <#else>
+ - nothing beside org.restlet JAR.
+      </#if>
+   </#if>
+</#list>

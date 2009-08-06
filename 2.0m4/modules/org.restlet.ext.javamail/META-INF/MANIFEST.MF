@@ -1,0 +1,33 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Restlet Extension - JavaMail
+Bundle-SymbolicName: org.restlet.ext.javamail
+Bundle-Version: 2.0
+Bundle-Vendor: Noelios Technologies
+Export-Package: org.restlet.ext.javamail;
+  uses:="org.restlet.resource,
+   org.restlet,
+   org.restlet.data,
+   org.restlet.engine"
+Import-Package: com.sun.mail.handlers,
+ com.sun.mail.pop3,
+ com.sun.mail.smtp,
+ com.sun.mail.util,
+ javax.mail,
+ javax.mail.internet,
+ javax.mail.util,
+ org.restlet,
+ org.restlet.data,
+ org.restlet.engine,
+ org.restlet.engine.application,
+ org.restlet.engine.component,
+ org.restlet.engine.http,
+ org.restlet.engine.local,
+ org.restlet.engine.security,
+ org.restlet.engine.util,
+ org.restlet.ext.xml,
+ org.restlet.representation,
+ org.restlet.resource,
+ org.restlet.service,
+ org.restlet.util
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

@@ -1,0 +1,11 @@
+<library id="groovy">
+	<package name="org.codehaus.groovy" />
+	<version>1.6</version>
+	<release>0</release>
+	<homeUri>
+		http://groovy.codehaus.org/
+	</homeUri>
+	<downloadUri>
+		http://groovy.codehaus.org/Download
+	</downloadUri>
+</library>

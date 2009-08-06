@@ -1,0 +1,24 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Apache Commons HTTP Client
+Bundle-SymbolicName: org.apache.commons.httpclient
+Bundle-Version: 3.1
+Bundle-ClassPath: org.apache.commons.httpclient.jar
+Bundle-Vendor: Apache Software Foundation
+Export-Package: org.apache.commons.httpclient;
+  uses:="org.apache.commons.httpclient.cookie,
+   org.apache.commons.httpclient.params,
+   org.apache.commons.httpclient.auth,
+   org.apache.commons.httpclient.protocol,
+   org.apache.commons.logging,
+   new org.apache.commons.httpclient",
+ org.apache.commons.httpclient.auth;uses:="org.apache.commons.httpclient,org.apache.commons.httpclient.params,org.apache.commons.logging",
+ org.apache.commons.httpclient.cookie;uses:="org.apache.commons.httpclient,org.apache.commons.logging",
+ org.apache.commons.httpclient.methods;uses:="org.apache.commons.httpclient,org.apache.commons.httpclient.methods.multipart",
+ org.apache.commons.httpclient.methods.multipart;uses:="org.apache.commons.httpclient.methods,org.apache.commons.httpclient.params",
+ org.apache.commons.httpclient.params;uses:="org.apache.commons.httpclient",
+ org.apache.commons.httpclient.protocol;uses:="org.apache.commons.httpclient.params",
+ org.apache.commons.httpclient.util;uses:="org.apache.commons.httpclient"
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Import-Package: org.apache.commons.codec,
+ org.apache.commons.logging

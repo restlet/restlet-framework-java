@@ -1,0 +1,28 @@
+<module id="xml" excludes="gwt" type="standard" package="org.restlet.ext.xml">
+   <label>Restlet Extension - XML</label>
+   <description>
+      Support for the XML documents.
+	</description>
+   <distributions>
+      <distribution id="classic" />
+      <distribution id="maven" />
+   </distributions>
+
+   <dependencies>
+      <dependency type="module" id="core" />
+   </dependencies>
+   <source edition="android">
+      <files-mappers>
+<![CDATA[
+      <mapper classname="mapper.ReplaceStringMapper" classpathref="forge-path" from=".java.android" to=".java" />
+]]>
+      </files-mappers>
+      <files-sets>
+<![CDATA[
+         <exclude name="src/org/restlet/ext/xml/SaxRepresentation.java" />
+         <exclude name="src/org/restlet/ext/xml/Transformer.java" />
+         <exclude name="src/org/restlet/ext/xml/TransformRepresentation.java" />
+]]>
+      </files-sets>
+   </source>
+</module>

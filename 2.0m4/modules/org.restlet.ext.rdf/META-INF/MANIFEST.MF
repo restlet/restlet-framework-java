@@ -1,0 +1,20 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Restlet Extension - Rdf
+Bundle-SymbolicName: org.restlet.ext.rdf
+Bundle-Version: 2.0
+Bundle-Vendor: Noelios Technologies
+Export-Package: org.restlet.ext.rdf;
+  uses:="org.restlet.resource,
+   org.restlet,
+   org.restlet.util,
+   org.restlet.data"
+Import-Package: org.restlet,
+ org.restlet.data,
+ org.restlet.engine.util,
+ org.restlet.ext.xml,
+ org.restlet.representation,
+ org.restlet.resource,
+ org.restlet.service,
+ org.restlet.util
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

@@ -1,0 +1,31 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: JSON StAX Implementation
+Bundle-SymbolicName: org.codehaus.jettison
+Bundle-Version: 1.1
+Bundle-ClassPath: org.codehaus.jettison.jar
+Bundle-Vendor: Envoi Solutions LLC
+Export-Package: org.codehaus.jettison;
+  uses:="org.codehaus.jettison.util,
+   javax.xml.stream,
+   javax.xml.stream.util,
+   org.codehaus.jettison.json,
+   javax.xml.transform,
+   javax.xml.stream.events,
+   org.w3c.dom,
+   javax.xml.namespace",
+ org.codehaus.jettison.badgerfish;
+  uses:="org.codehaus.jettison.util,
+   javax.xml.stream,
+   org.codehaus.jettison.json,
+   org.codehaus.jettison,
+   javax.xml.namespace",
+ org.codehaus.jettison.json,
+ org.codehaus.jettison.mapped;
+  uses:="org.codehaus.jettison.util,
+   javax.xml.stream,
+   org.codehaus.jettison.json,
+   org.codehaus.jettison,
+   javax.xml.namespace",
+ org.codehaus.jettison.util
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

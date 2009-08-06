@@ -1,0 +1,34 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Restlet Extension - Simple
+Bundle-SymbolicName: org.restlet.ext.simple
+Bundle-Version: 2.0
+Bundle-Vendor: Noelios Technologies
+Export-Package: org.restlet.ext.simple;
+  uses:="org.restlet.data,
+   org.simpleframework.http.core,
+   org.restlet,
+   org.restlet.util,
+   org.simpleframework.transport.connect,
+   org.simpleframework.transport,
+   org.restlet.engine.http,
+   javax.net.ssl,
+   org.simpleframework.http"
+Import-Package: org.restlet,
+ org.restlet.data,
+ org.restlet.engine,
+ org.restlet.engine.application,
+ org.restlet.engine.component,
+ org.restlet.engine.http,
+ org.restlet.engine.io,
+ org.restlet.engine.local,
+ org.restlet.engine.security,
+ org.restlet.engine.util,
+ org.restlet.resource,
+ org.restlet.service,
+ org.restlet.util,
+ org.simpleframework.http,
+ org.simpleframework.http.core,
+ org.simpleframework.transport,
+ org.simpleframework.transport.connect
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

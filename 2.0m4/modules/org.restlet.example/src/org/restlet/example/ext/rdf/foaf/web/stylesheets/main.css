@@ -1,0 +1,45 @@
+
+/* general */
+* {margin:0; padding:0}
+
+html, body {width:100%; height:100%; text-align:center; font:100% "Trebuchet MS", "Lucida Sans", Arial, Helvetica, sans-serif; color:#2e3436; background:#ffffff}
+acronym {text-decoration:none; font-weight:bold; font-style:normal; cursor:help}
+img {border: none}
+th {padding: 2px;background-color: #555753; color:white; font-weight: bold}
+td {padding: 2px}
+select {padding:1px;}
+
+/* error messages */
+.error {color:red; border: 1px solid red; padding: 2px; margin-bottom: 10px}
+
+/* container */
+#container {width:700px; margin:0 auto;text-align:left; background:#ffffff;overflow:auto;}
+#container p {margin:10px 20px 0; line-height:140%; text-align:justify}
+#container p.p1 {text-indent:20px}
+
+/* header */
+#header {height:50px; background:#66CC00; padding-top: 20px; margin-bottom:20px}
+
+/* quickSummary */
+#quickSummary {color:#292f33; text-align:center;font-size:110%;}
+
+/* content */
+#content {width:530px; float:right; overflow:auto;}
+#content a:link, #content a:visited {color:#292f33; text-decoration:none; background:transparent; border-bottom:1px solid #292f33}
+#content a:hover, #content a:focus {color:#3c4246; text-decoration:none; background:transparent; border-bottom:2px solid #3c4246}
+#content a:active {color:#d8dde0; text-decoration:none; background:#3c4246; border-bottom:2px solid #3c4246}
+
+/* menu */
+#menu {float:left;width:150px; text-align:center ; border-right: 1px solid black; font:100% "Trebuchet MS", "Lucida Sans", Arial, Helvetica, sans-serif; }
+#menu h3, #menu li {clear:left; width:150px; height:30px; overflow:hidden}
+#menu li {list-style:none; color:#885c2f}
+#menu img {height: 20px}
+
+#menu a {display:block; color: #3465a4;background:transparent}
+#menu a:link, #menu a:visited {color:#292f33; text-decoration:none; border-bottom:1px solid #292f33}
+#menu a:hover, #menu a:focus {color:#d8dde0; text-decoration:none; background:#3c4246; border-bottom:2px solid #3c4246}
+#menu a:active {color:#d8dde0; text-decoration:none; background:#3c4246; border-bottom:2px solid #3c4246}
+
+/* footer */
+#footer {height:50px; padding-top: 50px; margin-left:auto; margin-right: auto; clear:both; }
+#footer img {vertical-align: middle}

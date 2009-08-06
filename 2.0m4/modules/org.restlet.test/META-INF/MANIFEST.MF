@@ -1,0 +1,37 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Restlet Unit Tests
+Bundle-SymbolicName: org.restlet.test
+Bundle-Version: 2.0
+Bundle-Vendor: Noelios Technologies
+onEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Require-Bundle: org.restlet,
+ org.restlet.ext.xstream,
+ org.restlet.ext.xml,
+ org.restlet.ext.json,
+ org.restlet.ext.atom,
+ org.restlet.ext.spring,
+ org.restlet.ext.jaxb,
+ org.restlet.ext.jaxrs,
+ org.restlet.ext.gwt,
+ org.restlet.ext.grizzly,
+ org.restlet.ext.httpclient,
+ org.restlet.ext.net,
+ org.restlet.ext.simple,
+ org.restlet.ext.jetty,
+ org.restlet.ext.freemarker,
+ org.restlet.ext.lucene,
+ org.restlet.ext.velocity,
+ org.restlet.ext.rdf,
+ org.restlet.ext.wadl,
+ com.google.gwt,
+ javax.mail,
+ javax.ws.rs,
+ javax.xml.bind,
+ org.apache.velocity,
+ org.freemarker,
+ org.json,
+ org.junit4,
+ org.springframework,
+ org.apache.tika
