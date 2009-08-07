@@ -4,6 +4,8 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+
+- 2.0 Milestone 4 (2009-08-06)
     - Bugs fixed
         - Improved support for the RFC 3339 date format which was 
           limited due to SimpleDateFormat. Added InternetDateFormat.
