@@ -7,6 +7,8 @@ Changes log
     - Bugs fixed
         - Added Simple extension to the jee edition.
           Reported by Dustin Jenkins.
+        - Fixed bug detected in the CharacterSet class when running in 
+          the MacOS context. Reported by John Logsdon.
 
 - 2.0 Milestone 4 (2009-08-06)
     - Bugs fixed
