@@ -40,19 +40,6 @@ public final class CharacterSet extends Metadata {
     public static final CharacterSet ALL = new CharacterSet("*",
             "All character sets");
 
-    // [ifndef gwt] member
-    /**
-     * The default character set of the JVM.
-     * 
-     * @see java.nio.charset.Charset#defaultCharset()
-     */
-    public static final CharacterSet DEFAULT = new CharacterSet(
-            java.nio.charset.Charset.defaultCharset());
-
-    // [ifdef gwt] member uncomment
-    // public static final CharacterSet DEFAULT = new CharacterSet("ISO-8859-1",
-    // "ISO/IEC 8859-1 or Latin 1 character set");
-
     /**
      * The ISO/IEC 8859-1 (Latin 1) character set.
      * 
@@ -176,6 +163,19 @@ public final class CharacterSet extends Metadata {
      */
     public static final CharacterSet WINDOWS_1252 = new CharacterSet(
             "windows-1252", "Windows 1232 character set");
+
+    // [ifndef gwt] member
+    /**
+     * The default character set of the JVM.
+     * 
+     * @see java.nio.charset.Charset#defaultCharset()
+     */
+    public static final CharacterSet DEFAULT = new CharacterSet(
+            java.nio.charset.Charset.defaultCharset());
+
+    // [ifdef gwt] member uncomment
+    // public static final CharacterSet DEFAULT = new CharacterSet("ISO-8859-1",
+    // "ISO/IEC 8859-1 or Latin 1 character set");
 
     /**
      * Handles mapping between Java character set names and IANA preferred name.
