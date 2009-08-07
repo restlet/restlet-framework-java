@@ -4,6 +4,9 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - Bugs fixed
+        - Added Simple extension to the jee edition.
+          Reported by Dustin Jenkins.
 
 - 2.0 Milestone 4 (2009-08-06)
     - Bugs fixed
