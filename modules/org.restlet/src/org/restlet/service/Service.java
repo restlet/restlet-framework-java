@@ -46,7 +46,7 @@ public abstract class Service {
     /** Indicates if the service has been enabled. */
     private volatile boolean enabled;
 
-    /** Indicates if the restlet was started. */
+    /** Indicates if the service was started. */
     private volatile boolean started;
 
     /**
@@ -101,18 +101,18 @@ public abstract class Service {
     }
 
     /**
-     * Indicates if the Restlet is started.
+     * Indicates if the service is started.
      * 
-     * @return True if the Restlet is started.
+     * @return True if the service is started.
      */
     public boolean isStarted() {
         return this.started;
     }
 
     /**
-     * Indicates if the Restlet is stopped.
+     * Indicates if the service is stopped.
      * 
-     * @return True if the Restlet is stopped.
+     * @return True if the service is stopped.
      */
     public boolean isStopped() {
         return !this.started;
