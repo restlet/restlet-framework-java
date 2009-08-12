@@ -57,6 +57,12 @@ public class Service extends SaxRepresentation {
     public static final String APP_NAMESPACE = "http://www.w3.org/2007/app";
 
     /**
+     * The base reference used to resolve relative references found within the
+     * scope of the xml:base attribute.
+     */
+    private volatile Reference baseReference;
+
+    /**
      * The client HTTP dispatcher.
      */
     private volatile Client clientDispatcher;
@@ -70,59 +76,6 @@ public class Service extends SaxRepresentation {
      * The list of workspaces.
      */
     private volatile List<Workspace> workspaces;
-
-    /**
-     * Constructor.
-     * 
-     * @param context
-     *            The context from which the client dispatcher will be
-     *            retrieved.
-     * @param serviceUri
-     *            The service URI.
-     * @throws IOException
-     */
-    public Service(Context context, String serviceUri) throws IOException {
-        this(context.getClientDispatcher(), serviceUri, context
-                .getClientDispatcher().get(serviceUri).getEntity());
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param serviceUri
-     *            The service URI.
-     * @throws IOException
-     */
-    public Service(String serviceUri) throws IOException {
-        this(new Client(new Reference(serviceUri).getSchemeProtocol()),
-                serviceUri);
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param serviceUri
-     *            The service URI.
-     * @param xmlService
-     *            The XML introspection document.
-     * @throws IOException
-     */
-    public Service(String serviceUri, Representation xmlService)
-            throws IOException {
-        this(new Client(new Reference(serviceUri).getSchemeProtocol()),
-                serviceUri, xmlService);
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param xmlService
-     *            The XML introspection document.
-     * @throws IOException
-     */
-    public Service(Representation xmlService) throws IOException {
-        this(null, null, xmlService);
-    }
 
     /**
      * Constructor.
@@ -171,6 +124,59 @@ public class Service extends SaxRepresentation {
     }
 
     /**
+     * Constructor.
+     * 
+     * @param context
+     *            The context from which the client dispatcher will be
+     *            retrieved.
+     * @param serviceUri
+     *            The service URI.
+     * @throws IOException
+     */
+    public Service(Context context, String serviceUri) throws IOException {
+        this(context.getClientDispatcher(), serviceUri, context
+                .getClientDispatcher().get(serviceUri).getEntity());
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param xmlService
+     *            The XML introspection document.
+     * @throws IOException
+     */
+    public Service(Representation xmlService) throws IOException {
+        this(null, null, xmlService);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param serviceUri
+     *            The service URI.
+     * @throws IOException
+     */
+    public Service(String serviceUri) throws IOException {
+        this(new Client(new Reference(serviceUri).getSchemeProtocol()),
+                serviceUri);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param serviceUri
+     *            The service URI.
+     * @param xmlService
+     *            The XML introspection document.
+     * @throws IOException
+     */
+    public Service(String serviceUri, Representation xmlService)
+            throws IOException {
+        this(new Client(new Reference(serviceUri).getSchemeProtocol()),
+                serviceUri, xmlService);
+    }
+
+    /**
      * Deletes a resource.
      * 
      * @param uri
@@ -179,6 +185,17 @@ public class Service extends SaxRepresentation {
      */
     public Status deleteResource(String uri) {
         return getClientDispatcher().delete(uri).getStatus();
+    }
+
+    /**
+     * Returns the base reference used to resolve relative references found
+     * within the scope of the xml:base attribute.
+     * 
+     * @return The base reference used to resolve relative references found
+     *         within the scope of the xml:base attribute.
+     */
+    public Reference getBaseReference() {
+        return baseReference;
     }
 
     /**
@@ -221,6 +238,18 @@ public class Service extends SaxRepresentation {
         }
 
         return this.workspaces;
+    }
+
+    /**
+     * Sets the base reference used to resolve relative references found within
+     * the scope of the xml:base attribute.
+     * 
+     * @param baseReference
+     *            The base reference used to resolve relative references found
+     *            within the scope of the xml:base attribute.
+     */
+    public void setBaseReference(Reference baseReference) {
+        this.baseReference = baseReference;
     }
 
     /**

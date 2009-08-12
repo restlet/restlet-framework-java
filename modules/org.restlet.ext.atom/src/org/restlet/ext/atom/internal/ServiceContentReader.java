@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.data.MediaType;
+import org.restlet.data.Reference;
 import org.restlet.ext.atom.Collection;
 import org.restlet.ext.atom.Feed;
 import org.restlet.ext.atom.Service;
@@ -165,10 +166,19 @@ public class ServiceContentReader extends DefaultHandler {
             Attributes attrs) throws SAXException {
         if (uri.equalsIgnoreCase(Service.APP_NAMESPACE)) {
             if (localName.equalsIgnoreCase("service")) {
+                String attr = attrs.getValue("xml:base");
+                if (attr != null) {
+                    this.currentService.setBaseReference(new Reference(attr));
+                }
                 this.state = IN_SERVICE;
             } else if (localName.equalsIgnoreCase("workspace")) {
                 if (this.state == IN_SERVICE) {
                     this.currentWorkspace = new Workspace(this.currentService);
+                    String attr = attrs.getValue("xml:base");
+                    if (attr != null) {
+                        this.currentWorkspace.setBaseReference(new Reference(
+                                attr));
+                    }
                     this.state = IN_WORKSPACE;
                 }
             } else if (localName.equalsIgnoreCase("collection")) {
@@ -176,6 +186,12 @@ public class ServiceContentReader extends DefaultHandler {
                     this.currentCollection = new Collection(
                             this.currentWorkspace, attrs.getValue("title"),
                             attrs.getValue("href"));
+                    String attr = attrs.getValue("xml:base");
+                    if (attr != null) {
+                        this.currentCollection.setBaseReference(new Reference(
+                                attr));
+                    }
+
                     this.state = IN_COLLECTION;
                 }
             } else if (localName.equalsIgnoreCase("accept")) {

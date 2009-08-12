@@ -53,6 +53,12 @@ import org.xml.sax.SAXException;
 public class Categories extends SaxRepresentation {
 
     /**
+     * The base reference used to resolve relative references found within the
+     * scope of the xml:base attribute.
+     */
+    private volatile Reference baseReference;
+
+    /**
      * The list of entries.
      */
     private volatile List<Category> entries;
@@ -117,6 +123,17 @@ public class Categories extends SaxRepresentation {
     }
 
     /**
+     * Returns the base reference used to resolve relative references found
+     * within the scope of the xml:base attribute.
+     * 
+     * @return The base reference used to resolve relative references found
+     *         within the scope of the xml:base attribute.
+     */
+    public Reference getBaseReference() {
+        return baseReference;
+    }
+
+    /**
      * Returns the list of entries.
      * 
      * @return The list of entries.
@@ -141,6 +158,18 @@ public class Categories extends SaxRepresentation {
      */
     public boolean isFixed() {
         return fixed;
+    }
+
+    /**
+     * Sets the base reference used to resolve relative references found within
+     * the scope of the xml:base attribute.
+     * 
+     * @param baseReference
+     *            The base reference used to resolve relative references found
+     *            within the scope of the xml:base attribute.
+     */
+    public void setBaseReference(Reference baseReference) {
+        this.baseReference = baseReference;
     }
 
     /**

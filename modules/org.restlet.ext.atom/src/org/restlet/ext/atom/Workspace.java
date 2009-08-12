@@ -36,6 +36,7 @@ import static org.restlet.ext.atom.Service.APP_NAMESPACE;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.restlet.data.Reference;
 import org.restlet.ext.xml.XmlWriter;
 import org.xml.sax.SAXException;
 
@@ -45,6 +46,12 @@ import org.xml.sax.SAXException;
  * @author Jerome Louvel
  */
 public class Workspace {
+
+    /**
+     * The base reference used to resolve relative references found within the
+     * scope of the xml:base attribute.
+     */
+    private volatile Reference baseReference;
 
     /**
      * The list of collections.
@@ -85,6 +92,17 @@ public class Workspace {
     }
 
     /**
+     * Returns the base reference used to resolve relative references found
+     * within the scope of the xml:base attribute.
+     * 
+     * @return The base reference used to resolve relative references found
+     *         within the scope of the xml:base attribute.
+     */
+    public Reference getBaseReference() {
+        return baseReference;
+    }
+
+    /**
      * Returns the list of collections.
      * 
      * @return The list of collections.
@@ -113,6 +131,18 @@ public class Workspace {
      */
     public String getTitle() {
         return this.title;
+    }
+
+    /**
+     * Sets the base reference used to resolve relative references found within
+     * the scope of the xml:base attribute.
+     * 
+     * @param baseReference
+     *            The base reference used to resolve relative references found
+     *            within the scope of the xml:base attribute.
+     */
+    public void setBaseReference(Reference baseReference) {
+        this.baseReference = baseReference;
     }
 
     /**

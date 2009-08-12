@@ -58,6 +58,12 @@ public class Collection {
      */
     private volatile List<MediaType> accept;
 
+    /**
+     * The base reference used to resolve relative references found within the
+     * scope of the xml:base attribute.
+     */
+    private volatile Reference baseReference;
+
     /** The categories. */
     private volatile Categories categories;
 
@@ -101,6 +107,17 @@ public class Collection {
      */
     public List<MediaType> getAccept() {
         return this.accept;
+    }
+
+    /**
+     * Returns the base reference used to resolve relative references found
+     * within the scope of the xml:base attribute.
+     * 
+     * @return The base reference used to resolve relative references found
+     *         within the scope of the xml:base attribute.
+     */
+    public Reference getBaseReference() {
+        return baseReference;
     }
 
     /**
@@ -196,6 +213,18 @@ public class Collection {
      */
     public void setAccept(List<MediaType> accept) {
         this.accept = accept;
+    }
+
+    /**
+     * Sets the base reference used to resolve relative references found within
+     * the scope of the xml:base attribute.
+     * 
+     * @param baseReference
+     *            The base reference used to resolve relative references found
+     *            within the scope of the xml:base attribute.
+     */
+    public void setBaseReference(Reference baseReference) {
+        this.baseReference = baseReference;
     }
 
     /**
