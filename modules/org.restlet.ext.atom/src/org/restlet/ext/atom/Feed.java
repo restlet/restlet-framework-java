@@ -63,12 +63,17 @@ public class Feed extends SaxRepresentation {
     /** The authors of the feed. */
     private volatile List<Person> authors;
 
+    /**
+     * The base reference used to resolve relative references found within the
+     * scope of the xml:base attribute.
+     */
+    private volatile Reference baseReference;
+
     /** The categories associated with the feed. */
     private volatile List<Category> categories;
 
     /** The contributors to the feed. */
     private volatile List<Person> contributors;
-
     /**
      * Individual entries, acting as a components for associated metadata and
      * data.
@@ -125,6 +130,19 @@ public class Feed extends SaxRepresentation {
     /**
      * Constructor.
      * 
+     * @param clientDispatcher
+     *            The client HTTP dispatcher.
+     * @param feedUri
+     *            The feed URI.
+     * @throws IOException
+     */
+    public Feed(Client clientDispatcher, String feedUri) throws IOException {
+        this(clientDispatcher.get(feedUri).getEntity());
+    }
+
+    /**
+     * Constructor.
+     * 
      * @param context
      *            The context from which the client dispatcher will be
      *            retrieved.
@@ -160,19 +178,6 @@ public class Feed extends SaxRepresentation {
     }
 
     /**
-     * Constructor.
-     * 
-     * @param clientDispatcher
-     *            The client HTTP dispatcher.
-     * @param feedUri
-     *            The feed URI.
-     * @throws IOException
-     */
-    public Feed(Client clientDispatcher, String feedUri) throws IOException {
-        this(clientDispatcher.get(feedUri).getEntity());
-    }
-
-    /**
      * Returns the authors of the entry.
      * 
      * @return The authors of the entry.
@@ -189,6 +194,17 @@ public class Feed extends SaxRepresentation {
             }
         }
         return a;
+    }
+
+    /**
+     * Returns the base reference used to resolve relative references found
+     * within the scope of the xml:base attribute.
+     * 
+     * @return The base reference used to resolve relative references found
+     *         within the scope of the xml:base attribute.
+     */
+    public Reference getBaseReference() {
+        return baseReference;
     }
 
     /**
@@ -341,6 +357,18 @@ public class Feed extends SaxRepresentation {
      */
     public Date getUpdated() {
         return this.updated;
+    }
+
+    /**
+     * Sets the base reference used to resolve relative references found within
+     * the scope of the xml:base attribute.
+     * 
+     * @param baseReference
+     *            The base reference used to resolve relative references found
+     *            within the scope of the xml:base attribute.
+     */
+    public void setBaseReference(Reference baseReference) {
+        this.baseReference = baseReference;
     }
 
     /**
