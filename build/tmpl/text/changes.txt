@@ -161,6 +161,9 @@ Changes log
         extension for better serialization to JSON than the existing
         JSON provider based on the more limited JSON.org library.
         Reported by Juergen Zimmermann.
+      - Added extension based on ROME library to support several 
+        versions of syndication feed formats RSS and Atom.
+        Contributed by Tal Liron.
     - API changes
         - Added client and server RIAP connectors.
           Suggested by John Logsdon and Nirav Shah.
