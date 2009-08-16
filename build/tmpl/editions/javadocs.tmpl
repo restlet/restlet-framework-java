@@ -87,9 +87,9 @@
 				<![CDATA[<i>Copyright &#169; 2005-${current-year} <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
 			</bottom>
 
-			<group title="Standards support" />
-			<group title="Pluggable connectors" />
-			<group title="Third-party integrations" />
+			<group title="Standards support" packages="${standards-packages}" />
+			<group title="Pluggable connectors" packages="${connectors-packages}" />
+			<group title="Third-party integrations" packages="${integrations-packages}" />
 </#noparse>
 <#list edition.javadocsLinks as link>
 			${link}
