@@ -13,7 +13,6 @@ Export-Package: org.restlet.ext.oauth;
    net.oauth"
 Import-Package: net.oauth,
  net.oauth.client,
- net.oauth.server,
  net.oauth.signature,
  org.apache.commons.codec.digest,
  org.apache.commons.dbcp,

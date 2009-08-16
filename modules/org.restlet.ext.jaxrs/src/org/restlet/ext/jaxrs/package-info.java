@@ -49,7 +49,5 @@
  *      HTML (non normative)</a>
  * @see <a href="https://jsr311.dev.java.net/">JSR-311 Web site</a>
  * @author Stephan Koops
- * 
- * @author Stephan Koops
  */
 package org.restlet.ext.jaxrs;

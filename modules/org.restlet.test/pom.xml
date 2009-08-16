@@ -95,11 +95,6 @@
 		</dependency>
 		<dependency>
 			<groupId>org.restlet</groupId>
-			<artifactId>org.restlet.ext.script</artifactId>
-			<version>${version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.restlet</groupId>
 			<artifactId>org.restlet.ext.simple</artifactId>
 			<version>${version}</version>
 		</dependency>
