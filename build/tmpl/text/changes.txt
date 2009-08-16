@@ -12,6 +12,16 @@ Changes log
      - Enhancements
         - Added support of the "xml:base" attibute when parsing Atom 
           Publishing documents.
+        - Updated Grizzly to version 1.9.17.
+        - Updated FileUpload to version 1.2.1.
+        - Updated JavaMail to version 1.4.2.
+        - Updated JAXB RI to version 2.1.12.
+        - Updated JSON library to version from 2009/08/16.
+        - Updated Lucene to version 2.4.1.
+        - Updated Tika to version 0.4.
+        - Updated OAuth library to version from 2009/06/17.
+        - Updated Velocity to version 1.6.2.
+        - Updated JiBX to version 1.2.1.
 
 - 2.0 Milestone 4 (2009-08-06)
     - Bugs fixed
