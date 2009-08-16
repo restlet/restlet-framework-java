@@ -19,7 +19,12 @@ Changes log
         - The "Location" header must contain an absolute URI.
           Reported by Simon Reinhardt.
     - Misc
-        - Upgraded Grizzly to version 1.9.16.
+        - Updated Grizzly to version 1.9.17.
+        - Updated FileUpload to version 1.2.1.
+        - Updated JavaMail to version 1.4.2.
+        - Updated JAXB RI to version 2.1.12.
+        - Updated JSON library to version from 2009/08/16.
+        - Updated OAuth library to version from 2009/06/17.
         - Removed console traces when Restlet-GWT starts and stops the
           HTTP client. Reported by Frank Rousseau.
 
