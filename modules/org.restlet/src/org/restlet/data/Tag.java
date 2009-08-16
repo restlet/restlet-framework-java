@@ -33,16 +33,18 @@ package org.restlet.data;
 import java.util.logging.Level;
 
 import org.restlet.Context;
+import org.restlet.representation.RepresentationInfo;
 
 /**
- * Validation tag equivalent to the HTTP entity tag. "A strong entity tag may be
- * shared by two entities of a resource only if they are equivalent by octet
- * equality.<br>
+ * Validation tag equivalent to an HTTP entity tag (E-Tag). "A strong entity tag
+ * may be shared by two entities of a resource only if they are equivalent by
+ * octet equality.<br>
  * <br>
  * A weak entity tag may be shared by two entities of a resource only if the
  * entities are equivalent and could be substituted for each other with no
  * significant change in semantics."
  * 
+ * @see RepresentationInfo#getTag()
  * @see <a
  *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.11">HTTP
  *      Entity Tags</a>

@@ -131,7 +131,10 @@ public class Response extends Message {
      * Returns the modifiable set of methods allowed on the requested resource.
      * This property only has to be updated when a status
      * CLIENT_ERROR_METHOD_NOT_ALLOWED is set. Creates a new instance if no one
-     * has been set.
+     * has been set.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Allow" header.
      * 
      * @return The set of allowed methods.
      */
@@ -151,7 +154,10 @@ public class Response extends Message {
 
     /**
      * Returns the list of authentication requests sent by an origin server to a
-     * client. If none is available, an empty list is returned.
+     * client. If none is available, an empty list is returned.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "WWW-Authenticate" header.
      * 
      * @return The list of authentication requests.
      */
@@ -171,7 +177,10 @@ public class Response extends Message {
 
     /**
      * Returns the modifiable series of cookie settings provided by the server.
-     * Creates a new instance if no one has been set.
+     * Creates a new instance if no one has been set.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Set-Cookie" and "Set-Cookie2" headers.
      * 
      * @return The cookie settings provided by the server.
      */
@@ -193,7 +202,10 @@ public class Response extends Message {
      * Returns the modifiable set of selecting dimensions on which the response
      * entity may vary. If some server-side content negotiation is done, this
      * set should be properly updated, other it can be left empty. Creates a new
-     * instance if no one has been set.
+     * instance if no one has been set.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Vary" header.
      * 
      * @return The set of dimensions on which the response entity may vary.
      */
@@ -206,7 +218,10 @@ public class Response extends Message {
 
     /**
      * Returns the reference that the client should follow for redirections or
-     * resource creations.
+     * resource creations.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Location" header.
      * 
      * @return The redirection reference.
      */
@@ -216,7 +231,10 @@ public class Response extends Message {
 
     /**
      * Returns the list of authentication requests sent by an origin server to a
-     * client. If none is available, an empty list is returned.
+     * client. If none is available, an empty list is returned.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Proxy-Authenticate" header.
      * 
      * @return The list of authentication requests.
      */
@@ -370,7 +388,10 @@ public class Response extends Message {
     /**
      * Sets the set of methods allowed on the requested resource. The set
      * instance set must be thread-safe (use {@link CopyOnWriteArraySet} for
-     * example.
+     * example.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Allow" header.
      * 
      * @param allowedMethods
      *            The set of methods allowed on the requested resource.
@@ -398,7 +419,10 @@ public class Response extends Message {
     /**
      * Sets the list of authentication requests sent by an origin server to a
      * client. The list instance set must be thread-safe (use
-     * {@link CopyOnWriteArrayList} for example.
+     * {@link CopyOnWriteArrayList} for example.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "WWW-Authenticate" header.
      * 
      * @param requests
      *            The list of authentication requests sent by an origin server
@@ -409,7 +433,10 @@ public class Response extends Message {
     }
 
     /**
-     * Sets the cookie settings provided by the server.
+     * Sets the cookie settings provided by the server.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Set-Cookie" and "Set-Cookie2" headers.
      * 
      * @param cookieSettings
      *            The cookie settings provided by the server.
@@ -421,7 +448,10 @@ public class Response extends Message {
     /**
      * Sets the set of dimensions on which the response entity may vary. The set
      * instance set must be thread-safe (use {@link CopyOnWriteArraySet} for
-     * example.
+     * example.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Vary" header.
      * 
      * @param dimensions
      *            The set of dimensions on which the response entity may vary.
@@ -432,7 +462,10 @@ public class Response extends Message {
 
     /**
      * Sets the reference that the client should follow for redirections or
-     * resource creations.
+     * resource creations.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Location" header.
      * 
      * @param locationRef
      *            The reference to set.
@@ -446,10 +479,14 @@ public class Response extends Message {
      * resource creations. If you pass a relative location URI, it will be
      * resolved with the current base reference of the request's resource
      * reference (see {@link Request#getResourceRef()} and
-     * {@link Reference#getBaseRef()}.
+     * {@link Reference#getBaseRef()}.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Location" header.
      * 
      * @param locationUri
      *            The URI to set.
+     * @see #setLocationRef(Reference)
      */
     public void setLocationRef(String locationUri) {
         Reference baseRef = null;
@@ -468,7 +505,10 @@ public class Response extends Message {
     /**
      * Sets the list of authentication requests sent by a proxy to a client. The
      * list instance set must be thread-safe (use {@link CopyOnWriteArrayList}
-     * for example.
+     * for example.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Proxy-Authenticate" header.
      * 
      * @param requests
      *            The list of authentication requests sent by a proxy to a

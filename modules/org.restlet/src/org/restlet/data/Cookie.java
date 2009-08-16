@@ -37,8 +37,12 @@ import org.restlet.engine.util.SystemUtils;
  * you can use the {@link Request#getCookies()} method.<br>
  * <br>
  * Note that if you are on the server side and want to set a cookie on the
- * client, you should use the {@link CookieSetting} class instead.
+ * client, you should use the {@link CookieSetting} class instead.<br>
+ * <br>
+ * Note that when used with HTTP connectors, this class maps to the "Cookie"
+ * header.
  * 
+ * @see Request#getCookies()
  * @author Jerome Louvel
  */
 public class Cookie extends Parameter {

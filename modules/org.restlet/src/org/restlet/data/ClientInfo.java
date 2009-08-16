@@ -263,7 +263,10 @@ public final class ClientInfo {
 
     /**
      * Returns the modifiable list of character set preferences. Creates a new
-     * instance if no one has been set.
+     * instance if no one has been set.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Accept-Charset" header.
      * 
      * @return The character set preferences.
      */
@@ -283,7 +286,10 @@ public final class ClientInfo {
 
     /**
      * Returns the modifiable list of encoding preferences. Creates a new
-     * instance if no one has been set.
+     * instance if no one has been set.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Accept-Encoding" header.
      * 
      * @return The encoding preferences.
      */
@@ -303,7 +309,10 @@ public final class ClientInfo {
 
     /**
      * Returns the modifiable list of language preferences. Creates a new
-     * instance if no one has been set.
+     * instance if no one has been set.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Accept-Language" header.
      * 
      * @return The language preferences.
      */
@@ -323,7 +332,10 @@ public final class ClientInfo {
 
     /**
      * Returns the modifiable list of media type preferences. Creates a new
-     * instance if no one has been set.
+     * instance if no one has been set.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Accept" header.
      * 
      * @return The media type preferences.
      */
@@ -374,7 +386,10 @@ public final class ClientInfo {
     }
 
     /**
-     * Returns the agent name (ex: "Noelios-Restlet-Engine/1.1").
+     * Returns the agent name (ex: "Restlet-Framework/2.0").<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "User-Agent" header.
      * 
      * @return The agent name.
      */
@@ -387,6 +402,7 @@ public final class ClientInfo {
      * Returns a list of attributes taken from the name of the user agent.
      * 
      * @return A list of attributes taken from the name of the user agent.
+     * @see #getAgent()
      */
     public Map<String, String> getAgentAttributes() {
 
@@ -443,6 +459,7 @@ public final class ClientInfo {
      * Returns the name of the user agent.
      * 
      * @return The name of the user agent.
+     * @see #getAgent()
      */
     public String getAgentName() {
         final Product product = getMainAgentProduct();
@@ -458,6 +475,7 @@ public final class ClientInfo {
      * Returns the list of product tokens from the user agent name.
      * 
      * @return The list of product tokens from the user agent name.
+     * @see #getAgent()
      */
     public List<Product> getAgentProducts() {
         if (this.agentProducts == null) {
@@ -472,6 +490,7 @@ public final class ClientInfo {
      * Returns the version of the user agent.
      * 
      * @return The version of the user agent.
+     * @see #getAgent()
      */
     public String getAgentVersion() {
         final Product product = getMainAgentProduct();
@@ -729,7 +748,10 @@ public final class ClientInfo {
     }
 
     /**
-     * Sets the character set preferences.
+     * Sets the character set preferences.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Accept-Charset" header.
      * 
      * @param acceptedCharacterSets
      *            The character set preferences.
@@ -740,7 +762,10 @@ public final class ClientInfo {
     }
 
     /**
-     * Sets the encoding preferences.
+     * Sets the encoding preferences.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Accept-Encoding" header.
      * 
      * @param acceptedEncodings
      *            The encoding preferences.
@@ -751,7 +776,10 @@ public final class ClientInfo {
     }
 
     /**
-     * Sets the language preferences.
+     * Sets the language preferences.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Accept-Language" header.
      * 
      * @param acceptedLanguages
      *            The language preferences.
@@ -762,7 +790,10 @@ public final class ClientInfo {
     }
 
     /**
-     * Sets the media type preferences.
+     * Sets the media type preferences.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Accept" header.
      * 
      * @param acceptedMediaTypes
      *            The media type preferences.
@@ -795,7 +826,10 @@ public final class ClientInfo {
     }
 
     /**
-     * Sets the agent name (ex: "Noelios Restlet Engine/1.1").
+     * Sets the agent name (ex: "Restlet-Framework/2.0").<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "User-Agent" header.
      * 
      * @param agent
      *            The agent name.
@@ -822,6 +856,7 @@ public final class ClientInfo {
      * 
      * @param forwardedAddresses
      *            The list of forwarded IP addresses.
+     * @see #getForwardedAddresses()
      */
     public void setForwardedAddresses(List<String> forwardedAddresses) {
         this.forwardedAddresses = forwardedAddresses;

@@ -34,7 +34,10 @@ import org.restlet.engine.util.SystemUtils;
 
 /**
  * Cookie setting provided by a server. This allows a server side application to
- * add, modify or remove a cookie on the client. *
+ * add, modify or remove a cookie on the client.<br>
+ * <br>
+ * Note that when used with HTTP connectors, this class maps to the "Set-Cookie"
+ * and "Set-Cookie2" headers.
  * 
  * @see Response#getCookieSettings()
  * @author Jerome Louvel
@@ -243,8 +246,8 @@ public final class CookieSetting extends Cookie {
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        return SystemUtils.hashCode(super.hashCode(), getComment(), getMaxAge(),
-                isSecure());
+        return SystemUtils.hashCode(super.hashCode(), getComment(),
+                getMaxAge(), isSecure());
     }
 
     /**

@@ -31,13 +31,14 @@
 package org.restlet.data;
 
 /**
- * Dimension on which the representations of a resource may vary.
+ * Dimension on which the representations of a resource may vary.<br>
+ * <br>
+ * Note that when used with HTTP connectors, this class maps to the "Vary"
+ * header.
  * 
+ * @see Response#getDimensions()
  * @author Jerome Louvel
  * @author Piyush Purang (ppurang@gmail.com)
- * @see <a
- *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.44"
- *      >HTTP Vary header</a>
  */
 public enum Dimension {
     AUTHORIZATION, CHARACTER_SET, CLIENT_ADDRESS, CLIENT_AGENT, UNSPECIFIED, ENCODING, LANGUAGE, MEDIA_TYPE, TIME,

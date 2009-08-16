@@ -145,7 +145,10 @@ public class Variant {
     }
 
     /**
-     * Returns the character set or null if not applicable.
+     * Returns the character set or null if not applicable.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Content-Type" header.
      * 
      * @return The character set or null if not applicable.
      */
@@ -157,7 +160,10 @@ public class Variant {
      * Returns the modifiable list of encodings applied to the entity-body.
      * Creates a new instance if no one has been set. An
      * "IllegalArgumentException" exception is thrown when adding a null
-     * encoding to this list.
+     * encoding to this list.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Content-Encoding" header.
      * 
      * @return The list of encodings applied to the entity-body.
      */
@@ -228,7 +234,10 @@ public class Variant {
     /**
      * Returns an optional identifier. This is useful when the representation is
      * accessible from a location separate from the representation's resource
-     * URI, for example when content negotiation occurs.
+     * URI, for example when content negotiation occurs.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Content-Location" header.
      * 
      * @return The identifier.
      */
@@ -239,7 +248,10 @@ public class Variant {
     /**
      * Returns the modifiable list of languages. Creates a new instance if no
      * one has been set. An "IllegalArgumentException" exception is thrown when
-     * adding a null language to this list.
+     * adding a null language to this list.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Content-Language" header.
      * 
      * @return The list of languages.
      */
@@ -308,7 +320,10 @@ public class Variant {
     }
 
     /**
-     * Returns the media type.
+     * Returns the media type.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Content-Type" header.
      * 
      * @return The media type.
      */
@@ -406,7 +421,10 @@ public class Variant {
     }
 
     /**
-     * Sets the character set or null if not applicable.
+     * Sets the character set or null if not applicable.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Content-Type" header.
      * 
      * @param characterSet
      *            The character set or null if not applicable.
@@ -416,7 +434,10 @@ public class Variant {
     }
 
     /**
-     * Sets the list of encodings applied to the entity-body.
+     * Sets the list of encodings applied to the entity-body.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Content-Encoding" header.
      * 
      * @param encodings
      *            The list of encodings applied to the entity-body.
@@ -428,7 +449,10 @@ public class Variant {
     /**
      * Sets the optional identifier. This is useful when the representation is
      * accessible from a location separate from the representation's resource
-     * URI, for example when content negotiation occurs.
+     * URI, for example when content negotiation occurs.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Content-Location" header.
      * 
      * @param identifier
      *            The identifier.
@@ -438,17 +462,24 @@ public class Variant {
     }
 
     /**
-     * Sets the identifier from a URI string.
+     * Sets the identifier from a URI string.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Content-Location" header.
      * 
      * @param identifierUri
      *            The identifier to parse.
+     * @see #setIdentifier(Reference)
      */
     public void setIdentifier(String identifierUri) {
         setIdentifier(new Reference(identifierUri));
     }
 
     /**
-     * Sets the list of languages.
+     * Sets the list of languages.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Content-Language" header.
      * 
      * @param languages
      *            The list of languages.
@@ -458,7 +489,10 @@ public class Variant {
     }
 
     /**
-     * Sets the media type.
+     * Sets the media type.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Content-Type" header.
      * 
      * @param mediaType
      *            The media type.

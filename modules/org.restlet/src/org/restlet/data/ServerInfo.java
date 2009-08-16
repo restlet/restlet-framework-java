@@ -68,7 +68,10 @@ public final class ServerInfo {
     }
 
     /**
-     * Returns the agent name (ex: "Noelios Restlet Engine/1.1").
+     * Returns the agent name (ex: "Restlet-Framework/2.0").<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Server" header.
      * 
      * @return The agent name.
      */
@@ -87,7 +90,10 @@ public final class ServerInfo {
     }
 
     /**
-     * Return true if the server accepts range requests for a resource.
+     * Return true if the server accepts range requests for a resource.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Accept-Ranges" header.
      * 
      * @return True if the server accepts range requests for a resource.
      */
@@ -96,7 +102,10 @@ public final class ServerInfo {
     }
 
     /**
-     * Indicates if the server accepts range requests for a resource.
+     * Indicates if the server accepts range requests for a resource.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Accept-Ranges" header.
      * 
      * @param acceptRanges
      *            True if the server accepts range requests for a resource.
@@ -116,7 +125,10 @@ public final class ServerInfo {
     }
 
     /**
-     * Sets the agent name (ex: "Noelios Restlet Engine/1.1").
+     * Sets the agent name (ex: "Restlet-Framework/2.0").<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Server" header.
      * 
      * @param agent
      *            The agent name.

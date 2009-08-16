@@ -102,7 +102,7 @@ public class Engine {
             + RELEASE_NUMBER;
 
     /** Complete version header. */
-    public static final String VERSION_HEADER = "Noelios-Restlet/" + VERSION;
+    public static final String VERSION_HEADER = "Restlet-Framework/" + VERSION;
 
     // [ifndef gwt] method
     /**

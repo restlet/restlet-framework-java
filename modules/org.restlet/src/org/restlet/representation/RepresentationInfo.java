@@ -159,7 +159,10 @@ public class RepresentationInfo extends Variant {
 
     /**
      * Returns the last date when this representation was modified. If this
-     * information is not known, returns null.
+     * information is not known, returns null.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Last-Modified" header.
      * 
      * @return The modification date.
      */
@@ -168,7 +171,10 @@ public class RepresentationInfo extends Variant {
     }
 
     /**
-     * Returns the tag.
+     * Returns the tag.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "ETag" header.
      * 
      * @return The tag.
      */
@@ -178,7 +184,10 @@ public class RepresentationInfo extends Variant {
 
     /**
      * Sets the last date when this representation was modified. If this
-     * information is not known, pass null.
+     * information is not known, pass null.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Last-Modified" header.
      * 
      * @param modificationDate
      *            The modification date.
@@ -188,7 +197,10 @@ public class RepresentationInfo extends Variant {
     }
 
     /**
-     * Sets the tag.
+     * Sets the tag.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "ETag" header.
      * 
      * @param tag
      *            The tag.

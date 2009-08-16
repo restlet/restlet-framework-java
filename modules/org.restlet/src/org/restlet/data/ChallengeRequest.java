@@ -36,7 +36,10 @@ import org.restlet.util.Series;
 /**
  * Authentication challenge sent by an origin server to a client. Upon reception
  * of this request, the client should send a new request with the proper
- * {@link ChallengeResponse} set.
+ * {@link ChallengeResponse} set.<br>
+ * <br>
+ * Note that when used with HTTP connectors, this class maps to the
+ * "WWW-Authenticate" header.
  * 
  * @author Jerome Louvel
  */

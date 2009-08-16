@@ -77,8 +77,11 @@ public final class Conditions {
     }
 
     /**
-     * Returns the modifiable list of tags for the "if-match" condition. Creates
-     * a new instance if no one has been set.
+     * Returns the modifiable list of tags that must be matched. Creates a new
+     * instance if no one has been set.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "If-Match" header.
      * 
      * @return The "if-match" condition.
      */
@@ -97,19 +100,26 @@ public final class Conditions {
     }
 
     /**
-     * Returns the "if-modified-since" condition.
+     * Returns the condition based on the modification date of the requested
+     * variant.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "If-Modified-Since" header.
      * 
-     * @return The "if-modified-since" condition.
+     * @return The condition date.
      */
     public Date getModifiedSince() {
         return this.modifiedSince;
     }
 
     /**
-     * Returns the modifiable list of tags for the "if-none-match" condition.
-     * Creates a new instance if no one has been set.
+     * Returns the modifiable list of tags that mustn't match. Creates a new
+     * instance if no one has been set.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "If-None-Match" header.
      * 
-     * @return The "if-none-match" condition.
+     * @return The list of tags that mustn't match.
      */
     public List<Tag> getNoneMatch() {
         // Lazy initialization with double-check.
@@ -276,9 +286,13 @@ public final class Conditions {
     }
 
     /**
-     * Returns the "if-unmodified-since" condition.
+     * Returns the condition based on the modification date of the requested
+     * variant.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "If-Unmodified-Since" header.
      * 
-     * @return The "if-unmodified-since" condition.
+     * @return The condition date.
      */
     public Date getUnmodifiedSince() {
         return this.unmodifiedSince;
@@ -296,7 +310,10 @@ public final class Conditions {
     }
 
     /**
-     * Sets the "if-match" condition.
+     * Sets the modifiable list of tags that must be matched.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "If-Match" header.
      * 
      * @param tags
      *            The "if-match" condition.
@@ -306,30 +323,42 @@ public final class Conditions {
     }
 
     /**
-     * Sets the "if-modified-since" condition.
+     * Sets the condition based on the modification date of the requested
+     * variant.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "If-Modified-Since" header.
      * 
      * @param date
-     *            The "if-modified-since" condition.
+     *            The modification date.
      */
     public void setModifiedSince(Date date) {
         this.modifiedSince = DateUtils.unmodifiable(date);
     }
 
     /**
-     * Sets the "if-none-match" condition.
+     * Sets the modifiable list of tags that mustn't match. Creates a new
+     * instance if no one has been set.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "If-None-Match" header.
      * 
      * @param tags
-     *            The "if-none-match" condition.
+     *            The list of tags that mustn't match.
      */
     public void setNoneMatch(List<Tag> tags) {
         this.noneMatch = tags;
     }
 
     /**
-     * Sets the "if-unmodified-since" condition.
+     * Sets the condition based on the modification date of the requested
+     * variant.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "If-Unmodified-Since" header.
      * 
      * @param date
-     *            The "if-unmodified-since" condition.
+     *            The condition date.
      */
     public void setUnmodifiedSince(Date date) {
         this.unmodifiedSince = DateUtils.unmodifiable(date);

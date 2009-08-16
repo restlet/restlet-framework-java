@@ -392,7 +392,10 @@ public abstract class Representation extends RepresentationInfo {
 
     // [ifndef gwt] method
     /**
-     * Returns the representation digest if any.
+     * Returns the representation digest if any.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Content-MD5" header.
      * 
      * @return The representation digest or null.
      */
@@ -449,7 +452,11 @@ public abstract class Representation extends RepresentationInfo {
      * mainly used to suggest to the client a local name for a downloaded
      * representation. Note that in order for this property to be sent from
      * servers to clients, you also need to call
-     * {@link #setDownloadable(boolean)} with a 'true' value.
+     * {@link #setDownloadable(boolean)} with a 'true' value.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Content-Disposition" header with this value:
+     * "attachment; filename=<downloadName>".
      * 
      * @return The suggested file name for this representation.
      */
@@ -459,7 +466,10 @@ public abstract class Representation extends RepresentationInfo {
 
     /**
      * Returns the future date when this representation expire. If this
-     * information is not known, returns null.
+     * information is not known, returns null.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Expires" header.
      * 
      * @return The expiration date.
      */
@@ -470,7 +480,10 @@ public abstract class Representation extends RepresentationInfo {
     // [ifndef gwt] method
     /**
      * Returns the range where in the full content the partial content available
-     * should be applied.
+     * should be applied.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Content-Range" header.
      * 
      * @return The content range or null if the full content is available.
      */
@@ -491,7 +504,10 @@ public abstract class Representation extends RepresentationInfo {
     public abstract Reader getReader() throws IOException;
 
     /**
-     * Returns the size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
+     * Returns the size in bytes if known, UNKNOWN_SIZE (-1) otherwise.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Content-Length" header.
      * 
      * @return The size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
      */
@@ -603,7 +619,10 @@ public abstract class Representation extends RepresentationInfo {
 
     // [ifndef gwt] method
     /**
-     * Sets the representation digest.
+     * Sets the representation digest.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Content-MD5" header.
      * 
      * @param digest
      *            The representation digest.
@@ -626,7 +645,11 @@ public abstract class Representation extends RepresentationInfo {
     /**
      * Set the suggested download file name for this representation. Note that
      * in order for this property to be sent from servers to clients, you also
-     * need to call {@link #setDownloadable(boolean)} with a 'true' value.
+     * need to call {@link #setDownloadable(boolean)} with a 'true' value.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Content-Disposition" header with this value:
+     * "attachment; filename=<downloadName>".
      * 
      * @param fileName
      *            The suggested file name.
@@ -637,7 +660,10 @@ public abstract class Representation extends RepresentationInfo {
 
     /**
      * Sets the future date when this representation expire. If this information
-     * is not known, pass null.
+     * is not known, pass null.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Expires" header.
      * 
      * @param expirationDate
      *            The expiration date.
@@ -649,7 +675,10 @@ public abstract class Representation extends RepresentationInfo {
     // [ifndef gwt] method
     /**
      * Sets the range where in the full content the partial content available
-     * should be applied.
+     * should be applied.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Content-Range" header.
      * 
      * @param range
      *            The content range.
@@ -659,7 +688,10 @@ public abstract class Representation extends RepresentationInfo {
     }
 
     /**
-     * Sets the expected size in bytes if known, -1 otherwise.
+     * Sets the expected size in bytes if known, -1 otherwise.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Content-Length" header.
      * 
      * @param expectedSize
      *            The expected size in bytes if known, -1 otherwise.

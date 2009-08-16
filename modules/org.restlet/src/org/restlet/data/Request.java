@@ -202,7 +202,10 @@ public class Request extends Message {
     }
 
     /**
-     * Returns the authentication response sent by a client to an origin server.
+     * Returns the authentication response sent by a client to an origin server.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Authorization" header.
      * 
      * @return The authentication response sent by a client to an origin server.
      */
@@ -252,7 +255,10 @@ public class Request extends Message {
 
     /**
      * Returns the modifiable series of cookies provided by the client. Creates
-     * a new instance if no one has been set.
+     * a new instance if no one has been set.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Cookie" header.
      * 
      * @return The cookies provided by the client.
      */
@@ -273,7 +279,10 @@ public class Request extends Message {
     /**
      * Returns the host reference. This may be different from the resourceRef's
      * host, for example for URNs and other URIs that don't contain host
-     * information.
+     * information.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Host" header.
      * 
      * @return The host reference.
      */
@@ -328,7 +337,10 @@ public class Request extends Message {
 
     // [ifndef gwt] method
     /**
-     * Returns the authentication response sent by a client to a proxy.
+     * Returns the authentication response sent by a client to a proxy.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Proxy-Authorization" header.
      * 
      * @return The authentication response sent by a client to a proxy.
      */
@@ -338,7 +350,10 @@ public class Request extends Message {
 
     // [ifndef gwt] method
     /**
-     * Returns the ranges to return from the target resource's representation.
+     * Returns the ranges to return from the target resource's representation.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Range" header.
      * 
      * @return The ranges to return.
      */
@@ -357,7 +372,10 @@ public class Request extends Message {
     }
 
     /**
-     * Returns the referrer reference if available.
+     * Returns the referrer reference if available.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Referer" header.
      * 
      * @return The referrer reference.
      */
@@ -391,6 +409,7 @@ public class Request extends Message {
      * 
      * @return The reference of the target resource.
      * @see #getOriginalRef()
+     * @see #getHostRef()
      */
     public Reference getResourceRef() {
         return this.resourceRef;
@@ -436,7 +455,10 @@ public class Request extends Message {
     }
 
     /**
-     * Sets the authentication response sent by a client to an origin server.
+     * Sets the authentication response sent by a client to an origin server.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Authorization" header.
      * 
      * @param challengeResponse
      *            The authentication response sent by a client to an origin
@@ -467,7 +489,10 @@ public class Request extends Message {
     }
 
     /**
-     * Sets the cookies provided by the client.
+     * Sets the cookies provided by the client.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Cookie" header.
      * 
      * @param cookies
      *            The cookies provided by the client.
@@ -477,7 +502,10 @@ public class Request extends Message {
     }
 
     /**
-     * Sets the host reference.
+     * Sets the host reference.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Host" header.
      * 
      * @param hostRef
      *            The host reference.
@@ -487,7 +515,10 @@ public class Request extends Message {
     }
 
     /**
-     * Sets the host reference using an URI string.
+     * Sets the host reference using an URI string.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Host" header.
      * 
      * @param hostUri
      *            The host URI.
@@ -519,7 +550,10 @@ public class Request extends Message {
 
     // [ifndef gwt] method
     /**
-     * Sets the authentication response sent by a client to a proxy.
+     * Sets the authentication response sent by a client to a proxy.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Proxy-Authorization" header.
      * 
      * @param challengeResponse
      *            The authentication response sent by a client to a proxy.
@@ -530,7 +564,10 @@ public class Request extends Message {
 
     // [ifndef gwt] method
     /**
-     * Sets the ranges to return from the target resource's representation.
+     * Sets the ranges to return from the target resource's representation.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Range" header.
      * 
      * @param ranges
      *            The ranges.
@@ -540,7 +577,10 @@ public class Request extends Message {
     }
 
     /**
-     * Sets the referrer reference if available.
+     * Sets the referrer reference if available.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Referer" header.
      * 
      * @param referrerRef
      *            The referrer reference.
@@ -556,10 +596,14 @@ public class Request extends Message {
     }
 
     /**
-     * Sets the referrer reference if available using an URI string.
+     * Sets the referrer reference if available using an URI string.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Referer" header.
      * 
      * @param referrerUri
      *            The referrer URI.
+     * @see #setReferrerRef(Reference)
      */
     public void setReferrerRef(String referrerUri) {
         setReferrerRef(new Reference(referrerUri));

@@ -39,7 +39,10 @@ import org.restlet.util.Series;
  * <br>
  * Sometimes, it might be faster to preemptively issue a challenge response if
  * the client knows for sure that the target resource will require
- * authentication.
+ * authentication.<br>
+ * <br>
+ * Note that when used with HTTP connectors, this class maps to the
+ * "Authorization" header.
  * 
  * @author Jerome Louvel
  */

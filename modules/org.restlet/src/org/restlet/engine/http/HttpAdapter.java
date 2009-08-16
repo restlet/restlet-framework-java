@@ -170,7 +170,7 @@ public class HttpAdapter extends Adapter {
                                 HttpConstants.HEADER_VIA)
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_WARNING)) {
-                    // Standard headers can't shouldn't be overridden
+                    // Standard headers that shouldn't be overridden
                     getLogger()
                             .info(
                                     "Addition of the standard header \""

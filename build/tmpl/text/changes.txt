@@ -23,7 +23,11 @@ Changes log
         - Updated Velocity to version 1.6.2.
         - Updated JiBX to version 1.2.1.
         - Updated db4o to version 7.10.96.
-
+        - Updated the Javadocs of the API to indicate the mapping 
+          between properties/classes and HTTP headers.
+        - Updated the "Server" HTTP header returned by default to 
+          "Restlet-Framework/xxx"
+          
 - 2.0 Milestone 4 (2009-08-06)
     - Bugs fixed
         - Improved support for the RFC 3339 date format which was 
