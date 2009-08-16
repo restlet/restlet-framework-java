@@ -45,8 +45,6 @@ import org.restlet.routing.Router;
 
 /**
  * Unit test case for the RIAP Internal routing protocol.
- * 
- * @author Marc Portier (mpo@outerthought.org)
  */
 public class RiapConnectorsTestCase extends TestCase {
 
@@ -62,7 +60,7 @@ public class RiapConnectorsTestCase extends TestCase {
             @Override
             public Restlet createRoot() {
                 Router router = new Router(getContext());
-                router.attach("/test", new Restlet(getContext()) {
+                router.attach("/testA", new Restlet(getContext()) {
 
                     @Override
                     public void handle(Request request, Response response) {
@@ -71,18 +69,36 @@ public class RiapConnectorsTestCase extends TestCase {
                     }
 
                 });
+                router.attach("/testB", new Restlet(getContext()) {
+
+                    @Override
+                    public void handle(Request request, Response response) {
+                        response.setEntity(getContext().getClientDispatcher()
+                                .get("riap://component/app/testA")
+                                .getEntityAsText(), MediaType.TEXT_PLAIN);
+                    }
+
+                });
                 return router;
             }
         };
 
         // Attach the private application
-        component.getInternalRouter().attach(app);
+        component.getInternalRouter().attach("/app", app);
 
         try {
             component.start();
-            ClientResource res = new ClientResource("riap://component/test");
+
+            ClientResource res = new ClientResource(
+                    "riap://component/app/testA");
             Representation rep = res.get();
             assertEquals("hello, world", rep.getText());
+
+            rep = null;
+            res = new ClientResource("riap://component/app/testB");
+            rep = res.get();
+            assertEquals("hello, world", rep.getText());
+
             component.stop();
         } catch (Exception e) {
             fail(e.getMessage());

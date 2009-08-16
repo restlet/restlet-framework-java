@@ -11,4 +11,8 @@
 	<downloadUri>
 		http://download.java.net/maven/2/com/sun/grizzly/grizzly-framework/
 	</downloadUri>
+    <javadocs>
+      <link href="https://grizzly.dev.java.net/nonav/apidocs/" />
+   </javadocs>
+
 </library>

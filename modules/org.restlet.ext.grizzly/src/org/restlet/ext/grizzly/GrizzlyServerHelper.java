@@ -121,8 +121,7 @@ public abstract class GrizzlyServerHelper extends HttpServerHelper {
 
                         public void onReady() {
                             if (getHelped().getPort() == 0) {
-                                setEphemeralPort(selectorHandler
-                                        .getPortLowLevel());
+                                setEphemeralPort(selectorHandler.getPort());
                             }
 
                             latch.countDown();
