@@ -27,6 +27,7 @@ SOFTWARE.
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashMap;
@@ -83,7 +84,7 @@ import java.util.TreeSet;
  *     <code>0x-</code> <small>(hex)</small> prefix.</li>
  * </ul>
  * @author JSON.org
- * @version 2008-09-18
+ * @version 2009-03-06
  */
 public class JSONObject {
 
@@ -151,7 +152,7 @@ public class JSONObject {
     /**
      * Construct a JSONObject from a subset of another JSONObject.
      * An array of strings is used to identify the keys that should be copied.
-     * Missing keys are ignored. 
+     * Missing keys are ignored.
      * @param jo A JSONObject.
      * @param names An array of strings.
      * @exception JSONException If a value is a non-finite number or if a name is duplicated.
@@ -167,7 +168,7 @@ public class JSONObject {
     /**
      * Construct a JSONObject from a JSONTokener.
      * @param x A JSONTokener object containing the source string.
-     * @throws JSONException If there is a syntax error in the source string 
+     * @throws JSONException If there is a syntax error in the source string
      *  or a duplicated key.
      */
     public JSONObject(JSONTokener x) throws JSONException {
@@ -227,7 +228,7 @@ public class JSONObject {
 
     /**
      * Construct a JSONObject from a Map.
-     * 
+     *
      * @param map A map object that can be used to initialize the contents of
      *  the JSONObject.
      */
@@ -235,25 +236,32 @@ public class JSONObject {
         this.map = (map == null) ? new HashMap() : map;
     }
 
+
     /**
      * Construct a JSONObject from a Map.
-     * 
+     *
      * Note: Use this constructor when the map contains <key,bean>.
-     * 
+     *
      * @param map - A map with Key-Bean data.
      * @param includeSuperClass - Tell whether to include the super class properties.
      */
     public JSONObject(Map map, boolean includeSuperClass) {
-       	this.map = new HashMap();
-       	if (map != null){
-            for (Iterator i = map.entrySet().iterator(); i.hasNext(); ) {
+        this.map = new HashMap();
+        if (map != null) {
+            Iterator i = map.entrySet().iterator();
+            while (i.hasNext()) {
                 Map.Entry e = (Map.Entry)i.next();
-                this.map.put(e.getKey(), new JSONObject(e.getValue(), includeSuperClass));
+                if (isStandardProperty(e.getValue().getClass())) {
+                    this.map.put(e.getKey(), e.getValue());
+                } else {
+                    this.map.put(e.getKey(), new JSONObject(e.getValue(),
+                            includeSuperClass));
+                }
             }
-       	}
+        }
     }
 
-    
+
     /**
      * Construct a JSONObject from an Object using bean getters.
      * It reflects on all of the public methods of the object.
@@ -262,8 +270,8 @@ public class JSONObject {
      * the method is invoked, and a key and the value returned from the getter method
      * are put into the new JSONObject.
      *
-     * The key is formed by removing the <code>"get"</code> or <code>"is"</code> prefix. If the second remaining
-     * character is not upper case, then the first
+     * The key is formed by removing the <code>"get"</code> or <code>"is"</code> prefix.
+     * If the second remaining character is not upper case, then the first
      * character is converted to lower case.
      *
      * For example, if an object has a method named <code>"getName"</code>, and
@@ -274,97 +282,107 @@ public class JSONObject {
      * to make a JSONObject.
      */
     public JSONObject(Object bean) {
-    	this();
+        this();
         populateInternalMap(bean, false);
     }
-    
-    
+
+
     /**
-     * Construct JSONObject from the given bean. This will also create JSONObject
-     * for all internal object (List, Map, Inner Objects) of the provided bean.
-     * 
-     * -- See Documentation of JSONObject(Object bean) also.
-     * 
+     * Construct a JSONObject from an Object using bean getters.
+     * It reflects on all of the public methods of the object.
+     * For each of the methods with no parameters and a name starting
+     * with <code>"get"</code> or <code>"is"</code> followed by an uppercase letter,
+     * the method is invoked, and a key and the value returned from the getter method
+     * are put into the new JSONObject.
+     *
+     * The key is formed by removing the <code>"get"</code> or <code>"is"</code> prefix.
+     * If the second remaining character is not upper case, then the first
+     * character is converted to lower case.
+     *
      * @param bean An object that has getter methods that should be used
      * to make a JSONObject.
-     * @param includeSuperClass - Tell whether to include the super class properties.
+     * @param includeSuperClass If true, include the super class properties.
      */
     public JSONObject(Object bean, boolean includeSuperClass) {
-    	this();
+        this();
         populateInternalMap(bean, includeSuperClass);
     }
-    
+
     private void populateInternalMap(Object bean, boolean includeSuperClass){
-    	Class klass = bean.getClass();
-    	
-        //If klass.getSuperClass is System class then includeSuperClass = false;
-    	
-    	if (klass.getClassLoader() == null) {
-    		includeSuperClass = false;
-    	}
-    	
-    	Method[] methods = (includeSuperClass) ? 
-    			klass.getMethods() : klass.getDeclaredMethods();
+        Class klass = bean.getClass();
+
+        /* If klass.getSuperClass is System class then force includeSuperClass to false. */
+
+        if (klass.getClassLoader() == null) {
+            includeSuperClass = false;
+        }
+
+        Method[] methods = (includeSuperClass) ?
+                klass.getMethods() : klass.getDeclaredMethods();
         for (int i = 0; i < methods.length; i += 1) {
             try {
                 Method method = methods[i];
-                String name = method.getName();
-                String key = "";
-                if (name.startsWith("get")) {
-                    key = name.substring(3);
-                } else if (name.startsWith("is")) {
-                    key = name.substring(2);
-                }
-                if (key.length() > 0 &&
-                        Character.isUpperCase(key.charAt(0)) &&
-                        method.getParameterTypes().length == 0) {
-                    if (key.length() == 1) {
-                        key = key.toLowerCase();
-                    } else if (!Character.isUpperCase(key.charAt(1))) {
-                        key = key.substring(0, 1).toLowerCase() +
-                            key.substring(1);
+                if (Modifier.isPublic(method.getModifiers())) {
+                    String name = method.getName();
+                    String key = "";
+                    if (name.startsWith("get")) {
+                        key = name.substring(3);
+                    } else if (name.startsWith("is")) {
+                        key = name.substring(2);
                     }
-                    
-                    Object result = method.invoke(bean, (Object[])null);
-                    if (result == null){
-                    	map.put(key, NULL);
-                    }else if (result.getClass().isArray()) {
-                    	map.put(key, new JSONArray(result,includeSuperClass));
-                    }else if (result instanceof Collection) { //List or Set
-                    	map.put(key, new JSONArray((Collection)result,includeSuperClass));
-                    }else if (result instanceof Map) {
-                    	map.put(key, new JSONObject((Map)result,includeSuperClass));
-                    }else if (isStandardProperty(result.getClass())) { //Primitives, String and Wrapper
-                    	map.put(key, result);
-                    }else{
-                    	if (result.getClass().getPackage().getName().startsWith("java") || 
-                    			result.getClass().getClassLoader() == null) { 
-                    		map.put(key, result.toString());
-                    	} else { //User defined Objects
-                    		map.put(key, new JSONObject(result,includeSuperClass));
-                    	}
+                    if (key.length() > 0 &&
+                            Character.isUpperCase(key.charAt(0)) &&
+                            method.getParameterTypes().length == 0) {
+                        if (key.length() == 1) {
+                            key = key.toLowerCase();
+                        } else if (!Character.isUpperCase(key.charAt(1))) {
+                            key = key.substring(0, 1).toLowerCase() +
+                                key.substring(1);
+                        }
+
+                        Object result = method.invoke(bean, (Object[])null);
+                        if (result == null) {
+                            map.put(key, NULL);
+                        } else if (result.getClass().isArray()) {
+                            map.put(key, new JSONArray(result, includeSuperClass));
+                        } else if (result instanceof Collection) { // List or Set
+                            map.put(key, new JSONArray((Collection)result, includeSuperClass));
+                        } else if (result instanceof Map) {
+                            map.put(key, new JSONObject((Map)result, includeSuperClass));
+                        } else if (isStandardProperty(result.getClass())) { // Primitives, String and Wrapper
+                            map.put(key, result);
+                        } else {
+                            if (result.getClass().getPackage().getName().startsWith("java") ||
+                                    result.getClass().getClassLoader() == null) {
+                                map.put(key, result.toString());
+                            } else { // User defined Objects
+                                map.put(key, new JSONObject(result, includeSuperClass));
+                            }
+                        }
                     }
                 }
             } catch (Exception e) {
-            	throw new RuntimeException(e);
+                throw new RuntimeException(e);
             }
         }
     }
-    
-    private boolean isStandardProperty(Class clazz) {
-    	return clazz.isPrimitive()                  ||
-    		clazz.isAssignableFrom(Byte.class)      ||
-    		clazz.isAssignableFrom(Short.class)     ||
-    		clazz.isAssignableFrom(Integer.class)   ||
-    		clazz.isAssignableFrom(Long.class)      ||
-    		clazz.isAssignableFrom(Float.class)     ||
-    		clazz.isAssignableFrom(Double.class)    ||
-    		clazz.isAssignableFrom(Character.class) ||
-    		clazz.isAssignableFrom(String.class)    ||
-    		clazz.isAssignableFrom(Boolean.class);
+
+
+    static boolean isStandardProperty(Class clazz) {
+        return clazz.isPrimitive()                  ||
+            clazz.isAssignableFrom(Byte.class)      ||
+            clazz.isAssignableFrom(Short.class)     ||
+            clazz.isAssignableFrom(Integer.class)   ||
+            clazz.isAssignableFrom(Long.class)      ||
+            clazz.isAssignableFrom(Float.class)     ||
+            clazz.isAssignableFrom(Double.class)    ||
+            clazz.isAssignableFrom(Character.class) ||
+            clazz.isAssignableFrom(String.class)    ||
+            clazz.isAssignableFrom(Boolean.class);
     }
 
- 	/**
+
+    /**
      * Construct a JSONObject from an Object, using reflection to find the
      * public members. The resulting JSONObject's keys will be the strings
      * from the names array, and the values will be the field values associated
@@ -380,12 +398,12 @@ public class JSONObject {
         Class c = object.getClass();
         for (int i = 0; i < names.length; i += 1) {
             String name = names[i];
-        	try {
+            try {
                 putOpt(name, c.getField(name).get(object));
-        	} catch (Exception e) {
+            } catch (Exception e) {
                 /* forget about it */
             }
-        }    
+        }
     }
 
 
@@ -395,7 +413,7 @@ public class JSONObject {
      * @param source    A string beginning
      *  with <code>{</code>&nbsp;<small>(left brace)</small> and ending
      *  with <code>}</code>&nbsp;<small>(right brace)</small>.
-     * @exception JSONException If there is a syntax error in the source 
+     * @exception JSONException If there is a syntax error in the source
      *  string or a duplicated key.
      */
     public JSONObject(String source) throws JSONException {
@@ -620,17 +638,17 @@ public class JSONObject {
      * @return An array of field names, or null if there are no names.
      */
     public static String[] getNames(JSONObject jo) {
-    	int length = jo.length();
-    	if (length == 0) {
-    		return null;
-    	}
-    	Iterator i = jo.keys();
-    	String[] names = new String[length];
-    	int j = 0;
-    	while (i.hasNext()) {
-    		names[j] = (String)i.next();
-    		j += 1;
-    	}
+        int length = jo.length();
+        if (length == 0) {
+            return null;
+        }
+        Iterator i = jo.keys();
+        String[] names = new String[length];
+        int j = 0;
+        while (i.hasNext()) {
+            names[j] = (String)i.next();
+            j += 1;
+        }
         return names;
     }
 
@@ -641,19 +659,19 @@ public class JSONObject {
      * @return An array of field names, or null if there are no names.
      */
     public static String[] getNames(Object object) {
-    	if (object == null) {
-    		return null;
-    	}
-    	Class klass = object.getClass();
-    	Field[] fields = klass.getFields();
-    	int length = fields.length;
-    	if (length == 0) {
-    		return null;
-    	}
-    	String[] names = new String[length];
-    	for (int i = 0; i < length; i += 1) {
-    		names[i] = fields[i].getName();
-    	}
+        if (object == null) {
+            return null;
+        }
+        Class klass = object.getClass();
+        Field[] fields = klass.getFields();
+        int length = fields.length;
+        if (length == 0) {
+            return null;
+        }
+        String[] names = new String[length];
+        for (int i = 0; i < length; i += 1) {
+            names[i] = fields[i].getName();
+        }
         return names;
     }
 
@@ -1062,8 +1080,8 @@ public class JSONObject {
 
 
     /**
-     * Put a key/value pair in the JSONObject, but only if the key and the 
-     * value are both non-null, and only if there is not already a member 
+     * Put a key/value pair in the JSONObject, but only if the key and the
+     * value are both non-null, and only if there is not already a member
      * with that name.
      * @param key
      * @param value
@@ -1072,9 +1090,9 @@ public class JSONObject {
      */
     public JSONObject putOnce(String key, Object value) throws JSONException {
         if (key != null && value != null) {
-        	if (opt(key) != null) {
+            if (opt(key) != null) {
                 throw new JSONException("Duplicate key \"" + key + "\"");
-        	}
+            }
             put(key, value);
         }
         return this;
@@ -1097,8 +1115,8 @@ public class JSONObject {
         }
         return this;
     }
-    
-    
+
+
     /**
      * Produce a string in double quotes with backslash sequences in all the
      * right places. A backslash will be inserted within </, allowing JSON
@@ -1173,7 +1191,7 @@ public class JSONObject {
     public Object remove(String key) {
         return this.map.remove(key);
     }
-   
+
     /**
      * Get an enumeration of the keys of the JSONObject.
      * The keys will be sorted alphabetically.
@@ -1232,23 +1250,24 @@ public class JSONObject {
                 }
             }
             try {
-                return new Integer(s);
-            } catch (Exception e) {
-                try {
-                    return new Long(s);
-                } catch (Exception f) {
-                    try {
-                        return new Double(s);
-                    }  catch (Exception g) {
-                    	/* Ignore the error */
+                if (s.indexOf('.') > -1 || s.indexOf('e') > -1 || s.indexOf('E') > -1) {
+                    return Double.valueOf(s);
+                } else {
+                    Long myLong = new Long(s);
+                    if (myLong.longValue() == myLong.intValue()) {
+                        return new Integer(myLong.intValue());
+                    } else {
+                        return myLong;
                     }
                 }
+            }  catch (Exception f) {
+                /* Ignore the error */
             }
         }
         return s;
     }
-    
-    
+
+
     /**
      * Throw an exception if the object is an NaN or infinite number.
      * @param o The object to test.

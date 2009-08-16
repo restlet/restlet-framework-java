@@ -54,7 +54,7 @@ SOFTWARE.
  * <p>
  * This can sometimes be easier than using a JSONObject to build a string.
  * @author JSON.org
- * @version 2008-09-18
+ * @version 2008-09-22
  */
 public class JSONWriter {
     private static final int maxdepth = 20;
@@ -204,10 +204,10 @@ public class JSONWriter {
         }
         if (this.mode == 'k') {
             try {
+                stack[top - 1].putOnce(s, Boolean.TRUE);
                 if (this.comma) {
                     this.writer.write(',');
                 }
-                stack[top - 1].putOnce(s, Boolean.TRUE);
                 this.writer.write(JSONObject.quote(s));
                 this.writer.write(':');
                 this.comma = false;

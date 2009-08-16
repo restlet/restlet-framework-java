@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: JavaMail API and RI
 Bundle-SymbolicName: javax.mail
-Bundle-Version: 1.4.1
+Bundle-Version: 1.4.2
 Bundle-ClassPath: javax.mail.jar
 Bundle-Vendor: Sun Microsystems Inc.
 Export-Package: com.sun.mail.handlers;uses:="javax.activation",
@@ -13,6 +13,7 @@ Export-Package: com.sun.mail.handlers;uses:="javax.activation",
    javax.mail.search,
    javax.mail.internet,
    javax.mail,
+   javax.mail.event,
    com.sun.mail.imap.protocol",
  com.sun.mail.imap.protocol;
   uses:="com.sun.mail.iap,

@@ -263,11 +263,14 @@ public class JSONTokener {
                 case 'u':
                     sb.append((char)Integer.parseInt(next(4), 16));
                     break;
-                case 'x' :
-                    sb.append((char) Integer.parseInt(next(2), 16));
-                    break;
+                case '"':
+                case '\'':
+                case '\\':
+                case '/':
+                	sb.append(c);
+                	break;
                 default:
-                    sb.append(c);
+                    throw syntaxError("Illegal escape.");
                 }
                 break;
             default:

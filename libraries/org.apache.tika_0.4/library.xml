@@ -1,6 +1,6 @@
 <library id="tika">
    <package name="org.apache.tika" />
-   <version>0.2</version>
+   <version>0.4</version>
    <distributions>
       <distribution id="classic" />
    </distributions>

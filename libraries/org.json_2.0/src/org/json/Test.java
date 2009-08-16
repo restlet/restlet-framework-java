@@ -10,7 +10,7 @@ import java.io.StringWriter;
  * It is just a casual test tool.
  */
 public class Test {
-
+	
     /**
      * Entry point.
      * @param args
@@ -69,6 +69,7 @@ public class Test {
             }
         }      
         
+
     	Obj obj = new Obj("A beany object", 42, true);
         
         try {     
@@ -364,10 +365,14 @@ public class Test {
             System.out.println(j.toString());
             System.out.println("");
 
-            a = CDL.toJSONArray("No quotes, 'Single Quotes', \"Double Quotes\"\n1,'2',\"3\"\n,'It is \"good,\"', \"It works.\"\n\n");
+            a = CDL.toJSONArray("Comma delimited list test, '\"Strip\"Quotes', 'quote, comma', No quotes, 'Single Quotes', \"Double Quotes\"\n1,'2',\"3\"\n,'It is \"good,\"', \"It works.\"\n\n");
 
-            System.out.println(CDL.toString(a));
+            s = CDL.toString(a);
+            System.out.println(s);
             System.out.println("");
+            System.out.println(a.toString(4));
+            System.out.println("");
+            a = CDL.toJSONArray(s);
             System.out.println(a.toString(4));
             System.out.println("");
 

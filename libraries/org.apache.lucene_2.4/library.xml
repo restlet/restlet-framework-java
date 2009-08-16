@@ -1,6 +1,7 @@
 <library id="lucene">
    <package name="org.apache.lucene" />
    <version>2.4</version>
+   <release>1</release>
    <distributions>
       <distribution id="classic" />
    </distributions>
@@ -11,6 +12,6 @@
       http://www.apache.org/dyn/closer.cgi/lucene/java/
 	</downloadUri>
    <javadocs>
-      <link href="http://lucene.apache.org/java/2_4_0/api/" />
+      <link href="http://lucene.apache.org/java/2_4_1/api/" />
    </javadocs>
 </library>
