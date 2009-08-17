@@ -18,6 +18,9 @@ Changes log
         - Fixed bug with range service and redirections.
         - The "Location" header must contain an absolute URI.
           Reported by Simon Reinhardt.
+        - The internal HTTP server now shuts down in all cases after
+          30 seconds. Reported by Martin Pernollet.
+        - Fixed potential NPE 
     - Misc
         - Updated Grizzly to version 1.9.17.
         - Updated FileUpload to version 1.2.1.

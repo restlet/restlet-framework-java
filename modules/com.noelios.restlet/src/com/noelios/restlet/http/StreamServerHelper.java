@@ -289,12 +289,13 @@ public class StreamServerHelper extends HttpServerHelper {
             // in a timely fashion
             this.handlerService.shutdown();
             try {
-                this.handlerService.awaitTermination(Long.MAX_VALUE,
+                this.handlerService.awaitTermination(30,
                         TimeUnit.SECONDS);
             } catch (InterruptedException ex) {
-                ex.printStackTrace();
-            }
-        }
+				getLogger().log(Level.FINE,
+						"Interruption while shutting down internal server", ex);
+			}
+		}
 
         if (this.listenerService != null) {
             // This must be forcefully interrupted because the thread
@@ -302,12 +303,13 @@ public class StreamServerHelper extends HttpServerHelper {
             this.listenerService.shutdownNow();
 
             try {
-                this.listenerService.awaitTermination(Long.MAX_VALUE,
+                this.listenerService.awaitTermination(30,
                         TimeUnit.SECONDS);
             } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
+				getLogger().log(Level.FINE,
+						"Interruption while shutting down internal server", ex);
+			}
+		}
 
         // Close the server socket
         if (this.serverSocketChannel != null) {
