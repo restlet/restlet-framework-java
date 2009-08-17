@@ -24,7 +24,7 @@
 			<version>${lib-jettison-version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.restlet</groupId>
+			<groupId>${groupId}</groupId>
 			<artifactId>org.restlet</artifactId>
 			<version>${version}</version>
 		</dependency>

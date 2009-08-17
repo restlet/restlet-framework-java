@@ -20,7 +20,7 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.restlet</groupId>
+			<groupId>${groupId}</groupId>
 			<artifactId>org.restlet</artifactId>
 			<version>${version}</version>
 		</dependency>
