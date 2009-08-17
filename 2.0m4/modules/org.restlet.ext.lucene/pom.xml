@@ -3,9 +3,9 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>org.restlet</groupId>
-		<artifactId>org.restlet.parent</artifactId>
-		<version>2.0-M4</version>
+		<groupId>@parent-group-id@</groupId>
+		<artifactId>@parent-artifact-id@</artifactId>
+		<version>@parent-version@</version>
 	</parent>
 
 	<artifactId>org.restlet.ext.lucene</artifactId>
@@ -24,12 +24,12 @@
 			<version>${lib-tika-version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.restlet</groupId>
+			<groupId>@parent-group-id@</groupId>
 			<artifactId>org.restlet</artifactId>
 			<version>${version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.restlet</groupId>
+			<groupId>@parent-group-id@</groupId>
 			<artifactId>org.restlet.ext.xml</artifactId>
 			<version>${version}</version>
 		</dependency>

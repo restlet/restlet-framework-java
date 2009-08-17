@@ -14,12 +14,12 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.restlet</groupId>
+			<groupId>@parent-group-id@</groupId>
 			<artifactId>org.restlet</artifactId>
 			<version>${version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.restlet</groupId>
+			<groupId>@parent-group-id@</groupId>
 			<artifactId>org.restlet.lib.org.json</artifactId>
 			<version>${lib-json-version}</version>
 		</dependency>

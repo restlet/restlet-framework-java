@@ -14,12 +14,12 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.restlet</groupId>
+			<groupId>@parent-group-id@</groupId>
 			<artifactId>org.restlet.lib.com.db4o</artifactId>
 			<version>${lib-db4o-version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.restlet</groupId>
+			<groupId>@parent-group-id@</groupId>
 			<artifactId>org.restlet.lib.com.db4o.nativequery</artifactId>
 			<version>${lib-db4o-version}</version>
 		</dependency>
@@ -29,57 +29,57 @@
 			<version>${lib-junit-version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.restlet</groupId>
+			<groupId>@parent-group-id@</groupId>
 			<artifactId>org.restlet</artifactId>
 			<version>${version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.restlet</groupId>
+			<groupId>@parent-group-id@</groupId>
 			<artifactId>org.restlet.ext.atom</artifactId>
 			<version>${version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.restlet</groupId>
+			<groupId>@parent-group-id@</groupId>
 			<artifactId>org.restlet.ext.freemarker</artifactId>
 			<version>${version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.restlet</groupId>
+			<groupId>@parent-group-id@</groupId>
 			<artifactId>org.restlet.ext.jaxb</artifactId>
 			<version>${version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.restlet</groupId>
+			<groupId>@parent-group-id@</groupId>
 			<artifactId>org.restlet.ext.jaxrs</artifactId>
 			<version>${version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.restlet</groupId>
+			<groupId>@parent-group-id@</groupId>
 			<artifactId>org.restlet.ext.jetty</artifactId>
 			<version>${version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.restlet</groupId>
+			<groupId>@parent-group-id@</groupId>
 			<artifactId>org.restlet.ext.jibx</artifactId>
 			<version>${version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.restlet</groupId>
+			<groupId>@parent-group-id@</groupId>
 			<artifactId>org.restlet.ext.json</artifactId>
 			<version>${version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.restlet</groupId>
+			<groupId>@parent-group-id@</groupId>
 			<artifactId>org.restlet.ext.rdf</artifactId>
 			<version>${version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.restlet</groupId>
+			<groupId>@parent-group-id@</groupId>
 			<artifactId>org.restlet.ext.spring</artifactId>
 			<version>${version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.restlet</groupId>
+			<groupId>@parent-group-id@</groupId>
 			<artifactId>org.restlet.ext.velocity</artifactId>
 			<version>${version}</version>
 		</dependency>
