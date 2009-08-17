@@ -201,19 +201,7 @@ public abstract class JettyServerHelper extends
     public JettyServerHelper(org.restlet.Server server) {
         super(server);
         this.connector = null;
-        this.wrappedServer = new WrappedServer(this);
-
-        // Configuring the thread pool
-        final QueuedThreadPool btp = new QueuedThreadPool();
-        btp.setLowThreads(getLowThreads());
-        btp.setMaxIdleTimeMs(getThreadMaxIdleTimeMs());
-        btp.setMaxThreads(getMaxThreads());
-        btp.setMinThreads(getMinThreads());
-        getWrappedServer().setThreadPool(btp);
-
-        if (getGracefulShutdown() > 0) {
-            getWrappedServer().setGracefulShutdown(getGracefulShutdown());
-        }
+        this.wrappedServer = null;
     }
 
     /**
@@ -262,6 +250,17 @@ public abstract class JettyServerHelper extends
     public int getAcceptQueueSize() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
                 "acceptQueueSize", "0"));
+    }
+
+    /**
+     * Returns the time (in ms) to wait for existing requests to complete before
+     * fully stopping the server.
+     * 
+     * @return The graceful shutdown delay.
+     */
+    public int getGracefulShutdown() {
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "gracefulShutdown", "0"));
     }
 
     /**
@@ -361,17 +360,6 @@ public abstract class JettyServerHelper extends
     }
 
     /**
-     * Returns the time (in ms) to wait for existing requests to complete before
-     * fully stopping the server.
-     * 
-     * @return The graceful shutdown delay.
-     */
-    public int getGracefulShutdown() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "gracefulShutdown", "0"));
-    }
-
-    /**
      * Returns the time for an idle thread to wait for a request or read.
      * 
      * @return The time for an idle thread to wait for a request or read.
@@ -387,6 +375,23 @@ public abstract class JettyServerHelper extends
      * @return The wrapped Jetty server.
      */
     protected Server getWrappedServer() {
+        if (this.wrappedServer == null) {
+            this.wrappedServer = new WrappedServer(this);
+
+            // Configuring the thread pool
+            final QueuedThreadPool btp = new QueuedThreadPool();
+            btp.setLowThreads(getLowThreads());
+            btp.setMaxIdleTimeMs(getThreadMaxIdleTimeMs());
+            btp.setMaxThreads(getMaxThreads());
+            btp.setMinThreads(getMinThreads());
+            getWrappedServer().setThreadPool(btp);
+
+            if (getGracefulShutdown() > 0) {
+                getWrappedServer().setGracefulShutdown(getGracefulShutdown());
+            }
+
+        }
+
         return this.wrappedServer;
     }
 

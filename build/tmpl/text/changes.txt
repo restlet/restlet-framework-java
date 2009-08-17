@@ -29,6 +29,8 @@ Changes log
           between properties/classes and HTTP headers.
         - Updated the "Server" HTTP header returned by default to 
           "Restlet-Framework/xxx"
+        - The thread pool of Jetty servers can now be configured
+          with Spring. Reported by Evgeny Shepelyuk. 
           
 - 2.0 Milestone 4 (2009-08-06)
     - Bugs fixed
