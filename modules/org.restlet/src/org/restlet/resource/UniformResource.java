@@ -102,7 +102,7 @@ public abstract class UniformResource {
      *            The caught error or exception.
      */
     protected void doCatch(Throwable throwable) {
-        getLogger().log(Level.INFO, "Exception or error caught it resource",
+        getLogger().log(Level.INFO, "Exception or error caught in resource",
                 throwable);
 
         if (getResponse() != null && getApplication() != null) {
