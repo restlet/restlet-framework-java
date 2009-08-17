@@ -139,14 +139,12 @@ public class MediaTypeTestCase extends RestletTestCase {
         assertTrue(mt1.includes(mt2));
         assertFalse(mt2.includes(mt1));
 
-        if (false) { // TODO should "app/*+xml" includes "app/xml"? Is not yet.
-            mt1 = MediaType.APPLICATION_ALL_XML;
-            mt2 = MediaType.APPLICATION_XML;
-            assertTrue(mt1.includes(mt1));
-            assertTrue(mt2.includes(mt2));
-            assertTrue(mt1.includes(mt2));
-            assertFalse(mt2.includes(mt1));
-        }
+        mt1 = MediaType.APPLICATION_ALL_XML;
+        mt2 = MediaType.APPLICATION_XML;
+        assertTrue(mt1.includes(mt1));
+        assertTrue(mt2.includes(mt2));
+        assertTrue(mt1.includes(mt2));
+        assertFalse(mt2.includes(mt1));
 
         mt1 = MediaType.APPLICATION_ALL_XML;
         mt2 = MediaType.APPLICATION_ATOMPUB_SERVICE;

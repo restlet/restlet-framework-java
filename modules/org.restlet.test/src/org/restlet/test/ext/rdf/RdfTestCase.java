@@ -39,8 +39,6 @@ import org.restlet.representation.StringRepresentation;
 
 /**
  * Unit test case for the RIAP Internal routing protocol.
- * 
- * @author Marc Portier (mpo@outerthought.org)
  */
 public class RdfTestCase extends TestCase {
 

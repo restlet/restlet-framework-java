@@ -135,8 +135,8 @@ public class ContentTypeReader extends HeaderReader {
                     } else if (HttpUtils.isText(nextChar)) {
                         mediaTypeBuffer.append((char) nextChar);
                     } else {
-                        throw new IOException(
-                                "Control characters are not allowed within a mediaType name.");
+                        throw new IOException("The " + (char) nextChar
+                                        + " character isn't allowed in a media type name.");
                     }
                 } else if (readingParamName) {
                     if (nextChar == '=') {
@@ -174,7 +174,9 @@ public class ContentTypeReader extends HeaderReader {
                         paramNameBuffer.append((char) nextChar);
                     } else {
                         throw new IOException(
-                                "Separator and control characters are not allowed within a token.");
+                                "The \""
+                                        + (char) nextChar
+                                        + "\" character isn't allowed in a media type parameter name.");
                     }
                 } else if (readingParamValue) {
                     if (nextChar == -1) {
@@ -213,7 +215,9 @@ public class ContentTypeReader extends HeaderReader {
                                     quotedPair = false;
                                 } else {
                                     throw new IOException(
-                                            "Invalid character detected in quoted string. Please check your value");
+                                            "Invalid character \""
+                                                    + (char) nextChar
+                                                    + "\" detected in quoted string. Please check your value");
                                 }
                             } else if (HttpUtils.isDoubleQuote(nextChar)) {
                                 // End of quoted string
@@ -225,14 +229,18 @@ public class ContentTypeReader extends HeaderReader {
                                 paramValueBuffer.append((char) nextChar);
                             } else {
                                 throw new IOException(
-                                        "Invalid character detected in quoted string. Please check your value");
+                                        "Invalid character \""
+                                                + (char) nextChar
+                                                + "\" detected in quoted string. Please check your value");
                             }
                         }
                     } else if (HttpUtils.isTokenChar(nextChar)) {
                         paramValueBuffer.append((char) nextChar);
                     } else {
                         throw new IOException(
-                                "Separator and control characters are not allowed within a token");
+                                "The \""
+                                        + (char) nextChar
+                                        + "\" character isn't allowed in a media type parameter value.");
                     }
                 }
 
