@@ -305,10 +305,10 @@ public class StreamServerHelper extends HttpServerHelper {
             this.listenerService.shutdownNow();
 
             try {
-                this.listenerService.awaitTermination(Long.MAX_VALUE,
-                        TimeUnit.SECONDS);
+                this.listenerService.awaitTermination(30, TimeUnit.SECONDS);
             } catch (Exception ex) {
-                ex.printStackTrace();
+                getLogger().log(Level.FINE,
+                        "Interruption while shutting down internal server", ex);
             }
         }
 

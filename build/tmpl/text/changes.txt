@@ -9,6 +9,8 @@ Changes log
           Reported by Dustin Jenkins.
         - Fixed bug detected in the CharacterSet class when running in 
           the MacOS context. Reported by John Logsdon.
+        - Removed the TaskService from the GAE edition as we are not
+          allowed to create threads. Reported by Olivier Bruchez.
      - Enhancements
         - Added support of the "xml:base" attibute when parsing Atom 
           Publishing documents.

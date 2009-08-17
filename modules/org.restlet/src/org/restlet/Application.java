@@ -50,7 +50,6 @@ import org.restlet.service.MetadataService;
 import org.restlet.service.RangeService;
 import org.restlet.service.Service;
 import org.restlet.service.StatusService;
-import org.restlet.service.TaskService;
 import org.restlet.service.TunnelService;
 
 /**
@@ -161,7 +160,10 @@ public class Application extends Restlet {
         this.services.add(new ConnectorService());
         this.services.add(new ConverterService());
         this.services.add(new MetadataService());
-        this.services.add(new TaskService());
+
+        // [ifndef gae]
+        this.services.add(new org.restlet.service.TaskService());
+        // [enddef]
     }
 
     /**
@@ -323,8 +325,9 @@ public class Application extends Restlet {
      * 
      * @return A task service.
      */
-    public TaskService getTaskService() {
-        return getService(TaskService.class);
+    // [ifndef gae] method
+    public org.restlet.service.TaskService getTaskService() {
+        return getService(org.restlet.service.TaskService.class);
     }
 
     /**
@@ -509,7 +512,8 @@ public class Application extends Restlet {
      * @param taskService
      *            The task service.
      */
-    public void setTaskService(TaskService taskService) {
+    // [ifndef gae] method
+    public void setTaskService(org.restlet.service.TaskService taskService) {
         setService(taskService);
     }
 

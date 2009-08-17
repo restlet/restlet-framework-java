@@ -56,9 +56,9 @@ import java.util.logging.Level;
 import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.data.CharacterSet;
+import org.restlet.engine.Edition;
 import org.restlet.representation.Representation;
 import org.restlet.representation.WriterRepresentation;
-import org.restlet.service.TaskService;
 
 /**
  * Byte manipulation utilities.
@@ -250,33 +250,47 @@ public final class ByteUtils {
      * @return A stream with the representation's content.
      */
     public static InputStream getStream(final Representation representation) {
-        if (representation == null) {
+        if (Edition.CURRENT != Edition.GAE) {
+            // [ifndef gae] method
+            if (representation == null) {
+                return null;
+            }
+
+            final PipeStream pipe = new PipeStream();
+            final Application application = Application.getCurrent();
+
+            // Creates a thread that will handle the task of continuously
+            // writing the representation into the input side of the pipe
+            org.restlet.service.TaskService taskService = (application == null) ? new org.restlet.service.TaskService()
+                    : application.getTaskService();
+            taskService.execute(new Runnable() {
+                public void run() {
+                    try {
+                        final OutputStream os = pipe.getOutputStream();
+                        representation.write(os);
+                        os.write(-1);
+                        os.close();
+                    } catch (IOException ioe) {
+                        Context
+                                .getCurrentLogger()
+                                .log(
+                                        Level.FINE,
+                                        "Error while writing to the piped input stream.",
+                                        ioe);
+                    }
+                }
+            });
+
+            return pipe.getInputStream();
+            // [enddef]
+        } else {
+            Context
+                    .getCurrentLogger()
+                    .log(
+                            Level.WARNING,
+                            "The GAE edition is unable to get an InputStream out of an OutputRepresentation.");
             return null;
         }
-
-        final PipeStream pipe = new PipeStream();
-        final Application application = Application.getCurrent();
-
-        // Creates a thread that will handle the task of continuously
-        // writing the representation into the input side of the pipe
-        TaskService taskService = (application == null) ? new TaskService()
-                : application.getTaskService();
-        taskService.execute(new Runnable() {
-            public void run() {
-                try {
-                    final OutputStream os = pipe.getOutputStream();
-                    representation.write(os);
-                    os.write(-1);
-                    os.close();
-                } catch (IOException ioe) {
-                    Context.getCurrentLogger().log(Level.FINE,
-                            "Error while writing to the piped input stream.",
-                            ioe);
-                }
-            }
-        });
-
-        return pipe.getInputStream();
     }
 
     /**
