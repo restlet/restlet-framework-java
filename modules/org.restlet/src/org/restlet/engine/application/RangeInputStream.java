@@ -146,7 +146,11 @@ public class RangeInputStream extends FilterInputStream {
     public int read(byte[] b, int off, int len) throws IOException {
         // Reach the start index.
         while (!(position >= startIndex)) {
-            position += skip(startIndex - position);
+            long skipped = skip(startIndex - position);
+            if (skipped <= 0) {
+                throw new IOException("Cannot skip ahead in FilterInputStream");
+            }
+            position += skipped;
         }
 
         int n = -1;
