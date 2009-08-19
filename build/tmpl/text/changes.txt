@@ -12,6 +12,9 @@ Changes log
         - Removed the TaskService from the GAE edition as we are not
           allowed to create threads. Reported by Olivier Bruchez.
         - Fixed pom dependencies groupId. Reported by Rémi Dewitte.
+        - Fixed potential bug with RangeInputStream causing 100% CPU 
+          utilization with java NIO.
+          Reported and contributed by Tal Liron. 
      - Enhancements
         - Added support of the "xml:base" attibute when parsing Atom 
           Publishing documents.
