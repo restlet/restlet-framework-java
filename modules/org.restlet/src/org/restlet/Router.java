@@ -244,7 +244,7 @@ public class Router extends Restlet {
      * @return The created route.
      */
     public Route attachDefault(Restlet defaultTarget) {
-        final Route result = new Route(this, "", defaultTarget);
+		final Route result = createRoute("", defaultTarget);
         setDefaultRoute(result);
         return result;
     }

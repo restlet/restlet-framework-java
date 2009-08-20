@@ -24,6 +24,8 @@ Changes log
         - Fixed potential bug with RangeInputStream causing 100% CPU
           utilization with java NIO.
           Reported and contributed by Tal Liron.
+        - Router#attachDefault() method now relies on the protected
+          createRoute() method. Reported by Rob Heittman. 
     - Misc
         - Updated Grizzly to version 1.9.17.
         - Updated FileUpload to version 1.2.1.
