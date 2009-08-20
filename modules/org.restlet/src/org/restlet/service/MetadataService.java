@@ -199,7 +199,7 @@ public class MetadataService extends Service {
      * <li>xltx: Office Excel 2007 template</li>
      * <li>xml: XML document</li>
      * <li>xsd: W3C XML Schema document</li>
-     * <li>xslt: XSL Transform file</li>
+     * <li>xsl, xslt: XSL Transform file</li>
      * <li>xul: XML User Interface Language file</li>
      * <li>z: UNIX compressed archive file</li>
      * <li>zip: Zip archive</li>
@@ -339,6 +339,7 @@ public class MetadataService extends Service {
         ext(dm, "xml", MediaType.TEXT_XML);
         ext(dm, "xml", MediaType.APPLICATION_XML);
         ext(dm, "xsd", MediaType.APPLICATION_W3C_SCHEMA);
+        ext(dm, "xsl", MediaType.APPLICATION_W3C_XSLT);
         ext(dm, "xslt", MediaType.APPLICATION_W3C_XSLT);
         ext(dm, "xul", MediaType.APPLICATION_XUL);
         ext(dm, "z", MediaType.APPLICATION_COMPRESS);
@@ -676,7 +677,7 @@ public class MetadataService extends Service {
             Class<T> metadataType) {
         Metadata metadata = getMetadata(extension);
 
-        if (metadataType.isAssignableFrom(metadata.getClass())) {
+        if (metadata != null && metadataType.isAssignableFrom(metadata.getClass())) {
             return metadataType.cast(metadata);
         } else {
             return null;

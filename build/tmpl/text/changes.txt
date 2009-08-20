@@ -5,7 +5,7 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Bugs fixed
-        - Added Simple extension to the jee edition.
+        - Added Simple extension to the JEE edition.
           Reported by Dustin Jenkins.
         - Fixed bug detected in the CharacterSet class when running in 
           the MacOS context. Reported by John Logsdon.
@@ -35,6 +35,8 @@ Changes log
           "Restlet-Framework/xxx"
         - The thread pool of Jetty servers can now be configured
           with Spring. Reported by Evgeny Shepelyuk. 
+        - Added support for the "xsl" extension in MetadataService.
+          Fixed potential NPE. Contributed by Fabian Mandelbaum.
           
 - 2.0 Milestone 4 (2009-08-06)
     - Bugs fixed
