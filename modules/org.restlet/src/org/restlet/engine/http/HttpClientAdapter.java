@@ -68,7 +68,7 @@ public class HttpClientAdapter extends HttpAdapter {
     public static void copyResponseTransportHeaders(
             Iterable<Parameter> headers, Response response) {
         // Read info from headers
-        for (final Parameter header : headers) {
+        for (Parameter header : headers) {
             if (header.getName()
                     .equalsIgnoreCase(HttpConstants.HEADER_LOCATION)) {
                 response.setLocationRef(header.getValue());
@@ -77,7 +77,7 @@ public class HttpClientAdapter extends HttpAdapter {
                     || (header.getName()
                             .equalsIgnoreCase(HttpConstants.HEADER_SET_COOKIE2))) {
                 try {
-                    final CookieReader cr = new CookieReader(header.getValue());
+                    CookieReader cr = new CookieReader(header.getValue());
                     response.getCookieSettings().add(cr.readCookieSetting());
                 } catch (Exception e) {
                     Context.getCurrentLogger().log(
@@ -88,14 +88,14 @@ public class HttpClientAdapter extends HttpAdapter {
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_WWW_AUTHENTICATE)) {
                 // [ifndef gwt]
-                final ChallengeRequest request = org.restlet.engine.security.AuthenticatorUtils
+                ChallengeRequest request = org.restlet.engine.security.AuthenticatorUtils
                         .parseAuthenticateHeader(header.getValue());
                 response.getChallengeRequests().add(request);
                 // [enddef]
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_PROXY_AUTHENTICATE)) {
                 // [ifndef gwt]
-                final ChallengeRequest request = org.restlet.engine.security.AuthenticatorUtils
+                ChallengeRequest request = org.restlet.engine.security.AuthenticatorUtils
                         .parseAuthenticateHeader(header.getValue());
                 response.getProxyChallengeRequests().add(request);
                 // [enddef]
@@ -104,18 +104,20 @@ public class HttpClientAdapter extends HttpAdapter {
                 response.getServerInfo().setAgent(header.getValue());
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_ALLOW)) {
-                final HeaderReader hr = new HeaderReader(header.getValue());
+                HeaderReader hr = new HeaderReader(header.getValue());
                 String value = hr.readValue();
-                final Set<Method> allowedMethods = response.getAllowedMethods();
+                Set<Method> allowedMethods = response.getAllowedMethods();
+
                 while (value != null) {
                     allowedMethods.add(Method.valueOf(value));
                     value = hr.readValue();
                 }
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_VARY)) {
-                final HeaderReader hr = new HeaderReader(header.getValue());
+                HeaderReader hr = new HeaderReader(header.getValue());
                 String value = hr.readValue();
-                final Set<Dimension> dimensions = response.getDimensions();
+                Set<Dimension> dimensions = response.getDimensions();
+
                 while (value != null) {
                     if (value.equalsIgnoreCase(HttpConstants.HEADER_ACCEPT)) {
                         dimensions.add(Dimension.MEDIA_TYPE);
@@ -165,19 +167,18 @@ public class HttpClientAdapter extends HttpAdapter {
     @SuppressWarnings("unchecked")
     protected void addRequestHeaders(HttpClientCall httpCall, Request request) {
         if (httpCall != null) {
-            final Series<Parameter> requestHeaders = httpCall
-                    .getRequestHeaders();
+            Series<Parameter> requestHeaders = httpCall.getRequestHeaders();
 
             // Manually add the host name and port when it is potentially
             // different from the one specified in the target resource
             // reference.
-            final Reference hostRef = (request.getResourceRef().getBaseRef() != null) ? request
+            Reference hostRef = (request.getResourceRef().getBaseRef() != null) ? request
                     .getResourceRef().getBaseRef()
                     : request.getResourceRef();
 
             if (hostRef.getHostDomain() != null) {
                 String host = hostRef.getHostDomain();
-                final int hostRefPortValue = hostRef.getHostPort();
+                int hostRefPortValue = hostRef.getHostPort();
 
                 if ((hostRefPortValue != -1)
                         && (hostRefPortValue != request.getProtocol()
@@ -198,9 +199,9 @@ public class HttpClientAdapter extends HttpAdapter {
             }
 
             // Add the conditions
-            final Conditions condition = request.getConditions();
+            Conditions condition = request.getConditions();
             if (!condition.getMatch().isEmpty()) {
-                final StringBuilder value = new StringBuilder();
+                StringBuilder value = new StringBuilder();
 
                 for (int i = 0; i < condition.getMatch().size(); i++) {
                     if (i > 0) {
@@ -214,14 +215,13 @@ public class HttpClientAdapter extends HttpAdapter {
             }
 
             if (condition.getModifiedSince() != null) {
-                final String imsDate = DateUtils.format(condition
-                        .getModifiedSince());
+                String imsDate = DateUtils.format(condition.getModifiedSince());
                 requestHeaders.add(HttpConstants.HEADER_IF_MODIFIED_SINCE,
                         imsDate);
             }
 
             if (!condition.getNoneMatch().isEmpty()) {
-                final StringBuilder value = new StringBuilder();
+                StringBuilder value = new StringBuilder();
 
                 for (int i = 0; i < condition.getNoneMatch().size(); i++) {
                     if (i > 0) {
@@ -235,7 +235,7 @@ public class HttpClientAdapter extends HttpAdapter {
             }
 
             if (condition.getUnmodifiedSince() != null) {
-                final String iusDate = DateUtils
+                String iusDate = DateUtils
                         .format(condition.getUnmodifiedSince(),
                                 DateUtils.FORMAT_RFC_1123.get(0));
                 requestHeaders.add(HttpConstants.HEADER_IF_UNMODIFIED_SINCE,
@@ -244,7 +244,7 @@ public class HttpClientAdapter extends HttpAdapter {
 
             // Add the cookies
             if (request.getCookies().size() > 0) {
-                final String cookies = CookieUtils.format(request.getCookies());
+                String cookies = CookieUtils.format(request.getCookies());
                 requestHeaders.add(HttpConstants.HEADER_COOKIE, cookies);
             }
 
@@ -255,7 +255,7 @@ public class HttpClientAdapter extends HttpAdapter {
             }
 
             // Add the preferences
-            final ClientInfo client = request.getClientInfo();
+            ClientInfo client = request.getClientInfo();
             if (client.getAcceptedMediaTypes().size() > 0) {
                 try {
                     requestHeaders.add(HttpConstants.HEADER_ACCEPT,
@@ -397,14 +397,14 @@ public class HttpClientAdapter extends HttpAdapter {
             }
 
             // Add user-defined extension headers
-            final Series<Parameter> additionalHeaders = (Series<Parameter>) request
+            Series<Parameter> additionalHeaders = (Series<Parameter>) request
                     .getAttributes().get(HttpConstants.ATTRIBUTE_HEADERS);
             addAdditionalHeaders(requestHeaders, additionalHeaders);
 
             // [ifndef gwt]
             // Add the security headers. NOTE: This must stay at the end because
             // the AWS challenge scheme requires access to all HTTP headers
-            final ChallengeResponse challengeResponse = request
+            ChallengeResponse challengeResponse = request
                     .getChallengeResponse();
             if (challengeResponse != null) {
                 requestHeaders.add(HttpConstants.HEADER_AUTHORIZATION,
@@ -412,7 +412,7 @@ public class HttpClientAdapter extends HttpAdapter {
                                 challengeResponse, request, requestHeaders));
             }
 
-            final ChallengeResponse proxyChallengeResponse = request
+            ChallengeResponse proxyChallengeResponse = request
                     .getProxyChallengeResponse();
             if (proxyChallengeResponse != null) {
                 requestHeaders.add(HttpConstants.HEADER_PROXY_AUTHORIZATION,
@@ -511,7 +511,8 @@ public class HttpClientAdapter extends HttpAdapter {
     // * The callback invoked upon request completion.
     // */
     // public void commit(final HttpClientCall httpCall, Request request,
-    // Response response, final org.restlet.Uniform userCallback) throws Exception{
+    // Response response, final org.restlet.Uniform userCallback) throws
+    // Exception{
     // if (httpCall != null) {
     // // Send the request to the client
     // httpCall.sendRequest(request, response, new org.restlet.Uniform() {
@@ -547,8 +548,7 @@ public class HttpClientAdapter extends HttpAdapter {
     protected void readResponseHeaders(HttpClientCall httpCall,
             Response response) {
         try {
-            final Series<Parameter> responseHeaders = httpCall
-                    .getResponseHeaders();
+            Series<Parameter> responseHeaders = httpCall.getResponseHeaders();
             // Put the response headers in the call's attributes map
             response.getAttributes().put(HttpConstants.ATTRIBUTE_HEADERS,
                     responseHeaders);
@@ -574,7 +574,7 @@ public class HttpClientAdapter extends HttpAdapter {
      */
     public HttpClientCall toSpecific(HttpClientHelper client, Request request) {
         // Create the low-level HTTP client call
-        final HttpClientCall result = client.create(request);
+        HttpClientCall result = client.create(request);
 
         // Add the request headers
         addRequestHeaders(result, request);

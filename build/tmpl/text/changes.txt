@@ -14,7 +14,9 @@ Changes log
         - Fixed pom dependencies groupId. Reported by Rémi Dewitte.
         - Fixed potential bug with RangeInputStream causing 100% CPU 
           utilization with java NIO.
-          Reported and contributed by Tal Liron. 
+          Reported and contributed by Tal Liron.
+        - Router#attachDefault() method now relies on the protected
+          createRoute() method. Reported by Rob Heittman. 
      - Enhancements
         - Added support of the "xml:base" attibute when parsing Atom 
           Publishing documents.
