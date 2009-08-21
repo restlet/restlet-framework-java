@@ -38,7 +38,6 @@ import java.util.logging.Logger;
 
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
-import org.restlet.engine.Edition;
 import org.restlet.util.Series;
 
 /**

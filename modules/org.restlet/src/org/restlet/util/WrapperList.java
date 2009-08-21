@@ -36,8 +36,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Vector;
 
-import org.restlet.engine.Edition;
-
 /**
  * List wrapper. Modifiable list that delegates all methods to a wrapped list.
  * This allows an easy sub-classing. By default, it wraps a thread-safe

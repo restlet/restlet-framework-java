@@ -58,6 +58,7 @@ import org.w3c.dom.Node;
  * 
  * @author Jerome Louvel
  */
+@SuppressWarnings("deprecation")
 public class TriggerResource extends Resource {
 
     public static final String ATTRIBUTE_MAILBOX_CHALLENGE_SCHEME = "org.restlet.ext.javamail.mailbox.authentication.scheme";

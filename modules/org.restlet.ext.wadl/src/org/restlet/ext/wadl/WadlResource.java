@@ -35,11 +35,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
-import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
@@ -60,6 +58,7 @@ import org.restlet.resource.Resource;
  * 
  * @author Jerome Louvel
  */
+@SuppressWarnings("deprecation")
 public class WadlResource extends Resource {
 
     /**
@@ -306,15 +305,7 @@ public class WadlResource extends Resource {
     protected Variant getPreferredWadlVariant() {
         Variant result = null;
 
-        // Compute the preferred variant. Get the default language
-        // preference from the Application (if any).
-        final Application app = Application.getCurrent();
-        Language language = null;
-
-        if (app != null) {
-            language = app.getMetadataService().getDefaultLanguage();
-        }
-
+        // Compute the preferred variant
         result = getRequest().getClientInfo().getPreferredVariant(
                 getWadlVariants(),
                 (getApplication() == null) ? null : getApplication()

@@ -39,7 +39,6 @@ import org.restlet.data.Conditions;
 import org.restlet.data.Cookie;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
-import org.restlet.data.Range;
 import org.restlet.data.Reference;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;

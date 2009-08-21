@@ -39,7 +39,7 @@ import org.restlet.Server;
 import org.restlet.data.Parameter;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
-import org.restlet.routing.Route;
+import org.restlet.routing.TemplateRoute;
 import org.restlet.routing.VirtualHost;
 import org.restlet.util.ClientList;
 import org.restlet.util.ServerList;
@@ -386,11 +386,11 @@ public class ComponentXmlConfigTestCase extends RestletTestCase {
     public void testAttachParams1a() throws Exception {
         System.out.println("-- testAttachParams1a()");
 
-        final Route route = c.getDefaultHost().getRoutes().get(0);
+        TemplateRoute route = c.getDefaultHost().getRoutes().get(0);
         assertNotNull(
                 "The first Attach element of the Default Host MUST NOT be null",
                 route);
-        final String msg = "[" + ATTACH + " #1] ";
+        String msg = "[" + ATTACH + " #1] ";
         Context ctx = route.getContext();
 
         checkNegativeParam(msg, ctx, CON_NAME + "1");
@@ -417,7 +417,7 @@ public class ComponentXmlConfigTestCase extends RestletTestCase {
     public void testAttachParams1b() throws Exception {
         System.out.println("-- testAttachParams1b()");
 
-        final Route route = c.getDefaultHost().getRoutes().get(1);
+        TemplateRoute route = c.getDefaultHost().getRoutes().get(1);
         assertNotNull(
                 "The second Attach element of the Default Host MUST NOT be null",
                 route);
@@ -448,12 +448,12 @@ public class ComponentXmlConfigTestCase extends RestletTestCase {
     public void testAttachParams2() throws Exception {
         System.out.println("-- testAttachParams2()");
 
-        final Route route = c.getHosts().get(0).getRoutes().get(0);
+        TemplateRoute route = c.getHosts().get(0).getRoutes().get(0);
         assertNotNull(
                 "The single Attach element of the Single Host MUST NOT be null",
                 route);
-        final String msg = "[" + ATTACH + "] ";
-        final Context ctx = route.getContext();
+        String msg = "[" + ATTACH + "] ";
+        Context ctx = route.getContext();
 
         checkNegativeParam(msg, ctx, CON_NAME + "1");
         checkNegativeParam(msg, ctx, CON_NAME + "2");
@@ -491,9 +491,9 @@ public class ComponentXmlConfigTestCase extends RestletTestCase {
      */
     private void checkPositiveParam(String msg, Context ctx, String n, String v) {
         assertNotNull(msg + "Context MUST NOT be null", ctx);
-        final Parameter p = ctx.getParameters().getFirst(n);
+        Parameter p = ctx.getParameters().getFirst(n);
         assertNotNull(msg + "Parameter '" + n + "' MUST NOT be null", p);
-        final String pValue = p.getValue();
+        String pValue = p.getValue();
         assertNotNull(msg + "Parameter '" + n + "' MUST NOT have a null value",
                 pValue);
         assertEquals(msg + "Parameter '" + n + "' has unexpected value", v,
@@ -512,7 +512,7 @@ public class ComponentXmlConfigTestCase extends RestletTestCase {
      *            the name of the {@code init-param} to check for.
      */
     private void checkNegativeParam(String msg, Context ctx, String n) {
-        final Parameter p = ctx.getParameters().getFirst(n);
+        Parameter p = ctx.getParameters().getFirst(n);
         assertNull(msg + " Parameter '" + n + "' MUST be null", p);
     }
 }

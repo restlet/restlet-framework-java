@@ -79,16 +79,8 @@ public class TemplateFilterTestCase extends RestletTestCase {
                     this.directory);
         }
 
-        public Directory getDirectory() {
-            return this.directory;
-        }
-
         public File getTestDirectory() {
             return this.testDirectory;
-        }
-
-        public void setDirectory(Directory directory) {
-            this.directory = directory;
         }
 
         public void setTestDirectory(File testDirectory) {
@@ -123,16 +115,8 @@ public class TemplateFilterTestCase extends RestletTestCase {
                     this.directory);
         }
 
-        public Directory getDirectory() {
-            return this.directory;
-        }
-
         public File getTestDirectory() {
             return this.testDirectory;
-        }
-
-        public void setDirectory(Directory directory) {
-            this.directory = directory;
         }
 
         public void setTestDirectory(File testDirectory) {
