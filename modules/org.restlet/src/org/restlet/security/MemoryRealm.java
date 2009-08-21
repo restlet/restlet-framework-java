@@ -96,7 +96,7 @@ public class MemoryRealm extends Realm {
     }
 
     /** The modifiable list of organizations. */
-    private List<Organization> organizations;
+    private final List<Organization> organizations;
 
     /** The modifiable list of role mappings. */
     private final List<RoleMapping> roleMappings;

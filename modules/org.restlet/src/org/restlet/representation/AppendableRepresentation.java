@@ -45,7 +45,7 @@ public class AppendableRepresentation extends StringRepresentation implements
         Appendable {
 
     /** The appendable text. */
-    private StringBuilder appendableText;
+    private volatile StringBuilder appendableText;
 
     /**
      * Constructor. The following metadata are used by default: "text/plain"

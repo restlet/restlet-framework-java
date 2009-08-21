@@ -43,7 +43,7 @@ import org.restlet.security.Realm;
 public class RealmService extends Service {
 
     /** The modifiable list of security realms. */
-    private List<Realm> realms;
+    private final List<Realm> realms;
 
     /**
      * Constructor.

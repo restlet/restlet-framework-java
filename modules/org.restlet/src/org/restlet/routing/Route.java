@@ -69,13 +69,13 @@ public class Route extends TemplateRoute {
     /** Internal class holding extraction information. */
     private static final class ExtractInfo {
         /** Target attribute name. */
-        protected String attribute;
+        protected volatile String attribute;
 
         /** Indicates how to handle repeating values. */
-        protected boolean first;
+        protected volatile boolean first;
 
         /** Name of the parameter to look for. */
-        protected String parameter;
+        protected volatile String parameter;
 
         /**
          * Constructor.
@@ -97,13 +97,13 @@ public class Route extends TemplateRoute {
     /** Internal class holding validation information. */
     private static final class ValidateInfo {
         /** Name of the attribute to look for. */
-        protected String attribute;
+        protected volatile String attribute;
 
         /** Format of the attribute value, using Regex pattern syntax. */
-        protected String format;
+        protected volatile String format;
 
         /** Indicates if the attribute presence is required. */
-        protected boolean required;
+        protected volatile boolean required;
 
         /**
          * Constructor.

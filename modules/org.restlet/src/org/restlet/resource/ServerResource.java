@@ -78,22 +78,22 @@ import org.restlet.util.Series;
 public abstract class ServerResource extends UniformResource {
 
     /** Indicates if annotations are supported. */
-    private boolean annotated;
+    private volatile boolean annotated;
 
     /** The annotation descriptors. */
     private volatile List<AnnotationInfo> annotations;
 
     /** Indicates if conditional handling is enabled. */
-    private boolean conditional;
+    private volatile boolean conditional;
 
     /** Indicates if the identified resource exists. */
-    private boolean existing;
+    private volatile boolean existing;
 
     /** Indicates if the annotations where extracted. */
-    private boolean introspected;
+    private volatile boolean introspected;
 
     /** Indicates if content negotiation of response entities is enabled. */
-    private boolean negotiated;
+    private volatile boolean negotiated;
 
     /** The modifiable list of variants. */
     private volatile Map<Method, Object> variants;

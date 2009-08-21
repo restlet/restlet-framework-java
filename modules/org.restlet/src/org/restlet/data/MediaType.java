@@ -58,7 +58,7 @@ public final class MediaType extends Metadata {
      * retrievable using {@link #valueOf(String)}.<br>
      * Keep the underscore for the ordering.
      */
-    private static Map<String, MediaType> _types = null;
+    private static volatile Map<String, MediaType> _types = null;
 
     public static final MediaType ALL = register("*/*", "All media");
 

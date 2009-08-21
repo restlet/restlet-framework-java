@@ -297,7 +297,7 @@ public final class Method implements Comparable<Method> {
      * Indicates if the side-effects of several requests is the same as a single
      * request.
      */
-    private boolean idempotent;
+    private volatile boolean idempotent;
 
     /** The name. */
     private volatile String name;

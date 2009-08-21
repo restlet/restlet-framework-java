@@ -45,13 +45,13 @@ import org.restlet.service.MetadataService;
  */
 public class AnnotationInfo {
     /** The annotated Java method. */
-    private volatile java.lang.reflect.Method javaMethod;
+    private final java.lang.reflect.Method javaMethod;
 
     /** The matching Restlet method. */
-    private volatile Method restletMethod;
+    private final Method restletMethod;
 
     /** The annotation value. */
-    private volatile String value;
+    private final String value;
 
     /**
      * Constructor.
@@ -198,35 +198,5 @@ public class AnnotationInfo {
      */
     public String getValue() {
         return value;
-    }
-
-    /**
-     * Sets the annotated Java method.
-     * 
-     * @param javaMethod
-     *            The annotated Java method.
-     */
-    public void setJavaMethod(java.lang.reflect.Method javaMethod) {
-        this.javaMethod = javaMethod;
-    }
-
-    /**
-     * Sets the matching Restlet method.
-     * 
-     * @param restletMethod
-     *            The matching Restlet method.
-     */
-    public void setRestletMethod(Method restletMethod) {
-        this.restletMethod = restletMethod;
-    }
-
-    /**
-     * Sets the annotation value.
-     * 
-     * @param value
-     *            The annotation value.
-     */
-    public void setValue(String value) {
-        this.value = value;
     }
 }

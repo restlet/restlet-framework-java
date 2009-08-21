@@ -107,13 +107,13 @@ public abstract class Handler {
     }
 
     /** The parent context. */
-    private Context context;
+    private volatile Context context;
 
     /** The handled request. */
-    private Request request;
+    private volatile Request request;
 
     /** The returned response. */
-    private Response response;
+    private volatile Response response;
 
     /**
      * Special constructor used by IoC frameworks. Note that the init() method

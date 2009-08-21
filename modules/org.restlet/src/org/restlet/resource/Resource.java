@@ -101,23 +101,23 @@ import org.restlet.util.Series;
 public class Resource extends Handler {
 
     /** Indicates if the resource is actually available. */
-    private boolean available;
+    private volatile boolean available;
 
     /**
      * Indicates if the representations can be modified via the
      * {@link #handlePost()}, the {@link #handlePut()} or the
      * {@link #handleDelete()} methods.
      */
-    private boolean modifiable;
+    private volatile boolean modifiable;
 
     /** Indicates if the best content is automatically negotiated. */
-    private boolean negotiateContent;
+    private volatile boolean negotiateContent;
 
     /**
      * Indicates if the representations can be read via the {@link #handleGet()}
      * method.
      */
-    private boolean readable;
+    private volatile boolean readable;
 
     /** The modifiable list of variants. */
     private volatile List<Variant> variants;

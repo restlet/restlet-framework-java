@@ -41,13 +41,13 @@ package org.restlet.data;
 public class Product {
 
     /** Comment. */
-    private String comment;
+    private volatile String comment;
 
     /** Product name. */
-    private String name;
+    private volatile String name;
 
     /** Version number. */
-    private String version;
+    private volatile String version;
 
     /**
      * Constructor.

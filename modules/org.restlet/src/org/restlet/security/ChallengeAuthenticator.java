@@ -61,7 +61,7 @@ public class ChallengeAuthenticator extends Authenticator {
     private final ChallengeScheme scheme;
 
     /** The secrets verifier (login/password combinations). */
-    private Verifier verifier;
+    private volatile Verifier verifier;
 
     /**
      * Constructor.

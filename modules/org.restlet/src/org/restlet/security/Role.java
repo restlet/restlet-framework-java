@@ -59,19 +59,19 @@ public class Role {
     };
 
     /** The modifiable list of child roles. */
-    private List<Role> childRoles;
+    private final List<Role> childRoles;
 
     /** The modifiable list of denied permissions. */
-    private List<Permission> deniedPermissions;
+    private volatile List<Permission> deniedPermissions;
 
     /** The description. */
     private volatile String description;
 
     /** The modifiable list of granted permissions. */
-    private List<Permission> grantedPermissions;
+    private volatile List<Permission> grantedPermissions;
 
     /** Indicates if the permissions are inherited from the parent role. */
-    private boolean inheritPermissions;
+    private volatile boolean inheritPermissions;
 
     /** The name. */
     private volatile String name;
