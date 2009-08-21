@@ -30,10 +30,10 @@
 
 package org.restlet.ext.jetty;
 
-import org.mortbay.jetty.AbstractConnector;
-import org.mortbay.jetty.bio.SocketConnector;
-import org.mortbay.jetty.nio.BlockingChannelConnector;
-import org.mortbay.jetty.nio.SelectChannelConnector;
+import org.eclipse.jetty.server.AbstractConnector;
+import org.eclipse.jetty.server.bio.SocketConnector;
+import org.eclipse.jetty.server.nio.BlockingChannelConnector;
+import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 

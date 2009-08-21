@@ -7,7 +7,8 @@ Bundle-ClassPath: org.eclipse.jetty.ajp.jar,
  org.eclipse.jetty.http.jar,
  org.eclipse.jetty.server.jar,
  org.eclipse.jetty.util.jar,
- org.eclipse.jetty.io.jar
+ org.eclipse.jetty.io.jar,
+ org.eclipse.jetty.continuations.jar
 Bundle-Vendor: Eclipse Foundation
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Import-Package: javax.servlet,
@@ -19,6 +20,7 @@ Export-Package: org.eclipse.jetty.ajp;
    org.eclipse.jetty.io,
    org.eclipse.jetty.http,
    org.eclipse.jetty.server.bio",
+ org.eclipse.jetty.continuation;uses:="javax.servlet,org.mortbay.util.ajax",
  org.eclipse.jetty.http;
   uses:="org.eclipse.jetty.io,
    org.eclipse.jetty.util.resource,

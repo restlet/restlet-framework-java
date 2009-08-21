@@ -42,8 +42,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 
-import org.mortbay.jetty.EofException;
-import org.mortbay.jetty.HttpConnection;
+import org.eclipse.jetty.io.EofException;
+import org.eclipse.jetty.server.HttpConnection;
 import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Parameter;
@@ -153,7 +153,6 @@ public class JettyCall extends HttpServerCall {
      * @return The list of request headers.
      */
     @Override
-    @SuppressWarnings("unchecked")
     public Series<Parameter> getRequestHeaders() {
         final Series<Parameter> result = super.getRequestHeaders();
 

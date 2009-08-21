@@ -35,14 +35,13 @@ import java.io.File;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocketFactory;
 
-import org.mortbay.jetty.AbstractConnector;
-import org.mortbay.jetty.security.SslSelectChannelConnector;
-import org.mortbay.jetty.security.SslSocketConnector;
+import org.eclipse.jetty.server.AbstractConnector;
+import org.eclipse.jetty.server.ssl.SslSelectChannelConnector;
+import org.eclipse.jetty.server.ssl.SslSocketConnector;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.engine.http.HttpsUtils;
 import org.restlet.engine.security.SslContextFactory;
-
 
 /**
  * Jetty HTTPS server connector. Here is the list of additional parameters that
@@ -140,7 +139,9 @@ import org.restlet.engine.security.SslContextFactory;
  * </tr>
  * </table>
  * 
- * @see <a href="http://docs.codehaus.org/display/JETTY/How+to+configure+SSL">How to configure SSL for Jetty</a>
+ * @see <a
+ *      href="http://docs.codehaus.org/display/JETTY/How+to+configure+SSL">How
+ *      to configure SSL for Jetty</a>
  * @author Jerome Louvel
  */
 public class HttpsServerHelper extends JettyServerHelper {

@@ -35,6 +35,10 @@ Changes log
         - Updated Velocity to version 1.6.2.
         - Updated JiBX to version 1.2.1.
         - Updated db4o to version 7.10.96.
+        - Updated Jetty to version 7.0 RC4. Upgraded the Jetty
+          extension: replaced "headerBufferSize" parameter by
+          "requestHeaderSize" and "responseHeaderSize" parameters.
+          Removed "lowThreads" parameter no longer available. 
         - Updated the Javadocs of the API to indicate the mapping 
           between properties/classes and HTTP headers.
         - Updated the "Server" HTTP header returned by default to 

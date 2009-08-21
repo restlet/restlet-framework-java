@@ -30,8 +30,8 @@
 
 package org.restlet.ext.jetty;
 
-import org.mortbay.jetty.AbstractConnector;
-import org.mortbay.jetty.ajp.Ajp13SocketConnector;
+import org.eclipse.jetty.ajp.Ajp13SocketConnector;
+import org.eclipse.jetty.server.AbstractConnector;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 

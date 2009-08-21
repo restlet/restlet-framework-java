@@ -36,9 +36,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.mortbay.jetty.HttpConnection;
-import org.mortbay.jetty.Request;
-import org.mortbay.jetty.handler.AbstractHandler;
+import org.eclipse.jetty.server.HttpConnection;
+import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.restlet.Server;
 
 /**
@@ -100,15 +100,16 @@ public class JettyHandler extends AbstractHandler {
      *            The target of the request, either a URI or a name.
      * @param request
      *            The Jetty request.
-     * @param response
-     *            The Jetty response.
-     * @param dispatch
-     *            The Jetty dispatch mode.
+     * @param servletRequest
+     *            The Servlet request.
+     * @param servletResponse
+     *            The Servlet response.
      */
-    public void handle(String target, HttpServletRequest request,
-            HttpServletResponse response, int dispatch) throws IOException,
+    public void handle(String target, Request arg1,
+            HttpServletRequest servletRequest,
+            HttpServletResponse servletResponse) throws IOException,
             ServletException {
-        final Request baseRequest = (request instanceof Request) ? (Request) request
+        final Request baseRequest = (servletRequest instanceof Request) ? (Request) servletRequest
                 : HttpConnection.getCurrentConnection().getRequest();
         this.helper.handle(new JettyCall(this.helper.getHelped(),
                 HttpConnection.getCurrentConnection()));

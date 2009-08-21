@@ -34,10 +34,10 @@ import java.io.IOException;
 
 import javax.servlet.ServletException;
 
-import org.mortbay.jetty.AbstractConnector;
-import org.mortbay.jetty.HttpConnection;
-import org.mortbay.jetty.Server;
-import org.mortbay.thread.QueuedThreadPool;
+import org.eclipse.jetty.server.AbstractConnector;
+import org.eclipse.jetty.server.HttpConnection;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
 /**
  * Abstract Jetty Web server connector. Here is the list of parameters that are
@@ -68,13 +68,6 @@ import org.mortbay.thread.QueuedThreadPool;
  * <td>Time for an idle thread to wait for a request or read.</td>
  * </tr>
  * <tr>
- * <td>lowThreads</td>
- * <td>int</td>
- * <td>25</td>
- * <td>Threshold of remaining threads at which the server is considered as
- * running low on resources.</td>
- * </tr>
- * <tr>
  * <td>lowResourceMaxIdleTimeMs</td>
  * <td>int</td>
  * <td>2500</td>
@@ -94,10 +87,16 @@ import org.mortbay.thread.QueuedThreadPool;
  * <td>Size of the accept queue.</td>
  * </tr>
  * <tr>
- * <td>headerBufferSize</td>
+ * <td>requestHeaderSize</td>
  * <td>int</td>
  * <td>4*1024</td>
- * <td>Size of the buffer to be used for request and response headers.</td>
+ * <td>Size of the buffer to be used for request headers.</td>
+ * </tr>
+ * <tr>
+ * <td>responseHeaderSize</td>
+ * <td>int</td>
+ * <td>4*1024</td>
+ * <td>Size of the buffer to be used for response headers.</td>
  * </tr>
  * <tr>
  * <td>requestBufferSize</td>
@@ -159,7 +158,7 @@ public abstract class JettyServerHelper extends
      * 
      * @author Jerome Louvel
      */
-    private static class WrappedServer extends org.mortbay.jetty.Server {
+    private static class WrappedServer extends org.eclipse.jetty.server.Server {
         JettyServerHelper helper;
 
         /**
@@ -218,7 +217,8 @@ public abstract class JettyServerHelper extends
         connector.setLowResourceMaxIdleTime(getLowResourceMaxIdleTimeMs());
         connector.setAcceptors(getAcceptorThreads());
         connector.setAcceptQueueSize(getAcceptQueueSize());
-        connector.setHeaderBufferSize(getHeaderBufferSize());
+        connector.setRequestHeaderSize(getRequestHeaderSize());
+        connector.setResponseHeaderSize(getResponseHeaderSize());
         connector.setRequestBufferSize(getRequestBufferSize());
         connector.setResponseBufferSize(getResponseBufferSize());
         connector.setMaxIdleTime(getIoMaxIdleTimeMs());
@@ -264,18 +264,6 @@ public abstract class JettyServerHelper extends
     }
 
     /**
-     * Returns the size of the buffer to be used for request and response
-     * headers.
-     * 
-     * @return The size of the buffer to be used for request and response
-     *         headers.
-     */
-    public int getHeaderBufferSize() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "headerBufferSize", Integer.toString(4 * 1024)));
-    }
-
-    /**
      * Returns the maximum time to wait on an idle IO operation.
      * 
      * @return The maximum time to wait on an idle IO operation.
@@ -295,18 +283,6 @@ public abstract class JettyServerHelper extends
     public int getLowResourceMaxIdleTimeMs() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
                 "lowResourceMaxIdleTimeMs", "2500"));
-    }
-
-    /**
-     * Returns the threshold of remaining threads at which the server is
-     * considered as running low on resources.
-     * 
-     * @return The threshold of remaining threads at which the server is
-     *         considered as running low on resources.
-     */
-    public int getLowThreads() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "lowThreads", "25"));
     }
 
     /**
@@ -340,6 +316,16 @@ public abstract class JettyServerHelper extends
     }
 
     /**
+     * Returns the size of the buffer to be used for request headers.
+     * 
+     * @return The size of the buffer to be used for request headers.
+     */
+    public int getRequestHeaderSize() {
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "requestHeaderSize", Integer.toString(4 * 1024)));
+    }
+
+    /**
      * Returns the size of the content buffer for sending responses.
      * 
      * @return The size of the content buffer for sending responses.
@@ -347,6 +333,16 @@ public abstract class JettyServerHelper extends
     public int getResponseBufferSize() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
                 "responseBufferSize", Integer.toString(32 * 1024)));
+    }
+
+    /**
+     * Returns the size of the buffer to be used for response headers.
+     * 
+     * @return The size of the buffer to be used for response headers.
+     */
+    public int getResponseHeaderSize() {
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "responseHeaderSize", Integer.toString(4 * 1024)));
     }
 
     /**
@@ -379,8 +375,7 @@ public abstract class JettyServerHelper extends
             this.wrappedServer = new WrappedServer(this);
 
             // Configuring the thread pool
-            final QueuedThreadPool btp = new QueuedThreadPool();
-            btp.setLowThreads(getLowThreads());
+            QueuedThreadPool btp = new QueuedThreadPool();
             btp.setMaxIdleTimeMs(getThreadMaxIdleTimeMs());
             btp.setMaxThreads(getMaxThreads());
             btp.setMinThreads(getMinThreads());
