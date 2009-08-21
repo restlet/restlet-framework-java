@@ -46,6 +46,8 @@ import junit.framework.TestCase;
 
 import org.restlet.Application;
 import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.security.*;
 import org.restlet.Restlet;
 import org.restlet.data.ChallengeResponse;
@@ -60,8 +62,6 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.engine.io.ByteUtils;
 import org.restlet.representation.Representation;

@@ -34,8 +34,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.Context;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.engine.component.ChildContext;
 import org.restlet.routing.Filter;
 import org.restlet.service.LogService;

@@ -31,13 +31,13 @@
 package org.restlet.example.book.rest.ch7;
 
 import org.restlet.Client;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Form;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 
 /**
  * Client code that can be used to test the application developed in the chapter

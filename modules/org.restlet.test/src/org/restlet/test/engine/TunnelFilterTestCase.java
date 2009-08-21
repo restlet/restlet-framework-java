@@ -39,6 +39,8 @@ import junit.framework.TestCase;
 
 import org.restlet.Application;
 import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Encoding;
 import org.restlet.data.Form;
@@ -49,8 +51,6 @@ import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
 import org.restlet.data.Reference;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.engine.application.TunnelFilter;
 import org.restlet.engine.http.HttpConstants;
 import org.restlet.util.Series;

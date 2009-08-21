@@ -36,10 +36,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.ext.jaxrs.internal.core.CallContext;
 import org.restlet.ext.jaxrs.internal.wrappers.ResourceMethod;
 import org.restlet.ext.jaxrs.internal.wrappers.RrcOrRml;

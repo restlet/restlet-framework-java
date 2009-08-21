@@ -28,14 +28,20 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.data;
+package org.restlet;
 
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import org.restlet.Restlet;
+import org.restlet.data.ChallengeRequest;
+import org.restlet.data.CookieSetting;
+import org.restlet.data.Dimension;
+import org.restlet.data.Method;
+import org.restlet.data.Reference;
+import org.restlet.data.ServerInfo;
+import org.restlet.data.Status;
 import org.restlet.engine.util.CookieSettingSeries;
 import org.restlet.util.Series;
 
@@ -44,7 +50,7 @@ import org.restlet.util.Series;
  * connectors. Responses are uniform across all types of connectors, protocols
  * and components.
  * 
- * @see org.restlet.data.Request
+ * @see org.restlet.Request
  * @see org.restlet.Uniform
  * @author Jerome Louvel
  */
@@ -62,7 +68,7 @@ public class Response extends Message {
      * 
      * This variable is stored internally as a thread local variable and updated
      * each time a call is handled by a Restlet via the
-     * {@link Restlet#handle(org.restlet.data.Request, org.restlet.data.Response)}
+     * {@link Restlet#handle(org.restlet.Request, org.restlet.Response)}
      * method.
      * 
      * @return The current context.

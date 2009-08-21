@@ -66,7 +66,7 @@ public class ThreadLocalizedContext implements Request, HttpHeaders,
 
     /**
      * The key of the {@link CallContext} in the
-     * {@link org.restlet.data.Request} attributes.
+     * {@link org.restlet.Request} attributes.
      */
     private static final String CALLCONTEXT_KEY = "org.restlet.ext.jaxrs.CallContext";
 
@@ -181,12 +181,12 @@ public class ThreadLocalizedContext implements Request, HttpHeaders,
 
     /**
      * Returns the attributes of the current Restlet
-     * {@link org.restlet.data.Request}.
+     * {@link org.restlet.Request}.
      * 
      * @return the attributes of the current Restlet Request, but never null
      */
     private Map<String, Object> getRequestAttributes() {
-        return org.restlet.data.Request.getCurrent().getAttributes();
+        return org.restlet.Request.getCurrent().getAttributes();
     }
 
     /**

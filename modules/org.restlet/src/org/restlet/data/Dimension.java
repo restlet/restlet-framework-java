@@ -30,6 +30,8 @@
 
 package org.restlet.data;
 
+import org.restlet.Response;
+
 /**
  * Dimension on which the representations of a resource may vary.<br>
  * <br>

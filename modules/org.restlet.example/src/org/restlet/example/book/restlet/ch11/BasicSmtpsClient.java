@@ -33,13 +33,13 @@ package org.restlet.example.book.restlet.ch11;
 import java.io.File;
 
 import org.restlet.Client;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 

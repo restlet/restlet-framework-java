@@ -30,8 +30,6 @@
 
 package org.restlet;
 
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 
 /**
  * Uniform REST interface. "The central feature that distinguishes the REST

@@ -33,8 +33,8 @@ package org.restlet.security;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.restlet.data.Request;
-import org.restlet.data.Response;
+import org.restlet.Request;
+import org.restlet.Response;
 
 /**
  * Authorizer based on authorized and forbidden roles. Note that if no role is

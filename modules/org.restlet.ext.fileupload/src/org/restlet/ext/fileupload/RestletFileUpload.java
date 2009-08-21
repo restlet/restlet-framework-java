@@ -38,7 +38,7 @@ import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileUpload;
 import org.apache.commons.fileupload.FileUploadException;
-import org.restlet.data.Request;
+import org.restlet.Request;
 import org.restlet.representation.Representation;
 
 /**

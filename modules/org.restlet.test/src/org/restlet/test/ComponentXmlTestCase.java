@@ -32,8 +32,8 @@ package org.restlet.test;
 
 import org.restlet.Client;
 import org.restlet.Component;
+import org.restlet.Response;
 import org.restlet.data.Protocol;
-import org.restlet.data.Response;
 import org.restlet.representation.AppendableRepresentation;
 
 /**

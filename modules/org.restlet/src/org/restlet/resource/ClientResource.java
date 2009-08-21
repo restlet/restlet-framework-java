@@ -39,6 +39,8 @@ import java.util.logging.Level;
 
 import org.restlet.Client;
 import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.Uniform;
 import org.restlet.data.ChallengeResponse;
@@ -52,8 +54,6 @@ import org.restlet.data.Preference;
 import org.restlet.data.Protocol;
 import org.restlet.data.Range;
 import org.restlet.data.Reference;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.engine.Engine;
 import org.restlet.engine.resource.AnnotationInfo;

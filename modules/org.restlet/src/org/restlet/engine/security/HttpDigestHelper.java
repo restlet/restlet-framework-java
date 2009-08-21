@@ -30,13 +30,13 @@
 
 package org.restlet.engine.security;
 
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.engine.util.Base64;
 import org.restlet.engine.util.DigestUtils;
 import org.restlet.security.Guard;

@@ -31,9 +31,9 @@
 package org.restlet.example.book.rest.ch2;
 
 import org.restlet.Client;
+import org.restlet.Response;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
-import org.restlet.data.Response;
 import org.restlet.ext.xml.DomRepresentation;
 import org.w3c.dom.Node;
 

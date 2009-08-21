@@ -66,6 +66,7 @@ import javax.ws.rs.core.Variant;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.restlet.Application;
+import org.restlet.Request;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.CharacterSet;
@@ -73,7 +74,6 @@ import org.restlet.data.Dimension;
 import org.restlet.data.Form;
 import org.restlet.data.Language;
 import org.restlet.data.Reference;
-import org.restlet.data.Request;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
 import org.restlet.ext.jaxrs.ExtendedUriBuilder;
@@ -234,7 +234,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
 
     private UnmodifiableMultivaluedMap<String, String> requestHeaders;
 
-    private final org.restlet.data.Response response;
+    private final org.restlet.Response response;
 
     private final RoleChecker roleChecker;
 
@@ -247,7 +247,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * @param roleChecker
      *            Optional, can be null, see {@link RoleChecker}.
      */
-    public CallContext(Request request, org.restlet.data.Response response,
+    public CallContext(Request request, org.restlet.Response response,
             RoleChecker roleChecker) {
         if (request == null) {
             throw new IllegalArgumentException(
@@ -1023,9 +1023,9 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
     }
 
     /**
-     * Returns the Restlet {@link org.restlet.data.Request}
+     * Returns the Restlet {@link org.restlet.Request}
      * 
-     * @return the Restlet {@link org.restlet.data.Request}
+     * @return the Restlet {@link org.restlet.Request}
      */
     public Request getRequest() {
         return this.request;
@@ -1078,11 +1078,11 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
     }
 
     /**
-     * Returns the Restlet {@link org.restlet.data.Response}
+     * Returns the Restlet {@link org.restlet.Response}
      * 
-     * @return the Restlet {@link org.restlet.data.Response}
+     * @return the Restlet {@link org.restlet.Response}
      */
-    public org.restlet.data.Response getResponse() {
+    public org.restlet.Response getResponse() {
         return this.response;
     }
 

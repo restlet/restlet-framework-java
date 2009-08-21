@@ -34,11 +34,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.Dimension;
 import org.restlet.data.Parameter;
 import org.restlet.data.ReferenceList;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;

@@ -32,12 +32,12 @@ package org.restlet.example.book.restlet.ch10;
 
 import org.restlet.Client;
 import org.restlet.Component;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.Cookie;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.ext.xml.DomRepresentation;
 import org.restlet.ext.xml.NodeSet;
 import org.restlet.ext.xml.SaxRepresentation;

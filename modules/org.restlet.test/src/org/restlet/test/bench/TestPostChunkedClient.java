@@ -33,9 +33,9 @@ package org.restlet.test.bench;
 import java.io.IOException;
 
 import org.restlet.Client;
+import org.restlet.Response;
 import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
-import org.restlet.data.Response;
 import org.restlet.representation.FileRepresentation;
 import org.restlet.representation.InputRepresentation;
 

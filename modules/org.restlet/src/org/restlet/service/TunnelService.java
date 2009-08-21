@@ -31,8 +31,8 @@
 package org.restlet.service;
 
 import org.restlet.Context;
+import org.restlet.Request;
 import org.restlet.data.ClientInfo;
-import org.restlet.data.Request;
 import org.restlet.engine.application.TunnelFilter;
 import org.restlet.engine.http.HttpConstants;
 import org.restlet.routing.Filter;

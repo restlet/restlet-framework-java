@@ -35,7 +35,7 @@ import java.util.ArrayList;
 import org.apache.solr.common.util.ContentStream;
 import org.apache.solr.core.SolrCore;
 import org.apache.solr.request.SolrQueryRequestBase;
-import org.restlet.data.Request;
+import org.restlet.Request;
 
 /**
  * Solr query request wrapping a Restlet request.

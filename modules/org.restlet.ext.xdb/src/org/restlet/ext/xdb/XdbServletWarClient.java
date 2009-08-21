@@ -37,9 +37,9 @@ import javax.servlet.ServletConfig;
 
 import org.restlet.Client;
 import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.Protocol;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.engine.ClientHelper;
 
 

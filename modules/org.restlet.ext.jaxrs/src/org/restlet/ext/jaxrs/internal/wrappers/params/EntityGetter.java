@@ -38,8 +38,8 @@ import java.lang.reflect.InvocationTargetException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MultivaluedMap;
 
+import org.restlet.Request;
 import org.restlet.data.MediaType;
-import org.restlet.data.Request;
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
 import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;

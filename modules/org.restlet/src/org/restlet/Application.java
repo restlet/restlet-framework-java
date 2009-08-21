@@ -35,8 +35,6 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.engine.Engine;
 import org.restlet.engine.RestletHelper;
 import org.restlet.engine.application.ApplicationHelper;
@@ -59,8 +57,8 @@ import org.restlet.service.TunnelService;
  * the root Restlet and the actual Restlet that can be attached to one or more
  * VirtualHost instances.<br>
  * <br>
- * Applications also have many useful Services associated. They are available as
- * properties that can be eventually overridden:
+ * Applications also have many useful services associated. They are all enabled
+ * by default and are available as properties that can be eventually overridden:
  * <ul>
  * <li>"connectorService" to declare necessary client and server connectors.</li>
  * <li>"converterService" to convert between regular objects and

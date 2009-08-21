@@ -40,8 +40,8 @@ import junit.framework.AssertionFailedError;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.restlet.Response;
 import org.restlet.data.MediaType;
-import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.ext.jaxb.JaxbRepresentation;
 import org.restlet.ext.jaxrs.JaxRsApplication;

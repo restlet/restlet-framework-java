@@ -305,7 +305,7 @@ public class SimpleCall extends HttpServerCall {
     }
 
     @Override
-    public void writeResponseHead(org.restlet.data.Response restletResponse)
+    public void writeResponseHead(org.restlet.Response restletResponse)
             throws IOException {
         // this.response.clear();
         for (final Parameter header : getResponseHeaders()) {

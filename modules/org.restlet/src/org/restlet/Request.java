@@ -28,12 +28,19 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.data;
+package org.restlet;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.restlet.Context;
+import org.restlet.data.ChallengeResponse;
+import org.restlet.data.ClientInfo;
+import org.restlet.data.Conditions;
+import org.restlet.data.Cookie;
+import org.restlet.data.Method;
+import org.restlet.data.Protocol;
+import org.restlet.data.Range;
+import org.restlet.data.Reference;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 
@@ -43,7 +50,7 @@ import org.restlet.util.Series;
  * chain of Restlets, on both client and server sides. Requests are uniform
  * across all types of connectors, protocols and components.
  * 
- * @see org.restlet.data.Response
+ * @see org.restlet.Response
  * @see org.restlet.Uniform
  * @author Jerome Louvel
  */

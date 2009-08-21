@@ -37,7 +37,7 @@ import java.util.Set;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.core.Application;
 
-import org.restlet.data.Response;
+import org.restlet.Response;
 import org.restlet.data.Status;
 import org.restlet.test.jaxrs.services.resources.MatrixParamTestService;
 import org.restlet.test.jaxrs.services.resources.QueryParamTestService;

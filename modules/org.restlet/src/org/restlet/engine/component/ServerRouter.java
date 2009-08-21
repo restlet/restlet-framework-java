@@ -33,9 +33,9 @@ package org.restlet.engine.component;
 import java.util.logging.Level;
 
 import org.restlet.Component;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.Restlet;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.routing.Router;
 import org.restlet.routing.VirtualHost;

@@ -33,10 +33,10 @@ package org.restlet.example.ext.spring.book.rest.ch7;
 import java.util.Date;
 
 import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.example.book.rest.ch7.Bookmark;
 import org.restlet.representation.Representation;

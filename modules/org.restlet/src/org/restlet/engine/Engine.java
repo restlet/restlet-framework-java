@@ -42,9 +42,9 @@ import java.util.logging.Level;
 
 import org.restlet.Client;
 import org.restlet.Context;
+import org.restlet.Response;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
-import org.restlet.data.Response;
 
 /**
  * Engine supporting the Restlet API.

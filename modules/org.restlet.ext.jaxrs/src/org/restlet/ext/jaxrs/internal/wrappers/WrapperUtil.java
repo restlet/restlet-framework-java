@@ -49,9 +49,9 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
+import org.restlet.Request;
 import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
-import org.restlet.data.Request;
 import org.restlet.ext.jaxrs.InstantiateException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingConstructorException;

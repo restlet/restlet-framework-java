@@ -47,8 +47,8 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 
 import org.restlet.Client;
+import org.restlet.Request;
 import org.restlet.data.Protocol;
-import org.restlet.data.Request;
 
 /**
  * HTTP client helper based on BIO sockets. Here is the list of parameters that

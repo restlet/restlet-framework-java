@@ -1,12 +1,12 @@
 package org.restlet.example.book.restlet.ch7.jaxb;
 
 import org.restlet.Client;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.Server;
 import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.ext.jaxb.JaxbRepresentation;
 
 public class XmlTest {

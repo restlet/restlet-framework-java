@@ -45,9 +45,9 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.CharacterSet;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.engine.io.ByteUtils;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.representation.Representation;

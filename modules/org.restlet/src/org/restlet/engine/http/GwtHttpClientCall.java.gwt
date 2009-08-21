@@ -207,8 +207,8 @@ public class GwtHttpClientCall extends HttpClientCall {
     }
 
     @Override
-    public void sendRequest(final org.restlet.data.Request request,
-            final org.restlet.data.Response response, final Uniform callback)
+    public void sendRequest(final org.restlet.Request request,
+            final org.restlet.Response response, final Uniform callback)
             throws Exception {
         final Representation entity = request.isEntityAvailable() ? request
                 .getEntity() : null;

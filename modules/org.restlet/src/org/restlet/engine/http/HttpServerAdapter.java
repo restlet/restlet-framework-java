@@ -38,6 +38,7 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import org.restlet.Context;
+import org.restlet.Response;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Digest;
@@ -45,7 +46,6 @@ import org.restlet.data.Dimension;
 import org.restlet.data.Encoding;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
-import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.engine.security.AuthenticatorUtils;
 import org.restlet.engine.util.Base64;

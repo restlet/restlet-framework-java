@@ -31,8 +31,8 @@
 package org.restlet.engine.application;
 
 import org.restlet.Application;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.engine.ChainHelper;
 import org.restlet.routing.Filter;
 import org.restlet.service.Service;

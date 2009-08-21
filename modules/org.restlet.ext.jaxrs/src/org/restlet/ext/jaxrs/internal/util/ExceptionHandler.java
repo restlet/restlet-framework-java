@@ -46,10 +46,10 @@ import javax.ws.rs.core.Variant;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
+import org.restlet.Request;
 import org.restlet.Restlet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
-import org.restlet.data.Request;
 import org.restlet.ext.jaxrs.InstantiateException;
 import org.restlet.ext.jaxrs.internal.core.CallContext;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
@@ -166,8 +166,8 @@ public class ExceptionHandler {
      * @param exception
      * @param callContext
      *            Contains the encoded template Parameters, that are read from
-     *            the called URI, the Restlet {@link org.restlet.data.Request}
-     *            and the Restlet {@link org.restlet.data.Response}.
+     *            the called URI, the Restlet {@link org.restlet.Request}
+     *            and the Restlet {@link org.restlet.Response}.
      * @param methodName
      * @param logMessage
      * @return staticly to throw, if needed by compiler.
@@ -193,8 +193,8 @@ public class ExceptionHandler {
      * @param exception
      * @param callContext
      *            Contains the encoded template Parameters, that are read from
-     *            the called URI, the Restlet {@link org.restlet.data.Request}
-     *            and the Restlet {@link org.restlet.data.Response}.
+     *            the called URI, the Restlet {@link org.restlet.Request}
+     *            and the Restlet {@link org.restlet.Response}.
      * @param methodName
      * @param logMessage
      * @return staticly to throw, if needed by compiler.
@@ -233,8 +233,8 @@ public class ExceptionHandler {
      * @param exception
      * @param callContext
      *            Contains the encoded template Parameters, that are read from
-     *            the called URI, the Restlet {@link org.restlet.data.Request}
-     *            and the Restlet {@link org.restlet.data.Response}.
+     *            the called URI, the Restlet {@link org.restlet.Request}
+     *            and the Restlet {@link org.restlet.Response}.
      * @param methodName
      * @param logMessage
      * @return staticly to throw, if needed by compiler.
@@ -325,7 +325,7 @@ public class ExceptionHandler {
             RequestHandledException {
         if (this.noResMethodHandler != null) {
             this.noResMethodHandler.handle(Request.getCurrent(),
-                    org.restlet.data.Response.getCurrent());
+                    org.restlet.Response.getCurrent());
             throw new RequestHandledException();
         } else {
             throw new WebApplicationException(Status.NOT_FOUND);
@@ -345,7 +345,7 @@ public class ExceptionHandler {
             RequestHandledException {
         if (this.noResourceClHandler != null) {
             this.noResourceClHandler.handle(Request.getCurrent(),
-                    org.restlet.data.Response.getCurrent());
+                    org.restlet.Response.getCurrent());
             throw new RequestHandledException();
         } else {
             throw new WebApplicationException(Status.NOT_FOUND);
@@ -365,7 +365,7 @@ public class ExceptionHandler {
             RequestHandledException {
         if (this.noRootResClHandler != null) {
             this.noRootResClHandler.handle(Request.getCurrent(),
-                    org.restlet.data.Response.getCurrent());
+                    org.restlet.Response.getCurrent());
             throw new RequestHandledException();
         } else {
             throw new WebApplicationException(Status.NOT_FOUND);
@@ -382,8 +382,8 @@ public class ExceptionHandler {
      *            the called method when the exception occurs. May be null.
      * @param callContext
      *            Contains the encoded template Parameters, that are read from
-     *            the called URI, the Restlet {@link org.restlet.data.Request}
-     *            and the Restlet {@link org.restlet.data.Response}.
+     *            the called URI, the Restlet {@link org.restlet.Request}
+     *            and the Restlet {@link org.restlet.Response}.
      * @param logMessage
      * @param methodName
      * @return staticly to throw, if needed by compiler.

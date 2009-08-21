@@ -34,7 +34,7 @@ import java.util.Set;
 
 import javax.ws.rs.core.Application;
 
-import org.restlet.data.Response;
+import org.restlet.Response;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.test.jaxrs.services.providers.EntityConstructorProvider;
 import org.restlet.test.jaxrs.services.providers.ParamConstructorProvider;

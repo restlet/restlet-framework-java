@@ -32,6 +32,7 @@ package org.restlet.util;
 
 import java.util.Map;
 
+import org.restlet.Request;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
@@ -41,7 +42,6 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
-import org.restlet.data.Request;
 import org.restlet.representation.Representation;
 
 /**

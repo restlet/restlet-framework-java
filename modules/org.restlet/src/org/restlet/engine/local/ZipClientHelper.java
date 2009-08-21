@@ -43,12 +43,12 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 import org.restlet.Client;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.LocalReference;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.ReferenceList;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.engine.io.ByteUtils;
 import org.restlet.representation.Representation;

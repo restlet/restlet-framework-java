@@ -33,9 +33,9 @@ package org.restlet.example.book.restlet.ch10;
 import java.io.File;
 
 import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.MediaType;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.ext.xml.TransformRepresentation;
 import org.restlet.representation.FileRepresentation;
 import org.restlet.representation.Representation;

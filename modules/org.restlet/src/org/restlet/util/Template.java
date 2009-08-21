@@ -39,9 +39,9 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.Reference;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 
 /**
  * String template with a pluggable model. Supports both formatting and parsing.

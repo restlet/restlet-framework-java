@@ -35,11 +35,11 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.ReferenceList;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.engine.local.DirectoryResource;
 import org.restlet.engine.util.AlphaNumericComparator;
 import org.restlet.engine.util.AlphabeticalComparator;

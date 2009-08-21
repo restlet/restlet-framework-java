@@ -36,8 +36,6 @@ import java.util.List;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.engine.Engine;
 import org.restlet.engine.RestletHelper;

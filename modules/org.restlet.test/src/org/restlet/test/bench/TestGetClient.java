@@ -33,8 +33,8 @@ package org.restlet.test.bench;
 import java.io.IOException;
 
 import org.restlet.Client;
+import org.restlet.Response;
 import org.restlet.data.Protocol;
-import org.restlet.data.Response;
 
 public class TestGetClient {
 

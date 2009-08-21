@@ -33,11 +33,11 @@ package org.restlet.test;
 import java.util.Arrays;
 import java.util.List;
 
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.engine.http.HttpCall;
 

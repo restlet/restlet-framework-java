@@ -49,8 +49,8 @@ import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
 
+import org.restlet.Response;
 import org.restlet.Server;
-import org.restlet.data.Response;
 import org.restlet.engine.http.ChunkedInputStream;
 import org.restlet.engine.http.ChunkedOutputStream;
 import org.restlet.engine.http.HttpServerCall;

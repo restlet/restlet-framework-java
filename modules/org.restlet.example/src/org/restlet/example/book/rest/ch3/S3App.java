@@ -33,7 +33,7 @@ package org.restlet.example.book.rest.ch3;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.restlet.data.Response;
+import org.restlet.Response;
 import org.restlet.ext.xml.DomRepresentation;
 import org.w3c.dom.Node;
 

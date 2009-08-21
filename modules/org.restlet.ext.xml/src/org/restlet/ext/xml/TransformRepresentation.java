@@ -51,8 +51,8 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.restlet.Context;
+import org.restlet.Response;
 import org.restlet.data.Reference;
-import org.restlet.data.Response;
 import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
 import org.xml.sax.InputSource;

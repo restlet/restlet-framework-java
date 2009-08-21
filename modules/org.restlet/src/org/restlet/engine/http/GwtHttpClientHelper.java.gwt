@@ -32,7 +32,7 @@ package org.restlet.engine.http;
 
 import org.restlet.Client;
 import org.restlet.data.Protocol;
-import org.restlet.data.Request;
+import org.restlet.Request;
 
 /**
  * HTTP client connector using the GWT's HTTP module. Here is the list of

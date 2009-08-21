@@ -36,10 +36,10 @@ import java.io.FileWriter;
 import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
+import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.data.LocalReference;
 import org.restlet.data.Protocol;
-import org.restlet.data.Response;
 import org.restlet.resource.Directory;
 
 /**

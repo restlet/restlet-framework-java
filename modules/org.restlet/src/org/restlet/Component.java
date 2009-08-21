@@ -38,8 +38,6 @@ import org.restlet.data.LocalReference;
 import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.engine.Engine;
 import org.restlet.engine.RestletHelper;
 import org.restlet.engine.component.ComponentHelper;

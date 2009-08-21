@@ -37,8 +37,8 @@ import java.util.Set;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Application;
 
+import org.restlet.Response;
 import org.restlet.data.Reference;
-import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.test.jaxrs.services.resources.PathParamTestService;
 

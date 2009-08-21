@@ -37,12 +37,12 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.example.book.restlet.ch8.objects.Contact;
 import org.restlet.example.book.restlet.ch8.objects.Mail;
 import org.restlet.example.book.restlet.ch8.objects.Mailbox;

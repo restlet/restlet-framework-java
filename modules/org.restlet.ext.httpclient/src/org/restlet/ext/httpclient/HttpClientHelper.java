@@ -37,8 +37,8 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.restlet.Client;
+import org.restlet.Request;
 import org.restlet.data.Protocol;
-import org.restlet.data.Request;
 import org.restlet.engine.http.HttpClientCall;
 
 

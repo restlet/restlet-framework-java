@@ -38,8 +38,8 @@ import java.util.Set;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 
+import org.restlet.Response;
 import org.restlet.data.Parameter;
-import org.restlet.data.Response;
 import org.restlet.ext.jaxrs.internal.core.MultivaluedMapImpl;
 import org.restlet.util.Series;
 

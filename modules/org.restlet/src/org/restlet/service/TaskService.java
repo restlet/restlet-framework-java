@@ -45,7 +45,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.restlet.Application;
 import org.restlet.Context;
-import org.restlet.data.Response;
+import org.restlet.Response;
 import org.restlet.routing.VirtualHost;
 
 /**

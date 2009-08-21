@@ -32,9 +32,9 @@ package org.restlet.security;
 
 import javax.security.auth.Subject;
 
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.ChallengeResponse;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 
 /**
  * Verifier of identifier/secret couples.

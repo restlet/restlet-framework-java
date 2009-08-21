@@ -31,9 +31,9 @@
 package org.restlet.test.bench;
 
 import org.restlet.Client;
+import org.restlet.Response;
 import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
-import org.restlet.data.Response;
 import org.restlet.representation.FileRepresentation;
 
 public class TestPostClient {

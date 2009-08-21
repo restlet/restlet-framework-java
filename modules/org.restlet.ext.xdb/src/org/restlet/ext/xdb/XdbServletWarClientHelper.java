@@ -43,13 +43,13 @@ import java.sql.Timestamp;
 import javax.servlet.ServletConfig;
 
 import org.restlet.Client;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.ReferenceList;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.engine.local.Entity;
 import org.restlet.ext.servlet.internal.ServletWarClientHelper;

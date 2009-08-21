@@ -32,9 +32,9 @@ package org.restlet.engine;
 
 import java.net.ServerSocket;
 
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.Server;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 
 /**
  * Server connector helper.

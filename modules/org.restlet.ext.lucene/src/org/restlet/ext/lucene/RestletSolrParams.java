@@ -33,8 +33,8 @@ package org.restlet.ext.lucene;
 import java.util.Iterator;
 
 import org.apache.solr.common.params.SolrParams;
+import org.restlet.Request;
 import org.restlet.data.Form;
-import org.restlet.data.Request;
 
 /**
  * Wrap Restlet query parameters as Solr params.

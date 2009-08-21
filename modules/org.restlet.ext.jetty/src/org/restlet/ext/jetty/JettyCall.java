@@ -44,9 +44,9 @@ import java.util.logging.Level;
 
 import org.mortbay.jetty.EofException;
 import org.mortbay.jetty.HttpConnection;
+import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Parameter;
-import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.engine.http.HttpServerCall;
 import org.restlet.util.Series;

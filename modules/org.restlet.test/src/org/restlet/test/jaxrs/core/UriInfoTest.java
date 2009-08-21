@@ -40,9 +40,9 @@ import javax.ws.rs.core.UriInfo;
 
 import junit.framework.TestCase;
 
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.Reference;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.ext.jaxrs.RoleChecker;
 import org.restlet.ext.jaxrs.internal.core.CallContext;
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;

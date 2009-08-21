@@ -30,11 +30,11 @@
 
 package org.restlet.test.ext.spring;
 
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Method;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.ext.spring.SpringBeanFinder;
 import org.restlet.ext.spring.SpringBeanRouter;
 import org.restlet.resource.Resource;

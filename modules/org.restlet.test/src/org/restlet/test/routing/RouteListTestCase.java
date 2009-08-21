@@ -32,8 +32,8 @@ package org.restlet.test.routing;
 
 import junit.framework.TestCase;
 
-import org.restlet.data.Request;
-import org.restlet.data.Response;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.routing.Route;
 import org.restlet.util.RouteList;
 

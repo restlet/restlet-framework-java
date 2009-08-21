@@ -39,12 +39,12 @@ import java.security.cert.Certificate;
 import java.util.List;
 import java.util.logging.Level;
 
+import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Digest;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
 import org.restlet.data.Parameter;
-import org.restlet.data.Response;
 import org.restlet.engine.util.Base64;
 import org.restlet.engine.util.RangeUtils;
 import org.restlet.representation.InputRepresentation;

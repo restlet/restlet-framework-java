@@ -35,11 +35,11 @@ import static org.restlet.ext.atom.Service.APP_NAMESPACE;
 
 import java.util.List;
 
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.ext.xml.XmlWriter;
 import org.restlet.representation.Representation;

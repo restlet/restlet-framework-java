@@ -34,12 +34,12 @@ import org.junit.After;
 import org.junit.Before;
 import org.restlet.Client;
 import org.restlet.Component;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.test.RestletTestCase;
 

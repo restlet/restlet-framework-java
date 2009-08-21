@@ -47,11 +47,11 @@ import javax.mail.UIDFolder;
 import javax.mail.internet.AddressException;
 
 import org.restlet.Client;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.engine.ClientHelper;
 import org.restlet.representation.Representation;

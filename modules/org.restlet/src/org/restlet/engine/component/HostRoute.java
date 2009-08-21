@@ -33,8 +33,8 @@ package org.restlet.engine.component;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
-import org.restlet.data.Request;
-import org.restlet.data.Response;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.routing.Route;
 import org.restlet.routing.Router;
 import org.restlet.routing.VirtualHost;

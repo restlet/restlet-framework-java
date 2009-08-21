@@ -38,7 +38,7 @@ import java.util.logging.Logger;
 
 import javax.ws.rs.WebApplicationException;
 
-import org.restlet.data.Request;
+import org.restlet.Request;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
 import org.restlet.ext.jaxrs.internal.wrappers.params.ParameterList.ParamGetter;
 import org.restlet.representation.Representation;

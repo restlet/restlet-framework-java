@@ -38,6 +38,8 @@ import java.util.logging.Logger;
 
 import org.restlet.Application;
 import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
@@ -51,8 +53,6 @@ import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Range;
 import org.restlet.data.Reference;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.data.ServerInfo;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;

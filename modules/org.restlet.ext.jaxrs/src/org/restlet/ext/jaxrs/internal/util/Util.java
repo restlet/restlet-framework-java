@@ -68,14 +68,14 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Dimension;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
 import org.restlet.data.Parameter;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.engine.http.ContentType;
 import org.restlet.engine.http.HttpClientAdapter;
 import org.restlet.engine.http.HttpClientCall;

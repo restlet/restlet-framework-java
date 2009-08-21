@@ -44,8 +44,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
 
+import org.restlet.Response;
 import org.restlet.data.CharacterSet;
-import org.restlet.data.Response;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.representation.Representation;
 

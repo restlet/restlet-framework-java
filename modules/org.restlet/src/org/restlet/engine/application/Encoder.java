@@ -36,12 +36,12 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Encoding;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.representation.Representation;
 import org.restlet.routing.Filter;
 

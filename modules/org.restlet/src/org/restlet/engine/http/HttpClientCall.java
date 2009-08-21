@@ -35,12 +35,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.logging.Level;
 
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
 import org.restlet.representation.EmptyRepresentation;

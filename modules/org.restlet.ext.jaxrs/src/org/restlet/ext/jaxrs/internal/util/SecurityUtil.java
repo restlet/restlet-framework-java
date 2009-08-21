@@ -34,7 +34,7 @@ import java.security.Principal;
 import java.security.cert.X509Certificate;
 import java.util.List;
 
-import org.restlet.data.Request;
+import org.restlet.Request;
 
 /**
  * @author Stephan

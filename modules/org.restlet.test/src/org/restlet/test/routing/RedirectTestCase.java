@@ -32,12 +32,12 @@ package org.restlet.test.routing;
 
 import org.restlet.Component;
 import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.routing.Redirector;
 import org.restlet.test.RestletTestCase;

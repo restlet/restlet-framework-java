@@ -28,14 +28,15 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.data;
+package org.restlet;
 
 import java.io.IOException;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Level;
 
-import org.restlet.Context;
+import org.restlet.data.Form;
+import org.restlet.data.MediaType;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 
@@ -147,10 +148,9 @@ public abstract class Message {
     }
 
     /**
-     * Returns the entity as a form.<br>
-     * This method can be called several times and will always return the same
-     * form instance. Note that if the entity is large this method can result in
-     * important memory consumption.
+     * Returns the entity as a form. This method can be called several times and
+     * will always return the same form instance. Note that if the entity is
+     * large this method can result in important memory consumption.
      * 
      * @return The entity as a form.
      */
@@ -202,10 +202,9 @@ public abstract class Message {
 
     // [ifndef gwt] method
     /**
-     * Returns the entity as text.<br>
-     * This method can be called several times and will always return the same
-     * text. Note that if the entity is large this method can result in
-     * important memory consumption.
+     * Returns the entity as text. This method can be called several times and
+     * will always return the same text. Note that if the entity is large this
+     * method can result in important memory consumption.
      * 
      * @return The entity as text.
      */

@@ -37,8 +37,8 @@ import javax.ws.rs.core.Application;
 
 import junit.framework.AssertionFailedError;
 
+import org.restlet.Response;
 import org.restlet.data.MediaType;
-import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.test.jaxrs.services.resources.AppPlusXmlResource;
 

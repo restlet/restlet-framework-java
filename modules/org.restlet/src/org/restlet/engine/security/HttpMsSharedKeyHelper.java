@@ -35,6 +35,7 @@ import java.util.Iterator;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import org.restlet.Request;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
@@ -42,7 +43,6 @@ import org.restlet.data.Form;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
-import org.restlet.data.Request;
 import org.restlet.engine.http.HttpConstants;
 import org.restlet.engine.util.Base64;
 import org.restlet.engine.util.DateUtils;

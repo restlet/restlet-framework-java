@@ -34,9 +34,9 @@ import java.util.logging.Level;
 
 import org.restlet.Client;
 import org.restlet.Component;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.Restlet;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.routing.Router;
 
 /**

@@ -30,6 +30,7 @@
 
 package org.restlet.data;
 
+import org.restlet.Response;
 import org.restlet.engine.util.SystemUtils;
 
 /**

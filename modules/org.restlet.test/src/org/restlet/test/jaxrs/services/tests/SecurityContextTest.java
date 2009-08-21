@@ -37,12 +37,12 @@ import java.util.Set;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.SecurityContext;
 
+import org.restlet.Response;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Form;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
-import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.ext.jaxrs.RoleChecker;
 import org.restlet.representation.Representation;

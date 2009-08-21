@@ -507,7 +507,7 @@ public class ResponseBuilderImpl extends ResponseBuilder {
             }
         }
         Set<Dimension> dimensions;
-        dimensions = org.restlet.data.Response.getCurrent().getDimensions();
+        dimensions = org.restlet.Response.getCurrent().getDimensions();
         if (encodings.size() > 1) {
             dimensions.add(Dimension.ENCODING);
         }

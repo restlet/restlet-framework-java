@@ -37,8 +37,8 @@ import java.util.logging.Level;
 import javax.net.ssl.HostnameVerifier;
 
 import org.restlet.Client;
+import org.restlet.Request;
 import org.restlet.data.Protocol;
-import org.restlet.data.Request;
 import org.restlet.engine.http.HttpClientCall;
 import org.restlet.ext.net.internal.HttpUrlConnectionCall;
 

@@ -36,13 +36,13 @@ import java.util.Properties;
 
 import org.restlet.Client;
 import org.restlet.Component;
+import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.LocalReference;
 import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
-import org.restlet.data.Response;
 import org.restlet.example.book.restlet.ch8.data.db4o.Db4oFacade;
 import org.restlet.example.book.restlet.ch8.objects.ObjectsFacade;
 import org.restlet.example.book.restlet.ch8.resources.ContactResource;

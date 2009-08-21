@@ -34,10 +34,10 @@ import java.io.File;
 import java.io.IOException;
 
 import org.restlet.Client;
+import org.restlet.Response;
 import org.restlet.data.Language;
 import org.restlet.data.LocalReference;
 import org.restlet.data.Protocol;
-import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.representation.StringRepresentation;
 

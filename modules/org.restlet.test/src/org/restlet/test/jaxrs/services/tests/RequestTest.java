@@ -38,6 +38,7 @@ import java.util.Set;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Request;
 
+import org.restlet.Response;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
 import org.restlet.data.Dimension;
@@ -45,7 +46,6 @@ import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Preference;
-import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
 import org.restlet.ext.jaxrs.internal.core.CallContext;

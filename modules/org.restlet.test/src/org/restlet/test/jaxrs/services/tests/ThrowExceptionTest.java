@@ -35,7 +35,7 @@ import java.util.Set;
 
 import javax.ws.rs.core.Application;
 
-import org.restlet.data.Response;
+import org.restlet.Response;
 import org.restlet.data.Status;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.test.jaxrs.services.providers.SqlExceptionMapper;

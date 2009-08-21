@@ -46,8 +46,8 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 
+import org.restlet.Request;
 import org.restlet.data.Parameter;
-import org.restlet.data.Request;
 import org.restlet.data.Status;
 import org.restlet.engine.Edition;
 import org.restlet.engine.http.HttpClientCall;

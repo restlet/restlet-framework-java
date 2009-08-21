@@ -30,12 +30,12 @@
 
 package org.restlet.test.engine;
 
+import org.restlet.Request;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Form;
 import org.restlet.data.Method;
-import org.restlet.data.Request;
 import org.restlet.engine.http.HttpConstants;
 import org.restlet.engine.security.AuthenticatorUtils;
 import org.restlet.engine.security.HttpAwsS3Helper;

@@ -31,8 +31,8 @@
 package org.restlet.ext.wadl;
 
 import org.restlet.Component;
+import org.restlet.Response;
 import org.restlet.data.Reference;
-import org.restlet.data.Response;
 import org.restlet.representation.Representation;
 
 /**

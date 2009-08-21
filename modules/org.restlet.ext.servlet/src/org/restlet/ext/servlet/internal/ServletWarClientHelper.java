@@ -33,9 +33,9 @@ package org.restlet.ext.servlet.internal;
 import javax.servlet.ServletContext;
 
 import org.restlet.Client;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.Protocol;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.engine.local.Entity;
 import org.restlet.engine.local.EntityClientHelper;
 

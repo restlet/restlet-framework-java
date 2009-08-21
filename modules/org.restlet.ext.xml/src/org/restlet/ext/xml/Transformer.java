@@ -33,12 +33,12 @@ package org.restlet.ext.xml;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.representation.Representation;
 import org.restlet.routing.Filter;
 

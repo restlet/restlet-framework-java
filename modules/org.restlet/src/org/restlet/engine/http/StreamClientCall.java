@@ -45,10 +45,10 @@ import java.util.logging.Logger;
 import javax.net.SocketFactory;
 import javax.net.ssl.SSLSocket;
 
+import org.restlet.Request;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
-import org.restlet.data.Request;
 import org.restlet.data.Status;
 import org.restlet.engine.io.InputEntityStream;
 import org.restlet.engine.io.KeepAliveOutputStream;

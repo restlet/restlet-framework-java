@@ -33,9 +33,9 @@ package org.restlet.security;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.Method;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 
 /**
  * Authorizer based on authorized methods. Note that this authorizer makes the
