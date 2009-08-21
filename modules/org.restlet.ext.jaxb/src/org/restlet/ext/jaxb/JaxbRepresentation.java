@@ -67,14 +67,14 @@ import org.w3c.dom.Document;
  */
 public class JaxbRepresentation<T> extends XmlRepresentation {
     /**
-     * This is a utility class to assist in marshalling Java content trees into
+     * This is a utility class to assist in marshaling Java content trees into
      * XML. Each {@code marshal} method takes a different target for the XML.
      * This class is a factory that constructs an instance of itself for
      * multiple uses. The created instance is thread safe and is optimized to be
      * used for multiple, possibly concurrent calls.
      */
     private class Marshaller {
-        // Use thread identity to preserve safety of access to marshallers.
+        // Use thread identity to preserve safety of access to marshalers.
         private final ThreadLocal<javax.xml.bind.Marshaller> marshaller = new ThreadLocal<javax.xml.bind.Marshaller>() {
             @Override
             protected synchronized javax.xml.bind.Marshaller initialValue() {
@@ -144,11 +144,11 @@ public class JaxbRepresentation<T> extends XmlRepresentation {
          * String representation.
          * 
          * @param jaxbElement
-         *            The root of the content tree to be marshalled.
+         *            The root of the content tree to be marshaled.
          * @param rep
          *            The target string representation write the XML to.
          * @throws JAXBException
-         *             If any unexpected problem occurs during marshalling.
+         *             If any unexpected problem occurs during marshaling.
          */
         public void marshal(Object jaxbElement, StringRepresentation rep)
                 throws JAXBException {
@@ -161,11 +161,11 @@ public class JaxbRepresentation<T> extends XmlRepresentation {
          * Marshal the content tree rooted at {@code jaxbElement} into a writer.
          * 
          * @param jaxbElement
-         *            The root of the content tree to be marshalled.
+         *            The root of the content tree to be marshaled.
          * @param writer
          *            The target writer to write the XML to.
          * @throws JAXBException
-         *             If any unexpected problem occurs during marshalling.
+         *             If any unexpected problem occurs during marshaling.
          */
         public void marshal(Object jaxbElement, Writer writer)
                 throws JAXBException {
@@ -173,7 +173,7 @@ public class JaxbRepresentation<T> extends XmlRepresentation {
         }
 
         /**
-         * Sets the validation handler for this marshaller.
+         * Sets the validation handler for this marshaler.
          * 
          * @param handler
          *            A validation handler.
@@ -188,15 +188,15 @@ public class JaxbRepresentation<T> extends XmlRepresentation {
     }
 
     /**
-     * This is a utility class to assist in unmarshalling XML into a new Java
+     * This is a utility class to assist in unmarshaling XML into a new Java
      * content tree. Each {@code unmarshal} method takes a different source for
-     * the XML. This class caches information to improve unmarshalling
+     * the XML. This class caches information to improve unmarshaling
      * performance across calls using the same schema (package).
      */
     private class Unmarshaller {
         private final String pkg;
 
-        // Use thread identity to preserve safety of access to unmarshallers.
+        // Use thread identity to preserve safety of access to unmarshalers.
         private final ThreadLocal<javax.xml.bind.Unmarshaller> unmarshaller = new ThreadLocal<javax.xml.bind.Unmarshaller>() {
             @Override
             protected synchronized javax.xml.bind.Unmarshaller initialValue() {
@@ -254,7 +254,7 @@ public class JaxbRepresentation<T> extends XmlRepresentation {
          *            The source input stream.
          * @return The newly created root object of the Java content tree.
          * @throws JAXBException
-         *             If any unexpected problem occurs during unmarshalling.
+         *             If any unexpected problem occurs during unmarshaling.
          * @throws IOException
          *             If an error occurs accessing the string representation.
          */
@@ -270,7 +270,7 @@ public class JaxbRepresentation<T> extends XmlRepresentation {
          *            The source reader.
          * @return The newly created root object of the Java content tree.
          * @throws JAXBException
-         *             If any unexpected problem occurs during unmarshalling.
+         *             If any unexpected problem occurs during unmarshaling.
          * @throws IOException
          *             If an error occurs accessing the string representation.
          */
@@ -286,7 +286,7 @@ public class JaxbRepresentation<T> extends XmlRepresentation {
          *            The source string representation.
          * @return The newly created root object of the Java content tree.
          * @throws JAXBException
-         *             If any unexpected problem occurs during unmarshalling.
+         *             If any unexpected problem occurs during unmarshaling.
          * @throws IOException
          *             If an error occurs accessing the string representation.
          */

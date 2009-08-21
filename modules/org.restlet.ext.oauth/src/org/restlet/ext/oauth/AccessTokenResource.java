@@ -55,6 +55,7 @@ import org.restlet.resource.ResourceException;
  * 
  * @author Adam Rosien
  */
+@SuppressWarnings("deprecation")
 public class AccessTokenResource extends Resource {
 
     private final OAuthProvider provider;

@@ -49,6 +49,7 @@ import org.restlet.resource.Resource;
  * 
  * @author Adam Rosien
  */
+@SuppressWarnings("deprecation")
 public abstract class AuthorizationResource extends Resource {
 
     private final OAuthProvider provider;

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry exported="true" kind="lib" path="org.eclipse.jetty.io.jar"/>
 	<classpathentry exported="true" kind="lib" path="org.eclipse.jetty.ajp.jar"/>
 	<classpathentry exported="true" kind="lib" path="org.eclipse.jetty.http.jar"/>
 	<classpathentry exported="true" kind="lib" path="org.eclipse.jetty.server.jar"/>

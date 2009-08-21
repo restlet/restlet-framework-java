@@ -50,6 +50,7 @@ import org.restlet.security.Guard;
  * @see <a href="http://oauth.net">OAuth</a>
  * @author Adam Rosien
  */
+@SuppressWarnings("deprecation")
 public class OAuthGuard extends Guard {
 
     private volatile OAuthProvider provider;
