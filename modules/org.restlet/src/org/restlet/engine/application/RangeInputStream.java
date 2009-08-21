@@ -46,13 +46,13 @@ import org.restlet.representation.Representation;
 public class RangeInputStream extends FilterInputStream {
 
     /** The current position. */
-    private long position;
+    private volatile long position;
 
     /** The range to satisfy. */
-    private Range range;
+    private volatile Range range;
 
     /** The total size of the source stream. */
-    private long totalSize;
+    private volatile long totalSize;
 
     /** The start index inside the source stream. */
     private final long startIndex;

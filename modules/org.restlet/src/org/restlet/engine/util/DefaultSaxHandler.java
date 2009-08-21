@@ -74,10 +74,10 @@ public class DefaultSaxHandler extends DefaultHandler
      * Set to {@code true} if the current Context's logger is capable of
      * outputting messages at the CONFIG level; {@code false} otherwise.
      */
-    private boolean loggable;
+    private volatile boolean loggable;
 
     /** The current context JDK {@link Logger} to use for message output. */
-    private Logger logger;
+    private volatile Logger logger;
 
     /**
      * Trivial constructor.

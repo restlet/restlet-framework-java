@@ -66,12 +66,12 @@ import java.util.regex.Pattern;
  */
 public class InternetDateFormat extends DateFormat {
 
-    private static DecimalFormat df2 = new DecimalFormat("00");
+    private static volatile DecimalFormat df2 = new DecimalFormat("00");
 
-    private static DecimalFormat df4 = new DecimalFormat("0000");
+    private static volatile DecimalFormat df4 = new DecimalFormat("0000");
 
     /** The Regex pattern to match. */
-    private static Pattern pattern;
+    private static volatile Pattern pattern;
 
     private static final long serialVersionUID = 1L;
 

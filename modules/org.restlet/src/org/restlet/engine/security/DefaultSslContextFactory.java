@@ -68,14 +68,14 @@ public class DefaultSslContextFactory extends SslContextFactory {
     /**
      * Name of the KeyManager algorithm.
      */
-    private String keyManagerAlgorithm = System.getProperty(
+    private volatile String keyManagerAlgorithm = System.getProperty(
             "ssl.KeyManagerFactory.algorithm", KeyManagerFactory
                     .getDefaultAlgorithm());
 
     /**
      * Password for the key in the keystore (as a String).
      */
-    private char[] keyStoreKeyPassword = (System.getProperty(
+    private volatile char[] keyStoreKeyPassword = (System.getProperty(
             "javax.net.ssl.keyPassword", System
                     .getProperty("javax.net.ssl.keyStorePassword")) != null) ? System
             .getProperty("javax.net.ssl.keyPassword",
@@ -86,48 +86,49 @@ public class DefaultSslContextFactory extends SslContextFactory {
     /**
      * Password for the keystore (as a String).
      */
-    private char[] keyStorePassword = (System
+    private volatile char[] keyStorePassword = (System
             .getProperty("javax.net.ssl.keyStorePassword") != null) ? System
             .getProperty("javax.net.ssl.keyStorePassword").toCharArray() : null;
 
     /**
      * Path to the KeyStore file.
      */
-    private String keyStorePath = System.getProperty("javax.net.ssl.keyStore");
+    private volatile String keyStorePath = System
+            .getProperty("javax.net.ssl.keyStore");
 
     /**
      * Name of the keystore provider.
      */
-    private String keyStoreProvider = System
+    private volatile String keyStoreProvider = System
             .getProperty("javax.net.ssl.keyStoreProvider");
 
     /**
      * KeyStore type of the keystore.
      */
-    private String keyStoreType = System
+    private volatile String keyStoreType = System
             .getProperty("javax.net.ssl.keyStoreType");
 
     /**
      * Name of the SecureRandom algorithm.
      */
-    private String secureRandomAlgorithm = null;
+    private volatile String secureRandomAlgorithm = null;
 
     /**
      * Name of the protocol to use when creating the SSLContext.
      */
-    private String secureSocketProtocol = "TLS";
+    private volatile String secureSocketProtocol = "TLS";
 
     /**
      * Name of the TrustManager algorithm.
      */
-    private String trustManagerAlgorithm = System.getProperty(
+    private volatile String trustManagerAlgorithm = System.getProperty(
             "ssl.TrustManagerFactory.algorithm", TrustManagerFactory
                     .getDefaultAlgorithm());
 
     /**
      * Password for the trust store keystore.
      */
-    private char[] trustStorePassword = (System
+    private volatile char[] trustStorePassword = (System
             .getProperty("javax.net.ssl.trustStorePassword") != null) ? System
             .getProperty("javax.net.ssl.trustStorePassword").toCharArray()
             : null;
@@ -135,19 +136,19 @@ public class DefaultSslContextFactory extends SslContextFactory {
     /**
      * Path to the trust store (keystore) file.
      */
-    private String trustStorePath = System
+    private volatile String trustStorePath = System
             .getProperty("javax.net.ssl.trustStore");
 
     /**
      * Name of the trust store (keystore) provider.
      */
-    private String trustStoreProvider = System
+    private volatile String trustStoreProvider = System
             .getProperty("javax.net.ssl.trustStoreProvider");
 
     /**
      * KeyStore type of the trust store.
      */
-    private String trustStoreType = System
+    private volatile String trustStoreType = System
             .getProperty("javax.net.ssl.trustStoreType");
 
     /**

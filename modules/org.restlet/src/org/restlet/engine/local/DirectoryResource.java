@@ -72,52 +72,52 @@ public class DirectoryResource extends ServerResource {
      * The local base name of the resource. For example, "foo.en" and
      * "foo.en-GB.html" return "foo".
      */
-    private String baseName;
+    private volatile String baseName;
 
     /** The base variant. */
-    private Variant baseVariant;
+    private volatile Variant baseVariant;
 
     /** The parent directory handler. */
-    private Directory directory;
+    private volatile Directory directory;
 
     /** If the resource is a directory, this contains its content. */
-    private ReferenceList directoryContent;
+    private volatile ReferenceList directoryContent;
 
     /**
      * If the resource is a directory, the non-trailing slash character leads to
      * redirection.
      */
-    private boolean directoryRedirection;
+    private volatile boolean directoryRedirection;
 
     /** Indicates if the target resource is a directory. */
-    private boolean directoryTarget;
+    private volatile boolean directoryTarget;
 
     /** The context's directory URI (file, clap URI). */
-    private String directoryUri;
+    private volatile String directoryUri;
 
     /** If the resource is a file, this contains its content. */
-    private Representation fileContent;
+    private volatile Representation fileContent;
 
     /** Indicates if the target resource is a file. */
-    private boolean fileTarget;
+    private volatile boolean fileTarget;
 
     /** Indicates if the target resource is a directory with an index. */
-    private boolean indexTarget;
+    private volatile boolean indexTarget;
 
     /** The original target URI, in case of extensions tunneling. */
-    private Reference originalRef;
+    private volatile Reference originalRef;
 
     /** The prototype variant. */
-    private Variant protoVariant;
+    private volatile Variant protoVariant;
 
     /** The resource path relative to the directory URI. */
-    private String relativePart;
+    private volatile String relativePart;
 
     /** The context's target URI (file, clap URI). */
-    private String targetUri;
+    private volatile String targetUri;
 
     /** The unique representation of the target URI, if it exists. */
-    private Reference uniqueReference;
+    private volatile Reference uniqueReference;
 
     @Override
     public Representation delete() throws ResourceException {

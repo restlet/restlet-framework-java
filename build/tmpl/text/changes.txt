@@ -20,7 +20,8 @@ Changes log
           utilization with java NIO.
           Reported and contributed by Tal Liron.
         - Router#attachDefault() method now relies on the protected
-          createRoute() method. Reported by Rob Heittman. 
+          createRoute() method. Reported by Rob Heittman.
+        - Fixed potential synchronization issues.
      - Enhancements
         - Added support of the "xml:base" attibute when parsing Atom 
           Publishing documents.

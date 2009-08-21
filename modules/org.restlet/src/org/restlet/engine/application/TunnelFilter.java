@@ -84,13 +84,13 @@ public class TunnelFilter extends Filter {
      */
     private static class AcceptReplacer {
         /** New accept header value. */
-        private String acceptNew;
+        private volatile String acceptNew;
 
         /** Old accept header value. */
-        private String acceptOld;
+        private volatile String acceptOld;
 
         /** Agent attributes that must be checked. */
-        private Map<String, String> agentAttributes;
+        private volatile Map<String, String> agentAttributes;
 
         public String getAcceptNew() {
             return acceptNew;

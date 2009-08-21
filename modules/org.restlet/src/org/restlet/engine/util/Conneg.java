@@ -51,22 +51,22 @@ import org.restlet.service.MetadataService;
 public class Conneg {
 
     /** The enriched list of character set preferences. */
-    private List<Preference<CharacterSet>> characterSetPrefs;
+    private volatile List<Preference<CharacterSet>> characterSetPrefs;
 
     /** The client preferences. */
-    private ClientInfo clientInfo;
+    private volatile ClientInfo clientInfo;
 
     /** The enriched list of encoding preferences. */
-    private List<Preference<Encoding>> encodingPrefs;
+    private volatile List<Preference<Encoding>> encodingPrefs;
 
     /** The enriched list of language preferences. */
-    private List<Preference<Language>> languagePrefs;
+    private volatile List<Preference<Language>> languagePrefs;
 
     /** The enriched list of media type preferences. */
-    private List<Preference<MediaType>> mediaTypePrefs;
+    private volatile List<Preference<MediaType>> mediaTypePrefs;
 
     /** The metadata service. */
-    private MetadataService metadataService;
+    private volatile MetadataService metadataService;
 
     /**
      * Constructor.

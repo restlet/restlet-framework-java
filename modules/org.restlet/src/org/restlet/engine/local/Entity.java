@@ -262,7 +262,7 @@ public abstract class Entity {
     }
 
     /** The metadata service to use. */
-    private MetadataService metadataService;
+    private volatile MetadataService metadataService;
 
     /**
      * Constructor.

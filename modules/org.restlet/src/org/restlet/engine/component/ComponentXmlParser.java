@@ -106,10 +106,10 @@ public class ComponentXmlParser {
     }
 
     /** The component to update. */
-    private Component component;
+    private volatile Component component;
 
     /** The XML configuration to parse. */
-    private Representation xmlConfiguration;
+    private volatile Representation xmlConfiguration;
 
     /**
      * Constructor.

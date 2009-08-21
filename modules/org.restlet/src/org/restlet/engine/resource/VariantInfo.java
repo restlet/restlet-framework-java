@@ -42,10 +42,10 @@ import org.restlet.representation.Variant;
 public class VariantInfo extends Variant {
 
     /** The optional annotation descriptor. */
-    private AnnotationInfo annotationInfo;
+    private volatile AnnotationInfo annotationInfo;
 
     /** The optional converter helper. */
-    private ConverterHelper converterHelper;
+    private volatile ConverterHelper converterHelper;
 
     /**
      * Constructor.

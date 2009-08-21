@@ -50,7 +50,7 @@ import org.restlet.util.Template;
 public class TemplateDispatcher extends Client {
 
     /** The context. */
-    private Context context;
+    private volatile Context context;
 
     /**
      * Constructor.

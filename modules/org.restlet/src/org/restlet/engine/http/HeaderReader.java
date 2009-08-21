@@ -42,7 +42,7 @@ public class HeaderReader {
     private final String header;
 
     /** The current read index (or -1 if not reading anymore). */
-    private int index;
+    private volatile int index;
 
     /**
      * Constructor.
@@ -153,7 +153,9 @@ public class HeaderReader {
      * Read the next value of a multi-value header. It skips separator commas
      * and spaces.
      * 
-     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec2.html#sec2">HTTP parsing rule</a>
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec2.html#sec2">HTTP
+     *      parsing rule</a>
      * 
      * @return The next value or null.
      */
