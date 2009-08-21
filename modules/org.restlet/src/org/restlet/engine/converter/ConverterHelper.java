@@ -82,7 +82,6 @@ public abstract class ConverterHelper extends Helper {
                 variants = new ArrayList<VariantInfo>();
             }
 
-            userVariant.setConverterHelper(this);
             variants.add(userVariant);
         }
 

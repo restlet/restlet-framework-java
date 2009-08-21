@@ -30,7 +30,6 @@
 
 package org.restlet;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
@@ -449,7 +448,7 @@ public class Application extends Restlet {
      *            The new service to set.
      */
     protected synchronized void setService(Service newService) {
-        List<Service> services = new ArrayList<Service>();
+        List<Service> services = new CopyOnWriteArrayList<Service>();
         Service service;
         boolean replaced = false;
 

@@ -44,9 +44,6 @@ public class VariantInfo extends Variant {
     /** The optional annotation descriptor. */
     private volatile AnnotationInfo annotationInfo;
 
-    /** The optional converter helper. */
-    private volatile ConverterHelper converterHelper;
-
     /**
      * Constructor.
      * 
@@ -54,7 +51,7 @@ public class VariantInfo extends Variant {
      *            The media type.
      */
     public VariantInfo(MediaType mediaType) {
-        super(mediaType);
+        this(mediaType, null);
     }
 
     /**
@@ -95,14 +92,6 @@ public class VariantInfo extends Variant {
         return annotationInfo;
     }
 
-    /**
-     * Returns the optional converter helper.
-     * 
-     * @return The optional converter helper.
-     */
-    public ConverterHelper getConverterHelper() {
-        return converterHelper;
-    }
 
     /**
      * Sets the annotation descriptor.
@@ -113,15 +102,4 @@ public class VariantInfo extends Variant {
     public void setAnnotationInfo(AnnotationInfo annotationInfo) {
         this.annotationInfo = annotationInfo;
     }
-
-    /**
-     * Sets the optional converter helper.
-     * 
-     * @param converterHelper
-     *            The optional converter helper.
-     */
-    public void setConverterHelper(ConverterHelper converterHelper) {
-        this.converterHelper = converterHelper;
-    }
-
 }

@@ -1,10 +1,10 @@
 package org.restlet.engine.resource;
 
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.restlet.data.Method;
 
@@ -38,7 +38,7 @@ public class AnnotationUtils {
 
         // Add the annotation descriptor
         if (result == null) {
-            result = new ArrayList<AnnotationInfo>();
+            result = new CopyOnWriteArrayList<AnnotationInfo>();
         }
 
         for (java.lang.reflect.Method javaMethod : clazz.getMethods()) {
