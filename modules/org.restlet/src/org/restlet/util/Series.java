@@ -236,7 +236,7 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      * @param name
      *            The parameter name.
      * @param ignoreCase
-     *            Indicates if the name comparison is case sensitive.
+     *            Indicates if the name comparison is case insensitive.
      * @return The first parameter found with the given name.
      */
     public E getFirst(String name, boolean ignoreCase) {
@@ -451,7 +451,7 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      * @param name
      *            The parameter name.
      * @param ignoreCase
-     *            Indicates if the name comparison is case sensitive.
+     *            Indicates if the name comparison is case insensitive.
      * @return True if the list changed.
      */
     public boolean removeAll(String name, boolean ignoreCase) {
@@ -488,7 +488,7 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      * @param name
      *            The name of the entries to be removed.
      * @param ignoreCase
-     *            true if the comparison ignores the case, false otherwise.
+     *            Indicates if the name comparison is case insensitive.
      * @return false if no entry has been removed, true otherwise.
      */
     public boolean removeFirst(String name, boolean ignoreCase) {
@@ -515,7 +515,7 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      * @param value
      *            The value to set.
      * @param ignoreCase
-     *            Indicates if the name comparison is case sensitive.
+     *            Indicates if the name comparison is case insensitive.
      * @return The parameter set or added.
      */
     public E set(String name, String value, boolean ignoreCase) {
@@ -583,7 +583,7 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      * @param name
      *            The parameter name.
      * @param ignoreCase
-     *            Indicates if the name comparison is case sensitive.
+     *            Indicates if the name comparison is case insensitive.
      * @return The list of values.
      */
     public Series<E> subList(String name, boolean ignoreCase) {
