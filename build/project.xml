@@ -8,7 +8,7 @@
       <description>Restlet Edition for the Android platform 1.5.
       </description>
       <javadocs>
-         <link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
+         <link href="http://developer.android.com/reference/" />
       </javadocs>
       <distributions>
          <distribution id="classic" />
@@ -17,14 +17,15 @@
    </edition>
    <edition id="jee">
       <label>
-         <full>Java Entreprise Edition</full>
+         <full>Java Enterprise Edition</full>
          <medium>Java EE</medium>
          <short>JEE</short>
       </label>
-      <description>Restlet Edition for Java Entreprise Edition 5.
+      <description>Restlet Edition for Java Enterprise Edition 5.0.
       </description>
       <javadocs>
          <link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
+         <link href="http://java.sun.com/javaee/5/docs/api/" />
       </javadocs>
       <distributions>
          <distribution id="classic" />
@@ -37,7 +38,7 @@
          <medium>Java SE</medium>
          <short>JSE</short>
       </label>
-      <description>Restlet Edition for Java Standard Edition 5.
+      <description>Restlet Edition for Java Standard Edition 1.5.
       </description>
       <javadocs>
          <link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
@@ -53,9 +54,10 @@
          <medium>GAE</medium>
          <short>GAE</short>
       </label>
-      <description>Restlet Edition for Google App Engine.</description>
+      <description>Restlet Edition for Google App Engine 1.0.</description>
       <javadocs>
          <link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
+         <link href="http://code.google.com/intl/fr/appengine/docs/java/javadoc/" />
       </javadocs>
       <distributions>
          <distribution id="classic" />
@@ -68,10 +70,10 @@
          <medium>GWT</medium>
          <short>GWT</short>
       </label>
-      <description>Restlet Edition for Google Web Toolkit.</description>
+      <description>Restlet Edition for Google Web Toolkit 1.7.</description>
       <javadocs>
          <link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
-         <link href="http://google-web-toolkit.googlecode.com/svn/javadoc/1.5/" />
+         <link href="http://google-web-toolkit.googlecode.com/svn/javadoc/1.6/" />
       </javadocs>
       <distributions>
          <distribution id="classic" />

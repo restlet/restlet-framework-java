@@ -51,7 +51,7 @@ import org.restlet.util.Template;
  * should be especially careful when storing state in member variables.
  * 
  * @see <a
- *      href="http://www.restlet.org/documentation/1.1/tutorial#part07">Tutorial
+ *      href="http://www.restlet.org/documentation/2.0/tutorial#part07">Tutorial
  *      : Filters and call logging</a>
  * @author Jerome Louvel
  */

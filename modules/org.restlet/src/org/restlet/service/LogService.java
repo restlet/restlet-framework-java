@@ -69,7 +69,7 @@ import org.restlet.routing.Filter;
  * variable names in {@link org.restlet.util.Template}. <br>
  * 
  * @see <a
- *      href="http://www.restlet.org/documentation/1.1/tutorial#part07">Tutorial:
+ *      href="http://www.restlet.org/documentation/2.0/tutorial#part07">Tutorial:
  *      Access logging</a>
  * @see <a
  *      href="http://wiki.restlet.org/docs_1.2/g1/13-restlet/29-restlet/98-restlet/101-restlet.html">Wiki:

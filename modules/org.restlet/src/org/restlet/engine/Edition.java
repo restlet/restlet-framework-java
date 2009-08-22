@@ -42,4 +42,70 @@ public enum Edition {
 
     /** The current engine edition. */
     public static final Edition CURRENT = Edition.JSE;
+
+    /**
+     * Returns the full size name of the edition.
+     * 
+     * @return The full size of the edition.
+     */
+    public String getFullName() {
+        switch (this) {
+        case ANDROID:
+            return "Android";
+        case GAE:
+            return "Google App Engine";
+        case GWT:
+            return "Google Web Toolkit";
+        case JEE:
+            return "Java Enterprise Edition";
+        case JSE:
+            return "Java Standard Edition";
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns the medium size name of the edition.
+     * 
+     * @return The medium size name of the edition.
+     */
+    public String getMediumName() {
+        switch (this) {
+        case ANDROID:
+            return "Android";
+        case GAE:
+            return "GAE";
+        case GWT:
+            return "GWT";
+        case JEE:
+            return "Java EE";
+        case JSE:
+            return "Java SE";
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns the short size name of the edition.
+     * 
+     * @return The short size name of the edition.
+     */
+    public String getShortName() {
+        switch (this) {
+        case ANDROID:
+            return "Android";
+        case GAE:
+            return "GAE";
+        case GWT:
+            return "GWT";
+        case JEE:
+            return "JEE";
+        case JSE:
+            return "JSE";
+        }
+
+        return null;
+    }
 }

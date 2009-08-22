@@ -56,7 +56,7 @@ import org.restlet.service.StatusService;
  * should be especially careful when storing state in member variables.
  * 
  * @see <a
- *      href="http://www.restlet.org/documentation/1.1/tutorial#part08">Tutorial
+ *      href="http://www.restlet.org/documentation/2.0/tutorial#part08">Tutorial
  *      : Displaying error pages</a>
  * @author Jerome Louvel
  */

@@ -32,6 +32,7 @@ package org.restlet.routing;
 
 import java.util.logging.Level;
 
+import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -47,7 +48,7 @@ import org.restlet.util.Template;
  * redirections ({@link #MODE_CLIENT_FOUND}, {@link #MODE_CLIENT_PERMANENT},
  * {@link #MODE_CLIENT_SEE_OTHER}, {@link #MODE_CLIENT_TEMPORARY}) or
  * server-side redirections, similar to a reverse proxy (
- * {@link #MODE_DISPATCHER}).<br>
+ * {@link #MODE_CLIENT_DISPATCHER} and {@link #MODE_SERVER_DISPATCHER}).<br>
  * <br>
  * Concurrency note: instances of this class or its subclasses can be invoked by
  * several threads at the same time and therefore must be thread-safe. You
@@ -55,7 +56,7 @@ import org.restlet.util.Template;
  * 
  * @see org.restlet.util.Template
  * @see <a
- *      href="http://www.restlet.org/documentation/1.1/tutorial#part10">Tutorial:
+ *      href="http://www.restlet.org/documentation/2.0/tutorial#part10">Tutorial:
  *      URI rewriting and redirection</a>
  * @author Jerome Louvel
  */
@@ -63,28 +64,32 @@ public class Redirector extends Restlet {
     /**
      * In this mode, the client is permanently redirected to the URI generated
      * from the target URI pattern.<br>
-     * See org.restlet.data.Status.REDIRECTION_PERMANENT.
+     * 
+     * @see Status#REDIRECTION_PERMANENT
      */
     public static final int MODE_CLIENT_PERMANENT = 1;
 
     /**
      * In this mode, the client is simply redirected to the URI generated from
      * the target URI pattern.<br>
-     * See org.restlet.data.Status.REDIRECTION_FOUND.
+     * 
+     * @see Status#REDIRECTION_FOUND
      */
     public static final int MODE_CLIENT_FOUND = 2;
 
     /**
      * In this mode, the client is simply redirected to the URI generated from
      * the target URI pattern.<br>
-     * See org.restlet.data.Status.REDIRECTION_SEE_OTHER.
+     * 
+     * @see Status#REDIRECTION_SEE_OTHER
      */
     public static final int MODE_CLIENT_SEE_OTHER = 3;
 
     /**
      * In this mode, the client is temporarily redirected to the URI generated
      * from the target URI pattern.<br>
-     * See org.restlet.data.Status.REDIRECTION_TEMPORARY.
+     * 
+     * @see Status#REDIRECTION_TEMPORARY
      */
     public static final int MODE_CLIENT_TEMPORARY = 4;
 
@@ -101,8 +106,47 @@ public class Redirector extends Restlet {
      * Note that in this mode, the headers of HTTP requests, stored in the
      * request's attributes, are removed before dispatching. Also, when a HTTP
      * response comes back the headers are also removed.
+     * 
+     * @deprecated Use the {@link Redirector#MODE_CLIENT_DISPATCHER} instead.
      */
+    @Deprecated
     public static final int MODE_DISPATCHER = 5;
+
+    /**
+     * In this mode, the call is sent to the context's client dispatcher. Once
+     * the selected client connector has completed the request handling, the
+     * response is normally returned to the client. In this case, you can view
+     * the Redirector as acting as a transparent proxy Restlet.<br>
+     * <br>
+     * Remember to add the required connectors to the parent Component and to
+     * declare them in the list of required connectors on the
+     * Application.connectorService property.<br>
+     * <br>
+     * Note that in this mode, the headers of HTTP requests, stored in the
+     * request's attributes, are removed before dispatching. Also, when a HTTP
+     * response comes back the headers are also removed.
+     * 
+     * @see Context#getClientDispatcher()
+     */
+    public static final int MODE_CLIENT_DISPATCHER = 6;
+
+    /**
+     * In this mode, the call is sent to the context's server dispatcher. Once
+     * the selected client connector has completed the request handling, the
+     * response is normally returned to the client. In this case, you can view
+     * the Redirector as acting as a transparent proxy Restlet.<br>
+     * <br>
+     * Remember to add the required connectors to the parent Component and to
+     * declare them in the list of required connectors on the
+     * Application.connectorService property.<br>
+     * <br>
+     * Note that in this mode, the headers of HTTP requests, stored in the
+     * request's attributes, are removed before dispatching. Also, when a HTTP
+     * response comes back the headers are also removed.
+     * 
+     * @see Context#getServerDispatcher()
+     */
+    public static final int MODE_SERVER_DISPATCHER = 7;
 
     /** The target URI pattern. */
     protected volatile String targetTemplate;
@@ -111,7 +155,7 @@ public class Redirector extends Restlet {
     protected volatile int mode;
 
     /**
-     * Constructor for the dispatcher mode.
+     * Constructor for the client dispatcher mode.
      * 
      * @param context
      *            The context.
@@ -120,7 +164,7 @@ public class Redirector extends Restlet {
      * @see org.restlet.util.Template
      */
     public Redirector(Context context, String targetTemplate) {
-        this(context, targetTemplate, MODE_DISPATCHER);
+        this(context, targetTemplate, MODE_CLIENT_DISPATCHER);
     }
 
     /**
@@ -221,6 +265,18 @@ public class Redirector extends Restlet {
                     "Redirecting via client connector to: " + targetRef);
             redirectDispatcher(targetRef, request, response);
             break;
+
+        case MODE_CLIENT_DISPATCHER:
+            getLogger().log(Level.INFO,
+                    "Redirecting via client dispatcher to: " + targetRef);
+            redirectClientDispatcher(targetRef, request, response);
+            break;
+
+        case MODE_SERVER_DISPATCHER:
+            getLogger().log(Level.INFO,
+                    "Redirecting via server dispatcher to: " + targetRef);
+            redirectServerDispatcher(targetRef, request, response);
+            break;
         }
     }
 
@@ -238,15 +294,35 @@ public class Redirector extends Restlet {
      * @param response
      *            The response to update.
      */
-    protected void redirectDispatcher(Reference targetRef, Request request,
-            Response response) {
+    protected void redirectClientDispatcher(Reference targetRef,
+            Request request, Response response) {
+        redirectDispatcher(getContext().getClientDispatcher(), targetRef,
+                request, response);
+    }
+
+    /**
+     * Redirects a given call to a target reference. In the default
+     * implementation, the request HTTP headers, stored in the request's
+     * attributes, are removed before dispatching. After dispatching, the
+     * response HTTP headers are also removed to prevent conflicts with the main
+     * call.
+     * 
+     * @param targetRef
+     *            The target reference with URI variables resolved.
+     * @param request
+     *            The request to handle.
+     * @param response
+     *            The response to update.
+     */
+    private void redirectDispatcher(Client dispatcher, Reference targetRef,
+            Request request, Response response) {
         // Save the base URI if it exists as we might need it for redirections
         final Reference baseRef = request.getResourceRef().getBaseRef();
 
         // Update the request to cleanly go to the target URI
         request.setResourceRef(targetRef);
         request.getAttributes().remove("org.restlet.http.headers");
-        getContext().getClientDispatcher().handle(request, response);
+        dispatcher.handle(request, response);
 
         // Allow for response rewriting and clean the headers
         response.setEntity(rewrite(response.getEntity()));
@@ -271,7 +347,50 @@ public class Redirector extends Restlet {
     }
 
     /**
-     * Optionnaly rewrites the response entity returned in the MODE_CONNECTOR
+     * Redirects a given call to a target reference. In the default
+     * implementation, the request HTTP headers, stored in the request's
+     * attributes, are removed before dispatching. After dispatching, the
+     * response HTTP headers are also removed to prevent conflicts with the main
+     * call.
+     * 
+     * @param targetRef
+     *            The target reference with URI variables resolved.
+     * @param request
+     *            The request to handle.
+     * @param response
+     *            The response to update.
+     * @deprecated Use
+     *             {@link #redirectClientDispatcher(Reference, Request, Response)}
+     *             instead.
+     */
+    @Deprecated
+    protected void redirectDispatcher(Reference targetRef, Request request,
+            Response response) {
+        redirectClientDispatcher(targetRef, request, response);
+    }
+
+    /**
+     * Redirects a given call to a target reference. In the default
+     * implementation, the request HTTP headers, stored in the request's
+     * attributes, are removed before dispatching. After dispatching, the
+     * response HTTP headers are also removed to prevent conflicts with the main
+     * call.
+     * 
+     * @param targetRef
+     *            The target reference with URI variables resolved.
+     * @param request
+     *            The request to handle.
+     * @param response
+     *            The response to update.
+     */
+    protected void redirectServerDispatcher(Reference targetRef,
+            Request request, Response response) {
+        redirectDispatcher(getContext().getServerDispatcher(), targetRef,
+                request, response);
+    }
+
+    /**
+     * Optionally rewrites the response entity returned in the MODE_CONNECTOR
      * mode. By default, it just returns the initial entity without any
      * modification.
      * 

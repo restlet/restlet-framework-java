@@ -70,7 +70,7 @@ import org.restlet.data.Status;
  * should be especially careful when storing state in member variables.
  * 
  * @see <a
- *      href="http://www.restlet.org/documentation/1.1/tutorial#part12">Tutorial:
+ *      href="http://www.restlet.org/documentation/2.0/tutorial#part12">Tutorial:
  *      Reaching target Resources</a>
  * @author Jerome Louvel
  */

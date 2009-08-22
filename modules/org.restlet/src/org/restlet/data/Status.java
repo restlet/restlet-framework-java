@@ -30,6 +30,9 @@
 
 package org.restlet.data;
 
+import org.restlet.engine.Edition;
+import org.restlet.engine.Engine;
+
 /**
  * Status to return after handling a call.
  * 
@@ -38,7 +41,12 @@ package org.restlet.data;
 public final class Status {
     private static final String BASE_HTTP = "http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html";
 
-    private static final String BASE_RESTLET = "http://www.restlet.org/documentation/1.1/api/";
+    private static final String BASE_RESTLET = "http://www.restlet.org/documentation/"
+            + Engine.MAJOR_NUMBER
+            + '.'
+            + Engine.MINOR_NUMBER
+            + "/"
+            + Edition.CURRENT.getShortName().toLowerCase() + "/api/";
 
     private static final String BASE_WEBDAV = "http://www.webdav.org/specs/rfc2518.html";
 

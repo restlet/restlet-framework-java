@@ -8,6 +8,8 @@ Changes log
         - Moved Message, Request and Response classes from the
           org.restlet.data to the org.restlet package as they are
           core artifacts of the API used in Uniform interface.
+        - Deprecated Redirector.MODE_DISPATCHER to introduce support
+          for MODE_CLIENT_DISPATCHER and MODE_SERVER_DISPATCHER.
     - Bugs fixed
         - Added Simple extension to the JEE edition.
           Reported by Dustin Jenkins.

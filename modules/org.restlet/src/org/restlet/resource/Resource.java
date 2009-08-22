@@ -88,7 +88,7 @@ import org.restlet.util.Series;
  *      href="http://roy.gbiv.com/pubs/dissertation/rest_arch_style.htm#sec_5_2_1_1">Source
  *      dissertation</a>
  * @see <a
- *      href="http://www.restlet.org/documentation/1.1/tutorial#part12">Tutorial
+ *      href="http://www.restlet.org/documentation/2.0/tutorial#part12">Tutorial
  *      : Reaching target Resources</a>
  * @see org.restlet.representation.Representation
  * @see org.restlet.resource.Finder
