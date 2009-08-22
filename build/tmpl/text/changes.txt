@@ -22,6 +22,8 @@ Changes log
         - Router#attachDefault() method now relies on the protected
           createRoute() method. Reported by Rob Heittman.
         - Fixed potential synchronization issues.
+        - Fixed concurrency issue with annotated method that could 
+          result in wrong methods invoked. Reported by John Logsdon.
      - Enhancements
         - Added support of the "xml:base" attibute when parsing Atom 
           Publishing documents.

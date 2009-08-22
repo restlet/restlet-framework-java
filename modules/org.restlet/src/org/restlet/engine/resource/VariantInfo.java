@@ -31,7 +31,6 @@
 package org.restlet.engine.resource;
 
 import org.restlet.data.MediaType;
-import org.restlet.engine.converter.ConverterHelper;
 import org.restlet.representation.Variant;
 
 /**
@@ -42,7 +41,7 @@ import org.restlet.representation.Variant;
 public class VariantInfo extends Variant {
 
     /** The optional annotation descriptor. */
-    private volatile AnnotationInfo annotationInfo;
+    private final AnnotationInfo annotationInfo;
 
     /**
      * Constructor.
@@ -90,16 +89,5 @@ public class VariantInfo extends Variant {
      */
     public AnnotationInfo getAnnotationInfo() {
         return annotationInfo;
-    }
-
-
-    /**
-     * Sets the annotation descriptor.
-     * 
-     * @param annotationInfo
-     *            The annotation descriptor.
-     */
-    public void setAnnotationInfo(AnnotationInfo annotationInfo) {
-        this.annotationInfo = annotationInfo;
     }
 }

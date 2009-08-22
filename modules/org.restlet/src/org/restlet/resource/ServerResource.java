@@ -699,8 +699,8 @@ public abstract class ServerResource extends UniformResource {
                                     }
 
                                     for (VariantInfo v : annoVariants) {
-                                        v.setAnnotationInfo(annotationInfo);
-                                        result.add(v);
+                                        result.add(new VariantInfo(v,
+                                                annotationInfo));
                                     }
                                 }
                             }
@@ -714,8 +714,7 @@ public abstract class ServerResource extends UniformResource {
                             }
 
                             for (VariantInfo v : annoVariants) {
-                                v.setAnnotationInfo(annotationInfo);
-                                result.add(v);
+                                result.add(new VariantInfo(v, annotationInfo));
                             }
                         }
                     }
