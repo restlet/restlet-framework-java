@@ -50,7 +50,6 @@ import org.restlet.engine.http.HttpResponse;
 import org.restlet.engine.http.HttpServerAdapter;
 import org.restlet.ext.servlet.internal.ServletLogger;
 
-
 /**
  * HTTP converter from Servlet calls to Restlet calls. This class can be used in
  * any Servlet, just create a new instance and override the service() method in
@@ -88,7 +87,9 @@ import org.restlet.ext.servlet.internal.ServletLogger;
  * </pre>
  * 
  * @author Marcelo F. Ochoa (mochoa@ieee.org)
+ * @deprecated Use {@link XdbServletAdapter} instead
  */
+@Deprecated
 public class XdbServletConverter extends HttpServerAdapter {
     /** The target Restlet. */
     private volatile Restlet target;
@@ -137,7 +138,7 @@ public class XdbServletConverter extends HttpServerAdapter {
             preparedstatement.execute();
             this.localAddress = preparedstatement.getString(1);
             if (this.localAddress == null)
-              this.localAddress = "127.0.0.1";
+                this.localAddress = "127.0.0.1";
             this.localPort = preparedstatement.getInt(2);
             endPoint = preparedstatement.getInt(3);
             getLogger().info(

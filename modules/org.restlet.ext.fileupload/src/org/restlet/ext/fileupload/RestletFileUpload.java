@@ -60,7 +60,7 @@ import org.restlet.representation.Representation;
  */
 public class RestletFileUpload extends FileUpload {
     /**
-     * Constructs an uninitialised instance of this class. A factory must be
+     * Constructs an uninitialized instance of this class. A factory must be
      * configured, using <code>setFileItemFactory()</code>, before attempting to
      * parse request entity.
      * 
