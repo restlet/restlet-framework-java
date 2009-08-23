@@ -180,27 +180,26 @@ public class StreamClientHelper extends HttpClientHelper {
             keystoreInputStream = new FileInputStream(keystorePath);
         }
 
-        KeyStore keystore = KeyStore.getInstance(getKeystoreType());
-
+        KeyStore keystore = null;
         if (keystoreInputStream != null) {
             try {
+                keystore = KeyStore.getInstance(getKeystoreType());
                 keystore.load(keystoreInputStream,
                         keystorePassword == null ? null : keystorePassword
                                 .toCharArray());
             } catch (IOException ioe) {
-                getLogger().log(Level.WARNING, "Unable to load the keystore",
+                getLogger().log(Level.WARNING, "Unable to load the key store",
                         ioe);
                 keystore = null;
             }
         }
 
         KeyManager[] keyManagers = null;
-        if (keystore != null) {
+        if ((keystore != null) && (keyPassword != null)) {
             // Initialize a key manager
             KeyManagerFactory keyManagerFactory = KeyManagerFactory
                     .getInstance(certAlgorithm);
-            keyManagerFactory.init(keystore, keyPassword == null ? null
-                    : keyPassword.toCharArray());
+            keyManagerFactory.init(keystore, keyPassword.toCharArray());
             keyManagers = keyManagerFactory.getKeyManagers();
         }
 
@@ -211,13 +210,16 @@ public class StreamClientHelper extends HttpClientHelper {
         }
 
         KeyStore truststore = null;
-        if (truststoreType != null) {
-            truststore = KeyStore.getInstance(truststoreType);
-
-            if (truststoreInputStream != null) {
+        if ((truststoreType != null) && (truststoreInputStream != null)) {
+            try {
+                truststore = KeyStore.getInstance(truststoreType);
                 truststore.load(truststoreInputStream,
                         truststorePassword == null ? null : truststorePassword
                                 .toCharArray());
+            } catch (IOException ioe) {
+                getLogger().log(Level.WARNING,
+                        "Unable to load the trust store", ioe);
+                truststore = null;
             }
         }
 

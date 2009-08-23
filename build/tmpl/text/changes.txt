@@ -27,6 +27,8 @@ Changes log
         - Fixed concurrency issue with annotated methods that could 
           result in wrong methods invoked. Reported by John Logsdon.
           Isolation of issue by Filip Hanik from the Tomcat team.
+        - Improved robustness of internal HTTPS client with trust 
+          stores. Suggested by Bruno Harbulot.
      - Enhancements
         - Added support of the "xml:base" attibute when parsing Atom 
           Publishing documents.
