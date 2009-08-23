@@ -3,6 +3,7 @@
    <version>2.0</version>
    <distributions>
       <distribution id="classic" />
+      <distribution id="maven" />
    </distributions>
    <homeUri>
       http://www.json.org/
