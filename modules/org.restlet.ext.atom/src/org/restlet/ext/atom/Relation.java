@@ -172,4 +172,8 @@ public enum Relation {
 
         return result;
     }
+
+    public Object getName() {
+        return null;
+    }
 }
