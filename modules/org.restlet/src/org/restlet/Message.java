@@ -41,7 +41,7 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 
 /**
- * Generic message exchanged between client and server connectors.
+ * Generic message exchanged between components.
  * 
  * @author Jerome Louvel
  */
