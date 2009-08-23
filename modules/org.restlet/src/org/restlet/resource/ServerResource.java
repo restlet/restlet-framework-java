@@ -807,6 +807,11 @@ public abstract class ServerResource extends UniformResource {
      * a full representation in case a resource has only one variant or if the
      * initialization cost is very low.<br>
      * <br>
+     * The values accepted in this map are instances of {@link Variant},
+     * {@link MediaType} and {@link List} of the previous classes. It is also
+     * possible to associate variants common to all method by using the
+     * {@link Method#ALL} constant.<br>
+     * <br>
      * Note that the order in which the variants are inserted in the list
      * matters. For example, if the client has no preference defined, or if the
      * acceptable variants have the same quality level for the client, the first
