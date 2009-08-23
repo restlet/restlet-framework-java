@@ -10,6 +10,7 @@ Changes log
           core artifacts of the API used in Uniform interface.
         - Deprecated Redirector.MODE_DISPATCHER to introduce support
           for MODE_CLIENT_DISPATCHER and MODE_SERVER_DISPATCHER.
+        - ServerResource#getPreferredVariant() is now protected.
     - Bugs fixed
         - Added Simple extension to the JEE edition.
           Reported by Dustin Jenkins.

@@ -95,7 +95,7 @@ public abstract class ServerResource extends UniformResource {
     /** Indicates if content negotiation of response entities is enabled. */
     private volatile boolean negotiated;
 
-    /** The modifiable list of variants. */
+    /** The modifiable list of variant declarations. */
     private volatile Map<Method, Object> variants;
 
     /**
@@ -557,9 +557,7 @@ public abstract class ServerResource extends UniformResource {
 
         if ((variants != null) && (!variants.isEmpty())) {
             Variant preferredVariant = getClientInfo().getPreferredVariant(
-                    variants,
-                    (getApplication() == null) ? new MetadataService()
-                            : getApplication().getMetadataService());
+                    variants, getMetadataService());
 
             if (preferredVariant == null) {
                 // No variant was found matching the client preferences
@@ -658,7 +656,8 @@ public abstract class ServerResource extends UniformResource {
     }
 
     /**
-     * Return the list of available variants for the given method.
+     * Return the list of available variants for the given method. The variants
+     * can be either manually declared variants or annotation variants.
      * 
      * @param method
      *            The method.
@@ -670,19 +669,13 @@ public abstract class ServerResource extends UniformResource {
 
         // Add annotation-based variants in priority
         if (isAnnotated() && hasAnnotations()) {
-            MetadataService ms = (getApplication() == null) ? null
-                    : getApplication().getMetadataService();
-            if (ms == null) {
-                ms = new MetadataService();
-            }
-
             ConverterService cs = getConverterService();
             List<VariantInfo> annoVariants = null;
 
             for (AnnotationInfo annotationInfo : annotations) {
                 if (method.equals(annotationInfo.getRestletMethod())) {
                     if (annotationInfo.getValue() != null) {
-                        List<Metadata> allMetadata = ms
+                        List<Metadata> allMetadata = getMetadataService()
                                 .getAllMetadata(annotationInfo.getValue());
 
                         for (Metadata metadata : allMetadata) {
@@ -779,13 +772,23 @@ public abstract class ServerResource extends UniformResource {
     }
 
     /**
-     * Returns the preferred variant.
+     * Returns the application's metadata service or create a new one.
+     * 
+     * @return The metadata service.
+     */
+    private MetadataService getMetadataService() {
+        return getApplication() == null ? new MetadataService()
+                : getApplication().getMetadataService();
+    }
+
+    /**
+     * Returns the preferred variant among the.
      * 
      * @param method
      *            The method.
      * @return The preferred variant.
      */
-    public Variant getPreferredVariant(Method method) {
+    protected Variant getPreferredVariant(Method method) {
         Variant result = null;
         List<Variant> variants = getAvailableVariants(method);
 
