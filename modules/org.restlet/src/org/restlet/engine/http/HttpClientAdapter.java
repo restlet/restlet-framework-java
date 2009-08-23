@@ -527,8 +527,8 @@ public class HttpClientAdapter extends HttpAdapter {
     // // Unexpected exception occurred
     // if ((response.getStatus() == null)
     // || !response.getStatus().isError()) {
-    // response.setStatus(Status.CONNECTOR_ERROR_INTERNAL,
-    // e);
+    // response.setStatus(Status.CONNECTOR_ERROR_INTERNAL, e);
+    // userCallback.handle(request, response, null);
     // }
     // }
     // }

@@ -29,6 +29,8 @@ Changes log
           Isolation of issue by Filip Hanik from the Tomcat team.
         - Improved robustness of internal HTTPS client with trust 
           stores. Suggested by Bruno Harbulot.
+        - Fixed bug that would prevent the GWT callback from being
+          called if some exception occured.
      - Enhancements
         - Added support of the "xml:base" attibute when parsing Atom 
           Publishing documents.
