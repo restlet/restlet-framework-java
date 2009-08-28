@@ -65,8 +65,8 @@ import org.restlet.service.MetadataService;
 import org.restlet.util.Series;
 
 /**
- * Server-side resource. It is a full replacement for the {@link Resource} class
- * that will be deprecated in Restlet 1.2.<br>
+ * Server-side resource. It is a full replacement for the deprecated
+ * {@link Resource} class.<br>
  * <br>
  * Concurrency note: contrary to the {@link org.restlet.Uniform} class and its
  * main {@link Restlet} subclass where a single instance can handle several
