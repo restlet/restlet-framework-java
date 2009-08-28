@@ -39,7 +39,6 @@ import org.restlet.Restlet;
 import org.restlet.data.Status;
 import org.restlet.resource.Finder;
 import org.restlet.util.RouteList;
-import org.restlet.util.Template;
 
 /**
  * Restlet routing calls to one of the attached routes. Each route can compute

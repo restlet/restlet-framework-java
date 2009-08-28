@@ -48,8 +48,8 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Resource;
 import org.restlet.resource.ResourceException;
+import org.restlet.routing.Template;
 import org.restlet.util.Resolver;
-import org.restlet.util.Template;
 import org.w3c.dom.Node;
 
 /**

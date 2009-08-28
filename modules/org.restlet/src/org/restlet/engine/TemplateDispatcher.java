@@ -36,7 +36,7 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.data.Protocol;
-import org.restlet.util.Template;
+import org.restlet.routing.Template;
 
 /**
  * Base call dispatcher capable of resolving target resource URI templates.

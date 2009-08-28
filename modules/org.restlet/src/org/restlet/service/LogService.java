@@ -66,7 +66,7 @@ import org.restlet.routing.Filter;
  * (%Y-%m-%d\t%h:%n:%j\t%S\t%u\t%j\t%j\t%j\t%r\t%q\t%c\t%b\t%j\t%T\t%v\t%B\t%f)<br>
  * <br>
  * For custom access log format, see the syntax to use and the list of available
- * variable names in {@link org.restlet.util.Template}. <br>
+ * variable names in {@link org.restlet.routing.Template}. <br>
  * 
  * @see <a
  *      href="http://www.restlet.org/documentation/2.0/tutorial#part07">Tutorial:
@@ -110,7 +110,7 @@ public class LogService extends Service {
      * Returns the format used.
      * 
      * @return The format used, or null if the default one is used.
-     * @see org.restlet.util.Template for format syntax and variables.
+     * @see org.restlet.routing.Template for format syntax and variables.
      */
     public String getLogFormat() {
         return this.logFormat;
@@ -155,7 +155,7 @@ public class LogService extends Service {
      * 
      * @param format
      *            The format to use when loggin calls.
-     * @see org.restlet.util.Template for format syntax and variables.
+     * @see org.restlet.routing.Template for format syntax and variables.
      */
     public void setLogFormat(String format) {
         this.logFormat = format;

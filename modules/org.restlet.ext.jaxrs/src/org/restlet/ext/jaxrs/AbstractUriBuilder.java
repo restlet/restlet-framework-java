@@ -56,8 +56,8 @@ import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnMethodException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.todo.NotYetImplementedException;
 import org.restlet.ext.jaxrs.internal.util.EncodeOrCheck;
+import org.restlet.routing.Template;
 import org.restlet.util.Resolver;
-import org.restlet.util.Template;
 
 /**
  * Abstract implementation of interface {@link UriBuilder}. Not intended for

@@ -37,8 +37,6 @@ import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
-import org.restlet.util.Template;
-import org.restlet.util.Variable;
 
 /**
  * Filter scoring the affinity of calls with the attached Restlet. The score is
@@ -49,7 +47,7 @@ import org.restlet.util.Variable;
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
  * 
- * @see org.restlet.util.Template
+ * @see org.restlet.routing.Template
  * @author Jerome Louvel
  */
 public class TemplateRoute extends Filter {

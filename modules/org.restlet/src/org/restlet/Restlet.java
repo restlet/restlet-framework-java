@@ -202,20 +202,6 @@ public abstract class Restlet implements Uniform {
 
     // [ifndef gwt] method
     /**
-     * Handles a call.
-     * 
-     * @param request
-     *            The request to handle.
-     * @return The returned response.
-     */
-    public final Response handle(Request request) {
-        final Response response = new Response(request);
-        handle(request, response);
-        return response;
-    }
-
-    // [ifndef gwt] method
-    /**
      * Handles a call. The default behavior is to initialize the Restlet by
      * setting the current context using the {@link Context#setCurrent(Context)}
      * method and by attempting to start it, unless it was already started. If

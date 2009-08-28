@@ -101,8 +101,8 @@ public class SaasComponent extends Component {
         engineers.getMemberUsers().add(stiger);
         developers.getMemberGroups().add(engineers);
 
-        realm.map(customer1, app.findRole("user"));
-        realm.map(managers, app.findRole("admin"));
+        realm.map(customer1, app.getRole("user"));
+        realm.map(managers, app.getRole("admin"));
         return customer1;
     }
 

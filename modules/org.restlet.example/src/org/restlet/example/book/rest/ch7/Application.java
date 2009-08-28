@@ -37,7 +37,7 @@ import org.restlet.Restlet;
 import org.restlet.data.Protocol;
 import org.restlet.routing.Router;
 import org.restlet.routing.TemplateRoute;
-import org.restlet.util.Variable;
+import org.restlet.routing.Variable;
 
 import com.db4o.Db4o;
 import com.db4o.ObjectContainer;

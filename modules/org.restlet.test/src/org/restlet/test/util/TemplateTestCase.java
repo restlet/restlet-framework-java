@@ -35,9 +35,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.restlet.routing.Template;
+import org.restlet.routing.Variable;
 import org.restlet.test.RestletTestCase;
-import org.restlet.util.Template;
-import org.restlet.util.Variable;
 
 /**
  * Test case for URI templates.

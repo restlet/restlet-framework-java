@@ -366,7 +366,8 @@ public abstract class RestletServerTestCase extends TestCase {
             final String hostDomain = request.getResourceRef().getHostDomain();
             getHttpHeaders(request).add("host", hostDomain);
         }
-        final Response response = connector.handle(request);
+        Response response = new Response(request);
+        connector.handle(request, response);
         if (!useTcp && request.getMethod().equals(Method.HEAD)) {
             response.setEntity(new WrapperRepresentation(response.getEntity()) {
 

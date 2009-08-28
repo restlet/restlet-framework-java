@@ -114,8 +114,11 @@ public class Application extends Restlet {
     /** The modifiable list of roles. */
     private final List<Role> roles;
 
-    /** The root Restlet. */
-    private volatile Restlet root;
+    /** The server root Restlet. */
+    private volatile Restlet serverRoot;
+
+    /** The client root Restlet. */
+    private volatile Restlet clientRoot;
 
     /** The list of services. */
     private final List<Service> services;
@@ -148,7 +151,18 @@ public class Application extends Restlet {
         }
 
         this.roles = new CopyOnWriteArrayList<Role>();
-        this.root = null;
+
+        this.clientRoot = new Restlet() {
+            @Override
+            public void handle(Request request, Response response) {
+                if (getContext() != null) {
+                    getContext().getClientDispatcher()
+                            .handle(request, response);
+                }
+            }
+        };
+
+        this.serverRoot = null;
         this.services = new CopyOnWriteArrayList<Service>();
         this.services.add(new TunnelService(true, true));
         this.services.add(new StatusService());
@@ -164,32 +178,26 @@ public class Application extends Restlet {
     }
 
     /**
-     * Creates a root Restlet that will receive all incoming calls. In general,
-     * instances of Router, Filter or Handler classes will be used as initial
-     * application Restlet. The default implementation returns null by default.
-     * This method is intended to be overridden by subclasses.
+     * Creates a server root Restlet that will receive all incoming calls. In
+     * general, instances of Router, Filter or Handler classes will be used as
+     * initial application Restlet. The default implementation returns null by
+     * default. This method is intended to be overridden by subclasses.
      * 
-     * @return The root Restlet.
+     * @return The server root Restlet.
+     * @deprecated Use the {@link #setServerRoot(Restlet)} method instead.
      */
+    @Deprecated
     public Restlet createRoot() {
         return null;
     }
 
     /**
-     * Finds the role associated to the given name.
+     * Returns the client root Restlet.
      * 
-     * @param name
-     *            The name of the role to find.
-     * @return The role matched or null.
+     * @return The client root Restlet.
      */
-    public Role findRole(String name) {
-        for (Role role : getRoles()) {
-            if (role.getName().equals(name)) {
-                return role;
-            }
-        }
-
-        return null;
+    public synchronized Restlet getClientRoot() {
+        return this.clientRoot;
     }
 
     /**
@@ -220,7 +228,8 @@ public class Application extends Restlet {
     }
 
     /**
-     * Returns the finder class to instantiate.
+     * Returns the finder class used to instantiate resource classes. By
+     * default, it returns the {@link Finder} class.
      * 
      * @return the finder class to instantiate.
      */
@@ -256,6 +265,23 @@ public class Application extends Restlet {
     }
 
     /**
+     * Returns the role associated to the given name.
+     * 
+     * @param name
+     *            The name of the role to find.
+     * @return The role matched or null.
+     */
+    public Role getRole(String name) {
+        for (Role role : getRoles()) {
+            if (role.getName().equals(name)) {
+                return role;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Returns the modifiable list of roles.
      * 
      * @return The modifiable list of roles.
@@ -269,13 +295,24 @@ public class Application extends Restlet {
      * been set, and stores the Restlet created for future uses.
      * 
      * @return The root Restlet.
+     * @deprecated Use the {@link #getServerRoot()} method instead.
      */
+    @Deprecated
     public synchronized Restlet getRoot() {
-        if (this.root == null) {
-            this.root = createRoot();
+        if (getServerRoot() == null) {
+            setServerRoot(createRoot());
         }
 
-        return this.root;
+        return getServerRoot();
+    }
+
+    /**
+     * Returns the server root Restlet.
+     * 
+     * @return The server root Restlet.
+     */
+    public synchronized Restlet getServerRoot() {
+        return this.serverRoot;
     }
 
     /**
@@ -343,6 +380,27 @@ public class Application extends Restlet {
         if (getHelper() != null) {
             getHelper().handle(request, response);
         }
+    }
+
+    /**
+     * Sets the client root Resource class.
+     * 
+     * @param clientRootClass
+     *            The client root Resource class.
+     */
+    public synchronized void setClientRoot(Class<?> clientRootClass) {
+        setClientRoot(Finder.createFinder(clientRootClass, getFinderClass(),
+                getContext(), getLogger()));
+    }
+
+    /**
+     * Sets the client root Restlet.
+     * 
+     * @param clientRoot
+     *            The client root Restlet.
+     */
+    public synchronized void setClientRoot(Restlet clientRoot) {
+        this.clientRoot = clientRoot;
     }
 
     /**
@@ -424,10 +482,11 @@ public class Application extends Restlet {
      * 
      * @param rootClass
      *            The root Resource class.
+     * @deprecated Use the {@link #setServerRoot(Class)} method instead.
      */
+    @Deprecated
     public synchronized void setRoot(Class<?> rootClass) {
-        this.root = Finder.createFinder(rootClass, getFinderClass(),
-                getContext(), getLogger());
+        setServerRoot(rootClass);
     }
 
     /**
@@ -435,9 +494,32 @@ public class Application extends Restlet {
      * 
      * @param root
      *            The root Restlet.
+     * @deprecated Use the {@link #setServerRoot(Restlet)} method instead.
      */
+    @Deprecated
     public synchronized void setRoot(Restlet root) {
-        this.root = root;
+        setServerRoot(root);
+    }
+
+    /**
+     * Sets the server root Resource class.
+     * 
+     * @param serverRootClass
+     *            The root Resource class.
+     */
+    public synchronized void setServerRoot(Class<?> serverRootClass) {
+        setServerRoot(Finder.createFinder(serverRootClass, getFinderClass(),
+                getContext(), getLogger()));
+    }
+
+    /**
+     * Sets the server root Restlet.
+     * 
+     * @param serverRoot
+     *            The server root Restlet.
+     */
+    public synchronized void setServerRoot(Restlet serverRoot) {
+        this.serverRoot = serverRoot;
     }
 
     /**

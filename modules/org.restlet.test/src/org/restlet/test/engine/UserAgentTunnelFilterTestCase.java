@@ -83,16 +83,18 @@ public class UserAgentTunnelFilterTestCase extends RestletTestCase {
 
     public void testTunnelOff() {
         this.application.getTunnelService().setUserAgentTunnel(false);
-
-        final Response response = this.application.handle(createRequest());
+        Request request = createRequest();
+        Response response = new Response(request);
+        this.application.handle(request, response);
         assertEquals(response.getStatus(), Status.SUCCESS_OK);
         assertEquals(MediaType.TEXT_XML, response.getEntity().getMediaType());
     }
 
     public void testTunnelOn() {
         this.application.getTunnelService().setUserAgentTunnel(true);
-
-        final Response response = this.application.handle(createRequest());
+        Request request = createRequest();
+        Response response = new Response(request);
+        this.application.handle(request, response);
         assertEquals(response.getStatus(), Status.SUCCESS_OK);
         assertEquals(MediaType.TEXT_HTML, response.getEntity().getMediaType());
     }

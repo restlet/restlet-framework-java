@@ -80,17 +80,11 @@ public abstract class ServerResource extends UniformResource {
     /** Indicates if annotations are supported. */
     private volatile boolean annotated;
 
-    /** The annotation descriptors. */
-    private volatile List<AnnotationInfo> annotations;
-
     /** Indicates if conditional handling is enabled. */
     private volatile boolean conditional;
 
     /** Indicates if the identified resource exists. */
     private volatile boolean existing;
-
-    /** Indicates if the annotations where extracted. */
-    private volatile boolean introspected;
 
     /** Indicates if content negotiation of response entities is enabled. */
     private volatile boolean negotiated;
@@ -104,10 +98,8 @@ public abstract class ServerResource extends UniformResource {
      */
     {
         this.annotated = true;
-        this.annotations = null;
         this.conditional = true;
         this.existing = true;
-        this.introspected = false;
         this.negotiated = true;
         this.variants = null;
     }
@@ -646,13 +638,8 @@ public abstract class ServerResource extends UniformResource {
      * @return The annotation descriptors.
      */
     private List<AnnotationInfo> getAnnotations() {
-        if (isAnnotated() && !isIntrospected()) {
-            this.annotations = AnnotationUtils
-                    .getAnnotationDescriptors(getClass());
-            setIntrospected(true);
-        }
-
-        return annotations;
+        return isAnnotated() ? AnnotationUtils
+                .getAnnotationDescriptors(getClass()) : null;
     }
 
     /**
@@ -672,7 +659,7 @@ public abstract class ServerResource extends UniformResource {
             ConverterService cs = getConverterService();
             List<VariantInfo> annoVariants = null;
 
-            for (AnnotationInfo annotationInfo : annotations) {
+            for (AnnotationInfo annotationInfo : getAnnotations()) {
                 if (method.equals(annotationInfo.getRestletMethod())) {
                     if (annotationInfo.getValue() != null) {
                         List<Metadata> allMetadata = getMetadataService()
@@ -1033,16 +1020,7 @@ public abstract class ServerResource extends UniformResource {
      * @return True if the authenticated subject is in the given role.
      */
     public boolean isInRole(String roleName) {
-        return getClientInfo().isInRole(getApplication().findRole(roleName));
-    }
-
-    /**
-     * Indicates if the annotations where extracted.
-     * 
-     * @return True if the annotations where extracted.
-     */
-    private boolean isIntrospected() {
-        return introspected;
+        return getClientInfo().isInRole(getApplication().getRole(roleName));
     }
 
     /**
@@ -1327,16 +1305,6 @@ public abstract class ServerResource extends UniformResource {
      */
     public void setExisting(boolean exists) {
         this.existing = exists;
-    }
-
-    /**
-     * Indicates if the annotations where extracted.
-     * 
-     * @param introspected
-     *            True if the annotations where extracted.
-     */
-    private void setIntrospected(boolean introspected) {
-        this.introspected = introspected;
     }
 
     /**

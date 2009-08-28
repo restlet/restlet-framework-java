@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.util;
+package org.restlet.routing;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +42,7 @@ import java.util.regex.Pattern;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Reference;
+import org.restlet.util.Resolver;
 
 /**
  * String template with a pluggable model. Supports both formatting and parsing.

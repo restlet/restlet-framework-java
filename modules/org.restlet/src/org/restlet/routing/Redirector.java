@@ -40,7 +40,6 @@ import org.restlet.Restlet;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
-import org.restlet.util.Template;
 
 /**
  * Rewrites URIs then redirects the call or the client to a new destination.
@@ -54,7 +53,7 @@ import org.restlet.util.Template;
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
  * 
- * @see org.restlet.util.Template
+ * @see org.restlet.routing.Template
  * @see <a
  *      href="http://www.restlet.org/documentation/2.0/tutorial#part10">Tutorial:
  *      URI rewriting and redirection</a>
@@ -161,7 +160,7 @@ public class Redirector extends Restlet {
      *            The context.
      * @param targetTemplate
      *            The template to build the target URI.
-     * @see org.restlet.util.Template
+     * @see org.restlet.routing.Template
      */
     public Redirector(Context context, String targetTemplate) {
         this(context, targetTemplate, MODE_CLIENT_DISPATCHER);

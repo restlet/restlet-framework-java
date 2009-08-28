@@ -11,6 +11,14 @@ Changes log
         - Deprecated Redirector.MODE_DISPATCHER to introduce support
           for MODE_CLIENT_DISPATCHER and MODE_SERVER_DISPATCHER.
         - ServerResource#getPreferredVariant() is now protected.
+        - Moved Template and Variable classes from "org.restlet.util"
+          to "org.restlet.routing" package.
+        - Moved Restlet#handle(Request) method to Client class.
+        - Added "clientRoot" and "serverRoot" properties to Application
+          and deprecated the "root" property and the createRoot()
+          method. The client root, is the hook for client-side routing
+          and points by default to the context's client dispatcher, but
+          can be changed by the user to do custom routing/filtering.
     - Bugs fixed
         - Added Simple extension to the JEE edition.
           Reported by Dustin Jenkins.
@@ -18,7 +26,7 @@ Changes log
           the MacOS context. Reported by John Logsdon.
         - Removed the TaskService from the GAE edition as we are not
           allowed to create threads. Reported by Olivier Bruchez.
-        - Fixed pom dependencies groupId. Reported by Rémi Dewitte.
+        - Fixed POM dependencies groupId. Reported by Remi Dewitte.
         - Fixed potential bug with RangeInputStream causing 100% CPU 
           utilization with java NIO.
           Reported and contributed by Tal Liron.

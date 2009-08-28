@@ -418,21 +418,21 @@ public final class ClientInfo {
             // version and facultative comment. Respectively, these
             // variables are called "agentName", "agentVersion" and
             // "agentComment".
-            org.restlet.util.Template template = null;
+            org.restlet.routing.Template template = null;
             // Predefined variables.
-            final org.restlet.util.Variable agentName = new org.restlet.util.Variable(
-                    org.restlet.util.Variable.TYPE_TOKEN);
-            final org.restlet.util.Variable agentVersion = new org.restlet.util.Variable(
-                    org.restlet.util.Variable.TYPE_TOKEN);
-            final org.restlet.util.Variable agentComment = new org.restlet.util.Variable(
-                    org.restlet.util.Variable.TYPE_COMMENT);
-            final org.restlet.util.Variable agentCommentAttribute = new org.restlet.util.Variable(
-                    org.restlet.util.Variable.TYPE_COMMENT_ATTRIBUTE);
-            final org.restlet.util.Variable facultativeData = new org.restlet.util.Variable(
-                    org.restlet.util.Variable.TYPE_ALL, null, false, false);
+            final org.restlet.routing.Variable agentName = new org.restlet.routing.Variable(
+                    org.restlet.routing.Variable.TYPE_TOKEN);
+            final org.restlet.routing.Variable agentVersion = new org.restlet.routing.Variable(
+                    org.restlet.routing.Variable.TYPE_TOKEN);
+            final org.restlet.routing.Variable agentComment = new org.restlet.routing.Variable(
+                    org.restlet.routing.Variable.TYPE_COMMENT);
+            final org.restlet.routing.Variable agentCommentAttribute = new org.restlet.routing.Variable(
+                    org.restlet.routing.Variable.TYPE_COMMENT_ATTRIBUTE);
+            final org.restlet.routing.Variable facultativeData = new org.restlet.routing.Variable(
+                    org.restlet.routing.Variable.TYPE_ALL, null, false, false);
             for (String string : ClientInfo.getUserAgentTemplates()) {
-                template = new org.restlet.util.Template(string,
-                        org.restlet.util.Template.MODE_EQUALS);
+                template = new org.restlet.routing.Template(string,
+                        org.restlet.routing.Template.MODE_EQUALS);
                 // Update the predefined variables.
                 template.getVariables().put("agentName", agentName);
                 template.getVariables().put("agentVersion", agentVersion);

@@ -38,8 +38,8 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.engine.component.ChildContext;
 import org.restlet.routing.Filter;
+import org.restlet.routing.Template;
 import org.restlet.service.LogService;
-import org.restlet.util.Template;
 
 /**
  * Filter logging all calls after their handling by the target Restlet. The

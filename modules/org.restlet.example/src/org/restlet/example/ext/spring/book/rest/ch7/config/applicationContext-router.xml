@@ -29,14 +29,14 @@
 			</map>
 		</property>
 		<property name="routes[2].template.variables[URI]">
-			<bean class="org.restlet.util.Variable">
+			<bean class="org.restlet.routing.Variable">
 				<constructor-arg
-					ref="org.restlet.util.Variable.TYPE_URI_ALL" />
+					ref="org.restlet.routing.Variable.TYPE_URI_ALL" />
 			</bean>
 		</property>
 	</bean>
 
-	<bean id="org.restlet.util.Variable.TYPE_URI_ALL"
+	<bean id="org.restlet.routing.Variable.TYPE_URI_ALL"
 		class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean" />
 
 	<bean id="userResource"

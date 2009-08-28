@@ -43,7 +43,7 @@ import org.restlet.data.Form;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
-import org.restlet.util.Template;
+import org.restlet.routing.Template;
 
 /**
  * Final handler of calls typically created by Finders. Handler instances allow
