@@ -290,8 +290,8 @@ public class FeedContentReader extends DefaultHandler {
                             this.currentEntry.setContent(null);
                         } else {
                             currentContent
-                            .setInlineContent(new StringRepresentation(
-                                    content));
+                                    .setInlineContent(new StringRepresentation(
+                                            content));
                         }
                     }
 
@@ -367,6 +367,10 @@ public class FeedContentReader extends DefaultHandler {
             this.contentDepth++;
         } else if (uri.equalsIgnoreCase(Feed.ATOM_NAMESPACE)) {
             if (localName.equals("feed")) {
+                String attr = attrs.getValue("xml:base");
+                if (attr != null) {
+                    this.currentFeed.setBaseReference(new Reference(attr));
+                }
                 this.state = State.FEED;
             } else if (localName.equals("title")) {
                 startTextElement(attrs);
@@ -424,8 +428,8 @@ public class FeedContentReader extends DefaultHandler {
                 this.currentLink = new Link();
                 this.currentLink.setHref(new Reference(attrs.getValue("",
                         "href")));
-                this.currentLink.setRel(Relation.parse(attrs
-                        .getValue("", "rel")));
+                this.currentLink.setRel(Relation.valueOf(attrs.getValue("",
+                        "rel")));
                 if ("".equals(attrs.getValue("", "type"))) {
                     this.currentLink.setType(new MediaType(attrs
                             .getValue("type")));

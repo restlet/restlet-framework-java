@@ -35,18 +35,18 @@ package org.restlet.ext.atom;
  * 
  * @author Jerome Louvel
  */
-public enum Relation {
+public class Relation {
     /**
      * Signifies that the IRI in the value of the href attribute identifies an
      * alternate version of the resource described by the containing element.
      */
-    ALTERNATE,
+    public static final Relation ALTERNATE = new Relation("ALTERNATE");
 
     /**
      * Signifies that the IRI in the value of the href attribute identifies a
      * resource that is able to edit the current resource.
      */
-    EDIT,
+    public static final Relation EDIT = new Relation("EDIT");
 
     /**
      * Signifies that the IRI in the value of the href attribute identifies a
@@ -54,50 +54,50 @@ public enum Relation {
      * special handling. For atom:link elements with rel="enclosure", the length
      * attribute SHOULD be provided.
      */
-    ENCLOSURE,
+    public static final Relation ENCLOSURE = new Relation("ENCLOSURE");
 
     /**
      * Signifies that the IRI in the value of the href attribute identifies the
      * first resource in a series including the current resource.
      */
-    FIRST,
+    public static final Relation FIRST = new Relation("FIRST");
 
     /**
      * Signifies that the IRI in the value of the href attribute identifies the
      * last resource in a series including the current resource.
      */
-    LAST,
+    public static final Relation LAST = new Relation("LAST");
 
     /**
      * Signifies that the IRI in the value of the href attribute identifies the
      * next resource in a series including the current resource.
      */
-    NEXT,
+    public static final Relation NEXT = new Relation("NEXT");
 
     /**
      * Signifies that the IRI in the value of the href attribute identifies the
      * previous resource in a series including the current resource.
      */
-    PREVIOUS,
+    public static final Relation PREVIOUS = new Relation("PREVIOUS");
 
     /**
      * Signifies that the IRI in the value of the href attribute identifies a
      * resource related to the resource described by the containing element.
      */
-    RELATED,
+    public static final Relation RELATED = new Relation("RELATED");
 
     /**
      * Signifies that the IRI in the value of the href attribute identifies a
      * resource equivalent to the containing element.
      */
-    SELF,
+    public static final Relation SELF = new Relation("SELF");
 
     /**
      * Signifies that the IRI in the value of the href attribute identifies a
      * resource that is the source of the information provided in the containing
      * element.
      */
-    VIA;
+    public static final Relation VIA = new Relation("VIA");
 
     /**
      * Parses a relation name into the equivalent enumeration item.
@@ -105,7 +105,9 @@ public enum Relation {
      * @param rel
      *            The relation name to parse.
      * @return The equivalent enumeration item.
+     * @deprecated Use the {@link #valueOf(String)} method instead.
      */
+    @Deprecated
     public static Relation parse(String rel) {
         Relation result = ALTERNATE;
 
@@ -130,6 +132,8 @@ public enum Relation {
                 result = SELF;
             } else if (rel.equalsIgnoreCase("via")) {
                 result = VIA;
+            } else {
+                result = new Relation(rel);
             }
         }
 
@@ -144,36 +148,87 @@ public enum Relation {
      * @return The String representation of the argument.
      */
     public static String toString(Relation rel) {
-        String result = "alternate";
+        return rel.name;
+    }
+
+    /**
+     * Parses a relation name into the equivalent item.
+     * 
+     * @param rel
+     *            The relation name to parse.
+     * @return The equivalent item.
+     */
+    public static Relation valueOf(String rel) {
+        Relation result = ALTERNATE;
 
         if (rel != null) {
-            if (rel.equals(ALTERNATE)) {
-                result = "alternate";
-            } else if (rel.equals(EDIT)) {
-                result = "edit";
-            } else if (rel.equals(ENCLOSURE)) {
-                result = "enclosure";
-            } else if (rel.equals(FIRST)) {
-                result = "first";
-            } else if (rel.equals(LAST)) {
-                result = "last";
-            } else if (rel.equals(NEXT)) {
-                result = "next";
-            } else if (rel.equals(PREVIOUS)) {
-                result = "previous";
-            } else if (rel.equals(RELATED)) {
-                result = "related";
-            } else if (rel.equals(SELF)) {
-                result = "self";
-            } else if (rel.equals(VIA)) {
-                result = "via";
+            if (rel.equalsIgnoreCase("alternate")) {
+                result = ALTERNATE;
+            } else if (rel.equalsIgnoreCase("edit")) {
+                result = EDIT;
+            } else if (rel.equalsIgnoreCase("enclosure")) {
+                result = ENCLOSURE;
+            } else if (rel.equalsIgnoreCase("first")) {
+                result = FIRST;
+            } else if (rel.equalsIgnoreCase("last")) {
+                result = LAST;
+            } else if (rel.equalsIgnoreCase("next")) {
+                result = NEXT;
+            } else if (rel.equalsIgnoreCase("previous")) {
+                result = PREVIOUS;
+            } else if (rel.equalsIgnoreCase("related")) {
+                result = RELATED;
+            } else if (rel.equalsIgnoreCase("self")) {
+                result = SELF;
+            } else if (rel.equalsIgnoreCase("via")) {
+                result = VIA;
+            } else {
+                result = new Relation(rel);
             }
         }
 
         return result;
     }
 
-    public Object getName() {
-        return null;
+    /** The name of the relation. */
+    private String name;
+
+    /**
+     * Constructor.
+     * 
+     * @param name
+     *            The name of the relation.
+     */
+    public Relation(String name) {
+        super();
+        this.name = name;
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean equals(Object object) {
+        return (object instanceof Relation)
+                && name.equalsIgnoreCase(((Relation) object).getName());
+    }
+
+    /**
+     * Returns the name of the relation.
+     * 
+     * @return The name of the relation.
+     */
+    public String getName() {
+        return name;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int hashCode() {
+        return (getName() == null) ? 0 : getName().toLowerCase().hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return name;
+    }
+
 }

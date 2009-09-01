@@ -384,7 +384,7 @@ public class EntryContentReader extends DefaultHandler {
                 this.currentLink = new Link();
                 this.currentLink.setHref(new Reference(attrs.getValue("",
                         "href")));
-                this.currentLink.setRel(Relation.parse(attrs
+                this.currentLink.setRel(Relation.valueOf(attrs
                         .getValue("", "rel")));
                 if ("".equals(attrs.getValue("", "type"))) {
                     this.currentLink.setType(new MediaType(attrs
