@@ -32,6 +32,7 @@ package org.restlet.test.ext.spring;
 
 import org.restlet.ext.spring.SpringBeanFinder;
 import org.restlet.resource.Resource;
+import org.restlet.resource.ServerResource;
 import org.restlet.test.RestletTestCase;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
@@ -43,6 +44,7 @@ import org.springframework.context.support.StaticApplicationContext;
 public class SpringBeanFinderTestCase extends RestletTestCase {
     private static class SomeResource extends Resource { }
     private static class AnotherResource extends Resource { }
+    private static class SomeServerResource extends ServerResource { }
 
     private static final String BEAN_NAME = "fish";
 
@@ -60,7 +62,7 @@ public class SpringBeanFinderTestCase extends RestletTestCase {
         this.finder.setBeanName(BEAN_NAME);
     }
 
-    public void testExceptionWhenBeanIsWrongType() throws Exception {
+    public void testExceptionWhenResourceBeanIsWrongType() throws Exception {
         registerBeanFactoryBean(BEAN_NAME, String.class);
 
         this.finder.setBeanFactory(beanFactory);
@@ -75,7 +77,7 @@ public class SpringBeanFinderTestCase extends RestletTestCase {
         }
     }
 
-    public void testReturnsCorrectBeanWhenExists() throws Exception {
+    public void testReturnsResourceBeanWhenExists() throws Exception {
         registerBeanFactoryBean(BEAN_NAME, SomeResource.class);
 
         this.finder.setBeanFactory(beanFactory);
@@ -85,6 +87,33 @@ public class SpringBeanFinderTestCase extends RestletTestCase {
         assertNotNull("Resource not found", actual);
         assertTrue("Resource not the correct type",
                 actual instanceof SomeResource);
+    }
+
+    public void testReturnsServerResourceBeanWhenExists() throws Exception {
+        registerBeanFactoryBean(BEAN_NAME, SomeServerResource.class);
+
+        this.finder.setBeanFactory(beanFactory);
+
+        final ServerResource actual = this.finder.create();
+
+        assertNotNull("Resource not found", actual);
+        assertTrue("Resource not the correct type",
+                actual instanceof SomeServerResource);
+    }
+
+    public void testExceptionWhenServerResourceBeanIsWrongType() throws Exception {
+        registerBeanFactoryBean(BEAN_NAME, String.class);
+
+        this.finder.setBeanFactory(beanFactory);
+
+        try {
+            this.finder.create();
+            fail("Exception not thrown");
+        } catch (ClassCastException cce) {
+            assertEquals(
+                    "fish does not resolve to an instance of org.restlet.resource.ServerResource",
+                    cce.getMessage());
+        }
     }
 
     public void testUsesApplicationContextIfPresent() throws Exception {

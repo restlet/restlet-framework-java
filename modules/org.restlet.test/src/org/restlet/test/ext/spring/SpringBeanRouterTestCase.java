@@ -38,6 +38,7 @@ import org.restlet.data.Method;
 import org.restlet.ext.spring.SpringBeanFinder;
 import org.restlet.ext.spring.SpringBeanRouter;
 import org.restlet.resource.Resource;
+import org.restlet.resource.ServerResource;
 import org.restlet.routing.Filter;
 import org.restlet.routing.Route;
 import org.restlet.security.Guard;
@@ -79,7 +80,7 @@ public class SpringBeanRouterTestCase extends RestletTestCase {
         this.factory = new DefaultListableBeanFactory();
 
         registerResourceBeanDefinition("ore", ORE_URI);
-        registerResourceBeanDefinition("fish", FISH_URI);
+        registerServerResourceBeanDefinition("fish", FISH_URI);
         registerBeanDefinition("someOtherBean", null, String.class, null);
 
         this.router = new SpringBeanRouter();
@@ -87,6 +88,10 @@ public class SpringBeanRouterTestCase extends RestletTestCase {
 
     private void registerResourceBeanDefinition(String id, String alias) {
         registerBeanDefinition(id, alias, Resource.class, BeanDefinition.SCOPE_PROTOTYPE);
+    }
+
+    private void registerServerResourceBeanDefinition(String id, String alias) {
+        registerBeanDefinition(id, alias, ServerResource.class, BeanDefinition.SCOPE_PROTOTYPE);
     }
 
     private void registerBeanDefinition(String id, String alias, Class<?> beanClass, String scope) {
