@@ -131,7 +131,8 @@ public class SpringFinder extends Finder {
      * method in Spring.
      */
     @Override
-    public ServerResource create(Request request, Response response) {
+    public ServerResource create(Class<? extends ServerResource> targetClass,
+             Request request, Response response) {
         return create();
     }
 

@@ -30,10 +30,14 @@
 
 package org.restlet.test.ext.spring;
 
+import java.util.Arrays;
+
 import org.restlet.ext.spring.SpringBeanFinder;
 import org.restlet.resource.Resource;
 import org.restlet.resource.ServerResource;
 import org.restlet.test.RestletTestCase;
+import org.springframework.beans.MutablePropertyValues;
+import org.springframework.beans.PropertyValue;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.support.StaticApplicationContext;
@@ -44,7 +48,13 @@ import org.springframework.context.support.StaticApplicationContext;
 public class SpringBeanFinderTestCase extends RestletTestCase {
     private static class SomeResource extends Resource { }
     private static class AnotherResource extends Resource { }
-    private static class SomeServerResource extends ServerResource { }
+    private static class SomeServerResource extends ServerResource {
+        private String src;
+        
+        public SomeServerResource() { setSrc("constructor"); }
+        public String getSrc() { return src; }
+        public void setSrc(String src) { this.src = src; }
+    }
 
     private static final String BEAN_NAME = "fish";
 
@@ -90,7 +100,8 @@ public class SpringBeanFinderTestCase extends RestletTestCase {
     }
 
     public void testReturnsServerResourceBeanWhenExists() throws Exception {
-        registerBeanFactoryBean(BEAN_NAME, SomeServerResource.class);
+        registerBeanFactoryBean(BEAN_NAME, SomeServerResource.class,
+                createServerResourcePropertyValues());
 
         this.finder.setBeanFactory(beanFactory);
 
@@ -99,6 +110,21 @@ public class SpringBeanFinderTestCase extends RestletTestCase {
         assertNotNull("Resource not found", actual);
         assertTrue("Resource not the correct type",
                 actual instanceof SomeServerResource);
+    }
+
+    public void testReturnsServerResourceBeanForLongFormOfCreate() throws Exception {
+        registerBeanFactoryBean(BEAN_NAME, SomeServerResource.class,
+                createServerResourcePropertyValues());
+
+        this.finder.setBeanFactory(beanFactory);
+
+        final ServerResource actual = this.finder.create(SomeServerResource.class, null, null);
+
+        assertNotNull("Resource not found", actual);
+        assertTrue("Resource not the correct type",
+                actual instanceof SomeServerResource);
+        assertEquals("Resource not from spring context", 
+                "spring", ((SomeServerResource) actual).getSrc());
     }
 
     public void testExceptionWhenServerResourceBeanIsWrongType() throws Exception {
@@ -156,8 +182,13 @@ public class SpringBeanFinderTestCase extends RestletTestCase {
 
     private void registerBeanFactoryBean(
             String beanName, Class<?> resourceClass) {
+        registerBeanFactoryBean(beanName, resourceClass, null);
+    }
+
+    private void registerBeanFactoryBean(
+            String beanName, Class<?> resourceClass, MutablePropertyValues values) {
         this.beanFactory.registerBeanDefinition(beanName,
-                new RootBeanDefinition(resourceClass));
+                new RootBeanDefinition(resourceClass, values));
     }
 
     private void registerApplicationContextBean(
@@ -165,5 +196,11 @@ public class SpringBeanFinderTestCase extends RestletTestCase {
         this.applicationContext.registerPrototype(
                 beanName, resourceClass);
         this.applicationContext.refresh();
+    }
+
+    private MutablePropertyValues createServerResourcePropertyValues() {
+        return new MutablePropertyValues(Arrays.asList(
+            new PropertyValue("src", "spring")
+        ));
     }
 }
