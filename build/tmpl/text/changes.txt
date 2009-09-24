@@ -49,6 +49,9 @@ Changes log
           from working correctly with ServerResource subclasses.
           Reported by Evgeny Shepelyuk with contributions to the 
           solution by Rhett Sutphin.
+        - Fixed bug in CopyOnWriteArrayList emulation class causing
+          the Client helper to not being created in compiled mode. 
+          Reported by Guido Schmidt.
      - Enhancements
         - Added support of the "xml:base" attibute when parsing Atom 
           Publishing documents.

@@ -53,7 +53,7 @@ public class CopyOnWriteArrayList<E> implements List<E> {
     public CopyOnWriteArrayList(Collection<? extends E> c) {
         super();
         this.list = new ArrayList<E>();
-        this.list.addAll(list);
+        this.list.addAll(c);
     }
 
     public boolean add(E o) {
