@@ -132,7 +132,13 @@ public class SpringFinder extends Finder {
      */
     @Override
     public ServerResource create(Class<? extends ServerResource> targetClass,
-             Request request, Response response) {
+            Request request, Response response) {
+        return create(request, response);
+    }
+
+    @Override
+    public org.restlet.resource.ServerResource create(Request request,
+            Response response) {
         return create();
     }
 
@@ -171,7 +177,7 @@ public class SpringFinder extends Finder {
     @Override
     public org.restlet.resource.Resource createTarget(Request request,
             Response response) {
-        final org.restlet.resource.Resource result = createResource();
+        org.restlet.resource.Resource result = createResource();
 
         if (result != null) {
             result.init(getContext(), request, response);

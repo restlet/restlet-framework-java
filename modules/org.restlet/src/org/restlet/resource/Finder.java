@@ -75,9 +75,6 @@ import org.restlet.data.Status;
  * @author Jerome Louvel
  */
 public class Finder extends Restlet {
-    /** Target {@link Handler} or {@link ServerResource} subclass. */
-    private volatile Class<?> targetClass;
-
     /**
      * Creates a new finder instance based on the "targetClass" property.
      * 
@@ -122,6 +119,9 @@ public class Finder extends Restlet {
         }
         return result;
     }
+
+    /** Target {@link Handler} or {@link ServerResource} subclass. */
+    private volatile Class<?> targetClass;
 
     /**
      * Constructor.
@@ -241,8 +241,16 @@ public class Finder extends Restlet {
      */
     @SuppressWarnings("unchecked")
     public ServerResource create(Request request, Response response) {
-        return create((Class<? extends ServerResource>) getTargetClass(),
-                request, response);
+        ServerResource result = null;
+
+        if ((getTargetClass() != null)
+                && ServerResource.class
+                        .isAssignableFrom((Class<? extends ServerResource>) getTargetClass())) {
+            result = create((Class<? extends ServerResource>) getTargetClass(),
+                    request, response);
+        }
+
+        return result;
     }
 
     /**
@@ -318,8 +326,16 @@ public class Finder extends Restlet {
     @Deprecated
     @SuppressWarnings("unchecked")
     protected Handler createTarget(Request request, Response response) {
-        return createTarget((Class<? extends Handler>) getTargetClass(),
-                request, response);
+        Handler result = null;
+
+        if ((getTargetClass() != null)
+                && Handler.class
+                        .isAssignableFrom((Class<? extends Handler>) getTargetClass())) {
+            result = createTarget((Class<? extends Handler>) getTargetClass(),
+                    request, response);
+        }
+
+        return result;
     }
 
     /**
@@ -436,86 +452,82 @@ public class Finder extends Restlet {
      * @param response
      *            The response to update.
      */
-    @SuppressWarnings( { "unchecked", "deprecation" })
+    @SuppressWarnings("deprecation")
     @Override
     public void handle(Request request, Response response) {
         super.handle(request, response);
 
         if (isStarted()) {
-            if (getTargetClass() == null) {
-                getLogger().warning(
-                        "No target class was defined for this finder: "
-                                + toString());
-            } else {
-                if (Handler.class
-                        .isAssignableFrom((Class<? extends Handler>) getTargetClass())) {
-                    final Handler targetHandler = findTarget(request, response);
+            Handler targetHandler = findTarget(request, response);
 
-                    if (!response.getStatus().equals(Status.SUCCESS_OK)) {
-                        // Probably during the instantiation of the target
-                        // handler, or earlier the status was changed from the
-                        // default one. Don't go further.
+            if (targetHandler != null) {
+
+                if (!response.getStatus().equals(Status.SUCCESS_OK)) {
+                    // Probably during the instantiation of the target
+                    // handler, or earlier the status was changed from the
+                    // default one. Don't go further.
+                } else {
+                    Method method = request.getMethod();
+
+                    if (method == null) {
+                        response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST,
+                                "No method specified");
                     } else {
-                        final Method method = request.getMethod();
-
-                        if (method == null) {
-                            response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST,
-                                    "No method specified");
+                        if (!allow(method, targetHandler)) {
+                            response
+                                    .setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+                            targetHandler.updateAllowedMethods();
                         } else {
-                            if (!allow(method, targetHandler)) {
-                                response
-                                        .setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-                                targetHandler.updateAllowedMethods();
-                            } else {
 
-                                if (method.equals(Method.GET)) {
-                                    targetHandler.handleGet();
-                                } else if (method.equals(Method.HEAD)) {
-                                    targetHandler.handleHead();
-                                } else if (method.equals(Method.POST)) {
-                                    targetHandler.handlePost();
-                                } else if (method.equals(Method.PUT)) {
-                                    targetHandler.handlePut();
-                                } else if (method.equals(Method.DELETE)) {
-                                    targetHandler.handleDelete();
-                                } else if (method.equals(Method.OPTIONS)) {
-                                    targetHandler.handleOptions();
+                            if (method.equals(Method.GET)) {
+                                targetHandler.handleGet();
+                            } else if (method.equals(Method.HEAD)) {
+                                targetHandler.handleHead();
+                            } else if (method.equals(Method.POST)) {
+                                targetHandler.handlePost();
+                            } else if (method.equals(Method.PUT)) {
+                                targetHandler.handlePut();
+                            } else if (method.equals(Method.DELETE)) {
+                                targetHandler.handleDelete();
+                            } else if (method.equals(Method.OPTIONS)) {
+                                targetHandler.handleOptions();
+                            } else {
+                                final java.lang.reflect.Method handleMethod = getHandleMethod(
+                                        targetHandler, method);
+                                if (handleMethod != null) {
+                                    invoke(targetHandler, handleMethod);
                                 } else {
-                                    final java.lang.reflect.Method handleMethod = getHandleMethod(
-                                            targetHandler, method);
-                                    if (handleMethod != null) {
-                                        invoke(targetHandler, handleMethod);
-                                    } else {
-                                        response
-                                                .setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-                                    }
+                                    response
+                                            .setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
                                 }
                             }
                         }
                     }
+                }
+            } else {
+                ServerResource targetResource = find(request, response);
+
+                if (targetResource == null) {
+                    // If the current status is a success but we couldn't
+                    // find the target handler for the request's resource
+                    // URI, then we set the response status to 404 (Not
+                    // Found).
+                    getLogger().warning(
+                            "No target resource was defined for this finder: "
+                                    + toString());
+                    response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
                 } else {
-                    final ServerResource targetResource = find(request,
-                            response);
+                    targetResource.init(getContext(), request, response);
 
-                    if (targetResource == null) {
-                        // If the current status is a success but we couldn't
-                        // find the target handler for the request's resource
-                        // URI, then we set the response status to 404 (Not
-                        // Found).
-                        response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+                    if (response.getStatus().equals(Status.SUCCESS_OK)) {
+                        targetResource.handle();
                     } else {
-                        targetResource.init(getContext(), request, response);
-
-                        if (response.getStatus().equals(Status.SUCCESS_OK)) {
-                            targetResource.handle();
-                        } else {
-                            // Probably during the instantiation of the target
-                            // server resource, or earlier the status was
-                            // changed from the default one. Don't go further.
-                        }
-
-                        targetResource.release();
+                        // Probably during the instantiation of the target
+                        // server resource, or earlier the status was
+                        // changed from the default one. Don't go further.
                     }
+
+                    targetResource.release();
                 }
             }
         }

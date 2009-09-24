@@ -45,6 +45,10 @@ Changes log
           Tomcat buffer which could have been reused for another 
           request, causing unexpected socket reading issues.
           Initially reported by Denys Hryvastov.
+        - Fixed issues preventing SpringFinder and SpringBeanFinder
+          from working correctly with ServerResource subclasses.
+          Reported by Evgeny Shepelyuk with contributions to the 
+          solution by Rhett Sutphin.
      - Enhancements
         - Added support of the "xml:base" attibute when parsing Atom 
           Publishing documents.

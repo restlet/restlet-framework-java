@@ -96,12 +96,10 @@ public class SpringBeanFinder extends SpringFinder implements BeanFactoryAware,
     @SuppressWarnings("deprecation")
     @Override
     public org.restlet.resource.Resource createResource() {
-        final Object resource = findBean();
+        Object resource = findBean();
 
         if (!(resource instanceof org.restlet.resource.Resource)) {
-            throw new ClassCastException(getBeanName()
-                    + " does not resolve to an instance of "
-                    + org.restlet.resource.Resource.class.getName());
+            resource = null;
         }
 
         return (org.restlet.resource.Resource) resource;
