@@ -48,7 +48,7 @@ Changes log
      - Enhancements
         - Added support of the "xml:base" attibute when parsing Atom 
           Publishing documents.
-        - Updated Grizzly to version 1.9.17.
+        - Updated Grizzly to version 1.9.18b.
         - Updated FileUpload to version 1.2.1.
         - Updated JavaMail to version 1.4.2.
         - Updated JAXB RI to version 2.1.12.

@@ -1,7 +1,7 @@
 <library id="grizzly">
 	<package name="com.sun.grizzly" />
 	<version>1.9</version>
-	<release>17</release>
+	<release>18b</release>
 	<distributions>
 		<distribution id="classic" />
 	</distributions>
