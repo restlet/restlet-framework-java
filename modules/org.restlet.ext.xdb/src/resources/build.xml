@@ -37,6 +37,8 @@
 	      failonerror="no"/>
     <echo message="Ignore some resolvers errors due are not used classes"/>
     <loadjava-with-public-synonym login="${jdbc.username}/${jdbc.password}@${sqlnet.string}"
+              file="${dist-base}/lib/${mod-xml-id}.jar"/>
+    <loadjava-with-public-synonym login="${jdbc.username}/${jdbc.password}@${sqlnet.string}"
               file="${dist-base}/lib/${mod-servlet-id}.jar"/>
   </target>
 
@@ -48,10 +50,15 @@
 
   <target name="load-server-side-demos"
           description="Load restlet examples and tutorial">
-    <loadjava-with-public-synonym login="${jdbc.username}/${jdbc.password}@${sqlnet.string}"
+    <!--loadjava-with-public-synonym login="${jdbc.username}/${jdbc.password}@${sqlnet.string}"
               file="${dist-base}/lib/${mod-core-example-id}.jar"
-              failonerror="no"/>
-    <echo message="Ignore some resolvers errors due are not used classes"/>
+              failonerror="no"/-->
+    <echo message="Load using loadjava -r -v -s -g public -u ${jdbc.username}/${jdbc.password}@${sqlnet.string} ..."/>
+    <echo message="org/restlet/example/tutorial/Part10.java"/>
+    <echo message="org/restlet/example/tutorial/UserResource.java"/>
+    <echo message="org/restlet/example/tutorial/OrderResource.java"/>
+    <echo message="org/restlet/example/tutorial/OrdersResource.java"/>
+    <echo message="org/restlet/example/tutorial/Part12.java"/>
     <exec executable="${ORACLE_HOME}/bin/sqlplus" dir="sql">
       <arg value="${jdbc.sysusr}/${jdbc.syspwd}@${sqlnet.string} as sysdba"/>
       <arg value="@postInstall"/>
