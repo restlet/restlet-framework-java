@@ -2,17 +2,17 @@
    <label>Restlet Extension - Oracle XML DB</label>
    <description>
       Integration within OracleJVM via the Oracle XML DB feature.
-	</description>
+   </description>
    <distributions>
       <distribution id="classic" />
       <distribution id="maven" />
    </distributions>
 
    <dependencies>
-      <dependency type="library" id="dbcp" />
-      <dependency type="library" id="pool" />
       <dependency type="library" id="servlet" />
+      <dependency type="library" id="xdb" />
       <dependency type="module" id="core" />
       <dependency type="module" id="servlet" />
+      <dependency type="module" id="xml" />
    </dependencies>
 </module>
