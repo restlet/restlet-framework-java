@@ -40,6 +40,11 @@ Changes log
           stores. Suggested by Bruno Harbulot.
         - Fixed bug that would prevent the GWT callback from being
           called if some exception occured.
+        - Fixed integration issue with Tomcat due to the GC releasing
+          Restlet representations, indirectly closing the underlying
+          Tomcat buffer which could have been reused for another 
+          request, causing unexpected socket reading issues.
+          Initially reported by Denys Hryvastov.
      - Enhancements
         - Added support of the "xml:base" attibute when parsing Atom 
           Publishing documents.
