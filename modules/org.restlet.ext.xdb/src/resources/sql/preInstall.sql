@@ -23,9 +23,11 @@ grant create public synonym to $sch;
 begin
   -- required grants for using JDK1.4 logging
   dbms_java.grant_permission( UPPER('$sch'), 'SYS:java.lang.RuntimePermission', 'getClassLoader', '' );
+  dbms_java.grant_permission( UPPER('$sch'), 'SYS:java.lang.RuntimePermission', 'createClassLoader', '' );
   dbms_java.grant_permission( UPPER('$sch'), 'SYS:java.util.logging.LoggingPermission', 'control', '' );
-  dbms_java.grant_permission( UPPER('$sch'), 'SYS:java.lang.RuntimePermission', 'accessDeclaredMembers', '' )
+  dbms_java.grant_permission( UPPER('$sch'), 'SYS:java.lang.RuntimePermission', 'accessDeclaredMembers', '' );
   dbms_java.grant_permission( 'ANONYMOUS', 'SYS:java.lang.RuntimePermission', 'getClassLoader', '' );
+  dbms_java.grant_permission( 'ANONYMOUS', 'SYS:java.lang.RuntimePermission', 'createClassLoader', '' );
   dbms_java.grant_permission( 'ANONYMOUS', 'SYS:java.util.logging.LoggingPermission', 'control', '' );
   dbms_java.grant_permission( 'ANONYMOUS', 'SYS:java.lang.RuntimePermission', 'accessDeclaredMembers', '' );
   -- required for remote debugging
