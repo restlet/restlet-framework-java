@@ -40,7 +40,7 @@ import org.restlet.Response;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.ReferenceList;
-import org.restlet.engine.local.DirectoryResource;
+import org.restlet.engine.local.DirectoryServerResource;
 import org.restlet.engine.util.AlphaNumericComparator;
 import org.restlet.engine.util.AlphabeticalComparator;
 import org.restlet.representation.Representation;
@@ -138,7 +138,7 @@ public class Directory extends Finder {
         this.listingAllowed = false;
         this.modifiable = false;
         this.negotiateContent = true;
-        setTargetClass(DirectoryResource.class);
+        setTargetClass(DirectoryServerResource.class);
     }
 
     /**

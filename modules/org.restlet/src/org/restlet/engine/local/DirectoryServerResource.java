@@ -66,7 +66,7 @@ import org.restlet.service.MetadataService;
  * @author Jerome Louvel
  * @author Thierry Boileau
  */
-public class DirectoryResource extends ServerResource {
+public class DirectoryServerResource extends ServerResource {
 
     /**
      * The local base name of the resource. For example, "foo.en" and
