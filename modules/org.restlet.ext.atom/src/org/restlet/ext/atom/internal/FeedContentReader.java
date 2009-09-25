@@ -245,7 +245,7 @@ public class FeedContentReader extends DefaultHandler {
                     this.state = State.FEED_ENTRY_SOURCE;
                 }
                 // Set the inline content, if any
-                if (Relation.ALTERNATE == this.currentLink.getRel()) {
+                if (this.currentContentWriter != null) {
                     String content = this.currentContentWriter.getWriter()
                             .toString().trim();
                     contentDepth = -1;
@@ -262,6 +262,7 @@ public class FeedContentReader extends DefaultHandler {
                                             content));
                         }
                     }
+                    this.currentContentWriter = null;
                 }
             } else if (localName.equalsIgnoreCase("entry")) {
                 if (this.state == State.FEED_ENTRY) {
@@ -297,6 +298,7 @@ public class FeedContentReader extends DefaultHandler {
 
                     this.state = State.FEED_ENTRY;
                 }
+                this.currentContentWriter = null;
             }
         }
 
@@ -448,13 +450,11 @@ public class FeedContentReader extends DefaultHandler {
                 } else if (this.state == State.FEED_ENTRY_SOURCE) {
                     this.state = State.FEED_ENTRY_SOURCE_LINK;
                 }
-                // Glean the content if the link's type is ALTERNATE
-                if (Relation.ALTERNATE == this.currentLink.getRel()) {
-                    this.currentContent = new Content();
-                    // Content available inline
-                    initiateInlineMixedContent();
-                    this.currentLink.setContent(currentContent);
-                }
+                // Glean the content
+                this.currentContent = new Content();
+                // Content available inline
+                initiateInlineMixedContent();
+                this.currentLink.setContent(currentContent);
             } else if (localName.equalsIgnoreCase("entry")) {
                 if (this.state == State.FEED) {
                     this.currentEntry = new Entry();

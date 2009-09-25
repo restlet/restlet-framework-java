@@ -74,7 +74,6 @@ public class EntryContentReader extends DefaultHandler {
 
     /** The currently parsed Content. */
     private Content currentContent;
-
     /** The currently parsed XML content writer. */
     private XmlWriter currentContentWriter;
 
@@ -223,7 +222,7 @@ public class EntryContentReader extends DefaultHandler {
                     this.state = State.FEED_ENTRY_SOURCE;
                 }
                 // Set the inline content, if any
-                if (Relation.ALTERNATE == this.currentLink.getRel()) {
+                if (this.currentContentWriter != null) {
                     String content = this.currentContentWriter.getWriter()
                             .toString().trim();
                     contentDepth = -1;
@@ -241,6 +240,7 @@ public class EntryContentReader extends DefaultHandler {
                                             content));
                         }
                     }
+                    this.currentContentWriter = null;
                 }
             } else if (localName.equals("category")) {
                 if (this.state == State.FEED_ENTRY_CATEGORY) {
@@ -268,6 +268,7 @@ public class EntryContentReader extends DefaultHandler {
 
                     this.state = State.FEED_ENTRY;
                 }
+                this.currentContentWriter = null;
             }
 
         }
@@ -384,8 +385,8 @@ public class EntryContentReader extends DefaultHandler {
                 this.currentLink = new Link();
                 this.currentLink.setHref(new Reference(attrs.getValue("",
                         "href")));
-                this.currentLink.setRel(Relation.valueOf(attrs
-                        .getValue("", "rel")));
+                this.currentLink.setRel(Relation.valueOf(attrs.getValue("",
+                        "rel")));
                 if ("".equals(attrs.getValue("", "type"))) {
                     this.currentLink.setType(new MediaType(attrs
                             .getValue("type")));
@@ -402,13 +403,11 @@ public class EntryContentReader extends DefaultHandler {
                 } else if (this.state == State.FEED_ENTRY_SOURCE) {
                     this.state = State.FEED_ENTRY_SOURCE_LINK;
                 }
-                // Glean the content if the link's type is ALTERNATE
-                if (Relation.ALTERNATE == this.currentLink.getRel()) {
-                    this.currentContent = new Content();
-                    // Content available inline
-                    initiateInlineMixedContent();
-                    this.currentLink.setContent(currentContent);
-                }
+                // Glean the content
+                this.currentContent = new Content();
+                // Content available inline
+                initiateInlineMixedContent();
+                this.currentLink.setContent(currentContent);
             } else if (localName.equalsIgnoreCase("entry")) {
                 this.state = State.FEED_ENTRY;
             } else if (localName.equals("category")) {
