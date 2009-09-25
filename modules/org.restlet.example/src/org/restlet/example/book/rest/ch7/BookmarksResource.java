@@ -31,7 +31,6 @@
 package org.restlet.example.book.rest.ch7;
 
 import org.restlet.data.MediaType;
-import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.ReferenceList;
 import org.restlet.representation.Representation;
@@ -50,7 +49,7 @@ public class BookmarksResource extends UserResource {
         super.doInit();
         getVariants().clear();
         if (getUser() != null) {
-            getVariants().put(Method.GET, MediaType.TEXT_HTML);
+            getVariants().add(new Variant(MediaType.TEXT_HTML));
         }
     }
 
@@ -59,12 +58,12 @@ public class BookmarksResource extends UserResource {
         Representation result = null;
 
         if (variant.getMediaType().equals(MediaType.TEXT_HTML)) {
-            final int code = checkAuthorization();
-            final ReferenceList rl = new ReferenceList();
+            int code = checkAuthorization();
+            ReferenceList rl = new ReferenceList();
 
             // Copy the bookmark URIs into a reference list. Make sure that we
             // only expose public bookmarks if the client isn't the owner.
-            for (final Bookmark bookmark : getUser().getBookmarks()) {
+            for (Bookmark bookmark : getUser().getBookmarks()) {
                 if (!bookmark.isRestrict() || (code == 1)) {
                     rl.add(bookmark.getUri());
                 }
@@ -83,7 +82,7 @@ public class BookmarksResource extends UserResource {
         // Make sure that the URI ends with a "/" without changing the query.
         // This is helpful when exposing the list of relative references of the
         // bookmarks.
-        final Reference ref = getRequest().getResourceRef();
+        Reference ref = getRequest().getResourceRef();
         if (!ref.getPath().endsWith("/")) {
             ref.setPath(ref.getPath() + "/");
             redirectPermanent(ref);

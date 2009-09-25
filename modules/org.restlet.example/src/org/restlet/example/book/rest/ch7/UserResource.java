@@ -30,6 +30,7 @@
 
 package org.restlet.example.book.rest.ch7;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.data.ChallengeRequest;
@@ -37,7 +38,6 @@ import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
-import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
@@ -64,6 +64,8 @@ public class UserResource extends ServerResource {
     private User user;
 
     private String userName;
+
+    private List<Variant> variants;
 
     /**
      * Updates the response to challenge the client for credentials.
@@ -139,7 +141,8 @@ public class UserResource extends ServerResource {
         this.user = findUser();
 
         if (this.user != null) {
-            getVariants().put(Method.GET, MediaType.TEXT_PLAIN);
+            this.variants = new ArrayList<Variant>();
+            this.variants.add(new Variant(MediaType.TEXT_PLAIN));
         }
 
         modifiable = true;
@@ -220,6 +223,11 @@ public class UserResource extends ServerResource {
      */
     public User getUser() {
         return this.user;
+    }
+
+    @Override
+    public List<Variant> getVariants() {
+        return variants;
     }
 
     public boolean isModifiable() {

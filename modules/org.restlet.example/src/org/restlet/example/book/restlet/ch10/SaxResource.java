@@ -30,8 +30,10 @@
 
 package org.restlet.example.book.restlet.ch10;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.restlet.data.MediaType;
-import org.restlet.data.Method;
 import org.restlet.ext.xml.SaxRepresentation;
 import org.restlet.ext.xml.XmlWriter;
 import org.restlet.representation.Representation;
@@ -44,11 +46,6 @@ import org.xml.sax.SAXException;
  *
  */
 public class SaxResource extends ServerResource {
-
-    @Override
-    public void doInit() {
-        getVariants().put(Method.GET, MediaType.TEXT_XML);
-    }
 
     @Override
     public Representation get(Variant variant) throws ResourceException {
@@ -71,5 +68,12 @@ public class SaxResource extends ServerResource {
         }
 
         return rep;
+    }
+
+    @Override
+    public List<Variant> getVariants() {
+        List<Variant> variants = new ArrayList<Variant>();
+        variants.add(new Variant(MediaType.TEXT_XML));
+        return variants;
     }
 }

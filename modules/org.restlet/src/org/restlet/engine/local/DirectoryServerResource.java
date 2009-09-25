@@ -68,6 +68,9 @@ import org.restlet.service.MetadataService;
  */
 public class DirectoryServerResource extends ServerResource {
 
+    /** The list of variants for the GET method. */
+    private volatile List<Variant> variantsGet;
+
     /**
      * The local base name of the resource. For example, "foo.en" and
      * "foo.en-GB.html" return "foo".
@@ -580,127 +583,138 @@ public class DirectoryServerResource extends ServerResource {
         return this.targetUri;
     }
 
-    /**
-     * Returns the representation variants.
-     * 
-     * @return The representation variants.
-     */
     @Override
+    public List<Variant> getVariants() {
+        return getVariants(getMethod());
+    }
+
+    /**
+     * Returns the list of variants for the given method.
+     * 
+     * @param method
+     *            The related method.
+     * @return The list of variants for the given method.
+     */
     public List<Variant> getVariants(Method method) {
-        List<Variant> result = super.getVariants(method);
+        List<Variant> result = null;
 
         if ((Method.GET.equals(method) || Method.HEAD.equals(method))
                 && ((result == null) || result.isEmpty())) {
-            getLogger().info("Getting variants for : " + getTargetUri());
+            if (variantsGet != null) {
+                result = variantsGet;
+            } else {
+                getLogger().info("Getting variants for : " + getTargetUri());
 
-            if ((this.directoryContent != null) && (getReference() != null)
-                    && (getReference().getBaseRef() != null)) {
+                if ((this.directoryContent != null) && (getReference() != null)
+                        && (getReference().getBaseRef() != null)) {
 
-                // Allows to sort the list of representations
-                SortedSet<Representation> resultSet = new TreeSet<Representation>(
-                        getRepresentationsComparator());
+                    // Allows to sort the list of representations
+                    SortedSet<Representation> resultSet = new TreeSet<Representation>(
+                            getRepresentationsComparator());
 
-                // Compute the base reference (from a call's client point of
-                // view)
-                String baseRef = getReference().getBaseRef().toString(false,
-                        false);
+                    // Compute the base reference (from a call's client point of
+                    // view)
+                    String baseRef = getReference().getBaseRef().toString(
+                            false, false);
 
-                if (!baseRef.endsWith("/")) {
-                    baseRef += "/";
-                }
+                    if (!baseRef.endsWith("/")) {
+                        baseRef += "/";
+                    }
 
-                int lastIndex = this.relativePart.lastIndexOf("/");
+                    int lastIndex = this.relativePart.lastIndexOf("/");
 
-                if (lastIndex != -1) {
-                    baseRef += this.relativePart.substring(0, lastIndex);
-                }
+                    if (lastIndex != -1) {
+                        baseRef += this.relativePart.substring(0, lastIndex);
+                    }
 
-                int rootLength = getDirectoryUri().length();
+                    int rootLength = getDirectoryUri().length();
 
-                if (this.baseName != null) {
-                    String filePath;
-                    for (Reference ref : getVariantsReferences()) {
-                        // Add the new variant to the result list
-                        Response contextResponse = getRepresentation(ref
-                                .toString());
-                        if (contextResponse.getStatus().isSuccess()
-                                && (contextResponse.getEntity() != null)) {
-                            filePath = ref.toString(false, false).substring(
-                                    rootLength);
-                            Representation rep = contextResponse.getEntity();
+                    if (this.baseName != null) {
+                        String filePath;
+                        for (Reference ref : getVariantsReferences()) {
+                            // Add the new variant to the result list
+                            Response contextResponse = getRepresentation(ref
+                                    .toString());
+                            if (contextResponse.getStatus().isSuccess()
+                                    && (contextResponse.getEntity() != null)) {
+                                filePath = ref.toString(false, false)
+                                        .substring(rootLength);
+                                Representation rep = contextResponse
+                                        .getEntity();
 
-                            if (filePath.startsWith("/")) {
-                                rep.setIdentifier(baseRef + filePath);
-                            } else {
-                                rep.setIdentifier(baseRef + "/" + filePath);
+                                if (filePath.startsWith("/")) {
+                                    rep.setIdentifier(baseRef + filePath);
+                                } else {
+                                    rep.setIdentifier(baseRef + "/" + filePath);
+                                }
+
+                                resultSet.add(rep);
                             }
-
-                            resultSet.add(rep);
                         }
                     }
-                }
 
-                if (!resultSet.isEmpty()) {
+                    if (!resultSet.isEmpty()) {
+                        if (result == null) {
+                            result = new ArrayList<Variant>();
+                        }
+
+                        result.addAll(resultSet);
+                    }
+
+                    if (resultSet.isEmpty()) {
+                        if (this.directoryTarget
+                                && getDirectory().isListingAllowed()) {
+                            ReferenceList userList = new ReferenceList(
+                                    this.directoryContent.size());
+                            // Set the list identifier
+                            userList.setIdentifier(baseRef);
+
+                            SortedSet<Reference> sortedSet = new TreeSet<Reference>(
+                                    getDirectory().getComparator());
+                            sortedSet.addAll(this.directoryContent);
+
+                            for (Reference ref : sortedSet) {
+                                String filePart = ref.toString(false, false)
+                                        .substring(rootLength);
+                                StringBuilder filePath = new StringBuilder();
+                                if ((!baseRef.endsWith("/"))
+                                        && (!filePart.startsWith("/"))) {
+                                    filePath.append('/');
+                                }
+                                filePath.append(filePart);
+                                userList.add(baseRef + filePath);
+                            }
+                            List<Variant> list = getDirectory()
+                                    .getIndexVariants(userList);
+                            for (Variant variant : list) {
+                                if (result == null) {
+                                    result = new ArrayList<Variant>();
+                                }
+
+                                result.add(getDirectory()
+                                        .getIndexRepresentation(variant,
+                                                userList));
+                            }
+
+                        }
+                    }
+                } else if (this.fileTarget && (this.fileContent != null)) {
+                    // Sets the identifier of the target representation.
+                    if (getOriginalRef() != null) {
+                        this.fileContent.setIdentifier(getRequest()
+                                .getOriginalRef());
+                    } else {
+                        this.fileContent.setIdentifier(getReference());
+                    }
+
                     if (result == null) {
                         result = new ArrayList<Variant>();
                     }
-
-                    result.addAll(resultSet);
+                    result.add(this.fileContent);
                 }
 
-                if (resultSet.isEmpty()) {
-                    if (this.directoryTarget
-                            && getDirectory().isListingAllowed()) {
-                        ReferenceList userList = new ReferenceList(
-                                this.directoryContent.size());
-                        // Set the list identifier
-                        userList.setIdentifier(baseRef);
-
-                        SortedSet<Reference> sortedSet = new TreeSet<Reference>(
-                                getDirectory().getComparator());
-                        sortedSet.addAll(this.directoryContent);
-
-                        for (Reference ref : sortedSet) {
-                            String filePart = ref.toString(false, false)
-                                    .substring(rootLength);
-                            StringBuilder filePath = new StringBuilder();
-                            if ((!baseRef.endsWith("/"))
-                                    && (!filePart.startsWith("/"))) {
-                                filePath.append('/');
-                            }
-                            filePath.append(filePart);
-                            userList.add(baseRef + filePath);
-                        }
-                        List<Variant> list = getDirectory().getIndexVariants(
-                                userList);
-                        for (Variant variant : list) {
-                            if (result == null) {
-                                result = new ArrayList<Variant>();
-                            }
-
-                            result.add(getDirectory().getIndexRepresentation(
-                                    variant, userList));
-                        }
-
-                    }
-                }
-            } else if (this.fileTarget && (this.fileContent != null)) {
-                // Sets the identifier of the target representation.
-                if (getOriginalRef() != null) {
-                    this.fileContent.setIdentifier(getRequest()
-                            .getOriginalRef());
-                } else {
-                    this.fileContent.setIdentifier(getReference());
-                }
-
-                if (result == null) {
-                    result = new ArrayList<Variant>();
-                }
-                result.add(this.fileContent);
+                this.variantsGet = result;
             }
-
-            // Update the list of variants
-            super.getVariants().put(Method.GET, result);
         }
 
         return result;
