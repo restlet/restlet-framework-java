@@ -26,6 +26,11 @@ Changes log
           this method is only called once per request for performance
           reason. Added a "variants" parameter to several protected 
           methods.
+        - Refactored the ServerResource class so that annotated methods
+          are invoked through the regular get(), get(Variant), post(),
+          post(Variant) methods instead of using a separate call path.
+        - ServerResource now has protected getConverterService() and
+          getMetadataService() methods.
     - Bugs fixed
         - Added Simple extension to the JEE edition.
           Reported by Dustin Jenkins.

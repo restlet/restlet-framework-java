@@ -501,15 +501,6 @@ public class DirectoryServerResource extends ServerResource {
     }
 
     /**
-     * Returns the metadata service.
-     * 
-     * @return The metadata service.
-     */
-    protected MetadataService getMetadataService() {
-        return getApplication().getMetadataService();
-    }
-
-    /**
      * Returns a representation of the resource at the target URI. Leverages the
      * client dispatcher of the parent directory's context.
      * 
