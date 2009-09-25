@@ -52,7 +52,6 @@ import org.restlet.representation.Variant;
 import org.restlet.resource.Directory;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
-import org.restlet.service.MetadataService;
 
 /**
  * Resource supported by a set of context representations (from file system,
