@@ -122,8 +122,16 @@ public abstract class ServerResource extends UniformResource {
      *      >HTTP DELETE method</a>
      */
     protected Representation delete() throws ResourceException {
-        setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-        return null;
+        Representation result = null;
+        AnnotationInfo annotationInfo = getAnnotation(Method.DELETE);
+
+        if (annotationInfo != null) {
+            result = doHandle(annotationInfo);
+        } else {
+            setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+        }
+
+        return result;
     }
 
     /**
@@ -147,8 +155,16 @@ public abstract class ServerResource extends UniformResource {
      *      >HTTP DELETE method</a>
      */
     protected Representation delete(Variant variant) throws ResourceException {
-        setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-        return null;
+        Representation result = null;
+
+        if (variant instanceof VariantInfo) {
+            result = doHandle(((VariantInfo) variant).getAnnotationInfo(),
+                    variant);
+        } else {
+            setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+        }
+
+        return result;
     }
 
     /**
@@ -309,30 +325,30 @@ public abstract class ServerResource extends UniformResource {
         if (method == null) {
             setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "No method specified");
         } else {
-            AnnotationInfo annotationInfo = getAnnotation(method);
+            if (method.equals(Method.PUT)) {
+                result = put(getRequestEntity());
+            } else if (isExisting()) {
+                if (method.equals(Method.GET)) {
+                    result = get();
+                } else if (method.equals(Method.POST)) {
+                    result = post(getRequestEntity());
+                } else if (method.equals(Method.DELETE)) {
+                    result = delete();
+                } else if (method.equals(Method.HEAD)) {
+                    result = head();
+                } else if (method.equals(Method.OPTIONS)) {
+                    result = options();
+                } else {
+                    AnnotationInfo annotationInfo = getAnnotation(Method.OPTIONS);
 
-            if (annotationInfo != null) {
-                result = doHandle(annotationInfo);
-            } else {
-                if (method.equals(Method.PUT)) {
-                    result = put(getRequestEntity());
-                } else if (isExisting()) {
-                    if (method.equals(Method.GET)) {
-                        result = get();
-                    } else if (method.equals(Method.POST)) {
-                        result = post(getRequestEntity());
-                    } else if (method.equals(Method.DELETE)) {
-                        result = delete();
-                    } else if (method.equals(Method.HEAD)) {
-                        result = head();
-                    } else if (method.equals(Method.OPTIONS)) {
-                        result = options();
+                    if (annotationInfo != null) {
+                        result = doHandle(annotationInfo);
                     } else {
                         setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
                     }
-                } else {
-                    setStatus(Status.CLIENT_ERROR_NOT_FOUND);
                 }
+            } else {
+                setStatus(Status.CLIENT_ERROR_NOT_FOUND);
             }
         }
 
@@ -513,6 +529,9 @@ public abstract class ServerResource extends UniformResource {
                     } else {
                         result = options(variant);
                     }
+                } else if (variant instanceof VariantInfo) {
+                    result = doHandle(((VariantInfo) variant)
+                            .getAnnotationInfo(), variant);
                 } else {
                     setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
                 }
@@ -553,13 +572,7 @@ public abstract class ServerResource extends UniformResource {
             } else {
                 // Update the variant dimensions used for content negotiation
                 updateDimensions();
-
-                if (preferredVariant instanceof VariantInfo) {
-                    result = doHandle(((VariantInfo) preferredVariant)
-                            .getAnnotationInfo(), preferredVariant);
-                } else {
-                    result = doHandle(preferredVariant);
-                }
+                result = doHandle(preferredVariant);
             }
         } else {
             // No variant declared for this method.
@@ -584,8 +597,16 @@ public abstract class ServerResource extends UniformResource {
      *      GET method</a>
      */
     protected Representation get() throws ResourceException {
-        setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-        return null;
+        Representation result = null;
+        AnnotationInfo annotationInfo = getAnnotation(Method.GET);
+
+        if (annotationInfo != null) {
+            result = doHandle(annotationInfo);
+        } else {
+            setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+        }
+
+        return result;
     }
 
     /**
@@ -608,8 +629,16 @@ public abstract class ServerResource extends UniformResource {
      * @throws ResourceException
      */
     protected Representation get(Variant variant) throws ResourceException {
-        setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-        return null;
+        Representation result = null;
+
+        if (variant instanceof VariantInfo) {
+            result = doHandle(((VariantInfo) variant).getAnnotationInfo(),
+                    variant);
+        } else {
+            setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+        }
+
+        return result;
     }
 
     /**
@@ -642,7 +671,7 @@ public abstract class ServerResource extends UniformResource {
      * 
      * @return The converter service.
      */
-    private ConverterService getConverterService() {
+    public ConverterService getConverterService() {
         return getApplication() == null ? new ConverterService()
                 : getApplication().getConverterService();
     }
@@ -685,7 +714,7 @@ public abstract class ServerResource extends UniformResource {
      * 
      * @return The metadata service.
      */
-    private MetadataService getMetadataService() {
+    public MetadataService getMetadataService() {
         return getApplication() == null ? new MetadataService()
                 : getApplication().getMetadataService();
     }
@@ -928,8 +957,16 @@ public abstract class ServerResource extends UniformResource {
      * @return The optional response entity.
      */
     protected Representation options() throws ResourceException {
-        setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-        return null;
+        Representation result = null;
+        AnnotationInfo annotationInfo = getAnnotation(Method.OPTIONS);
+
+        if (annotationInfo != null) {
+            result = doHandle(annotationInfo);
+        } else {
+            setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+        }
+
+        return result;
     }
 
     /**
@@ -943,8 +980,16 @@ public abstract class ServerResource extends UniformResource {
      * @see #get(Variant)
      */
     protected Representation options(Variant variant) throws ResourceException {
-        setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-        return null;
+        Representation result = null;
+
+        if (variant instanceof VariantInfo) {
+            result = doHandle(((VariantInfo) variant).getAnnotationInfo(),
+                    variant);
+        } else {
+            setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+        }
+
+        return result;
     }
 
     /**
@@ -963,8 +1008,16 @@ public abstract class ServerResource extends UniformResource {
      */
     protected Representation post(Representation entity)
             throws ResourceException {
-        setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-        return null;
+        Representation result = null;
+        AnnotationInfo annotationInfo = getAnnotation(Method.POST);
+
+        if (annotationInfo != null) {
+            result = doHandle(annotationInfo);
+        } else {
+            setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+        }
+
+        return result;
     }
 
     /**
@@ -984,8 +1037,16 @@ public abstract class ServerResource extends UniformResource {
      */
     protected Representation post(Representation entity, Variant variant)
             throws ResourceException {
-        setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-        return null;
+        Representation result = null;
+
+        if (variant instanceof VariantInfo) {
+            result = doHandle(((VariantInfo) variant).getAnnotationInfo(),
+                    variant);
+        } else {
+            setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+        }
+
+        return result;
     }
 
     /**
@@ -1003,8 +1064,16 @@ public abstract class ServerResource extends UniformResource {
      */
     protected Representation put(Representation representation)
             throws ResourceException {
-        setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-        return null;
+        Representation result = null;
+        AnnotationInfo annotationInfo = getAnnotation(Method.PUT);
+
+        if (annotationInfo != null) {
+            result = doHandle(annotationInfo);
+        } else {
+            setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+        }
+
+        return result;
     }
 
     /**
@@ -1025,8 +1094,16 @@ public abstract class ServerResource extends UniformResource {
      */
     protected Representation put(Representation representation, Variant variant)
             throws ResourceException {
-        setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-        return null;
+        Representation result = null;
+
+        if (variant instanceof VariantInfo) {
+            result = doHandle(((VariantInfo) variant).getAnnotationInfo(),
+                    variant);
+        } else {
+            setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+        }
+
+        return result;
     }
 
     /**
