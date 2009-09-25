@@ -396,7 +396,8 @@ public class WadlApplication extends Application {
         applicationInfo.getResources().setBaseRef(
                 request.getResourceRef().getBaseRef());
         applicationInfo.getResources().setResources(
-                getResourceInfos(getFirstRouter(getRoot()), request, response));
+                getResourceInfos(getFirstRouter(getInboundRoot()), request,
+                        response));
         return applicationInfo;
     }
 

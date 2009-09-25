@@ -64,7 +64,7 @@ public class SaasApplication extends Application {
     }
 
     @Override
-    public Restlet createRoot() {
+    public Restlet createInboundRoot() {
         Router root = new Router();
 
         // Attach test 1

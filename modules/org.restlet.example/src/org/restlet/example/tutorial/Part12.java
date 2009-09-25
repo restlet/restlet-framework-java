@@ -64,7 +64,7 @@ public class Part12 extends Application {
     }
 
     @Override
-    public Restlet createRoot() {
+    public Restlet createInboundRoot() {
         // Create a router
         Router router = new Router(getContext());
 

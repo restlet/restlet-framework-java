@@ -85,7 +85,7 @@ public class ChildClientDispatcher extends TemplateDispatcher {
                             .getChild();
                     request.getResourceRef().setBaseRef(
                             request.getResourceRef().getHostIdentifier());
-                    application.getRoot().handle(request, response);
+                    application.getInboundRoot().handle(request, response);
                 }
             } else if (cr.getRiapAuthorityType() == LocalReference.RIAP_COMPONENT) {
                 parentHandle(request, response);

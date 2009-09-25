@@ -70,7 +70,7 @@ public class TemplateFilterTestCase extends RestletTestCase {
         }
 
         @Override
-        public Restlet createRoot() {
+        public Restlet createInboundRoot() {
             // Create a Directory that manages a local directory
             this.directory = new Directory(getContext(), LocalReference
                     .createFileReference(getTestDirectory()));
@@ -106,7 +106,7 @@ public class TemplateFilterTestCase extends RestletTestCase {
         }
 
         @Override
-        public Restlet createRoot() {
+        public Restlet createInboundRoot() {
             // Create a Directory that manages a local directory
             this.directory = new Directory(getContext(), LocalReference
                     .createFileReference(getTestDirectory()));

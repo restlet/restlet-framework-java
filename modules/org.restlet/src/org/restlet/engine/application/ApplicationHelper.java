@@ -87,8 +87,8 @@ public class ApplicationHelper extends ChainHelper<Application> {
             }
         }
 
-        // Attach the Application's root Restlet
-        setNext(getHelped().getRoot());
+        // Attach the Application's server root Restlet
+        setNext(getHelped().getInboundRoot());
     }
 
     @Override

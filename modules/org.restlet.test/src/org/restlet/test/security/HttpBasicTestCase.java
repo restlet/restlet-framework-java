@@ -234,7 +234,7 @@ public class HttpBasicTestCase extends RestletTestCase {
 
         final Application application = new Application() {
             @Override
-            public Restlet createRoot() {
+            public Restlet createInboundRoot() {
                 HttpBasicTestCase.this.guard = new TestGuard(getContext());
                 HttpBasicTestCase.this.guard
                         .setNext(new AuthenticatedRestlet());

@@ -54,7 +54,7 @@ public class TunnelApplication extends Application {
     }
 
     @Override
-    public Restlet createRoot() {
+    public Restlet createInboundRoot() {
         final Restlet restlet = new Restlet() {
             @Override
             public void handle(Request request, Response response) {

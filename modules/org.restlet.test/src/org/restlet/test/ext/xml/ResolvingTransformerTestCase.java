@@ -127,7 +127,7 @@ public class ResolvingTransformerTestCase extends RestletTestCase {
         }
 
         @Override
-        public Restlet createRoot() {
+        public Restlet createInboundRoot() {
             return new Restlet() {
                 @Override
                 public void handle(Request request, Response response) {

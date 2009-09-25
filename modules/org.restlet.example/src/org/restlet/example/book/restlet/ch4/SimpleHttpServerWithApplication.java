@@ -48,8 +48,8 @@ public class SimpleHttpServerWithApplication {
         final Application application = new Application() {
 
             @Override
-            public synchronized Restlet createRoot() {
-                // TODO note that the router is intantiated with the
+            public synchronized Restlet createInboundRoot() {
+                // TODO note that the router is instantiated with the
                 // application's context.
                 final Router router = new Router(getContext());
 

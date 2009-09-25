@@ -73,7 +73,7 @@ public class RangeTestCase extends RestletTestCase {
         }
 
         @Override
-        public Restlet createRoot() {
+        public Restlet createInboundRoot() {
             Router router = new Router();
             router.attach("/test", new TestRangeRestlet());
             router.attach("/testGet", new TestRangeGetRestlet());

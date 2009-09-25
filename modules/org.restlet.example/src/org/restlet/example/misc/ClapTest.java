@@ -52,7 +52,7 @@ public class ClapTest {
         final Application application = new Application() {
 
             @Override
-            public Restlet createRoot() {
+            public Restlet createInboundRoot() {
                 getConnectorService().getClientProtocols().add(Protocol.CLAP);
                 getConnectorService().getServerProtocols().add(Protocol.HTTP);
 

@@ -14,11 +14,13 @@ Changes log
         - Moved Template and Variable classes from "org.restlet.util"
           to "org.restlet.routing" package.
         - Moved Restlet#handle(Request) method to Client class.
-        - Added "clientRoot" and "serverRoot" properties to Application
-          and deprecated the "root" property and the createRoot()
-          method. The client root, is the hook for client-side routing
-          and points by default to the context's client dispatcher, but
-          can be changed by the user to do custom routing/filtering.
+        - Added "inboundRoot" and "outboundRoot" properties to 
+          Application and deprecated the "root" property and the 
+          createRoot() method. The outbound root, is the hook for 
+          client-side routing and points by default to the context's 
+          client dispatcher, but can be changed by the user to do 
+          custom routing/filtering. New createInboundRoot() and 
+          createOutboundRoot() methods can be overriden.
     - Bugs fixed
         - Added Simple extension to the JEE edition.
           Reported by Dustin Jenkins.

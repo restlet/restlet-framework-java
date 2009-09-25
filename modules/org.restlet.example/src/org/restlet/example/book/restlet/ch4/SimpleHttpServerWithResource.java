@@ -45,7 +45,7 @@ public class SimpleHttpServerWithResource {
         final Application application = new Application() {
 
             @Override
-            public synchronized Restlet createRoot() {
+            public synchronized Restlet createInboundRoot() {
                 final Router router = new Router(getContext());
 
                 // TODO attach a "hello, world" resource.

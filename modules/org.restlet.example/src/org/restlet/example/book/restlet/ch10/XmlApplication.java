@@ -42,7 +42,7 @@ import org.restlet.routing.Router;
 public class XmlApplication extends Application {
 
     @Override
-    public Restlet createRoot() {
+    public Restlet createInboundRoot() {
         final Router router = new Router(getContext());
         router.attach("/dom", DomResource.class);
         final Directory dir = new Directory(

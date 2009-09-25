@@ -105,7 +105,7 @@ public class GetChunkedTestCase extends BaseConnectorsTestCase {
     protected Application createApplication(Component component) {
         final Application application = new Application() {
             @Override
-            public Restlet createRoot() {
+            public Restlet createInboundRoot() {
                 final Router router = new Router(getContext());
                 router.attach("/test", GetChunkedTestResource.class);
                 return router;

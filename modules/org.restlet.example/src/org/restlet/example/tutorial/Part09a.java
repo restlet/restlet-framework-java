@@ -70,7 +70,7 @@ public class Part09a extends Application {
     }
 
     @Override
-    public Restlet createRoot() {
+    public Restlet createInboundRoot() {
         // Create a simple password verifier
         MapVerifier verifier = new MapVerifier();
         verifier.getSecrets().put("scott", "tiger".toCharArray());

@@ -57,7 +57,7 @@ public class PostPutTestCase extends BaseConnectorsTestCase {
     protected Application createApplication(final Component component) {
         final Application application = new Application() {
             @Override
-            public Restlet createRoot() {
+            public Restlet createInboundRoot() {
                 final Restlet trace = new Restlet(getContext()) {
                     @Override
                     public void handle(Request request, Response response) {

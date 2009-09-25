@@ -58,7 +58,7 @@ public class RiapConnectorsTestCase extends TestCase {
 
         Application app = new Application() {
             @Override
-            public Restlet createRoot() {
+            public Restlet createInboundRoot() {
                 Router router = new Router(getContext());
                 router.attach("/testA", new Restlet(getContext()) {
 

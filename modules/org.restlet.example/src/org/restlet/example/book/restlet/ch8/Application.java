@@ -153,7 +153,7 @@ public class Application extends org.restlet.Application {
     }
 
     @Override
-    public Restlet createRoot() {
+    public Restlet createInboundRoot() {
         final Router router = new Router(getContext());
 
         final RmepGuard guard = new RmepGuard(getContext(),

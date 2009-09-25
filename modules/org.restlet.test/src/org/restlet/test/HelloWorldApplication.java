@@ -36,7 +36,7 @@ import org.restlet.Restlet;
 public class HelloWorldApplication extends Application {
 
     @Override
-    public synchronized Restlet createRoot() {
+    public synchronized Restlet createInboundRoot() {
         return new HelloWorldRestlet();
     }
 }

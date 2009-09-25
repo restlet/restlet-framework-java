@@ -114,11 +114,11 @@ public class Application extends Restlet {
     /** The modifiable list of roles. */
     private final List<Role> roles;
 
-    /** The server root Restlet. */
-    private volatile Restlet serverRoot;
+    /** The inbound root Restlet. */
+    private volatile Restlet inboundRoot;
 
-    /** The client root Restlet. */
-    private volatile Restlet clientRoot;
+    /** The outbound root Restlet. */
+    private volatile Restlet outboundRoot;
 
     /** The list of services. */
     private final List<Service> services;
@@ -152,17 +152,8 @@ public class Application extends Restlet {
 
         this.roles = new CopyOnWriteArrayList<Role>();
 
-        this.clientRoot = new Restlet() {
-            @Override
-            public void handle(Request request, Response response) {
-                if (getContext() != null) {
-                    getContext().getClientDispatcher()
-                            .handle(request, response);
-                }
-            }
-        };
-
-        this.serverRoot = null;
+        this.outboundRoot = null;
+        this.inboundRoot = null;
         this.services = new CopyOnWriteArrayList<Service>();
         this.services.add(new TunnelService(true, true));
         this.services.add(new StatusService());
@@ -178,26 +169,43 @@ public class Application extends Restlet {
     }
 
     /**
-     * Creates a server root Restlet that will receive all incoming calls. In
+     * Creates a inbound root Restlet that will receive all incoming calls. In
+     * general, instances of Router, Filter or Finder classes will be used as
+     * initial application Restlet. The default implementation returns null by
+     * default. This method is intended to be overridden by subclasses.
+     * 
+     * @return The server root Restlet.
+     */
+    public Restlet createInboundRoot() {
+        return null;
+    }
+
+    /**
+     * Creates a outbound root Restlet that will receive all outgoing calls from
+     * ClientResource. In general, instances of Router, Filter or Finder classes
+     * will be used as initial application Restlet. The default implementation
+     * returns the {@link Context#getClientDispatcher()} by default. This method
+     * is intended to be overridden by subclasses.
+     * 
+     * @return The server root Restlet.
+     */
+    public Restlet createOutboundRoot() {
+        return (getContext() != null) ? getContext().getClientDispatcher()
+                : null;
+    }
+
+    /**
+     * Creates a inbound root Restlet that will receive all incoming calls. In
      * general, instances of Router, Filter or Handler classes will be used as
      * initial application Restlet. The default implementation returns null by
      * default. This method is intended to be overridden by subclasses.
      * 
      * @return The server root Restlet.
-     * @deprecated Use the {@link #setServerRoot(Restlet)} method instead.
+     * @deprecated Override the {@link #createInboundRoot()} method instead.
      */
     @Deprecated
     public Restlet createRoot() {
-        return null;
-    }
-
-    /**
-     * Returns the client root Restlet.
-     * 
-     * @return The client root Restlet.
-     */
-    public synchronized Restlet getClientRoot() {
-        return this.clientRoot;
+        return createInboundRoot();
     }
 
     /**
@@ -247,12 +255,38 @@ public class Application extends Restlet {
     }
 
     /**
+     * Returns the inbound root Restlet.
+     * 
+     * @return The inbound root Restlet.
+     */
+    public synchronized Restlet getInboundRoot() {
+        if (this.inboundRoot == null) {
+            this.inboundRoot = createInboundRoot();
+        }
+
+        return this.inboundRoot;
+    }
+
+    /**
      * Returns the metadata service. The service is enabled by default.
      * 
      * @return The metadata service.
      */
     public MetadataService getMetadataService() {
         return getService(MetadataService.class);
+    }
+
+    /**
+     * Returns the outbound root Restlet.
+     * 
+     * @return The outbound root Restlet.
+     */
+    public synchronized Restlet getOutboundRoot() {
+        if (this.outboundRoot == null) {
+            this.outboundRoot = createOutboundRoot();
+        }
+
+        return this.outboundRoot;
     }
 
     /**
@@ -291,28 +325,16 @@ public class Application extends Restlet {
     }
 
     /**
-     * Returns the root Restlet. Invokes the createRoot() method if no root has
-     * been set, and stores the Restlet created for future uses.
+     * Returns the root inbound Restlet. Invokes the createRoot() method if no
+     * inbound root has been set, and stores the Restlet created for future
+     * uses.
      * 
-     * @return The root Restlet.
-     * @deprecated Use the {@link #getServerRoot()} method instead.
+     * @return The root inbound Restlet.
+     * @deprecated Use the {@link #getInboundRoot()} method instead.
      */
     @Deprecated
     public synchronized Restlet getRoot() {
-        if (getServerRoot() == null) {
-            setServerRoot(createRoot());
-        }
-
-        return getServerRoot();
-    }
-
-    /**
-     * Returns the server root Restlet.
-     * 
-     * @return The server root Restlet.
-     */
-    public synchronized Restlet getServerRoot() {
-        return this.serverRoot;
+        return getInboundRoot();
     }
 
     /**
@@ -389,18 +411,8 @@ public class Application extends Restlet {
      *            The client root Resource class.
      */
     public synchronized void setClientRoot(Class<?> clientRootClass) {
-        setClientRoot(Finder.createFinder(clientRootClass, getFinderClass(),
+        setOutboundRoot(Finder.createFinder(clientRootClass, getFinderClass(),
                 getContext(), getLogger()));
-    }
-
-    /**
-     * Sets the client root Restlet.
-     * 
-     * @param clientRoot
-     *            The client root Restlet.
-     */
-    public synchronized void setClientRoot(Restlet clientRoot) {
-        this.clientRoot = clientRoot;
     }
 
     /**
@@ -444,6 +456,27 @@ public class Application extends Restlet {
     }
 
     /**
+     * Sets the inbound root Resource class.
+     * 
+     * @param inboundRootClass
+     *            The inbound root Resource class.
+     */
+    public synchronized void setInboundRoot(Class<?> inboundRootClass) {
+        setInboundRoot(Finder.createFinder(inboundRootClass, getFinderClass(),
+                getContext(), getLogger()));
+    }
+
+    /**
+     * Sets the inbound root Restlet.
+     * 
+     * @param inboundRoot
+     *            The inbound root Restlet.
+     */
+    public synchronized void setInboundRoot(Restlet inboundRoot) {
+        this.inboundRoot = inboundRoot;
+    }
+
+    /**
      * Sets the metadata service.
      * 
      * @param metadataService
@@ -451,6 +484,16 @@ public class Application extends Restlet {
      */
     public void setMetadataService(MetadataService metadataService) {
         setService(metadataService);
+    }
+
+    /**
+     * Sets the outbound root Restlet.
+     * 
+     * @param outboundRoot
+     *            The outbound root Restlet.
+     */
+    public synchronized void setOutboundRoot(Restlet outboundRoot) {
+        this.outboundRoot = outboundRoot;
     }
 
     /**
@@ -478,48 +521,27 @@ public class Application extends Restlet {
     }
 
     /**
-     * Sets the root Resource class.
+     * Sets the inbound root Resource class.
      * 
-     * @param rootClass
-     *            The root Resource class.
-     * @deprecated Use the {@link #setServerRoot(Class)} method instead.
+     * @param inboundRootClass
+     *            The inbound root Resource class.
+     * @deprecated Use the {@link #setInboundRoot(Class)} method instead.
      */
     @Deprecated
-    public synchronized void setRoot(Class<?> rootClass) {
-        setServerRoot(rootClass);
+    public synchronized void setRoot(Class<?> inboundRootClass) {
+        setInboundRoot(inboundRootClass);
     }
 
     /**
-     * Sets the root Restlet.
+     * Sets the inbound root Restlet.
      * 
-     * @param root
-     *            The root Restlet.
-     * @deprecated Use the {@link #setServerRoot(Restlet)} method instead.
+     * @param inboundRoot
+     *            The inbound root Restlet.
+     * @deprecated Use the {@link #setInboundRoot(Restlet)} method instead.
      */
     @Deprecated
-    public synchronized void setRoot(Restlet root) {
-        setServerRoot(root);
-    }
-
-    /**
-     * Sets the server root Resource class.
-     * 
-     * @param serverRootClass
-     *            The root Resource class.
-     */
-    public synchronized void setServerRoot(Class<?> serverRootClass) {
-        setServerRoot(Finder.createFinder(serverRootClass, getFinderClass(),
-                getContext(), getLogger()));
-    }
-
-    /**
-     * Sets the server root Restlet.
-     * 
-     * @param serverRoot
-     *            The server root Restlet.
-     */
-    public synchronized void setServerRoot(Restlet serverRoot) {
-        this.serverRoot = serverRoot;
+    public synchronized void setRoot(Restlet inboundRoot) {
+        setInboundRoot(inboundRoot);
     }
 
     /**

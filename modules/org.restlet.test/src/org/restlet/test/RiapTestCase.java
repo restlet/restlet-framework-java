@@ -72,7 +72,7 @@ public class RiapTestCase extends TestCase {
         final Component comp = new Component();
         final Application localOnly = new Application() {
             @Override
-            public Restlet createRoot() {
+            public Restlet createInboundRoot() {
                 return new Restlet(getContext()) {
                     @Override
                     public void handle(Request request, Response response) {

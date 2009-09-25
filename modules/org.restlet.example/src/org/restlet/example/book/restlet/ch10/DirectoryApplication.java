@@ -59,7 +59,7 @@ public class DirectoryApplication extends Application {
     }
 
     @Override
-    public Restlet createRoot() {
+    public Restlet createInboundRoot() {
         // Instantiates the Directory with the path of the root directory
         final Directory directory = new Directory(getContext(), LocalReference
                 .createFileReference("d:\\temp"));

@@ -53,7 +53,7 @@ public class Part06 {
         // Create an application
         Application application = new Application() {
             @Override
-            public Restlet createRoot() {
+            public Restlet createInboundRoot() {
                 return new Directory(getContext(), ROOT_URI);
             }
         };

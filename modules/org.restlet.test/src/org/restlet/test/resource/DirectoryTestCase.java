@@ -79,7 +79,7 @@ public class DirectoryTestCase extends RestletTestCase {
         }
 
         @Override
-        public Restlet createRoot() {
+        public Restlet createInboundRoot() {
             return this.directory;
         }
 

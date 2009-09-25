@@ -65,7 +65,7 @@ public class DigestTestCase extends RestletTestCase {
     private static class TestDigestApplication extends Application {
 
         @Override
-        public Restlet createRoot() {
+        public Restlet createInboundRoot() {
             Restlet restlet = new Restlet() {
                 @Override
                 public void handle(Request request, Response response) {

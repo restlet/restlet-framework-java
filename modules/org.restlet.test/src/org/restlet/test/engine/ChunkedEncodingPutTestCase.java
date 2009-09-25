@@ -108,7 +108,7 @@ public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
     protected Application createApplication(Component component) {
         final Application application = new Application() {
             @Override
-            public Restlet createRoot() {
+            public Restlet createInboundRoot() {
                 final Router router = new Router(getContext());
                 router.attach("/test", PutTestResource.class);
                 return router;

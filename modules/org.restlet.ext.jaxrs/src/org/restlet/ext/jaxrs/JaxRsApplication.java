@@ -153,7 +153,7 @@ public class JaxRsApplication extends org.restlet.Application {
     }
 
     @Override
-    public Restlet createRoot() {
+    public Restlet createInboundRoot() {
         Restlet restlet = this.jaxRsRestlet;
         if (this.guard != null) {
             this.guard.setNext(restlet);

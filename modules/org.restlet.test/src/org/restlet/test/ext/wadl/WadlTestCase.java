@@ -48,8 +48,8 @@ public class WadlTestCase extends RestletTestCase {
         final WadlApplication app = (WadlApplication) comp.getHosts().get(0)
                 .getRoutes().get(0).getNext();
         assertNotNull(app);
-        assertEquals(app.getRoot(), app.getRouter());
-        assertNotNull(app.getRoot());
+        assertEquals(app.getInboundRoot(), app.getRouter());
+        assertNotNull(app.getInboundRoot());
     }
 
 }

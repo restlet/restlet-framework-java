@@ -63,7 +63,7 @@ public class DynamicApplication extends Application {
     }
 
     @Override
-    public Restlet createRoot() {
+    public Restlet createInboundRoot() {
         final Router router = new Router(getContext());
         router.attach("/transformer", TransformerResource.class);
         router.attach("/freemarker", FreemarkerResource.class);

@@ -105,7 +105,7 @@ public class FileRepresentationTestCase extends RestletTestCase {
     public void testFileName() throws Exception {
         Application application = new Application() {
             @Override
-            public Restlet createRoot() {
+            public Restlet createInboundRoot() {
                 return new Restlet() {
                     @Override
                     public void handle(Request request, Response response) {

@@ -73,7 +73,7 @@ public class UserAgentTunnelFilterTestCase extends RestletTestCase {
     public void setUp() {
         this.application = new Application() {
             @Override
-            public Restlet createRoot() {
+            public Restlet createInboundRoot() {
                 final Router router = new Router(getContext());
                 router.attachDefault(UserAgentTestResource.class);
                 return router;

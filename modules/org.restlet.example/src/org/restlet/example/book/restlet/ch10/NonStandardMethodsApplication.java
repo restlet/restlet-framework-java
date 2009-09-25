@@ -40,7 +40,7 @@ import org.restlet.routing.Router;
 public class NonStandardMethodsApplication extends Application {
 
     @Override
-    public Restlet createRoot() {
+    public Restlet createInboundRoot() {
         final Router router = new Router(getContext());
         router.attachDefault(NonStandardMethodsResource.class);
         return router;

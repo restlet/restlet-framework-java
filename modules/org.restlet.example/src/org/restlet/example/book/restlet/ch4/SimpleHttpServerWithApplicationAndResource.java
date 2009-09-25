@@ -45,8 +45,7 @@ public class SimpleHttpServerWithApplicationAndResource {
         final Application application = new Application() {
 
             @Override
-            public synchronized Restlet createRoot() {
-                // Tiens le routeur recupere le contexte de l'application
+            public synchronized Restlet createInboundRoot() {
                 final Router router = new Router(getContext());
                 router.attach("helloWorld", HelloWorldResource.class);
                 return router;
