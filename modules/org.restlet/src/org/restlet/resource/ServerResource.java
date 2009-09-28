@@ -87,6 +87,9 @@ public abstract class ServerResource extends UniformResource {
     /** Indicates if content negotiation of response entities is enabled. */
     private volatile boolean negotiated;
 
+    /** Modifiable list of variants. */
+    private volatile List<Variant> variants;
+
     /**
      * Initializer block to ensure that the basic properties are initialized
      * consistently across constructors.
@@ -96,6 +99,7 @@ public abstract class ServerResource extends UniformResource {
         this.conditional = true;
         this.existing = true;
         this.negotiated = true;
+        this.variants = null;
     }
 
     /**
@@ -197,8 +201,7 @@ public abstract class ServerResource extends UniformResource {
      * @return The response entity.
      * @throws ResourceException
      */
-    protected Representation doConditionalHandle(List<Variant> variants)
-            throws ResourceException {
+    protected Representation doConditionalHandle() throws ResourceException {
         Representation result = null;
 
         if (getConditions().hasSome()) {
@@ -209,7 +212,7 @@ public abstract class ServerResource extends UniformResource {
                 RepresentationInfo resultInfo = null;
 
                 if (isNegotiated()) {
-                    resultInfo = doGetInfo(getPreferredVariant(variants));
+                    resultInfo = doGetInfo(getPreferredVariant(getVariants()));
                 } else {
                     resultInfo = doGetInfo();
                 }
@@ -245,7 +248,7 @@ public abstract class ServerResource extends UniformResource {
                         result = (Representation) resultInfo;
                     } else {
                         if (isNegotiated()) {
-                            result = doNegotiatedHandle(variants);
+                            result = doNegotiatedHandle();
                         } else {
                             result = doHandle();
                         }
@@ -254,7 +257,7 @@ public abstract class ServerResource extends UniformResource {
             }
         } else {
             if (isNegotiated()) {
-                result = doNegotiatedHandle(variants);
+                result = doNegotiatedHandle();
             } else {
                 result = doHandle();
             }
@@ -557,13 +560,12 @@ public abstract class ServerResource extends UniformResource {
      * @return The response entity.
      * @throws ResourceException
      */
-    protected Representation doNegotiatedHandle(List<Variant> variants)
-            throws ResourceException {
+    protected Representation doNegotiatedHandle() throws ResourceException {
         Representation result = null;
 
-        if ((variants != null) && (!variants.isEmpty())) {
+        if ((getVariants() != null) && (!getVariants().isEmpty())) {
             Variant preferredVariant = getClientInfo().getPreferredVariant(
-                    variants, getMetadataService());
+                    getVariants(), getMetadataService());
 
             if (preferredVariant == null) {
                 // No variant was found matching the client preferences
@@ -741,62 +743,69 @@ public abstract class ServerResource extends UniformResource {
     }
 
     /**
-     * Return the list of available variants for the given method. The variants
-     * can be either manually declared variants or are by default the
-     * annotation-based variants.
+     * Return a modifiable list of exposed variants for the current request
+     * method. You can declare variants manually by updating the result list ,
+     * by overriding this method. By default, the variants will be provided
+     * based on annotated methods.
      * 
-     * @return The list of variant declared for a given method.
+     * @return The modifiable list of variants.
      */
     @SuppressWarnings("unchecked")
     public List<Variant> getVariants() {
-        List<Variant> result = null;
+        List<Variant> result = this.variants;
 
-        // Add annotation-based variants in priority
-        if (isAnnotated() && hasAnnotations()) {
-            ConverterService cs = getConverterService();
-            List<VariantInfo> annoVariants = null;
+        if (result == null) {
+            // Add annotation-based variants in priority
+            if (isAnnotated() && hasAnnotations()) {
+                ConverterService cs = getConverterService();
+                List<VariantInfo> annoVariants = null;
 
-            for (AnnotationInfo annotationInfo : getAnnotations()) {
-                if (getMethod().equals(annotationInfo.getRestletMethod())) {
-                    if (annotationInfo.getValue() != null) {
-                        List<Metadata> allMetadata = getMetadataService()
-                                .getAllMetadata(annotationInfo.getValue());
+                for (AnnotationInfo annotationInfo : getAnnotations()) {
+                    if (getMethod().equals(annotationInfo.getRestletMethod())) {
+                        if (annotationInfo.getValue() != null) {
+                            List<Metadata> allMetadata = getMetadataService()
+                                    .getAllMetadata(annotationInfo.getValue());
 
-                        for (Metadata metadata : allMetadata) {
-                            if (metadata instanceof MediaType) {
-                                annoVariants = (List<VariantInfo>) cs
-                                        .getVariants(annotationInfo
-                                                .getJavaReturnType(),
-                                                new Variant(
-                                                        (MediaType) metadata));
+                            for (Metadata metadata : allMetadata) {
+                                if (metadata instanceof MediaType) {
+                                    annoVariants = (List<VariantInfo>) cs
+                                            .getVariants(
+                                                    annotationInfo
+                                                            .getJavaReturnType(),
+                                                    new Variant(
+                                                            (MediaType) metadata));
 
-                                if (annoVariants != null) {
-                                    if (result == null) {
-                                        result = new ArrayList<Variant>();
-                                    }
+                                    if (annoVariants != null) {
+                                        if (result == null) {
+                                            result = new ArrayList<Variant>();
+                                        }
 
-                                    for (VariantInfo v : annoVariants) {
-                                        result.add(new VariantInfo(v,
-                                                annotationInfo));
+                                        for (VariantInfo v : annoVariants) {
+                                            result.add(new VariantInfo(v,
+                                                    annotationInfo));
+                                        }
                                     }
                                 }
                             }
-                        }
-                    } else {
-                        annoVariants = (List<VariantInfo>) cs.getVariants(
-                                annotationInfo.getJavaReturnType(), null);
-                        if (annoVariants != null) {
-                            if (result == null) {
-                                result = new ArrayList<Variant>();
-                            }
+                        } else {
+                            annoVariants = (List<VariantInfo>) cs.getVariants(
+                                    annotationInfo.getJavaReturnType(), null);
+                            if (annoVariants != null) {
+                                if (result == null) {
+                                    result = new ArrayList<Variant>();
+                                }
 
-                            for (VariantInfo v : annoVariants) {
-                                result.add(new VariantInfo(v, annotationInfo));
+                                for (VariantInfo v : annoVariants) {
+                                    result.add(new VariantInfo(v,
+                                            annotationInfo));
+                                }
                             }
                         }
                     }
                 }
             }
+
+            this.variants = result;
         }
 
         return result;
@@ -829,9 +838,9 @@ public abstract class ServerResource extends UniformResource {
         } else {
             try {
                 if (isConditional()) {
-                    result = doConditionalHandle(getVariants());
+                    result = doConditionalHandle();
                 } else if (isNegotiated()) {
-                    result = doNegotiatedHandle(getVariants());
+                    result = doNegotiatedHandle();
                 } else {
                     result = doHandle();
                 }

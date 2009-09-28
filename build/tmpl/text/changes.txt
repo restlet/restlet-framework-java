@@ -21,11 +21,8 @@ Changes log
           client dispatcher, but can be changed by the user to do 
           custom routing/filtering. New createInboundRoot() and 
           createOutboundRoot() methods can be overriden.
-        - Removed the "variants" property from ServerResource to 
-          solely rely on protected getVariant() method and ensured that 
-          this method is only called once per request for performance
-          reason. Added a "variants" parameter to several protected 
-          methods.
+        - The ServerResource#getVariants() method now returns a 
+          modifiable list of variants instead of a map.
         - Refactored the ServerResource class so that annotated methods
           are invoked through the regular get(), get(Variant), post(),
           post(Variant) methods instead of using a separate call path.
