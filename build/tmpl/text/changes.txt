@@ -67,6 +67,8 @@ Changes log
           Reported by Carsten Lohmann.
         - Added test to prevent class cast exception in Variant#equals.
           Reported by Patrick Logan.
+        - Fixed GAE compilation issue in ByteUtils.getStream() method.
+          Reported by Marcelo Ochoa.
      - Enhancements
         - Added support of the "xml:base" attibute when parsing Atom 
           Publishing documents.

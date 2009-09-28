@@ -79,7 +79,7 @@ public final class ByteUtils {
         long result = -1L;
 
         if (input != null) {
-            final byte[] buf = new byte[4096];
+            byte[] buf = new byte[4096];
             int read = input.read(buf);
             result = (read == -1) ? -1 : 0;
 
@@ -136,7 +136,7 @@ public final class ByteUtils {
         application.getTaskService().execute(new Runnable() {
             public void run() {
                 try {
-                    final WritableByteChannel wbc = pipe.sink();
+                    WritableByteChannel wbc = pipe.sink();
                     representation.write(wbc);
                     wbc.close();
                 } catch (IOException ioe) {
@@ -251,7 +251,7 @@ public final class ByteUtils {
      */
     public static InputStream getStream(final Representation representation) {
         if (Edition.CURRENT != Edition.GAE) {
-            // [ifndef gae] method
+            // [ifndef gae]
             if (representation == null) {
                 return null;
             }
@@ -266,7 +266,7 @@ public final class ByteUtils {
             taskService.execute(new Runnable() {
                 public void run() {
                     try {
-                        final OutputStream os = pipe.getOutputStream();
+                        OutputStream os = pipe.getOutputStream();
                         representation.write(os);
                         os.write(-1);
                         os.close();
@@ -304,7 +304,7 @@ public final class ByteUtils {
         OutputStream result = null;
 
         if (writableChannel instanceof SelectableChannel) {
-            final SelectableChannel selectableChannel = (SelectableChannel) writableChannel;
+            SelectableChannel selectableChannel = (SelectableChannel) writableChannel;
 
             synchronized (selectableChannel.blockingLock()) {
                 if (selectableChannel.isBlocking()) {
@@ -454,8 +454,8 @@ public final class ByteUtils {
 
         if (reader != null) {
             try {
-                final StringBuilder sb = new StringBuilder();
-                final BufferedReader br = (reader instanceof BufferedReader) ? (BufferedReader) reader
+                StringBuilder sb = new StringBuilder();
+                BufferedReader br = (reader instanceof BufferedReader) ? (BufferedReader) reader
                         : new BufferedReader(reader);
                 char[] buffer = new char[8192];
                 int charsRead = br.read(buffer);
@@ -516,10 +516,12 @@ public final class ByteUtils {
     public static void write(InputStream inputStream, OutputStream outputStream)
             throws IOException {
         int bytesRead;
-        final byte[] buffer = new byte[4096];
+        byte[] buffer = new byte[4096];
+
         while ((bytesRead = inputStream.read(buffer)) > 0) {
             outputStream.write(buffer, 0, bytesRead);
         }
+
         inputStream.close();
     }
 
@@ -536,10 +538,12 @@ public final class ByteUtils {
     public static void write(InputStream inputStream,
             RandomAccessFile randomAccessFile) throws IOException {
         int bytesRead;
-        final byte[] buffer = new byte[2048];
+        byte[] buffer = new byte[2048];
+
         while ((bytesRead = inputStream.read(buffer)) > 0) {
             randomAccessFile.write(buffer, 0, bytesRead);
         }
+
         inputStream.close();
     }
 
@@ -572,10 +576,12 @@ public final class ByteUtils {
      */
     public static void write(Reader reader, Writer writer) throws IOException {
         int charsRead;
-        final char[] buffer = new char[2048];
+        char[] buffer = new char[2048];
+
         while ((charsRead = reader.read(buffer)) > 0) {
             writer.write(buffer, 0, charsRead);
         }
+
         reader.close();
     }
 
