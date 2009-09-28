@@ -145,6 +145,49 @@ public class Variant {
     }
 
     /**
+     * Indicates if the current variant is equal to the given variant.
+     * 
+     * @param other
+     *            The other variant.
+     * @return True if the current variant includes the other.
+     */
+    @Override
+    public boolean equals(Object other) {
+        boolean result = (other instanceof Variant);
+
+        if (result) {
+            Variant otherVariant = (Variant) other;
+
+            // Compare the character set
+            if (result) {
+                result = ((getCharacterSet() == null)
+                        && (otherVariant.getCharacterSet() == null) || (getCharacterSet() != null)
+                        && getCharacterSet().equals(
+                                otherVariant.getCharacterSet()));
+            }
+
+            // Compare the media type
+            if (result) {
+                result = ((getMediaType() == null)
+                        && (otherVariant.getMediaType() == null) || (getMediaType() != null)
+                        && getMediaType().equals(otherVariant.getMediaType()));
+            }
+
+            // Compare the languages
+            if (result) {
+                result = getLanguages().equals(otherVariant.getLanguages());
+            }
+
+            // Compare the encodings
+            if (result) {
+                result = getEncodings().equals(otherVariant.getEncodings());
+            }
+        }
+
+        return result;
+    }
+
+    /**
      * Returns the character set or null if not applicable.<br>
      * <br>
      * Note that when used with HTTP connectors, this property maps to the
@@ -329,45 +372,6 @@ public class Variant {
      */
     public MediaType getMediaType() {
         return this.mediaType;
-    }
-
-    /**
-     * Indicates if the current variant is equal to the given variant.
-     * 
-     * @param other
-     *            The other variant.
-     * @return True if the current variant includes the other.
-     */
-    @Override
-    public boolean equals(Object other) {
-        boolean result = (other instanceof Variant);
-        Variant otherVariant = (Variant) other;
-
-        // Compare the character set
-        if (result) {
-            result = ((getCharacterSet() == null)
-                    && (otherVariant.getCharacterSet() == null) || (getCharacterSet() != null)
-                    && getCharacterSet().equals(otherVariant.getCharacterSet()));
-        }
-
-        // Compare the media type
-        if (result) {
-            result = ((getMediaType() == null)
-                    && (otherVariant.getMediaType() == null) || (getMediaType() != null)
-                    && getMediaType().equals(otherVariant.getMediaType()));
-        }
-
-        // Compare the languages
-        if (result) {
-            result = getLanguages().equals(otherVariant.getLanguages());
-        }
-
-        // Compare the encodings
-        if (result) {
-            result = getEncodings().equals(otherVariant.getEncodings());
-        }
-
-        return result;
     }
 
     /**

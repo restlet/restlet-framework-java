@@ -65,6 +65,8 @@ Changes log
           Reported by Bob Resendes.
         - Added NPE check in MapVerifier.getSecret().
           Reported by Carsten Lohmann.
+        - Added test to prevent class cast exception in Variant#equals.
+          Reported by Patrick Logan.
      - Enhancements
         - Added support of the "xml:base" attibute when parsing Atom 
           Publishing documents.
