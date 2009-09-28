@@ -63,6 +63,8 @@ Changes log
           Reported by Guido Schmidt.
         - Added NPE check in ServerResource in getAvailableVariants().
           Reported by Bob Resendes.
+        - Added NPE check in MapVerifier.getSecret().
+          Reported by Carsten Lohmann.
      - Enhancements
         - Added support of the "xml:base" attibute when parsing Atom 
           Publishing documents.

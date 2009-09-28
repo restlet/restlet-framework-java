@@ -64,7 +64,8 @@ public class MapVerifier extends LocalVerifier {
 
     @Override
     protected char[] getSecret(String identifier) {
-        return (getSecrets() != null) ? getSecrets().get(identifier) : null;
+        return (identifier == null) ? null
+                : (getSecrets() != null) ? getSecrets().get(identifier) : null;
     }
 
     /**
