@@ -15,7 +15,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.osgi</groupId>
-			<artifactId>osgi_R4_core</artifactId>
+			<artifactId>org.osgi.core</artifactId>
 			<version>${lib-osgi-version}</version>
 			<scope>compile</scope>
 		</dependency>
