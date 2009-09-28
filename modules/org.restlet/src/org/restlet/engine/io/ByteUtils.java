@@ -128,37 +128,35 @@ public final class ByteUtils {
      */
     public static ReadableByteChannel getChannel(
             final Representation representation) throws IOException {
-        if (Edition.CURRENT != Edition.GAE) {
-            // [ifndef gae]
-            final Pipe pipe = Pipe.open();
-            final Application application = Application.getCurrent();
+        // [ifndef gae]
+        final Pipe pipe = Pipe.open();
+        final Application application = Application.getCurrent();
 
-            // Get a thread that will handle the task of continuously
-            // writing the representation into the input side of the pipe
-            application.getTaskService().execute(new Runnable() {
-                public void run() {
-                    try {
-                        WritableByteChannel wbc = pipe.sink();
-                        representation.write(wbc);
-                        wbc.close();
-                    } catch (IOException ioe) {
-                        Context.getCurrentLogger().log(Level.FINE,
-                                "Error while writing to the piped channel.",
-                                ioe);
-                    }
+        // Get a thread that will handle the task of continuously
+        // writing the representation into the input side of the pipe
+        application.getTaskService().execute(new Runnable() {
+            public void run() {
+                try {
+                    WritableByteChannel wbc = pipe.sink();
+                    representation.write(wbc);
+                    wbc.close();
+                } catch (IOException ioe) {
+                    Context.getCurrentLogger().log(Level.FINE,
+                            "Error while writing to the piped channel.", ioe);
                 }
-            });
+            }
+        });
 
-            return pipe.source();
-            // [enddef]
-        } else {
-            Context
-                    .getCurrentLogger()
-                    .log(
-                            Level.WARNING,
-                            "The GAE edition is unable to return a channel for a representation given its write(WritableByteChannel) method.");
-            return null;
-        }
+        return pipe.source();
+        // [enddef]
+        // [ifdef gae] uncomment
+        // Context
+        // .getCurrentLogger()
+        // .log(
+        // Level.WARNING,
+        // "The GAE edition is unable to return a channel for a representation given its write(WritableByteChannel) method.");
+        // return null;
+        // [enddef]
     }
 
     /**
@@ -192,40 +190,36 @@ public final class ByteUtils {
      */
     public static Reader getReader(final WriterRepresentation representation)
             throws IOException {
-        if (Edition.CURRENT != Edition.GAE) {
-            // [ifndef gae]
+        // [ifndef gae]
 
-            final PipedWriter pipedWriter = new PipedWriter();
-            final PipedReader pipedReader = new PipedReader(pipedWriter);
-            final Application application = Application.getCurrent();
+        final PipedWriter pipedWriter = new PipedWriter();
+        final PipedReader pipedReader = new PipedReader(pipedWriter);
+        final Application application = Application.getCurrent();
 
-            // Gets a thread that will handle the task of continuously
-            // writing the representation into the input side of the pipe
-            application.getTaskService().execute(new Runnable() {
-                public void run() {
-                    try {
-                        representation.write(pipedWriter);
-                        pipedWriter.close();
-                    } catch (IOException ioe) {
-                        Context
-                                .getCurrentLogger()
-                                .log(
-                                        Level.FINE,
-                                        "Error while writing to the piped reader.",
-                                        ioe);
-                    }
+        // Gets a thread that will handle the task of continuously
+        // writing the representation into the input side of the pipe
+        application.getTaskService().execute(new Runnable() {
+            public void run() {
+                try {
+                    representation.write(pipedWriter);
+                    pipedWriter.close();
+                } catch (IOException ioe) {
+                    Context.getCurrentLogger().log(Level.FINE,
+                            "Error while writing to the piped reader.", ioe);
                 }
-            });
+            }
+        });
 
-            return pipedReader;
-            // [enddef]
-        } else {
-            Context
-                    .getCurrentLogger()
-                    .log(Level.WARNING,
-                            "The GAE edition is unable to return a reader for a writer representation.");
-            return null;
-        }
+        return pipedReader;
+        // [enddef]
+        // [ifdef gae] uncomment
+        // Context
+        // .getCurrentLogger()
+        // .log(Level.WARNING,
+        // "The GAE edition is unable to return a reader for a writer representation.");
+        // return null;
+        // [enddef]
+
     }
 
     /**
@@ -277,47 +271,44 @@ public final class ByteUtils {
      * @return A stream with the representation's content.
      */
     public static InputStream getStream(final Representation representation) {
-        if (Edition.CURRENT != Edition.GAE) {
-            // [ifndef gae]
-            if (representation == null) {
-                return null;
-            }
 
-            final PipeStream pipe = new PipeStream();
-            final Application application = Application.getCurrent();
-
-            // Creates a thread that will handle the task of continuously
-            // writing the representation into the input side of the pipe
-            org.restlet.service.TaskService taskService = (application == null) ? new org.restlet.service.TaskService()
-                    : application.getTaskService();
-            taskService.execute(new Runnable() {
-                public void run() {
-                    try {
-                        OutputStream os = pipe.getOutputStream();
-                        representation.write(os);
-                        os.write(-1);
-                        os.close();
-                    } catch (IOException ioe) {
-                        Context
-                                .getCurrentLogger()
-                                .log(
-                                        Level.FINE,
-                                        "Error while writing to the piped input stream.",
-                                        ioe);
-                    }
-                }
-            });
-
-            return pipe.getInputStream();
-            // [enddef]
-        } else {
-            Context
-                    .getCurrentLogger()
-                    .log(
-                            Level.WARNING,
-                            "The GAE edition is unable to get an InputStream out of an OutputRepresentation.");
+        // [ifndef gae]
+        if (representation == null) {
             return null;
         }
+
+        final PipeStream pipe = new PipeStream();
+        final Application application = Application.getCurrent();
+
+        // Creates a thread that will handle the task of continuously
+        // writing the representation into the input side of the pipe
+        org.restlet.service.TaskService taskService = (application == null) ? new org.restlet.service.TaskService()
+                : application.getTaskService();
+        taskService.execute(new Runnable() {
+            public void run() {
+                try {
+                    OutputStream os = pipe.getOutputStream();
+                    representation.write(os);
+                    os.write(-1);
+                    os.close();
+                } catch (IOException ioe) {
+                    Context.getCurrentLogger().log(Level.FINE,
+                            "Error while writing to the piped input stream.",
+                            ioe);
+                }
+            }
+        });
+
+        return pipe.getInputStream();
+        // [enddef]
+        // [ifdef gae] uncomment
+        // Context
+        // .getCurrentLogger()
+        // .log(
+        // Level.WARNING,
+        // "The GAE edition is unable to get an InputStream out of an OutputRepresentation.");
+        // return null;
+        // [enddef]
     }
 
     /**
