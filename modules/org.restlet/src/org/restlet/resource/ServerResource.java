@@ -766,23 +766,25 @@ public abstract class ServerResource extends UniformResource {
                             List<Metadata> allMetadata = getMetadataService()
                                     .getAllMetadata(annotationInfo.getValue());
 
-                            for (Metadata metadata : allMetadata) {
-                                if (metadata instanceof MediaType) {
-                                    annoVariants = (List<VariantInfo>) cs
-                                            .getVariants(
-                                                    annotationInfo
-                                                            .getJavaReturnType(),
-                                                    new Variant(
-                                                            (MediaType) metadata));
+                            if (allMetadata != null) {
+                                for (Metadata metadata : allMetadata) {
+                                    if (metadata instanceof MediaType) {
+                                        annoVariants = (List<VariantInfo>) cs
+                                                .getVariants(
+                                                        annotationInfo
+                                                                .getJavaReturnType(),
+                                                        new Variant(
+                                                                (MediaType) metadata));
 
-                                    if (annoVariants != null) {
-                                        if (result == null) {
-                                            result = new ArrayList<Variant>();
-                                        }
+                                        if (annoVariants != null) {
+                                            if (result == null) {
+                                                result = new ArrayList<Variant>();
+                                            }
 
-                                        for (VariantInfo v : annoVariants) {
-                                            result.add(new VariantInfo(v,
-                                                    annotationInfo));
+                                            for (VariantInfo v : annoVariants) {
+                                                result.add(new VariantInfo(v,
+                                                        annotationInfo));
+                                            }
                                         }
                                     }
                                 }
@@ -790,6 +792,7 @@ public abstract class ServerResource extends UniformResource {
                         } else {
                             annoVariants = (List<VariantInfo>) cs.getVariants(
                                     annotationInfo.getJavaReturnType(), null);
+
                             if (annoVariants != null) {
                                 if (result == null) {
                                     result = new ArrayList<Variant>();
