@@ -39,6 +39,7 @@ import org.restlet.Context;
 import org.restlet.engine.Engine;
 import org.restlet.engine.converter.ConverterHelper;
 import org.restlet.engine.converter.ConverterUtils;
+import org.restlet.engine.resource.VariantInfo;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.UniformResource;
@@ -177,7 +178,8 @@ public class ConverterService extends Service {
     }
 
     /**
-     * Converts a regular Java object into a Representation.
+     * Converts a regular Java object into a Representation. The converter will
+     * use the preferred variant of the selected converter.
      * 
      * @param source
      *            The source object to convert.
@@ -211,7 +213,14 @@ public class ConverterService extends Service {
                                 + source + " object: " + ch);
 
                 if (target == null) {
-                    target = new Variant();
+                    List<VariantInfo> variants = ch.getVariants(source
+                            .getClass());
+
+                    if ((variants != null) && !variants.isEmpty()) {
+                        target = variants.get(0);
+                    } else {
+                        target = new Variant();
+                    }
                 }
 
                 result = ch.toRepresentation(source, target, resource);
@@ -245,5 +254,4 @@ public class ConverterService extends Service {
 
         return result;
     }
-
 }

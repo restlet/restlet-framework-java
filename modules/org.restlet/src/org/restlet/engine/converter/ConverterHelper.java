@@ -100,7 +100,7 @@ public abstract class ConverterHelper extends Helper {
 
     /**
      * Returns the list of variants that can be converted from a given object
-     * class.
+     * class. The preferred variant should be set in first position.
      * 
      * @param source
      *            The source object class.

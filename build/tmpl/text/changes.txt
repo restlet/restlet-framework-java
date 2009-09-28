@@ -99,7 +99,10 @@ Changes log
           with Spring. Reported by Evgeny Shepelyuk. 
         - Added support for the "xsl" extension in MetadataService.
           Fixed potential NPE. Contributed by Fabian Mandelbaum.
-        - Added JAXB converter helper. Contributed by Sanjay Acharya. 
+        - Added JAXB converter helper. Contributed by Sanjay Acharya.
+        - The ConverterService now passes a preferred variant to the
+          selected converter helper when no one is provided by the
+          client. Reported by John Logsdon.
           
 - 2.0 Milestone 4 (2009-08-06)
     - Bugs fixed
