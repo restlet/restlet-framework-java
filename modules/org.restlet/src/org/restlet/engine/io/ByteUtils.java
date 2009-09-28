@@ -128,25 +128,37 @@ public final class ByteUtils {
      */
     public static ReadableByteChannel getChannel(
             final Representation representation) throws IOException {
-        final Pipe pipe = Pipe.open();
-        final Application application = Application.getCurrent();
+        if (Edition.CURRENT != Edition.GAE) {
+            // [ifndef gae]
+            final Pipe pipe = Pipe.open();
+            final Application application = Application.getCurrent();
 
-        // Get a thread that will handle the task of continuously
-        // writing the representation into the input side of the pipe
-        application.getTaskService().execute(new Runnable() {
-            public void run() {
-                try {
-                    WritableByteChannel wbc = pipe.sink();
-                    representation.write(wbc);
-                    wbc.close();
-                } catch (IOException ioe) {
-                    Context.getCurrentLogger().log(Level.FINE,
-                            "Error while writing to the piped channel.", ioe);
+            // Get a thread that will handle the task of continuously
+            // writing the representation into the input side of the pipe
+            application.getTaskService().execute(new Runnable() {
+                public void run() {
+                    try {
+                        WritableByteChannel wbc = pipe.sink();
+                        representation.write(wbc);
+                        wbc.close();
+                    } catch (IOException ioe) {
+                        Context.getCurrentLogger().log(Level.FINE,
+                                "Error while writing to the piped channel.",
+                                ioe);
+                    }
                 }
-            }
-        });
+            });
 
-        return pipe.source();
+            return pipe.source();
+            // [enddef]
+        } else {
+            Context
+                    .getCurrentLogger()
+                    .log(
+                            Level.WARNING,
+                            "The GAE edition is unable to return a channel for a representation given its write(WritableByteChannel) method.");
+            return null;
+        }
     }
 
     /**
@@ -180,25 +192,40 @@ public final class ByteUtils {
      */
     public static Reader getReader(final WriterRepresentation representation)
             throws IOException {
-        final PipedWriter pipedWriter = new PipedWriter();
-        final PipedReader pipedReader = new PipedReader(pipedWriter);
-        final Application application = Application.getCurrent();
+        if (Edition.CURRENT != Edition.GAE) {
+            // [ifndef gae]
 
-        // Gets a thread that will handle the task of continuously
-        // writing the representation into the input side of the pipe
-        application.getTaskService().execute(new Runnable() {
-            public void run() {
-                try {
-                    representation.write(pipedWriter);
-                    pipedWriter.close();
-                } catch (IOException ioe) {
-                    Context.getCurrentLogger().log(Level.FINE,
-                            "Error while writing to the piped reader.", ioe);
+            final PipedWriter pipedWriter = new PipedWriter();
+            final PipedReader pipedReader = new PipedReader(pipedWriter);
+            final Application application = Application.getCurrent();
+
+            // Gets a thread that will handle the task of continuously
+            // writing the representation into the input side of the pipe
+            application.getTaskService().execute(new Runnable() {
+                public void run() {
+                    try {
+                        representation.write(pipedWriter);
+                        pipedWriter.close();
+                    } catch (IOException ioe) {
+                        Context
+                                .getCurrentLogger()
+                                .log(
+                                        Level.FINE,
+                                        "Error while writing to the piped reader.",
+                                        ioe);
+                    }
                 }
-            }
-        });
+            });
 
-        return pipedReader;
+            return pipedReader;
+            // [enddef]
+        } else {
+            Context
+                    .getCurrentLogger()
+                    .log(Level.WARNING,
+                            "The GAE edition is unable to return a reader for a writer representation.");
+            return null;
+        }
     }
 
     /**
