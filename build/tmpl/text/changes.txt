@@ -3,7 +3,7 @@
 Changes log  
 ===========
 
-- @version-full@ (@release-date@)
+- 2.0 Milestone 5 (2009-09-28)
     - API changes
         - Moved Message, Request and Response classes from the
           org.restlet.data to the org.restlet package as they are
