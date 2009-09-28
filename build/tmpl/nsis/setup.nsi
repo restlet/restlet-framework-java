@@ -146,14 +146,14 @@ Section -post SEC0001
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Restlet @edition-medium-label@\${VERSION}\Restlet Extensions (javadocs).lnk" "$INSTDIR\docs\ext\index.html"
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Restlet @edition-medium-label@\${VERSION}\Restlet Engine (javadocs).lnk" "$INSTDIR\docs\engine\index.html"
     !insertmacro MUI_STARTMENU_WRITE_END
-    WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Restlet Framework ${VERSION}" DisplayName "Restlet Framework - @edition-medium-label@ - @version-full@"
-    WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Restlet Framework ${VERSION}" DisplayVersion "${VERSION}"
-    WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Restlet Framework ${VERSION}" Publisher "${COMPANY}"
-    WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Restlet Framework ${VERSION}" URLInfoAbout "${URL}"
-    WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Restlet Framework ${VERSION}" DisplayIcon $INSTDIR\uninstall.exe
-    WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Restlet Framework ${VERSION}" UninstallString $INSTDIR\uninstall.exe
-    WriteRegDWORD HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Restlet Framework ${VERSION}" NoModify 1
-    WriteRegDWORD HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Restlet Framework ${VERSION}" NoRepair 1
+    WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Restlet Framework - @edition-medium-label@ ${VERSION}" DisplayName "Restlet Framework - @edition-medium-label@ - @version-full@"
+    WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Restlet Framework - @edition-medium-label@ ${VERSION}" DisplayVersion "${VERSION}"
+    WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Restlet Framework - @edition-medium-label@ ${VERSION}" Publisher "${COMPANY}"
+    WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Restlet Framework - @edition-medium-label@ ${VERSION}" URLInfoAbout "${URL}"
+    WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Restlet Framework - @edition-medium-label@ ${VERSION}" DisplayIcon $INSTDIR\uninstall.exe
+    WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Restlet Framework - @edition-medium-label@ ${VERSION}" UninstallString $INSTDIR\uninstall.exe
+    WriteRegDWORD HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Restlet Framework - @edition-medium-label@ ${VERSION}" NoModify 1
+    WriteRegDWORD HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Restlet Framework - @edition-medium-label@ ${VERSION}" NoRepair 1
 SectionEnd
 
 # Macro for selecting uninstaller sections
@@ -175,7 +175,7 @@ Section /o un.Main UNSEC0000
 SectionEnd
 
 Section un.post UNSEC0001
-    DeleteRegKey HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)${VERSION}"
+    DeleteRegKey HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Restlet Framework - @edition-medium-label@ ${VERSION}"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Restlet @edition-medium-label@ ${VERSION}\Uninstall.lnk"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Restlet @edition-medium-label@ ${VERSION}\Home page.lnk"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Restlet @edition-medium-label@ ${VERSION}\Restlet API (javadocs).lnk"
