@@ -327,9 +327,8 @@ public class ClientResource extends UniformResource {
     }
 
     /**
-     * Deletes the target resource and all its representations.<br>
-     * <br>
-     * If a success status is not returned, then a resource exception is thrown.
+     * Deletes the target resource and all its representations. If a success
+     * status is not returned, then a resource exception is thrown.
      * 
      * @return The optional response entity.
      */
@@ -339,9 +338,8 @@ public class ClientResource extends UniformResource {
     }
 
     /**
-     * Deletes the target resource and all its representations.<br>
-     * <br>
-     * If a success status is not returned, then a resource exception is thrown.
+     * Deletes the target resource and all its representations. If a success
+     * status is not returned, then a resource exception is thrown.
      * 
      * @param <T>
      *            The expected type for the response entity.
@@ -376,11 +374,10 @@ public class ClientResource extends UniformResource {
 
     /**
      * Represents the resource using content negotiation to select the best
-     * variant based on the client preferences.<br>
-     * <br>
-     * Note that the client preferences will be automatically adjusted, but only
-     * for this request. If you want to change them once for all, you can use
-     * the {@link #getClientInfo()} method.<br>
+     * variant based on the client preferences. Note that the client preferences
+     * will be automatically adjusted, but only for this request. If you want to
+     * change them once for all, you can use the {@link #getClientInfo()}
+     * method.<br>
      * <br>
      * If a success status is not returned, then a resource exception is thrown.
      * 
@@ -396,11 +393,10 @@ public class ClientResource extends UniformResource {
     }
 
     /**
-     * Represents the resource in the given object class.<br>
-     * <br>
-     * Note that the client preferences will be automatically adjusted, but only
-     * for this request. If you want to change them once for all, you can use
-     * the {@link #getClientInfo()} method.<br>
+     * Represents the resource in the given object class. Note that the client
+     * preferences will be automatically adjusted, but only for this request. If
+     * you want to change them once for all, you can use the
+     * {@link #getClientInfo()} method.<br>
      * <br>
      * If a success status is not returned, then a resource exception is thrown.
      * 
@@ -432,11 +428,10 @@ public class ClientResource extends UniformResource {
     }
 
     /**
-     * Represents the resource using a given media type.<br>
-     * <br>
-     * Note that the client preferences will be automatically adjusted, but only
-     * for this request. If you want to change them once for all, you can use
-     * the {@link #getClientInfo()} method.<br>
+     * Represents the resource using a given media type. Note that the client
+     * preferences will be automatically adjusted, but only for this request. If
+     * you want to change them once for all, you can use the
+     * {@link #getClientInfo()} method.<br>
      * <br>
      * If a success status is not returned, then a resource exception is thrown.
      * 
@@ -729,9 +724,8 @@ public class ClientResource extends UniformResource {
 
     /**
      * Describes the resource using content negotiation to select the best
-     * variant based on the client preferences.<br>
-     * <br>
-     * If a success status is not returned, then a resource exception is thrown.
+     * variant based on the client preferences. If a success status is not
+     * returned, then a resource exception is thrown.
      * 
      * @return The best description.
      * @throws ResourceException
@@ -745,9 +739,8 @@ public class ClientResource extends UniformResource {
     }
 
     /**
-     * Describes the resource using a given media type.<br>
-     * <br>
-     * If a success status is not returned, then a resource exception is thrown.
+     * Describes the resource using a given media type. If a success status is
+     * not returned, then a resource exception is thrown.
      * 
      * @param mediaType
      *            The media type of the representation to retrieve.
@@ -889,9 +882,8 @@ public class ClientResource extends UniformResource {
 
     /**
      * Creates or updates a resource with the given representation as new state
-     * to be stored.<br>
-     * <br>
-     * If a success status is not returned, then a resource exception is thrown.
+     * to be stored. If a success status is not returned, then a resource
+     * exception is thrown.
      * 
      * @param representation
      *            The representation to store.
