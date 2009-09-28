@@ -72,7 +72,7 @@ Changes log
         - Fixed issue with redirections in first resource example.
           Reported by Philippe Mougin.
         - Fixed issues with response.getEntity().getText() in the GWT edition.
-          Reported and contributed by Guido Schmidt.
+          Reported by Guido Schmidt.
      - Enhancements
         - Added support of the "xml:base" attibute when parsing Atom 
           Publishing documents.
