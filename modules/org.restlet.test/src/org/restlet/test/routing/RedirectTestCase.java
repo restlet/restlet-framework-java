@@ -72,7 +72,8 @@ public class RedirectTestCase extends RestletTestCase {
         // Create the proxy Restlet
         final String target = "http://localhost:" + (TEST_PORT + 1) + "{rr}";
         final Redirector proxy = new Redirector(proxyComponent.getContext()
-                .createChildContext(), target, Redirector.MODE_DISPATCHER);
+                .createChildContext(), target,
+                Redirector.MODE_CLIENT_DISPATCHER);
 
         // Create a new Restlet that will display some path information.
         final Restlet trace = new Restlet(originComponent.getContext()
