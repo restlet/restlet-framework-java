@@ -37,6 +37,7 @@ import java.util.logging.Level;
 
 import org.restlet.Context;
 import org.restlet.data.MediaType;
+import org.restlet.engine.Edition;
 import org.restlet.engine.io.ByteUtils;
 
 /**
@@ -91,9 +92,13 @@ public class InputRepresentation extends StreamRepresentation {
 
     @Override
     public InputStream getStream() throws IOException {
-        final InputStream result = this.stream;
-        setStream(null);
-        return result;
+        if (Edition.CURRENT != Edition.GWT) {
+            final InputStream result = this.stream;
+            setStream(null);
+            return result;
+        } else {
+            return this.stream;
+        }
     }
 
     @Override

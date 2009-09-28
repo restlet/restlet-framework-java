@@ -6,8 +6,6 @@ public class StringBufferInputStream extends InputStream {
 
     protected int position;
 
-    protected String text;
-
     public StringBufferInputStream(String text) {
         this.text = text;
     }

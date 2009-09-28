@@ -43,7 +43,7 @@ public class InputStream {
     private int position;
 
     /** The text to stream. */
-    private String text;
+    protected String text;
 
     public InputStream() {
         super();
