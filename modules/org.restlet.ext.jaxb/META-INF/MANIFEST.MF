@@ -5,12 +5,15 @@ Bundle-SymbolicName: org.restlet.ext.jaxb
 Bundle-Version: 2.0
 Bundle-Vendor: Noelios Technologies
 Import-Package: javax.xml.bind;version="2.1.0",
+ javax.xml.bind.annotation,
  javax.xml.bind.util;version="2.1.0",
  javax.xml.stream,
  javax.xml.stream.events,
  javax.xml.stream.util,
  org.restlet,
  org.restlet.data,
+ org.restlet.engine.converter,
+ org.restlet.engine.resource,
  org.restlet.ext.xml,
  org.restlet.representation,
  org.restlet.resource,

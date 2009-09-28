@@ -68,7 +68,7 @@ Changes log
         - Added test to prevent class cast exception in Variant#equals.
           Reported by Patrick Logan.
         - Fixed GAE compilation issue in ByteUtils.getStream() method.
-          Reported by Marcelo Ochoa.
+          Contribution by Marcelo Ochoa.
      - Enhancements
         - Added support of the "xml:base" attibute when parsing Atom 
           Publishing documents.
@@ -95,6 +95,7 @@ Changes log
           with Spring. Reported by Evgeny Shepelyuk. 
         - Added support for the "xsl" extension in MetadataService.
           Fixed potential NPE. Contributed by Fabian Mandelbaum.
+        - Added JAXB converter helper. Contributed by Sanjay Acharya. 
           
 - 2.0 Milestone 4 (2009-08-06)
     - Bugs fixed

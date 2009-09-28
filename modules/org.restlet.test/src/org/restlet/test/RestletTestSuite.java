@@ -45,6 +45,7 @@ import org.restlet.test.data.StatusTestCase;
 import org.restlet.test.engine.EngineTestSuite;
 import org.restlet.test.ext.atom.AtomTestCase;
 import org.restlet.test.ext.freemarker.FreeMarkerTestCase;
+import org.restlet.test.ext.jaxb.JaxbBasicConverterTest;
 import org.restlet.test.ext.spring.AllSpringTests;
 import org.restlet.test.ext.velocity.VelocityTestCase;
 import org.restlet.test.ext.wadl.WadlTestCase;
@@ -92,6 +93,7 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(FileReferenceTestCase.class);
         addTestSuite(FilterTestCase.class);
         addTestSuite(FreeMarkerTestCase.class);
+        addTestSuite(JaxbBasicConverterTest.class);
         addTestSuite(LanguageTestCase.class);
         addTestSuite(MediaTypeTestCase.class);
         addTestSuite(ProductTokenTestCase.class);

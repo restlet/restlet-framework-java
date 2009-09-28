@@ -150,6 +150,7 @@ public class JaxbRepresentation<T> extends XmlRepresentation {
          * @throws JAXBException
          *             If any unexpected problem occurs during marshaling.
          */
+        @SuppressWarnings("unused")
         public void marshal(Object jaxbElement, StringRepresentation rep)
                 throws JAXBException {
             final StringWriter writer = new StringWriter();
@@ -181,6 +182,7 @@ public class JaxbRepresentation<T> extends XmlRepresentation {
          *             If an error was encountered while setting the event
          *             handler.
          */
+        @SuppressWarnings("unused")
         public void setEventHandler(ValidationEventHandler handler)
                 throws JAXBException {
             getMarshaller().setEventHandler(handler);
@@ -274,6 +276,7 @@ public class JaxbRepresentation<T> extends XmlRepresentation {
          * @throws IOException
          *             If an error occurs accessing the string representation.
          */
+        @SuppressWarnings("unused")
         public Object unmarshal(Reader reader) throws JAXBException {
             return getUnmarshaller().unmarshal(reader);
         }
@@ -290,6 +293,7 @@ public class JaxbRepresentation<T> extends XmlRepresentation {
          * @throws IOException
          *             If an error occurs accessing the string representation.
          */
+        @SuppressWarnings("unused")
         public Object unmarshal(StringRepresentation rep) throws JAXBException,
                 IOException {
             return getUnmarshaller().unmarshal(rep.getStream());
