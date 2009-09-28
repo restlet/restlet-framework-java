@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+<xs:element name="mail">
+   <xs:complexType>
+      <xs:sequence>
+         <xs:element name="subject" type="xs:string" />
+         <xs:element name="from" type="xs:string" />
+         <xs:element name="message" type="xs:string" />
+         <xs:element ref="recipients" />
+      </xs:sequence>
+   </xs:complexType>
+</xs:element>
+
+<xs:element name="recipients">
+   <xs:complexType>
+      <xs:sequence>
+         <xs:element name="to" minOccurs="1" maxOccurs="unbounded" type="xs:string"/>
+         <xs:element name="cc" minOccurs="0" maxOccurs="unbounded" type="xs:string"/>
+      </xs:sequence>
+   </xs:complexType>
+</xs:element>
+
+</xs:schema>

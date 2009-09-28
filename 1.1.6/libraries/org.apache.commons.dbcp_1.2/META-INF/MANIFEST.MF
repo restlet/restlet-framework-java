@@ -1,0 +1,29 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Apache Commons DBCP
+Bundle-SymbolicName: org.apache.commons.dbcp
+Bundle-Version: 1.2.2
+Bundle-ClassPath: org.apache.commons.dbcp.jar
+Bundle-Vendor: Apache Software Foundation
+Export-Package: .,
+ org.apache.commons.dbcp;
+  uses:="javax.naming,
+   org.apache.commons.pool.impl,
+   org.apache.commons.pool,
+   javax.naming.spi,
+   javax.sql",
+ org.apache.commons.dbcp.cpdsadapter;
+  uses:="javax.naming,
+   org.apache.commons.pool,
+   javax.naming.spi,
+   org.apache.commons.dbcp,
+   javax.sql",
+ org.apache.commons.dbcp.datasources;
+  uses:="javax.naming,
+   org.apache.commons.pool,
+   javax.naming.spi,
+   javax.sql",
+ org.apache.commons.jocl;uses:="org.xml.sax,org.xml.sax.helpers"
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Import-Package: org.apache.commons.pool,
+ org.apache.commons.pool.impl

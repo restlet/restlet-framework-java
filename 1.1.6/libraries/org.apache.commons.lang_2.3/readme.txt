@@ -1,0 +1,16 @@
+-------------------
+Apache Commons Lang
+-------------------
+
+"The standard Java libraries fail to provide enough methods for manipulation of
+its core classes. The Lang Component provides these extra methods. The Lang 
+Component provides a host of helper utilities for the java.lang API, notably 
+String manipulation methods, basic numerical methods, object reflection, 
+creation and serialization, and System properties. Additionally it contains 
+an inheritable enum type, an exception structure that supports multiple types 
+of nested-Exceptions, basic enhancements to java.util.Date and a series of 
+utlities dedicated to help with building methods, such as hashCode, toString 
+and equals."
+
+For more information:
+http://commons.apache.org/lang/
