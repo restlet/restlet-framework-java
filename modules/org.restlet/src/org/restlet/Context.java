@@ -70,7 +70,7 @@ public class Context {
      * 
      * This variable is stored internally as a thread local variable and updated
      * each time a request is handled by a Restlet via the
-     * {@link Restlet#handle(org.restlet.data.Request, org.restlet.data.Response)}
+     * {@link Restlet#handle(org.restlet.Request, org.restlet.Response)}
      * method.
      * 
      * @return The current context.
