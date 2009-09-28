@@ -7,6 +7,9 @@ import org.restlet.Application;
 import org.restlet.Restlet;
 import org.restlet.routing.Router;
 
+/**
+ * The application containing the resources.
+ */
 public class FirstResourceApplication extends Application {
 
     /** The list of items is persisted in memory. */

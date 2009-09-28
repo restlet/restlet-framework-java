@@ -5,9 +5,8 @@ import java.util.concurrent.ConcurrentMap;
 import org.restlet.resource.ServerResource;
 
 /**
- * Base resource class that supports common behaviours or attributes shared by
+ * Base resource class that supports common behaviors or attributes shared by
  * all resources.
- * 
  */
 public abstract class BaseResource extends ServerResource {
 

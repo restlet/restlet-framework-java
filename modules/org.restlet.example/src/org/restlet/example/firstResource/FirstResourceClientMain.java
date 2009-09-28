@@ -7,6 +7,9 @@ import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
 
+/**
+ * Launches the client.
+ */
 public class FirstResourceClientMain {
 
     public static void main(String[] args) throws IOException,

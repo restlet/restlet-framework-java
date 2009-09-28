@@ -14,6 +14,9 @@ import org.restlet.resource.ResourceException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+/**
+ * Resource that manages a single item.
+ */
 public class ItemResource extends BaseResource {
 
     /** The underlying Item object. */

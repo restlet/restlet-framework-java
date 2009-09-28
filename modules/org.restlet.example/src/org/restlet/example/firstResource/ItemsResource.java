@@ -15,7 +15,6 @@ import org.w3c.dom.Element;
 
 /**
  * Resource that manages a list of items.
- * 
  */
 public class ItemsResource extends BaseResource {
 
@@ -25,6 +24,7 @@ public class ItemsResource extends BaseResource {
     @Post
     public Representation acceptItem(Representation entity) {
         Representation result = null;
+
         // Parse the given representation and retrieve pairs of
         // "name=value" tokens.
         Form form = new Form(entity);
@@ -35,15 +35,19 @@ public class ItemsResource extends BaseResource {
         if (!getItems().containsKey(itemName)
                 && getItems().putIfAbsent(itemName,
                         new Item(itemName, itemDescription)) == null) {
+
             // Set the response's status and entity
             setStatus(Status.SUCCESS_CREATED);
             Representation rep = new StringRepresentation("Item created",
                     MediaType.TEXT_PLAIN);
+
             // Indicates where is located the new resource.
-            rep.setIdentifier(getRequest().getResourceRef().getIdentifier()
-                    + "/" + itemName);
+            getResponse().setLocationRef(
+                    getRequest().getResourceRef().getIdentifier() + "/"
+                            + itemName);
             result = rep;
-        } else { // Item is already registered.
+        } else {
+            // Item is already registered.
             setStatus(Status.CLIENT_ERROR_NOT_FOUND);
             result = generateErrorRepresentation("Item " + itemName
                     + " already exists.", "1");
@@ -59,18 +63,20 @@ public class ItemsResource extends BaseResource {
      *            the error message.
      * @param errorCode
      *            the error code.
+     * @return Returns the error XML representation.
      */
     private Representation generateErrorRepresentation(String errorMessage,
             String errorCode) {
         DomRepresentation result = null;
+
         // This is an error
         // Generate the output representation
         try {
             result = new DomRepresentation(MediaType.TEXT_XML);
+
             // Generate a DOM document representing the list of
             // items.
             Document d = result.getDocument();
-
             Element eltError = d.createElement("error");
 
             Element eltCode = d.createElement("code");
@@ -96,6 +102,7 @@ public class ItemsResource extends BaseResource {
         try {
             DomRepresentation representation = new DomRepresentation(
                     MediaType.TEXT_XML);
+
             // Generate a DOM document representing the list of
             // items.
             Document d = representation.getDocument();
