@@ -35,8 +35,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.PipedReader;
-import java.io.PipedWriter;
 import java.io.RandomAccessFile;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
@@ -45,7 +43,6 @@ import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
-import java.nio.channels.Pipe;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
@@ -53,10 +50,8 @@ import java.nio.channels.WritableByteChannel;
 import java.nio.charset.Charset;
 import java.util.logging.Level;
 
-import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.data.CharacterSet;
-import org.restlet.engine.Edition;
 import org.restlet.representation.Representation;
 import org.restlet.representation.WriterRepresentation;
 
@@ -129,8 +124,9 @@ public final class ByteUtils {
     public static ReadableByteChannel getChannel(
             final Representation representation) throws IOException {
         // [ifndef gae]
-        final Pipe pipe = Pipe.open();
-        final Application application = Application.getCurrent();
+        final java.nio.channels.Pipe pipe = java.nio.channels.Pipe.open();
+        final org.restlet.Application application = org.restlet.Application
+                .getCurrent();
 
         // Get a thread that will handle the task of continuously
         // writing the representation into the input side of the pipe
@@ -150,10 +146,7 @@ public final class ByteUtils {
         return pipe.source();
         // [enddef]
         // [ifdef gae] uncomment
-        // Context
-        // .getCurrentLogger()
-        // .log(
-        // Level.WARNING,
+        // Context.getCurrentLogger().log(Level.WARNING,
         // "The GAE edition is unable to return a channel for a representation given its write(WritableByteChannel) method.");
         // return null;
         // [enddef]
@@ -191,10 +184,11 @@ public final class ByteUtils {
     public static Reader getReader(final WriterRepresentation representation)
             throws IOException {
         // [ifndef gae]
-
-        final PipedWriter pipedWriter = new PipedWriter();
-        final PipedReader pipedReader = new PipedReader(pipedWriter);
-        final Application application = Application.getCurrent();
+        final java.io.PipedWriter pipedWriter = new java.io.PipedWriter();
+        final java.io.PipedReader pipedReader = new java.io.PipedReader(
+                pipedWriter);
+        final org.restlet.Application application = org.restlet.Application
+                .getCurrent();
 
         // Gets a thread that will handle the task of continuously
         // writing the representation into the input side of the pipe
@@ -213,9 +207,7 @@ public final class ByteUtils {
         return pipedReader;
         // [enddef]
         // [ifdef gae] uncomment
-        // Context
-        // .getCurrentLogger()
-        // .log(Level.WARNING,
+        // Context.getCurrentLogger().log(Level.WARNING,
         // "The GAE edition is unable to return a reader for a writer representation.");
         // return null;
         // [enddef]
@@ -271,14 +263,14 @@ public final class ByteUtils {
      * @return A stream with the representation's content.
      */
     public static InputStream getStream(final Representation representation) {
-
         // [ifndef gae]
         if (representation == null) {
             return null;
         }
 
         final PipeStream pipe = new PipeStream();
-        final Application application = Application.getCurrent();
+        final org.restlet.Application application = org.restlet.Application
+                .getCurrent();
 
         // Creates a thread that will handle the task of continuously
         // writing the representation into the input side of the pipe
@@ -302,10 +294,7 @@ public final class ByteUtils {
         return pipe.getInputStream();
         // [enddef]
         // [ifdef gae] uncomment
-        // Context
-        // .getCurrentLogger()
-        // .log(
-        // Level.WARNING,
+        // Context.getCurrentLogger().log(Level.WARNING,
         // "The GAE edition is unable to get an InputStream out of an OutputRepresentation.");
         // return null;
         // [enddef]
