@@ -1,0 +1,17 @@
+<module id="dataservices" includes="jse" type="integration" package="org.restlet.ext.dataservices">
+   <label>Restlet Extension - ADO.NET Data Services</label>
+   <description>
+      Integration with ADO.NET Data Services 1.0.
+   </description>
+   <distributions>
+      <distribution id="classic" />
+      <distribution id="maven" />
+   </distributions>
+   <dependencies>
+      <dependency type="module" id="core" />
+      <dependency type="module" id="atom" />
+      <dependency type="module" id="freemarker" />
+      <dependency type="module" id="xml" />
+      <dependency type="library" id="freemarker" />
+  </dependencies>
+</module>

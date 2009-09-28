@@ -1,0 +1,18 @@
+<module id="jaxb" excludes="android, gwt" type="integration" package="org.restlet.ext.jaxb">
+   <label>Restlet Extension - JAXB</label>
+   <description>
+      Integration with Java XML Binding.
+	</description>
+   <distributions>
+      <distribution id="classic" />
+      <distribution id="maven" />
+   </distributions>
+
+   <dependencies>
+      <dependency type="library" id="jaxb-api" />
+      <dependency type="library" id="jaxb-ri" />
+      <dependency type="library" id="stax" />
+      <dependency type="module" id="core" />
+      <dependency type="module" id="xml" />
+   </dependencies>
+</module>

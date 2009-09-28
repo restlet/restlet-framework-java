@@ -1,0 +1,10 @@
+<library id="bouncycastle">
+	<package name="org.bouncycastle" />
+	<version>1.34</version>
+	<homeUri>
+		http://www.bouncycastle.org/
+	</homeUri>
+	<downloadUri>
+		http://www.bouncycastle.org/latest_releases.html 
+	</downloadUri>
+</library>

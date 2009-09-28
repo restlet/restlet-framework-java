@@ -1,0 +1,233 @@
+﻿<?xml version="1.0"?>
+
+<!-- ===============================================================
+     Restlet build script - Copyright 2005-2009 Noelios Technologies
+     =============================================================== -->
+
+<project name="Restlet" default="build">
+	<!-- ============================ -->
+	<!-- ===  Properties setting  === -->
+	<!-- ============================ -->
+
+	<!-- Load system specific properties -->
+	<property file="custom.properties" />
+
+	<!-- Load default properties -->
+	<property file="build.properties" />
+
+	<!-- General properties -->
+	<!-- Current year -->
+	<tstamp>
+		<format property="current-year" pattern="yyyy" />
+	</tstamp>
+
+	<!-- Maven time stamp -->
+	<tstamp>
+		<format property="maven-snapshot-timestamp" pattern="yyyyMMdd.HHmmss" />
+	</tstamp>
+
+	<!-- Location properties -->
+	<property name="dist" location="dist" />
+	<property name="temp" location="temp" />
+	<property name="tmpl" location="tmpl" />
+	<property name="modules" location="../modules" />
+	<property name="parent-maven-groupId" value="org.restlet" />
+	<property name="parent-maven-artifactId" value="org.restlet.parent" />
+	<property name="parent-maven-version" value="${version-maven}" />
+
+	<!-- ======================= -->
+	<!-- ===  Paths setting  === -->
+	<!-- ======================= -->
+	<path id="forge-path">
+		<fileset dir="tools/forge" includes="**/*.jar" />
+	</path>
+	<path id="fmpp-path">
+		<fileset dir="tools/fmpp" includes="**/*.jar" />
+	</path>
+
+	<!-- =================== -->
+	<!-- ===  Ant Tasks  === -->
+	<!-- =================== -->
+
+	<!-- Ant Contrib -->
+	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
+		<classpath>
+			<fileset dir="tools/ant-contrib" includes="**/*.jar" />
+		</classpath>
+	</taskdef>
+
+	<!-- FMPP (FreeMarker-based text file PreProcessor) -->
+	<taskdef name="fmpp" classname="fmpp.tools.AntTask">
+		<classpath>
+			<path refid="fmpp-path" />
+			<path refid="forge-path" />
+		</classpath>
+	</taskdef>
+
+	<!-- = = = = = = = = = = = = = = = = =
+          macrodef: generate-edition          
+         = = = = = = = = = = = = = = = = = -->
+	<macrodef name="generate-edition" description="Generate the source code for a target edition.">
+		<attribute name="edition" />
+		<sequential>
+			<fmpp sourceroot="${tmpl}/editions" outputroot="${temp}/@{edition}" dataroot="${basedir}" includes="*.properties">
+				<data expandproperties="true">
+					values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
+					project: get(values, "project")
+					editions: get(values, "editions")
+    				editionKey: @{edition}
+    				edition: get(editions, @{edition})
+					currentYear: ${current-year}
+    			</data>
+			</fmpp>
+
+			<fmpp sourceroot="${tmpl}/text" outputroot="${temp}/@{edition}" dataroot="${basedir}" includes="dependencies.txt">
+				<data expandproperties="true">
+					values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
+					project: get(values, "project")
+					editions: get(values, "editions")
+					editionKey: @{edition}
+    				edition: get(editions, @{edition})
+					currentYear: ${current-year}
+    			</data>
+			</fmpp>
+
+			<!-- Process the build.xml file. -->
+			<loadfile property="paths" srcFile="${tmpl}/editions/paths.tmpl" />
+			<loadfile property="generate-sources" srcFile="${tmpl}/editions/generate-sources.tmpl" />
+			<loadfile property="generate-javadocs" srcFile="${tmpl}/editions/javadocs.tmpl" />
+			<loadfile property="stage-modules" srcFile="${tmpl}/editions/stage-modules.tmpl" />
+			<loadfile property="stage-extras" srcFile="${tmpl}/editions/stage-extras.tmpl" />
+			<!-- Pre-process the build file since ant and freemarker shares the same syntax. -->
+			<copy file="${tmpl}/editions/build.xml" tofile="${temp}/@{edition}/build.tmpl" overwrite="true">
+				<filterchain>
+					<replaceregex pattern="\$\{" replace="*DOLLAR*{" flags="g" />
+					<!-- nb: ant tokens can't contain "<" characters -->
+					<replacestring from="@paths@" to="${paths}" />
+					<replacestring from="@generate-sources@" to="${generate-sources}" />
+					<replacestring from="@generate-javadocs@" to="${generate-javadocs}" />
+					<replacestring from="@stage-modules@" to="${stage-modules}" />
+					<replacestring from="@stage-extras@" to="${stage-extras}" />
+				</filterchain>
+			</copy>
+			<!-- Process it as a Freemarker template. -->
+			<fmpp sourcefile="${temp}/@{edition}/build.tmpl" outputfile="${temp}/@{edition}/build.xml" dataroot="${basedir}" expert="true">
+				<data expandproperties="true">
+					values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
+					project: get(values, "project")
+					editions: get(values, "editions")
+    				editionKey: @{edition}
+    				edition: get(editions, @{edition})
+					currentYear: ${current-year}
+    			</data>
+			</fmpp>
+			<delete file="${temp}/@{edition}/build.tmpl" />
+			<!-- Post-process the build file since ant and freemarker shares the same syntax. -->
+			<replace file="${temp}/@{edition}/build.xml" token="*DOLLAR*" value="$" />
+
+			<copy file="build.properties" todir="${temp}/@{edition}" overwrite="true" />
+			<copy file="custom.properties" todir="${temp}/@{edition}" overwrite="true" failonerror="false" />
+			<ant antfile="build.xml" target="generate-sources" dir="${temp}/@{edition}/" inheritall="false" />
+		</sequential>
+	</macrodef>
+
+	
+	<!-- = = = = = = = = = = = = = = = = =
+          macrodef: exec-edition          
+         = = = = = = = = = = = = = = = = = -->
+	<macrodef name="exec-edition" description="Executes a task for a target edition">
+		<attribute name="edition" />
+		<attribute name="target" default="build" />
+		<sequential>
+			<for param="task" delimiter=" " list="@{target}">
+				<sequential>
+					<ant antfile="build.xml" target="@{task}" dir="${temp}/@{edition}/" inheritall="false" />
+				</sequential>
+			</for>
+		</sequential>
+	</macrodef>
+
+	<target name="generate-poms" description="Generates the pom files">
+		<fmpp sourcefile="${tmpl}/poms/org.restlet.parent.pom.tmpl" outputfile="${modules}/pom.xml" dataroot="${basedir}" expert="true">
+			<data expandproperties="true">
+				values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
+				project: get(values, "project")
+				ant: antProperties()
+			</data>
+		</fmpp>
+	</target>
+
+	<target name="prepare-stage-maven" if="do-prepare-stage-maven" description="Prepare the generation of the maven distributions.">
+		<!-- Svn revision number -->
+		<mkdir dir="${temp}" />
+		<exec executable="svn" output="${temp}/svninfo.xml">
+			<arg line="info --xml" />
+		</exec>
+		<xmlproperty file="${temp}/svninfo.xml" collapseattributes="true" />
+		<property name="svn.revision" value="${info.entry.revision}" />
+
+		<!-- Snapshot? -->
+		<condition property="is.snapshot" else="false">
+			<contains string="${version-maven}" substring="-SNAPSHOT" />
+		</condition>
+		<echo message="maven-timestamp:${maven-snapshot-timestamp}${line.separator}" file="${temp}/snapshot.properties" append="false" />
+		<echo message="svn-revision:${svn.revision}${line.separator}" file="${temp}/snapshot.properties" append="true" />
+	</target>
+
+
+	<!-- CLEAN target -->
+	<target name="clean" depends="clean-temp, clean-dist" description="Clean the staging area." />
+
+	<!-- CLEAN-DIST target -->
+	<target name="clean-dist" description="Clean distributions files.">
+		<delete includeEmptyDirs="true" verbose="false" quiet="false" failonerror="false">
+			<fileset dir="${dist}" />
+		</delete>
+	</target>
+
+	<!-- CLEAN-TEMP target -->
+	<target name="clean-temp" description="Clean temporary build files.">
+		<delete includeEmptyDirs="true" verbose="false" quiet="false" failonerror="false">
+			<fileset dir="${temp}" />
+		</delete>
+	</target>
+	<target name="build-current" depends="generate-poms, prepare-stage-maven" description="Build the editions with the current source code.">
+		<exec-edition edition="jse" target="build" />
+		<exec-edition edition="jee" target="build" />
+		<exec-edition edition="android" target="build" />
+		<exec-edition edition="gae" target="build" />
+		<exec-edition edition="gwt" target="build" />
+	</target>
+	<target name="build" depends="generate-poms, prepare-stage-maven" description="Regenerate the source code and build the editions.">
+		<generate-edition edition="jse" />
+		<exec-edition edition="jse" target="build" />
+		<generate-edition edition="jee" />
+		<exec-edition edition="jee" target="build" />
+		<generate-edition edition="android" />
+		<exec-edition edition="android" target="build" />
+		<generate-edition edition="gae" />
+		<exec-edition edition="gae" target="build" />
+		<generate-edition edition="gwt" />
+		<exec-edition edition="gwt" target="build" />
+	</target>
+	<target name="rebuild" depends="clean-temp, generate-poms, prepare-stage-maven" description="Clean the temp files, regenerate the source code and build the editions.">
+		<generate-edition edition="jse" />
+		<exec-edition edition="jse" target="build" />
+		<generate-edition edition="jee" />
+		<exec-edition edition="jee" target="build" />
+		<generate-edition edition="android" />
+		<exec-edition edition="android" target="build" />
+		<generate-edition edition="gae" />
+		<exec-edition edition="gae" target="build" />
+		<generate-edition edition="gwt" />
+		<exec-edition edition="gwt" target="build" />
+	</target>
+	<target name="generate" depends="generate-poms" description="Regenerate the source code.">
+		<generate-edition edition="jse" />
+		<generate-edition edition="jee" />
+		<generate-edition edition="android" />
+		<generate-edition edition="gae" />
+		<generate-edition edition="gwt" />
+	</target>
+	<target name="regenerate" depends="clean-temp, generate" description="Clean and regenerate the source code." />
+</project>

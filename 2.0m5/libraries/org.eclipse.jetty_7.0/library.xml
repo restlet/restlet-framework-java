@@ -1,0 +1,17 @@
+<library id="jetty">
+	<package name="org.eclipse.jetty" />
+	<version>7.0</version>
+	<release>RC4</release>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+	<homeUri>
+		http://www.eclipse.org/jetty/
+	</homeUri>
+   <downloadUri>
+      http://www.eclipse.org/jetty/downloads.php
+	</downloadUri>
+   <javadocs>
+      <link href="http://download.eclipse.org/jetty/stable-7/apidocs/" />
+   </javadocs>
+</library>

@@ -1,0 +1,19 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Apache Commons FileUpload
+Bundle-SymbolicName: org.apache.commons.fileupload
+Bundle-Version: 1.2.1
+Bundle-ClassPath: org.apache.commons.fileupload.jar
+Bundle-Vendor: Apache Software Foundation
+Export-Package: org.apache.commons.fileupload;uses:="org.apache.commons.fileupload.util,org.apache.commons.fileupload.disk,javax.servlet.http",
+ org.apache.commons.fileupload.disk;uses:="org.apache.commons.fileupload,org.apache.commons.io",
+ org.apache.commons.fileupload.portlet;uses:="org.apache.commons.fileupload,javax.portlet",
+ org.apache.commons.fileupload.servlet;
+  uses:="javax.servlet,
+   org.apache.commons.fileupload,
+   org.apache.commons.io,
+   javax.servlet.http",
+ org.apache.commons.fileupload.util;uses:="org.apache.commons.fileupload"
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Import-Package: org.apache.commons.io,
+ org.apache.commons.io.output
