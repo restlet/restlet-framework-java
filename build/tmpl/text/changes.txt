@@ -11,7 +11,9 @@ Changes log
         - DataServices.Session#getMetadata() now returns on Object 
           to prevent link to internal class.
     - Bugs fixed
-        - 
+        - Fixed bug when the deprecated method "createRoot" is 
+          implemented instead of the "createInboundRoot".
+          Reported by Fabian Mandelbaum.
     - Enhancements
         - Improved JAXB converted. Contributed by Sanjay Acharya.
  
