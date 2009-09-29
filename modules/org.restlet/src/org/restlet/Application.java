@@ -261,7 +261,7 @@ public class Application extends Restlet {
      */
     public synchronized Restlet getInboundRoot() {
         if (this.inboundRoot == null) {
-            this.inboundRoot = createInboundRoot();
+            this.inboundRoot = createRoot();
         }
 
         return this.inboundRoot;
