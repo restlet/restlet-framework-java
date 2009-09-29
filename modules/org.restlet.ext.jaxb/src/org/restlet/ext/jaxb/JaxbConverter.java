@@ -102,8 +102,9 @@ public class JaxbConverter extends ConverterHelper {
             UniformResource resource) {
         float result = -1.0F;
 
-        if (isJaxbRootElementClass(target)
-                || JaxbRepresentation.class.isAssignableFrom(source.getClass())) {
+        if ((source != null)
+                && (isJaxbRootElementClass(target) || JaxbRepresentation.class
+                        .isAssignableFrom(source.getClass()))) {
             result = 1.0F;
         } else if (JaxbRepresentation.class.isAssignableFrom(target)) {
             result = 1.0F;
@@ -116,11 +117,12 @@ public class JaxbConverter extends ConverterHelper {
     public float score(Object source, Variant target, UniformResource resource) {
         float result = -1.0F;
 
-        if (source instanceof JaxbRepresentation<?>
-                || isJaxbRootElementClass(source.getClass())) {
+        if (source != null
+                && (source instanceof JaxbRepresentation<?> || isJaxbRootElementClass(source
+                        .getClass()))) {
             if (target == null) {
-              // Can Happen when using ClientResource toRepresentation();
-              result = 1.0F;
+                // Can Happen when using ClientResource toRepresentation();
+                result = 1.0F;
             } else if (MediaType.APPLICATION_ALL_XML.isCompatible(target
                     .getMediaType())) {
                 result = 1.0F;
@@ -130,8 +132,9 @@ public class JaxbConverter extends ConverterHelper {
             } else if (MediaType.TEXT_XML.isCompatible(target.getMediaType())) {
                 result = 1.0F;
             } else {
-                // Allow for Jaxb object to be used for Json and other representations
-                result = 0.9F;
+                // Allow for JAXB object to be used for JSON and other
+                // representations
+                result = 0.5F;
             }
         }
 
