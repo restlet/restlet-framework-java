@@ -528,9 +528,9 @@ public class Engine {
         getRegisteredAuthenticators().add(
                 new org.restlet.engine.security.HttpAwsS3Helper());
         getRegisteredAuthenticators().add(
-                new org.restlet.engine.security.HttpMsSharedKeyHelper());
+                new org.restlet.engine.security.HttpSharedKeyHelper());
         getRegisteredAuthenticators().add(
-                new org.restlet.engine.security.HttpMsSharedKeyLiteHelper());
+                new org.restlet.engine.security.HttpSharedKeyLiteHelper());
         getRegisteredAuthenticators().add(
                 new org.restlet.engine.security.SmtpPlainHelper());
     }

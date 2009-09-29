@@ -4,7 +4,17 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
-
+    - API changes
+        - Renamed ChallengeScheme#HTTP_MS_SHAREDKEY into 
+          HTTP_SHAREDKEY and HTTP_MS_SHAREDKEY_LITE into 
+          HTTP_SHAREDKEY_LITE.
+        - DataServices.Session#getMetadata() now returns on Object 
+          to prevent link to internal class.
+    - Bugs fixed
+        - 
+    - Enhancements
+        - Improved JAXB converted. Contributed by Sanjay Acharya.
+ 
 - 2.0 Milestone 5 (2009-09-28)
     - API changes
         - Moved Message, Request and Response classes from the

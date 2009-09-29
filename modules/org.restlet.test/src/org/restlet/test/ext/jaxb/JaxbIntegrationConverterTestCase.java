@@ -34,13 +34,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import junit.framework.TestCase;
+import org.restlet.test.RestletTestCase;
 
 import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
 import org.restlet.Context;
 import org.restlet.Restlet;
+import org.restlet.Server;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Preference;
@@ -64,28 +65,43 @@ import org.restlet.routing.Router;
  * 
  * @author Sanjay Acharya
  */
-public class JaxbIntegrationConverterTestCase extends TestCase {
-    private static final String SERVER_URI = "http://localhost:9091";
-
-    private Component component;
-
+public class JaxbIntegrationConverterTestCase extends RestletTestCase {    
     private static final String IN_STRING = "foo";
 
     private static final String HELLO_OUT_STRING = "Hello World " + IN_STRING;
-
-    @Override
+    private Component component;
+    private String uri; 
+    
     public void setUp() throws Exception {
-        component = new Component();
-        component.getServers().add(Protocol.HTTP, 9091);
-        component.getDefaultHost().attach(new SampleApplication());
-        component.start();
-    }
+      super.setUp();
+      this.component = new Component();
+      final Server server = this.component.getServers().add(Protocol.HTTP, 0);
+      final Application application = createApplication(this.component);
 
-    @Override
+      this.component.getDefaultHost().attach(application);
+      this.component.start();
+
+      uri = "http://localhost:" + server.getEphemeralPort() + "/test";
+    }
+    
     public void tearDown() throws Exception {
-        if (component != null) {
-            component.stop();
-        }
+      super.tearDown();
+      if (component != null) {
+        component.stop();
+      }
+    }
+    
+    protected Application createApplication(Component component) {
+        final Application application = new Application() {
+            @Override
+            public Restlet createInboundRoot() {
+                final Router router = new Router(getContext());
+                router.attach("/test", SampleResource.class);
+                return router;
+            }
+        };
+
+        return application;
     }
 
     /**
@@ -95,7 +111,7 @@ public class JaxbIntegrationConverterTestCase extends TestCase {
      */
     public void testIntegration() throws Exception {
         Client client = new Client(new Context(), Arrays.asList(Protocol.HTTP));
-        Request request = new Request(Method.POST, SERVER_URI);
+        Request request = new Request(Method.POST, uri);
         request
                 .setEntity(new JaxbRepresentation<Sample>(new Sample(IN_STRING)));
 
@@ -105,8 +121,8 @@ public class JaxbIntegrationConverterTestCase extends TestCase {
                 response.getEntity(), Sample.class);
         Sample sample = resultRepresentation.getObject();
         assertEquals(HELLO_OUT_STRING, sample.getVal());
-
-        request = new Request(Method.PUT, SERVER_URI);
+        
+        request = new Request(Method.PUT, uri);
         request
                 .setEntity(new JaxbRepresentation<Sample>(new Sample(IN_STRING)));
 
@@ -116,12 +132,12 @@ public class JaxbIntegrationConverterTestCase extends TestCase {
         sample = resultRepresentation.getObject();
         assertEquals(HELLO_OUT_STRING, sample.getVal());
 
-        request = new Request(Method.GET, SERVER_URI);
+        request = new Request(Method.GET, uri);
         response = client.handle(request);
         resultRepresentation = new JaxbRepresentation<Sample>(response
                 .getEntity(), Sample.class);
         sample = resultRepresentation.getObject();
-        assertEquals(IN_STRING, sample.getVal());
+        assertEquals(IN_STRING, sample.getVal());     
     }
 
     /**
@@ -130,7 +146,7 @@ public class JaxbIntegrationConverterTestCase extends TestCase {
      * @throws Exception
      */
     public void testWithClientResource() throws Exception {
-        ClientResource sampleResource = new ClientResource(SERVER_URI);
+        ClientResource sampleResource = new ClientResource(uri);
         List<Preference<MediaType>> m = new ArrayList<Preference<MediaType>>();
         m.add(new Preference<MediaType>(MediaType.APPLICATION_XML));
         sampleResource.getClientInfo().setAcceptedMediaTypes(m);
@@ -149,35 +165,22 @@ public class JaxbIntegrationConverterTestCase extends TestCase {
         assertEquals(IN_STRING, sample.getVal());
     }
 
-    private static class SampleApplication extends Application {
-        public SampleApplication() {
-            super();
-        }
-
-        @Override
-        public Restlet createRoot() {
-            Router root = new Router(getContext());
-            root.attachDefault(SampleResource.class);
-            return root;
-        }
-    }
-
     public static class SampleResource extends ServerResource {
-        @Post
-        public Sample post(Sample sample) {
+        @Post("xml")        
+        public Sample post(Sample sample) {            
             assertNotNull(sample);
             return new Sample(HELLO_OUT_STRING);
         }
-
-        @Get
+        
+        @Get("xml")
         public Sample getSample() {
             return new Sample(IN_STRING);
         }
 
-        @Put
-        public Sample putSample(Sample sample) {
+        @Put("xml:xml")
+        public JaxbRepresentation<Sample> putSample(Sample sample) {
             assertNotNull(sample);
-            return new Sample(HELLO_OUT_STRING);
+            return new JaxbRepresentation<Sample>(new Sample(HELLO_OUT_STRING));
         }
     }
 }

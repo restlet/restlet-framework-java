@@ -161,7 +161,7 @@ public class Session {
             return;
         }
 
-        addEntity(getMetadata().getSubpath(source, sourceProperty), target);
+        addEntity(getSubpath(source, sourceProperty), target);
     }
 
     /**
@@ -192,7 +192,7 @@ public class Session {
         }
         ClientResource resource = new ClientResource(new Reference(serviceRef
                 .toString()
-                + getMetadata().getSubpath(entity)));
+                + getSubpath(entity)));
         resource.setChallengeResponse(getCredentials());
 
         resource.delete();
@@ -235,7 +235,7 @@ public class Session {
         if (getMetadata() == null) {
             return;
         }
-        deleteEntity(getMetadata().getSubpath(source, sourceProperty, target));
+        deleteEntity(getSubpath(source, sourceProperty, target));
     }
 
     /**
@@ -282,7 +282,7 @@ public class Session {
      * 
      * @return The metadata document related to the current service.
      */
-    protected Metadata getMetadata() {
+    protected Object getMetadata() {
         if (metadata == null) {
             String sRef = serviceRef.toString();
             if (!sRef.endsWith("/")) {
@@ -312,6 +312,7 @@ public class Session {
                         "Can't get the metadata for " + serviceRef, e);
             }
         }
+
         return metadata;
     }
 
@@ -337,9 +338,10 @@ public class Session {
             return;
         }
 
-        EntityType type = getMetadata().getEntityType(entity.getClass());
-        AssociationEnd association = getMetadata().getAssociation(type,
-                propertyName);
+        EntityType type = ((Metadata) getMetadata()).getEntityType(entity
+                .getClass());
+        AssociationEnd association = ((Metadata) getMetadata()).getAssociation(
+                type, propertyName);
 
         if (association != null) {
             EntityType propertyEntityType = association.getType();
@@ -350,8 +352,8 @@ public class Session {
                     propertyClass = Type.getJavaClass(propertyEntityType);
                 }
                 Iterator<?> iterator = createQuery(
-                        getMetadata().getSubpath(entity, propertyName),
-                        propertyClass).iterator();
+                        getSubpath(entity, propertyName), propertyClass)
+                        .iterator();
 
                 ReflectUtils.setProperty(entity, propertyName, association
                         .isToMany(), iterator, propertyClass);
@@ -364,7 +366,7 @@ public class Session {
             }
         } else {
             String ref = getServiceRef().toString()
-                    + getMetadata().getSubpath(entity, propertyName);
+                    + getSubpath(entity, propertyName);
             try {
                 ClientResource resource = new ClientResource(ref);
                 resource.setChallengeResponse(getCredentials());
@@ -374,8 +376,8 @@ public class Session {
                     DomRepresentation xmlRep = new DomRepresentation(rep);
                     Node node = xmlRep.getNode("//" + propertyName);
                     if (node != null) {
-                        Property property = getMetadata().getProperty(entity,
-                                propertyName);
+                        Property property = ((Metadata) getMetadata())
+                                .getProperty(entity, propertyName);
                         try {
                             ReflectUtils.setProperty(entity, property, node
                                     .getTextContent());
@@ -402,6 +404,53 @@ public class Session {
                                 + " for the service" + serviceRef, e);
             }
         }
+    }
+
+    /**
+     * According to the metadata of the service, returns the path of the given
+     * entity relatively to the current ADO.NET service.
+     * 
+     * @param entity
+     *            The entity.
+     * @return The path of the given entity relatively to the current ADO.NET
+     *         service.
+     */
+    private String getSubpath(Object entity) {
+        return ((Metadata) getMetadata()).getSubpath(entity);
+    }
+
+    /**
+     * According to the metadata of the service, returns the path of the given
+     * entity's property relatively to the current ADO.NET service.
+     * 
+     * @param entity
+     *            The entity.
+     * @param propertyName
+     *            The name of the property.
+     * @return The path of the given entity's property relatively to the current
+     *         ADO.NET service.
+     */
+    private String getSubpath(Object entity, String propertyName) {
+        return ((Metadata) getMetadata()).getSubpath(entity, propertyName);
+    }
+
+    /**
+     * According to the metadata of the service, returns the relative path of
+     * the given target entity linked to the source entity via the source
+     * property.
+     * 
+     * @param source
+     *            The source entity to update.
+     * @param sourceProperty
+     *            The name of the property of the source entity.
+     * @param target
+     *            The entity linked to the source entity.
+     * @return
+     */
+    private String getSubpath(Object source, String sourceProperty,
+            Object target) {
+        return ((Metadata) getMetadata()).getSubpath(source, sourceProperty,
+                target);
     }
 
     /**
@@ -508,7 +557,7 @@ public class Session {
 
         ClientResource resource = new ClientResource(new Reference(serviceRef
                 .toString()
-                + getMetadata().getSubpath(entity)));
+                + getSubpath(entity)));
         resource.setChallengeResponse(getCredentials());
 
         resource.put(entry);

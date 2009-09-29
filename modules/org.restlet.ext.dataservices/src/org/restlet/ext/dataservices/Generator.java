@@ -97,7 +97,7 @@ public class Generator {
 
             step = "step 4 - get the metadata descriptor";
             Session session = new Session(dataServiceUri);
-            if ((metadata = session.getMetadata()) == null) {
+            if ((metadata = (Metadata) session.getMetadata()) == null) {
                 error = true;
             } else {
                 step = "step 5 - generate source code";
@@ -191,8 +191,10 @@ public class Generator {
 
             // Generate Session subclass.
             StringBuffer className = new StringBuffer();
-            className.append(schema.getNamespace().getNormalizedName().substring(0,1).toUpperCase());
-            className.append(schema.getNamespace().getNormalizedName().substring(1));
+            className.append(schema.getNamespace().getNormalizedName()
+                    .substring(0, 1).toUpperCase());
+            className.append(schema.getNamespace().getNormalizedName()
+                    .substring(1));
             className.append("Session");
 
             Map<String, Object> dataModel = new HashMap<String, Object>();

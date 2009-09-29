@@ -88,7 +88,7 @@ public class JaxbConverter extends ConverterHelper {
         List<VariantInfo> result = null;
 
         if (isJaxbRootElementClass(source)
-                || source.isAssignableFrom(JaxbRepresentation.class)) {
+                || JaxbRepresentation.class.isAssignableFrom(source)) {
             result = addVariant(result, VARIANT_APPLICATION_ALL_XML);
             result = addVariant(result, VARIANT_APPLICATION_XML);
             result = addVariant(result, VARIANT_TEXT_XML);
@@ -103,7 +103,9 @@ public class JaxbConverter extends ConverterHelper {
         float result = -1.0F;
 
         if (isJaxbRootElementClass(target)
-                || source.getClass().isAssignableFrom(JaxbRepresentation.class)) {
+                || JaxbRepresentation.class.isAssignableFrom(source.getClass())) {
+            result = 1.0F;
+        } else if (JaxbRepresentation.class.isAssignableFrom(target)) {
             result = 1.0F;
         }
 
@@ -116,7 +118,10 @@ public class JaxbConverter extends ConverterHelper {
 
         if (source instanceof JaxbRepresentation<?>
                 || isJaxbRootElementClass(source.getClass())) {
-            if (MediaType.APPLICATION_ALL_XML.isCompatible(target
+            if (target == null) {
+              // Can Happen when using ClientResource toRepresentation();
+              result = 1.0F;
+            } else if (MediaType.APPLICATION_ALL_XML.isCompatible(target
                     .getMediaType())) {
                 result = 1.0F;
             } else if (MediaType.APPLICATION_XML.isCompatible(target
@@ -124,6 +129,9 @@ public class JaxbConverter extends ConverterHelper {
                 result = 1.0F;
             } else if (MediaType.TEXT_XML.isCompatible(target.getMediaType())) {
                 result = 1.0F;
+            } else {
+                // Allow for Jaxb object to be used for Json and other representations
+                result = 0.9F;
             }
         }
 
@@ -149,6 +157,8 @@ public class JaxbConverter extends ConverterHelper {
 
         if (isJaxbRootElementClass(source.getClass())) {
             result = new JaxbRepresentation<Object>(source);
+        } else if (source instanceof JaxbRepresentation<?>) {
+            result = (Representation) source;
         }
 
         return result;

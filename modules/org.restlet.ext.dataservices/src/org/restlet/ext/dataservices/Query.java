@@ -38,6 +38,7 @@ import org.restlet.data.Parameter;
 import org.restlet.ext.atom.Entry;
 import org.restlet.ext.atom.Feed;
 import org.restlet.ext.dataservices.internal.FeedParser;
+import org.restlet.ext.dataservices.internal.edm.Metadata;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
@@ -223,7 +224,8 @@ public class Query<T> implements Iterable<T> {
             ClientResource resource = new ClientResource(targetUri);
             resource.setChallengeResponse(session.getCredentials());
 
-            Representation result = new StringRepresentation(resource.get().getText());
+            Representation result = new StringRepresentation(resource.get()
+                    .getText());
             System.out.println(result.getText());
             session.setLatestRequest(resource.getRequest());
             session.setLatestResponse(resource.getResponse());
@@ -449,7 +451,7 @@ public class Query<T> implements Iterable<T> {
         try {
             execute();
             result = new FeedParser<T>(getFeed(), this.entityClass,
-                    getSession().getMetadata()).parse();
+                    (Metadata) getSession().getMetadata()).parse();
         } catch (Exception e) {
             getLogger().log(Level.WARNING,
                     "Can't parse the content of " + createTargetUri(), e);
