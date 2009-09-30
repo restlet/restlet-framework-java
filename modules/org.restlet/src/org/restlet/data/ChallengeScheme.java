@@ -36,7 +36,7 @@ package org.restlet.data;
  * @author Jerome Louvel
  */
 public final class ChallengeScheme {
-    /** Custom scheme based on IP address or cookies or query params, etc. */
+    /** Custom scheme based on IP address or cookies or query parameters, etc. */
     public static final ChallengeScheme CUSTOM = new ChallengeScheme("CUSTOM",
             "Custom", "Custom authentication");
 
@@ -64,8 +64,8 @@ public final class ChallengeScheme {
      *      page</a>
      */
     public static final ChallengeScheme HTTP_AZURE_SHAREDKEY = new ChallengeScheme(
-            "HTTP_SHARED_KEY", "SharedKey",
-            "Microsoft Shared Key authorization (authentication)");
+            "HTTP_AZURE_SHAREDKEY", "SharedKey",
+            "Microsoft Azure Shared Key authorization (authentication)");
 
     /**
      * Microsoft Azure Shared Key lite scheme.
@@ -75,8 +75,8 @@ public final class ChallengeScheme {
      *      page</a>
      */
     public static final ChallengeScheme HTTP_AZURE_SHAREDKEY_LITE = new ChallengeScheme(
-            "HTTP_SHARED_KEY_LITE", "SharedKeyLite",
-            "Microsoft Shared Key lite authorization (authentication)");
+            "HTTP_AZURE_SHAREDKEY_LITE", "SharedKeyLite",
+            "Microsoft Azure Shared Key lite authorization (authentication)");
 
     /** Microsoft NTML HTTP scheme. */
     public static final ChallengeScheme HTTP_NTLM = new ChallengeScheme(
