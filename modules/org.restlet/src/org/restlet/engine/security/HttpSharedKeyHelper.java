@@ -119,7 +119,7 @@ public class HttpSharedKeyHelper extends AuthenticatorHelper {
      * Constructor.
      */
     public HttpSharedKeyHelper() {
-        super(ChallengeScheme.HTTP_SHAREDKEY, true, false);
+        super(ChallengeScheme.HTTP_AZURE_SHAREDKEY, true, false);
     }
 
     @Override

@@ -6,8 +6,8 @@ Changes log
 - @version-full@ (@release-date@)
     - API changes
         - Renamed ChallengeScheme#HTTP_MS_SHAREDKEY into 
-          HTTP_SHAREDKEY and HTTP_MS_SHAREDKEY_LITE into 
-          HTTP_SHAREDKEY_LITE.
+          HTTP_AZURE_SHAREDKEY and HTTP_MS_SHAREDKEY_LITE into 
+          HTTP_AZURE_SHAREDKEY_LITE.
         - DataServices.Session#getMetadata() now returns on Object 
           to prevent link to internal class.
         - OAuthProvider methods are now public.

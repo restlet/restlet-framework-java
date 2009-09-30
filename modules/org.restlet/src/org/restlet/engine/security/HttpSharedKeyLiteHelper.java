@@ -79,7 +79,7 @@ public class HttpSharedKeyLiteHelper extends AuthenticatorHelper {
      * Constructor.
      */
     public HttpSharedKeyLiteHelper() {
-        super(ChallengeScheme.HTTP_SHAREDKEY_LITE, true, false);
+        super(ChallengeScheme.HTTP_AZURE_SHAREDKEY_LITE, true, false);
     }
 
     @Override

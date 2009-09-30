@@ -56,13 +56,25 @@ public final class ChallengeScheme {
     public static final ChallengeScheme HTTP_DIGEST = new ChallengeScheme(
             "HTTP_DIGEST", "Digest", "Digest HTTP authentication");
 
-    /** Microsoft Shared Key scheme. */
-    public static final ChallengeScheme HTTP_SHAREDKEY = new ChallengeScheme(
+    /**
+     * Microsoft Azure Shared Key scheme.
+     * 
+     * @see <a
+     *      href="http://msdn.microsoft.com/en-us/library/dd179428.aspx#Subheading2">MSDN
+     *      page</a>
+     */
+    public static final ChallengeScheme HTTP_AZURE_SHAREDKEY = new ChallengeScheme(
             "HTTP_SHARED_KEY", "SharedKey",
             "Microsoft Shared Key authorization (authentication)");
 
-    /** Microsoft Shared Key lite scheme. */
-    public static final ChallengeScheme HTTP_SHAREDKEY_LITE = new ChallengeScheme(
+    /**
+     * Microsoft Azure Shared Key lite scheme.
+     * 
+     * @see <a
+     *      href="http://msdn.microsoft.com/en-us/library/dd179428.aspx#Subheading2">MSDN
+     *      page</a>
+     */
+    public static final ChallengeScheme HTTP_AZURE_SHAREDKEY_LITE = new ChallengeScheme(
             "HTTP_SHARED_KEY_LITE", "SharedKeyLite",
             "Microsoft Shared Key lite authorization (authentication)");
 
@@ -113,10 +125,11 @@ public final class ChallengeScheme {
                 result = HTTP_COOKIE;
             } else if (name.equalsIgnoreCase(HTTP_DIGEST.getName())) {
                 result = HTTP_DIGEST;
-            } else if (name.equalsIgnoreCase(HTTP_SHAREDKEY.getName())) {
-                result = HTTP_SHAREDKEY;
-            } else if (name.equalsIgnoreCase(HTTP_SHAREDKEY_LITE.getName())) {
-                result = HTTP_SHAREDKEY_LITE;
+            } else if (name.equalsIgnoreCase(HTTP_AZURE_SHAREDKEY.getName())) {
+                result = HTTP_AZURE_SHAREDKEY;
+            } else if (name.equalsIgnoreCase(HTTP_AZURE_SHAREDKEY_LITE
+                    .getName())) {
+                result = HTTP_AZURE_SHAREDKEY_LITE;
             } else if (name.equalsIgnoreCase(HTTP_NTLM.getName())) {
                 result = HTTP_NTLM;
             } else if (name.equalsIgnoreCase(HTTP_OAUTH.getName())) {
