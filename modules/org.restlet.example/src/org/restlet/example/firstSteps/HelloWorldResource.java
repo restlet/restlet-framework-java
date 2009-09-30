@@ -5,7 +5,6 @@ import org.restlet.resource.ServerResource;
 
 /**
  * Resource which has only one representation.
- * 
  */
 public class HelloWorldResource extends ServerResource {
 

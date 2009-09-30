@@ -14,6 +14,9 @@ Changes log
         - Fixed bug when the deprecated method "createRoot" is 
           implemented instead of the "createInboundRoot".
           Reported by Fabian Mandelbaum.
+        - ServerResource#getVariants() now returns an empty list
+          instead of null when no annotation is present.
+          Reported by Tal Liron. 
     - Enhancements
         - Improved JAXB converted. Contributed by Sanjay Acharya.
  

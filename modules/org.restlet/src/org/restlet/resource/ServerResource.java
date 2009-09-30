@@ -755,6 +755,8 @@ public abstract class ServerResource extends UniformResource {
         List<Variant> result = this.variants;
 
         if (result == null) {
+            result = new ArrayList<Variant>();
+
             // Add annotation-based variants in priority
             if (isAnnotated() && hasAnnotations()) {
                 ConverterService cs = getConverterService();
@@ -777,10 +779,6 @@ public abstract class ServerResource extends UniformResource {
                                                                 (MediaType) metadata));
 
                                         if (annoVariants != null) {
-                                            if (result == null) {
-                                                result = new ArrayList<Variant>();
-                                            }
-
                                             for (VariantInfo v : annoVariants) {
                                                 result.add(new VariantInfo(v,
                                                         annotationInfo));
@@ -794,10 +792,6 @@ public abstract class ServerResource extends UniformResource {
                                     annotationInfo.getJavaReturnType(), null);
 
                             if (annoVariants != null) {
-                                if (result == null) {
-                                    result = new ArrayList<Variant>();
-                                }
-
                                 for (VariantInfo v : annoVariants) {
                                     result.add(new VariantInfo(v,
                                             annotationInfo));
