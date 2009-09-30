@@ -226,7 +226,7 @@ public class Query<T> implements Iterable<T> {
 
             Representation result = new StringRepresentation(resource.get()
                     .getText());
-            System.out.println(result.getText());
+            getLogger().fine(result.getText());
             session.setLatestRequest(resource.getRequest());
             session.setLatestResponse(resource.getResponse());
 
@@ -254,7 +254,7 @@ public class Query<T> implements Iterable<T> {
                     }
                 default:
                     // Can only guess entity and entity set, a priori.
-                    // TODO May we go a step further by analysing the metadata
+                    // TODO May we go a step further by analyzing the metadata
                     // of the data services?
                     // Do we support only those two types?
                     // Another way is to guess from the result representation.

@@ -60,7 +60,7 @@ public class Generator {
      * Takes two parameters :<br>
      * <ol>
      * <li>the URI of the ADO.NET data service</li>
-     * <li>the ouput directory</li>
+     * <li>the output directory</li>
      * </ol>
      * 
      * @param args
