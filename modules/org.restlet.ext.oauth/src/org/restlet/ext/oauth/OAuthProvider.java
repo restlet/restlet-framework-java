@@ -47,21 +47,21 @@ public abstract class OAuthProvider {
      * @param key
      * @param consumer
      */
-    abstract void addConsumer(String key, OAuthConsumer consumer);
+    public abstract void addConsumer(String key, OAuthConsumer consumer);
 
     /**
      * Generate an access token.
      * 
      * @param accessor
      */
-    abstract void generateAccessToken(OAuthAccessor accessor);
+    public abstract void generateAccessToken(OAuthAccessor accessor);
 
     /**
      * Generate a request token.
      * 
      * @param accessor
      */
-    abstract void generateRequestToken(OAuthAccessor accessor);
+    public abstract void generateRequestToken(OAuthAccessor accessor);
 
     /**
      * Get the accessor from a request.
@@ -69,7 +69,7 @@ public abstract class OAuthProvider {
      * @param requestMessage
      * @return Accessor, null if none found.
      */
-    abstract OAuthAccessor getAccessor(OAuthMessage requestMessage);
+    public abstract OAuthAccessor getAccessor(OAuthMessage requestMessage);
 
     /**
      * Get the consumer from a request.
@@ -77,7 +77,7 @@ public abstract class OAuthProvider {
      * @param requestMessage
      * @return Consumer, null if none found.
      */
-    abstract OAuthConsumer getConsumer(OAuthMessage requestMessage);
+    public abstract OAuthConsumer getConsumer(OAuthMessage requestMessage);
 
     /**
      * Authorize a request token for a user.
@@ -85,6 +85,6 @@ public abstract class OAuthProvider {
      * @param accessor
      * @param userId
      */
-    abstract void markAsAuthorized(OAuthAccessor accessor, String userId);
+    public abstract void markAsAuthorized(OAuthAccessor accessor, String userId);
 
 }

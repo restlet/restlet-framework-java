@@ -10,6 +10,7 @@ Changes log
           HTTP_SHAREDKEY_LITE.
         - DataServices.Session#getMetadata() now returns on Object 
           to prevent link to internal class.
+        - OAuthProvider methods are now public.
     - Bugs fixed
         - Fixed bug when the deprecated method "createRoot" is 
           implemented instead of the "createInboundRoot".
