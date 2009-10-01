@@ -9,18 +9,21 @@ public class ResourceTestSuite {
         TestSuite suite = new TestSuite("Test for org.restlet.test.resource");
         // $JUnit-BEGIN$
         suite.addTestSuite(DirectoryTestCase.class);
-        suite.addTestSuite(AnnotatedResource2TestCase.class);
+        suite.addTestSuite(ResourceTestCase.class);
+
         // TODO fix the import order before uncommenting this test case
         // suite.addTestSuite(AnnotatedResource1TestCase.class);
-        suite.addTestSuite(ResourceTestCase.class);
+
+        suite.addTestSuite(AnnotatedResource2TestCase.class);
         suite.addTestSuite(AnnotatedResource3TestCase.class);
-        // $JUnit-END$
+        suite.addTestSuite(AnnotatedResource4TestCase.class);
 
         // Tests based on HTTP client connectors are not supported by the GAE
         // edition.
         // [ifndef gae]
         suite.addTestSuite(FileRepresentationTestCase.class);
         // [enddef]
+        // $JUnit-END$
 
         return suite;
     }

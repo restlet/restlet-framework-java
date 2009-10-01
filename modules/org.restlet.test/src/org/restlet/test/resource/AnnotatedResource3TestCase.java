@@ -50,7 +50,7 @@ public class AnnotatedResource3TestCase extends TestCase {
 
     protected void setUp() throws Exception {
         Finder finder = new Finder();
-        finder.setTargetClass(MyNullServerResource.class);
+        finder.setTargetClass(MyResource3.class);
 
         this.clientResource = new ClientResource("http://local");
         this.clientResource.setNext(finder);

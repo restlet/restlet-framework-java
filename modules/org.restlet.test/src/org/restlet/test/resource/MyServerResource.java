@@ -37,7 +37,7 @@ import org.restlet.resource.ServerResource;
  * 
  * @author Jerome Louvel
  */
-public class MyServerResource extends ServerResource implements MyResource {
+public class MyServerResource extends ServerResource implements MyResource1 {
 
     private volatile MyBean myBean = new MyBean("myName", "myDescription");
 

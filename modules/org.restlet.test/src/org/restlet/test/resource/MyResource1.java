@@ -41,7 +41,7 @@ import org.restlet.resource.Put;
  * 
  * @author Jerome Louvel
  */
-public interface MyResource {
+public interface MyResource1 {
 
     @Get
     public MyBean represent();

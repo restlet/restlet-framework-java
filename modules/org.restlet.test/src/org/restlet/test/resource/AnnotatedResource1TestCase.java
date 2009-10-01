@@ -50,7 +50,7 @@ public class AnnotatedResource1TestCase extends TestCase {
 
     private ClientResource clientResource;
 
-    private MyResource myResource;
+    private MyResource1 myResource;
 
     protected void setUp() throws Exception {
         Finder finder = new Finder();
@@ -58,7 +58,7 @@ public class AnnotatedResource1TestCase extends TestCase {
 
         this.clientResource = new ClientResource("http://local");
         this.clientResource.setNext(finder);
-        this.myResource = clientResource.wrap(MyResource.class);
+        this.myResource = clientResource.wrap(MyResource1.class);
     }
 
     public void testDelete() {

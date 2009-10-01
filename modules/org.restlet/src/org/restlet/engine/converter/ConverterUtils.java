@@ -75,9 +75,10 @@ public class ConverterUtils {
                         if (result == null) {
                             result = new ArrayList<VariantInfo>();
                         }
+                        
                         // Detected a more generic variant, but still consider
                         // the conversion is possible to the target variant.
-                        // TODO Add support for the other kind of metadata
+                        // TODO: Add support for the other kind of metadata
                         result
                                 .add(new VariantInfo(targetVariant
                                         .getMediaType()));

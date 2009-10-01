@@ -20,7 +20,10 @@ Changes log
           Reported by Fabian Mandelbaum.
         - ServerResource#getVariants() now returns an empty list
           instead of null when no annotation is present.
-          Reported by Tal Liron. 
+          Reported by Tal Liron.
+        - Annotated methods returning a String, a StringRepresentation
+          or a Reader were only exposing a "text/plain" variant even
+          though most other media types are acceptable like JSON, XML.
     - Enhancements
         - Improved JAXB converted. Contributed by Sanjay Acharya.
         - Upgraded Apache Commons Logging to version 1.1.1. 

@@ -45,23 +45,34 @@ import org.restlet.resource.ResourceException;
  * 
  * @author Jerome Louvel
  */
-public class AnnotatedResource2TestCase extends TestCase {
+public class AnnotatedResource4TestCase extends TestCase {
 
     private ClientResource clientResource;
 
     protected void setUp() throws Exception {
         Finder finder = new Finder();
-        finder.setTargetClass(MyResource2.class);
+        finder.setTargetClass(MyResource4.class);
 
         this.clientResource = new ClientResource("http://local");
         this.clientResource.setNext(finder);
     }
 
     public void testGet() throws IOException, ResourceException {
-        Representation result = clientResource.get(MediaType.APPLICATION_ATOM);
+        Representation result = clientResource.get(MediaType.APPLICATION_JSON);
         assertNotNull(result);
-        assertEquals("<content/>", result.getText());
-        assertEquals(MediaType.TEXT_XML, result.getMediaType());
+        assertEquals("[\"root\"]", result.getText());
+        assertEquals(MediaType.APPLICATION_JSON, result.getMediaType());
+
+        result = clientResource.get(MediaType.APPLICATION_XML);
+        assertNotNull(result);
+        assertEquals("<root/>", result.getText());
+        assertEquals(MediaType.APPLICATION_XML, result.getMediaType());
+
+        result = clientResource.get(MediaType.TEXT_HTML);
+        assertNotNull(result);
+        assertEquals("<html><body>root</body></html>", result.getText());
+        assertEquals(MediaType.TEXT_HTML, result.getMediaType());
+
     }
 
 }

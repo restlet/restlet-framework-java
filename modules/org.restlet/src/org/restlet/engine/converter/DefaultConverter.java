@@ -74,10 +74,6 @@ public class DefaultConverter extends ConverterHelper {
     private static final VariantInfo VARIANT_OBJECT_XML = new VariantInfo(
             MediaType.APPLICATION_JAVA_OBJECT_XML);
 
-    /** Plain text variant. */
-    private static final VariantInfo VARIANT_TEXT = new VariantInfo(
-            MediaType.TEXT_PLAIN);
-
     @Override
     public List<Class<?>> getObjectClasses(Variant source) {
         List<Class<?>> result = null;
@@ -107,7 +103,7 @@ public class DefaultConverter extends ConverterHelper {
 
         if (String.class.isAssignableFrom(source)
                 || StringRepresentation.class.isAssignableFrom(source)) {
-            result = addVariant(result, VARIANT_TEXT);
+            result = addVariant(result, VARIANT_ALL);
         } else if (File.class.isAssignableFrom(source)
                 || FileRepresentation.class.isAssignableFrom(source)) {
             result = addVariant(result, VARIANT_ALL);
@@ -116,7 +112,7 @@ public class DefaultConverter extends ConverterHelper {
             result = addVariant(result, VARIANT_ALL);
         } else if (Reader.class.isAssignableFrom(source)
                 || ReaderRepresentation.class.isAssignableFrom(source)) {
-            result = addVariant(result, VARIANT_TEXT);
+            result = addVariant(result, VARIANT_ALL);
         } else if (Representation.class.isAssignableFrom(source)) {
             result = addVariant(result, VARIANT_ALL);
         } else if (Form.class.isAssignableFrom(source)) {
