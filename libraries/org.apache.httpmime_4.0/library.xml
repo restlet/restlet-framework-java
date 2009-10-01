@@ -1,0 +1,16 @@
+<library id="httpclient">
+   <package name="org.apache.httpmime" />
+   <version>4.0</version>
+   <distributions>
+      <distribution id="classic" />
+   </distributions>
+   <homeUri>
+      http://hc.apache.org/httpcomponents-client/httpmime/
+	</homeUri>
+   <downloadUri>
+      http://hc.apache.org/httpcomponents-client/download.html
+	</downloadUri>
+   <javadocs>
+      <link href="http://hc.apache.org/httpcomponents-client/httpmime/apidocs/" />
+   </javadocs>
+</library>

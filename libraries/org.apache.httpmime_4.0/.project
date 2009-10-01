@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>org.apache.commons.httpclient</name>
+	<name>org.apache.httpmime</name>
 	<comment></comment>
 	<projects>
 	</projects>

@@ -1,0 +1,17 @@
+<library id="httpclient">
+   <package name="org.apache.httpcore" />
+   <version>4.0</version>
+   <release>1</release>
+   <distributions>
+      <distribution id="classic" />
+   </distributions>
+   <homeUri>
+      http://hc.apache.org/httpcomponents-core/
+	</homeUri>
+   <downloadUri>
+      http://hc.apache.org/httpcomponents-core/download.html
+	</downloadUri>
+   <javadocs>
+      <link href="http://hc.apache.org/httpcomponents-core/httpcore/apidocs/" />
+   </javadocs>
+</library>

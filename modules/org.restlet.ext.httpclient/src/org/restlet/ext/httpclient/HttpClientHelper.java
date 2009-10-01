@@ -31,16 +31,30 @@
 package org.restlet.ext.httpclient;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
-import org.apache.commons.httpclient.cookie.CookiePolicy;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.HttpRequestRetryHandler;
+import org.apache.http.client.params.CookiePolicy;
+import org.apache.http.client.params.HttpClientParams;
+import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.params.ConnManagerParams;
+import org.apache.http.conn.params.ConnPerRouteBean;
+import org.apache.http.conn.scheme.PlainSocketFactory;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.restlet.Client;
 import org.restlet.Request;
 import org.restlet.data.Protocol;
+import org.restlet.engine.Engine;
 import org.restlet.engine.http.HttpClientCall;
-
 
 /**
  * HTTP client connector using the HttpMethodCall and Apache HTTP Client
@@ -77,11 +91,10 @@ import org.restlet.engine.http.HttpClientCall;
  * <td>The maximum number of active connections.</td>
  * </tr>
  * <tr>
- * <td>connectionManagerTimeout</td>
+ * <td>connectionTimeout</td>
  * <td>int</td>
  * <td>0</td>
- * <td>The timeout in milliseconds used when retrieving an HTTP connection from
- * the HTTP connection manager.</td>
+ * <td>The timeout in milliseconds used when establishing an HTTP connection.</td>
  * </tr>
  * <tr>
  * <td>stopIdleTimeout</td>
@@ -91,20 +104,20 @@ import org.restlet.engine.http.HttpClientCall;
  * stopping the connector.</td>
  * </tr>
  * <tr>
- * <td>readTimeout</td>
+ * <td>socketTimeout</td>
  * <td>int</td>
  * <td>0</td>
- * <td>Sets the read timeout to a specified timeout, in milliseconds. A timeout
- * of zero is interpreted as an infinite timeout.</td>
+ * <td>Sets the socket timeout to a specified timeout, in milliseconds. A
+ * timeout of zero is interpreted as an infinite timeout.</td>
  * </tr>
  * <tr>
  * <td>retryHandler</td>
  * <td>String</td>
  * <td>null</td>
  * <td>Class name of the retry handler to use instead of HTTP Client default
- * behavior. The given class name must implement the
- * org.apache.commons.httpclient.HttpMethodRetryHandler interface and have a
- * default constructor</td>
+ * behavior. The given class name must extend the
+ * org.apache.http.client.HttpRequestRetryHandler class and have a default
+ * constructor</td>
  * </tr>
  * <tr>
  * <td>tcpNoDelay</td>
@@ -123,7 +136,7 @@ import org.restlet.engine.http.HttpClientCall;
  * @author Jerome Louvel
  */
 public class HttpClientHelper extends org.restlet.engine.http.HttpClientHelper {
-    private volatile HttpClient httpClient;
+    private volatile DefaultHttpClient httpClient;
 
     /**
      * Constructor.
@@ -136,6 +149,66 @@ public class HttpClientHelper extends org.restlet.engine.http.HttpClientHelper {
         this.httpClient = null;
         getProtocols().add(Protocol.HTTP);
         getProtocols().add(Protocol.HTTPS);
+    }
+
+    /**
+     * Configures the HTTP client. By default, it try to set the retry handler.
+     * 
+     * @param httpClient
+     *            The HTTP client to configure.
+     */
+    protected void configure(DefaultHttpClient httpClient) {
+        if (getRetryHandler() != null) {
+            try {
+                HttpRequestRetryHandler retryHandler = (HttpRequestRetryHandler) Engine
+                        .loadClass(getRetryHandler()).newInstance();
+                this.httpClient.setHttpRequestRetryHandler(retryHandler);
+            } catch (Exception e) {
+                getLogger()
+                        .log(
+                                Level.WARNING,
+                                "An error occurred during the instantiation of the retry handler.",
+                                e);
+            }
+        }
+    }
+
+    /**
+     * Configures the various parameters of the connection manager and the HTTP
+     * client.
+     * 
+     * @param params
+     *            The parameter list to update.
+     */
+    protected void configure(HttpParams params) {
+        ConnManagerParams.setMaxTotalConnections(params,
+                getMaxTotalConnections());
+        ConnManagerParams.setMaxConnectionsPerRoute(params,
+                new ConnPerRouteBean(getMaxConnectionsPerHost()));
+
+        // Configure other parameters
+        HttpClientParams.setAuthenticating(params, false);
+        HttpClientParams.setRedirecting(params, isFollowRedirects());
+        HttpClientParams.setCookiePolicy(params,
+                CookiePolicy.BROWSER_COMPATIBILITY);
+        HttpConnectionParams.setTcpNoDelay(params, getTcpNoDelay());
+        HttpConnectionParams.setConnectionTimeout(params,
+                getConnectionTimeout());
+        HttpConnectionParams.setSoTimeout(params, getSocketTimeout());
+    }
+
+    /**
+     * Configures the scheme registry. By default, it registers the HTTP and the
+     * HTTPS schemes.
+     * 
+     * @param schemeRegistry
+     *            The scheme registry to configure.
+     */
+    protected void configure(SchemeRegistry schemeRegistry) {
+        schemeRegistry.register(new Scheme("http", PlainSocketFactory
+                .getSocketFactory(), 80));
+        schemeRegistry.register(new Scheme("https", SSLSocketFactory
+                .getSocketFactory(), 443));
     }
 
     /**
@@ -162,15 +235,30 @@ public class HttpClientHelper extends org.restlet.engine.http.HttpClientHelper {
     }
 
     /**
-     * Returns the timeout in milliseconds used when retrieving an HTTP
-     * connection from the HTTP connection manager.
+     * Creates the connection manager. By default, it creates a thread safe
+     * connection manager.
+     * 
+     * @param params
+     *            The configuration parameters.
+     * @param schemeRegistry
+     *            The scheme registry to use.
+     * @return The created connection manager.
+     */
+    protected ClientConnectionManager createClientConnectionManager(
+            HttpParams params, SchemeRegistry schemeRegistry) {
+        return new ThreadSafeClientConnManager(params, schemeRegistry);
+    }
+
+    /**
+     * Returns the timeout in milliseconds used when establishing an HTTP
+     * connection.
      * 
      * @return The timeout in milliseconds used when retrieving an HTTP
      *         connection from the HTTP connection manager.
      */
-    public int getConnectionManagerTimeout() {
+    public int getConnectionTimeout() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "connectionManagerTimeout", "0"));
+                "connectionTimeout", "0"));
     }
 
     public HttpClient getHttpClient() {
@@ -200,17 +288,6 @@ public class HttpClientHelper extends org.restlet.engine.http.HttpClientHelper {
     }
 
     /**
-     * Returns the read timeout value. A timeout of zero is interpreted as an
-     * infinite timeout.
-     * 
-     * @return The read timeout value.
-     */
-    public int getReadTimeout() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "readTimeout", "0"));
-    }
-
-    /**
      * Returns the class name of the retry handler to use instead of HTTP Client
      * default behavior. The given class name must implement the
      * org.apache.commons.httpclient.HttpMethodRetryHandler interface and have a
@@ -220,6 +297,17 @@ public class HttpClientHelper extends org.restlet.engine.http.HttpClientHelper {
      */
     public String getRetryHandler() {
         return getHelpedParameters().getFirstValue("retryHandler", null);
+    }
+
+    /**
+     * Returns the socket timeout value. A timeout of zero is interpreted as an
+     * infinite timeout.
+     * 
+     * @return The read timeout value.
+     */
+    public int getSocketTimeout() {
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "socketTimeout", "0"));
     }
 
     /**
@@ -235,16 +323,6 @@ public class HttpClientHelper extends org.restlet.engine.http.HttpClientHelper {
     }
 
     /**
-     * Indicates if the protocol will automatically follow redirects.
-     * 
-     * @return True if the protocol will automatically follow redirects.
-     */
-    public boolean isFollowRedirects() {
-        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
-                "followRedirects", "false"));
-    }
-    
-    /**
      * Indicates if the protocol will use Nagle's algorithm
      * 
      * @return True to enable TCP_NODELAY, false to disable.
@@ -255,34 +333,45 @@ public class HttpClientHelper extends org.restlet.engine.http.HttpClientHelper {
                 "tcpNoDelay", "false"));
     }
 
+    /**
+     * Indicates if the protocol will automatically follow redirects.
+     * 
+     * @return True if the protocol will automatically follow redirects.
+     */
+    public boolean isFollowRedirects() {
+        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
+                "followRedirects", "false"));
+    }
+
     @Override
     public void start() throws Exception {
         super.start();
 
-        // Create the multi-threaded connection manager and configure it
-        final MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
-        connectionManager.getParams().setDefaultMaxConnectionsPerHost(
-                getMaxConnectionsPerHost());
-        connectionManager.getParams().setMaxTotalConnections(
-                getMaxTotalConnections());
-        connectionManager.getParams().setTcpNoDelay(getTcpNoDelay());
+        // Define configuration parameters
+        HttpParams params = new BasicHttpParams();
+        configure(params);
 
-        // Create the internal client connector
-        this.httpClient = new HttpClient(connectionManager);
-        getHttpClient().getParams().setAuthenticationPreemptive(false);
-        getHttpClient().getParams().setConnectionManagerTimeout(
-                getConnectionManagerTimeout());
-        getHttpClient().getParams()
-                .setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
-        getHttpClient().getParams().setSoTimeout(getReadTimeout());
+        // Set-up the scheme registry
+        SchemeRegistry schemeRegistry = new SchemeRegistry();
+        configure(schemeRegistry);
+
+        // Create the connection manager
+        ClientConnectionManager connectionManager = createClientConnectionManager(
+                params, schemeRegistry);
+
+        // Create and configure the HTTP client
+        this.httpClient = new DefaultHttpClient(connectionManager, params);
+        configure(this.httpClient);
 
         getLogger().info("Starting the HTTP client");
     }
 
     @Override
     public void stop() throws Exception {
-        getHttpClient().getHttpConnectionManager().closeIdleConnections(
-                getStopIdleTimeout());
+        getHttpClient().getConnectionManager().closeExpiredConnections();
+        getHttpClient().getConnectionManager().closeIdleConnections(
+                getStopIdleTimeout(), TimeUnit.MILLISECONDS);
+        getHttpClient().getConnectionManager().shutdown();
         getLogger().info("Stopping the HTTP client");
     }
 

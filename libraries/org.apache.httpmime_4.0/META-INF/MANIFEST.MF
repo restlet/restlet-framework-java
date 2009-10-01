@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Apache HTTP Components MIME
+Bundle-SymbolicName: org.apache.httpmime
+Bundle-Version: 4.0
+Bundle-ClassPath: 
+ org.apache.httpmime.jar
+Bundle-Vendor: Apache Software Foundation
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Export-Package: org.apache.http.entity.mime;
+  uses:="org.apache.james.mime4j.parser,
+   org.apache.http.entity.mime.content,
+   org.apache.james.mime4j.util,
+   org.apache.james.mime4j.message,
+   org.apache.james.mime4j,
+   org.apache.http,
+   org.apache.james.mime4j.descriptor",
+ org.apache.http.entity.mime.content;uses:="org.apache.james.mime4j.message,org.apache.james.mime4j.descriptor"

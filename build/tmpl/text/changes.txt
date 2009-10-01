@@ -11,6 +11,9 @@ Changes log
         - DataServices.Session#getMetadata() now returns on Object 
           to prevent link to internal class.
         - OAuthProvider methods are now public.
+        - Upgraded the "org.restlet.ext.httpclient" extension to
+          leverage Apache HTTP Client 4.0. WARNING: some parameters 
+          were renamed due to API changes.
     - Bugs fixed
         - Fixed bug when the deprecated method "createRoot" is 
           implemented instead of the "createInboundRoot".
@@ -20,6 +23,7 @@ Changes log
           Reported by Tal Liron. 
     - Enhancements
         - Improved JAXB converted. Contributed by Sanjay Acharya.
+        - Upgraded Apache Commons Logging to version 1.1.1. 
  
 - 2.0 Milestone 5 (2009-09-28)
     - API changes

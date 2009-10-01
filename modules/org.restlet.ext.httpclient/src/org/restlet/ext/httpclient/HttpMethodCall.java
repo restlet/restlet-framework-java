@@ -34,36 +34,34 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.logging.Level;
 
-import org.apache.commons.httpclient.ConnectMethod;
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HostConfiguration;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.URI;
-import org.apache.commons.httpclient.URIException;
-import org.apache.commons.httpclient.methods.DeleteMethod;
-import org.apache.commons.httpclient.methods.EntityEnclosingMethod;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.HeadMethod;
-import org.apache.commons.httpclient.methods.OptionsMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.PutMethod;
-import org.apache.commons.httpclient.methods.RequestEntity;
-import org.apache.commons.httpclient.methods.TraceMethod;
-import org.apache.commons.httpclient.params.HttpMethodParams;
+import org.apache.http.Header;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpHead;
+import org.apache.http.client.methods.HttpOptions;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpTrace;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.entity.AbstractHttpEntity;
+import org.apache.http.message.BasicHeader;
 import org.restlet.Request;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
-import org.restlet.engine.Engine;
 import org.restlet.engine.http.HttpClientCall;
+import org.restlet.engine.http.HttpConstants;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
-
 
 /**
  * HTTP client connector call based on Apache HTTP Client's HttpMethod class.
@@ -75,8 +73,11 @@ public class HttpMethodCall extends HttpClientCall {
     /** The associated HTTP client. */
     private volatile HttpClientHelper clientHelper;
 
-    /** The wrapped HTTP method. */
-    private volatile HttpMethod httpMethod;
+    /** The wrapped HTTP request. */
+    private volatile HttpUriRequest httpRequest;
+
+    /** The wrapped HTTP response. */
+    private volatile HttpResponse httpResponse;
 
     /** Indicates if the response headers were added. */
     private volatile boolean responseHeadersAdded;
@@ -96,61 +97,48 @@ public class HttpMethodCall extends HttpClientCall {
      * @throws IOException
      */
     public HttpMethodCall(HttpClientHelper helper, final String method,
-            String requestUri, boolean hasEntity) throws IOException {
+            final String requestUri, boolean hasEntity) throws IOException {
         super(helper, method, requestUri);
         this.clientHelper = helper;
 
         if (requestUri.startsWith("http")) {
             if (method.equalsIgnoreCase(Method.GET.getName())) {
-                this.httpMethod = new GetMethod(requestUri);
+                this.httpRequest = new HttpGet(requestUri);
             } else if (method.equalsIgnoreCase(Method.POST.getName())) {
-                this.httpMethod = new PostMethod(requestUri);
+                this.httpRequest = new HttpPost(requestUri);
             } else if (method.equalsIgnoreCase(Method.PUT.getName())) {
-                this.httpMethod = new PutMethod(requestUri);
+                this.httpRequest = new HttpPut(requestUri);
             } else if (method.equalsIgnoreCase(Method.HEAD.getName())) {
-                this.httpMethod = new HeadMethod(requestUri);
+                this.httpRequest = new HttpHead(requestUri);
             } else if (method.equalsIgnoreCase(Method.DELETE.getName())) {
-                this.httpMethod = new DeleteMethod(requestUri);
-            } else if (method.equalsIgnoreCase(Method.CONNECT.getName())) {
-                final HostConfiguration host = new HostConfiguration();
-                host.setHost(new URI(requestUri, false));
-                this.httpMethod = new ConnectMethod(host);
+                this.httpRequest = new HttpDelete(requestUri);
             } else if (method.equalsIgnoreCase(Method.OPTIONS.getName())) {
-                this.httpMethod = new OptionsMethod(requestUri);
+                this.httpRequest = new HttpOptions(requestUri);
             } else if (method.equalsIgnoreCase(Method.TRACE.getName())) {
-                this.httpMethod = new TraceMethod(requestUri);
+                this.httpRequest = new HttpTrace(requestUri);
             } else {
-                this.httpMethod = new EntityEnclosingMethod(requestUri) {
+                this.httpRequest = new HttpEntityEnclosingRequestBase() {
+
                     @Override
-                    public String getName() {
+                    public URI getURI() {
+                        try {
+                            return new URI(requestUri);
+                        } catch (URISyntaxException e) {
+                            getLogger().log(Level.WARNING,
+                                    "Invalid URI syntax", e);
+                            return null;
+                        }
+                    }
+
+                    @Override
+                    public String getMethod() {
                         return method;
                     }
                 };
             }
 
-            this.httpMethod.setFollowRedirects(this.clientHelper
-                    .isFollowRedirects());
-            this.httpMethod.setDoAuthentication(false);
-
-            if (this.clientHelper.getRetryHandler() != null) {
-                try {
-                    this.httpMethod.getParams().setParameter(
-                            HttpMethodParams.RETRY_HANDLER,
-                            Engine.loadClass(
-                                    this.clientHelper.getRetryHandler())
-                                    .newInstance());
-                } catch (Exception e) {
-                    this.clientHelper
-                            .getLogger()
-                            .log(
-                                    Level.WARNING,
-                                    "An error occurred during the instantiation of the retry handler.",
-                                    e);
-                }
-            }
-
             this.responseHeadersAdded = false;
-            setConfidential(this.httpMethod.getURI().getScheme()
+            setConfidential(this.httpRequest.getURI().getScheme()
                     .equalsIgnoreCase(Protocol.HTTPS.getSchemeName()));
         } else {
             throw new IllegalArgumentException(
@@ -159,12 +147,21 @@ public class HttpMethodCall extends HttpClientCall {
     }
 
     /**
-     * Returns the HTTP method.
+     * Returns the HTTP request.
      * 
-     * @return The HTTP method.
+     * @return The HTTP request.
      */
-    public HttpMethod getHttpMethod() {
-        return this.httpMethod;
+    public HttpUriRequest getHttpRequest() {
+        return this.httpRequest;
+    }
+
+    /**
+     * Returns the HTTP response.
+     * 
+     * @return The HTTP response.
+     */
+    public HttpResponse getHttpResponse() {
+        return this.httpResponse;
     }
 
     /**
@@ -174,7 +171,7 @@ public class HttpMethodCall extends HttpClientCall {
      */
     @Override
     public String getReasonPhrase() {
-        return getHttpMethod().getStatusText();
+        return getHttpResponse().getStatusLine().getReasonPhrase();
     }
 
     @Override
@@ -204,14 +201,14 @@ public class HttpMethodCall extends HttpClientCall {
         try {
             // Return a wrapper filter that will release the connection when
             // needed
-            final InputStream responseBodyAsStream = getHttpMethod()
-                    .getResponseBodyAsStream();
-            if (responseBodyAsStream != null) {
-                result = new FilterInputStream(responseBodyAsStream) {
+            final InputStream responseStream = getHttpResponse().getEntity()
+                    .getContent();
+            if (responseStream != null) {
+                result = new FilterInputStream(responseStream) {
                     @Override
                     public void close() throws IOException {
                         super.close();
-                        getHttpMethod().releaseConnection();
+                        getHttpResponse().getEntity().consumeContent();
                     }
                 };
             }
@@ -228,11 +225,14 @@ public class HttpMethodCall extends HttpClientCall {
      */
     @Override
     public Series<Parameter> getResponseHeaders() {
-        final Series<Parameter> result = super.getResponseHeaders();
+        Series<Parameter> result = super.getResponseHeaders();
 
         if (!this.responseHeadersAdded) {
-            for (final Header header : getHttpMethod().getResponseHeaders()) {
-                result.add(header.getName(), header.getValue());
+            if ((getHttpResponse() != null)
+                    && (getHttpResponse().getAllHeaders() != null)) {
+                for (Header header : getHttpResponse().getAllHeaders()) {
+                    result.add(header.getName(), header.getValue());
+                }
             }
 
             this.responseHeadersAdded = true;
@@ -249,11 +249,7 @@ public class HttpMethodCall extends HttpClientCall {
      */
     @Override
     public String getServerAddress() {
-        try {
-            return getHttpMethod().getURI().getHost();
-        } catch (URIException e) {
-            return null;
-        }
+        return getHttpRequest().getURI().getHost();
     }
 
     /**
@@ -263,7 +259,7 @@ public class HttpMethodCall extends HttpClientCall {
      */
     @Override
     public int getStatusCode() {
-        return getHttpMethod().getStatusCode();
+        return getHttpResponse().getStatusLine().getStatusCode();
     }
 
     /**
@@ -282,47 +278,56 @@ public class HttpMethodCall extends HttpClientCall {
             final Representation entity = request.getEntity();
 
             // Set the request headers
-            for (final Parameter header : getRequestHeaders()) {
-                getHttpMethod().addRequestHeader(header.getName(),
-                        header.getValue());
+            for (Parameter header : getRequestHeaders()) {
+                if (!header.getName().equals(
+                        HttpConstants.HEADER_CONTENT_LENGTH)) {
+                    getHttpRequest().addHeader(header.getName(),
+                            header.getValue());
+                }
             }
 
-            // For those method that accept enclosing entites, provide it
+            // For those method that accept enclosing entities, provide it
             if ((entity != null)
-                    && (getHttpMethod() instanceof EntityEnclosingMethod)) {
-                final EntityEnclosingMethod eem = (EntityEnclosingMethod) getHttpMethod();
-                eem.setRequestEntity(new RequestEntity() {
+                    && (getHttpRequest() instanceof HttpEntityEnclosingRequestBase)) {
+                final HttpEntityEnclosingRequestBase eem = (HttpEntityEnclosingRequestBase) getHttpRequest();
+                eem.setEntity(new AbstractHttpEntity() {
                     public long getContentLength() {
                         return entity.getSize();
                     }
 
-                    public String getContentType() {
-                        return (entity.getMediaType() != null) ? entity
-                                .getMediaType().toString() : null;
+                    public Header getContentType() {
+                        return new BasicHeader(
+                                HttpConstants.HEADER_CONTENT_TYPE, (entity
+                                        .getMediaType() != null) ? entity
+                                        .getMediaType().toString() : null);
+                    }
+
+                    public InputStream getContent() throws IOException,
+                            IllegalStateException {
+                        return entity.getStream();
+                    }
+
+                    public boolean isStreaming() {
+                        return (entity.getSize() == Representation.UNKNOWN_SIZE);
+                    }
+
+                    public void writeTo(OutputStream os) throws IOException {
+                        entity.write(os);
                     }
 
                     public boolean isRepeatable() {
                         return !entity.isTransient();
                     }
-
-                    public void writeRequest(OutputStream os)
-                            throws IOException {
-                        entity.write(os);
-                    }
                 });
             }
 
             // Ensure that the connection is active
-            this.clientHelper.getHttpClient().executeMethod(getHttpMethod());
+            this.httpResponse = this.clientHelper.getHttpClient().execute(
+                    getHttpRequest());
 
             // Now we can access the status code, this MUST happen after closing
             // any open request stream.
             result = new Status(getStatusCode(), null, getReasonPhrase(), null);
-
-            // If there is no response body, immediately release the connection
-            if (getHttpMethod().getResponseBodyAsStream() == null) {
-                getHttpMethod().releaseConnection();
-            }
         } catch (IOException ioe) {
             this.clientHelper
                     .getLogger()
@@ -333,7 +338,7 @@ public class HttpMethodCall extends HttpClientCall {
             result = new Status(Status.CONNECTOR_ERROR_COMMUNICATION, ioe);
 
             // Release the connection
-            getHttpMethod().releaseConnection();
+            getHttpRequest().abort();
         }
 
         return result;
