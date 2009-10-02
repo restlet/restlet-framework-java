@@ -56,8 +56,8 @@ import org.restlet.service.MetadataService;
 
 /**
  * ZIP and JAR client connector. Only works for archives available as local
- * files.
- * 
+ * files.<br>
+ * <br>
  * Handles GET, HEAD and PUT request on resources referenced as :
  * zip:file://<file path>
  * 

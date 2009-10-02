@@ -38,7 +38,8 @@ import org.restlet.engine.ClientHelper;
 
 /**
  * Connector to the local resources accessible via file system, class loaders
- * and similar mechanisms. Here is the list of parameters that are supported:
+ * and similar mechanisms. Here is the list of parameters that are supported.
+ * They should be set in the Client's context before it is started:
  * <table>
  * <tr>
  * <th>Parameter name</th>

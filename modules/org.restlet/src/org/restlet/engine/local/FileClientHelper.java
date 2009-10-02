@@ -65,7 +65,8 @@ import org.restlet.representation.Variant;
 
 /**
  * Connector to the file resources accessible. Here is the list of parameters
- * that are supported:
+ * that are supported. They should be set in the Client's context before it is
+ * started:
  * <table>
  * <tr>
  * <th>Parameter name</th>

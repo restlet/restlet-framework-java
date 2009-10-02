@@ -52,7 +52,8 @@ import com.sun.grizzly.filter.SSLReadFilter;
 
 /**
  * HTTPS connector based on Grizzly. Here is the list of additional parameters
- * that are supported:
+ * that are supported. They should be set in the Server's context before it is
+ * started:
  * <table>
  * <tr>
  * <th>Parameter name</th>

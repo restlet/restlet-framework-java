@@ -50,7 +50,8 @@ import org.restlet.representation.InputRepresentation;
 
 /**
  * FTP client connector using the {@link URLConnection}. Here is the list of
- * parameters that are supported:
+ * parameters that are supported. They should be set in the Client's context
+ * before it is started:
  * <table>
  * <tr>
  * <th>Parameter name</th>

@@ -44,7 +44,8 @@ import org.restlet.ext.net.internal.HttpUrlConnectionCall;
 
 /**
  * HTTP client connector using the {@link HttpUrlConnectionCall}. Here is the
- * list of parameters that are supported:
+ * list of parameters that are supported. They should be set in the Client's
+ * context before it is started:
  * <table>
  * <tr>
  * <th>Parameter name</th>
@@ -88,10 +89,10 @@ import org.restlet.ext.net.internal.HttpUrlConnectionCall;
  * <td>If true, the protocol is allowed to use caching whenever it can.</td>
  * </tr>
  * </table>
- * 
+ * <br>
  * It is also possible to specify a hostname verifier for HTTPS connections. See
- * the {@link #getHostnameVerifier()} method for details.
- * 
+ * the {@link #getHostnameVerifier()} method for details.<br>
+ * <br>
  * Note that by default, the {@link HttpURLConnection} class as implemented by
  * Sun will retry a request if an IO exception is caught, for example due to a
  * connection reset by the server. This can be annoying, especially because the

@@ -68,7 +68,7 @@ import org.restlet.engine.ClientHelper;
  * There is one additionnal parameter : "DefaultCore" which gives default core
  * for "solr:///..." requests.
  * 
- * @author Rémi Dewitte <remi@gide.net>
+ * @author Remi Dewitte <remi@gide.net>
  */
 public class SolrClientHelper extends ClientHelper {
 

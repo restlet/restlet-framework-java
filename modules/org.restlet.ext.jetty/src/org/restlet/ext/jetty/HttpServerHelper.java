@@ -39,7 +39,8 @@ import org.restlet.data.Protocol;
 
 /**
  * Jetty HTTP server connector. Here is the list of additional parameters that
- * are supported:
+ * are supported. They should be set in the Server's context before it is
+ * started:
  * <table>
  * <tr>
  * <th>Parameter name</th>
@@ -107,7 +108,8 @@ public class HttpServerHelper extends JettyServerHelper {
      * @return The type of Jetty connector to use.
      */
     public int getType() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue("type", "1"));
+        return Integer.parseInt(getHelpedParameters()
+                .getFirstValue("type", "1"));
     }
 
 }

@@ -51,7 +51,8 @@ import org.simpleframework.http.core.ContainerServer;
 
 /**
  * Simple HTTP server connector. Here is the list of additional parameters that
- * are supported:
+ * are supported. They should be set in the Server's context before it is
+ * started:
  * <table>
  * <tr>
  * <th>Parameter name</th>

@@ -52,7 +52,8 @@ import org.restlet.data.Protocol;
 
 /**
  * HTTP client helper based on BIO sockets. Here is the list of parameters that
- * are supported:
+ * are supported. They should be set in the Client's context before it is
+ * started:
  * <table>
  * <tr>
  * <th>Parameter name</th>

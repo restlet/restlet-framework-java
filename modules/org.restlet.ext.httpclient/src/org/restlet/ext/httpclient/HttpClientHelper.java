@@ -60,9 +60,10 @@ import org.restlet.engine.http.HttpClientCall;
  * HTTP client connector using the HttpMethodCall and Apache HTTP Client
  * project. Note that the response must be fully read in all cases in order to
  * surely release the underlying connection. Not doing so may cause future
- * requests to block.
- * 
- * Here is the list of parameters that are supported:
+ * requests to block.<br>
+ * <br>
+ * Here is the list of parameters that are supported. They should be set in the
+ * Client's context before it is started:
  * <table>
  * <tr>
  * <th>Parameter name</th>

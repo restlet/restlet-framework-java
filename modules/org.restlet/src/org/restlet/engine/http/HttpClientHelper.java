@@ -41,7 +41,7 @@ import org.restlet.engine.ClientHelper;
 
 /**
  * Base HTTP client connector. Here is the list of parameters that are
- * supported:
+ * supported. They should be set in the Client's context before it is started:
  * <table>
  * <tr>
  * <th>Parameter name</th>

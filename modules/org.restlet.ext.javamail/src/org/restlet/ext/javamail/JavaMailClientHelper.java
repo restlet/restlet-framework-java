@@ -112,8 +112,9 @@ import com.sun.mail.pop3.POP3Folder;
  * 
  * To retrieve an individual email, just add the href attribute at the end of
  * the POP URI, such as: pop://host/1234<br>
- * 
- * Here is the list of parameters that are supported:
+ * <br>
+ * Here is the list of parameters that are supported. They should be set in the
+ * Client's context before it is started:
  * <table>
  * <tr>
  * <th>Parameter name</th>
