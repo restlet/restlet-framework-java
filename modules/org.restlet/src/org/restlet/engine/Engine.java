@@ -300,11 +300,11 @@ public class Engine {
 
             if (result == null) {
                 // Couldn't find a matching connector
-                final StringBuilder sb = new StringBuilder();
+                StringBuilder sb = new StringBuilder();
                 sb
                         .append("No available client connector supports the required protocols: ");
 
-                for (final Protocol p : client.getProtocols()) {
+                for (Protocol p : client.getProtocols()) {
                     sb.append("'").append(p.getName()).append("' ");
                 }
 

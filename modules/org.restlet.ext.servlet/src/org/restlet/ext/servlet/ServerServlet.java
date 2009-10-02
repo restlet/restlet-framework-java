@@ -181,7 +181,11 @@ import org.restlet.routing.VirtualHost;
  * component. It lets you access to resources inside your WAR using the uniform
  * interface. Here is an example of WAR URI that can be resolved by this client:
  * "war:///WEB-INF/web.xml". In order to use it, just call the
- * {@link Context#getClientDispatcher()} in your application.
+ * {@link Context#getClientDispatcher()} in your application.<br>
+ * <br>
+ * Finally, the ServletContext is copied into an
+ * "org.restlet.ext.servlet.ServletContext" attribute of the Restlet application
+ * in case you need access to it.
  * 
  * @see <a href="http://java.sun.com/j2ee/">J2EE home page</a>
  * @author Jerome Louvel
