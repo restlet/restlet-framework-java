@@ -1,8 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: JDBC Rowset 1.0.1 Implementation
+Bundle-Name: JDBC Rowset Implementation
 Bundle-SymbolicName: com.sun.rowset
-Bundle-Version: 1.0.1
+Bundle-Version: 1.0
 Bundle-ClassPath: com.sun.rowset.jar
 Bundle-Vendor: Sun Microsystems Inc.
 Export-Package: com.sun.rowset;

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Java Architecture for XML Binding
 Bundle-SymbolicName: com.sun.xml.bind
-Bundle-Version: 2.1.10
+Bundle-Version: 2.1
 Bundle-ClassPath: com.sun.jaxb.jar
 Bundle-Vendor: Sun Microsystems Inc.
 Export-Package: com.sun.xml.bind;version="2.1.10";

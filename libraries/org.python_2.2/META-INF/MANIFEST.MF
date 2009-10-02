@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Jython
 Bundle-SymbolicName: org.python
-Bundle-Version: 2.2.1
+Bundle-Version: 2.2
 Bundle-ClassPath: org.python.jar,
  com.sun.script.jython.jar
 Bundle-Vendor: Python Software Foundation

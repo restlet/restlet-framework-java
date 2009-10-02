@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Quercus
 Bundle-SymbolicName: com.caucho.quercus
-Bundle-Version: 3.2.1
+Bundle-Version: 3.2
 Bundle-ClassPath: com.caucho.quercus.jar,
  com.caucho.resin.util.jar
 Bundle-Vendor: Caucho

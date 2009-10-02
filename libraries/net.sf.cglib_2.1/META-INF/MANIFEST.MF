@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: cglib library
 Bundle-SymbolicName: net.sf.cglib
-Bundle-Version: 2.1.3
+Bundle-Version: 2.1
 Bundle-Vendor: cglib
 Bundle-ClassPath: net.sf.cglib.jar
 Export-Package: net.sf.cglib.asm,

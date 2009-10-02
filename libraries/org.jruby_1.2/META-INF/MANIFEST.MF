@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: JRuby
 Bundle-SymbolicName: org.jruby
-Bundle-Version: 1.2.0
+Bundle-Version: 1.2
 Bundle-ClassPath: org.jruby.jar,
  com.sun.script.jruby.jar
 Bundle-Vendor: Codehaus

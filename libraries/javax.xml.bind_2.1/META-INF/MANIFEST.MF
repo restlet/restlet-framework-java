@@ -33,4 +33,27 @@ Export-Package: javax.xml.bind;version="2.1.0";
    org.xml.sax",
  javax.xml.bind.util;version="2.1.0";uses:="javax.xml.transform.sax,javax.xml.bind,org.xml.sax"
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Require-Bundle: com.sun.xml.bind;bundle-version="2.1.10"
+Import-Package: com.sun.xml.bind,
+ com.sun.xml.bind.annotation,
+ com.sun.xml.bind.api,
+ com.sun.xml.bind.api.impl,
+ com.sun.xml.bind.marshaller,
+ com.sun.xml.bind.unmarshaller,
+ com.sun.xml.bind.util,
+ com.sun.xml.bind.v2,
+ com.sun.xml.bind.v2.bytecode,
+ com.sun.xml.bind.v2.model.annotation,
+ com.sun.xml.bind.v2.model.core,
+ com.sun.xml.bind.v2.model.impl,
+ com.sun.xml.bind.v2.model.nav,
+ com.sun.xml.bind.v2.model.runtime,
+ com.sun.xml.bind.v2.runtime,
+ com.sun.xml.bind.v2.runtime.output,
+ com.sun.xml.bind.v2.runtime.property,
+ com.sun.xml.bind.v2.runtime.reflect,
+ com.sun.xml.bind.v2.runtime.reflect.opt,
+ com.sun.xml.bind.v2.runtime.unmarshaller,
+ com.sun.xml.bind.v2.schemagen,
+ com.sun.xml.bind.v2.schemagen.episode,
+ com.sun.xml.bind.v2.schemagen.xmlschema,
+ com.sun.xml.bind.v2.util
