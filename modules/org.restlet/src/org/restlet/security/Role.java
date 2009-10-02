@@ -61,17 +61,8 @@ public class Role {
     /** The modifiable list of child roles. */
     private final List<Role> childRoles;
 
-    /** The modifiable list of denied permissions. */
-    private volatile List<Permission> deniedPermissions;
-
     /** The description. */
     private volatile String description;
-
-    /** The modifiable list of granted permissions. */
-    private volatile List<Permission> grantedPermissions;
-
-    /** Indicates if the permissions are inherited from the parent role. */
-    private volatile boolean inheritPermissions;
 
     /** The name. */
     private volatile String name;
@@ -107,15 +98,6 @@ public class Role {
     }
 
     /**
-     * Returns the modifiable list of denied permissions.
-     * 
-     * @return The modifiable list of denied permissions.
-     */
-    public List<Permission> getDeniedPermissions() {
-        return deniedPermissions;
-    }
-
-    /**
      * Returns the description.
      * 
      * @return The description.
@@ -125,30 +107,12 @@ public class Role {
     }
 
     /**
-     * Returns the modifiable list of granted permissions.
-     * 
-     * @return The modifiable list of granted permissions.
-     */
-    public List<Permission> getGrantedPermissions() {
-        return grantedPermissions;
-    }
-
-    /**
      * Returns the name.
      * 
      * @return The name.
      */
     public String getName() {
         return name;
-    }
-
-    /**
-     * Indicates if the permissions are inherited from the parent role.
-     * 
-     * @return True if the permissions are inherited
-     */
-    public boolean isInheritPermissions() {
-        return inheritPermissions;
     }
 
     /**
@@ -166,16 +130,6 @@ public class Role {
     }
 
     /**
-     * Sets the modifiable list of denied permissions.
-     * 
-     * @param deniedPermissions
-     *            The modifiable list of denied permissions.
-     */
-    public void setDeniedPermissions(List<Permission> deniedPermissions) {
-        this.deniedPermissions = deniedPermissions;
-    }
-
-    /**
      * Sets the description.
      * 
      * @param description
@@ -183,26 +137,6 @@ public class Role {
      */
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    /**
-     * Sets the modifiable list of granted permissions.
-     * 
-     * @param grantedPermissions
-     *            The modifiable list of granted permissions.
-     */
-    public void setGrantedPermissions(List<Permission> grantedPermissions) {
-        this.grantedPermissions = grantedPermissions;
-    }
-
-    /**
-     * Indicates if the permissions are inherited from the parent role.
-     * 
-     * @param inheritPermissions
-     *            True if the permissions are inherited.
-     */
-    public void setInheritPermissions(boolean inheritPermissions) {
-        this.inheritPermissions = inheritPermissions;
     }
 
     /**

@@ -17,7 +17,9 @@ Changes log
         - Refactored for simplification the security API introduced 
           in previous Restlet 2.0 milestones. 
            - The Organization class was removed and its "rootGroups" 
-             and "users" properties were moved to MemoryRealm. 
+             and "users" properties were moved to MemoryRealm.
+           - The Permission class was removed as it isn't necessarily
+             the best way to enforce fine grained authorization. 
            - The RealmService class was removed and the "realms" 
              property moved to Component.
            - The ClientInfo#subject property was replaced by 
