@@ -171,7 +171,8 @@ public class HttpMethodCall extends HttpClientCall {
      */
     @Override
     public String getReasonPhrase() {
-        return getHttpResponse().getStatusLine().getReasonPhrase();
+        return (getHttpResponse() == null) ? null : getHttpResponse()
+                .getStatusLine().getReasonPhrase();
     }
 
     @Override
@@ -201,8 +202,9 @@ public class HttpMethodCall extends HttpClientCall {
         try {
             // Return a wrapper filter that will release the connection when
             // needed
-            final InputStream responseStream = getHttpResponse().getEntity()
-                    .getContent();
+            InputStream responseStream = (getHttpResponse() == null) ? null
+                    : (getHttpResponse().getEntity() == null) ? null
+                            : getHttpResponse().getEntity().getContent();
             if (responseStream != null) {
                 result = new FilterInputStream(responseStream) {
                     @Override
@@ -259,7 +261,8 @@ public class HttpMethodCall extends HttpClientCall {
      */
     @Override
     public int getStatusCode() {
-        return getHttpResponse().getStatusLine().getStatusCode();
+        return (getHttpResponse() == null) ? null : getHttpResponse()
+                .getStatusLine().getStatusCode();
     }
 
     /**

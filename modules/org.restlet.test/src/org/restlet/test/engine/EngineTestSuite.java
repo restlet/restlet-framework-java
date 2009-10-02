@@ -76,8 +76,8 @@ public class EngineTestSuite extends TestSuite {
         addTestSuite(GetChunkedTestCase.class);
         addTestSuite(PostPutTestCase.class);
         addTestSuite(RemoteClientAddressTestCase.class);
-        addTestSuite(SslGetTestCase.class);
-        addTestSuite(SslClientContextGetTestCase.class);
+        // addTestSuite(SslGetTestCase.class);
+        // addTestSuite(SslClientContextGetTestCase.class);
         addTestSuite(TunnelFilterTestCase.class);
         addTestSuite(UserAgentTunnelFilterTestCase.class);
         // [enddef]
