@@ -90,6 +90,13 @@ public class LogService extends Service {
 
     /**
      * Constructor.
+     */
+    public LogService() {
+        this(true);
+    }
+
+    /**
+     * Constructor.
      * 
      * @param enabled
      *            True if the service has been enabled.

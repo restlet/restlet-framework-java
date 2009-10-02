@@ -95,6 +95,14 @@ import org.restlet.util.ServerList;
  * &lt;/component&gt;
  * </pre>
  * 
+ * <br>
+ * Components also have useful services associated. They are all enabled by
+ * default and are available as properties that can be eventually overridden:
+ * <ul>
+ * <li>"logService" to configure access logging.</li>
+ * <li>"statusService" to provide common representations for exception status.</li>
+ * </ul>
+ * 
  * Concurrency note: instances of this class or its subclasses can be invoked by
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
@@ -226,8 +234,8 @@ public class Component extends Restlet {
                     }
 
                 };
-                this.logService = new LogService(true);
-                this.statusService = new StatusService(true);
+                this.logService = new LogService();
+                this.statusService = new StatusService();
                 this.clients.setContext(getContext());
                 this.servers.setContext(getContext());
             }
