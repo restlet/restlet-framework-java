@@ -34,7 +34,7 @@ import org.restlet.Request;
 import org.restlet.Response;
 
 /**
- * Verifies the credentials provided by a subject sending a request.
+ * Verifies the credentials provided by a user sending a request.
  * 
  * @author Jerome Louvel
  */

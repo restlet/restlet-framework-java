@@ -65,6 +65,16 @@ public class User {
      * 
      * @param identifier
      *            The identifier (login).
+     */
+    public User(String identifier) {
+        this(identifier, (char[]) null, null, null, null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param identifier
+     *            The identifier (login).
      * @param secret
      *            The identification secret.
      */

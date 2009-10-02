@@ -41,11 +41,8 @@ import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Level;
 
-import javax.security.auth.Subject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -340,19 +337,8 @@ public class ServletCall extends HttpServerCall {
     }
 
     @Override
-    public Subject getSubject() {
-        Subject result = null;
-
-        if (getRequest().getUserPrincipal() != null) {
-            Set<Principal> principals = new CopyOnWriteArraySet<Principal>();
-            Set<Object> pubCredentials = new CopyOnWriteArraySet<Object>();
-            Set<Object> privCredentials = new CopyOnWriteArraySet<Object>();
-            principals.add(getRequest().getUserPrincipal());
-            result = new Subject(false, principals, pubCredentials,
-                    privCredentials);
-        }
-
-        return result;
+    public Principal getUserPrincipal() {
+        return getRequest().getUserPrincipal();
     }
 
     @Override

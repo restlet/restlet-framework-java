@@ -43,6 +43,9 @@ import org.restlet.util.Series;
  */
 public abstract class Realm {
 
+    /** The name. */
+    private volatile String name;
+
     /** The modifiable series of parameters. */
     private final Series<Parameter> parameters;
 
@@ -52,8 +55,8 @@ public abstract class Realm {
     private volatile Enroler enroler;
 
     /**
-     * The verifier that can check the validity of the credentials associated to
-     * a request.
+     * The verifier that can check the validity of the user credentials
+     * associated to a request.
      */
     private volatile Verifier verifier;
 
@@ -91,6 +94,15 @@ public abstract class Realm {
     }
 
     /**
+     * Returns the name.
+     * 
+     * @return The name.
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
      * Returns the modifiable series of parameters. A parameter is a pair
      * composed of a name and a value and is typically used for configuration
      * purpose, like Java properties. Note that multiple parameters with the
@@ -123,6 +135,16 @@ public abstract class Realm {
     }
 
     /**
+     * Sets the name.
+     * 
+     * @param name
+     *            The name.
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
      * Sets the modifiable series of parameters.
      * 
      * @param parameters
@@ -145,6 +167,11 @@ public abstract class Realm {
      */
     public void setVerifier(Verifier verifier) {
         this.verifier = verifier;
+    }
+
+    @Override
+    public String toString() {
+        return getName();
     }
 
 }

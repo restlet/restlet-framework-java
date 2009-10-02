@@ -86,11 +86,10 @@ import org.restlet.ext.jaxrs.internal.util.SortedMetadata;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.representation.Representation;
 import org.restlet.security.Role;
-import org.restlet.security.UserPrincipal;
 
 /**
  * Contains all request specific data of the interfaces injectable for &#64;
- * {@link Context}. Implemetation of the JAX-RS interfaces {@link HttpHeaders},
+ * {@link Context}. Implementation of the JAX-RS interfaces {@link HttpHeaders},
  * {@link UriInfo}, {@link javax.ws.rs.core.Request} and {@link SecurityContext}
  * .<br>
  * This class is not required to be thread safe, because it is only used for one
@@ -1097,18 +1096,8 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * @see SecurityContext#getUserPrincipal()
      */
     public Principal getUserPrincipal() {
-        Principal foundPrincipal = null;
-        for (Principal principal : request.getClientInfo().getSubject()
-                .getPrincipals()) {
-            if (principal instanceof UserPrincipal) {
-                if (foundPrincipal != null) {
-                    throw new RuntimeException(
-                            "Multiple UserPrincipal's in Request.clientInfo.subject:"
-                                    + " don't know which one to use.");
-                }
-                foundPrincipal = principal;
-            }
-        }
+        Principal foundPrincipal = (request.getChallengeResponse() == null) ? null
+                : request.getChallengeResponse().getPrincipal();
 
         if (foundPrincipal != null)
             return foundPrincipal;
@@ -1166,7 +1155,8 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
             return roleChecker.isInRole(getUserPrincipal(), roleName);
         } else {
             Role role = Application.getCurrent().getRole(roleName);
-            return role != null && this.request.getClientInfo().isInRole(role);
+            return (role != null)
+                    && this.request.getClientInfo().getRoles().contains(role);
         }
     }
 

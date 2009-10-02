@@ -31,7 +31,6 @@
 package org.restlet.engine.security;
 
 import org.restlet.security.Group;
-import org.restlet.security.Organization;
 import org.restlet.security.Role;
 import org.restlet.security.User;
 
@@ -44,7 +43,7 @@ public class RoleMapping {
 
     /**
      * The source of the mapping. It must be an instance of one of these
-     * classes: {@link Organization}, {@link User} or {@link Group}.
+     * classes: {@link User} or {@link Group}.
      */
     private volatile Object source;
 

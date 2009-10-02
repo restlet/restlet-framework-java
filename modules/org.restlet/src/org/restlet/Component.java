@@ -47,8 +47,8 @@ import org.restlet.representation.Representation;
 import org.restlet.resource.Finder;
 import org.restlet.routing.Router;
 import org.restlet.routing.VirtualHost;
+import org.restlet.security.Realm;
 import org.restlet.service.LogService;
-import org.restlet.service.RealmService;
 import org.restlet.service.StatusService;
 import org.restlet.util.ClientList;
 import org.restlet.util.ServerList;
@@ -157,11 +157,11 @@ public class Component extends Restlet {
     /** The modifiable list of server connectors. */
     private final ServerList servers;
 
-    /** The security realm service. */
-    private volatile RealmService realmService;
-
     /** The status service. */
     private volatile StatusService statusService;
+
+    /** The modifiable list of security realms. */
+    private final List<Realm> realms;
 
     /**
      * Constructor.
@@ -170,6 +170,7 @@ public class Component extends Restlet {
         this.hosts = new CopyOnWriteArrayList<VirtualHost>();
         this.clients = new ClientList(null);
         this.servers = new ServerList(null, this);
+        this.realms = new CopyOnWriteArrayList<Realm>();
 
         if (Engine.getInstance() != null) {
             this.helper = new ComponentHelper(this);
@@ -226,7 +227,6 @@ public class Component extends Restlet {
 
                 };
                 this.logService = new LogService(true);
-                this.realmService = new RealmService(true);
                 this.statusService = new StatusService(true);
                 this.clients.setContext(getContext());
                 this.servers.setContext(getContext());
@@ -288,6 +288,25 @@ public class Component extends Restlet {
             getLogger().log(Level.WARNING,
                     "Unable to parse the Component XML configuration.");
         }
+    }
+
+    /**
+     * Finds the realm with the given name.
+     * 
+     * @param name
+     *            The name.
+     * @return The realm found or null.
+     */
+    public Realm findRealm(String name) {
+        if (name != null) {
+            for (Realm realm : getRealms()) {
+                if (name.equals(realm.getName())) {
+                    return realm;
+                }
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -367,12 +386,12 @@ public class Component extends Restlet {
     }
 
     /**
-     * Returns the security service, enabled by default.
+     * Returns the modifiable list of security realms.
      * 
-     * @return The security service.
+     * @return The modifiable list of security realms.
      */
-    public RealmService getRealmService() {
-        return this.realmService;
+    public List<Realm> getRealms() {
+        return realms;
     }
 
     /**
@@ -467,13 +486,17 @@ public class Component extends Restlet {
     }
 
     /**
-     * Sets the security service.
+     * Sets the list of realms.
      * 
-     * @param securityService
-     *            The security service.
+     * @param realms
+     *            The list of realms.
      */
-    public void setRealmService(RealmService securityService) {
-        this.realmService = securityService;
+    public synchronized void setRealms(List<Realm> realms) {
+        this.realms.clear();
+
+        if (realms != null) {
+            this.realms.addAll(realms);
+        }
     }
 
     /**

@@ -31,7 +31,7 @@
 package org.restlet.security;
 
 /**
- * Verifier that stores its secrets in a map indexed by the identifier.
+ * Verifier that can locally retrieve the passwords.
  * 
  * @author Jerome Louvel
  */

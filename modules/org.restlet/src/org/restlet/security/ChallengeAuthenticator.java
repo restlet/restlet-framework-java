@@ -128,7 +128,6 @@ public class ChallengeAuthenticator extends Authenticator {
     protected boolean authenticate(Request request, Response response) {
         boolean result = false;
         final boolean loggable = getLogger().isLoggable(Level.FINE);
-        ChallengeResponse challengeResponse = request.getChallengeResponse();
 
         if (getVerifier() != null) {
             switch (getVerifier().verify(request, response)) {
@@ -137,6 +136,9 @@ public class ChallengeAuthenticator extends Authenticator {
                 result = true;
 
                 if (loggable) {
+                    ChallengeResponse challengeResponse = request
+                            .getChallengeResponse();
+
                     if (challengeResponse != null) {
                         getLogger().fine(
                                 "Authentication succeeded. Valid credentials provided for identifier: "

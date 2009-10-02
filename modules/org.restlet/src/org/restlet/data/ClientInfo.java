@@ -33,6 +33,7 @@ package org.restlet.data;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,6 +42,8 @@ import java.util.Map;
 import org.restlet.Context;
 import org.restlet.engine.Engine;
 import org.restlet.representation.Variant;
+import org.restlet.security.Role;
+import org.restlet.security.User;
 
 /**
  * Client specific data related to a call. When extracted from a request, most
@@ -240,8 +243,14 @@ public final class ClientInfo {
     private volatile int port;
 
     // [ifndef gwt] member
-    /** The subject containing security related information. */
-    private volatile javax.security.auth.Subject subject;
+    /** List of security principals. */
+    private volatile List<Principal> principals;
+
+    /** Authenticated user. */
+    private volatile User user;
+
+    /** List of user roles. */
+    private volatile List<Role> roles;
 
     /**
      * Constructor.
@@ -257,7 +266,7 @@ public final class ClientInfo {
         this.forwardedAddresses = null;
         // [ifndef gwt]
         this.agentProducts = null;
-        this.subject = new javax.security.auth.Subject();
+        this.principals = null;
         // [enddef]
     }
 
@@ -674,13 +683,41 @@ public final class ClientInfo {
 
     // [ifndef gwt] method
     /**
-     * Returns the subject containing security related information. Typically,
-     * it contains principals and credentials.
+     * Returns the client principals.
      * 
-     * @return The subject containing security related information.
+     * @return The client principals.
      */
-    public javax.security.auth.Subject getSubject() {
-        return subject;
+    public List<Principal> getPrincipals() {
+        // Lazy initialization with double-check.
+        List<Principal> a = this.principals;
+        if (a == null) {
+            synchronized (this) {
+                a = this.principals;
+                if (a == null) {
+                    this.principals = a = new ArrayList<Principal>();
+                }
+            }
+        }
+        return a;
+    }
+
+    /**
+     * Returns the authenticated user roles.
+     * 
+     * @return The authenticated user roles.
+     */
+    public List<Role> getRoles() {
+        // Lazy initialization with double-check.
+        List<Role> a = this.roles;
+        if (a == null) {
+            synchronized (this) {
+                a = this.roles;
+                if (a == null) {
+                    this.roles = a = new ArrayList<Role>();
+                }
+            }
+        }
+        return a;
     }
 
     // [ifndef gwt] method
@@ -709,6 +746,15 @@ public final class ClientInfo {
         return this.forwardedAddresses.get(0);
     }
 
+    /**
+     * Returns the authenticated user.
+     * 
+     * @return The authenticated user.
+     */
+    public User getUser() {
+        return user;
+    }
+
     // [ifndef gwt] method
     /**
      * Indicates if the identifier or principal has been authenticated. The
@@ -719,32 +765,6 @@ public final class ClientInfo {
      */
     public boolean isAuthenticated() {
         return this.authenticated;
-    }
-
-    // [ifndef gwt] method
-    /**
-     * Indicates if the subject has been granted a specific role in the current
-     * context. The context contains a mapping between user and groups defined
-     * in a component, and roles defined in an application.
-     * 
-     * @param role
-     *            The role that should have been granted.
-     * @return True if the user has been granted the specific role.
-     */
-    public boolean isInRole(org.restlet.security.Role role) {
-        org.restlet.security.RolePrincipal rolePrincipal;
-
-        for (java.security.Principal principal : getSubject().getPrincipals()) {
-            if (principal instanceof org.restlet.security.RolePrincipal) {
-                rolePrincipal = (org.restlet.security.RolePrincipal) principal;
-
-                if (rolePrincipal.matches(role)) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
     }
 
     /**
@@ -872,15 +892,34 @@ public final class ClientInfo {
         this.port = port;
     }
 
-    // [ifndef gwt] method
     /**
-     * Sets the subject containing security related information.
+     * Sets the user principals.
      * 
-     * @param subject
-     *            The subject containing security related information.
+     * @param principals
+     *            The user principals.
      */
-    public void setSubject(javax.security.auth.Subject subject) {
-        this.subject = subject;
+    public void setPrincipals(List<Principal> principals) {
+        this.principals = principals;
+    }
+
+    /**
+     * Sets the authenticated user roles.
+     * 
+     * @param roles
+     *            The authenticated user roles.
+     */
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
+    }
+
+    /**
+     * Sets the authenticated user.
+     * 
+     * @param user
+     *            The authenticated user.
+     */
+    public void setUser(User user) {
+        this.user = user;
     }
 
 }

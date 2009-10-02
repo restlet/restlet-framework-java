@@ -30,14 +30,13 @@
 
 package org.restlet.security;
 
-import javax.security.auth.Subject;
-
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.ChallengeResponse;
 
 /**
- * Verifier of identifier/secret couples.
+ * Verifier of identifier/secret couples. By default, it extracts the identifier
+ * and the secret from the {@link ChallengeResponse}.
  * 
  * @author Jerome Louvel
  */
@@ -74,15 +73,29 @@ public abstract class SecretVerifier extends Verifier {
     }
 
     /**
-     * When the verification succeeds, we need to update the {@link Subject}
-     * associated to the request. By default, it adds a {@link UserPrincipal}.
+     * Returns the user identifier.
      * 
-     * @param identifier
-     *            The user identifier.
-     * @return The user principal created.
+     * @param request
+     *            The request to inspect.
+     * @param response
+     *            The response to inspect.
+     * @return
      */
-    protected UserPrincipal createUserPrincipal(String identifier) {
-        return new UserPrincipal(identifier);
+    protected String getIdentifier(Request request, Response response) {
+        return request.getChallengeResponse().getIdentifier();
+    }
+
+    /**
+     * Returns the user secret.
+     * 
+     * @param request
+     *            The request to inspect.
+     * @param response
+     *            The response to inspect.
+     * @return
+     */
+    protected char[] getSecret(Request request, Response response) {
+        return request.getChallengeResponse().getSecret();
     }
 
     /**
@@ -93,9 +106,9 @@ public abstract class SecretVerifier extends Verifier {
      * successful.
      * 
      * @param request
-     *            The request to handle.
+     *            The request to inspect.
      * @param response
-     *            The response to handle.
+     *            The response to inspect.
      * @return True if the proposed secret was correct and the subject updated.
      */
     @Override
@@ -105,15 +118,11 @@ public abstract class SecretVerifier extends Verifier {
         if (request.getChallengeResponse() == null) {
             result = RESULT_MISSING;
         } else {
-            String identifier = request.getChallengeResponse().getIdentifier();
-            char[] inputSecret = request.getChallengeResponse().getSecret();
+            String identifier = getIdentifier(request, response);
+            char[] inputSecret = getSecret(request, response);
 
             if (verify(identifier, inputSecret)) {
-                // Add a principal for this identifier
-                if (request.getClientInfo().getSubject() != null) {
-                    request.getClientInfo().getSubject().getPrincipals().add(
-                            createUserPrincipal(identifier));
-                }
+                request.getClientInfo().setUser(new User(identifier));
             } else {
                 result = RESULT_INVALID;
             }

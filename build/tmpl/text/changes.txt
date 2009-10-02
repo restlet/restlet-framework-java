@@ -14,6 +14,22 @@ Changes log
         - Upgraded the "org.restlet.ext.httpclient" extension to
           leverage Apache HTTP Client 4.0. WARNING: some parameters 
           were renamed due to API changes.
+        - Refactored for simplification the security API introduced 
+          in previous Restlet 2.0 milestones. 
+           - The Organization class was removed and its "rootGroups" 
+             and "users" properties were moved to MemoryRealm. 
+           - The RealmService class was removed and the "realms" 
+             property moved to Component.
+           - The ClientInfo#subject property was replaced by 
+             "user : User", "roles : List<Role>" and "principals" to 
+             remove the JAAS dependency.
+           - A new JAAS extension was added, where the JaasVerifier, 
+             DefaultCallbackHandler, UserPrincipal and RolePrincipal
+             classes where moved.
+           - Verifier now uses ClientInfo as parameter instead of
+             Subject.
+           - Added a "name" property to Realm and a findRealm(name)
+             to Component.
     - Bugs fixed
         - Fixed bug when the deprecated method "createRoot" is 
           implemented instead of the "createInboundRoot".

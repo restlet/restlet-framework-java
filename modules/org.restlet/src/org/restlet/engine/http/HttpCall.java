@@ -31,6 +31,7 @@
 package org.restlet.engine.http;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.util.Date;
 import java.util.logging.Logger;
 
@@ -128,8 +129,8 @@ public abstract class HttpCall extends Call {
     private volatile int statusCode;
 
     // [ifndef gwt] member
-    /** The security subject. */
-    private volatile javax.security.auth.Subject subject;
+    /** The user principal. */
+    private volatile Principal userPrincipal;
 
     /** The protocol version. */
     private volatile String version;
@@ -153,7 +154,7 @@ public abstract class HttpCall extends Call {
         this.serverPort = -1;
         this.statusCode = 200;
         // [ifndef gwt] line
-        this.subject = null;
+        this.userPrincipal = null;
         this.version = null;
     }
 
@@ -340,12 +341,12 @@ public abstract class HttpCall extends Call {
 
     // [ifndef gwt] method
     /**
-     * Returns the security subject.
+     * Returns the user principal.
      * 
-     * @return The security subject.
+     * @return The user principal.
      */
-    public javax.security.auth.Subject getSubject() {
-        return this.subject;
+    public Principal getUserPrincipal() {
+        return this.userPrincipal;
     }
 
     /**
@@ -563,13 +564,13 @@ public abstract class HttpCall extends Call {
 
     // [ifndef gwt] method
     /**
-     * Sets the security subject.
+     * Sets the user principal.
      * 
-     * @param subject
-     *            The security subject.
+     * @param principal
+     *            The user principal.
      */
-    public void setSubject(javax.security.auth.Subject subject) {
-        this.subject = subject;
+    public void setUserPrincipal(Principal principal) {
+        this.userPrincipal = principal;
     }
 
     /**

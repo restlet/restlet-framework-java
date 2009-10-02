@@ -30,14 +30,13 @@
 
 package org.restlet.security;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import javax.security.auth.Subject;
-
-import org.restlet.Context;
+import org.restlet.data.ClientInfo;
 import org.restlet.engine.security.RoleMapping;
 
 /**
@@ -54,23 +53,16 @@ public class MemoryRealm extends Realm {
     private class DefaultEnroler extends Enroler {
 
         @Override
-        public void enrole(Subject subject) {
-            Set<UserPrincipal> userPrincipals = subject
-                    .getPrincipals(UserPrincipal.class);
+        public void enrole(ClientInfo clientInfo) {
+            User user = findUser(clientInfo.getUser().getIdentifier());
 
-            for (UserPrincipal userPrincipal : userPrincipals) {
-                Organization orga = findUserOrganization(userPrincipal
-                        .getName());
-                User user = findUser(orga, userPrincipal.getName());
+            if (user != null) {
+                // Add a principal for the user roles
+                Set<Group> userGroups = findGroups(user);
+                Set<Role> userRoles = findRoles(userGroups, user);
 
-                if (user != null) {
-                    // Add a principal for the user roles
-                    Set<Group> userGroups = orga.findGroups(user);
-                    Set<Role> userRoles = findRoles(orga, userGroups, user);
-
-                    for (Role role : userRoles) {
-                        subject.getPrincipals().add(new RolePrincipal(role));
-                    }
+                for (Role role : userRoles) {
+                    clientInfo.getRoles().add(role);
                 }
             }
         }
@@ -95,11 +87,14 @@ public class MemoryRealm extends Realm {
         }
     }
 
-    /** The modifiable list of organizations. */
-    private final List<Organization> organizations;
+    /** The modifiable list of root groups. */
+    private final List<Group> rootGroups;
 
     /** The modifiable list of role mappings. */
     private final List<RoleMapping> roleMappings;
+
+    /** The modifiable list of users. */
+    private final List<User> users;
 
     /**
      * Constructor.
@@ -107,48 +102,103 @@ public class MemoryRealm extends Realm {
     public MemoryRealm() {
         setVerifier(new DefaultVerifier());
         setEnroler(new DefaultEnroler());
-        this.organizations = new CopyOnWriteArrayList<Organization>();
+        this.rootGroups = new CopyOnWriteArrayList<Group>();
         this.roleMappings = new CopyOnWriteArrayList<RoleMapping>();
+        this.users = new CopyOnWriteArrayList<User>();
     }
 
     /**
-     * Finds an organization based on its domain name.
+     * Recursively adds groups where a given user is a member.
      * 
-     * @param domainName
-     *            The domain name to match.
-     * @return The organization found.
+     * @param user
+     *            The member user.
+     * @param userGroups
+     *            The set of user groups to update.
+     * @param currentGroup
+     *            The current group to inspect.
+     * @param stack
+     *            The stack of ancestor groups.
+     * @param inheritOnly
+     *            Indicates if only the ancestors groups that have their
+     *            "inheritRoles" property enabled should be added.
      */
-    public Organization findOrganization(String domainName) {
-        for (Organization org : getOrganizations()) {
-            if (org.getDomainName().equals(domainName)) {
-                return org;
+    private void addGroups(User user, Set<Group> userGroups,
+            Group currentGroup, List<Group> stack, boolean inheritOnly) {
+        if ((currentGroup != null) && !stack.contains(currentGroup)) {
+            stack.add(currentGroup);
+
+            if (currentGroup.getMemberUsers().contains(user)) {
+                userGroups.add(currentGroup);
+
+                // Add the ancestor groups as well
+                boolean inherit = !inheritOnly || currentGroup.isInheritRoles();
+                Group group;
+
+                for (int i = stack.size() - 2; inherit && (i >= 0); i--) {
+                    group = stack.get(i);
+                    userGroups.add(group);
+                    inherit = !inheritOnly || group.isInheritRoles();
+                }
+            }
+
+            for (Group group : currentGroup.getMemberGroups()) {
+                addGroups(user, userGroups, group, stack, inheritOnly);
             }
         }
-
-        return null;
     }
 
     /**
-     * Finds the roles mapped to a specific user/groups/organization triple.
+     * Finds the set of groups where a given user is a member. Note that
+     * inheritable ancestors groups are also returned.
      * 
-     * @param userOrganization
-     *            The user organization.
+     * @param user
+     *            The member user.
+     * @return The set of groups.
+     */
+    public Set<Group> findGroups(User user) {
+        return findGroups(user, true);
+    }
+
+    /**
+     * Finds the set of groups where a given user is a member.
+     * 
+     * @param user
+     *            The member user.
+     * @param inheritOnly
+     *            Indicates if only the ancestors groups that have their
+     *            "inheritRoles" property enabled should be added.
+     * @return The set of groups.
+     */
+    public Set<Group> findGroups(User user, boolean inheritOnly) {
+        Set<Group> result = new HashSet<Group>();
+        List<Group> stack;
+
+        // Recursively find user groups
+        for (Group group : getRootGroups()) {
+            stack = new ArrayList<Group>();
+            addGroups(user, result, group, stack, inheritOnly);
+        }
+
+        return result;
+    }
+
+    /**
+     * Finds the roles mapped to a specific user/groups couple.
+     * 
      * @param userGroups
      *            The user groups.
      * @param user
      *            The user.
      * @return The roles found.
      */
-    public Set<Role> findRoles(Organization userOrganization,
-            Set<Group> userGroups, User user) {
+    public Set<Role> findRoles(Set<Group> userGroups, User user) {
         Set<Role> result = new HashSet<Role>();
 
         Object source;
         for (RoleMapping mapping : getRoleMappings()) {
             source = mapping.getSource();
 
-            if (userOrganization.equals(source) || user.equals(source)
-                    || userGroups.contains(source)) {
+            if (user.equals(source) || userGroups.contains(source)) {
                 result.add(mapping.getTarget());
             }
         }
@@ -157,81 +207,25 @@ public class MemoryRealm extends Realm {
     }
 
     /**
-     * Returns a user based on its (optionally qualified) identifier and the
-     * mapped organization.
+     * Finds a user in the organization based on its identifier.
      * 
-     * @param organization
-     *            The user organization.
-     * @param identifier
-     *            The user identifier.
-     * @return The matching user.
+     * @param userIdentifier
+     *            The identifier to match.
+     * @return The matched user or null.
      */
-    public User findUser(Organization organization, String identifier) {
+    public User findUser(String userIdentifier) {
         User result = null;
+        User user;
 
-        // Parse qualified identifiers
-        int at = identifier.indexOf('@');
-        String userIdentifier = (at == -1) ? identifier : identifier.substring(
-                0, at);
+        for (int i = 0; (result == null) && (i < getUsers().size()); i++) {
+            user = getUsers().get(i);
 
-        // Lookup the user
-        if (organization != null) {
-            result = organization.findUser(userIdentifier);
-        }
-
-        return result;
-    }
-
-    /**
-     * Returns a user based on its (optionally qualified) identifier and the
-     * mapped organization.
-     * 
-     * @param identifier
-     *            The user identifier.
-     * @return The matching user.
-     */
-    public User findUser(String identifier) {
-        return findUser(findUserOrganization(identifier), identifier);
-    }
-
-    /**
-     * Returns a user based on its (optionally qualified) identifier and the
-     * mapped organization.
-     * 
-     * @param identifier
-     *            The user identifier.
-     * @return The matching user.
-     */
-    public Organization findUserOrganization(String identifier) {
-        Organization result = null;
-
-        // Parse qualified identifiers
-        int at = identifier.indexOf('@');
-        String domainName = (at == -1) ? null : identifier.substring(at + 1);
-
-        if (domainName == null) {
-            if (getOrganizations().size() == 1) {
-                result = getOrganizations().get(0);
-            } else {
-                Context
-                        .getCurrentLogger()
-                        .info(
-                                "Unable to identify an unqualified user. Multiple organizations were bounded.");
+            if (user.getIdentifier().equals(userIdentifier)) {
+                result = user;
             }
-        } else {
-            result = findOrganization(domainName);
         }
 
         return result;
-    }
-
-    /**
-     * Returns the modifiable list of organizations.
-     * 
-     * @return The modifiable list of organizations.
-     */
-    public List<Organization> getOrganizations() {
-        return organizations;
     }
 
     /**
@@ -241,6 +235,24 @@ public class MemoryRealm extends Realm {
      */
     private List<RoleMapping> getRoleMappings() {
         return roleMappings;
+    }
+
+    /**
+     * Returns the modifiable list of root groups.
+     * 
+     * @return The modifiable list of root groups.
+     */
+    public List<Group> getRootGroups() {
+        return rootGroups;
+    }
+
+    /**
+     * Returns the modifiable list of users.
+     * 
+     * @return The modifiable list of users.
+     */
+    public List<User> getUsers() {
+        return users;
     }
 
     /**
@@ -256,19 +268,6 @@ public class MemoryRealm extends Realm {
     }
 
     /**
-     * Maps an organization defined in a component to a role defined in the
-     * application.
-     * 
-     * @param organization
-     *            The source organization.
-     * @param role
-     *            The target role.
-     */
-    public void map(Organization organization, Role role) {
-        getRoleMappings().add(new RoleMapping(organization, role));
-    }
-
-    /**
      * Maps a user defined in a component to a role defined in the application.
      * 
      * @param user
@@ -281,16 +280,30 @@ public class MemoryRealm extends Realm {
     }
 
     /**
-     * Sets the list of organizations.
+     * Sets the list of root groups.
      * 
-     * @param organizations
-     *            The list of organizations.
+     * @param rootGroups
+     *            The list of root groups.
      */
-    public synchronized void setOrganizations(List<Organization> organizations) {
-        this.organizations.clear();
+    public synchronized void setRootGroups(List<Group> rootGroups) {
+        this.rootGroups.clear();
 
-        if (organizations != null) {
-            this.organizations.addAll(organizations);
+        if (rootGroups != null) {
+            this.rootGroups.addAll(rootGroups);
+        }
+    }
+
+    /**
+     * Sets the list of users.
+     * 
+     * @param users
+     *            The list of users.
+     */
+    public synchronized void setUsers(List<User> users) {
+        this.users.clear();
+
+        if (users != null) {
+            this.users.addAll(users);
         }
     }
 
@@ -326,19 +339,6 @@ public class MemoryRealm extends Realm {
                 getRoleMappings().remove(i);
             }
         }
-    }
-
-    /**
-     * Unmaps an organization defined in a component from a role defined in the
-     * application.
-     * 
-     * @param organization
-     *            The source organization.
-     * @param role
-     *            The target role.
-     */
-    public void unmap(Organization organization, Role role) {
-        unmap((Object) organization, role);
     }
 
     /**

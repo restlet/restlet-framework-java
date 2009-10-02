@@ -942,7 +942,8 @@ public abstract class ServerResource extends UniformResource {
      * @return True if the authenticated subject is in the given role.
      */
     public boolean isInRole(String roleName) {
-        return getClientInfo().isInRole(getApplication().getRole(roleName));
+        return getClientInfo().getRoles().contains(
+                getApplication().getRole(roleName));
     }
 
     /**

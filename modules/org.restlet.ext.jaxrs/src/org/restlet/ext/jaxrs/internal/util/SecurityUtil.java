@@ -37,21 +37,22 @@ import java.util.List;
 import org.restlet.Request;
 
 /**
- * @author Stephan
+ * Security utilities.
  * 
+ * @author Stephan Koops
  */
 public class SecurityUtil {
 
-    /** Key in the request attributes for the https client certificates. */
+    /** Key in the request attributes for the HTTPS client certificates. */
     private static final String ORG_RESTLET_HTTPS_CLIENT_CERTS = "org.restlet.https.clientCertificates";
 
     /**
-     * Returns the Principal from the SSl client certificates (the first with a
+     * Returns the Principal from the SSL client certificates (the first with a
      * name).
      * 
      * @param request
-     *            the Request to get the Principal from.
-     * @return the Principal, or null, if no one is found.
+     *            The Request to get the Principal from.
+     * @return The Principal, or null, if no one is found.
      */
     public static Principal getSslClientCertPrincipal(Request request) {
         final List<X509Certificate> sslClientCerts = getSslClientCerts(request);

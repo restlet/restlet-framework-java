@@ -140,7 +140,7 @@ public abstract class Authenticator extends Filter {
 
         // Add the roles for the authenticated subject
         if (getEnroler() != null) {
-            getEnroler().enrole(request.getClientInfo().getSubject());
+            getEnroler().enrole(request.getClientInfo());
         }
 
         return CONTINUE;

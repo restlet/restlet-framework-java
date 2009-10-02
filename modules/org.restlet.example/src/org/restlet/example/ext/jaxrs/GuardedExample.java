@@ -42,7 +42,6 @@ import org.restlet.ext.jaxrs.JaxRsApplication;
 import org.restlet.ext.jaxrs.RoleChecker;
 import org.restlet.security.ChallengeAuthenticator;
 import org.restlet.security.MemoryRealm;
-import org.restlet.security.Organization;
 import org.restlet.security.User;
 
 /**
@@ -114,14 +113,9 @@ public class GuardedExample {
         application.getContext().setEnroler(realm.getEnroler());
         application.getContext().setVerifier(realm.getVerifier());
 
-        Organization organization = new Organization();
-        realm.getOrganizations().add(organization);
-
-        organization.getUsers().add(new User("admin", "adminPW".toCharArray()));
-        organization.getUsers().add(
-                new User("alice", "alicesSecret".toCharArray()));
-        organization.getUsers()
-                .add(new User("bob", "bobsSecret".toCharArray()));
+        realm.getUsers().add(new User("admin", "adminPW".toCharArray()));
+        realm.getUsers().add(new User("alice", "alicesSecret".toCharArray()));
+        realm.getUsers().add(new User("bob", "bobsSecret".toCharArray()));
 
         // create an RoleChecker (see above)
         final ExampleRoleChecker roleChecker = new ExampleRoleChecker();

@@ -32,7 +32,7 @@ package org.restlet.security;
 
 import java.security.Principal;
 
-import javax.security.auth.Subject;
+import org.restlet.data.ClientInfo;
 
 /**
  * Updates an authenticated subject with new principals. Typically, it is
@@ -46,17 +46,16 @@ import javax.security.auth.Subject;
 public abstract class Enroler {
 
     /**
-     * Attempts to update an authenticated subject, with a {@link UserPrincipal}
-     * properly defined, by adding the {@link RolePrincipal} that are assigned
-     * to this user.<br>
+     * Attempts to update an authenticated client, with a {@link User} properly
+     * defined, by adding the {@link Role} that are assigned to this user.<br>
      * <br>
-     * Note that other types of principals could also be added to the subject if
+     * Note that principals could also be added to the {@link ClientInfo} if
      * necessary. The addition could also potentially be based on the presence
-     * of other type of {@link Principal}.
+     * of {@link Principal}.
      * 
-     * @param subject
-     *            The subject to update.
+     * @param clientInfo
+     *            The clientInfo to update.
      */
-    public abstract void enrole(Subject subject);
+    public abstract void enrole(ClientInfo clientInfo);
 
 }

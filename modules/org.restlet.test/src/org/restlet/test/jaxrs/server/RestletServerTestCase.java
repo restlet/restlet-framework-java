@@ -161,14 +161,9 @@ public abstract class RestletServerTestCase extends TestCase {
             final Context context, final ChallengeScheme challengeScheme) {
         MemoryRealm realm = new MemoryRealm();
 
-        Organization organization = new Organization();
-        realm.getOrganizations().add(organization);
-
-        organization.getUsers().add(new User("admin", "adminPW".toCharArray()));
-        organization.getUsers().add(
-                new User("alice", "alicesSecret".toCharArray()));
-        organization.getUsers()
-                .add(new User("bob", "bobsSecret".toCharArray()));
+        realm.getUsers().add(new User("admin", "adminPW".toCharArray()));
+        realm.getUsers().add(new User("alice", "alicesSecret".toCharArray()));
+        realm.getUsers().add(new User("bob", "bobsSecret".toCharArray()));
 
         context.setEnroler(realm.getEnroler());
         context.setVerifier(realm.getVerifier());

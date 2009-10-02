@@ -227,8 +227,8 @@ public class HttpRequest extends Request {
             result.setAddress(getHttpCall().getClientAddress());
             result.setPort(getHttpCall().getClientPort());
 
-            if (getHttpCall().getSubject() != null) {
-                result.setSubject(getHttpCall().getSubject());
+            if (getHttpCall().getUserPrincipal() != null) {
+                result.getPrincipals().add(getHttpCall().getUserPrincipal());
             }
 
             if (this.context != null) {
