@@ -33,7 +33,6 @@ package org.restlet.data;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,8 +41,6 @@ import java.util.Map;
 import org.restlet.Context;
 import org.restlet.engine.Engine;
 import org.restlet.representation.Variant;
-import org.restlet.security.Role;
-import org.restlet.security.User;
 
 /**
  * Client specific data related to a call. When extracted from a request, most
@@ -244,13 +241,15 @@ public final class ClientInfo {
 
     // [ifndef gwt] member
     /** List of security principals. */
-    private volatile List<Principal> principals;
+    private volatile List<java.security.Principal> principals;
 
+    // [ifndef gwt] member
     /** Authenticated user. */
-    private volatile User user;
+    private volatile org.restlet.security.User user;
 
+    // [ifndef gwt] member
     /** List of user roles. */
-    private volatile List<Role> roles;
+    private volatile List<org.restlet.security.Role> roles;
 
     /**
      * Constructor.
@@ -687,33 +686,34 @@ public final class ClientInfo {
      * 
      * @return The client principals.
      */
-    public List<Principal> getPrincipals() {
+    public List<java.security.Principal> getPrincipals() {
         // Lazy initialization with double-check.
-        List<Principal> a = this.principals;
+        List<java.security.Principal> a = this.principals;
         if (a == null) {
             synchronized (this) {
                 a = this.principals;
                 if (a == null) {
-                    this.principals = a = new ArrayList<Principal>();
+                    this.principals = a = new ArrayList<java.security.Principal>();
                 }
             }
         }
         return a;
     }
 
+    // [ifndef gwt] method
     /**
      * Returns the authenticated user roles.
      * 
      * @return The authenticated user roles.
      */
-    public List<Role> getRoles() {
+    public List<org.restlet.security.Role> getRoles() {
         // Lazy initialization with double-check.
-        List<Role> a = this.roles;
+        List<org.restlet.security.Role> a = this.roles;
         if (a == null) {
             synchronized (this) {
                 a = this.roles;
                 if (a == null) {
-                    this.roles = a = new ArrayList<Role>();
+                    this.roles = a = new ArrayList<org.restlet.security.Role>();
                 }
             }
         }
@@ -746,12 +746,13 @@ public final class ClientInfo {
         return this.forwardedAddresses.get(0);
     }
 
+    // [ifndef gwt] method
     /**
      * Returns the authenticated user.
      * 
      * @return The authenticated user.
      */
-    public User getUser() {
+    public org.restlet.security.User getUser() {
         return user;
     }
 
@@ -892,33 +893,36 @@ public final class ClientInfo {
         this.port = port;
     }
 
+    // [ifndef gwt] method
     /**
      * Sets the user principals.
      * 
      * @param principals
      *            The user principals.
      */
-    public void setPrincipals(List<Principal> principals) {
+    public void setPrincipals(List<java.security.Principal> principals) {
         this.principals = principals;
     }
 
+    // [ifndef gwt] method
     /**
      * Sets the authenticated user roles.
      * 
      * @param roles
      *            The authenticated user roles.
      */
-    public void setRoles(List<Role> roles) {
+    public void setRoles(List<org.restlet.security.Role> roles) {
         this.roles = roles;
     }
 
+    // [ifndef gwt] method
     /**
      * Sets the authenticated user.
      * 
      * @param user
      *            The authenticated user.
      */
-    public void setUser(User user) {
+    public void setUser(org.restlet.security.User user) {
         this.user = user;
     }
 
