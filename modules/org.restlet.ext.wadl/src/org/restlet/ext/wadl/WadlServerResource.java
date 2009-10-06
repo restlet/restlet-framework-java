@@ -33,17 +33,20 @@ package org.restlet.ext.wadl;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-import org.restlet.Context;
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
+import org.restlet.engine.resource.AnnotationInfo;
+import org.restlet.engine.resource.AnnotationUtils;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
-import org.restlet.resource.Resource;
+import org.restlet.resource.ResourceException;
+import org.restlet.resource.ServerResource;
+import org.restlet.service.MetadataService;
 
 /**
  * Resource that is able to automatically describe itself with WADL. This
@@ -58,7 +61,7 @@ import org.restlet.resource.Resource;
  * 
  * @author Jerome Louvel
  */
-public class WadlResource extends Resource {
+public class WadlServerResource extends ServerResource {
 
 	/**
 	 * Indicates if the resource should be automatically described via WADL when
@@ -76,34 +79,8 @@ public class WadlResource extends Resource {
 	/**
 	 * Constructor.
 	 */
-	public WadlResource() {
+	public WadlServerResource() {
 		this.autoDescribed = true;
-	}
-
-	/**
-	 * Constructor.
-	 * 
-	 * @param context
-	 *            The parent context.
-	 * @param request
-	 *            The request to handle.
-	 * @param response
-	 *            The response to return.
-	 */
-	public WadlResource(Context context, Request request, Response response) {
-		super(context, request, response);
-		this.autoDescribed = true;
-	}
-
-	/**
-	 * Indicates if OPTIONS calls are allowed by checking the "readable"
-	 * property.
-	 * 
-	 * @return True if the method is allowed.
-	 */
-	@Override
-	public boolean allowOptions() {
-		return isReadable();
 	}
 
 	/**
@@ -207,6 +184,7 @@ public class WadlResource extends Resource {
 	 *            The method description to update.
 	 */
 	protected void describeDelete(MethodInfo info) {
+		discoverAnnotations(info);
 	}
 
 	/**
@@ -219,10 +197,9 @@ public class WadlResource extends Resource {
 	 *            The method description to update.
 	 */
 	protected void describeGet(MethodInfo info) {
-		List<Variant> variants = getVariants();
-		if (variants != null) {
+		if (getVariants() != null) {
 			// Describe each variant
-			for (final Variant variant : variants) {
+			for (final Variant variant : getVariants()) {
 				info.addResponseRepresentation(variant);
 			}
 		}
@@ -276,6 +253,7 @@ public class WadlResource extends Resource {
 	 *            The method description to update.
 	 */
 	protected void describePost(MethodInfo info) {
+		discoverAnnotations(info);
 	}
 
 	/**
@@ -285,6 +263,85 @@ public class WadlResource extends Resource {
 	 *            The method description to update.
 	 */
 	protected void describePut(MethodInfo info) {
+		discoverAnnotations(info);
+	}
+
+	/**
+	 * Automatically describe a method by discovering the resource's
+	 * annotations.
+	 * 
+	 * @param info
+	 *            The method description to update.
+	 * @param method
+	 *            The Method to document
+	 */
+	@SuppressWarnings("unchecked")
+	private void discoverAnnotations(MethodInfo info) {
+		// Loop over the annotated Java methods
+		MetadataService metadataService = getMetadataService();
+		List<AnnotationInfo> annotations = getAnnotations();
+		if (annotations != null && metadataService != null) {
+			for (AnnotationInfo annotationInfo : annotations) {
+				if (info.getName().equals(annotationInfo.getRestletMethod())) {
+					Class<?>[] classes = annotationInfo.getJavaParameterTypes();
+					if (classes != null && classes.length == 1) {
+						List<Variant> variants = (List<Variant>) getApplication()
+								.getConverterService().getVariants(classes[0],
+										null);
+						if (variants != null) {
+							for (Variant variant : variants) {
+								if (!info.getRequest().getRepresentations()
+										.contains(variant)) {
+									info.addRequestRepresentation(variant);
+								}
+							}
+						}
+					}
+					if (annotationInfo.getJavaReturnType() != null) {
+						List<Variant> variants = (List<Variant>) getApplication()
+								.getConverterService().getVariants(
+										annotationInfo.getJavaReturnType(),
+										null);
+						if (variants != null) {
+							for (Variant variant : variants) {
+								if (!info.getResponse().getRepresentations()
+										.contains(variant)) {
+									info.addResponseRepresentation(variant);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	@Override
+	protected void doInit() throws ResourceException {
+		super.doInit();
+		this.autoDescribed = true;
+	}
+
+	/**
+	 * Returns the set of allowed methods.
+	 * 
+	 * @return The set of allowed methods.
+	 */
+	@Override
+	public Set<Method> getAllowedMethods() {
+		final Set<Method> result = new HashSet<Method>();
+		updateAllowedMethods(result);
+		return result;
+	}
+
+	/**
+	 * Returns the annotation descriptors.
+	 * 
+	 * @return The annotation descriptors.
+	 */
+	private List<AnnotationInfo> getAnnotations() {
+		return isAnnotated() ? AnnotationUtils
+				.getAnnotationDescriptors(getClass()) : null;
 	}
 
 	/**
@@ -305,8 +362,10 @@ public class WadlResource extends Resource {
 	 * @return The preferred WADL variant.
 	 */
 	protected Variant getPreferredWadlVariant() {
+		Variant result = null;
+
 		// Compute the preferred variant
-		Variant result = getRequest().getClientInfo().getPreferredVariant(
+		result = getRequest().getClientInfo().getPreferredVariant(
 				getWadlVariants(),
 				(getApplication() == null) ? null : getApplication()
 						.getMetadataService());
@@ -355,13 +414,6 @@ public class WadlResource extends Resource {
 		return result;
 	}
 
-	@Override
-	public void handleOptions() {
-		if (isAutoDescribed()) {
-			getResponse().setEntity(describe());
-		}
-	}
-
 	/**
 	 * Indicates if the resource should be automatically described via WADL when
 	 * an OPTIONS request is handled.
@@ -385,6 +437,14 @@ public class WadlResource extends Resource {
 		return !(Method.HEAD.equals(method) || Method.OPTIONS.equals(method));
 	}
 
+	@Override
+	public Representation options() {
+		if (isAutoDescribed()) {
+			return describe();
+		}
+		return null;
+	}
+
 	/**
 	 * Indicates if the resource should be automatically described via WADL when
 	 * an OPTIONS request is handled.
@@ -405,6 +465,22 @@ public class WadlResource extends Resource {
 	 */
 	public void setTitle(String title) {
 		this.title = title;
+	}
+
+	/**
+	 * Updates the set of methods with the ones allowed by this resource
+	 * instance.
+	 * 
+	 * @param allowedMethods
+	 *            The set to update.
+	 */
+	private void updateAllowedMethods(Set<Method> allowedMethods) {
+		List<AnnotationInfo> annotations = getAnnotations();
+		if (annotations != null) {
+			for (AnnotationInfo annotationInfo : annotations) {
+				allowedMethods.add(annotationInfo.getRestletMethod());
+			}
+		}
 	}
 
 }

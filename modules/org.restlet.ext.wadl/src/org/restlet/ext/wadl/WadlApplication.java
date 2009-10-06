@@ -167,7 +167,7 @@ public class WadlApplication extends Application {
 
             final Router root = new Router(getContext());
             this.router = root;
-            setRoot(root);
+            setInboundRoot(root);
 
             if (wadlRep.getApplication() != null) {
                 if (wadlRep.getApplication().getResources() != null) {
