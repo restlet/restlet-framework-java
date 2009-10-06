@@ -13,8 +13,9 @@
       <dependency type="library" id="httpclient" />
       <dependency type="library" id="httpcore" />
       <dependency type="library" id="httpmime" />
-      <dependency type="library" id="mime4j" />
+      <dependency type="library" id="jcip-annotations" />
       <dependency type="library" id="logging" />
+      <dependency type="library" id="mime4j" />
       <dependency type="module" id="core" />
    </dependencies>
 </module>
