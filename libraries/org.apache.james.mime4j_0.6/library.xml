@@ -1,4 +1,4 @@
-<library id="httpclient">
+<library id="mime4j">
    <package name="org.apache.james.mime4j" />
    <version>0.6</version>
    <distributions>
