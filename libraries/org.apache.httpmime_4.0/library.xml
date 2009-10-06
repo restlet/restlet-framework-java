@@ -1,4 +1,4 @@
-<library id="httpclient">
+<library id="httpmime">
    <package name="org.apache.httpmime" />
    <version>4.0</version>
    <distributions>
