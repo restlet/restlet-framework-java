@@ -61,7 +61,28 @@ import org.restlet.util.Series;
 
 /**
  * Base resource class exposing the uniform REST interface. Intended conceptual
- * target of a hypertext reference.<br>
+ * target of a hypertext reference. An uniform resource encapsulates a
+ * {@link Context}, a {@link Request} and a {@link Response}, corresponding to a
+ * specific target resource.<br>
+ * <br>
+ * It also defines a precise life cycle. First, the instance is created and the
+ * final {@link #init(Context, Request, Response)} method is invoked, with a
+ * chance for the developer to do some additional initialization by overriding
+ * the {@link #doInit()} method.<br>
+ * <br>
+ * Then, the abstract {@link #handle()} method can be invoked. For concrete
+ * behavior, see the {@link ClientResource} and {@link ServerResource}
+ * subclasses. Note that the state of the resource can be changed several times
+ * and the {@link #handle()} method called more than once, but always by the
+ * same thread.<br>
+ * <br>
+ * Finally, the final {@link #release()} method can be called to clean-up the
+ * resource, with a chance for the developer to do some additional clean-up by
+ * overriding the {@link #doRelease()} method.<br>
+ * <br>
+ * Note also that throwable raised such as {@link Error} and {@link Exception}
+ * can be caught in a single point by overriding the {@link #doCatch(Throwable)}
+ * method.<br>
  * <br>
  * "The central feature that distinguishes the REST architectural style from
  * other network-based styles is its emphasis on a uniform interface between
@@ -138,7 +159,7 @@ public abstract class UniformResource {
      * @return The set of allowed methods.
      */
     public Set<Method> getAllowedMethods() {
-        return getResponse().getAllowedMethods();
+        return getResponse() == null ? null : getResponse().getAllowedMethods();
     }
 
     /**
@@ -160,7 +181,8 @@ public abstract class UniformResource {
      * @see Response#getChallengeRequests()
      */
     public List<ChallengeRequest> getChallengeRequests() {
-        return getResponse().getChallengeRequests();
+        return getResponse() == null ? null : getResponse()
+                .getChallengeRequests();
     }
 
     /**
@@ -170,7 +192,8 @@ public abstract class UniformResource {
      * @see Request#getChallengeResponse()
      */
     public ChallengeResponse getChallengeResponse() {
-        return getRequest().getChallengeResponse();
+        return getRequest() == null ? null : getRequest()
+                .getChallengeResponse();
     }
 
     /**
@@ -181,7 +204,7 @@ public abstract class UniformResource {
      * @see Request#getClientInfo()
      */
     public ClientInfo getClientInfo() {
-        return getRequest().getClientInfo();
+        return getRequest() == null ? null : getRequest().getClientInfo();
     }
 
     /**
@@ -192,7 +215,7 @@ public abstract class UniformResource {
      * @see Request#getConditions()
      */
     public Conditions getConditions() {
-        return getRequest().getConditions();
+        return getRequest() == null ? null : getRequest().getConditions();
     }
 
     /**
@@ -212,7 +235,7 @@ public abstract class UniformResource {
      * @see Request#getCookies()
      */
     public Series<Cookie> getCookies() {
-        return getRequest().getCookies();
+        return getRequest() == null ? null : getRequest().getCookies();
     }
 
     /**
@@ -223,7 +246,7 @@ public abstract class UniformResource {
      * @see Response#getCookieSettings()
      */
     public Series<CookieSetting> getCookieSettings() {
-        return getResponse().getCookieSettings();
+        return getResponse() == null ? null : getResponse().getCookieSettings();
     }
 
     /**
@@ -236,7 +259,7 @@ public abstract class UniformResource {
      * @see Response#getDimensions()
      */
     public Set<Dimension> getDimensions() {
-        return getResponse().getDimensions();
+        return getResponse() == null ? null : getResponse().getDimensions();
     }
 
     /**
@@ -248,7 +271,7 @@ public abstract class UniformResource {
      * @see Request#getHostRef()
      */
     public Reference getHostRef() {
-        return getRequest().getHostRef();
+        return getRequest() == null ? null : getRequest().getHostRef();
     }
 
     /**
@@ -259,7 +282,7 @@ public abstract class UniformResource {
      * @see Response#getLocationRef()
      */
     public Reference getLocationRef() {
-        return getResponse().getLocationRef();
+        return getResponse() == null ? null : getResponse().getLocationRef();
     }
 
     /**
@@ -268,7 +291,7 @@ public abstract class UniformResource {
      * @return The logger.
      */
     public Logger getLogger() {
-        return (getContext() != null) ? getContext().getLogger() : Context
+        return getContext() != null ? getContext().getLogger() : Context
                 .getCurrentLogger();
     }
 
@@ -279,7 +302,7 @@ public abstract class UniformResource {
      * @see Reference#getMatrixAsForm()
      */
     public Form getMatrix() {
-        return getReference().getMatrixAsForm();
+        return getReference() == null ? null : getReference().getMatrixAsForm();
     }
 
     /**
@@ -289,7 +312,7 @@ public abstract class UniformResource {
      * @see Request#getMethod()
      */
     public Method getMethod() {
-        return getRequest().getMethod();
+        return getRequest() == null ? null : getRequest().getMethod();
     }
 
     /**
@@ -300,7 +323,7 @@ public abstract class UniformResource {
      * @see Request#getOriginalRef()
      */
     public Reference getOriginalRef() {
-        return getRequest().getOriginalRef();
+        return getRequest() == null ? null : getRequest().getOriginalRef();
     }
 
     /**
@@ -311,7 +334,7 @@ public abstract class UniformResource {
      * @see Request#getProtocol()
      */
     public Protocol getProtocol() {
-        return getRequest().getProtocol();
+        return getRequest() == null ? null : getRequest().getProtocol();
     }
 
     /**
@@ -321,7 +344,7 @@ public abstract class UniformResource {
      * @see Reference#getQueryAsForm()
      */
     public Form getQuery() {
-        return getReference().getQueryAsForm();
+        return getReference() == null ? null : getReference().getQueryAsForm();
     }
 
     /**
@@ -331,7 +354,7 @@ public abstract class UniformResource {
      * @see Request#getRanges()
      */
     public List<Range> getRanges() {
-        return getRequest().getRanges();
+        return getRequest() == null ? null : getRequest().getRanges();
     }
 
     /**
@@ -349,7 +372,7 @@ public abstract class UniformResource {
      * @return The referrer reference.
      */
     public Reference getReferrerRef() {
-        return getRequest().getReferrerRef();
+        return getRequest() == null ? null : getRequest().getReferrerRef();
     }
 
     /**
@@ -368,7 +391,7 @@ public abstract class UniformResource {
      * @see Request#getAttributes()
      */
     public Map<String, Object> getRequestAttributes() {
-        return getRequest().getAttributes();
+        return getRequest() == null ? null : getRequest().getAttributes();
     }
 
     /**
@@ -377,7 +400,7 @@ public abstract class UniformResource {
      * @return The request entity representation.
      */
     public Representation getRequestEntity() {
-        return getRequest().getEntity();
+        return getRequest() == null ? null : getRequest().getEntity();
     }
 
     /**
@@ -396,7 +419,7 @@ public abstract class UniformResource {
      * @see Response#getAttributes()
      */
     public Map<String, Object> getResponseAttributes() {
-        return getResponse().getAttributes();
+        return getResponse() == null ? null : getResponse().getAttributes();
     }
 
     /**
@@ -405,7 +428,7 @@ public abstract class UniformResource {
      * @return The response entity representation.
      */
     public Representation getResponseEntity() {
-        return getResponse().getEntity();
+        return getResponse() == null ? null : getResponse().getEntity();
     }
 
     /**
@@ -415,7 +438,7 @@ public abstract class UniformResource {
      * @see Request#getRootRef()
      */
     public Reference getRootRef() {
-        return getRequest().getRootRef();
+        return getRequest() == null ? null : getRequest().getRootRef();
     }
 
     /**
@@ -426,7 +449,7 @@ public abstract class UniformResource {
      * @see Response#getServerInfo()
      */
     public ServerInfo getServerInfo() {
-        return getResponse().getServerInfo();
+        return getResponse() == null ? null : getResponse().getServerInfo();
     }
 
     /**
@@ -436,7 +459,7 @@ public abstract class UniformResource {
      * @see Response#getStatus()
      */
     public Status getStatus() {
-        return getResponse().getStatus();
+        return getResponse() == null ? null : getResponse().getStatus();
     }
 
     /**
@@ -478,7 +501,7 @@ public abstract class UniformResource {
      * @see Request#isConfidential()
      */
     public boolean isConfidential() {
-        return getRequest().isConfidential();
+        return getRequest() == null ? null : getRequest().isConfidential();
     }
 
     /**
