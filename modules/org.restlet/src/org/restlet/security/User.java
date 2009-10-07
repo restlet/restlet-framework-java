@@ -31,9 +31,11 @@
 package org.restlet.security;
 
 /**
- * User part of an organization. Note the same user can be member of any number
- * of groups.
+ * User part of a security realm. Note the same user can be member of several
+ * groups.
  * 
+ * @see Realm
+ * @see Group
  * @author Jerome Louvel
  */
 public class User {

@@ -30,67 +30,34 @@
 
 package org.restlet.ext.lucene;
 
-import java.util.Iterator;
+import java.util.ArrayList;
 
-import org.apache.solr.common.params.SolrParams;
+import org.apache.solr.common.util.ContentStream;
+import org.apache.solr.core.SolrCore;
+import org.apache.solr.request.SolrQueryRequestBase;
 import org.restlet.Request;
-import org.restlet.data.Form;
 
 /**
- * Wrap Restlet query parameters as Solr params.
+ * Solr query request wrapping a Restlet request.
  * 
  * @author Rémi Dewitte <remi@gide.net>
  */
-public class RestletSolrParams extends SolrParams {
-
-    private static final long serialVersionUID = 1L;
-
-    private final Request request;
+public class SolrRestletQueryRequest extends SolrQueryRequestBase {
 
     /**
      * Constructor.
      * 
      * @param request
-     *            The wrapped Restlet request.
+     *            The Restlet request to wrap.
+     * @param core
+     *            The Solr core.
      */
-    public RestletSolrParams(Request request) {
-        this.request = request;
-    }
-
-    /**
-     * Returns the request query form.
-     * 
-     * @return The request query form.
-     */
-    protected Form getForm() {
-        return request.getResourceRef().getQueryAsForm();
-    }
-
-    /**
-     * Reads parameter from the form returned {@link #getForm()}.
-     * 
-     */
-    @Override
-    public String get(String param) {
-        return getForm().getFirstValue(param);
-    }
-
-    /**
-     * Reads parameter names from the form returned {@link #getForm()}.
-     * 
-     */
-    @Override
-    public Iterator<String> getParameterNamesIterator() {
-        return getForm().getNames().iterator();
-    }
-
-    /**
-     * Reads parameter values from the form returned {@link #getForm()}.
-     * 
-     */
-    @Override
-    public String[] getParams(String param) {
-        return getForm().getValuesArray(param);
+    public SolrRestletQueryRequest(Request request, SolrCore core) {
+        super(core, new SolrRestletParams(request));
+        getContext().put("path", request.getResourceRef().getPath());
+        ArrayList<ContentStream> _streams = new ArrayList<ContentStream>(1);
+        _streams.add(new SolrRepresentationContentStream(request.getEntity()));
+        setContentStreams(_streams);
     }
 
 }

@@ -34,7 +34,10 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * Application specific role.
+ * Application specific role. Common examples are "administrator", "user",
+ * "anonymous", "supervisor". Note that for reusability purpose, it is
+ * recommended that those role don't reflect an actual organization, but more
+ * the functional requirements of your application.
  * 
  * @author Jerome Louvel
  */

@@ -46,7 +46,7 @@ import org.restlet.Response;
  * 
  * @author Jerome Louvel
  */
-public class DefaultCallbackHandler implements CallbackHandler {
+public class ChallengeCallbackHandler implements CallbackHandler {
 
     /** The handled request. */
     private volatile Request request;
@@ -62,7 +62,7 @@ public class DefaultCallbackHandler implements CallbackHandler {
      * @param response
      *            The handled response.
      */
-    public DefaultCallbackHandler(Request request, Response response) {
+    public ChallengeCallbackHandler(Request request, Response response) {
         this.request = request;
         this.response = response;
     }

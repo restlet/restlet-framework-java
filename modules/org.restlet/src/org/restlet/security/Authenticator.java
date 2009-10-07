@@ -36,7 +36,7 @@ import org.restlet.Response;
 import org.restlet.routing.Filter;
 
 /**
- * Filter authenticating the subject sending the request.
+ * Filter authenticating the client sending the request.
  * 
  * @author Jerome Louvel
  */

@@ -32,6 +32,8 @@ Changes log
              Subject.
            - Added a "name" property to Realm and a findRealm(name)
              to Component.
+        - Renamed RestletSolrQueryRequest to SolrRestletQueryRequest.
+        - Renamed RestletSolrParams to SolrRestletParams.
     - Bugs fixed
         - Fixed bug when the deprecated method "createRoot" is 
           implemented instead of the "createInboundRoot".
@@ -45,7 +47,11 @@ Changes log
     - Enhancements
         - Improved JAXB converted. Contributed by Sanjay Acharya.
         - Upgraded Apache Commons Logging to version 1.1.1.
-        - Added library jcip-annotations 1.0. 
+        - Added library jcip-annotations 1.0.
+        - ServerSevlet now automatically supports the declaration of 
+          several adapters in the same web.xml. Reworked the Javadocs
+          to encourage usage of Servlet init parameters instead of
+          context parameters.
  
 - 2.0 Milestone 5 (2009-09-28)
     - API changes

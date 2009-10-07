@@ -77,7 +77,7 @@ public class JaasVerifier extends Verifier {
      */
     protected CallbackHandler createCallbackHandler(Request request,
             Response response) {
-        return new DefaultCallbackHandler(request, response);
+        return new ChallengeCallbackHandler(request, response);
     }
 
     /**

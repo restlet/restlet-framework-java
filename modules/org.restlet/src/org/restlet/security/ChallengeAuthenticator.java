@@ -42,8 +42,11 @@ import org.restlet.data.ClientInfo;
 import org.restlet.data.Status;
 
 /**
- * Authenticator based on a challenge scheme such as HTTP Basic.
+ * Authenticator based on the challenge schemes.
  * 
+ * @see ChallengeScheme
+ * @see ChallengeRequest
+ * @see ChallengeResponse
  * @author Jerome Louvel
  */
 public class ChallengeAuthenticator extends Authenticator {

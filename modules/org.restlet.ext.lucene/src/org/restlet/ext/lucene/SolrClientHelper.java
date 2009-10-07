@@ -161,7 +161,7 @@ public class SolrClientHelper extends ClientHelper {
         }
 
         try {
-            SolrQueryRequest solrReq = new RestletSolrQueryRequest(request,
+            SolrQueryRequest solrReq = new SolrRestletQueryRequest(request,
                     core);
             SolrQueryResponse solrResp = new SolrQueryResponse();
             core.execute(handler, solrReq, solrResp);

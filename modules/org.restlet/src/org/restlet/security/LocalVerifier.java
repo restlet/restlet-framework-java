@@ -31,7 +31,9 @@
 package org.restlet.security;
 
 /**
- * Verifier that can locally retrieve the passwords.
+ * Verifier that can locally retrieve the passwords. This verifier assumes that
+ * the secret associated to an identifier can be retrieved, which isn't always
+ * possible or even desirable.
  * 
  * @author Jerome Louvel
  */

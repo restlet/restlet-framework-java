@@ -62,11 +62,10 @@ import org.restlet.routing.VirtualHost;
  * href="/documentation/1.1/faq#02">Developer FAQ #2</a> for details on how to
  * integrate a Restlet application into a servlet container.<br>
  * <br>
- * Initially designed to deploy a single Restlet Application, this Servlet can
- * now deploy a complete Restlet Component. This allows you to reuse an existing
- * standalone Restlet Component, potentially containing several applications,
- * and declaring client connectors, for example for the CLAP, FILE or HTTP
- * protocols.<br>
+ * This Servlet can deploy multiple Restlet applications or components. This
+ * allows you to reuse an existing standalone Restlet Component, potentially
+ * containing several applications, and declaring client connectors, for example
+ * for the CLAP, FILE or HTTP protocols.<br>
  * <br>
  * There are three separate ways to configure the deployment using this Servlet.
  * They are described below by order of priority:
@@ -77,75 +76,122 @@ import org.restlet.routing.VirtualHost;
  * </tr>
  * <tr>
  * <td><b>1</b></td>
- * <td>If a "/WEB-INF/restlet.xml" file exists and contains a valid XML
+ * <td>A "/WEB-INF/restlet.xml" file exists and contains a valid XML
  * configuration as described in the documentation of the {@link Component}
  * class. It is used to instantiate and attach the described component,
  * contained applications and connectors.</td>
  * </tr>
  * <tr>
  * <td><b>2</b></td>
- * <td>If the "/WEB-INF/web.xml" file contains a context parameter named
- * "org.restlet.component", its value must be the path of a class that inherits
+ * <td>The "/WEB-INF/web.xml" file contains a parameter named
+ * "org.restlet.component". Its value must be the path of a class that inherits
  * from {@link Component}. It is used to instantiate and attach the described
  * component, contained applications and connectors.</td>
  * </tr>
  * <tr>
  * <td><b>3</b></td>
- * <td>If the "/WEB-INF/web.xml" file contains a context parameter named
- * "org.restlet.application", its value must be the path of a class that
+ * <td>The "/WEB-INF/web.xml" file contains a parameter named
+ * "org.restlet.application". Its value must be the path of a class that
  * inherits from {@link Application}. It is used to instantiate the application
- * and to attach it to a default Restlet Component.</td>
+ * and to attach it to an implicit Restlet Component.</td>
  * </tr>
  * </table>
  * <br>
  * In deployment mode 3, you can also add an optional "org.restlet.clients"
  * context parameter that contains a space separated list of client protocols
  * supported by the underlying component. For each one, a new client connector
- * is added to the Component instance.<br>
+ * is added to the implicit {@link Component} instance.<br>
  * 
- * Here is a template configuration for the ServerServlet:
+ * Here is an example configuration to attach two separate applications:
  * 
  * <pre>
- * &lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt;
- * &lt;!DOCTYPE web-app PUBLIC &quot;-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN&quot; &quot;http://java.sun.com/dtd/web-app_2_3.dtd&quot;&gt;
- * &lt;web-app&gt;
- *         &lt;display-name&gt;Restlet adapter&lt;/display-name&gt;
+ * &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+ * &lt;web-app xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+ *         xmlns=&quot;http://java.sun.com/xml/ns/javaee&quot; xmlns:web=&quot;http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd&quot;
+ *         xsi:schemaLocation=&quot;http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd&quot;
+ *         id=&quot;WebApp_ID&quot; version=&quot;2.5&quot;&gt;
  * 
- *         &lt;!-- Your component class name (Optional - For mode 2) --&gt;
- *         &lt;context-param&gt;
- *                 &lt;param-name&gt;org.restlet.component&lt;/param-name&gt;
- *                 &lt;param-value&gt;com.mycompany.MyComponent&lt;/param-value&gt;
- *         &lt;/context-param&gt;
- *         
- *         &lt;!-- Your application class name (Optional - For mode 3) --&gt;
- *         &lt;context-param&gt;
- *                 &lt;param-name&gt;org.restlet.application&lt;/param-name&gt;
- *                 &lt;param-value&gt;com.mycompany.MyApplication&lt;/param-value&gt;
- *         &lt;/context-param&gt;
- *         
- *         &lt;!-- List of supported client protocols (Optional - Only in mode 3) --&gt;
- *         &lt;context-param&gt;
- *                 &lt;param-name&gt;org.restlet.clients&lt;/param-name&gt;
- *                 &lt;param-value&gt;HTTP HTTPS FILE&lt;/param-value&gt;
- *         &lt;/context-param&gt;
- *         
- *         &lt;!-- Add the Servlet context path to the routes (Optional - true by default) --&gt;
- *         &lt;context-param&gt;
- *                 &lt;param-name&gt;org.restlet.autoWire&lt;/param-name&gt;
- *                 &lt;param-value&gt;true&lt;/param-value&gt;
- *         &lt;/context-param&gt;
+ *         &lt;display-name&gt;Restlet adapters&lt;/display-name&gt;
  * 
- *         &lt;!-- Restlet adapter (Mandatory) --&gt;
  *         &lt;servlet&gt;
- *                 &lt;servlet-name&gt;ServerServlet&lt;/servlet-name&gt;
+ *                 &lt;servlet-name&gt;Restlet1&lt;/servlet-name&gt;
  *                 &lt;servlet-class&gt;org.restlet.ext.servlet.ServerServlet&lt;/servlet-class&gt;
+ *                 &lt;init-param&gt;
+ *                         &lt;param-name&gt;org.restlet.application&lt;/param-name&gt;
+ *                         &lt;param-value&gt;test.MyApplication1&lt;/param-value&gt;
+ *                 &lt;/init-param&gt;
  *         &lt;/servlet&gt;
  * 
- *         &lt;!-- Catch all requests (Mandatory) --&gt;
  *         &lt;servlet-mapping&gt;
- *                 &lt;servlet-name&gt;ServerServlet&lt;/servlet-name&gt;
+ *                 &lt;servlet-name&gt;Restlet1&lt;/servlet-name&gt;
+ *                 &lt;url-pattern&gt;/1/*&lt;/url-pattern&gt;
+ *         &lt;/servlet-mapping&gt;
+ * 
+ *         &lt;servlet&gt;
+ *                 &lt;servlet-name&gt;Restlet2&lt;/servlet-name&gt;
+ *                 &lt;servlet-class&gt;org.restlet.ext.servlet.ServerServlet&lt;/servlet-class&gt;
+ *                 &lt;init-param&gt;
+ *                         &lt;param-name&gt;org.restlet.application&lt;/param-name&gt;
+ *                         &lt;param-value&gt;test.MyApplication2&lt;/param-value&gt;
+ *                 &lt;/init-param&gt;
+ *         &lt;/servlet&gt;
+ * 
+ *         &lt;servlet-mapping&gt;
+ *                 &lt;servlet-name&gt;Restlet2&lt;/servlet-name&gt;
+ *                 &lt;url-pattern&gt;/2/*&lt;/url-pattern&gt;
+ *         &lt;/servlet-mapping&gt;
+ * 
+ * &lt;/web-app&gt;
+ * </pre>
+ * 
+ * Now, here is a more detailed template configuration showing you more
+ * configuration options:
+ * 
+ * <pre>
+ * &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+ * &lt;web-app xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+ *         xmlns=&quot;http://java.sun.com/xml/ns/javaee&quot; xmlns:web=&quot;http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd&quot;
+ *         xsi:schemaLocation=&quot;http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd&quot;
+ *         id=&quot;WebApp_ID&quot; version=&quot;2.5&quot;&gt;
+ * 
+ *         &lt;display-name&gt;Restlet adapters&lt;/display-name&gt;
+ * 
+ *         &lt;!-- Servlet to Restlet adapter declaration (Mandatory) --&gt;
+ *         &lt;servlet&gt;
+ *                 &lt;servlet-name&gt;RestletAdapter&lt;/servlet-name&gt;
+ *                 &lt;servlet-class&gt;org.restlet.ext.servlet.ServerServlet&lt;/servlet-class&gt;
+ * 
+ *                 &lt;!-- Your component class name (Optional - For mode 2) --&gt;
+ *                 &lt;init-param&gt;
+ *                         &lt;param-name&gt;org.restlet.component&lt;/param-name&gt;
+ *                         &lt;param-value&gt;test.MyComponent&lt;/param-value&gt;
+ *                 &lt;/init-param&gt;
+ * 
+ *                 &lt;!-- Your application class name (Optional - For mode 3) --&gt;
+ *                 &lt;init-param&gt;
+ *                         &lt;param-name&gt;org.restlet.application&lt;/param-name&gt;
+ *                         &lt;param-value&gt;test..MyApplication&lt;/param-value&gt;
+ *                 &lt;/init-param&gt;
+ * 
+ *                 &lt;!-- List of supported client protocols (Optional - Only in mode 3) --&gt;
+ *                 &lt;init-param&gt;
+ *                         &lt;param-name&gt;org.restlet.clients&lt;/param-name&gt;
+ *                         &lt;param-value&gt;HTTP HTTPS FILE&lt;/param-value&gt;
+ *                 &lt;/init-param&gt;
+ * 
+ *                 &lt;!-- Add the Servlet context path to routes (Optional) --&gt;
+ *                 &lt;init-param&gt;
+ *                         &lt;param-name&gt;org.restlet.autoWire&lt;/param-name&gt;
+ *                         &lt;param-value&gt;true&lt;/param-value&gt;
+ *                 &lt;/init-param&gt;
+ *         &lt;/servlet&gt;
+ * 
+ *         &lt;!-- Mapping catching all requests on a given path (Mandatory) --&gt;
+ *         &lt;servlet-mapping&gt;
+ *                 &lt;servlet-name&gt;RestletAdapter&lt;/servlet-name&gt;
  *                 &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
  *         &lt;/servlet-mapping&gt;
+ * 
  * &lt;/web-app&gt;
  * </pre>
  * 
@@ -745,7 +791,8 @@ public class ServerServlet extends HttpServlet {
                         // application
                         final String applicationAttributeName = getInitParameter(
                                 NAME_APPLICATION_ATTRIBUTE,
-                                NAME_APPLICATION_ATTRIBUTE_DEFAULT);
+                                NAME_APPLICATION_ATTRIBUTE_DEFAULT + "."
+                                        + getServletName());
 
                         // Look up the attribute for a target
                         result = (Application) getServletContext()
@@ -782,7 +829,8 @@ public class ServerServlet extends HttpServlet {
                     // Find the attribute name to use to store the component
                     final String componentAttributeName = getInitParameter(
                             NAME_COMPONENT_ATTRIBUTE,
-                            NAME_COMPONENT_ATTRIBUTE_DEFAULT);
+                            NAME_COMPONENT_ATTRIBUTE_DEFAULT + "."
+                                    + getServletName());
 
                     // Look up the attribute for a target
                     result = (Component) getServletContext().getAttribute(
@@ -882,7 +930,8 @@ public class ServerServlet extends HttpServlet {
                     // reference
                     final String serverAttributeName = getInitParameter(
                             NAME_SERVER_ATTRIBUTE,
-                            NAME_SERVER_ATTRIBUTE_DEFAULT);
+                            NAME_SERVER_ATTRIBUTE_DEFAULT + "."
+                                    + getServletName());
 
                     // Look up the attribute for a target
                     result = (HttpServerHelper) getServletContext()
@@ -965,7 +1014,7 @@ public class ServerServlet extends HttpServlet {
     @Override
     public void service(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        final HttpServerHelper helper = getServer(request);
+        HttpServerHelper helper = getServer(request);
 
         if (helper != null) {
             helper.handle(createCall(helper.getHelped(), request, response));

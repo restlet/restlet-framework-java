@@ -34,7 +34,7 @@ import org.restlet.Request;
 import org.restlet.Response;
 
 /**
- * Verifies the credentials provided by a user sending a request.
+ * Verifies the credentials provided by a client user sending a request.
  * 
  * @author Jerome Louvel
  */
@@ -56,8 +56,8 @@ public abstract class Verifier {
     public final static int RESULT_VALID = 4;
 
     /**
-     * Attempts to verify the credentials provided by the subject sending the
-     * request.
+     * Attempts to verify the credentials provided by the client user sending
+     * the request.
      * 
      * @param request
      *            The request sent.

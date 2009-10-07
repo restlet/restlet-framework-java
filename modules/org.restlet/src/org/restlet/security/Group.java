@@ -34,8 +34,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * Group part of an organization that contains member groups and member user
- * references.
+ * Group that contains member groups and users.
  * 
  * @author Jerome Louvel
  */

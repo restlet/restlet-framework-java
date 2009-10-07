@@ -36,7 +36,9 @@ import org.restlet.data.ChallengeResponse;
 
 /**
  * Verifier of identifier/secret couples. By default, it extracts the identifier
- * and the secret from the {@link ChallengeResponse}.
+ * and the secret from the {@link ChallengeResponse}. If the verification is
+ * successful, it automatically adds a new {@link User} for the given
+ * identifier.
  * 
  * @author Jerome Louvel
  */

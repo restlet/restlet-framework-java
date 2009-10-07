@@ -35,13 +35,15 @@ import java.security.Principal;
 import org.restlet.data.ClientInfo;
 
 /**
- * Updates an authenticated subject with new principals. Typically, it is
+ * Updates an authenticated client user with assigned roles. Typically, it is
  * invoked by an {@link Authenticator} after successful authentication to add
- * {@link RolePrincipal} instances based on available {@link UserPrincipal}.
+ * {@link Role} instances based on available {@link User}.
  * 
- * @author Jerome Louvel
  * @see Authenticator#getEnroler()
  * @see Authenticator#setEnroler(Enroler)
+ * @see ClientInfo#getUser()
+ * @see ClientInfo#getRoles()
+ * @author Jerome Louvel
  */
 public abstract class Enroler {
 

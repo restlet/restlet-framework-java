@@ -33,10 +33,8 @@ package org.restlet.data;
 import org.restlet.Response;
 
 /**
- * Dimension on which the representations of a resource may vary.<br>
- * <br>
- * Note that when used with HTTP connectors, this class maps to the "Vary"
- * header.
+ * Dimension on which the representations of a resource may vary. Note that when
+ * used with HTTP connectors, this class maps to the "Vary" header.
  * 
  * @see Response#getDimensions()
  * @author Jerome Louvel

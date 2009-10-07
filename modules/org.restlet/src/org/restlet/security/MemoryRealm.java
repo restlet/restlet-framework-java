@@ -40,8 +40,8 @@ import org.restlet.data.ClientInfo;
 import org.restlet.engine.security.RoleMapping;
 
 /**
- * Security realm based on a memory model. The model is composed of
- * organizations.
+ * Security realm based on a memory model. The model is composed of root groups,
+ * users and mapping to associated roles.
  * 
  * @author Jerome Louvel
  */
