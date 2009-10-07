@@ -34,7 +34,8 @@ Changes log
              to Component.
         - Renamed RestletSolrQueryRequest to SolrRestletQueryRequest.
         - Renamed RestletSolrParams to SolrRestletParams.
-    - Bugs fixed
+        - Renamed Application#getRole() into findRole().
+     - Bugs fixed
         - Fixed bug when the deprecated method "createRoot" is 
           implemented instead of the "createInboundRoot".
           Reported by Fabian Mandelbaum.

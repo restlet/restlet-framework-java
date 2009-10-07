@@ -943,7 +943,7 @@ public abstract class ServerResource extends UniformResource {
      */
     public boolean isInRole(String roleName) {
         return getClientInfo().getRoles().contains(
-                getApplication().getRole(roleName));
+                getApplication().findRole(roleName));
     }
 
     /**

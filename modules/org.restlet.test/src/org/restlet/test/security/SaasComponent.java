@@ -86,7 +86,7 @@ public class SaasComponent extends Component {
         developers.getMemberGroups().add(engineers);
 
         // realm.map(customer1, app.getRole("user"));
-        realm.map(managers, app.getRole("admin"));
+        realm.map(managers, app.findRole("admin"));
 
         getDefaultHost().attach(app);
         getServers().add(Protocol.HTTP, RestletTestCase.TEST_PORT);

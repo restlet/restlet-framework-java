@@ -209,6 +209,23 @@ public class Application extends Restlet {
     }
 
     /**
+     * Finds the role associated to the given name.
+     * 
+     * @param name
+     *            The name of the role to find.
+     * @return The role matched or null.
+     */
+    public Role findRole(String name) {
+        for (Role role : getRoles()) {
+            if (role.getName().equals(name)) {
+                return role;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Returns the connector service. The service is enabled by default.
      * 
      * @return The connector service.
@@ -296,23 +313,6 @@ public class Application extends Restlet {
      */
     public RangeService getRangeService() {
         return getService(RangeService.class);
-    }
-
-    /**
-     * Returns the role associated to the given name.
-     * 
-     * @param name
-     *            The name of the role to find.
-     * @return The role matched or null.
-     */
-    public Role getRole(String name) {
-        for (Role role : getRoles()) {
-            if (role.getName().equals(name)) {
-                return role;
-            }
-        }
-
-        return null;
     }
 
     /**
