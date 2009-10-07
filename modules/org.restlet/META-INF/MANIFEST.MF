@@ -122,9 +122,6 @@ Import-Package: javax.crypto,
  javax.crypto.spec,
  javax.net,
  javax.net.ssl,
- javax.security.auth,
- javax.security.auth.callback,
- javax.security.auth.login,
  org.osgi.framework
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-Activator: org.restlet.engine.internal.Activator

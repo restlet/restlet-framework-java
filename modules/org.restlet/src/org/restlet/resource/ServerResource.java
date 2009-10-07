@@ -63,8 +63,8 @@ import org.restlet.service.MetadataService;
 import org.restlet.util.Series;
 
 /**
- * Server-side resource. It is a full replacement for the deprecated
- * {@link Resource} class.<br>
+ * Base class for server-side resources. It is a full replacement for the
+ * deprecated {@link Resource} class.<br>
  * <br>
  * Concurrency note: contrary to the {@link org.restlet.Uniform} class and its
  * main {@link Restlet} subclass where a single instance can handle several
@@ -612,17 +612,15 @@ public abstract class ServerResource extends UniformResource {
     }
 
     /**
-     * Returns a full representation for a given variant. The default
-     * implementation directly returns the variant if it is already an instance
-     * of {@link Representation}. In other cases, you need to override this
-     * method in order to provide your own implementation.<br>
+     * Returns a full representation for a given variant. A variant parameter is
+     * passed to indicate which representation should be returned if any.<br>
      * <br>
      * This method is only invoked if content negotiation has been enabled as
      * indicated by the {@link #isNegotiated()}, otherwise the {@link #get()}
      * method is invoked.<br>
      * <br>
      * The default behavior is to set the response status to
-     * {@link Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.
+     * {@link Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.<br>
      * 
      * @param variant
      *            The variant whose full representation must be returned.
@@ -682,9 +680,11 @@ public abstract class ServerResource extends UniformResource {
      * Returns information about the resource's representation. Those metadata
      * are important for conditional method processing. The advantage over the
      * complete {@link Representation} class is that it is much lighter to
-     * create.<br>
+     * create. This method is only invoked if content negotiation has been
+     * disabled as indicated by the {@link #isNegotiated()}, otherwise the
+     * {@link #getInfo(Variant)} method is invoked.<br>
      * <br>
-     * By default, the {@link #get()} method is invoked.
+     * The default behavior is to invoke the {@link #get()} method.
      * 
      * @return Information about the resource's representation.
      * @throws ResourceException
@@ -697,9 +697,14 @@ public abstract class ServerResource extends UniformResource {
      * Returns information about the resource's representation. Those metadata
      * are important for conditional method processing. The advantage over the
      * complete {@link Representation} class is that it is much lighter to
-     * create.<br>
+     * create. A variant parameter is passed to indicate which representation
+     * should be returned if any.<br>
      * <br>
-     * By default, the {@link #get(Variant)} method is invoked.
+     * This method is only invoked if content negotiation has been enabled as
+     * indicated by the {@link #isNegotiated()}, otherwise the
+     * {@link #put(Representation)} method is invoked.<br>
+     * <br>
+     * The default behavior is to invoke the {@link #get(Variant)} method.
      * 
      * @param variant
      *            The variant whose representation information must be returned.
@@ -868,7 +873,7 @@ public abstract class ServerResource extends UniformResource {
      * Returns a representation whose metadata will be returned to the client.
      * This method is only invoked if content negotiation has been disabled as
      * indicated by the {@link #isNegotiated()}, otherwise the
-     * {@link #get(Variant)} method is invoked.<br>
+     * {@link #head(Variant)} method is invoked.<br>
      * <br>
      * The default behavior is to set the response status to
      * {@link Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.
@@ -884,17 +889,17 @@ public abstract class ServerResource extends UniformResource {
     }
 
     /**
-     * Returns a representation whose metadata will be returned to the client.
-     * The default implementation directly returns the variant if it is already
-     * an instance of {@link Representation}. In other cases, you need to
-     * override this method in order to provide your own implementation.<br>
+     * Returns a representation whose metadata will be returned to the client. A
+     * variant parameter is passed to indicate which representation should be
+     * returned if any.<br>
      * <br>
      * This method is only invoked if content negotiation has been enabled as
-     * indicated by the {@link #isNegotiated()}, otherwise the {@link #get()}
+     * indicated by the {@link #isNegotiated()}, otherwise the {@link #head()}
      * method is invoked.<br>
      * <br>
-     * The default behavior is to set the response status to
-     * {@link Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.
+     * The default implementation directly returns the variant if it is already
+     * an instance of {@link Representation}. In other cases, you need to
+     * override this method in order to provide your own implementation. *
      * 
      * @param variant
      *            The variant whose full representation must be returned.
@@ -907,7 +912,7 @@ public abstract class ServerResource extends UniformResource {
     }
 
     /**
-     * Indicates if annotations are supported.
+     * Indicates if annotations are supported. The default value is true.
      * 
      * @return True if annotations are supported.
      */
@@ -916,7 +921,7 @@ public abstract class ServerResource extends UniformResource {
     }
 
     /**
-     * Indicates if conditional handling is enabled.
+     * Indicates if conditional handling is enabled. The default value is true.
      * 
      * @return True if conditional handling is enabled.
      */
@@ -925,7 +930,7 @@ public abstract class ServerResource extends UniformResource {
     }
 
     /**
-     * Indicates if the identified resource exists.
+     * Indicates if the identified resource exists. The default value is true.
      * 
      * @return True if the identified resource exists.
      */
@@ -934,8 +939,8 @@ public abstract class ServerResource extends UniformResource {
     }
 
     /**
-     * Indicates if the authenticated subject associated to the current request
-     * is in the given role name.
+     * Indicates if the authenticated client user associated to the current
+     * request is in the given role name.
      * 
      * @param roleName
      *            The role name to test.
@@ -948,7 +953,7 @@ public abstract class ServerResource extends UniformResource {
 
     /**
      * Indicates if content negotiation of response entities is enabled. The
-     * default value is 'false'.
+     * default value is true.
      * 
      * @return True if content negotiation of response entities is enabled.
      */
@@ -957,8 +962,12 @@ public abstract class ServerResource extends UniformResource {
     }
 
     /**
-     * Indicates the communication options available for this resource. The
-     * default behavior is to set the response status to
+     * Indicates the communication options available for this resource.This
+     * method is only invoked if content negotiation has been disabled as
+     * indicated by the {@link #isNegotiated()}, otherwise the
+     * {@link #options(Variant)} method is invoked.<br>
+     * <br>
+     * The default behavior is to set the response status to
      * {@link Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.
      * 
      * @return The optional response entity.
@@ -977,9 +986,16 @@ public abstract class ServerResource extends UniformResource {
     }
 
     /**
-     * Indicates the communication options available for this resource. The
-     * default behavior is to set the response status to
-     * {@link Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.
+     * Indicates the communication options available for this resource. A
+     * variant parameter is passed to indicate which representation should be
+     * returned if any.<br>
+     * <br>
+     * This method is only invoked if content negotiation has been enabled as
+     * indicated by the {@link #isNegotiated()}, otherwise the
+     * {@link #options()} method is invoked.<br>
+     * <br>
+     * The default behavior is to set the response status to
+     * {@link Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.<br>
      * 
      * @param variant
      *            The variant of the response entity.
@@ -1000,8 +1016,12 @@ public abstract class ServerResource extends UniformResource {
     }
 
     /**
-     * Posts a representation to the resource at the target URI reference. The
-     * default behavior is to set the response status to
+     * Posts a representation to the resource at the target URI reference. This
+     * method is only invoked if content negotiation has been disabled as
+     * indicated by the {@link #isNegotiated()}, otherwise the
+     * {@link #post(Representation, Variant)} method is invoked.<br>
+     * <br>
+     * The default behavior is to set the response status to
      * {@link Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.
      * 
      * @param entity
@@ -1028,9 +1048,16 @@ public abstract class ServerResource extends UniformResource {
     }
 
     /**
-     * Posts a representation to the resource at the target URI reference. The
-     * default behavior is to set the response status to
-     * {@link Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.
+     * Posts a representation to the resource at the target URI reference. A
+     * variant parameter is passed to indicate which representation should be
+     * returned if any.<br>
+     * <br>
+     * This method is only invoked if content negotiation has been enabled as
+     * indicated by the {@link #isNegotiated()}, otherwise the
+     * {@link #post(Representation)} method is invoked.<br>
+     * <br>
+     * The default behavior is to set the response status to
+     * {@link Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.<br>
      * 
      * @param entity
      *            The posted entity.
@@ -1058,7 +1085,11 @@ public abstract class ServerResource extends UniformResource {
 
     /**
      * Creates or updates a resource with the given representation as new state
-     * to be stored. The default behavior is to set the response status to
+     * to be stored. This method is only invoked if content negotiation has been
+     * disabled as indicated by the {@link #isNegotiated()}, otherwise the
+     * {@link #put(Representation, Variant)} method is invoked.<br>
+     * <br>
+     * The default behavior is to set the response status to
      * {@link Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.
      * 
      * @param representation
@@ -1085,8 +1116,15 @@ public abstract class ServerResource extends UniformResource {
 
     /**
      * Creates or updates a resource with the given representation as new state
-     * to be stored. The default behavior is to set the response status to
-     * {@link Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.
+     * to be stored. A variant parameter is passed to indicate which
+     * representation should be returned if any.<br>
+     * <br>
+     * This method is only invoked if content negotiation has been enabled as
+     * indicated by the {@link #isNegotiated()}, otherwise the
+     * {@link #put(Representation)} method is invoked.<br>
+     * <br>
+     * The default behavior is to set the response status to
+     * {@link Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.<br>
      * 
      * @param representation
      *            The representation to store.
@@ -1121,7 +1159,9 @@ public abstract class ServerResource extends UniformResource {
      *            The target URI reference.
      */
     public void redirectPermanent(Reference targetRef) {
-        getResponse().redirectPermanent(targetRef);
+        if (getResponse() != null) {
+            getResponse().redirectPermanent(targetRef);
+        }
     }
 
     /**
@@ -1136,7 +1176,9 @@ public abstract class ServerResource extends UniformResource {
      *            The target URI.
      */
     public void redirectPermanent(String targetUri) {
-        getResponse().redirectPermanent(targetUri);
+        if (getResponse() != null) {
+            getResponse().redirectPermanent(targetUri);
+        }
     }
 
     /**
@@ -1150,7 +1192,9 @@ public abstract class ServerResource extends UniformResource {
      *            The target reference.
      */
     public void redirectSeeOther(Reference targetRef) {
-        getResponse().redirectSeeOther(targetRef);
+        if (getResponse() != null) {
+            getResponse().redirectSeeOther(targetRef);
+        }
     }
 
     /**
@@ -1168,7 +1212,9 @@ public abstract class ServerResource extends UniformResource {
      *            The target URI.
      */
     public void redirectSeeOther(String targetUri) {
-        getResponse().redirectSeeOther(targetUri);
+        if (getResponse() != null) {
+            getResponse().redirectSeeOther(targetUri);
+        }
     }
 
     /**
@@ -1179,7 +1225,9 @@ public abstract class ServerResource extends UniformResource {
      *            The target reference.
      */
     public void redirectTemporary(Reference targetRef) {
-        getResponse().redirectTemporary(targetRef);
+        if (getResponse() != null) {
+            getResponse().redirectTemporary(targetRef);
+        }
     }
 
     /**
@@ -1194,7 +1242,9 @@ public abstract class ServerResource extends UniformResource {
      *            The target URI.
      */
     public void redirectTemporary(String targetUri) {
-        getResponse().redirectTemporary(targetUri);
+        if (getResponse() != null) {
+            getResponse().redirectTemporary(targetUri);
+        }
     }
 
     /**
@@ -1207,11 +1257,13 @@ public abstract class ServerResource extends UniformResource {
      * @see Response#setAllowedMethods(Set)
      */
     public void setAllowedMethods(Set<Method> allowedMethods) {
-        getResponse().setAllowedMethods(allowedMethods);
+        if (getResponse() != null) {
+            getResponse().setAllowedMethods(allowedMethods);
+        }
     }
 
     /**
-     * Indicates if annotations are supported.
+     * Indicates if annotations are supported. The default value is true.
      * 
      * @param annotated
      *            Indicates if annotations are supported.
@@ -1231,11 +1283,13 @@ public abstract class ServerResource extends UniformResource {
      * @see Response#setChallengeRequests(List)
      */
     public void setChallengeRequests(List<ChallengeRequest> requests) {
-        getResponse().setChallengeRequests(requests);
+        if (getResponse() != null) {
+            getResponse().setChallengeRequests(requests);
+        }
     }
 
     /**
-     * Indicates if conditional handling is enabled.
+     * Indicates if conditional handling is enabled. The default value is true.
      * 
      * @param conditional
      *            True if conditional handling is enabled.
@@ -1252,7 +1306,9 @@ public abstract class ServerResource extends UniformResource {
      * @see Response#setCookieSettings(Series)
      */
     public void setCookieSettings(Series<CookieSetting> cookieSettings) {
-        getResponse().setCookieSettings(cookieSettings);
+        if (getResponse() != null) {
+            getResponse().setCookieSettings(cookieSettings);
+        }
     }
 
     /**
@@ -1265,11 +1321,13 @@ public abstract class ServerResource extends UniformResource {
      * @see Response#setDimensions(Set)
      */
     public void setDimensions(Set<Dimension> dimensions) {
-        getResponse().setDimensions(dimensions);
+        if (getResponse() != null) {
+            getResponse().setDimensions(dimensions);
+        }
     }
 
     /**
-     * Indicates if the identified resource exists.
+     * Indicates if the identified resource exists. The default value is true.
      * 
      * @param exists
      *            Indicates if the identified resource exists.
@@ -1287,7 +1345,9 @@ public abstract class ServerResource extends UniformResource {
      * @see Response#setLocationRef(Reference)
      */
     public void setLocationRef(Reference locationRef) {
-        getResponse().setLocationRef(locationRef);
+        if (getResponse() != null) {
+            getResponse().setLocationRef(locationRef);
+        }
     }
 
     /**
@@ -1302,11 +1362,14 @@ public abstract class ServerResource extends UniformResource {
      * @see Response#setLocationRef(String)
      */
     public void setLocationRef(String locationUri) {
-        getResponse().setLocationRef(locationUri);
+        if (getResponse() != null) {
+            getResponse().setLocationRef(locationUri);
+        }
     }
 
     /**
-     * Indicates if content negotiation of response entities is enabled.
+     * Indicates if content negotiation of response entities is enabled. The
+     * default value is true.
      * 
      * @param negotiateContent
      *            True if content negotiation of response entities is enabled.
@@ -1323,7 +1386,9 @@ public abstract class ServerResource extends UniformResource {
      * @see Response#setServerInfo(ServerInfo)
      */
     public void setServerInfo(ServerInfo serverInfo) {
-        getResponse().setServerInfo(serverInfo);
+        if (getResponse() != null) {
+            getResponse().setServerInfo(serverInfo);
+        }
     }
 
     /**
@@ -1334,7 +1399,9 @@ public abstract class ServerResource extends UniformResource {
      * @see Response#setStatus(Status)
      */
     public void setStatus(Status status) {
-        getResponse().setStatus(status);
+        if (getResponse() != null) {
+            getResponse().setStatus(status);
+        }
     }
 
     /**
@@ -1347,7 +1414,9 @@ public abstract class ServerResource extends UniformResource {
      * @see Response#setStatus(Status, String)
      */
     public void setStatus(Status status, String message) {
-        getResponse().setStatus(status, message);
+        if (getResponse() != null) {
+            getResponse().setStatus(status, message);
+        }
     }
 
     /**
@@ -1360,7 +1429,9 @@ public abstract class ServerResource extends UniformResource {
      * @see Response#setStatus(Status, Throwable)
      */
     public void setStatus(Status status, Throwable throwable) {
-        getResponse().setStatus(status, throwable);
+        if (getResponse() != null) {
+            getResponse().setStatus(status, throwable);
+        }
     }
 
     /**
@@ -1375,7 +1446,9 @@ public abstract class ServerResource extends UniformResource {
      * @see Response#setStatus(Status, Throwable, String)
      */
     public void setStatus(Status status, Throwable throwable, String message) {
-        getResponse().setStatus(status, throwable, message);
+        if (getResponse() != null) {
+            getResponse().setStatus(status, throwable, message);
+        }
     }
 
     /**
