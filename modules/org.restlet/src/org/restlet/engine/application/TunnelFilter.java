@@ -366,17 +366,17 @@ public class TunnelFilter extends Filter {
      * @return True if the query has been updated, false otherwise.
      */
     private boolean processQuery(Request request) {
-        final TunnelService tunnelService = getTunnelService();
+        TunnelService tunnelService = getTunnelService();
         boolean queryModified = false;
-        final Reference resourceRef = request.getResourceRef();
+        Reference resourceRef = request.getResourceRef();
 
         if (resourceRef.hasQuery()) {
-            final Form query = resourceRef.getQueryAsForm();
+            Form query = resourceRef.getQueryAsForm();
 
             // Tunnel the request method
-            final Method method = request.getMethod();
+            Method method = request.getMethod();
             if (tunnelService.isMethodTunnel()) {
-                final String methodName = query.getFirstValue(tunnelService
+                String methodName = query.getFirstValue(tunnelService
                         .getMethodParameter());
 
                 Method tunnelledMethod = Method.valueOf(methodName);
@@ -393,27 +393,24 @@ public class TunnelFilter extends Filter {
             // Tunnel the client preferences
             if (tunnelService.isPreferencesTunnel()) {
                 // Get the parameter names to look for
-                final String charSetParameter = tunnelService
+                String charSetParameter = tunnelService
                         .getCharacterSetParameter();
-                final String encodingParameter = tunnelService
-                        .getEncodingParameter();
-                final String languageParameter = tunnelService
-                        .getLanguageParameter();
-                final String mediaTypeParameter = tunnelService
+                String encodingParameter = tunnelService.getEncodingParameter();
+                String languageParameter = tunnelService.getLanguageParameter();
+                String mediaTypeParameter = tunnelService
                         .getMediaTypeParameter();
 
                 // Get the preferences from the query
-                final String acceptedCharSet = query
-                        .getFirstValue(charSetParameter);
-                final String acceptedEncoding = query
+                String acceptedCharSet = query.getFirstValue(charSetParameter);
+                String acceptedEncoding = query
                         .getFirstValue(encodingParameter);
-                final String acceptedLanguage = query
+                String acceptedLanguage = query
                         .getFirstValue(languageParameter);
-                final String acceptedMediaType = query
+                String acceptedMediaType = query
                         .getFirstValue(mediaTypeParameter);
 
                 // Updates the client preferences
-                final ClientInfo clientInfo = request.getClientInfo();
+                ClientInfo clientInfo = request.getClientInfo();
                 Metadata metadata = getMetadata(acceptedCharSet);
 
                 if ((metadata == null) && (acceptedCharSet != null)) {
