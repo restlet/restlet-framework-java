@@ -38,7 +38,7 @@ import org.restlet.Response;
  * 
  * @author Jerome Louvel
  */
-public abstract class Verifier {
+public interface Verifier {
 
     /** Invalid credentials provided. */
     public final static int RESULT_INVALID = -1;
@@ -65,6 +65,6 @@ public abstract class Verifier {
      *            The response to update.
      * @return Result of the verification based on the RESULT_* constants.
      */
-    public abstract int verify(Request request, Response response);
+    public int verify(Request request, Response response);
 
 }

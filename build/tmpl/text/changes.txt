@@ -32,6 +32,11 @@ Changes log
              Subject.
            - Added a "name" property to Realm and a findRealm(name)
              to Component.
+           - Added JaasUtils class with a createSubject(ClientInfo)
+             static method. Suggested by Rickard Oberg.
+           - Enroler and Verifier are now interfaces.
+             Suggested by Rickard Oberg.
+ * {@link ClientInfo} class
         - Renamed RestletSolrQueryRequest to SolrRestletQueryRequest.
         - Renamed RestletSolrParams to SolrRestletParams.
         - Renamed Application#getRole() into findRole().

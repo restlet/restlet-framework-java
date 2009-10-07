@@ -28,36 +28,43 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.security;
+package org.restlet.ext.jaas;
 
-import java.security.Principal;
+import javax.security.auth.Subject;
 
 import org.restlet.data.ClientInfo;
+import org.restlet.security.Role;
 
 /**
- * Updates an authenticated client user with assigned roles. Typically, it is
- * invoked by an {@link Authenticator} after successful authentication to add
- * {@link Role} instances based on available {@link User}.
+ * Utility class to facilitate integration between the Restlet and JAAS APIs.
  * 
- * @see Authenticator#getEnroler()
- * @see Authenticator#setEnroler(Enroler)
- * @see ClientInfo#getUser()
- * @see ClientInfo#getRoles()
  * @author Jerome Louvel
  */
-public interface Enroler {
+public final class JaasUtils {
 
     /**
-     * Attempts to update an authenticated client, with a {@link User} properly
-     * defined, by adding the {@link Role} that are assigned to this user.<br>
-     * <br>
-     * Note that principals could also be added to the {@link ClientInfo} if
-     * necessary. The addition could also potentially be based on the presence
-     * of {@link Principal}.
+     * Creates a JAAS subject based on a given {@link ClientInfo}. It adds a
+     * {@link UserPrincipal} based on the {@link ClientInfo#getUser()} and a
+     * {@link RolePrincipal} for each role in {@link ClientInfo#getRoles()}.
      * 
      * @param clientInfo
-     *            The clientInfo to update.
+     *            The client info to expose as a subject.
+     * @return The populated JAAS subject.
      */
-    public void enrole(ClientInfo clientInfo);
+    public Subject create(ClientInfo clientInfo) {
+        Subject result = new Subject();
 
+        if (clientInfo != null) {
+            if (clientInfo.getUser() != null) {
+                result.getPrincipals().add(
+                        new UserPrincipal(clientInfo.getUser()));
+            }
+
+            for (Role role : clientInfo.getRoles()) {
+                result.getPrincipals().add(new RolePrincipal(role));
+            }
+        }
+
+        return result;
+    }
 }

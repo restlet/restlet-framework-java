@@ -50,9 +50,8 @@ public class MemoryRealm extends Realm {
     /**
      * Enroler based on the default security model.
      */
-    private class DefaultEnroler extends Enroler {
+    private class DefaultEnroler implements Enroler {
 
-        @Override
         public void enrole(ClientInfo clientInfo) {
             User user = findUser(clientInfo.getUser().getIdentifier());
 

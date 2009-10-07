@@ -32,6 +32,8 @@ package org.restlet.ext.jaas;
 
 import java.io.Serializable;
 
+import org.restlet.security.User;
+
 /**
  * Principal corresponding to an authenticated user.
  * 
@@ -52,6 +54,17 @@ public class UserPrincipal implements java.security.Principal, Serializable {
      */
     public UserPrincipal(String identifier) {
         this.identifier = identifier;
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param user
+     *            The underlying user whose identifier will be used as the
+     *            principal name.
+     */
+    public UserPrincipal(User user) {
+        this(user == null ? null : user.getIdentifier());
     }
 
     @Override

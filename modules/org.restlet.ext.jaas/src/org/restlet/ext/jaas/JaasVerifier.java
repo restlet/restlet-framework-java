@@ -51,7 +51,7 @@ import org.restlet.security.Verifier;
  *      href="http://java.sun.com/j2se/1.5.0/docs/guide/security/jaas/JAASRefGuide.html">JAAS
  *      Reference Guide</a>
  */
-public class JaasVerifier extends Verifier {
+public class JaasVerifier implements Verifier {
 
     /** The optional JAAS login configuration. */
     private volatile Configuration configuration;
@@ -124,8 +124,12 @@ public class JaasVerifier extends Verifier {
      * handler obtained by {@link #createCallbackHandler(Request, Response)} and
      * calls the {@link LoginContext#login()} method on it.
      * 
+     * @param request
+     *            The request sent.
+     * @param response
+     *            The response to update.
+     * @return Result of the verification based on the RESULT_* constants.
      */
-    @Override
     public int verify(Request request, Response response) {
         int result = RESULT_VALID;
 

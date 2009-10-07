@@ -42,7 +42,7 @@ import org.restlet.data.ChallengeResponse;
  * 
  * @author Jerome Louvel
  */
-public abstract class SecretVerifier extends Verifier {
+public abstract class SecretVerifier implements Verifier {
     /**
      * Compares that two secrets are equal.
      * 
@@ -113,7 +113,6 @@ public abstract class SecretVerifier extends Verifier {
      *            The response to inspect.
      * @return True if the proposed secret was correct and the subject updated.
      */
-    @Override
     public int verify(Request request, Response response) {
         int result = RESULT_VALID;
 
