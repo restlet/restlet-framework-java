@@ -7,7 +7,9 @@ Changes log
     - Bugs fixed
         - Some Jetty parameters (maxThreads, etc.) had to be set at the
           connector creation time instead. Now they only need to be set
-          at start time. Reported by Avi Flax. 
+          at start time. Reported by Avi Flax.
+        - Fixed issue with Grizzly Maven artifact ID. 
+          Reported by Daniel Peters.
 
 - 1.1.6 (2009-09-28)
     - Bugs fixed
