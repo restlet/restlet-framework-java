@@ -60,6 +60,7 @@ Changes log
         - Refactored connector extensions to move implementation 
           classes in "internal" packages hidden from the Javadocs.
         - Upgraded Jetty to version 7.0.0.
+        - The default status page now uses a sans-serif font.
  
 - 2.0 Milestone 5 (2009-09-28)
     - API changes

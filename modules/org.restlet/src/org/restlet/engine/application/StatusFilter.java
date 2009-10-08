@@ -170,7 +170,7 @@ public class StatusFilter extends Filter {
     /**
      * Returns a representation for the given status.<br>
      * In order to customize the default representation, this method can be
-     * overriden.
+     * overridden.
      * 
      * @param status
      *            The status to represent.
@@ -187,7 +187,7 @@ public class StatusFilter extends Filter {
         sb.append("<head>\n");
         sb.append("   <title>Status page</title>\n");
         sb.append("</head>\n");
-        sb.append("<body>\n");
+        sb.append("<body style=\"font-family: sans-serif;\">\n");
 
         sb.append("<h3>");
         if (status.getDescription() != null) {

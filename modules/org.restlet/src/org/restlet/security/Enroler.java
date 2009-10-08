@@ -49,9 +49,8 @@ public interface Enroler {
 
     /**
      * Attempts to update an authenticated client, with a {@link User} properly
-     * defined, by adding the {@link Role} that are assigned to this user.<br>
-     * <br>
-     * Note that principals could also be added to the {@link ClientInfo} if
+     * defined, by adding the {@link Role} that are assigned to this user. Note
+     * that principals could also be added to the {@link ClientInfo} if
      * necessary. The addition could also potentially be based on the presence
      * of {@link Principal}.
      * 
