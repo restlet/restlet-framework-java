@@ -96,7 +96,7 @@
 </#list>
 <#list edition.modules?sort_by("id") as module>
    <#list module.neededLibraries as library>
-      <#list library.javadocsLinks as link>
+      <#list library.library.javadocsLinks as link>
 			${link}
       </#list>
    </#list>
