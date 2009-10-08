@@ -59,6 +59,7 @@ Changes log
           context parameters.
         - Refactored connector extensions to move implementation 
           classes in "internal" packages hidden from the Javadocs.
+        - Upgraded Jetty to version 7.0.0.
  
 - 2.0 Milestone 5 (2009-09-28)
     - API changes
