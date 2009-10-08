@@ -16,9 +16,9 @@ to the Restlet User Guide: http://wiki.restlet.org/docs_@version-minor@/
 ${module.package} (${module.label})
 <#list 1..(module.package?length) as i>-</#list>
    <#if ((module.neededLibraries??) && (module.neededLibraries?size)>0)>
-      <#list module.neededLibraries?sort_by("id") as library>
-         <#list library.packages?sort_by("name") as package>  
- - ${package.name}_${library.minorVersion}
+      <#list module.neededLibraries?sort_by(["library", "id"]) as library>
+         <#list library.library.packages?sort_by("name") as package>  
+ - ${package.name}_${library.library.minorVersion}
          </#list>
       </#list>
    <#else>
