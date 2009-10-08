@@ -35,6 +35,8 @@ import java.net.InetSocketAddress;
 
 import org.restlet.Server;
 import org.restlet.data.Protocol;
+import org.restlet.ext.simple.internal.SimpleContainer;
+import org.restlet.ext.simple.internal.SimpleServer;
 import org.simpleframework.transport.connect.Connection;
 import org.simpleframework.transport.connect.SocketConnection;
 import org.simpleframework.http.core.Container;

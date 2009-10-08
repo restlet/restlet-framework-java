@@ -55,6 +55,7 @@ import org.restlet.Request;
 import org.restlet.data.Protocol;
 import org.restlet.engine.Engine;
 import org.restlet.engine.http.HttpClientCall;
+import org.restlet.ext.httpclient.internal.HttpMethodCall;
 
 /**
  * HTTP client connector using the HttpMethodCall and Apache HTTP Client

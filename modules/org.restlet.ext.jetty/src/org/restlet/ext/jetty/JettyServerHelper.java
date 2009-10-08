@@ -38,6 +38,7 @@ import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.HttpConnection;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
+import org.restlet.ext.jetty.internal.JettyCall;
 
 /**
  * Abstract Jetty Web server connector. Here is the list of parameters that are

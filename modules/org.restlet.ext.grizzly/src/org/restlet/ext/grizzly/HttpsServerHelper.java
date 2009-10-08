@@ -42,6 +42,7 @@ import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.engine.http.HttpsUtils;
 import org.restlet.engine.security.SslContextFactory;
+import org.restlet.ext.grizzly.internal.HttpParserFilter;
 
 import com.sun.grizzly.Controller;
 import com.sun.grizzly.DefaultProtocolChain;

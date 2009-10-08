@@ -28,11 +28,14 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.grizzly;
+package org.restlet.ext.grizzly.internal;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
+
+import org.restlet.ext.grizzly.GrizzlyServerHelper;
+import org.restlet.ext.grizzly.HttpsServerHelper;
 
 import com.sun.grizzly.Context;
 import com.sun.grizzly.ProtocolFilter;

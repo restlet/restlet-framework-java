@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.jetty;
+package org.restlet.ext.jetty.internal;
 
 import java.io.IOException;
 
@@ -40,6 +40,9 @@ import org.eclipse.jetty.server.HttpConnection;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.restlet.Server;
+import org.restlet.ext.jetty.HttpServerHelper;
+import org.restlet.ext.jetty.HttpsServerHelper;
+import org.restlet.ext.jetty.JettyServerHelper;
 
 /**
  * Jetty handler that knows how to convert Jetty calls into Restlet calls. This

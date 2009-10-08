@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.xdb;
+package org.restlet.ext.xdb.internal;
 
 import java.io.InputStream;
 
@@ -53,6 +53,7 @@ import org.restlet.data.ReferenceList;
 import org.restlet.data.Status;
 import org.restlet.engine.local.Entity;
 import org.restlet.ext.servlet.internal.ServletWarClientHelper;
+import org.restlet.ext.xdb.XdbServerServlet;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.service.MetadataService;

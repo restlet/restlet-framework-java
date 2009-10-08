@@ -49,6 +49,7 @@ import org.restlet.engine.http.HttpRequest;
 import org.restlet.engine.http.HttpResponse;
 import org.restlet.engine.http.HttpServerAdapter;
 import org.restlet.ext.servlet.internal.ServletLogger;
+import org.restlet.ext.xdb.internal.XdbServletCall;
 
 /**
  * HTTP converter from Servlet calls to Restlet calls. This class can be used in

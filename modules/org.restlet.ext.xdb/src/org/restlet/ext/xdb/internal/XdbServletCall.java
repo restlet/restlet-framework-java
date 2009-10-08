@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.xdb;
+package org.restlet.ext.xdb.internal;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -56,7 +56,6 @@ import org.restlet.engine.http.ChunkedOutputStream;
 import org.restlet.engine.http.HttpServerCall;
 import org.restlet.engine.io.InputEntityStream;
 import org.restlet.util.Series;
-
 
 /**
  * Call that is used by the XDB Servlet HTTP connector. This is a downgrade
@@ -235,7 +234,7 @@ public class XdbServletCall extends HttpServerCall {
                     this.responseEntityStream = new ChunkedOutputStream(
                             getResponse().getOutputStream());
                 } else {
-                    //this.responseEntityStream = new KeepAliveOutputStream(
+                    // this.responseEntityStream = new KeepAliveOutputStream(
                     this.responseEntityStream = getResponse().getOutputStream();
                 }
             } catch (IOException e) {

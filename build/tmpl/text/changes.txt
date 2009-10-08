@@ -36,7 +36,6 @@ Changes log
              static method. Suggested by Rickard Oberg.
            - Enroler and Verifier are now interfaces.
              Suggested by Rickard Oberg.
- * {@link ClientInfo} class
         - Renamed RestletSolrQueryRequest to SolrRestletQueryRequest.
         - Renamed RestletSolrParams to SolrRestletParams.
         - Renamed Application#getRole() into findRole().
@@ -58,6 +57,8 @@ Changes log
           several adapters in the same web.xml. Reworked the Javadocs
           to encourage usage of Servlet init parameters instead of
           context parameters.
+        - Refactored connector extensions to move implementation 
+          classes in "internal" packages hidden from the Javadocs.
  
 - 2.0 Milestone 5 (2009-09-28)
     - API changes

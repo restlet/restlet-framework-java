@@ -155,7 +155,7 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
      * 
      * @return True if this service is acting in HTTP or HTTPS mode.
      */
-    protected boolean isConfidential() {
+    public boolean isConfidential() {
         return this.confidential;
     }
 

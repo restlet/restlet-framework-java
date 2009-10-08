@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.simple;
+package org.restlet.ext.simple.internal;
 
 import java.io.IOException;
 import java.nio.channels.SocketChannel;
