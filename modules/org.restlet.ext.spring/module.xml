@@ -11,7 +11,7 @@
    <dependencies>
       <dependency type="library" id="cglib" />
       <dependency type="library" id="logging" />
-      <dependency type="library" id="servlet" includes="jee" />
+      <dependency type="library" id="servlet" includes="jee" maven-scope="provided" />
       <dependency type="library" id="spring" />
       <dependency type="module" id="core" />
       <dependency type="module" id="servlet" includes="jee" />

@@ -1,18 +1,29 @@
-<module id="oauth" excludes="android,gwt" type="standard" package="org.restlet.ext.oauth">
-   <label>Restlet Extension - OAuth</label>
-   <description>
-      Support for OAuth HTTP authentication.
+<module id="oauth" excludes="android,gwt" type="standard"
+	package="org.restlet.ext.oauth">
+	<label>Restlet Extension - OAuth</label>
+	<description>
+		Support for OAuth HTTP authentication.
 	</description>
-   <distributions>
-      <distribution id="classic" />
-      <distribution id="maven" />
-   </distributions>
-
-   <dependencies>
-      <dependency type="library" id="codec" />
-      <dependency type="library" id="dbcp" />
-      <dependency type="library" id="oauth" />
-      <dependency type="library" id="pool" />
-      <dependency type="module" id="core" />
-   </dependencies>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+	</distributions>
+	<dependencies>
+		<dependency type="library" id="codec" />
+		<dependency type="library" id="dbcp" />
+		<dependency type="library" id="oauth" />
+		<dependency type="library" id="pool" />
+		<dependency type="module" id="core" />
+	</dependencies>
+	<maven-misc>
+<![CDATA[
+		<repositories>
+			<repository>
+				<id>oauth-repo</id>
+				<name>OAuth repository</name>
+				<url>http://oauth.googlecode.com/svn/code/maven</url>
+			</repository>
+		</repositories>
+]]>
+	</maven-misc>
 </module>
