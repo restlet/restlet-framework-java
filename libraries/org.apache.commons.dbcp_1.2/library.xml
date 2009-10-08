@@ -1,5 +1,10 @@
 <library id="dbcp">
-	<package name="org.apache.commons.dbcp" />
+	<package name="org.apache.commons.dbcp">
+		<maven>
+			<groupId>commons-dbcp</groupId>
+			<artifactId>commons-dbcp</artifactId>
+		</maven>
+	</package>
 	<version>1.2</version>
 	<release>2</release>
 	<distributions>

@@ -1,5 +1,10 @@
 <library id="fileupload">
-   <package name="org.apache.commons.fileupload" />
+   <package name="org.apache.commons.fileupload">
+		<maven>
+			<groupId>commons-fileupload</groupId>
+			<artifactId>commons-fileupload</artifactId>
+		</maven>
+   </package>
    <version>1.2</version>
    <release>1</release>
    <distributions>

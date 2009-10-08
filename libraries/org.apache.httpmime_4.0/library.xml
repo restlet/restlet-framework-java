@@ -1,16 +1,21 @@
 <library id="httpmime">
-   <package name="org.apache.httpmime" />
-   <version>4.0</version>
-   <distributions>
-      <distribution id="classic" />
-   </distributions>
-   <homeUri>
-      http://hc.apache.org/httpcomponents-client/httpmime/
+	<package name="org.apache.httpmime">
+		<maven>
+			<groupId>commons-httpmime</groupId>
+			<artifactId>commons-httpmime</artifactId>
+		</maven>
+	</package>
+	<version>4.0</version>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+	<homeUri>
+		http://hc.apache.org/httpcomponents-client/httpmime/
 	</homeUri>
-   <downloadUri>
-      http://hc.apache.org/httpcomponents-client/download.html
+	<downloadUri>
+		http://hc.apache.org/httpcomponents-client/download.html
 	</downloadUri>
-   <javadocs>
-      <link href="http://hc.apache.org/httpcomponents-client/httpmime/apidocs/" />
-   </javadocs>
+	<javadocs>
+		<link href="http://hc.apache.org/httpcomponents-client/httpmime/apidocs/" />
+	</javadocs>
 </library>

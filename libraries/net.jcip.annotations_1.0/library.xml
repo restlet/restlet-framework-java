@@ -1,5 +1,10 @@
 <library id="jcip-annotations">
-	<package name="net.jcip.annotations" />
+	<package name="net.jcip.annotations">
+		<maven>
+			<groupId>net.jcip</groupId>
+			<artifactId>jcip-annotations</artifactId>
+		</maven>
+	</package>
 	<version>1.0</version>
 	<release>0</release>
 	<distributions>

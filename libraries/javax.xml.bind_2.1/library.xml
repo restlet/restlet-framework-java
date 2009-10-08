@@ -1,5 +1,10 @@
 <library id="jaxb-api">
-	<package name="javax.xml.bind" />
+	<package name="javax.xml.bind">
+		<maven>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-impl</artifactId>
+		</maven>
+	</package>
 	<version>2.1</version>
 	<distributions>
 		<distribution id="classic" />

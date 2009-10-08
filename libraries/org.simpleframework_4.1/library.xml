@@ -1,12 +1,15 @@
 <library id="simple">
-	<package name="org.simpleframework" />
+	<package name="org.simpleframework">
+		<maven>
+			<artifactId>simple</artifactId>
+		</maven>
+	</package>
 	<name>Simple framework</name>
 	<description>Simple framework.</description>
 	<version>4.1</version>
 	<release>13</release>
 	<distributions>
 		<distribution id="classic" />
-		<distribution id="maven" />
 	</distributions>
 	<homeUri>
 		http://simpleweb.sourceforge.net/

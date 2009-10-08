@@ -1,16 +1,21 @@
 <library id="httpclient">
-   <package name="org.apache.httpclient" />
-   <version>4.0</version>
-   <distributions>
-      <distribution id="classic" />
-   </distributions>
-   <homeUri>
-      http://hc.apache.org/httpcomponents-client/
+	<package name="org.apache.httpclient">
+		<maven>
+			<groupId>commons-httpclient</groupId>
+			<artifactId>commons-httpclient</artifactId>
+		</maven>
+	</package>
+	<version>4.0</version>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+	<homeUri>
+		http://hc.apache.org/httpcomponents-client/
 	</homeUri>
-   <downloadUri>
-      http://hc.apache.org/httpcomponents-client/download.html
+	<downloadUri>
+		http://hc.apache.org/httpcomponents-client/download.html
 	</downloadUri>
-   <javadocs>
-      <link href="http://hc.apache.org/httpcomponents-client/httpclient/apidocs/" />
-   </javadocs>
+	<javadocs>
+		<link href="http://hc.apache.org/httpcomponents-client/httpclient/apidocs/" />
+	</javadocs>
 </library>

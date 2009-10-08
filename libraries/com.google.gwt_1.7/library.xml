@@ -1,14 +1,18 @@
 <library id="gwt">
-   <package name="com.google.gwt" />
-   <version>1.7</version>
-   <release>0</release>
-   <distributions>
-      <distribution id="classic" />
-   </distributions>
-   <homeUri>
-      http://code.google.com/webtoolkit/
+	<package name="com.google.gwt">
+		<maven>
+			<artifactId>gwt-servlet</artifactId>
+		</maven>
+	</package>
+	<version>1.7</version>
+	<release>0</release>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+	<homeUri>
+		http://code.google.com/webtoolkit/
 	</homeUri>
-   <downloadUri>
-      http://code.google.com/webtoolkit/download.html
+	<downloadUri>
+		http://code.google.com/webtoolkit/download.html
 	</downloadUri>
 </library>

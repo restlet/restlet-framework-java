@@ -1,5 +1,15 @@
 <library id="grizzly">
-	<package name="com.sun.grizzly" />
+	<package id="grizzly" name="com.sun.grizzly">
+		<maven>
+			<artifactId>grizzly-framework</artifactId>
+		</maven>
+	</package>
+	<package id="grizzly-util" name="com.sun.grizzly.util">
+		<maven>
+			<artifactId>grizzly-utils</artifactId>
+		</maven>
+	</package>
+
 	<version>1.9</version>
 	<release>18b</release>
 	<distributions>
@@ -11,8 +21,8 @@
 	<downloadUri>
 		http://download.java.net/maven/2/com/sun/grizzly/grizzly-framework/
 	</downloadUri>
-    <javadocs>
-      <link href="https://grizzly.dev.java.net/nonav/apidocs/" />
-   </javadocs>
+	<javadocs>
+		<link href="https://grizzly.dev.java.net/nonav/apidocs/" />
+	</javadocs>
 
 </library>
