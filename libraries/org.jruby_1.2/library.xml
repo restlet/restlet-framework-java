@@ -1,5 +1,7 @@
 <library id="jruby">
-	<package name="org.codehaus.jruby" />
+	<package name="org.jruby">
+		<maven />
+	</package>
 	<package name="com.sun.script.jruby">
 		<maven />
 	</package>

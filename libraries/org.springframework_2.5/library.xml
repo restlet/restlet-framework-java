@@ -1,29 +1,29 @@
 <library id="spring">
-	<package name="org.springframework.beans">
+	<package id="spring-beans" name="org.springframework.beans">
 		<maven>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
 		</maven>
 	</package>
-	<package name="org.springframework.context">
+	<package id="spring-context" name="org.springframework.context">
 		<maven>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
 		</maven>
 	</package>
-	<package name="org.springframework.core">
+	<package id="spring-core" name="org.springframework.core">
 		<maven>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
 		</maven>
 	</package>
-	<package name="org.springframework.web">
+	<package id="spring-web" name="org.springframework.web">
 		<maven>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
 		</maven>
 	</package>
-	<package name="org.springframework.webmvc">
+	<package id="spring-webmvc" name="org.springframework.webmvc">
 		<maven>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>

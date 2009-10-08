@@ -1,35 +1,35 @@
 <library id="jetty">
-	<package name="org.eclipse.jetty.ajp">
+	<package id="jetty-ajp" name="org.eclipse.jetty.ajp">
 		<maven>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-ajp</artifactId>
 		</maven>
 	</package>
-	<package name="org.eclipse.jetty.continuations">
+	<package id="jetty-continuations" name="org.eclipse.jetty.continuations">
 		<maven>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-continnuation</artifactId>
 		</maven>
 	</package>
-	<package name="org.eclipse.jetty.http">
+	<package id="jetty-http" name="org.eclipse.jetty.http">
 		<maven>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-http</artifactId>
 		</maven>
 	</package>
-	<package name="org.eclipse.jetty.io">
+	<package id="jetty-io" name="org.eclipse.jetty.io">
 		<maven>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-io</artifactId>
 		</maven>
 	</package>
-	<package name="org.eclipse.jetty.server">
+	<package id="jetty-server" name="org.eclipse.jetty.server">
 		<maven>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-server</artifactId>
 		</maven>
 	</package>
-	<package name="org.eclipse.jetty.util">
+	<package id="jetty-util" name="org.eclipse.jetty.util">
 		<maven>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-util</artifactId>

@@ -6,6 +6,9 @@
 			<version>1.7R1</version>
 		</maven>
 	</package>
+	<package name="com.sun.phobos.script">
+		<maven />
+	</package>
 	<version>1.7</version>
 	<release>0.rc1</release>
 	<distributions>

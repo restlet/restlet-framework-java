@@ -1,5 +1,16 @@
 <library id="mina">
-	<package name="org.apache.mina" />
+	<package id="mina" name="org.apache.mina">
+		<maven>
+			<groupId>org.apache.mina</groupId>
+			<artifactId>mina-core</artifactId>
+		</maven>
+	</package>
+	<package id="mina-ssl" name="org.apache.mina.ssl">
+		<maven>
+			<groupId>org.apache.mina</groupId>
+			<artifactId>mina-filter-ssl</artifactId>
+		</maven>
+	</package>
 	<version>1.1</version>
 	<release>0</release>
 	<homeUri>

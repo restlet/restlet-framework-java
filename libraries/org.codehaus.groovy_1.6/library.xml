@@ -1,5 +1,9 @@
 <library id="groovy">
-	<package name="org.codehaus.groovy" />
+	<package name="org.codehaus.groovy">
+		<maven>
+			<artifactId>groovy-all</artifactId>
+		</maven>
+	</package>
 	<version>1.6</version>
 	<release>0</release>
 	<homeUri>

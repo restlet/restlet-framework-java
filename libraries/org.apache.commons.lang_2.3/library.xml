@@ -1,5 +1,10 @@
 <library id="lang">
-	<package name="org.apache.commons.lang" />
+	<package name="org.apache.commons.lang">
+		<maven>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+		</maven>
+	</package>
 	<version>2.3</version>
 	<distributions>
 		<distribution id="classic" />

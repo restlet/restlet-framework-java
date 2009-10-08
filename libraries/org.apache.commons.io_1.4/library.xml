@@ -1,5 +1,10 @@
 <library id="io">
-	<package name="org.apache.commons.io" />
+	<package name="org.apache.commons.io">
+		<maven>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+		</maven>
+	</package>
 	<version>1.4</version>
 	<distributions>
 		<distribution id="classic" />

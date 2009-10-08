@@ -1,9 +1,9 @@
 <library id="tika">
-	<package name="org.apache.tika">
+	<package id="tika" name="org.apache.tika">
 		<groupId>org.apache.tika</groupId>
 		<artifactId>tika-core</artifactId>
 	</package>
-	<package name="org.apache.tika.parsers">
+	<package id="tika-parsers" name="org.apache.tika.parsers">
 		<groupId>org.apache.tika</groupId>
 		<artifactId>tika-parsers</artifactId>
 	</package>
