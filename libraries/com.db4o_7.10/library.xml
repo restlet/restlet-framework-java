@@ -9,12 +9,19 @@
 			<groupId>com.db4o</groupId>
 		</maven>
 	</package>
+	<maven-misc>
+<![CDATA[
+		<name>Db4o - object database framework</name>
+		<description>Db4o - object database framework.</description>
+]]>
+	</maven-misc>
 	<version>7.10</version>
 	<release>96</release>
 	<distributions>
 		<distribution id="classic" />
 		<distribution id="maven" />
 	</distributions>
+	<dependency type="library" id="bloat" />
 	<homeUri>
 		http://www.db4o.com/
 	</homeUri>

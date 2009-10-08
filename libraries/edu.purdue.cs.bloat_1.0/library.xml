@@ -11,4 +11,10 @@
 	<downloadUri>
 		http://www.cs.purdue.edu/homes/hosking/bloat/
 	</downloadUri>
+	<maven-misc>
+<![CDATA[
+		<name>The Bytecode-Level Optimizer and Analysis Tool</name>
+		<description>The Bytecode-Level Optimizer and Analysis Tool.</description>
+]]>
+	</maven-misc>
 </library>
