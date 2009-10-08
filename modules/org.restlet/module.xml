@@ -10,7 +10,7 @@
    </distributions>
 
    <dependencies>
-      <dependency excludes="android, gae, gwt" type="library" id="osgi" />
+      <dependency excludes="android, gae, gwt" type="library" id="osgi" maven-scope="compile" />
       <dependency includes="gwt" type="library" id="gwt" />
    </dependencies>
    <osgi>

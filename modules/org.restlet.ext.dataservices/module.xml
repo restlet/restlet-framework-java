@@ -1,4 +1,4 @@
-<module id="dataservices" includes="jse" type="integration" package="org.restlet.ext.dataservices">
+<module id="dataservices" excludes="android, gwt" type="integration" package="org.restlet.ext.dataservices">
    <label>Restlet Extension - ADO.NET Data Services</label>
    <description>
       Integration with ADO.NET Data Services 1.0.
