@@ -343,7 +343,7 @@ public abstract class ServerResource extends UniformResource {
                 } else if (method.equals(Method.OPTIONS)) {
                     result = options();
                 } else {
-                    AnnotationInfo annotationInfo = getAnnotation(Method.OPTIONS);
+                    AnnotationInfo annotationInfo = getAnnotation(method);
 
                     if (annotationInfo != null) {
                         result = doHandle(annotationInfo);
