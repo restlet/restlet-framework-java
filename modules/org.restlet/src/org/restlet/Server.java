@@ -58,8 +58,8 @@ public class Server extends Connector {
     /** The listening port if specified. */
     private volatile int port;
 
-    /** The target Restlet. */
-    private volatile Restlet target;
+    /** The next Restlet. */
+    private volatile Restlet next;
 
     /**
      * Constructor.
@@ -70,12 +70,12 @@ public class Server extends Connector {
      *            The connector protocols.
      * @param port
      *            The listening port.
-     * @param target
-     *            The target Restlet.
+     * @param next
+     *            The next Restlet.
      */
     public Server(Context context, List<Protocol> protocols, int port,
-            Restlet target) {
-        this(context, protocols, null, port, target);
+            Restlet next) {
+        this(context, protocols, null, port, next);
     }
 
     /**
@@ -91,12 +91,12 @@ public class Server extends Connector {
      *            alias for the IP address to listen to.
      * @param port
      *            The listening port.
-     * @param target
-     *            The target Restlet.
+     * @param next
+     *            The next Restlet.
      */
     public Server(Context context, List<Protocol> protocols, String address,
-            int port, Restlet target) {
-        this(context, protocols, address, port, target, null);
+            int port, Restlet next) {
+        this(context, protocols, address, port, next, null);
     }
 
     /**
@@ -112,17 +112,17 @@ public class Server extends Connector {
      *            alias for the IP address to listen to.
      * @param port
      *            The listening port.
-     * @param target
-     *            The target Restlet.
+     * @param next
+     *            The next Restlet.
      * @param helperClass
      *            Optional helper class name.
      */
     public Server(Context context, List<Protocol> protocols, String address,
-            int port, Restlet target, String helperClass) {
+            int port, Restlet next, String helperClass) {
         super(context, protocols);
         this.address = address;
         this.port = port;
-        this.target = target;
+        this.next = next;
 
         if (Engine.getInstance() != null) {
             this.helper = Engine.getInstance().createHelper(this, helperClass);
@@ -140,11 +140,11 @@ public class Server extends Connector {
      *            The connector protocol.
      * @param port
      *            The listening port.
-     * @param target
-     *            The target Restlet.
+     * @param next
+     *            The next Restlet.
      */
-    public Server(Context context, Protocol protocol, int port, Restlet target) {
-        this(context, protocol, null, port, target);
+    public Server(Context context, Protocol protocol, int port, Restlet next) {
+        this(context, protocol, null, port, next);
     }
 
     /**
@@ -154,12 +154,12 @@ public class Server extends Connector {
      *            The context.
      * @param protocol
      *            The connector protocol.
-     * @param target
-     *            The target Restlet.
+     * @param next
+     *            The next Restlet.
      */
-    public Server(Context context, Protocol protocol, Restlet target) {
+    public Server(Context context, Protocol protocol, Restlet next) {
         this(context, protocol, null, (protocol == null) ? -1 : protocol
-                .getDefaultPort(), target);
+                .getDefaultPort(), next);
     }
 
     /**
@@ -175,13 +175,13 @@ public class Server extends Connector {
      *            alias for the IP address to listen to.
      * @param port
      *            The listening port.
-     * @param target
-     *            The target Restlet.
+     * @param next
+     *            The next Restlet.
      */
     public Server(Context context, Protocol protocol, String address, int port,
-            Restlet target) {
+            Restlet next) {
         this(context, (protocol == null) ? null : Arrays.asList(protocol),
-                address, port, target);
+                address, port, next);
     }
 
     /**
@@ -191,11 +191,11 @@ public class Server extends Connector {
      *            The connector protocols.
      * @param port
      *            The listening port.
-     * @param target
-     *            The target Restlet.
+     * @param next
+     *            The next Restlet.
      */
-    public Server(List<Protocol> protocols, int port, Restlet target) {
-        this(null, protocols, port, target);
+    public Server(List<Protocol> protocols, int port, Restlet next) {
+        this(null, protocols, port, next);
     }
 
     /**
@@ -209,12 +209,12 @@ public class Server extends Connector {
      *            alias for the IP address to listen to.
      * @param port
      *            The listening port.
-     * @param target
-     *            The target Restlet.
+     * @param next
+     *            The next Restlet.
      */
     public Server(List<Protocol> protocols, String address, int port,
-            Restlet target) {
-        this(null, protocols, address, port, target);
+            Restlet next) {
+        this(null, protocols, address, port, next);
     }
 
     /**
@@ -224,12 +224,9 @@ public class Server extends Connector {
      *            The connector protocol.
      * @param port
      *            The listening port.
-     * @param targetClass
-     *            The target server resource.
      */
-    public Server(Protocol protocol, int port, Class<?> targetClass) {
-        this(null, protocol, port,
-                new Finder(Context.getCurrent(), targetClass));
+    public Server(Protocol protocol, int port) {
+        this(null, protocol, port, null);
     }
 
     /**
@@ -239,11 +236,25 @@ public class Server extends Connector {
      *            The connector protocol.
      * @param port
      *            The listening port.
-     * @param target
-     *            The target Restlet.
+     * @param nextClass
+     *            The next server resource.
      */
-    public Server(Protocol protocol, int port, Restlet target) {
-        this(null, protocol, port, target);
+    public Server(Protocol protocol, int port, Class<?> nextClass) {
+        this(null, protocol, port, new Finder(Context.getCurrent(), nextClass));
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param protocol
+     *            The connector protocol.
+     * @param port
+     *            The listening port.
+     * @param next
+     *            The next Restlet.
+     */
+    public Server(Protocol protocol, int port, Restlet next) {
+        this(null, protocol, port, next);
     }
 
     /**
@@ -251,29 +262,11 @@ public class Server extends Connector {
      * 
      * @param protocol
      *            The connector protocol.
-     * @param target
-     *            The target Restlet.
+     * @param next
+     *            The next Restlet.
      */
-    public Server(Protocol protocol, Restlet target) {
-        this(null, protocol, target);
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param protocol
-     *            The connector protocol.
-     * @param address
-     *            The optional listening IP address (useful if multiple IP
-     *            addresses available). You can also use a domain name as an
-     *            alias for the IP address to listen to.
-     * @param port
-     *            The listening port.
-     * @param target
-     *            The target Restlet.
-     */
-    public Server(Protocol protocol, String address, int port, Restlet target) {
-        this(null, protocol, address, port, target);
+    public Server(Protocol protocol, Restlet next) {
+        this(null, protocol, next);
     }
 
     /**
@@ -285,11 +278,59 @@ public class Server extends Connector {
      *            The listening IP address (useful if multiple IP addresses
      *            available). You can also use a domain name as an alias for the
      *            IP address to listen to.
-     * @param target
-     *            The target Restlet.
      */
-    public Server(Protocol protocol, String address, Restlet target) {
-        this(null, protocol, address, protocol.getDefaultPort(), target);
+    public Server(Protocol protocol, String address) {
+        this(null, protocol, address, protocol.getDefaultPort(), null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param protocol
+     *            The connector protocol.
+     * @param address
+     *            The optional listening IP address (useful if multiple IP
+     *            addresses available). You can also use a domain name as an
+     *            alias for the IP address to listen to.
+     * @param port
+     *            The listening port.
+     */
+    public Server(Protocol protocol, String address, int port) {
+        this(null, protocol, address, port, null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param protocol
+     *            The connector protocol.
+     * @param address
+     *            The optional listening IP address (useful if multiple IP
+     *            addresses available). You can also use a domain name as an
+     *            alias for the IP address to listen to.
+     * @param port
+     *            The listening port.
+     * @param next
+     *            The next Restlet.
+     */
+    public Server(Protocol protocol, String address, int port, Restlet next) {
+        this(null, protocol, address, port, next);
+    }
+
+    /**
+     * Constructor using the protocol's default port.
+     * 
+     * @param protocol
+     *            The connector protocol.
+     * @param address
+     *            The listening IP address (useful if multiple IP addresses
+     *            available). You can also use a domain name as an alias for the
+     *            IP address to listen to.
+     * @param next
+     *            The next Restlet.
+     */
+    public Server(Protocol protocol, String address, Restlet next) {
+        this(null, protocol, address, protocol.getDefaultPort(), next);
     }
 
     /**
@@ -323,6 +364,15 @@ public class Server extends Connector {
     }
 
     /**
+     * Returns the next Restlet.
+     * 
+     * @return The next Restlet.
+     */
+    public Restlet getNext() {
+        return this.next;
+    }
+
+    /**
      * Returns the listening port if specified.
      * 
      * @return The listening port if specified.
@@ -332,12 +382,14 @@ public class Server extends Connector {
     }
 
     /**
-     * Returns the target Restlet.
+     * Returns the next Restlet.
      * 
-     * @return The target Restlet.
+     * @return The next Restlet.
+     * @deprecated Use the {@link #getNext()} method instead.
      */
+    @Deprecated
     public Restlet getTarget() {
-        return this.target;
+        return getNext();
     }
 
     @Override
@@ -350,12 +402,23 @@ public class Server extends Connector {
     }
 
     /**
-     * Indicates if a target Restlet is set.
+     * Indicates if a next Restlet is set.
      * 
-     * @return True if a target Restlet is set.
+     * @return True if a next Restlet is set.
      */
+    public boolean hasNext() {
+        return this.next != null;
+    }
+
+    /**
+     * Indicates if a next Restlet is set.
+     * 
+     * @return True if a next Restlet is set.
+     * @deprecated Use the {@link #hasNext()} method instead.
+     */
+    @Deprecated
     public boolean hasTarget() {
-        return this.target != null;
+        return hasNext();
     }
 
     /**
@@ -379,15 +442,25 @@ public class Server extends Connector {
     }
 
     /**
-     * Sets the target Restlet as a Finder for a given resource class. When the
+     * Sets the next Restlet as a Finder for a given resource class. When the
      * call is delegated to the Finder instance, a new instance of the resource
      * class will be created and will actually handle the request.
      * 
-     * @param targetClass
-     *            The target resource class to attach.
+     * @param nextClass
+     *            The next resource class to attach.
      */
-    public void setNext(Class<?> targetClass) {
-        setTarget(new Finder(getContext(), targetClass));
+    public void setNext(Class<?> nextClass) {
+        setTarget(new Finder(getContext(), nextClass));
+    }
+
+    /**
+     * Sets the next Restlet.
+     * 
+     * @param next
+     *            The next Restlet.
+     */
+    public void setNext(Restlet next) {
+        this.next = next;
     }
 
     /**
@@ -404,13 +477,15 @@ public class Server extends Connector {
     }
 
     /**
-     * Sets the target Restlet.
+     * Sets the next Restlet.
      * 
-     * @param target
-     *            The target Restlet.
+     * @param next
+     *            The next Restlet.
+     * @deprecated Use the {@link #setNext(Restlet)} method instead.
      */
-    public void setTarget(Restlet target) {
-        this.target = target;
+    @Deprecated
+    public void setTarget(Restlet next) {
+        setNext(next);
     }
 
     @Override

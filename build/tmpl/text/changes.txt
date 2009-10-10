@@ -39,7 +39,10 @@ Changes log
         - Renamed RestletSolrQueryRequest to SolrRestletQueryRequest.
         - Renamed RestletSolrParams to SolrRestletParams.
         - Renamed Application#getRole() into findRole().
-     - Bugs fixed
+        - Added "next" property to Server and deprecated "target" for
+          more naming consistency with filters.
+        - Added conveniency constructors to Server.
+      - Bugs fixed
         - Fixed bug when the deprecated method "createRoot" is 
           implemented instead of the "createInboundRoot".
           Reported by Fabian Mandelbaum.

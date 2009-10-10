@@ -40,7 +40,7 @@ public class BasicHttpServer {
     public static void main(String[] args) {
         // Instantiates and starts a simple HTTP server.
         try {
-            new Server(Protocol.HTTP, null).start();
+            new Server(Protocol.HTTP, 8182).start();
         } catch (Exception e) {
             e.printStackTrace();
         }
