@@ -157,7 +157,7 @@ public class ReferenceList extends WrapperList<Reference> {
     public Representation getWebRepresentation() {
         // Create a simple HTML list
         final StringBuilder sb = new StringBuilder();
-        sb.append("<html><body>\n");
+        sb.append("<html><body style=\"font-family: sans-serif;\">\n");
 
         if (getIdentifier() != null) {
             sb.append("<h2>Listing of \"" + getIdentifier().getPath()
