@@ -57,6 +57,8 @@ Changes log
           method. 
         - Fixed ClientResource to throw ResourceException upon error
           as specified in Javadocs. Reported by Patrick Logan.
+        - ClientResource was not checking the "followRedirects"
+          property.
     - Enhancements
         - Improved JAXB converted. Contributed by Sanjay Acharya.
         - Upgraded Apache Commons Logging to version 1.1.1.

@@ -134,7 +134,7 @@ public class ClientResource extends UniformResource {
     /** Number of retry attempts before reporting an error. */
     private volatile int retryAttempts;
 
-    /** Indicates if redirections are followed. */
+    /** Indicates if redirections should be automatically followed. */
     private volatile boolean followRedirects;
 
     /** The next Restlet. */
@@ -586,9 +586,9 @@ public class ClientResource extends UniformResource {
         getNext().handle(request, response);
 
         // Check for redirections
-        if (request.getMethod().isSafe()
-                && response.getStatus().isRedirection()
-                && response.getLocationRef() != null) {
+        if (isFollowRedirects() && response.getStatus().isRedirection()
+                && (response.getLocationRef() != null)
+                && request.getMethod().isSafe()) {
             Reference newTargetRef = response.getLocationRef();
 
             if ((references != null) && references.contains(newTargetRef)) {
@@ -611,32 +611,31 @@ public class ClientResource extends UniformResource {
                 request.setResourceRef(newTargetRef);
                 handle(request, response, references, 0);
             }
-        } else if (request.getMethod().isIdempotent()
-                && response.getStatus().isRecoverableError()) {
-            if (isRetryOnError() && (retryAttempt < getRetryAttempts())) {
-                if ((getRequestEntity() == null)
-                        || getRequestEntity().isAvailable()) {
-                    getLogger().log(
-                            Level.INFO,
-                            "A recoverable error was detected ("
-                                    + response.getStatus().getCode()
-                                    + "), attempting again in "
-                                    + getRetryDelay() + " ms.");
+        } else if (isRetryOnError()
+                && response.getStatus().isRecoverableError()
+                && request.getMethod().isIdempotent()
+                && (retryAttempt < getRetryAttempts())
+                && ((getRequestEntity() == null) || getRequestEntity()
+                        .isAvailable())) {
+            getLogger().log(
+                    Level.INFO,
+                    "A recoverable error was detected ("
+                            + response.getStatus().getCode()
+                            + "), attempting again in " + getRetryDelay()
+                            + " ms.");
 
-                    // Wait before attempting again
-                    if (getRetryDelay() > 0) {
-                        try {
-                            Thread.sleep(getRetryDelay());
-                        } catch (InterruptedException e) {
-                            getLogger().log(Level.FINE,
-                                    "Retry delay sleep was interrupted", e);
-                        }
-                    }
-
-                    // Retry the call
-                    handle(request, response, references, ++retryAttempt);
+            // Wait before attempting again
+            if (getRetryDelay() > 0) {
+                try {
+                    Thread.sleep(getRetryDelay());
+                } catch (InterruptedException e) {
+                    getLogger().log(Level.FINE,
+                            "Retry delay sleep was interrupted", e);
                 }
             }
+
+            // Retry the call
+            handle(request, response, references, ++retryAttempt);
         }
     }
 
