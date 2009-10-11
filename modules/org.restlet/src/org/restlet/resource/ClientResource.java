@@ -334,7 +334,13 @@ public class ClientResource extends UniformResource {
      */
     public Representation delete() throws ResourceException {
         setMethod(Method.DELETE);
-        return handle();
+        Representation result = handle();
+
+        if (getStatus().isError()) {
+            throw new ResourceException(getStatus());
+        }
+
+        return result;
     }
 
     /**
@@ -365,14 +371,6 @@ public class ClientResource extends UniformResource {
     }
 
     /**
-     * Calls the {@link #release()}.
-     */
-    @Override
-    protected void finalize() throws Throwable {
-        release();
-    }
-
-    /**
      * Represents the resource using content negotiation to select the best
      * variant based on the client preferences. Note that the client preferences
      * will be automatically adjusted, but only for this request. If you want to
@@ -389,7 +387,13 @@ public class ClientResource extends UniformResource {
      */
     public Representation get() throws ResourceException {
         setMethod(Method.GET);
-        return handle();
+        Representation result = handle();
+
+        if (getStatus().isError()) {
+            throw new ResourceException(getStatus());
+        }
+
+        return result;
     }
 
     /**
@@ -665,7 +669,13 @@ public class ClientResource extends UniformResource {
      */
     public Representation head() throws ResourceException {
         setMethod(Method.HEAD);
-        return handle();
+        Representation result = handle();
+
+        if (getStatus().isError()) {
+            throw new ResourceException(getStatus());
+        }
+
+        return result;
     }
 
     /**
@@ -735,7 +745,13 @@ public class ClientResource extends UniformResource {
      */
     public Representation options() throws ResourceException {
         setMethod(Method.OPTIONS);
-        return handle();
+        Representation result = handle();
+
+        if (getStatus().isError()) {
+            throw new ResourceException(getStatus());
+        }
+
+        return result;
     }
 
     /**
@@ -829,7 +845,13 @@ public class ClientResource extends UniformResource {
     public Representation post(Representation entity) throws ResourceException {
         setMethod(Method.POST);
         getRequest().setEntity(entity);
-        return handle();
+        Representation result = handle();
+
+        if (getStatus().isError()) {
+            throw new ResourceException(getStatus());
+        }
+
+        return result;
     }
 
     /**
@@ -897,7 +919,13 @@ public class ClientResource extends UniformResource {
             throws ResourceException {
         setMethod(Method.PUT);
         getRequest().setEntity(representation);
-        return handle();
+        Representation result = handle();
+
+        if (getStatus().isError()) {
+            throw new ResourceException(getStatus());
+        }
+
+        return result;
     }
 
     /**

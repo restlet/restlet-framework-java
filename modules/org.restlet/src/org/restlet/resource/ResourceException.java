@@ -173,4 +173,9 @@ public class ResourceException extends Exception {
         return this.status;
     }
 
+    @Override
+    public String toString() {
+        return getStatus().toString();
+    }
+
 }
