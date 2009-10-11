@@ -42,6 +42,11 @@ Changes log
         - Added "next" property to Server and deprecated "target" for
           more naming consistency with filters.
         - Added conveniency constructors to Server.
+        - ResourceException is now a RuntimeException to facilitate its
+          usage with dynamic proxies created by ClientResource#create()
+          static methods and wrap() methods.
+        - UniformResource#doCatch() now logs throwable with different
+          levels depending on the type of errors.
       - Bugs fixed
         - Fixed bug when the deprecated method "createRoot" is 
           implemented instead of the "createInboundRoot".

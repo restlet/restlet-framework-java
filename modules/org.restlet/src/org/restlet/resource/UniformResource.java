@@ -123,7 +123,21 @@ public abstract class UniformResource {
      *            The caught error or exception.
      */
     protected void doCatch(Throwable throwable) {
-        getLogger().log(Level.INFO, "Exception or error caught in resource",
+        Level level = Level.INFO;
+
+        if (throwable instanceof ResourceException) {
+            ResourceException re = (ResourceException) throwable;
+
+            if (re.getStatus().isServerError()) {
+                level = Level.WARNING;
+            } else if (re.getStatus().isConnectorError()) {
+                level = Level.INFO;
+            } else if (re.getStatus().isClientError()) {
+                level = Level.FINE;
+            }
+        }
+
+        getLogger().log(level, "Exception or error caught in resource",
                 throwable);
 
         if (getResponse() != null && getApplication() != null) {

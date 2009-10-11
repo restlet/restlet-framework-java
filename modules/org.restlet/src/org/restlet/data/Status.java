@@ -271,19 +271,19 @@ public final class Status {
 
     /**
      * A client connector faces an error during the communication with the
-     * remote server (interruption, timeout, etc).
+     * remote server (interruption, timeout, etc). The status code is 1001.
      */
     public static final Status CONNECTOR_ERROR_COMMUNICATION = new Status(1001);
 
     /**
-     * A client connector can not connect to the remote server.
+     * A client connector can not connect to the remote server. The status code is 1000.
      */
     public static final Status CONNECTOR_ERROR_CONNECTION = new Status(1000);
 
     /**
      * Generic status code sent by a client connector when an error occurs
      * during the process of a request to its server or the process of a
-     * response to its client.
+     * response to its client. The status code is 1002.
      */
     public static final Status CONNECTOR_ERROR_INTERNAL = new Status(1002);
 

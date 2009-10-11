@@ -37,7 +37,7 @@ import org.restlet.data.Status;
  * 
  * @author Jerome Louvel
  */
-public class ResourceException extends Exception {
+public class ResourceException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 

@@ -164,7 +164,7 @@ public class ClientResource extends UniformResource {
 
         this.followRedirects = true;
         this.retryOnError = true;
-        this.retryDelay = 1000L;
+        this.retryDelay = 2000L;
         this.retryAttempts = 2;
         init(context, request, response);
     }
@@ -530,7 +530,7 @@ public class ClientResource extends UniformResource {
 
     /**
      * Returns the delay in milliseconds between two retry attempts. Default
-     * value is 1 second.
+     * value is 2 seconds.
      * 
      * @return The delay in milliseconds between two retry attempts.
      */
@@ -1075,17 +1075,29 @@ public class ClientResource extends UniformResource {
     }
 
     /**
-     * Sets the target resource reference. If the reference is relative, it will
-     * be resolved as an absolute reference. Also, the context's base reference
+     * Sets the resource's reference. If the reference is relative, it will be
+     * resolved as an absolute reference. Also, the context's base reference
      * will be reset. Finally, the reference will be normalized to ensure a
      * consistent handling of the call.
      * 
-     * @param resourceRef
+     * @param reference
      *            The resource reference.
      * @see Request#setResourceRef(Reference)
      */
-    public void setReference(Reference resourceRef) {
-        getRequest().setResourceRef(resourceRef);
+    public void setReference(Reference reference) {
+        getRequest().setResourceRef(reference);
+    }
+
+    /**
+     * Sets the resource's reference using an URI string. Note that the URI can
+     * be either absolute or relative to the context's base reference.
+     * 
+     * @param uri
+     *            The resource URI.
+     * @see Request#setResourceRef(String)
+     */
+    public void setReference(String uri) {
+        getRequest().setResourceRef(uri);
     }
 
     /**
@@ -1111,31 +1123,6 @@ public class ClientResource extends UniformResource {
     }
 
     /**
-     * Sets the target resource reference using a Reference. Note that the
-     * Reference can be either absolute or relative to the context's base
-     * reference.
-     * 
-     * @param resourceRef
-     *            The resource Reference.
-     * @see Request#setResourceRef(Reference)
-     */
-    public void setResourceRef(Reference resourceRef) {
-        getRequest().setResourceRef(resourceRef);
-    }
-
-    /**
-     * Sets the target resource reference using an URI string. Note that the URI
-     * can be either absolute or relative to the context's base reference.
-     * 
-     * @param resourceUri
-     *            The resource URI.
-     * @see Request#setResourceRef(String)
-     */
-    public void setResourceRef(String resourceUri) {
-        getRequest().setResourceRef(resourceUri);
-    }
-
-    /**
      * Sets the number of retry attempts before reporting an error.
      * 
      * @param retryAttempts
@@ -1146,7 +1133,8 @@ public class ClientResource extends UniformResource {
     }
 
     /**
-     * Sets the delay in milliseconds between two retry attempts.
+     * Sets the delay in milliseconds between two retry attempts. The default
+     * value is two seconds.
      * 
      * @param retryDelay
      *            The delay in milliseconds between two retry attempts.
@@ -1292,6 +1280,10 @@ public class ClientResource extends UniformResource {
                         }
 
                         handle();
+
+                        if (getStatus().isError()) {
+                            throw new ResourceException(getStatus());
+                        }
 
                         if (annotation.getJavaReturnType() != null) {
                             result = toObject(getResponseEntity(), annotation
