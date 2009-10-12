@@ -57,8 +57,14 @@ public class AnnotatedResource3TestCase extends TestCase {
     }
 
     public void testGet() throws IOException, ResourceException {
-        clientResource.get();
-        assertEquals(Status.CLIENT_ERROR_NOT_FOUND, clientResource.getStatus());
+        Status status = null;
+    	try {
+	    	clientResource.get();
+	    	status = clientResource.getStatus();
+		} catch (ResourceException e) {
+			status = e.getStatus();
+		}
+        assertEquals(Status.CLIENT_ERROR_NOT_FOUND, status);
     }
 
 }
