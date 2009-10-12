@@ -29,6 +29,7 @@
 		<dependency type="module" id="velocity" />
 		<dependency type="module" id="rdf" />
 		<dependency type="module" id="wadl" />
+		<dependency type="module" id="example" />
 	</dependencies>
 	<source edition="android">
 		<files-sets>
