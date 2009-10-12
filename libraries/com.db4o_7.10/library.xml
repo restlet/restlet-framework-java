@@ -1,4 +1,4 @@
-<library id="db4o">
+<library id="db4o" dir="com.db4o">
 	<name>Db4o - object database framework</name>
 	<description>Db4o - object database framework.</description>
 	<package id="db4o" name="com.db4o">

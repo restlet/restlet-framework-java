@@ -1,4 +1,4 @@
-<library id="jxta">
+<library id="jxta" dir="net.jxta">
 	<package id="jxta" name="net.jxta">
 		<maven>
 			<groupId>net.jxta</groupId>

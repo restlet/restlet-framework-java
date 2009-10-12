@@ -1,4 +1,4 @@
-<library id="tika">
+<library id="tika" dir="org.apache.tika">
 	<package id="tika" name="org.apache.tika">
 		<groupId>org.apache.tika</groupId>
 		<artifactId>tika-core</artifactId>

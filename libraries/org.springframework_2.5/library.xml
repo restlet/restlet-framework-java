@@ -1,4 +1,4 @@
-<library id="spring">
+<library id="spring" dir="org.springframework">
 	<package id="spring-beans" name="org.springframework.beans">
 		<maven>
 			<groupId>org.springframework</groupId>

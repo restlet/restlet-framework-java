@@ -1,4 +1,4 @@
-<library id="solr">
+<library id="solr" dir="org.apache.solr">
 	<package id="solr" name="org.apache.solr">
 		<maven>
 			<artifactId>solr-core</artifactId>

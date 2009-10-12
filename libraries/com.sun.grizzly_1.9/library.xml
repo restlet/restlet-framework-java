@@ -1,4 +1,4 @@
-<library id="grizzly">
+<library id="grizzly" dir="com.sun.grizzly">
 	<package id="grizzly" name="com.sun.grizzly">
 		<maven>
 			<artifactId>grizzly-framework</artifactId>

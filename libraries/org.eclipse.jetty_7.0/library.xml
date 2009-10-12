@@ -1,4 +1,4 @@
-<library id="jetty">
+<library id="jetty" dir="org.eclipse.jetty">
 	<package id="jetty-ajp" name="org.eclipse.jetty.ajp">
 		<maven>
 			<groupId>org.eclipse.jetty</groupId>

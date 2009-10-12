@@ -1,4 +1,4 @@
-<library id="mina">
+<library id="mina" dir="org.apache.mina">
 	<package id="mina" name="org.apache.mina">
 		<maven>
 			<groupId>org.apache.mina</groupId>
