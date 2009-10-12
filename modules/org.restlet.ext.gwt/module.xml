@@ -1,5 +1,5 @@
 <module includes="jee, jse" id="gwt" type="integration" package="org.restlet.ext.gwt">
-   <label>Restlet Extension - GWT</label>
+   <name>Restlet Extension - GWT</name>
    <description>
       Server-side integration with GWT.
 	</description>

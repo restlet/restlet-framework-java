@@ -1,5 +1,5 @@
 <module id="net" includes="gae, jee, jse" type="connector" package="org.restlet.ext.net">
-   <label>Restlet Extension - Net</label>
+   <name>Restlet Extension - Net</name>
    <description>
       Integration with java.net.HttpURLConnection class.
 	</description>

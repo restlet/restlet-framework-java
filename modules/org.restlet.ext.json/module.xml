@@ -1,5 +1,5 @@
 <module id="json" excludes="android,gwt" type="standard" package="org.restlet.ext.json">
-   <label>Restlet Extension - JSON</label>
+   <name>Restlet Extension - JSON</name>
    <description>
       Support for JSON representations.
 	</description>

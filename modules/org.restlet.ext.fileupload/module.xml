@@ -1,6 +1,6 @@
 <module id="fileupload" excludes="android,gae,gwt" type="integration"
 	package="org.restlet.ext.fileupload">
-	<label>Restlet Extension - FileUpload</label>
+	<name>Restlet Extension - FileUpload</name>
 	<description>
 		Integration with Apache FileUpload.
 	</description>

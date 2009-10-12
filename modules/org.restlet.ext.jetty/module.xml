@@ -1,5 +1,5 @@
 <module id="jetty" includes="jee,jse" type="connector" package="org.restlet.ext.jetty">
-   <label>Restlet Extension - Jetty</label>
+   <name>Restlet Extension - Jetty</name>
    <description>
       Integration with Jetty.
 	</description>

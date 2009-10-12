@@ -1,5 +1,5 @@
 <module id="atom" excludes="gwt" type="standard" package="org.restlet.ext.atom">
-   <label>Restlet Extension - Atom</label>
+   <name>Restlet Extension - Atom</name>
    <description>
       Support for the Atom syndication and the AtomPub (Atom Publication Protocol) standards in their 1.0 version.
 	</description>

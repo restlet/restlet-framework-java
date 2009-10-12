@@ -1,5 +1,5 @@
 <module id="grizzly" type="connector" includes="jse" package="org.restlet.ext.grizzly">
-   <label>Restlet Extension - Grizzly</label>
+   <name>Restlet Extension - Grizzly</name>
    <description>
       Integration with Grizzly NIO framework.
 	</description>

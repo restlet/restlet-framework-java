@@ -1,5 +1,5 @@
 <module id="core" type="core" package="org.restlet">
-   <label>Restlet API</label>
+   <name>Restlet API</name>
    <description>
       Restlet API is a Java framework for the REST architectural
       style.

@@ -1,5 +1,5 @@
 <module id="jaxb" excludes="android, gwt" type="integration" package="org.restlet.ext.jaxb">
-   <label>Restlet Extension - JAXB</label>
+   <name>Restlet Extension - JAXB</name>
    <description>
       Integration with Java XML Binding.
 	</description>

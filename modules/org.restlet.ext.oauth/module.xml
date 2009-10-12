@@ -1,6 +1,6 @@
 <module id="oauth" excludes="android,gwt" type="standard"
 	package="org.restlet.ext.oauth">
-	<label>Restlet Extension - OAuth</label>
+	<name>Restlet Extension - OAuth</name>
 	<description>
 		Support for OAuth HTTP authentication.
 	</description>

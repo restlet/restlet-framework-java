@@ -1,5 +1,5 @@
 <module id="ssl" excludes="android, gae, gwt" type="standard" package="org.restlet.ext.ssl">
-   <label>Restlet Extension - SSL support</label>
+   <name>Restlet Extension - SSL support</name>
    <description>
       Utilities to configure SSL support.
 	</description>

@@ -1,5 +1,5 @@
 <module id="jibx" excludes="android, gwt" type="integration" package="org.restlet.ext.jibx">
-   <label>Restlet Extension - JiBX</label>
+   <name>Restlet Extension - JiBX</name>
    <description>
       Integration with JiBX.
 	</description>

@@ -1,5 +1,5 @@
 <module id="jaas" excludes="gwt" type="standard" package="org.restlet.ext.jaas">
-   <label>Restlet Extension - JAAS</label>
+   <name>Restlet Extension - JAAS</name>
    <description>
       Support for JAAS based security.
 	</description>
