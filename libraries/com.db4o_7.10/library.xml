@@ -1,4 +1,6 @@
 <library id="db4o">
+	<name>Db4o - object database framework</name>
+	<description>Db4o - object database framework.</description>
 	<package id="db4o" name="com.db4o">
 		<maven>
 			<groupId>com.db4o</groupId>
@@ -29,12 +31,6 @@
 			<groupId>com.db4o</groupId>
 		</maven>
 	</package>
-	<maven-misc>
-<![CDATA[
-		<name>Db4o - object database framework</name>
-		<description>Db4o - object database framework.</description>
-]]>
-	</maven-misc>
 	<version>7.10</version>
 	<release>96</release>
 	<distributions>
