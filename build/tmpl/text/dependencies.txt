@@ -13,7 +13,7 @@ To configure connectors such as HTTP server or HTTP client connectors, please re
 to the Restlet User Guide: http://wiki.restlet.org/docs_@version-minor@/
 <#list edition.modules?sort_by("id") as module>
 
-${module.package} (${module.label})
+${module.package} (${module.name})
 <#list 1..(module.package?length) as i>-</#list>
    <#if ((module.neededLibraries??) && (module.neededLibraries?size)>0)>
       <#list module.neededLibraries?sort_by(["library", "id"]) as library>
