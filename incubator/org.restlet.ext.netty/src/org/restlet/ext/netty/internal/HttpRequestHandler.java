@@ -51,7 +51,7 @@ import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.jboss.netty.handler.ssl.SslHandler;
-import org.restlet.ext.netty.HttpsNettyServerHelper;
+import org.restlet.ext.netty.HttpsServerHelper;
 import org.restlet.ext.netty.NettyServerHelper;
 
 /**
@@ -142,7 +142,7 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler {
 
             NettyServerCall httpCall = new NettyServerCall(this.helper
                     .getHelped(), content, request, response,
-                    (this.helper instanceof HttpsNettyServerHelper), sslEngine);
+                    (this.helper instanceof HttpsServerHelper), sslEngine);
             this.helper.handle(httpCall);
         }
         Channel ch = e.getChannel();

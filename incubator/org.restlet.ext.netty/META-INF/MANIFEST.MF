@@ -22,7 +22,16 @@ Import-Package: org.jboss.netty.bootstrap,
  org.restlet.util
 Export-Package: org.restlet.ext.netty;
   uses:="org.restlet.engine.http,
-   org.restlet.util,
+   org.jboss.netty.channel,
    javax.net.ssl,
-   org.restlet"
+   org.restlet",
+ org.restlet.ext.netty.internal;
+  uses:="org.jboss.netty.buffer,
+   org.restlet.ext.netty,
+   org.restlet.engine.http,
+   org.jboss.netty.handler.codec.http,
+   org.jboss.netty.channel,
+   org.restlet.util,
+   org.restlet,
+   javax.net.ssl"
 Bundle-RequiredExecutionEnvironment: J2SE-1.5

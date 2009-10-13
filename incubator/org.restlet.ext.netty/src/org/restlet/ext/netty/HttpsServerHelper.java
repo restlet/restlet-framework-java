@@ -109,7 +109,7 @@ import org.restlet.ext.netty.internal.HttpsServerPipelineFactory;
  * @see <a href="http://jboss.org/netty/">Netty home page</a>
  * @author Gabriel Ciuloaica (gciuloaica@gmail.com)
  */
-public class HttpsNettyServerHelper extends NettyServerHelper {
+public class HttpsServerHelper extends NettyServerHelper {
 
     /**
      * This is the SSL context.
@@ -122,7 +122,7 @@ public class HttpsNettyServerHelper extends NettyServerHelper {
      * @param server
      *            The helped server.
      */
-    public HttpsNettyServerHelper(Server server) {
+    public HttpsServerHelper(Server server) {
         super(server);
         getProtocols().add(Protocol.HTTPS);
     }
