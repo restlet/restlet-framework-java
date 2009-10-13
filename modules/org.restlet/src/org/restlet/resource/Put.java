@@ -49,7 +49,7 @@ import org.restlet.service.MetadataService;
  * &#064;Put(&quot;json&quot;)
  * public String storeJson(String value);
  * 
- * &#064;Put(&quot;json:xml&quot;)
+ * &#064;Put(&quot;json:xml|json&quot;)
  * public Representation storeXml(Representation value);
  * </pre>
  * 
@@ -68,10 +68,12 @@ public @interface Put {
      * separated by a comma, then the first one is for the request entity and
      * the second one for the response entity.<br>
      * <br>
-     * Note that this isn't the full MIME type value, just the extension name
-     * declared in {@link MetadataService}. For a list of all predefined
-     * extensions, please check {@link MetadataService#addCommonExtensions()}.
-     * New extension can be registered using
+     * If several response media types are supported, their extension can be
+     * specified separated by "|" characters. Note that this isn't the full MIME
+     * type value, just the extension name declared in {@link MetadataService}.
+     * For a list of all predefined extensions, please check
+     * {@link MetadataService#addCommonExtensions()}. New extension can be
+     * registered using
      * {@link MetadataService#addExtension(String, org.restlet.data.Metadata)}
      * method.
      * 

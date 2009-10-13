@@ -49,8 +49,8 @@ import org.restlet.service.MetadataService;
  * &#064;Get(&quot;json&quot;)
  * public String toJson();
  * 
- * &#064;Get(&quot;xml&quot;)
- * public Representation toXml();
+ * &#064;Get(&quot;xml|html&quot;)
+ * public Representation represent();
  * </pre>
  * 
  * @author Jerome Louvel
@@ -62,10 +62,12 @@ import org.restlet.service.MetadataService;
 public @interface Get {
 
     /**
-     * Specifies the media type extension of the response entity. Note that this
-     * isn't the full MIME type value, just the extension name declared in
-     * {@link MetadataService}. For a list of all predefined extensions, please
-     * check {@link MetadataService#addCommonExtensions()}. New extension can be
+     * Specifies the media type extension of the response entity. If several
+     * media types are supported, their extension can be specified separated by
+     * "|" characters. Note that this isn't the full MIME type value, just the
+     * extension name declared in {@link MetadataService}. For a list of all
+     * predefined extensions, please check
+     * {@link MetadataService#addCommonExtensions()}. New extension can be
      * registered using
      * {@link MetadataService#addExtension(String, org.restlet.data.Metadata)}
      * method.

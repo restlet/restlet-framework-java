@@ -74,8 +74,6 @@ Changes log
           as specified in Javadocs. Reported by Patrick Logan.
         - ClientResource was not checking the "followRedirects"
           property.
-        - Fixed handling of annotations values separated by a ":".
-          Reported by Bob Resendes.
     - Enhancements
         - Improved JAXB converted. Contributed by Sanjay Acharya.
         - Upgraded Apache Commons Logging to version 1.1.1.
@@ -89,6 +87,8 @@ Changes log
         - Upgraded Jetty to version 7.0.0.
         - The default status page and directory listings are now using
           a sans-serif font.
+        - Add support for annotations values separated by a ":" and "|"
+          characters. Suggested by Bob Resendes.
  
 - 2.0 Milestone 5 (2009-09-28)
     - API changes

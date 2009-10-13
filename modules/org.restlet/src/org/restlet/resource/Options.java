@@ -46,7 +46,7 @@ import org.restlet.service.MetadataService;
  * Example:
  * 
  * <pre>
- * &#064;Options(&quot;wadl&quot;)
+ * &#064;Options(&quot;wadl|html&quot;)
  * public Representation toWadl();
  * </pre>
  * 
@@ -59,10 +59,12 @@ import org.restlet.service.MetadataService;
 public @interface Options {
 
     /**
-     * Specifies the media type extension of the response entity. Note that this
-     * isn't the full MIME type value, just the extension name declared in
-     * {@link MetadataService}. For a list of all predefined extensions, please
-     * check {@link MetadataService#addCommonExtensions()}. New extension can be
+     * Specifies the media type extension of the response entity. If several
+     * media types are supported, their extension can be specified separated by
+     * "|" characters. Note that this isn't the full MIME type value, just the
+     * extension name declared in {@link MetadataService}. For a list of all
+     * predefined extensions, please check
+     * {@link MetadataService#addCommonExtensions()}. New extension can be
      * registered using
      * {@link MetadataService#addExtension(String, org.restlet.data.Metadata)}
      * method.

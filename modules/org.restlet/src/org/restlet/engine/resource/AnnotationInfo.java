@@ -162,6 +162,8 @@ public class AnnotationInfo {
             }
 
             if (value != null) {
+                String[] extensions = value.split("\\|");
+
                 if (requestEntity != null) {
                     List<Variant> requestVariants = getRequestVariants(application
                             .getMetadataService());
@@ -179,16 +181,21 @@ public class AnnotationInfo {
                 }
 
                 if (compatibleRequestEntity) {
-                    List<MediaType> mediaTypes = application
-                            .getMetadataService().getAllMediaTypes(value);
+                    if (extensions != null) {
+                        for (String extension : extensions) {
+                            List<MediaType> mediaTypes = application
+                                    .getMetadataService().getAllMediaTypes(
+                                            extension);
 
-                    if (mediaTypes != null) {
-                        if (result == null) {
-                            result = new ArrayList<Variant>();
-                        }
+                            if (mediaTypes != null) {
+                                if (result == null) {
+                                    result = new ArrayList<Variant>();
+                                }
 
-                        for (MediaType mediaType : mediaTypes) {
-                            result.add(new Variant(mediaType));
+                                for (MediaType mediaType : mediaTypes) {
+                                    result.add(new Variant(mediaType));
+                                }
+                            }
                         }
                     }
                 }
