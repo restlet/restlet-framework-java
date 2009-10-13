@@ -1418,8 +1418,15 @@ public class ClientResource extends UniformResource {
                     ClientInfo currentClientInfo = getClientInfo();
 
                     try {
+                        Representation requestEntity = null;
+                        if ((args != null) && args.length > 0) {
+                            requestEntity = toRepresentation(args[0]);
+                            getRequest().setEntity(requestEntity);
+                        }
+
                         List<Variant> responseVariants = annotation
-                                .getResponseVariants(getApplication());
+                                .getResponseVariants(requestEntity,
+                                        getApplication());
 
                         if (responseVariants != null) {
                             updateClientInfo(responseVariants);
@@ -1427,11 +1434,6 @@ public class ClientResource extends UniformResource {
 
                         // The Java method was annotated
                         setMethod(annotation.getRestletMethod());
-
-                        if ((args != null) && args.length > 0) {
-                            Representation entity = toRepresentation(args[0]);
-                            getRequest().setEntity(entity);
-                        }
 
                         handle();
 

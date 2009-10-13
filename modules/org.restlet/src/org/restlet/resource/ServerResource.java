@@ -769,7 +769,7 @@ public abstract class ServerResource extends UniformResource {
                 for (AnnotationInfo annotationInfo : getAnnotations()) {
                     if (getMethod().equals(annotationInfo.getRestletMethod())) {
                         annoVariants = annotationInfo
-                                .getResponseVariants(getApplication());
+                                .getResponseVariants(getRequestEntity(), getApplication());
 
                         if (annoVariants != null) {
                             for (Variant v : annoVariants) {

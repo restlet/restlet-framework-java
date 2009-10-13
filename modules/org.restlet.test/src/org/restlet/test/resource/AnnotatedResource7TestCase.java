@@ -36,6 +36,7 @@ import junit.framework.TestCase;
 
 import org.restlet.data.MediaType;
 import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.Finder;
 import org.restlet.resource.ResourceException;
@@ -45,28 +46,30 @@ import org.restlet.resource.ResourceException;
  * 
  * @author Jerome Louvel
  */
-public class AnnotatedResource6TestCase extends TestCase {
+public class AnnotatedResource7TestCase extends TestCase {
 
     private ClientResource clientResource;
 
     protected void setUp() throws Exception {
         Finder finder = new Finder();
-        finder.setTargetClass(MyResource6.class);
+        finder.setTargetClass(MyResource7.class);
 
         this.clientResource = new ClientResource("http://local");
         this.clientResource.setNext(finder);
     }
 
     public void testGet() throws IOException, ResourceException {
-        Representation result = clientResource.post("[\"root\"]",
+        Representation input = new StringRepresentation("[\"root\"]",
                 MediaType.APPLICATION_JSON);
+        Representation result = clientResource.post(input);
         assertNotNull(result);
-        assertEquals("[\"root\"]2", result.getText());
-        assertEquals(MediaType.APPLICATION_JSON, result.getMediaType());
+        assertEquals("[\"root\"]1", result.getText());
+        assertEquals(MediaType.APPLICATION_XML, result.getMediaType());
 
-        result = clientResource.post("<root/>", MediaType.APPLICATION_XML);
+        input = new StringRepresentation("<root/>", MediaType.APPLICATION_XML);
+        result = clientResource.post(input);
         assertNotNull(result);
-        assertEquals("<root/>1", result.getText());
+        assertEquals("<root/>2", result.getText());
         assertEquals(MediaType.APPLICATION_XML, result.getMediaType());
     }
 

@@ -46,7 +46,7 @@ import org.restlet.service.MetadataService;
  * Example:
  * 
  * <pre>
- * &#064;Post(&quot;json)
+ * &#064;Post(&quot;json&quot;)
  * public String acceptJson(String value);
  * 
  * &#064;Post(&quot;xml:json&quot;)
@@ -64,7 +64,7 @@ public @interface Post {
     /**
      * Specifies the media type of the request and response entities as
      * extensions. If only one extension is provided, the extension applies to
-     * both request and response entities. If two extensions are provived,
+     * both request and response entities. If two extensions are provided,
      * separated by a comma, then the first one is for the request entity and
      * the second one for the response entity.<br>
      * <br>

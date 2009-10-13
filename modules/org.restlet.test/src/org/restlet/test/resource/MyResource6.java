@@ -9,12 +9,12 @@ public class MyResource6 extends ServerResource {
 
     @Post("xml:xml")
     public String storeXml() throws IOException {
-        return getRequestEntity().getText();
+        return getRequestEntity().getText() + "1";
     }
 
     @Post("json:json")
     public String storeJson() throws IOException {
-        return getRequestEntity().getText();
+        return getRequestEntity().getText() + "2";
     }
 
 }

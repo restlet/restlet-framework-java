@@ -36,6 +36,7 @@ import java.util.List;
 import org.restlet.Application;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
+import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.service.ConverterService;
 import org.restlet.service.MetadataService;
@@ -140,14 +141,18 @@ public class AnnotationInfo {
     /**
      * Returns a list of response variants based on the annotation value.
      * 
+     * @param requestEntity
+     *            Optional request entity.
      * @param application
      *            The application to use.
      * @return A list of response variants.
      */
     @SuppressWarnings("unchecked")
-    public List<Variant> getResponseVariants(Application application) {
+    public List<Variant> getResponseVariants(Representation requestEntity,
+            Application application) {
         List<Variant> result = null;
         String value = getValue();
+        boolean compatibleRequestEntity = true;
 
         if (value != null) {
             int colonIndex = value.indexOf(':');
@@ -157,22 +162,40 @@ public class AnnotationInfo {
             }
 
             if (value != null) {
-                List<MediaType> mediaTypes = application.getMetadataService()
-                        .getAllMediaTypes(value);
+                if (requestEntity != null) {
+                    List<Variant> requestVariants = getRequestVariants(application
+                            .getMetadataService());
 
-                if (mediaTypes != null) {
-                    if (result == null) {
-                        result = new ArrayList<Variant>();
+                    if ((requestVariants != null) && !requestVariants.isEmpty()) {
+                        // Check that the compatibility
+                        compatibleRequestEntity = false;
+
+                        for (int i = 0; (!compatibleRequestEntity)
+                                && (i < requestVariants.size()); i++) {
+                            compatibleRequestEntity = (requestVariants.get(i)
+                                    .isCompatible(requestEntity));
+                        }
                     }
+                }
 
-                    for (MediaType mediaType : mediaTypes) {
-                        result.add(new Variant(mediaType));
+                if (compatibleRequestEntity) {
+                    List<MediaType> mediaTypes = application
+                            .getMetadataService().getAllMediaTypes(value);
+
+                    if (mediaTypes != null) {
+                        if (result == null) {
+                            result = new ArrayList<Variant>();
+                        }
+
+                        for (MediaType mediaType : mediaTypes) {
+                            result.add(new Variant(mediaType));
+                        }
                     }
                 }
             }
         }
 
-        if (result == null) {
+        if (compatibleRequestEntity && (result == null)) {
             ConverterService cs = application.getConverterService();
             result = (List<Variant>) cs.getVariants(getJavaOutputType(), null);
         }

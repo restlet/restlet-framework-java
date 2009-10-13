@@ -18,6 +18,7 @@ public class ResourceTestSuite {
         suite.addTestSuite(AnnotatedResource4TestCase.class);
         suite.addTestSuite(AnnotatedResource5TestCase.class);
         suite.addTestSuite(AnnotatedResource6TestCase.class);
+        suite.addTestSuite(AnnotatedResource7TestCase.class);
 
         // Tests based on HTTP client connectors are not supported by the GAE
         // edition.
