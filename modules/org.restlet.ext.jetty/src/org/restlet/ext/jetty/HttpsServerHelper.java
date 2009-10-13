@@ -66,13 +66,13 @@ import org.restlet.engine.security.SslContextFactory;
  * <td>keystorePath</td>
  * <td>String</td>
  * <td>${user.home}/.keystore</td>
- * <td>SSL keystore path.</td>
+ * <td>SSL keystore path</td>
  * </tr>
  * <tr>
  * <td>keystorePassword</td>
  * <td>String</td>
  * <td></td>
- * <td>SSL keystore password.</td>
+ * <td>SSL keystore password</td>
  * </tr>
  * <tr>
  * <td>keystoreType</td>
@@ -84,44 +84,44 @@ import org.restlet.engine.security.SslContextFactory;
  * <td>keyPassword</td>
  * <td>String</td>
  * <td>${keystorePassword}</td>
- * <td>SSL key password.</td>
+ * <td>SSL key password</td>
  * </tr>
  * <tr>
  * <td>certAlgorithm</td>
  * <td>String</td>
  * <td>SunX509</td>
- * <td>SSL certificate algorithm.</td>
+ * <td>SSL certificate algorithm</td>
  * </tr>
  * <tr>
  * <td>disabledCipherSuites</td>
  * <td>String</td>
  * <td>null</td>
  * <td>Whitespace-separated list of disabled cipher suites and/or can be
- * specified multiple times.</td>
+ * specified multiple times</td>
  * </tr>
  * <tr>
  * <td>needClientAuthentication</td>
  * <td>boolean</td>
  * <td>false</td>
- * <td>Indicates if we require client certificate authentication.</td>
+ * <td>Indicates if we require client certificate authentication</td>
  * </tr>
  * <tr>
  * <td>secureRandomAlgorithm</td>
  * <td>String</td>
  * <td>null (see java.security.SecureRandom)</td>
- * <td>Name of the RNG algorithm. (see java.security.SecureRandom class).</td>
+ * <td>Name of the RNG algorithm. (see java.security.SecureRandom class)</td>
  * </tr>
  * <tr>
  * <td>securityProvider</td>
  * <td>String</td>
  * <td>null (see javax.net.ssl.SSLContext)</td>
- * <td>Java security provider name (see java.security.Provider class).</td>
+ * <td>Java security provider name (see java.security.Provider class)</td>
  * </tr>
  * <tr>
  * <td>sslProtocol</td>
  * <td>String</td>
  * <td>TLS</td>
- * <td>SSL protocol.</td>
+ * <td>SSL protocol</td>
  * </tr>
  * <tr>
  * <td>type</td>
@@ -129,14 +129,14 @@ import org.restlet.engine.security.SslContextFactory;
  * <td>2</td>
  * <td>The type of Jetty connector to use.<br>
  * 1 : Selecting NIO connector (Jetty's SslSelectChannelConnector class).<br>
- * 2 : Blocking BIO connector (Jetty's SslSocketConnector class).</td>
+ * 2 : Blocking BIO connector (Jetty's SslSocketConnector class)</td>
  * </tr>
  * <tr>
  * <td>wantClientAuthentication</td>
  * <td>boolean</td>
  * <td>false</td>
  * <td>Indicates if we would like client certificate authentication (only for
- * the BIO connector type).</td>
+ * the BIO connector type)</td>
  * </tr>
  * </table>
  * 
