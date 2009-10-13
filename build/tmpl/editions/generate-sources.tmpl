@@ -24,6 +24,10 @@
          </fileset>
    <#if (module.source[editionKey]??) && (module.source[editionKey].mappers??)><chainedmapper>${module.source[editionKey].mappers}</chainedmapper></#if>
       </copy>
+   <#if module.primaryLibrary??>
+      <replace dir="<#noparse>${mod}</#noparse>/${module.package}" includes="**/package.html" token="@minor-version@" value="${module.primaryLibrary.minorVersion}" />
+      <replace dir="<#noparse>${mod}</#noparse>/${module.package}" includes="**/package.html" token="@home-uri@" value="${module.primaryLibrary.homeUri}" />
+   </#if>   
 </#list>
 <#noparse>
       <replace dir="${mod}" includes="**/MANIFEST.MF*" token="Bundle-Version: ${version-minor}" value="Bundle-Version: ${version-manifest}" />
@@ -33,4 +37,5 @@
       <replace dir="${mod}" includes="**/Engine.java" token="@release-number@" value="${release-number}" />
       <replace dir="${mod}" includes="**/Edition.java" token="final Edition CURRENT = Edition.JSE;" value="final Edition CURRENT = Edition.</#noparse>${editionKey?upper_case}<#noparse>;" />
 </#noparse>
+
 <!--
