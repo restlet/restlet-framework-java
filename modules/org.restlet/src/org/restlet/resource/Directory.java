@@ -45,11 +45,24 @@ import org.restlet.engine.util.AlphaNumericComparator;
 import org.restlet.engine.util.AlphabeticalComparator;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
+import org.restlet.routing.Template;
 
 /**
  * Finder mapping a directory of local resources. Those resources have
- * representations accessed by the file system or the class loaders.<br>
- * <br>
+ * representations accessed by the file system, the class loaders or other URI
+ * accessible protocols. Here is some sample code illustrating how to attach a
+ * directory to a router. Note that the matching mode of the directory's route
+ * must be changed from {@link Template#MODE_EQUALS} to
+ * {@link Template#MODE_STARTS_WITH} in order to map the URI subspace to this
+ * directory:<br>
+ * 
+ * <pre>
+ * Directory directory = new Directory(getContext(), &quot;file:///user/data/files/&quot;);
+ * Router router = new Router(getContext());
+ * TemplateRoute route = router.attach(&quot;/static/&quot;, directory);
+ * route.setMatchingMode(Template.MODE_STARTS_WITH);
+ * </pre>
+ * 
  * An automatic content negotiation mechanism (similar to the one in Apache HTTP
  * server) is used to select the best representation of a resource based on the
  * available variants and on the client capabilities and preferences.<br>

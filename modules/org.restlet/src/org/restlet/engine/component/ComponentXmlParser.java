@@ -567,7 +567,7 @@ public class ComponentXmlParser {
                                             protocolsList, getInt(portNode,
                                                     Protocol.UNKNOWN_PORT),
                                             getComponent().getServers()
-                                                    .getTarget());
+                                                    .getNext());
                                 }
                             }
                         } else {
@@ -577,7 +577,7 @@ public class ComponentXmlParser {
                                     new Context(),
                                     protocol,
                                     getInt(portNode, protocol.getDefaultPort()),
-                                    getComponent().getServers().getTarget());
+                                    getComponent().getServers().getNext());
                         }
 
                         if (server != null) {

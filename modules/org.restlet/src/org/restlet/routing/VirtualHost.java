@@ -225,6 +225,11 @@ public class VirtualHost extends Router {
             String serverPort) {
         super((parentContext == null) ? null : parentContext
                 .createChildContext());
+        
+        // Override Router's default modes 
+        setDefaultMatchingMode(Template.MODE_STARTS_WITH);
+        setRoutingMode(BEST);
+
         this.parentContext = parentContext;
 
         this.hostDomain = hostDomain;

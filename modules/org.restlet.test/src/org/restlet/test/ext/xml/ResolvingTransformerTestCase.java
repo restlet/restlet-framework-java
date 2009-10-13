@@ -53,10 +53,10 @@ import org.restlet.data.LocalReference;
 import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
+import org.restlet.ext.xml.TransformRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.test.RestletTestCase;
-import org.restlet.ext.xml.TransformRepresentation;
 
 /**
  * ResolvingTransformerTestCase tests the resolving aspects of the
@@ -69,9 +69,9 @@ public class ResolvingTransformerTestCase extends RestletTestCase {
 
     class AssertResolvingHelper {
 
-        final String baseUri;
+        String baseUri;
 
-        final URIResolver resolver;
+        URIResolver resolver;
 
         AssertResolvingHelper(String baseUri, URIResolver resolver) {
             this.baseUri = baseUri;
@@ -81,29 +81,33 @@ public class ResolvingTransformerTestCase extends RestletTestCase {
         /**
          * Asserts that the testUri resolves into the expectedUri
          */
-        void assertResolving(final String message, final String testUri,
-                final String testData) throws TransformerException, IOException {
+        void assertResolving(String message, String testUri, String testData)
+                throws TransformerException, IOException {
 
-            final Source resolvedSource = this.resolver.resolve(testUri,
-                    this.baseUri);
+            Source resolvedSource = this.resolver
+                    .resolve(testUri, this.baseUri);
             assertNotNull("resolved source for " + testUri
                     + " should not be null", resolvedSource);
-            final StringBuilder data = new StringBuilder();
+            StringBuilder data = new StringBuilder();
+
             if (resolvedSource instanceof StreamSource) {
-                final StreamSource streamSource = (StreamSource) resolvedSource;
+                StreamSource streamSource = (StreamSource) resolvedSource;
                 Reader dataReader = (streamSource).getReader();
+
                 if (dataReader == null) {
-                    final InputStream in = (streamSource.getInputStream());
+                    InputStream in = (streamSource.getInputStream());
                     assertNotNull("no reader or inputstream available", in);
                     dataReader = new InputStreamReader(in);
                 }
 
                 assertNotNull("no reader to data in source.", dataReader);
-                final char[] buf = new char[1024];
+                char[] buf = new char[1024];
                 int len = 0;
+
                 while ((len = dataReader.read(buf)) != -1) {
                     data.append(buf, 0, len);
                 }
+
                 dataReader.close();
             } else {
                 // TODO support other source implementations (namely sax-source
@@ -131,10 +135,11 @@ public class ResolvingTransformerTestCase extends RestletTestCase {
             return new Restlet() {
                 @Override
                 public void handle(Request request, Response response) {
-                    final String remainder = request.getResourceRef()
+                    String remainder = request.getResourceRef()
                             .getRemainingPart();
-                    final Representation answer = SimpleUriMapApplication.this.uriMap
+                    Representation answer = SimpleUriMapApplication.this.uriMap
                             .get(remainder);
+
                     if (answer != null) {
                         response.setEntity(answer);
                     }
@@ -160,54 +165,54 @@ public class ResolvingTransformerTestCase extends RestletTestCase {
     // testing purely the resolver, no active transforming context (ie xslt
     // engine) in this test
     public void testResolving() throws Exception {
-        final Component comp = new Component();
+        Component comp = new Component();
 
         // create an xml input representation
-        final Representation xml = new StringRepresentation(
+        Representation xml = new StringRepresentation(
                 "<?xml version='1.0'><simpleroot/>", MediaType.TEXT_XML);
 
         // create an xsl template representation
-        final Representation xslt = new StringRepresentation(
+        Representation xslt = new StringRepresentation(
                 "<?xml version=\"1.0\"?>"
                         + "<xsl:transform xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='1.0'>"
                         + "<xsl:template match ='/'><newroot/></xsl:template></xsl:transform>",
                 MediaType.TEXT_XML);
 
-        final TransformRepresentation transRep = new TransformRepresentation(
-                comp.getContext(), xml, xslt);
+        TransformRepresentation transRep = new TransformRepresentation(comp
+                .getContext(), xml, xslt);
 
         // create a test-stream representation to be returned when the correct
         // code is presented
-        final String testCode = "rnd." + (new Random()).nextInt();
-        final String testData = "\"The resolver is doing OK\", said the testclass "
+        String testCode = "rnd." + (new Random()).nextInt();
+        String testData = "\"The resolver is doing OK\", said the testclass "
                 + MY_NAME + ".";
-        final Representation testRep = new StringRepresentation(testData);
+        Representation testRep = new StringRepresentation(testData);
 
-        final SimpleUriMapApplication testApp = new SimpleUriMapApplication();
+        SimpleUriMapApplication testApp = new SimpleUriMapApplication();
         testApp.add(testCode, testRep);
 
         comp.getInternalRouter().attach("/testApp/", testApp);
-        final String testBase = "riap://component/testApp";
+        String testBase = "riap://component/testApp";
 
-        final URIResolver uriResolver = transRep.getUriResolver();
+        URIResolver uriResolver = transRep.getUriResolver();
         assertNotNull("no resolver present!", uriResolver);
-        final String baseUri = testBase + "/dummy";
+        String baseUri = testBase + "/dummy";
 
-        final AssertResolvingHelper test = new AssertResolvingHelper(baseUri,
+        AssertResolvingHelper test = new AssertResolvingHelper(baseUri,
                 uriResolver);
 
-        final String absoluteUri = testBase + "/" + testCode;
+        String absoluteUri = testBase + "/" + testCode;
         test.assertResolving("error in absolute resolving.", absoluteUri,
                 testData);
 
-        final String relUri = testCode;
+        String relUri = testCode;
         test.assertResolving("error in relative resolving.", relUri, testData);
 
-        final String relLocalUri = "./" + testCode;
+        String relLocalUri = "./" + testCode;
         test.assertResolving("error in relative resolving to ./", relLocalUri,
                 testData);
 
-        final String relParentUri = "../testApp/" + testCode;
+        String relParentUri = "../testApp/" + testCode;
         test.assertResolving("error in relative resolving to ../",
                 relParentUri, testData);
     }
@@ -215,7 +220,7 @@ public class ResolvingTransformerTestCase extends RestletTestCase {
     // functional test in the actual xslt engine context
     public void testTransform() throws Exception {
 
-        final Component comp = new Component();
+        Component comp = new Component();
         comp.getClients().add(Protocol.CLAP);
 
         // here is the plan / setup
@@ -229,8 +234,8 @@ public class ResolvingTransformerTestCase extends RestletTestCase {
         // * output should show all converted lines as read from the various
         // external documents
 
-        final String thirdDocData = "<data3>"
-                + ("rnd." + (new Random()).nextInt()) + "</data3>";
+        String thirdDocData = "<data3>" + ("rnd." + (new Random()).nextInt())
+                + "</data3>";
         // Note below doesn't work,:
         // final String xsl2xmlLink = "riap://application/3rd.xml";
         // cause: the application-context one refers to with above is the one
@@ -239,12 +244,12 @@ public class ResolvingTransformerTestCase extends RestletTestCase {
         // application-context so it doesn't support
         // the riap-authority 'application'
         // This does work though:
-        final String xsl2xmlLink = "./3rd.xml"; // and "/three/3rd.xml" would
+        String xsl2xmlLink = "./3rd.xml"; // and "/three/3rd.xml" would
         // too...
 
-        final Representation xml3 = new StringRepresentation(
-                "<?xml version='1.0' ?>" + thirdDocData, MediaType.TEXT_XML);
-        final Representation xslt3 = new StringRepresentation(
+        Representation xml3 = new StringRepresentation("<?xml version='1.0' ?>"
+                + thirdDocData, MediaType.TEXT_XML);
+        Representation xslt3 = new StringRepresentation(
                 "<?xml version=\"1.0\"?>"
                         + "<xsl:transform xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='1.0'>"
                         + "  <xsl:template match ='el3'>"
@@ -253,20 +258,20 @@ public class ResolvingTransformerTestCase extends RestletTestCase {
                         + "    <xsl:copy-of select='$external/data3' />"
                         + "  </xsl:template>" + "</xsl:transform>",
                 MediaType.TEXT_XML);
-        final SimpleUriMapApplication thirdLevel = new SimpleUriMapApplication();
+        SimpleUriMapApplication thirdLevel = new SimpleUriMapApplication();
         thirdLevel.add("3rd.xsl", xslt3);
         thirdLevel.add("3rd.xml", xml3);
         comp.getInternalRouter().attach("/three/", thirdLevel);
 
         // xml In
-        final Representation xmlIn = new StringRepresentation(
+        Representation xmlIn = new StringRepresentation(
                 "<?xml version='1.0' ?><input><one/><any attTwo='2'/><el3>drie</el3></input>");
         // xslOne
-        final Reference xsltOneRef = new LocalReference("clap://thread/"
+        Reference xsltOneRef = new LocalReference("clap://thread/"
                 + MY_BASEPATH + "/xslt/one/1st.xsl");
-        final Representation xsltOne = comp.getContext().getClientDispatcher()
-                .get(xsltOneRef).getEntity();
-        final TransformRepresentation tr = new TransformRepresentation(comp
+        Representation xsltOne = comp.getContext().getClientDispatcher().get(
+                xsltOneRef).getEntity();
+        TransformRepresentation tr = new TransformRepresentation(comp
                 .getContext(), xmlIn, xsltOne);
 
         // TODO transformer output should go to SAX! The sax-event-stream should
@@ -274,11 +279,11 @@ public class ResolvingTransformerTestCase extends RestletTestCase {
         // and then the assertions should be written as DOM tests...
         // (NOTE: current string-compare assertion might fail on lexical aspects
         // as ignorable whitespace, encoding settings etc etc)
-        final ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
         tr.write(out);
-        final String xmlOut = out.toString();
+        String xmlOut = out.toString();
 
-        final String expectedResult = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><output><data1>1st</data1><data2>2nd</data2>"
+        String expectedResult = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><output><data1>1st</data1><data2>2nd</data2>"
                 + thirdDocData + "</output>";
         assertEquals("xslt result doesn't match expectations", expectedResult,
                 xmlOut);

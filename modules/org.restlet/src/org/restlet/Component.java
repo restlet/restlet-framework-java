@@ -46,6 +46,7 @@ import org.restlet.representation.FileRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Finder;
 import org.restlet.routing.Router;
+import org.restlet.routing.Template;
 import org.restlet.routing.VirtualHost;
 import org.restlet.security.Realm;
 import org.restlet.service.LogService;
@@ -234,6 +235,12 @@ public class Component extends Restlet {
                     }
 
                 };
+
+                // Override Router's default modes
+                this.internalRouter
+                        .setDefaultMatchingMode(Template.MODE_STARTS_WITH);
+                this.internalRouter.setRoutingMode(Router.BEST);
+
                 this.logService = new LogService();
                 this.statusService = new StatusService();
                 this.clients.setContext(getContext());

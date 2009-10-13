@@ -274,7 +274,7 @@ public class Client extends Connector {
      * @return The returned response.
      */
     public final Response handle(Request request) {
-        final Response response = new Response(request);
+        Response response = new Response(request);
         handle(request, response);
         return response;
     }
@@ -287,7 +287,7 @@ public class Client extends Connector {
         if (getHelper() != null) {
             getHelper().handle(request, response);
         } else {
-            final StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder();
             sb
                     .append("No available client connector supports the required protocol: ");
             sb.append("'").append(request.getProtocol().getName()).append("'.");

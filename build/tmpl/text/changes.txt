@@ -4,6 +4,14 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - Breaking changes
+        - The Router class now has those default values:
+           - "defaultMatchingMode" : MODE_EQUALS instead of STARTS_WITH
+           - "defaultMatchQuery" : false
+           - "routingMode" : FIRST instead of BEST
+          Make sure that you change the way you attach directories to 
+          routers to specify a MODE_START_WITH mode. See the Javadocs of
+          the Directory for a code example.
     - API changes
         - Renamed ChallengeScheme#HTTP_MS_SHAREDKEY into 
           HTTP_AZURE_SHAREDKEY and HTTP_MS_SHAREDKEY_LITE into 

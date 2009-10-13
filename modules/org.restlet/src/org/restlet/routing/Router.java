@@ -169,11 +169,11 @@ public class Router extends Restlet {
     public Router(Context context) {
         super(context);
         this.routes = new RouteList();
-        this.defaultMatchingMode = Template.MODE_STARTS_WITH;
-        this.defaultMatchQuery = true;
+        this.defaultMatchingMode = Template.MODE_EQUALS;
+        this.defaultMatchQuery = false;
         this.defaultRoute = null;
         this.finderClass = Finder.class;
-        this.routingMode = BEST;
+        this.routingMode = FIRST;
         this.requiredScore = 0.5F;
         this.maxAttempts = 1;
         this.retryDelay = 500L;
@@ -253,7 +253,8 @@ public class Router extends Restlet {
      */
     @SuppressWarnings("deprecation")
     public Route attachDefault(Restlet defaultTarget) {
-        final Route result = createRoute("", defaultTarget);
+        Route result = createRoute("", defaultTarget);
+        result.setMatchingMode(Template.MODE_STARTS_WITH);
         setDefaultRoute(result);
         return result;
     }

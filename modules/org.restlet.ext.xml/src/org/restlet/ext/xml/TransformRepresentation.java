@@ -107,16 +107,17 @@ public class TransformRepresentation extends OutputRepresentation {
 
                 if ((base != null) && !base.equals("")) {
                     // Potentially a relative reference
-                    final Reference baseRef = new Reference(base);
+                    Reference baseRef = new Reference(base);
                     targetRef = new Reference(baseRef, href);
                 } else {
                     // No base, assume "href" is an absolute URI
                     targetRef = new Reference(href);
                 }
 
-                final String targetUri = targetRef.getTargetRef().toString();
-                final Response response = this.context.getClientDispatcher()
-                        .get(targetUri);
+                String targetUri = targetRef.getTargetRef().toString();
+                Response response = this.context.getClientDispatcher().get(
+                        targetUri);
+
                 if (response.getStatus().isSuccess()
                         && response.isEntityAvailable()) {
                     try {

@@ -369,7 +369,7 @@ public class Server extends Connector {
      * @return The next Restlet.
      */
     public Restlet getNext() {
-        return this.next;
+        return getTarget();
     }
 
     /**
@@ -389,7 +389,7 @@ public class Server extends Connector {
      */
     @Deprecated
     public Restlet getTarget() {
-        return getNext();
+        return this.next;
     }
 
     @Override
@@ -460,7 +460,7 @@ public class Server extends Connector {
      *            The next Restlet.
      */
     public void setNext(Restlet next) {
-        this.next = next;
+        setTarget(next);
     }
 
     /**
@@ -485,7 +485,7 @@ public class Server extends Connector {
      */
     @Deprecated
     public void setTarget(Restlet next) {
-        setNext(next);
+        this.next = next;
     }
 
     @Override
