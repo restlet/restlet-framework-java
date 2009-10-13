@@ -9,7 +9,7 @@
    </distributions>
 
    <dependencies>
-      <dependency type="library" id="freemarker" />
+      <dependency type="library" id="freemarker" primary="true" />
       <dependency type="module" id="core" />
    </dependencies>
 </module>

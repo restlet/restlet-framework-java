@@ -9,7 +9,7 @@
    </distributions>
 
    <dependencies>
-      <dependency type="library" id="jsslutils" />
+      <dependency type="library" id="jsslutils" primary="true" />
       <dependency type="module" id="core" />
    </dependencies>
 </module>

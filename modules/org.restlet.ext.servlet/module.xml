@@ -9,7 +9,7 @@
    </distributions>
 
    <dependencies>
-      <dependency type="library" id="servlet" maven-scope="provided" />
+      <dependency type="library" id="servlet" maven-scope="provided" primary="true" />
       <dependency type="module" id="core" />
    </dependencies>
 </module>

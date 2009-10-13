@@ -19,6 +19,26 @@
 			<version>${lib-httpclient-version}</version>
 		</dependency>
 		<dependency>
+			<groupId>commons-httpcore</groupId>
+			<artifactId>commons-httpcore</artifactId>
+			<version>${lib-httpcore-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-httpmime</groupId>
+			<artifactId>commons-httpmime</artifactId>
+			<version>${lib-httpmime-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.james</groupId>
+			<artifactId>apache-mime4j</artifactId>
+			<version>${lib-mime4j-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.jcip</groupId>
+			<artifactId>jcip-annotations</artifactId>
+			<version>${lib-jcip-annotations-version}</version>
+		</dependency>
+		<dependency>
 			<groupId>${groupId}</groupId>
 			<artifactId>org.restlet</artifactId>
 			<version>${version}</version>

@@ -11,7 +11,7 @@
 	<dependencies>
 		<dependency type="library" id="codec" />
 		<dependency type="library" id="dbcp" />
-		<dependency type="library" id="oauth" />
+		<dependency type="library" id="oauth" primary="true" />
 		<dependency type="library" id="pool" />
 		<dependency type="module" id="core" />
 	</dependencies>

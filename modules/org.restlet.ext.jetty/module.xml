@@ -9,7 +9,7 @@
    </distributions>
 
    <dependencies>
-      <dependency type="library" id="jetty" />
+      <dependency type="library" id="jetty" primary="true" />
       <dependency type="library" id="servlet" />
       <dependency type="module" id="core" />
    </dependencies>

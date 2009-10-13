@@ -9,7 +9,7 @@
    </distributions>
 
    <dependencies>
-      <dependency type="library" id="simple" />
+      <dependency type="library" id="simple" primary="true" />
       <dependency type="module" id="core" />
    </dependencies>
 </module>

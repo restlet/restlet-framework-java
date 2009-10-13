@@ -11,7 +11,7 @@
 
 	<dependencies>
 		<dependency type="library" id="servlet" maven-scope="provided" />
-		<dependency type="library" id="fileupload" />
+		<dependency type="library" id="fileupload" primary="true" />
 		<dependency type="module" id="core" />
 	</dependencies>
 </module>

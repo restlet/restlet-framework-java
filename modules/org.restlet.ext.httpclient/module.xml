@@ -10,7 +10,7 @@
 
    <dependencies>
       <dependency type="library" id="codec" />
-      <dependency type="library" id="httpclient" />
+      <dependency type="library" id="httpclient" primary="true" />
       <dependency type="library" id="httpcore" />
       <dependency type="library" id="httpmime" />
       <dependency type="library" id="jcip-annotations" />

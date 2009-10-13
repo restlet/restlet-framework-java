@@ -9,7 +9,7 @@
    </distributions>
 
    <dependencies>
-      <dependency type="library" id="grizzly" />
+      <dependency type="library" id="grizzly" primary="true" />
       <dependency type="module" id="core" />
    </dependencies>
 </module>
