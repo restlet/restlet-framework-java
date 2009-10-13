@@ -1,0 +1,17 @@
+<library id="netty">
+	<package name="org.jboss.netty" />
+	<version>3.1</version>
+	<release>5</release>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+	<homeUri>
+		http://jboss.org/netty/
+	</homeUri>
+   <downloadUri>
+      http://jboss.org/netty/downloads.html
+	</downloadUri>
+   <javadocs>
+      <link href="http://jboss.org/file-access/default/members/netty/freezone/api/3.1/" />
+   </javadocs>
+</library>
