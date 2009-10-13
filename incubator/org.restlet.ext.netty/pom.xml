@@ -1,0 +1,28 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>@parent-group-id@</groupId>
+		<artifactId>@parent-artifact-id@</artifactId>
+		<version>@parent-version@</version>
+	</parent>
+
+
+	<artifactId>org.restlet.ext.netty</artifactId>
+	<name>Restlet Extension: Netty</name>
+	<description>Integration with Netty framework</description>
+
+	<dependencies>
+		<dependency>
+			<groupId>${groupId}</groupId>
+			<artifactId>org.restlet</artifactId>
+			<version>${version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.netty</groupId>
+			<artifactId>netty</artifactId>
+			<version>${lib-netty-version}</version>
+			<scope>compile</scope>
+		</dependency>
+	</dependencies>
+</project>
