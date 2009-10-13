@@ -331,6 +331,9 @@ public class ClientResource extends UniformResource {
      * status is not returned, then a resource exception is thrown.
      * 
      * @return The optional response entity.
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.7">HTTP
+     *      DELETE method</a>
      */
     public Representation delete() throws ResourceException {
         setMethod(Method.DELETE);
@@ -352,6 +355,9 @@ public class ClientResource extends UniformResource {
      * @param resultClass
      *            The expected class for the response entity object.
      * @return The response entity object.
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.7">HTTP
+     *      DELETE method</a>
      */
     public <T> T delete(Class<T> resultClass) throws ResourceException {
         T result = null;
@@ -362,6 +368,40 @@ public class ClientResource extends UniformResource {
         try {
             updateClientInfo(resultClass);
             result = toObject(delete(), resultClass);
+        } finally {
+            // Restore the current client info
+            setClientInfo(currentClientInfo);
+        }
+
+        return result;
+    }
+
+    /**
+     * Deletes the target resource and all its representations. If a success
+     * status is not returned, then a resource exception is thrown.
+     * 
+     * @param mediaType
+     *            The media type of the representation to retrieve.
+     * @return The representation matching the given media type.
+     * @throws ResourceException
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.7">HTTP
+     *      DELETE method</a>
+     */
+    public Representation delete(MediaType mediaType) throws ResourceException {
+        Representation result = null;
+
+        // Save the current client info
+        ClientInfo currentClientInfo = getClientInfo();
+
+        // Create a fresh one for this request
+        ClientInfo newClientInfo = new ClientInfo();
+        newClientInfo.getAcceptedMediaTypes().add(
+                new Preference<MediaType>(mediaType));
+        setClientInfo(newClientInfo);
+
+        try {
+            result = delete();
         } finally {
             // Restore the current client info
             setClientInfo(currentClientInfo);
@@ -697,6 +737,8 @@ public class ClientResource extends UniformResource {
      *      HEAD method</a>
      */
     public Representation head(MediaType mediaType) throws ResourceException {
+        Representation result = null;
+
         // Save the current client info
         ClientInfo currentClientInfo = getClientInfo();
 
@@ -705,10 +747,14 @@ public class ClientResource extends UniformResource {
         newClientInfo.getAcceptedMediaTypes().add(
                 new Preference<MediaType>(mediaType));
         setClientInfo(newClientInfo);
-        Representation result = head();
 
-        // Restore the current client info
-        setClientInfo(currentClientInfo);
+        try {
+            result = head();
+        } finally {
+            // Restore the current client info
+            setClientInfo(currentClientInfo);
+        }
+
         return result;
     }
 
@@ -757,6 +803,37 @@ public class ClientResource extends UniformResource {
      * Describes the resource using a given media type. If a success status is
      * not returned, then a resource exception is thrown.
      * 
+     * @param <T>
+     *            The expected type for the response entity.
+     * @param resultClass
+     *            The expected class for the response entity object.
+     * @return The response entity object.
+     * @throws ResourceException
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.2">HTTP
+     *      OPTIONS method</a>
+     */
+    public <T> T options(Class<T> resultClass) throws ResourceException {
+        T result = null;
+
+        // Save the current client info
+        ClientInfo currentClientInfo = getClientInfo();
+
+        try {
+            updateClientInfo(resultClass);
+            result = toObject(options(), resultClass);
+        } finally {
+            // Restore the current client info
+            setClientInfo(currentClientInfo);
+        }
+
+        return result;
+    }
+
+    /**
+     * Describes the resource using a given media type. If a success status is
+     * not returned, then a resource exception is thrown.
+     * 
      * @param mediaType
      *            The media type of the representation to retrieve.
      * @return The matched description or null.
@@ -766,6 +843,8 @@ public class ClientResource extends UniformResource {
      *      OPTIONS method</a>
      */
     public Representation options(MediaType mediaType) throws ResourceException {
+        Representation result = null;
+
         // Save the current client info
         ClientInfo currentClientInfo = getClientInfo();
 
@@ -774,10 +853,14 @@ public class ClientResource extends UniformResource {
         newClientInfo.getAcceptedMediaTypes().add(
                 new Preference<MediaType>(mediaType));
         setClientInfo(newClientInfo);
-        Representation result = options();
 
-        // Restore the current client info
-        setClientInfo(currentClientInfo);
+        try {
+            result = options();
+        } finally {
+            // Restore the current client info
+            setClientInfo(currentClientInfo);
+        }
+
         return result;
     }
 
@@ -821,6 +904,43 @@ public class ClientResource extends UniformResource {
         try {
             updateClientInfo(resultClass);
             result = toObject(post(toRepresentation(entity)), resultClass);
+        } finally {
+            // Restore the current client info
+            setClientInfo(currentClientInfo);
+        }
+
+        return result;
+    }
+
+    /**
+     * Posts an object entity. Automatically serializes the object using the
+     * {@link ConverterService}.
+     * 
+     * @param entity
+     *            The object entity to post.
+     * @param mediaType
+     *            The media type of the representation to retrieve.
+     * @return The response object entity.
+     * @throws ResourceException
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.5">HTTP
+     *      POST method</a>
+     */
+    public Representation post(Object entity, MediaType mediaType)
+            throws ResourceException {
+        Representation result = null;
+
+        // Save the current client info
+        ClientInfo currentClientInfo = getClientInfo();
+
+        // Create a fresh one for this request
+        ClientInfo newClientInfo = new ClientInfo();
+        newClientInfo.getAcceptedMediaTypes().add(
+                new Preference<MediaType>(mediaType));
+        setClientInfo(newClientInfo);
+
+        try {
+            result = post(toRepresentation(entity));
         } finally {
             // Restore the current client info
             setClientInfo(currentClientInfo);
@@ -893,6 +1013,43 @@ public class ClientResource extends UniformResource {
         try {
             updateClientInfo(resultClass);
             result = toObject(put(toRepresentation(entity)), resultClass);
+        } finally {
+            // Restore the current client info
+            setClientInfo(currentClientInfo);
+        }
+
+        return result;
+    }
+
+    /**
+     * Puts an object entity. Automatically serializes the object using the
+     * {@link ConverterService}.
+     * 
+     * @param entity
+     *            The object entity to post.
+     * @param mediaType
+     *            The media type of the representation to retrieve.
+     * @return The response object entity.
+     * @throws ResourceException
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6">HTTP
+     *      PUT method</a>
+     */
+    public Representation put(Object entity, MediaType mediaType)
+            throws ResourceException {
+        Representation result = null;
+
+        // Save the current client info
+        ClientInfo currentClientInfo = getClientInfo();
+
+        // Create a fresh one for this request
+        ClientInfo newClientInfo = new ClientInfo();
+        newClientInfo.getAcceptedMediaTypes().add(
+                new Preference<MediaType>(mediaType));
+        setClientInfo(newClientInfo);
+
+        try {
+            result = put(toRepresentation(entity));
         } finally {
             // Restore the current client info
             setClientInfo(currentClientInfo);
@@ -1262,13 +1419,10 @@ public class ClientResource extends UniformResource {
 
                     try {
                         List<Variant> responseVariants = annotation
-                                .getResponseVariants(getApplication()
-                                        .getMetadataService());
+                                .getResponseVariants(getApplication());
 
                         if (responseVariants != null) {
                             updateClientInfo(responseVariants);
-                        } else if (annotation.getJavaReturnType() != null) {
-                            updateClientInfo(annotation.getJavaReturnType());
                         }
 
                         // The Java method was annotated
@@ -1285,9 +1439,9 @@ public class ClientResource extends UniformResource {
                             throw new ResourceException(getStatus());
                         }
 
-                        if (annotation.getJavaReturnType() != null) {
+                        if (annotation.getJavaOutputType() != null) {
                             result = toObject(getResponseEntity(), annotation
-                                    .getJavaReturnType());
+                                    .getJavaOutputType());
                         }
                     } finally {
                         // Restore the current client info

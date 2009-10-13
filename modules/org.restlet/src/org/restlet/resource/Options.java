@@ -59,8 +59,8 @@ import org.restlet.service.MetadataService;
 public @interface Options {
 
     /**
-     * Specifies the result media type extension. Note that this isn't the full
-     * MIME type value, just the extension name declared in
+     * Specifies the media type extension of the response entity. Note that this
+     * isn't the full MIME type value, just the extension name declared in
      * {@link MetadataService}. For a list of all predefined extensions, please
      * check {@link MetadataService#addCommonExtensions()}. New extension can be
      * registered using

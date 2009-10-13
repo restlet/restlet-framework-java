@@ -46,8 +46,6 @@ import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Dimension;
-import org.restlet.data.MediaType;
-import org.restlet.data.Metadata;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.ServerInfo;
@@ -371,7 +369,7 @@ public abstract class ServerResource extends UniformResource {
             throws ResourceException {
         Representation result = null;
         ConverterService cs = getConverterService();
-        Class<?>[] parameterTypes = annotationInfo.getJavaParameterTypes();
+        Class<?>[] parameterTypes = annotationInfo.getJavaInputTypes();
         List<Object> parameters = null;
         Object resultObject = null;
 
@@ -437,12 +435,12 @@ public abstract class ServerResource extends UniformResource {
         Object resultObject = null;
 
         try {
-            if ((annotationInfo.getJavaParameterTypes() != null)
-                    && (annotationInfo.getJavaParameterTypes().length > 0)) {
+            if ((annotationInfo.getJavaInputTypes() != null)
+                    && (annotationInfo.getJavaInputTypes().length > 0)) {
                 List<Object> parameters = new ArrayList<Object>();
                 Object parameter = null;
 
-                for (Class<?> param : annotationInfo.getJavaParameterTypes()) {
+                for (Class<?> param : annotationInfo.getJavaInputTypes()) {
                     if (Variant.class.equals(param)) {
                         parameters.add(variant);
                     } else {
@@ -758,7 +756,6 @@ public abstract class ServerResource extends UniformResource {
      * 
      * @return The modifiable list of variants.
      */
-    @SuppressWarnings("unchecked")
     public List<Variant> getVariants() {
         List<Variant> result = this.variants;
 
@@ -767,43 +764,16 @@ public abstract class ServerResource extends UniformResource {
 
             // Add annotation-based variants in priority
             if (isAnnotated() && hasAnnotations()) {
-                ConverterService cs = getConverterService();
-                List<VariantInfo> annoVariants = null;
+                List<Variant> annoVariants = null;
 
                 for (AnnotationInfo annotationInfo : getAnnotations()) {
                     if (getMethod().equals(annotationInfo.getRestletMethod())) {
-                        if (annotationInfo.getValue() != null) {
-                            List<Metadata> allMetadata = getMetadataService()
-                                    .getAllMetadata(annotationInfo.getValue());
+                        annoVariants = annotationInfo
+                                .getResponseVariants(getApplication());
 
-                            if (allMetadata != null) {
-                                for (Metadata metadata : allMetadata) {
-                                    if (metadata instanceof MediaType) {
-                                        annoVariants = (List<VariantInfo>) cs
-                                                .getVariants(
-                                                        annotationInfo
-                                                                .getJavaReturnType(),
-                                                        new Variant(
-                                                                (MediaType) metadata));
-
-                                        if (annoVariants != null) {
-                                            for (VariantInfo v : annoVariants) {
-                                                result.add(new VariantInfo(v,
-                                                        annotationInfo));
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        } else {
-                            annoVariants = (List<VariantInfo>) cs.getVariants(
-                                    annotationInfo.getJavaReturnType(), null);
-
-                            if (annoVariants != null) {
-                                for (VariantInfo v : annoVariants) {
-                                    result.add(new VariantInfo(v,
-                                            annotationInfo));
-                                }
+                        if (annoVariants != null) {
+                            for (Variant v : annoVariants) {
+                                result.add(new VariantInfo(v, annotationInfo));
                             }
                         }
                     }

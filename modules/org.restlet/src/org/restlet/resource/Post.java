@@ -46,11 +46,11 @@ import org.restlet.service.MetadataService;
  * Example:
  * 
  * <pre>
- * &#064;Post(&quot;json:json&quot;)
+ * &#064;Post(&quot;json)
  * public String acceptJson(String value);
  * 
- * &#064;Post(&quot;xml:xml&quot;)
- * public Representation acceptXml(Representation value);
+ * &#064;Post(&quot;xml:json&quot;)
+ * public Representation acceptXml(Representation xmlValue);
  * </pre>
  * 
  * @author Jerome Louvel
@@ -62,15 +62,20 @@ import org.restlet.service.MetadataService;
 public @interface Post {
 
     /**
-     * Specifies the input and result media type extensions. Note that this
-     * isn't the full MIME type value, just the extension name declared in
-     * {@link MetadataService}. For a list of all predefined extensions, please
-     * check {@link MetadataService#addCommonExtensions()}. New extension can be
-     * registered using
+     * Specifies the media type of the request and response entities as
+     * extensions. If only one extension is provided, the extension applies to
+     * both request and response entities. If two extensions are provived,
+     * separated by a comma, then the first one is for the request entity and
+     * the second one for the response entity.<br>
+     * <br>
+     * Note that this isn't the full MIME type value, just the extension name
+     * declared in {@link MetadataService}. For a list of all predefined
+     * extensions, please check {@link MetadataService#addCommonExtensions()}.
+     * New extension can be registered using
      * {@link MetadataService#addExtension(String, org.restlet.data.Metadata)}
      * method.
      * 
-     * @return The result media types.
+     * @return The media types of request and/or response entities.
      */
     String value() default "";
 

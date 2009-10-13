@@ -283,7 +283,7 @@ public class WadlServerResource extends ServerResource {
 		if (annotations != null && metadataService != null) {
 			for (AnnotationInfo annotationInfo : annotations) {
 				if (info.getName().equals(annotationInfo.getRestletMethod())) {
-					Class<?>[] classes = annotationInfo.getJavaParameterTypes();
+					Class<?>[] classes = annotationInfo.getJavaInputTypes();
 					if (classes != null && classes.length == 1) {
 						List<Variant> variants = (List<Variant>) getApplication()
 								.getConverterService().getVariants(classes[0],
@@ -297,10 +297,10 @@ public class WadlServerResource extends ServerResource {
 							}
 						}
 					}
-					if (annotationInfo.getJavaReturnType() != null) {
+					if (annotationInfo.getJavaOutputType() != null) {
 						List<Variant> variants = (List<Variant>) getApplication()
 								.getConverterService().getVariants(
-										annotationInfo.getJavaReturnType(),
+										annotationInfo.getJavaOutputType(),
 										null);
 						if (variants != null) {
 							for (Variant variant : variants) {

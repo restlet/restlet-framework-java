@@ -33,9 +33,11 @@ package org.restlet.engine.resource;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.restlet.Application;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.representation.Variant;
+import org.restlet.service.ConverterService;
 import org.restlet.service.MetadataService;
 
 /**
@@ -72,6 +74,15 @@ public class AnnotationInfo {
     }
 
     /**
+     * Returns the input types of the Java method.
+     * 
+     * @return The input types of the Java method.
+     */
+    public Class<?>[] getJavaInputTypes() {
+        return getJavaMethod().getParameterTypes();
+    }
+
+    /**
      * Returns the annotated Java method.
      * 
      * @return The annotated Java method.
@@ -81,20 +92,11 @@ public class AnnotationInfo {
     }
 
     /**
-     * Returns the parameter types of the Java method.
+     * Returns the output type of the Java method.
      * 
-     * @return The parameter types of the Java method.
+     * @return The output type of the Java method.
      */
-    public Class<?>[] getJavaParameterTypes() {
-        return getJavaMethod().getParameterTypes();
-    }
-
-    /**
-     * Returns the return type of the Java method.
-     * 
-     * @return The return type of the Java method.
-     */
-    public Class<?> getJavaReturnType() {
+    public Class<?> getJavaOutputType() {
         return getJavaMethod().getReturnType();
     }
 
@@ -112,12 +114,7 @@ public class AnnotationInfo {
         if (value != null) {
             int colonIndex = value.indexOf(':');
 
-            if (colonIndex == -1) {
-                if ((getJavaParameterTypes() == null)
-                        || (getJavaParameterTypes().length == 0)) {
-                    value = null;
-                }
-            } else {
+            if (colonIndex != -1) {
                 value = getValue().substring(0, colonIndex);
             }
 
@@ -143,28 +140,24 @@ public class AnnotationInfo {
     /**
      * Returns a list of response variants based on the annotation value.
      * 
-     * @param metadataService
-     *            The metadata service to use.
+     * @param application
+     *            The application to use.
      * @return A list of response variants.
      */
-    public List<Variant> getResponseVariants(MetadataService metadataService) {
+    @SuppressWarnings("unchecked")
+    public List<Variant> getResponseVariants(Application application) {
         List<Variant> result = null;
         String value = getValue();
 
         if (value != null) {
             int colonIndex = value.indexOf(':');
 
-            if (colonIndex == -1) {
-                if ((getJavaReturnType() == null)
-                        || ((getJavaParameterTypes() != null) && (getJavaParameterTypes().length > 0))) {
-                    value = null;
-                }
-            } else {
+            if (colonIndex != -1) {
                 value = getValue().substring(colonIndex + 1);
             }
 
             if (value != null) {
-                List<MediaType> mediaTypes = metadataService
+                List<MediaType> mediaTypes = application.getMetadataService()
                         .getAllMediaTypes(value);
 
                 if (mediaTypes != null) {
@@ -177,6 +170,11 @@ public class AnnotationInfo {
                     }
                 }
             }
+        }
+
+        if (result == null) {
+            ConverterService cs = application.getConverterService();
+            result = (List<Variant>) cs.getVariants(getJavaOutputType(), null);
         }
 
         return result;
@@ -196,7 +194,7 @@ public class AnnotationInfo {
      * 
      * @return The annotation value.
      */
-    public String getValue() {
+    private String getValue() {
         return value;
     }
 }
