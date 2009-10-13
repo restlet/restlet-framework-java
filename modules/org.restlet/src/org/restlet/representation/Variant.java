@@ -188,10 +188,8 @@ public class Variant {
     }
 
     /**
-     * Returns the character set or null if not applicable.<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
-     * "Content-Type" header.
+     * Returns the character set or null if not applicable. Note that when used
+     * with HTTP connectors, this property maps to the "Content-Type" header.
      * 
      * @return The character set or null if not applicable.
      */
