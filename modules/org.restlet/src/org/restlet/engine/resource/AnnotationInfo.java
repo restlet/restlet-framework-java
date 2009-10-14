@@ -120,16 +120,22 @@ public class AnnotationInfo {
             }
 
             if (value != null) {
-                List<MediaType> mediaTypes = metadataService
-                        .getAllMediaTypes(value);
+                String[] extensions = value.split("\\|");
 
-                if (mediaTypes != null) {
-                    if (result == null) {
-                        result = new ArrayList<Variant>();
-                    }
+                if (extensions != null) {
+                    for (String extension : extensions) {
+                        List<MediaType> mediaTypes = metadataService
+                                .getAllMediaTypes(extension);
 
-                    for (MediaType mediaType : mediaTypes) {
-                        result.add(new Variant(mediaType));
+                        if (mediaTypes != null) {
+                            if (result == null) {
+                                result = new ArrayList<Variant>();
+                            }
+
+                            for (MediaType mediaType : mediaTypes) {
+                                result.add(new Variant(mediaType));
+                            }
+                        }
                     }
                 }
             }

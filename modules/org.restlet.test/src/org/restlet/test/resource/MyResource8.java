@@ -5,14 +5,19 @@ import org.restlet.resource.ServerResource;
 
 public class MyResource8 extends ServerResource {
 
-    @Post("xml:xml")
+    @Post("xml|json:xml")
     public String storeForm(String entity) {
         return entity + "1";
     }
 
-    @Post("xml:json|html")
+    @Post("xml|json:json|html")
     public String storeXml(String entity) {
         return entity + "2";
+    }
+
+    @Post("form|json:json|html")
+    public String store(String entity) {
+        return entity + "3";
     }
 
 }

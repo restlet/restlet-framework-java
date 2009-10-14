@@ -72,6 +72,13 @@ public class AnnotatedResource8TestCase extends TestCase {
         assertNotNull(result);
         assertEquals("<root/>2", result.getText());
         assertEquals(MediaType.APPLICATION_JSON, result.getMediaType());
+
+        input = new StringRepresentation("root=true",
+                MediaType.APPLICATION_WWW_FORM);
+        result = clientResource.post(input, MediaType.APPLICATION_JSON);
+        assertNotNull(result);
+        assertEquals("root=true3", result.getText());
+        assertEquals(MediaType.APPLICATION_JSON, result.getMediaType());
     }
 
 }
