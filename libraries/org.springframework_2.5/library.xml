@@ -42,6 +42,6 @@
 	</downloadUri>
 	<javadocs>
 		<link
-			href="http://static.springframework.org/spring/docs/${lib-spring-version}.x/api/" />
+			href="http://static.springframework.org/spring/docs/${lib-spring-core-version}.x/api/" />
 	</javadocs>
 </library>
