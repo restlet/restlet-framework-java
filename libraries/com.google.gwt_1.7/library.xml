@@ -1,4 +1,4 @@
-<library id="gwt">
+<library id="gwt" dir="com.google.gwt">
 	<package name="com.google.gwt">
 		<maven>
 			<artifactId>gwt-servlet</artifactId>

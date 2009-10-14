@@ -1,6 +1,7 @@
-<library id="jaxb-ri">
-	<package name="com.sun.xml.bind">
+<library id="jaxb-ri" dir="com.sun.xml.bind">
+	<package name="com.sun.jaxb">
 		<maven>
+			<groupId>com.sun.xml.bind</groupId>
 			<artifactId>jaxb-impl</artifactId>
 		</maven>
 	</package>

@@ -1,5 +1,11 @@
-<library id="quercus">
-	<package name="com.caucho.quercus" />
+<library id="quercus" dir="com.caucho.quercus">
+	<package id="quercus" name="com.caucho.quercus">
+		<maven></maven>
+	</package>
+	<package id="resin-util" name="com.caucho.resin.util">
+		<maven></maven>
+	</package>
+	
 	<version>3.2</version>
 	<release>1</release>
 	<homeUri>
