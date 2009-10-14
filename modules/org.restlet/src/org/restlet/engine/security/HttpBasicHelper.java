@@ -77,13 +77,16 @@ public class HttpBasicHelper extends AuthenticatorHelper {
     }
 
     @Override
-    public void parseResponse(ChallengeResponse cr, Request request) {
+    public void parseResponse(ChallengeResponse challenge, Request request,
+            Series<Parameter> httpHeaders) {
         try {
-            byte[] credentialsEncoded = Base64.decode(cr.getCredentials());
+            byte[] credentialsEncoded = Base64.decode(challenge
+                    .getCredentials());
 
             if (credentialsEncoded == null) {
                 getLogger().warning(
-                        "Cannot decode credentials: " + cr.getCredentials());
+                        "Cannot decode credentials: "
+                                + challenge.getCredentials());
             }
 
             String credentials = new String(credentialsEncoded, "US-ASCII");
@@ -96,8 +99,8 @@ public class HttpBasicHelper extends AuthenticatorHelper {
                                 + ((request != null) ? request.getClientInfo()
                                         .getAddress() : "?"));
             } else {
-                cr.setIdentifier(credentials.substring(0, separator));
-                cr.setSecret(credentials.substring(separator + 1));
+                challenge.setIdentifier(credentials.substring(0, separator));
+                challenge.setSecret(credentials.substring(separator + 1));
             }
         } catch (UnsupportedEncodingException e) {
             getLogger().log(Level.WARNING, "Unsupported encoding error", e);

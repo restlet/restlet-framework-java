@@ -65,8 +65,8 @@ public class HttpClientAdapter extends HttpAdapter {
      * @param response
      *            The response to update.
      */
-    public static void copyResponseTransportHeaders(
-            Iterable<Parameter> headers, Response response) {
+    public static void copyResponseTransportHeaders(Series<Parameter> headers,
+            Response response) {
         // Read info from headers
         for (Parameter header : headers) {
             if (header.getName()
@@ -89,14 +89,14 @@ public class HttpClientAdapter extends HttpAdapter {
                     HttpConstants.HEADER_WWW_AUTHENTICATE)) {
                 // [ifndef gwt]
                 ChallengeRequest request = org.restlet.engine.security.AuthenticatorUtils
-                        .parseRequest(header.getValue());
+                        .parseRequest(header.getValue(), headers);
                 response.getChallengeRequests().add(request);
                 // [enddef]
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_PROXY_AUTHENTICATE)) {
                 // [ifndef gwt]
                 ChallengeRequest request = org.restlet.engine.security.AuthenticatorUtils
-                        .parseRequest(header.getValue());
+                        .parseRequest(header.getValue(), headers);
                 response.getProxyChallengeRequests().add(request);
                 // [enddef]
             } else if (header.getName().equalsIgnoreCase(
@@ -408,8 +408,9 @@ public class HttpClientAdapter extends HttpAdapter {
                     .getChallengeResponse();
             if (challengeResponse != null) {
                 requestHeaders.add(HttpConstants.HEADER_AUTHORIZATION,
-                        org.restlet.engine.security.AuthenticatorUtils.formatResponse(
-                                challengeResponse, request, requestHeaders));
+                        org.restlet.engine.security.AuthenticatorUtils
+                                .formatResponse(challengeResponse, request,
+                                        requestHeaders));
             }
 
             ChallengeResponse proxyChallengeResponse = request
@@ -417,8 +418,8 @@ public class HttpClientAdapter extends HttpAdapter {
             if (proxyChallengeResponse != null) {
                 requestHeaders.add(HttpConstants.HEADER_PROXY_AUTHORIZATION,
                         org.restlet.engine.security.AuthenticatorUtils
-                                .formatResponse(proxyChallengeResponse, request,
-                                        requestHeaders));
+                                .formatResponse(proxyChallengeResponse,
+                                        request, requestHeaders));
             }
             // [enddef]
         }

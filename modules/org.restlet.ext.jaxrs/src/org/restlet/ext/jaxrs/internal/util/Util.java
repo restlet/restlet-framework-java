@@ -286,11 +286,14 @@ public class Util {
     public static void copyResponseHeaders(
             final MultivaluedMap<String, Object> jaxRsHeaders,
             Response restletResponse) {
-        final Collection<Parameter> headers = new ArrayList<Parameter>();
-        for (final Map.Entry<String, List<Object>> m : jaxRsHeaders.entrySet()) {
-            final String headerName = m.getKey();
-            for (final Object headerValue : m.getValue()) {
+        Series<Parameter> headers = new Form();
+
+        for (Map.Entry<String, List<Object>> m : jaxRsHeaders.entrySet()) {
+            String headerName = m.getKey();
+
+            for (Object headerValue : m.getValue()) {
                 String hValue;
+
                 if (headerValue == null) {
                     hValue = null;
                 } else if (headerValue instanceof Date) {
@@ -298,9 +301,11 @@ public class Util {
                 } else {
                     hValue = headerValue.toString();
                 }
+
                 headers.add(new Parameter(headerName, hValue));
             }
         }
+
         if (restletResponse.getEntity() == null) {
             restletResponse.setEntity(new EmptyRepresentation());
         }

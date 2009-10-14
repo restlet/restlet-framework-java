@@ -226,40 +226,44 @@ public class AuthenticatorUtils {
     }
 
     /**
-     * Parses an authenticate header into a challenge request.
+     * Parses an authenticate header into a challenge request. The header is
+     * {@link HttpConstants#HEADER_WWW_AUTHENTICATE}.
      * 
      * @param header
      *            The HTTP header value to parse.
+     * @param httpHeaders
+     *            The current response HTTP headers.
      * @return The parsed challenge request.
      */
-    public static ChallengeRequest parseRequest(String header) {
+    public static ChallengeRequest parseRequest(String header,
+            Series<Parameter> httpHeaders) {
         ChallengeRequest result = null;
 
         if (header != null) {
-            final int space = header.indexOf(' ');
+            int space = header.indexOf(' ');
 
             if (space != -1) {
-                final String scheme = header.substring(0, space);
+                String scheme = header.substring(0, space);
                 result = new ChallengeRequest(new ChallengeScheme("HTTP_"
                         + scheme, scheme), null);
 
                 // Parse the parameters to extract the realm
-                final String rest = header.substring(space + 1);
+                String rest = header.substring(space + 1);
                 parseParameters(rest, result.getParameters());
                 result.setRealm(result.getParameters().getFirstValue("realm"));
             } else {
-                final String scheme = header.substring(0);
+                String scheme = header.substring(0);
                 result = new ChallengeRequest(new ChallengeScheme("HTTP_"
                         + scheme, scheme), null);
             }
         }
 
         // Give a chance to the authentication helper to do further parsing
-        final AuthenticatorHelper helper = Engine.getInstance().findHelper(
+        AuthenticatorHelper helper = Engine.getInstance().findHelper(
                 result.getScheme(), true, false);
 
         if (helper != null) {
-            helper.parseRequest(result, header);
+            helper.parseRequest(result, header, httpHeaders);
         } else {
             Context.getCurrentLogger().warning(
                     "Challenge scheme " + result.getScheme()
@@ -270,33 +274,37 @@ public class AuthenticatorUtils {
     }
 
     /**
-     * Parses an authorization header into a challenge response.
+     * Parses an authorization header into a challenge response. The header is
+     * {@link HttpConstants#HEADER_AUTHORIZATION}.
      * 
+     * @param challenge
+     *            The challenge response to update.
      * @param request
-     *            The request.
-     * @param header
-     *            The header value to parse.
+     *            The parent request.
+     * @param httpHeaders
+     *            The current request HTTP headers.
      * @return The parsed challenge response.
      */
-    public static ChallengeResponse parseResponse(Request request, String header) {
+    public static ChallengeResponse parseResponse(Request request,
+            String header, Series<Parameter> httpHeaders) {
         ChallengeResponse result = null;
 
         if (header != null) {
-            final int space = header.indexOf(' ');
+            int space = header.indexOf(' ');
 
             if (space != -1) {
-                final String scheme = header.substring(0, space);
-                final String credentials = header.substring(space + 1);
+                String scheme = header.substring(0, space);
+                String credentials = header.substring(space + 1);
                 result = new ChallengeResponse(new ChallengeScheme("HTTP_"
                         + scheme, scheme), credentials);
 
                 // Give a chance to the authentication helper to do further
                 // parsing
-                final AuthenticatorHelper helper = Engine.getInstance()
-                        .findHelper(result.getScheme(), true, false);
+                AuthenticatorHelper helper = Engine.getInstance().findHelper(
+                        result.getScheme(), true, false);
 
                 if (helper != null) {
-                    helper.parseResponse(result, request);
+                    helper.parseResponse(result, request, httpHeaders);
                 } else {
                     Context.getCurrentLogger().warning(
                             "Challenge scheme " + result.getScheme()

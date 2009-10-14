@@ -162,12 +162,12 @@ public class HttpRequest extends Request {
 
         if (!this.securityAdded) {
             // Extract the header value
-            final String authorization = getHttpCall().getRequestHeaders()
-                    .getValues(HttpConstants.HEADER_AUTHORIZATION);
+            String authorization = getHttpCall().getRequestHeaders().getValues(
+                    HttpConstants.HEADER_AUTHORIZATION);
 
             // Set the challenge response
-            result = AuthenticatorUtils.parseResponse(this,
-                    authorization);
+            result = AuthenticatorUtils.parseResponse(this, authorization,
+                    getHttpCall().getRequestHeaders());
             setChallengeResponse(result);
             this.securityAdded = true;
         }
@@ -443,8 +443,8 @@ public class HttpRequest extends Request {
                     .getValues(HttpConstants.HEADER_PROXY_AUTHORIZATION);
 
             // Set the challenge response
-            result = AuthenticatorUtils.parseResponse(this,
-                    authorization);
+            result = AuthenticatorUtils.parseResponse(this, authorization,
+                    getHttpCall().getRequestHeaders());
             setProxyChallengeResponse(result);
             this.proxySecurityAdded = true;
         }

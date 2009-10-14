@@ -139,9 +139,4 @@ public class OAuthHelper extends AuthenticatorHelper {
         super.formatParameters(sb, parameters, request);
     }
 
-    @Override
-    public void parseResponse(ChallengeResponse cr, Request request) {
-        super.parseResponse(cr, request);
-    }
-
 }

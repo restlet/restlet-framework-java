@@ -318,9 +318,11 @@ public class HttpDigestHelper extends AuthenticatorHelper {
     }
 
     @Override
-    public void parseResponse(ChallengeResponse cr, Request request) {
-        Series<Parameter> parameters = cr.getParameters();
-        AuthenticatorUtils.parseParameters(cr.getCredentials(), parameters);
+    public void parseResponse(ChallengeResponse challenge, Request request,
+            Series<Parameter> httpHeaders) {
+        Series<Parameter> parameters = challenge.getParameters();
+        AuthenticatorUtils.parseParameters(challenge.getCredentials(),
+                parameters);
 
         // Extract the identifier and secret parameters and remove them
         String username = parameters.getFirstValue("username");
@@ -329,8 +331,8 @@ public class HttpDigestHelper extends AuthenticatorHelper {
         parameters.removeAll("response");
 
         if ((username != null) && (response != null)) {
-            cr.setIdentifier(username);
-            cr.setSecret(response);
+            challenge.setIdentifier(username);
+            challenge.setSecret(response);
         } else {
             // Log the blocking
             getLogger().warning(

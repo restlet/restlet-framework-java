@@ -95,11 +95,11 @@ public class AuthenticationTestCase extends RestletTestCase {
         final String authorization1 = "Basic c2NvdHQ6dGlnZXI=";
 
         assertEquals(authorization1, AuthenticatorUtils.formatResponse(
-                AuthenticatorUtils.parseResponse(null,
-                        authorization1), null, null));
-        assertEquals(authenticate1, AuthenticatorUtils.formatRequest(
-                AuthenticatorUtils.parseRequest(authenticate1),
+                AuthenticatorUtils.parseResponse(null, authorization1, null),
                 null, null));
+        assertEquals(authenticate1, AuthenticatorUtils.formatRequest(
+                AuthenticatorUtils.parseRequest(authenticate1, null), null,
+                null));
     }
 
     /**
@@ -109,14 +109,15 @@ public class AuthenticationTestCase extends RestletTestCase {
         final String authorization1 = "Digest username=\"admin\",response=\"a891ebedebb2046b83a9b7540f4e9554\",cnonce=\"MTE3NzEwMzIwMjkwMDoxNmMzODFiYzRjNWRjMmMyOTVkMWFhNDdkMTQ4OGFlMw==\",qop=auth,uri=\"/protected/asdass\",nonce=\"MTE3NzEwMzIwMjg0Mjo2NzFjODQyMjAyOWRlNWQ1YjFjNmEzYzJmOWRlZmE2Mw==\",nc=00000001";
         final String authenticate1 = "Digest realm=\"realm\", domain=\"/protected/ /alsoProtected/\", qop=\"auth\", algorithm=MD5, nonce=\"MTE3NzEwMzIwMjg0Mjo2NzFjODQyMjAyOWRlNWQ1YjFjNmEzYzJmOWRlZmE2Mw==\"";
 
-        final ChallengeResponse cres = AuthenticatorUtils
-                .parseResponse(null, authorization1);
+        final ChallengeResponse cres = AuthenticatorUtils.parseResponse(null,
+                authorization1, null);
         cres.setCredentials(null);
-        assertEquals(authorization1, AuthenticatorUtils
-                .formatResponse(cres, null, null));
+        assertEquals(authorization1, AuthenticatorUtils.formatResponse(cres,
+                null, null));
 
-        final ChallengeRequest creq = AuthenticatorUtils
-                .parseRequest(authenticate1);
-        assertEquals(authenticate1, AuthenticatorUtils.formatRequest(creq, null, null));
+        final ChallengeRequest creq = AuthenticatorUtils.parseRequest(
+                authenticate1, null);
+        assertEquals(authenticate1, AuthenticatorUtils.formatRequest(creq,
+                null, null));
     }
 }

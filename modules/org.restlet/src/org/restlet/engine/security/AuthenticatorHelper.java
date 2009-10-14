@@ -250,21 +250,33 @@ public abstract class AuthenticatorHelper extends Helper {
     }
 
     /**
-     * Parses an authenticate header into a challenge request.
+     * Parses an authenticate header into a challenge request. The header is
+     * {@link HttpConstants#HEADER_WWW_AUTHENTICATE}.
      * 
+     * @param challenge
+     *            The challenge request to update.
      * @param header
      *            The HTTP header value to parse.
+     * @param httpHeaders
+     *            The current response HTTP headers.
      */
-    public void parseRequest(ChallengeRequest cr, String header) {
+    public void parseRequest(ChallengeRequest challenge, String header,
+            Series<Parameter> httpHeaders) {
     }
 
     /**
-     * Parses an authorization header into a challenge response.
+     * Parses an authorization header into a challenge response. The header is
+     * {@link HttpConstants#HEADER_AUTHORIZATION}.
      * 
+     * @param challenge
+     *            The challenge response to update.
      * @param request
-     *            The request.
+     *            The parent request.
+     * @param httpHeaders
+     *            The current request HTTP headers.
      */
-    public void parseResponse(ChallengeResponse cr, Request request) {
+    public void parseResponse(ChallengeResponse challenge, Request request,
+            Series<Parameter> httpHeaders) {
     }
 
     /**
