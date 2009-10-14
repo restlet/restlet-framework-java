@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.util;
+package org.restlet.engine.security;
 
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
@@ -39,6 +39,7 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.restlet.data.Digest;
+import org.restlet.engine.util.Base64;
 
 /**
  * Security data manipulation utilities.
@@ -55,24 +56,6 @@ public class DigestUtils {
      * Pattern is immutable and thread-safe so reuse one static instance.
      */
     private static final char[] HEXDIGITS = "0123456789abcdef".toCharArray();
-
-    /**
-     * Generates a nonce as recommended in section 3.2.1 of RFC-2617, but
-     * without the ETag field. The format is: <code><pre>
-     * Base64.encodeBytes(currentTimeMS + &quot;:&quot;
-     *         + md5String(currentTimeMS + &quot;:&quot; + secretKey))
-     * </pre></code>
-     * 
-     * @param secretKey
-     *            a secret value known only to the creator of the nonce. It's
-     *            inserted into the nonce, and can be used later to validate the
-     *            nonce.
-     */
-    public static String makeNonce(String secretKey) {
-        final long currentTimeMS = System.currentTimeMillis();
-        return Base64.encode((currentTimeMS + ":" + toMd5(currentTimeMS + ":"
-                + secretKey)).getBytes(), true);
-    }
 
     /**
      * Converts a source string to its HMAC/SHA-1 value.
@@ -177,6 +160,25 @@ public class DigestUtils {
      */
     public static byte[] toHMac256(String source, String secretKey) {
         return toHMac256(source, secretKey.getBytes());
+    }
+
+    /**
+     * Return the HTTP DIGEST hashed secret. It concatenates the identifier,
+     * realm and secret, separated by a comma and digest them using MD5.
+     * 
+     * @param identifier
+     *            The user identifier to hash.
+     * @param secret
+     *            The user secret.
+     * @param realm
+     *            The authentication realm.
+     * @return A hash of the user name, realm, and password, specified as A1 in
+     *         section 3.2.2.2 of RFC2617, or null if the identifier has no
+     *         corresponding secret.
+     */
+    public static String toHttpDigest(String identifier, char[] secret,
+            String realm) {
+        return toMd5(identifier + ":" + realm + ":" + new String(secret));
     }
 
     /**

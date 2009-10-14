@@ -32,10 +32,18 @@ package org.restlet.data;
 
 import java.util.Arrays;
 
+import org.restlet.representation.Representation;
+import org.restlet.security.DigestAuthenticator;
+import org.restlet.security.DigestVerifier;
+
 /**
- * Describes a representation digest to ensure its integrity when sent over the
- * network.
+ * Describes a digest value and the digest algorithm used. Digests can have
+ * several use cases such as ensuring the integrity of representations exchanges
+ * between resources, or for authentication purpose.
  * 
+ * @see Representation#getDigest()
+ * @see DigestAuthenticator
+ * @see DigestVerifier
  * @author Jerome Louvel
  */
 public class Digest {
@@ -60,6 +68,13 @@ public class Digest {
 
     /** NIST approved digest algorithm from SHA-2 family. */
     public static final String ALGORITHM_SHA_512 = "SHA-512";
+
+    /**
+     * Digest algorithm for the HTTP DIGEST scheme. This is exactly the A1 value
+     * specified in RFC2617 which is a MD5 hash of the user name, realm and
+     * password, separated by a colon character.
+     */
+    public static final String ALGORITHM_HTTP_DIGEST = "HTTP-DIGEST-A1";
 
     /** The digest algorithm. */
     private final String algorithm;

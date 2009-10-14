@@ -63,7 +63,7 @@ public class ChallengeAuthenticator extends Authenticator {
     /** The expected challenge scheme. */
     private final ChallengeScheme scheme;
 
-    /** The secrets verifier (login/password combinations). */
+    /** The credentials verifier. */
     private volatile Verifier verifier;
 
     /**
@@ -205,8 +205,18 @@ public class ChallengeAuthenticator extends Authenticator {
      */
     public void challenge(Response response, boolean stale) {
         response.setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
-        response.getChallengeRequests().add(
-                new ChallengeRequest(getScheme(), getRealm()));
+        response.getChallengeRequests().add(createChallengeRequest(stale));
+    }
+
+    /**
+     * Creates a new challenge request.
+     * 
+     * @param stale
+     *            Indicates if the new challenge is due to a stale response.
+     * @return A new challenge request.
+     */
+    protected ChallengeRequest createChallengeRequest(boolean stale) {
+        return new ChallengeRequest(getScheme(), getRealm());
     }
 
     /**
@@ -242,9 +252,9 @@ public class ChallengeAuthenticator extends Authenticator {
     }
 
     /**
-     * Returns the secrets verifier.
+     * Returns the credentials verifier.
      * 
-     * @return The secrets verifier.
+     * @return The credentials verifier.
      */
     public Verifier getVerifier() {
         return verifier;
@@ -285,10 +295,10 @@ public class ChallengeAuthenticator extends Authenticator {
     }
 
     /**
-     * Sets the secrets verifier.
+     * Sets the credentials verifier.
      * 
      * @param verifier
-     *            The secrets verifier.
+     *            The credentials verifier.
      */
     public void setVerifier(Verifier verifier) {
         this.verifier = verifier;

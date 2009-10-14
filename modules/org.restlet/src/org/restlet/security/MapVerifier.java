@@ -34,16 +34,16 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
- * Verifier that stores its secrets in a map indexed by the identifier. Note
- * that this verifier isn't very secure by itself. It is recommended to use it
- * in conjunction with a {@link DigestVerifier}.
+ * Verifier that stores its local secrets in a map indexed by the identifier.
+ * Note that this verifier isn't very secure by itself. It is recommended to use
+ * it in conjunction with a {@link DigestVerifier}.
  * 
  * @author Jerome Louvel
  */
 public class MapVerifier extends LocalVerifier {
 
-    /** The map of secrets. */
-    private volatile ConcurrentMap<String, char[]> secrets;
+    /** The map of local secrets. */
+    private volatile ConcurrentMap<String, char[]> localSecrets;
 
     /**
      * Constructor.
@@ -55,36 +55,37 @@ public class MapVerifier extends LocalVerifier {
     /**
      * Constructor.
      * 
-     * @param secrets
-     *            The map of secrets.
+     * @param localSecrets
+     *            The map of local secrets.
      */
-    public MapVerifier(ConcurrentMap<String, char[]> secrets) {
-        this.secrets = secrets;
+    public MapVerifier(ConcurrentMap<String, char[]> localSecrets) {
+        this.localSecrets = localSecrets;
     }
 
     @Override
-    protected char[] getSecret(String identifier) {
+    public char[] getLocalSecret(String identifier) {
         return (identifier == null) ? null
-                : (getSecrets() != null) ? getSecrets().get(identifier) : null;
+                : (getLocalSecrets() != null) ? getLocalSecrets().get(
+                        identifier) : null;
     }
 
     /**
-     * Returns the map of secrets.
+     * Returns the map of local secrets.
      * 
-     * @return The map of secrets.
+     * @return The map of local secrets.
      */
-    public ConcurrentMap<String, char[]> getSecrets() {
-        return secrets;
+    public ConcurrentMap<String, char[]> getLocalSecrets() {
+        return localSecrets;
     }
 
     /**
-     * Sets the map of secrets.
+     * Sets the map of local secrets.
      * 
      * @param secrets
-     *            The map of secrets.
+     *            The map of local secrets.
      */
-    public void setSecrets(ConcurrentMap<String, char[]> secrets) {
-        this.secrets = secrets;
+    public void setLocalSecrets(ConcurrentMap<String, char[]> secrets) {
+        this.localSecrets = secrets;
     }
 
 }

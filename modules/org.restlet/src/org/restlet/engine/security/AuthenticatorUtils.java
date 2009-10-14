@@ -302,7 +302,7 @@ public class AuthenticatorUtils {
     }
 
     /**
-     * Parsed the parameters of a credientials string and updates the series of
+     * Parsed the parameters of a credentials string and updates the series of
      * parameters.
      * 
      * @param paramString

@@ -73,17 +73,18 @@ public class Part09a extends Application {
     public Restlet createInboundRoot() {
         // Create a simple password verifier
         MapVerifier verifier = new MapVerifier();
-        verifier.getSecrets().put("scott", "tiger".toCharArray());
+        verifier.getLocalSecrets().put("scott", "tiger".toCharArray());
 
         // Create a Guard
-        ChallengeAuthenticator guard = new ChallengeAuthenticator(getContext(),
-                ChallengeScheme.HTTP_BASIC, "Tutorial");
-        guard.setVerifier(verifier);
+        ChallengeAuthenticator authenticator = new ChallengeAuthenticator(
+                getContext(), ChallengeScheme.HTTP_BASIC, "Tutorial");
+        authenticator.setVerifier(verifier);
 
         // Create a Directory able to return a deep hierarchy of files
         Directory directory = new Directory(getContext(), ROOT_URI);
-        guard.setNext(directory);
-        return guard;
+        directory.setListingAllowed(true);
+        authenticator.setNext(directory);
+        return authenticator;
     }
 
 }

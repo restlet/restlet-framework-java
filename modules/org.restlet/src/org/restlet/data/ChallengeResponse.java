@@ -73,6 +73,16 @@ public final class ChallengeResponse {
     private volatile char[] secret;
 
     /**
+     * Constructor with no credentials.
+     * 
+     * @param scheme
+     *            The challenge scheme.
+     */
+    public ChallengeResponse(ChallengeScheme scheme) {
+        this(scheme, null);
+    }
+
+    /**
      * Constructor.
      * 
      * @param scheme
@@ -80,8 +90,7 @@ public final class ChallengeResponse {
      * @param credentials
      *            The raw credentials for custom challenge schemes.
      */
-    public ChallengeResponse(final ChallengeScheme scheme,
-            final String credentials) {
+    public ChallengeResponse(ChallengeScheme scheme, String credentials) {
         this.scheme = scheme;
         this.credentials = credentials;
         this.identifier = null;

@@ -44,6 +44,12 @@ Changes log
              static method. Suggested by Rickard Oberg.
            - Enroler and Verifier are now interfaces.
              Suggested by Rickard Oberg.
+           - Added new Digest#ALGORITHM_HTTP_DIGEST constant for A1 
+             field as specified in RFC 2617.
+           - Renamed HttpDigestAuthenticator into a more generic 
+             DigestAuthenticator.
+           - Made the HTTP DIGEST work again on the server-side, via 
+             DigestAuthenticator. Issue reported by Carsten Lohmann.
         - Renamed RestletSolrQueryRequest to SolrRestletQueryRequest.
         - Renamed RestletSolrParams to SolrRestletParams.
         - Renamed Application#getRole() into findRole().

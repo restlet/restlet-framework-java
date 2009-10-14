@@ -31,7 +31,7 @@
 package org.restlet.security;
 
 /**
- * Verifier that can locally retrieve the passwords. This verifier assumes that
+ * Verifier that can locally retrieve the secrets. This verifier assumes that
  * the secret associated to an identifier can be retrieved, which isn't always
  * possible or even desirable.
  * 
@@ -40,17 +40,17 @@ package org.restlet.security;
 public abstract class LocalVerifier extends SecretVerifier {
 
     /**
-     * Returns the secret associated to a given identifier.
+     * Returns the local secret associated to a given identifier.
      * 
      * @param identifier
      *            The identifier to lookup.
      * @return The secret associated to the identifier or null.
      */
-    protected abstract char[] getSecret(String identifier);
+    public abstract char[] getLocalSecret(String identifier);
 
     @Override
-    public boolean verify(String identifier, char[] inputSecret) {
-        return compare(inputSecret, getSecret(identifier));
+    public boolean verify(String identifier, char[] secret) {
+        return compare(secret, getLocalSecret(identifier));
     }
 
 }

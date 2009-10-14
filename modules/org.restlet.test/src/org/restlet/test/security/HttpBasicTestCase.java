@@ -38,7 +38,6 @@ import org.junit.Before;
 import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
-import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
@@ -48,15 +47,17 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
-import org.restlet.security.Guard;
+import org.restlet.security.ChallengeAuthenticator;
+import org.restlet.security.MapVerifier;
 import org.restlet.test.RestletTestCase;
 
 /**
  * Restlet unit tests for HTTP Basic authentication client/server. By default,
  * runs server on localhost on port {@value #DEFAULT_PORT}, which can be
- * overriden by setting system property {@value #RESTLET_TEST_PORT}
+ * overridden by setting system property {@value #RESTLET_TEST_PORT}
  * 
  * @author Stian Soiland
+ * @author Jerome Louvel
  */
 public class HttpBasicTestCase extends RestletTestCase {
 
@@ -67,28 +68,25 @@ public class HttpBasicTestCase extends RestletTestCase {
         }
     }
 
-    public class TestGuard extends Guard {
-        public TestGuard(Context context) {
-            super(context, ChallengeScheme.HTTP_BASIC, HttpBasicTestCase.class
-                    .getSimpleName());
-            getSecrets().put(SHORT_USERNAME, SHORT_PASSWORD.toCharArray());
-            getSecrets().put(LONG_USERNAME, LONG_PASSWORD.toCharArray());
+    public class TestVerifier extends MapVerifier {
+        public TestVerifier() {
+            getLocalSecrets().put(SHORT_USERNAME, SHORT_PASSWORD.toCharArray());
+            getLocalSecrets().put(LONG_USERNAME, LONG_PASSWORD.toCharArray());
         }
 
         @Override
-        public boolean checkSecret(Request request, String identifier,
-                char[] secret) {
+        public boolean verify(String identifier, char[] inputSecret) {
             // NOTE: Allocating Strings are not really secure treatment of
             // passwords
-            final String almostSecret = new String(secret);
+            final String almostSecret = new String(inputSecret);
             System.out.println("Checking " + identifier + " " + almostSecret);
             try {
-                return super.checkSecret(request, identifier, secret);
+                return super.verify(identifier, inputSecret);
             } finally {
                 // Clear secret from memory as soon as possible (This is better
                 // treatment, but of course useless due to our almostSecret
                 // copy)
-                Arrays.fill(secret, '\000');
+                Arrays.fill(inputSecret, '\000');
             }
         }
     }
@@ -113,35 +111,36 @@ public class HttpBasicTestCase extends RestletTestCase {
 
     private String uri;
 
-    private TestGuard guard;
+    private ChallengeAuthenticator authenticator;
+
+    private MapVerifier verifier;
 
     public void guardLong() {
-        assertTrue("Didn't authenticate short user/pwd", this.guard
-                .checkSecret(null, LONG_USERNAME, LONG_PASSWORD.toCharArray()));
+        assertTrue("Didn't authenticate short user/pwd", this.verifier.verify(
+                LONG_USERNAME, LONG_PASSWORD.toCharArray()));
     }
 
     public void guardLongWrong() {
         assertFalse("Authenticated long username with wrong password",
-                this.guard.checkSecret(null, LONG_USERNAME, SHORT_PASSWORD
+                this.verifier.verify(LONG_USERNAME, SHORT_PASSWORD
                         .toCharArray()));
     }
 
     // Test our guard.checkSecret() stand-alone
     public void guardShort() {
-        assertTrue("Didn't authenticate short user/pwd",
-                this.guard.checkSecret(null, SHORT_USERNAME, SHORT_PASSWORD
-                        .toCharArray()));
+        assertTrue("Didn't authenticate short user/pwd", this.verifier.verify(
+                SHORT_USERNAME, SHORT_PASSWORD.toCharArray()));
     }
 
     public void guardShortWrong() {
         assertFalse("Authenticated short username with wrong password",
-                this.guard.checkSecret(null, SHORT_USERNAME, LONG_PASSWORD
+                this.verifier.verify(SHORT_USERNAME, LONG_PASSWORD
                         .toCharArray()));
     }
 
     public void guardWrongUser() {
-        assertFalse("Authenticated wrong username", this.guard.checkSecret(
-                null, WRONG_USERNAME, SHORT_PASSWORD.toCharArray()));
+        assertFalse("Authenticated wrong username", this.verifier.verify(
+                WRONG_USERNAME, SHORT_PASSWORD.toCharArray()));
     }
 
     public void HTTPBasicLong() throws IOException {
@@ -235,10 +234,15 @@ public class HttpBasicTestCase extends RestletTestCase {
         final Application application = new Application() {
             @Override
             public Restlet createInboundRoot() {
-                HttpBasicTestCase.this.guard = new TestGuard(getContext());
-                HttpBasicTestCase.this.guard
+                HttpBasicTestCase.this.verifier = new TestVerifier();
+                HttpBasicTestCase.this.authenticator = new ChallengeAuthenticator(
+                        getContext(), ChallengeScheme.HTTP_BASIC,
+                        HttpBasicTestCase.class.getSimpleName());
+                HttpBasicTestCase.this.authenticator
+                        .setVerifier(HttpBasicTestCase.this.verifier);
+                HttpBasicTestCase.this.authenticator
                         .setNext(new AuthenticatedRestlet());
-                return HttpBasicTestCase.this.guard;
+                return HttpBasicTestCase.this.authenticator;
             }
         };
 

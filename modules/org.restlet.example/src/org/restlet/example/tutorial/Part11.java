@@ -80,7 +80,7 @@ public class Part11 extends Application {
 
         // Create a simple password verifier
         MapVerifier verifier = new MapVerifier();
-        verifier.getSecrets().put("scott", "tiger".toCharArray());
+        verifier.getLocalSecrets().put("scott", "tiger".toCharArray());
 
         // Create a Guard
         // Attach a guard to secure access to the directory

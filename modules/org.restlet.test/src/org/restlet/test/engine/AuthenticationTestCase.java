@@ -88,7 +88,7 @@ public class AuthenticationTestCase extends RestletTestCase {
     }
 
     /**
-     * Tests the cookies parsing.
+     * Tests the authentication parsing for HTTP BASIC.
      */
     public void testParsingBasic() {
         final String authenticate1 = "Basic realm=\"Restlet tutorial\"";
@@ -103,10 +103,10 @@ public class AuthenticationTestCase extends RestletTestCase {
     }
 
     /**
-     * Tests the cookies parsing with Digest authentication.
+     * Tests the authentication parsing for HTTP DIGEST.
      */
     public void testParsingDigest() {
-        final String authorization1 = "Digest cnonce=\"MTE3NzEwMzIwMjkwMDoxNmMzODFiYzRjNWRjMmMyOTVkMWFhNDdkMTQ4OGFlMw==\",qop=auth,uri=\"/protected/asdass\",username=\"admin\",nonce=\"MTE3NzEwMzIwMjg0Mjo2NzFjODQyMjAyOWRlNWQ1YjFjNmEzYzJmOWRlZmE2Mw==\",response=\"a891ebedebb2046b83a9b7540f4e9554\",nc=00000001";
+        final String authorization1 = "Digest username=\"admin\",response=\"a891ebedebb2046b83a9b7540f4e9554\",cnonce=\"MTE3NzEwMzIwMjkwMDoxNmMzODFiYzRjNWRjMmMyOTVkMWFhNDdkMTQ4OGFlMw==\",qop=auth,uri=\"/protected/asdass\",nonce=\"MTE3NzEwMzIwMjg0Mjo2NzFjODQyMjAyOWRlNWQ1YjFjNmEzYzJmOWRlZmE2Mw==\",nc=00000001";
         final String authenticate1 = "Digest realm=\"realm\", domain=\"/protected/ /alsoProtected/\", qop=\"auth\", algorithm=MD5, nonce=\"MTE3NzEwMzIwMjg0Mjo2NzFjODQyMjAyOWRlNWQ1YjFjNmEzYzJmOWRlZmE2Mw==\"";
 
         final ChallengeResponse cres = AuthenticatorUtils

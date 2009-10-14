@@ -88,7 +88,7 @@ public abstract class SecretVerifier implements Verifier {
     }
 
     /**
-     * Returns the user secret.
+     * Returns the secret provided by the user.
      * 
      * @param request
      *            The request to inspect.
@@ -120,9 +120,9 @@ public abstract class SecretVerifier implements Verifier {
             result = RESULT_MISSING;
         } else {
             String identifier = getIdentifier(request, response);
-            char[] inputSecret = getSecret(request, response);
+            char[] secret = getSecret(request, response);
 
-            if (verify(identifier, inputSecret)) {
+            if (verify(identifier, secret)) {
                 request.getClientInfo().setUser(new User(identifier));
             } else {
                 result = RESULT_INVALID;
@@ -137,10 +137,10 @@ public abstract class SecretVerifier implements Verifier {
      * 
      * @param identifier
      *            The user identifier to match.
-     * @param inputSecret
-     *            The input secret to verify.
+     * @param secret
+     *            The provided secret to verify.
      * @return true if the identifier/secret couple is valid.
      */
-    public abstract boolean verify(String identifier, char[] inputSecret);
+    public abstract boolean verify(String identifier, char[] secret);
 
 }

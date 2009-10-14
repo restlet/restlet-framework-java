@@ -62,6 +62,7 @@ import org.restlet.test.routing.RedirectTestCase;
 import org.restlet.test.routing.RouteListTestCase;
 import org.restlet.test.security.DigestVerifierTestCase;
 import org.restlet.test.security.HttpBasicTestCase;
+import org.restlet.test.security.HttpDigestTestCase;
 import org.restlet.test.security.SecurityTestCase;
 import org.restlet.test.util.TemplateTestCase;
 
@@ -120,6 +121,7 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(DigestTestCase.class);
         addTestSuite(HeaderTestCase.class);
         addTestSuite(HttpBasicTestCase.class);
+        addTestSuite(HttpDigestTestCase.class);
         addTestSuite(RangeTestCase.class);
         addTestSuite(RedirectTestCase.class);
         addTestSuite(SecurityTestCase.class);

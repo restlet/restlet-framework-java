@@ -47,7 +47,6 @@ import org.restlet.engine.http.HttpConstants;
 import org.restlet.engine.io.ByteUtils;
 import org.restlet.engine.util.Base64;
 import org.restlet.engine.util.DateUtils;
-import org.restlet.engine.util.DigestUtils;
 import org.restlet.engine.util.SystemUtils;
 import org.restlet.util.Series;
 

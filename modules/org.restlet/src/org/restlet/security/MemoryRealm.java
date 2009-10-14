@@ -74,7 +74,7 @@ public class MemoryRealm extends Realm {
     private class DefaultVerifier extends LocalVerifier {
 
         @Override
-        protected char[] getSecret(String identifier) {
+        public char[] getLocalSecret(String identifier) {
             char[] result = null;
             User user = findUser(identifier);
 

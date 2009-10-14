@@ -44,10 +44,10 @@ public class DigestVerifierTestCase extends RestletTestCase {
 
     public void test1() {
         MapVerifier mv = new MapVerifier();
-        mv.getSecrets().put("scott", "tiger".toCharArray());
+        mv.getLocalSecrets().put("scott", "tiger".toCharArray());
 
-        DigestVerifier sdv = new DigestVerifier(Digest.ALGORITHM_SHA_1, null,
-                mv);
+        DigestVerifier<MapVerifier> sdv = new DigestVerifier<MapVerifier>(
+                Digest.ALGORITHM_SHA_1, mv, null);
 
         assertTrue(sdv.verify("scott", "RuPXcqGIjq3/JsetpH/XUC15bgc="
                 .toCharArray()));
@@ -55,11 +55,11 @@ public class DigestVerifierTestCase extends RestletTestCase {
 
     public void test2() {
         MapVerifier mv = new MapVerifier();
-        mv.getSecrets().put("scott",
+        mv.getLocalSecrets().put("scott",
                 "RuPXcqGIjq3/JsetpH/XUC15bgc=".toCharArray());
 
-        DigestVerifier sdv = new DigestVerifier(Digest.ALGORITHM_SHA_1,
-                Digest.ALGORITHM_SHA_1, mv);
+        DigestVerifier<MapVerifier> sdv = new DigestVerifier<MapVerifier>(
+                Digest.ALGORITHM_SHA_1, mv, Digest.ALGORITHM_SHA_1);
 
         assertTrue(sdv.verify("scott", "RuPXcqGIjq3/JsetpH/XUC15bgc="
                 .toCharArray()));
@@ -72,11 +72,11 @@ public class DigestVerifierTestCase extends RestletTestCase {
 
     public void test3() {
         MapVerifier mv = new MapVerifier();
-        mv.getSecrets().put("scott",
+        mv.getLocalSecrets().put("scott",
                 "RuPXcqGIjq3/JsetpH/XUC15bgc=".toCharArray());
 
-        DigestVerifier sdv = new DigestVerifier(null, Digest.ALGORITHM_SHA_1,
-                mv);
+        DigestVerifier<MapVerifier> sdv = new DigestVerifier<MapVerifier>(null,
+                mv, Digest.ALGORITHM_SHA_1);
 
         assertTrue(sdv.verify("scott", "tiger".toCharArray()));
     }

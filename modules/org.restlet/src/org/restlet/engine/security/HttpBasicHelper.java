@@ -61,33 +61,33 @@ public class HttpBasicHelper extends AuthenticatorHelper {
             ChallengeResponse challenge, Request request,
             Series<Parameter> httpHeaders) {
         try {
-        	final CharArrayWriter credentials = new CharArrayWriter();
-        	credentials.write(challenge.getIdentifier());
-        	credentials.write(":");
-        	credentials.write(challenge.getSecret());
-            sb.append(Base64.encode(credentials.toCharArray(),"US-ASCII", false));
+            CharArrayWriter credentials = new CharArrayWriter();
+            credentials.write(challenge.getIdentifier());
+            credentials.write(":");
+            credentials.write(challenge.getSecret());
+            sb.append(Base64.encode(credentials.toCharArray(), "US-ASCII",
+                    false));
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(
                     "Unsupported encoding, unable to encode credentials");
         } catch (IOException e) {
-        	throw new RuntimeException(
-        			"Unexpected exception, unable to encode credentials",e);
-		}
+            throw new RuntimeException(
+                    "Unexpected exception, unable to encode credentials", e);
+        }
     }
 
     @Override
     public void parseResponse(ChallengeResponse cr, Request request) {
         try {
-            final byte[] credentialsEncoded = Base64
-                    .decode(cr.getCredentials());
+            byte[] credentialsEncoded = Base64.decode(cr.getCredentials());
+
             if (credentialsEncoded == null) {
                 getLogger().warning(
                         "Cannot decode credentials: " + cr.getCredentials());
             }
 
-            final String credentials = new String(credentialsEncoded,
-                    "US-ASCII");
-            final int separator = credentials.indexOf(':');
+            String credentials = new String(credentialsEncoded, "US-ASCII");
+            int separator = credentials.indexOf(':');
 
             if (separator == -1) {
                 // Log the blocking
