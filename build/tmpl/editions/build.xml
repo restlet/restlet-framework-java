@@ -51,6 +51,7 @@
 	<property name="images" location="../../images" />
 	<property name="pom-mods" location="modules" />
 	<property name="mod" location="modules" />
+	<property name="poms" location="poms" />
 
 	<property name="dist-classic" location="${dist-base}/classic/${dist-path}" />
 	<property name="dist-eclipse" location="${dist-base}/eclipse/${dist-path}" />
@@ -375,78 +376,6 @@
 		</sequential>
 	</macrodef>
 
-	<!-- Generate the module POM file -->
-	<macrodef name="pomModule">
-		<attribute name="name" />
-		<sequential>
-			<!-- sets the final pom version -->
-			<condition property="mod-pom-@{name}-version" value="${lib-@{name}-maven-version}">
-				<isset property="lib-@{name}-maven-version" />
-			</condition>
-			<condition property="mod-pom-@{name}-version" value="${lib-@{name}-version}.${lib-@{name}-release}">
-				<isset property="lib-@{name}-release" />
-			</condition>
-			<property name="mod-pom-@{name}-version" value="${lib-@{name}-version}" />
-
-			<condition property="mod-pom-@{name}-artifactId" value="${mod-@{name}-id}">
-				<isset property="mod-@{name}-id" />
-			</condition>
-			<property name="mod-pom-@{name}-artifactId" value="${mod-@{name}-id}" />
-
-			<!-- Generation of the pom.xml file for the edition-->
-			<copy file="${tmpl}/poms/${mod-@{name}-id}.pom" tofile="${temp}/poms/${mod-@{name}-id}.pom" overwrite="true" />
-			<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@parent-group-id@" value="${parent-maven-groupId}" />
-			<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@parent-artifact-id@" value="${parent-maven-artifactId}" />
-			<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@parent-version@" value="${parent-maven-version}" />
-			<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@lib-@{name}-version@" value="${mod-pom-@{name}-version}" />
-			<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@group-id@" value="${mod-maven-groupId}" />
-			<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@artifact-id@" value="${mod-pom-@{name}-artifactId}" />
-			<copy file="${temp}/poms/${mod-@{name}-id}.pom" tofile="${pom-mods}/${mod-@{name}-id}/pom.xml" overwrite="true" />
-
-			<!-- Generation of the pom.xml file for the source code-->
-			<copy file="${tmpl}/poms/${mod-@{name}-id}.pom" tofile="${mods}/${mod-@{name}-id}/pom.xml" overwrite="true" />
-			<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@parent-group-id@" value="${parent-maven-groupId}" />
-			<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@parent-artifact-id@" value="${parent-maven-artifactId}" />
-			<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@parent-version@" value="${parent-maven-version}" />
-			<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@lib-@{name}-version@" value="${mod-pom-@{name}-version}" />
-			<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@group-id@" value="${mod-maven-groupId}" />
-			<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@artifact-id@" value="${mod-pom-@{name}-artifactId}" />				
-		</sequential>
-	</macrodef>
-
-	<!-- Generate the library POM file -->
-	<macrodef name="pomLibrary">
-		<attribute name="name" />
-		<sequential>
-			<!-- sets the final pom version -->
-			<condition property="lib-pom-@{name}-version" value="${lib-@{name}-maven-version}">
-				<isset property="lib-@{name}-maven-version" />
-			</condition>
-			<condition property="lib-pom-@{name}-version" value="${lib-@{name}-version}.${lib-@{name}-release}">
-				<isset property="lib-@{name}-release" />
-			</condition>
-			<property name="lib-pom-@{name}-version" value="${lib-@{name}-version}" />
-
-			<!-- sets the final pom artifact id: "org.restlet.lib.<artifactId>" -->
-			<condition property="lib-pom-@{name}-artifactId" value="org.restlet.lib.${lib-@{name}-maven-artifactId}">
-				<isset property="lib-@{name}-maven-artifactId" />
-			</condition>
-			<property name="lib-pom-@{name}-artifactId" value="org.restlet.lib.${lib-@{name}-package}" />
-
-			<!-- sets the final pom group id: "org.restlet" -->
-			<property name="lib-@{name}-groupId" value="${lib-@{name}-package}" />
-			<property name="lib-pom-@{name}-groupId" value="org.restlet" />
-
-			<copy file="${tmpl}/poms/${lib-@{name}-package}.pom" tofile="${temp}/poms/${lib-@{name}-id}.pom" overwrite="true" />
-			<replace file="${temp}/poms/${lib-@{name}-id}.pom" token="@parent-group-id@" value="${parent-maven-groupId}" />
-			<replace file="${temp}/poms/${lib-@{name}-id}.pom" token="@parent-artifact-id@" value="${parent-maven-artifactId}" />
-			<replace file="${temp}/poms/${lib-@{name}-id}.pom" token="@parent-version@" value="${parent-maven-version}" />
-			<replace file="${temp}/poms/${lib-@{name}-id}.pom" token="@version@" value="${lib-pom-@{name}-version}" />
-			<replace file="${temp}/poms/${lib-@{name}-id}.pom" token="@group-id@" value="${lib-pom-@{name}-groupId}" />
-			<replace file="${temp}/poms/${lib-@{name}-id}.pom" token="@artifact-id@" value="${lib-pom-@{name}-artifactId}" />
-		</sequential>
-	</macrodef>
-
 	<!-- Check style of a module -->
 	<macrodef name="checkstyleModule">
 		<attribute name="name" />
@@ -506,66 +435,41 @@
 	<macrodef name="maven2Library">
 		<attribute name="name" />
 		<sequential>
-			<!-- sets the final pom version -->
-			<condition property="lib-pom-@{name}-version" value="${lib-@{name}-maven-version}">
-				<isset property="lib-@{name}-maven-version" />
-			</condition>
-			<condition property="lib-pom-@{name}-version" value="${lib-@{name}-version}.${lib-@{name}-release}">
-				<isset property="lib-@{name}-release" />
-			</condition>
-			<property name="lib-pom-@{name}-version" value="${lib-@{name}-version}" />
+			<propertyregex property="lib-dir-@{name}-maven-groupId" input="${lib-@{name}-maven-groupId}" regexp="\." replace="/" global="true" casesensitive="false" />
+			<property name="lib-dir-@{name}-maven" value="${dist-maven2}/${lib-dir-@{name}-maven-groupId}/org.restlet.lib.${lib-@{name}-maven-artifactId}/${lib-@{name}-maven-version}" />
+			<mkdir dir="${lib-dir-@{name}-maven}" />
 
-			<!-- sets the final pom artifact id: "org.restlet.lib.<artifactId>" -->
-			<condition property="lib-pom-@{name}-artifactId" value="org.restlet.lib.${lib-@{name}-maven-artifactId}">
-				<isset property="lib-@{name}-maven-artifactId" />
-			</condition>
-			<property name="lib-pom-@{name}-artifactId" value="org.restlet.lib.${lib-@{name}-package}" />
-
-			<!-- sets the final pom group id: "org.restlet.${edition}" -->
-			<property name="lib-@{name}-maven-groupId" value="${lib-@{name}-package}" />
-			<property name="lib-pom-@{name}-maven-groupId" value="org.restlet.${edition}" />
-
-			<propertyregex property="lib-dir-@{name}-maven-groupId" input="${lib-pom-@{name}-maven-groupId}" regexp="\." replace="/" global="true" casesensitive="false" defaultvalue="${lib-@{name}-maven-groupId}" />
-			<property name="lib-dir-@{name}-maven2" value="${dist-maven2}/${lib-dir-@{name}-maven-groupId}/${lib-pom-@{name}-artifactId}/${lib-pom-@{name}-version}" />
-			<mkdir dir="${lib-dir-@{name}-maven2}" />
-
-			<copy file="${dist-classic}/lib/${lib-@{name}-maven-groupId}_${lib-@{name}-version}/${lib-@{name}-package}.jar" tofile="${lib-dir-@{name}-maven2}/${lib-pom-@{name}-artifactId}-${lib-pom-@{name}-version}.jar" overwrite="true" />
-			<copy file="${temp}/poms/${lib-@{name}-id}.pom" tofile="${lib-dir-@{name}-maven2}/${lib-pom-@{name}-artifactId}-${lib-pom-@{name}-version}.pom" overwrite="true" />
-			<checksum file="${lib-dir-@{name}-maven2}/${lib-pom-@{name}-artifactId}-${lib-pom-@{name}-version}.jar" algorithm="MD5" fileext=".md5" />
-			<checksum file="${lib-dir-@{name}-maven2}/${lib-pom-@{name}-artifactId}-${lib-pom-@{name}-version}.jar" algorithm="SHA" fileext=".sha1" />
-			<checksum file="${lib-dir-@{name}-maven2}/${lib-pom-@{name}-artifactId}-${lib-pom-@{name}-version}.pom" algorithm="MD5" fileext=".md5" />
-			<checksum file="${lib-dir-@{name}-maven2}/${lib-pom-@{name}-artifactId}-${lib-pom-@{name}-version}.pom" algorithm="SHA" fileext=".sha1" />
+			<copy file="${dist-classic}/lib/${lib-@{name}-root}/${lib-@{name}-package}.jar" tofile="${lib-dir-@{name}-maven}/${lib-@{name}-maven-artifactId}-${lib-@{name}-maven-version}.jar" overwrite="true" />
+			<copy file="${poms}/${lib-@{name}-package}.pom" tofile="${lib-dir-@{name}-maven}/${lib-@{name}-maven-artifactId}-${lib-@{name}-maven-version}.pom" overwrite="true" />
+			<checksum file="${lib-dir-@{name}-maven}/${lib-@{name}-maven-artifactId}-${lib-@{name}-maven-version}.jar" algorithm="MD5" fileext=".md5" />
+			<checksum file="${lib-dir-@{name}-maven}/${lib-@{name}-maven-artifactId}-${lib-@{name}-maven-version}.jar" algorithm="SHA" fileext=".sha1" />
+			<checksum file="${lib-dir-@{name}-maven}/${lib-@{name}-maven-artifactId}-${lib-@{name}-maven-version}.pom" algorithm="MD5" fileext=".md5" />
+			<checksum file="${lib-dir-@{name}-maven}/${lib-@{name}-maven-artifactId}-${lib-@{name}-maven-version}.pom" algorithm="SHA" fileext=".sha1" />
 		</sequential>
 	</macrodef>
 
 	<macrodef name="maven2Module">
 		<attribute name="name" />
 		<sequential>
-			<property name="mod-@{name}-version-maven" value="${version-maven}" />
 			<propertyregex property="mod-dir-maven-groupId" input="${mod-maven-groupId}" regexp="\." replace="/" global="true" casesensitive="false" />
-			<propertyregex property="mod-dir-@{name}-maven-groupId" input="${mod-@{name}-maven-groupId}" regexp="\." replace="/" global="true" casesensitive="false" defaultvalue="${mod-dir-maven-groupId}" />
-			<condition property="mod-pom-@{name}-artifactId" value="${mod-@{name}-maven-artifactId}">
-				<isset property="mod-@{name}-maven-artifactId" />
-			</condition>
-			<property name="mod-pom-@{name}-artifactId" value="${mod-@{name}-id}" />
 
 			<!-- All files generated from the modules are stamped with the current full version number -->
-			<property name="mod-dir-@{name}-maven2" value="${dist-maven2}/${mod-dir-@{name}-maven-groupId}/${mod-pom-@{name}-artifactId}/${version-maven}" />
-			<mkdir dir="${mod-dir-@{name}-maven2}" />
+			<property name="mod-dir-@{name}-maven" value="${dist-maven2}/${mod-dir-maven-groupId}/${mod-@{name}-id}/${version-maven}" />
+			<mkdir dir="${mod-dir-@{name}-maven}" />
 
-			<copy file="${dist-classic}/lib/${mod-@{name}-id}.jar" tofile="${mod-dir-@{name}-maven2}/${mod-pom-@{name}-artifactId}-${mod-@{name}-version-maven}.jar" overwrite="true" />
+			<copy file="${dist-classic}/lib/${mod-@{name}-id}.jar" tofile="${mod-dir-@{name}-maven}/${mod-@{name}-id}-${version-maven}.jar" overwrite="true" />
 
-			<jar destfile="${mod-dir-@{name}-maven2}/${mod-pom-@{name}-artifactId}-${mod-@{name}-version-maven}-sources.jar" filesetmanifest="merge">
+			<jar destfile="${mod-dir-@{name}-maven}/${mod-@{name}-id}-${version-maven}-sources.jar" filesetmanifest="merge">
 				<fileset dir="${mod}/${mod-@{name}-id}/src" includes="**/*" />
 			</jar>
 
-			<copy file="${temp}/poms/${mod-@{name}-id}.pom" tofile="${mod-dir-@{name}-maven2}/${mod-pom-@{name}-artifactId}-${mod-@{name}-version-maven}.pom" overwrite="true" />
-			<checksum file="${mod-dir-@{name}-maven2}/${mod-pom-@{name}-artifactId}-${mod-@{name}-version-maven}.jar" algorithm="MD5" fileext=".md5" />
-			<checksum file="${mod-dir-@{name}-maven2}/${mod-pom-@{name}-artifactId}-${mod-@{name}-version-maven}.jar" algorithm="SHA" fileext=".sha1" />
-			<checksum file="${mod-dir-@{name}-maven2}/${mod-pom-@{name}-artifactId}-${mod-@{name}-version-maven}-sources.jar" algorithm="MD5" fileext=".md5" />
-			<checksum file="${mod-dir-@{name}-maven2}/${mod-pom-@{name}-artifactId}-${mod-@{name}-version-maven}-sources.jar" algorithm="SHA" fileext=".sha1" />
-			<checksum file="${mod-dir-@{name}-maven2}/${mod-pom-@{name}-artifactId}-${mod-@{name}-version-maven}.pom" algorithm="MD5" fileext=".md5" />
-			<checksum file="${mod-dir-@{name}-maven2}/${mod-pom-@{name}-artifactId}-${mod-@{name}-version-maven}.pom" algorithm="SHA" fileext=".sha1" />
+			<copy file="${poms}/${mod-@{name}-id}.pom" tofile="${mod-dir-@{name}-maven}/${mod-@{name}-id}-${version-maven}.pom" overwrite="true" />
+			<checksum file="${mod-dir-@{name}-maven}/${mod-@{name}-id}-${version-maven}.jar" algorithm="MD5" fileext=".md5" />
+			<checksum file="${mod-dir-@{name}-maven}/${mod-@{name}-id}-${version-maven}.jar" algorithm="SHA" fileext=".sha1" />
+			<checksum file="${mod-dir-@{name}-maven}/${mod-@{name}-id}-${version-maven}-sources.jar" algorithm="MD5" fileext=".md5" />
+			<checksum file="${mod-dir-@{name}-maven}/${mod-@{name}-id}-${version-maven}-sources.jar" algorithm="SHA" fileext=".sha1" />
+			<checksum file="${mod-dir-@{name}-maven}/${mod-@{name}-id}-${version-maven}.pom" algorithm="MD5" fileext=".md5" />
+			<checksum file="${mod-dir-@{name}-maven}/${mod-@{name}-id}-${version-maven}.pom" algorithm="SHA" fileext=".sha1" />
 		</sequential>
 	</macrodef>
 
@@ -603,31 +507,6 @@
 
 	<target name="generate-sources" description="Generate the sources.">
 		<!-- @generate-sources@ -->
-
-		<!-- Generate the Maven POM files -->
-		<mkdir dir="${temp}/poms" />
-
-		<for param="module" delimiter=" " list="${modules}">
-			<sequential>
-				<pomModule name="@{module}" />
-			</sequential>
-		</for>
-
-		<!-- Generate the parent POM -->
-		<fmpp sourcefile="${tmpl}/poms/${parent-maven-artifactId}.pom" outputfile="${temp}/poms/${parent-maven-artifactId}.pom" dataroot="${basedir}">
-			<data>
-				ant: antProperties()
-				lib: properties(libraries.properties)
-			</data>
-		</fmpp>
-		<!-- Copy it as the parent pom module -->
-		<copy file="${temp}/poms/${parent-maven-artifactId}.pom" tofile="${pom-mods}/pom.xml" overwrite="true" />
-
-		<for param="package" delimiter=" " list="${packages-maven}">
-			<sequential>
-				<pomLibrary name="@{package}" />
-			</sequential>
-		</for>
 	</target>
 
 	<target name="generate-templates" description="Generate template-based files.">
@@ -821,13 +700,6 @@
 		<!-- Complete the jar file with extra files -->
 		<!-- @stage-extras@ -->
 		<!-- @stage-modules@ -->
-
-		<!-- Copy the POM files -->
-		<!-- 
-      <copy todir="${dist-classic}/lib/poms">
-         <fileset dir="${temp}/poms" />
-      </copy>
- 		-->
 	</target>
 
 	<target name="stage-maven" depends="stage-classic, stage-maven-2" if="do-maven" description="Generate the maven distributions." />
@@ -854,7 +726,7 @@
 		<property name="mod-dir-restlet-parent-maven2" value="${dist-maven2}/${mod-restlet-parent-dir-maven-groupId}/${parent-maven-artifactId}/${version-maven}" />
 		<mkdir dir="${mod-dir-restlet-parent-maven2}" />
 
-		<copy file="${temp}/poms/${parent-maven-artifactId}.pom" tofile="${mod-dir-restlet-parent-maven2}/${parent-maven-artifactId}-${mod-restlet-parent-version-maven}.pom" overwrite="true" />
+		<copy file="${poms}/${parent-maven-artifactId}.pom" tofile="${mod-dir-restlet-parent-maven2}/${parent-maven-artifactId}-${mod-restlet-parent-version-maven}.pom" overwrite="true" />
 		<checksum file="${mod-dir-restlet-parent-maven2}/${parent-maven-artifactId}-${mod-restlet-parent-version-maven}.pom" algorithm="MD5" fileext=".md5" />
 		<checksum file="${mod-dir-restlet-parent-maven2}/${parent-maven-artifactId}-${mod-restlet-parent-version-maven}.pom" algorithm="SHA" fileext=".sha1" />
 	</target>

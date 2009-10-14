@@ -70,6 +70,7 @@
 	<macrodef name="generate-edition" description="Generate the source code for a target edition.">
 		<attribute name="edition" />
 		<sequential>
+			<!-- Generate the properties files -->
 			<fmpp sourceroot="${tmpl}/editions" outputroot="${temp}/@{edition}" dataroot="${basedir}" includes="*.properties">
 				<data expandproperties="true">
 					values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
@@ -81,6 +82,7 @@
     			</data>
 			</fmpp>
 
+			<!-- Generate the dependencies.txt file -->
 			<fmpp sourceroot="${tmpl}/text" outputroot="${temp}/@{edition}" dataroot="${basedir}" includes="dependencies.txt">
 				<data expandproperties="true">
 					values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
@@ -91,7 +93,20 @@
 					currentYear: ${current-year}
     			</data>
 			</fmpp>
-
+			<!-- Generate the POM files. -->
+			<echo message="Generate the POM files" />
+			<fmpp sourceroot="${tmpl}/editions" outputroot="${temp}/@{edition}/poms" dataroot="${basedir}" includes="*pom.tmpl">
+				<data expandproperties="true">
+					values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
+					project: get(values, "project")
+					editions: get(values, "editions")
+					editionKey: @{edition}
+    				edition: get(editions, @{edition})
+					currentYear: ${current-year}
+					ant: antProperties()
+    			</data>
+			</fmpp>
+			<move file="${temp}/@{edition}/poms/org.restlet.parent.pom.tmpl" tofile="${temp}/@{edition}/poms/org.restlet.parent.pom" />
 			<!-- Process the build.xml file. -->
 			<loadfile property="paths" srcFile="${tmpl}/editions/paths.tmpl" />
 			<loadfile property="generate-sources" srcFile="${tmpl}/editions/generate-sources.tmpl" />
@@ -155,6 +170,15 @@
 				ant: antProperties()
 			</data>
 		</fmpp>
+		<!-- Generation of the pom.xml file for the source code
+		<copy file="${tmpl}/poms/${mod-@{name}-id}.pom" tofile="${mods}/${mod-@{name}-id}/pom.xml" overwrite="true" />
+		<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@parent-group-id@" value="${parent-maven-groupId}" />
+		<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@parent-artifact-id@" value="${parent-maven-artifactId}" />
+		<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@parent-version@" value="${parent-maven-version}" />
+		<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@lib-@{name}-version@" value="${mod-pom-@{name}-version}" />
+		<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@group-id@" value="${mod-maven-groupId}" />
+		<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@artifact-id@" value="${mod-pom-@{name}-artifactId}" />				
+-->
 	</target>
 
 	<target name="prepare-stage-maven" if="do-prepare-stage-maven" description="Prepare the generation of the maven distributions.">
