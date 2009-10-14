@@ -36,7 +36,6 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.restlet.Request;
-import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Form;
@@ -119,11 +118,6 @@ public class HttpSharedKeyHelper extends AuthenticatorHelper {
      */
     public HttpSharedKeyHelper() {
         super(ChallengeScheme.HTTP_AZURE_SHAREDKEY, true, false);
-    }
-
-    @Override
-    public String format(ChallengeRequest request) {
-        return null;
     }
 
     @Override

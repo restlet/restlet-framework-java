@@ -166,7 +166,7 @@ public class HttpRequest extends Request {
                     .getValues(HttpConstants.HEADER_AUTHORIZATION);
 
             // Set the challenge response
-            result = AuthenticatorUtils.parseAuthorizationHeader(this,
+            result = AuthenticatorUtils.parseResponse(this,
                     authorization);
             setChallengeResponse(result);
             this.securityAdded = true;
@@ -443,7 +443,7 @@ public class HttpRequest extends Request {
                     .getValues(HttpConstants.HEADER_PROXY_AUTHORIZATION);
 
             // Set the challenge response
-            result = AuthenticatorUtils.parseAuthorizationHeader(this,
+            result = AuthenticatorUtils.parseResponse(this,
                     authorization);
             setProxyChallengeResponse(result);
             this.proxySecurityAdded = true;

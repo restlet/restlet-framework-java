@@ -226,7 +226,8 @@ public class HttpServerAdapter extends HttpAdapter {
             for (final ChallengeRequest challengeRequest : response
                     .getChallengeRequests()) {
                 responseHeaders.add(HttpConstants.HEADER_WWW_AUTHENTICATE,
-                        AuthenticatorUtils.format(challengeRequest));
+                        AuthenticatorUtils.formatRequest(challengeRequest, response,
+                                responseHeaders));
             }
         }
 
@@ -234,7 +235,8 @@ public class HttpServerAdapter extends HttpAdapter {
             for (final ChallengeRequest challengeRequest : response
                     .getProxyChallengeRequests()) {
                 responseHeaders.add(HttpConstants.HEADER_PROXY_AUTHENTICATE,
-                        AuthenticatorUtils.format(challengeRequest));
+                        AuthenticatorUtils.formatRequest(challengeRequest, response,
+                                responseHeaders));
             }
         }
 

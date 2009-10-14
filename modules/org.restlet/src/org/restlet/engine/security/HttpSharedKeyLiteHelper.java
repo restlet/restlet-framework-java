@@ -27,13 +27,12 @@
  * 
  * Restlet is a registered trademark of Noelios Technologies.
  */
- 
+
 package org.restlet.engine.security;
 
 import java.util.Date;
 
 import org.restlet.Request;
-import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Form;
@@ -79,11 +78,6 @@ public class HttpSharedKeyLiteHelper extends AuthenticatorHelper {
      */
     public HttpSharedKeyLiteHelper() {
         super(ChallengeScheme.HTTP_AZURE_SHAREDKEY_LITE, true, false);
-    }
-
-    @Override
-    public String format(ChallengeRequest request) {
-        return null;
     }
 
     @Override

@@ -41,6 +41,7 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Parameter;
 import org.restlet.data.Status;
 import org.restlet.engine.Helper;
+import org.restlet.engine.http.HttpConstants;
 import org.restlet.security.Guard;
 import org.restlet.util.Series;
 
@@ -131,26 +132,33 @@ public abstract class AuthenticatorHelper extends Helper {
     }
 
     /**
-     * Formats a challenge request as a HTTP header value.
+     * Formats a challenge request as a HTTP header value. The header is
+     * {@link HttpConstants#HEADER_WWW_AUTHENTICATE}.
      * 
-     * @param request
+     * @param challenge
      *            The challenge request to format.
-     * @return The authenticate header value.
+     * @param response
+     *            The parent response.
+     * @param httpHeaders
+     *            The current response HTTP headers.
+     * @return The {@link HttpConstants#HEADER_WWW_AUTHENTICATE} header value.
      */
-    public String format(ChallengeRequest request) {
-        final StringBuilder sb = new StringBuilder();
-        sb.append(request.getScheme().getTechnicalName());
+    public String formatRequest(ChallengeRequest challenge, Response response,
+            Series<Parameter> httpHeaders) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(challenge.getScheme().getTechnicalName());
 
-        if (request.getRealm() != null) {
-            sb.append(" realm=\"").append(request.getRealm()).append('"');
+        if (challenge.getRealm() != null) {
+            sb.append(" realm=\"").append(challenge.getRealm()).append('"');
         }
 
-        formatParameters(sb, request.getParameters(), request);
+        formatParameters(sb, challenge.getParameters(), challenge);
         return sb.toString();
     }
 
     /**
-     * Formats a challenge response as raw credentials.
+     * Formats a challenge response as a HTTP header value. The header is
+     * {@link HttpConstants#HEADER_AUTHORIZATION}.
      * 
      * @param challenge
      *            The challenge response to format.
@@ -158,11 +166,11 @@ public abstract class AuthenticatorHelper extends Helper {
      *            The parent request.
      * @param httpHeaders
      *            The current request HTTP headers.
-     * @return The authorization header value.
+     * @return The {@link HttpConstants#HEADER_AUTHORIZATION} header value.
      */
-    public String format(ChallengeResponse challenge, Request request,
+    public String formatResponse(ChallengeResponse challenge, Request request,
             Series<Parameter> httpHeaders) {
-        final StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         sb.append(challenge.getScheme().getTechnicalName()).append(' ');
 
         if (challenge.getCredentials() != null) {
@@ -186,7 +194,7 @@ public abstract class AuthenticatorHelper extends Helper {
      * @param httpHeaders
      *            The current request HTTP headers.
      */
-    public abstract void formatCredentials(StringBuilder sb,
+    protected abstract void formatCredentials(StringBuilder sb,
             ChallengeResponse challenge, Request request,
             Series<Parameter> httpHeaders);
 
@@ -201,7 +209,7 @@ public abstract class AuthenticatorHelper extends Helper {
      * @param request
      *            The challenger request.
      */
-    public void formatParameters(StringBuilder sb,
+    protected void formatParameters(StringBuilder sb,
             Series<Parameter> parameters, ChallengeRequest request) {
     }
 

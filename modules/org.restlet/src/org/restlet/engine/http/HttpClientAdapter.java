@@ -89,14 +89,14 @@ public class HttpClientAdapter extends HttpAdapter {
                     HttpConstants.HEADER_WWW_AUTHENTICATE)) {
                 // [ifndef gwt]
                 ChallengeRequest request = org.restlet.engine.security.AuthenticatorUtils
-                        .parseAuthenticateHeader(header.getValue());
+                        .parseRequest(header.getValue());
                 response.getChallengeRequests().add(request);
                 // [enddef]
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_PROXY_AUTHENTICATE)) {
                 // [ifndef gwt]
                 ChallengeRequest request = org.restlet.engine.security.AuthenticatorUtils
-                        .parseAuthenticateHeader(header.getValue());
+                        .parseRequest(header.getValue());
                 response.getProxyChallengeRequests().add(request);
                 // [enddef]
             } else if (header.getName().equalsIgnoreCase(
@@ -408,7 +408,7 @@ public class HttpClientAdapter extends HttpAdapter {
                     .getChallengeResponse();
             if (challengeResponse != null) {
                 requestHeaders.add(HttpConstants.HEADER_AUTHORIZATION,
-                        org.restlet.engine.security.AuthenticatorUtils.format(
+                        org.restlet.engine.security.AuthenticatorUtils.formatResponse(
                                 challengeResponse, request, requestHeaders));
             }
 
@@ -417,7 +417,7 @@ public class HttpClientAdapter extends HttpAdapter {
             if (proxyChallengeResponse != null) {
                 requestHeaders.add(HttpConstants.HEADER_PROXY_AUTHORIZATION,
                         org.restlet.engine.security.AuthenticatorUtils
-                                .format(proxyChallengeResponse, request,
+                                .formatResponse(proxyChallengeResponse, request,
                                         requestHeaders));
             }
             // [enddef]

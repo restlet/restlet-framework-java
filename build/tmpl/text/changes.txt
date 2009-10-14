@@ -50,6 +50,8 @@ Changes log
              DigestAuthenticator.
            - Made the HTTP DIGEST work again on the server-side, via 
              DigestAuthenticator. Issue reported by Carsten Lohmann.
+           - Refactored engine's AuthenticatorHelper to facilitate the
+             support of alternative server-side schemes such as S3.
         - Renamed RestletSolrQueryRequest to SolrRestletQueryRequest.
         - Renamed RestletSolrParams to SolrRestletParams.
         - Renamed Application#getRole() into findRole().

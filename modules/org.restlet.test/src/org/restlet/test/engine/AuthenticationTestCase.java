@@ -94,12 +94,12 @@ public class AuthenticationTestCase extends RestletTestCase {
         final String authenticate1 = "Basic realm=\"Restlet tutorial\"";
         final String authorization1 = "Basic c2NvdHQ6dGlnZXI=";
 
-        assertEquals(authorization1, AuthenticatorUtils.format(
-                AuthenticatorUtils.parseAuthorizationHeader(null,
+        assertEquals(authorization1, AuthenticatorUtils.formatResponse(
+                AuthenticatorUtils.parseResponse(null,
                         authorization1), null, null));
-        assertEquals(authenticate1, AuthenticatorUtils
-                .format(AuthenticatorUtils
-                        .parseAuthenticateHeader(authenticate1)));
+        assertEquals(authenticate1, AuthenticatorUtils.formatRequest(
+                AuthenticatorUtils.parseRequest(authenticate1),
+                null, null));
     }
 
     /**
@@ -110,13 +110,13 @@ public class AuthenticationTestCase extends RestletTestCase {
         final String authenticate1 = "Digest realm=\"realm\", domain=\"/protected/ /alsoProtected/\", qop=\"auth\", algorithm=MD5, nonce=\"MTE3NzEwMzIwMjg0Mjo2NzFjODQyMjAyOWRlNWQ1YjFjNmEzYzJmOWRlZmE2Mw==\"";
 
         final ChallengeResponse cres = AuthenticatorUtils
-                .parseAuthorizationHeader(null, authorization1);
+                .parseResponse(null, authorization1);
         cres.setCredentials(null);
         assertEquals(authorization1, AuthenticatorUtils
-                .format(cres, null, null));
+                .formatResponse(cres, null, null));
 
         final ChallengeRequest creq = AuthenticatorUtils
-                .parseAuthenticateHeader(authenticate1);
-        assertEquals(authenticate1, AuthenticatorUtils.format(creq));
+                .parseRequest(authenticate1);
+        assertEquals(authenticate1, AuthenticatorUtils.formatRequest(creq, null, null));
     }
 }

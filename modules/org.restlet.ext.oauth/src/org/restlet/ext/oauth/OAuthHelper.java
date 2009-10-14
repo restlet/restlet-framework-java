@@ -50,7 +50,6 @@ import org.restlet.data.Parameter;
 import org.restlet.engine.security.AuthenticatorHelper;
 import org.restlet.util.Series;
 
-
 /**
  * Helper routines for OAuth.
  * 
@@ -127,15 +126,16 @@ public class OAuthHelper extends AuthenticatorHelper {
     }
 
     @Override
-    public void formatParameters(StringBuilder sb,
+    protected void formatParameters(StringBuilder sb,
             Series<Parameter> parameters, ChallengeRequest request) {
-        for (final Parameter p : parameters) {
+        for (Parameter p : parameters) {
             sb.append(",");
             sb.append(p.getName());
             sb.append("=\"");
             sb.append(p.getValue());
             sb.append("\"");
         }
+
         super.formatParameters(sb, parameters, request);
     }
 

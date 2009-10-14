@@ -41,6 +41,7 @@ import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Parameter;
 import org.restlet.engine.Engine;
+import org.restlet.engine.http.HttpConstants;
 import org.restlet.security.Guard;
 import org.restlet.util.Series;
 
@@ -162,25 +163,31 @@ public class AuthenticatorUtils {
     }
 
     /**
-     * Formats a challenge request as a HTTP header value.
+     * Formats a challenge request as a HTTP header value. The header is
+     * {@link HttpConstants#HEADER_WWW_AUTHENTICATE}.
      * 
-     * @param request
+     * @param challenge
      *            The challenge request to format.
-     * @return The authenticate header value.
+     * @param response
+     *            The parent response.
+     * @param httpHeaders
+     *            The current response HTTP headers.
+     * @return The {@link HttpConstants#HEADER_WWW_AUTHENTICATE} header value.
      */
-    public static String format(ChallengeRequest request) {
+    public static String formatRequest(ChallengeRequest challenge,
+            Response response, Series<Parameter> httpHeaders) {
         String result = null;
 
-        if (request != null) {
+        if (challenge != null) {
             final AuthenticatorHelper helper = Engine.getInstance().findHelper(
-                    request.getScheme(), false, true);
+                    challenge.getScheme(), false, true);
 
             if (helper != null) {
-                result = helper.format(request);
+                result = helper.formatRequest(challenge, response, httpHeaders);
             } else {
                 result = "?";
                 Context.getCurrentLogger().warning(
-                        "Challenge scheme " + request.getScheme()
+                        "Challenge scheme " + challenge.getScheme()
                                 + " not supported by the Restlet engine.");
             }
         }
@@ -189,7 +196,8 @@ public class AuthenticatorUtils {
     }
 
     /**
-     * Formats a challenge response as raw credentials.
+     * Formats a challenge response as a HTTP header value. The header is
+     * {@link HttpConstants#HEADER_AUTHORIZATION}.
      * 
      * @param challenge
      *            The challenge response to format.
@@ -197,16 +205,16 @@ public class AuthenticatorUtils {
      *            The parent request.
      * @param httpHeaders
      *            The current request HTTP headers.
-     * @return The authorization header value.
+     * @return The {@link HttpConstants#HEADER_AUTHORIZATION} header value.
      */
-    public static String format(ChallengeResponse challenge, Request request,
-            Series<Parameter> httpHeaders) {
+    public static String formatResponse(ChallengeResponse challenge,
+            Request request, Series<Parameter> httpHeaders) {
         String result = null;
         final AuthenticatorHelper helper = Engine.getInstance().findHelper(
                 challenge.getScheme(), true, false);
 
         if (helper != null) {
-            result = helper.format(challenge, request, httpHeaders);
+            result = helper.formatResponse(challenge, request, httpHeaders);
         } else {
             result = "?";
             Context.getCurrentLogger().warning(
@@ -224,7 +232,7 @@ public class AuthenticatorUtils {
      *            The HTTP header value to parse.
      * @return The parsed challenge request.
      */
-    public static ChallengeRequest parseAuthenticateHeader(String header) {
+    public static ChallengeRequest parseRequest(String header) {
         ChallengeRequest result = null;
 
         if (header != null) {
@@ -270,8 +278,7 @@ public class AuthenticatorUtils {
      *            The header value to parse.
      * @return The parsed challenge response.
      */
-    public static ChallengeResponse parseAuthorizationHeader(Request request,
-            String header) {
+    public static ChallengeResponse parseResponse(Request request, String header) {
         ChallengeResponse result = null;
 
         if (header != null) {
