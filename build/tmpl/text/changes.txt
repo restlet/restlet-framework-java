@@ -97,7 +97,9 @@ Changes log
           a sans-serif font.
         - Add support for annotations values separated by a ":" and "|"
           characters. Suggested by Bob Resendes.
- 
+    - Misc
+        - Added velocity template in the org.restlet.example project.
+          Reported by Ben Vesco. 
 - 2.0 Milestone 5 (2009-09-28)
     - API changes
         - Moved Message, Request and Response classes from the
