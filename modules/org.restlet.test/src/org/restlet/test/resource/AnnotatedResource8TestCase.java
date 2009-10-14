@@ -34,6 +34,7 @@ import java.io.IOException;
 
 import junit.framework.TestCase;
 
+import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
@@ -79,6 +80,20 @@ public class AnnotatedResource8TestCase extends TestCase {
         assertNotNull(result);
         assertEquals("root=true3", result.getText());
         assertEquals(MediaType.APPLICATION_JSON, result.getMediaType());
+
+        Form inputForm = new Form();
+        inputForm.add("root", "true");
+        result = clientResource.post(inputForm, MediaType.APPLICATION_JSON);
+        assertNotNull(result);
+        assertEquals("root=true3", result.getText());
+        assertEquals(MediaType.APPLICATION_JSON, result.getMediaType());
+
+        input = new StringRepresentation("[root]", MediaType.APPLICATION_JSON);
+        result = clientResource.post(input, MediaType.APPLICATION_JSON);
+        assertNotNull(result);
+        assertEquals("[root]2", result.getText());
+        assertEquals(MediaType.APPLICATION_JSON, result.getMediaType());
+
     }
 
 }

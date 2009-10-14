@@ -11,12 +11,12 @@ public class MyResource8 extends ServerResource {
     }
 
     @Post("xml|json:json|html")
-    public String storeXml(String entity) {
+    public String store1(String entity) {
         return entity + "2";
     }
 
     @Post("form|json:json|html")
-    public String store(String entity) {
+    public String store2(String entity) {
         return entity + "3";
     }
 
