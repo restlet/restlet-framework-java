@@ -30,6 +30,8 @@
 
 package org.restlet.ext.netty.internal;
 
+import java.net.InetSocketAddress;
+
 import javax.net.ssl.SSLEngine;
 
 import org.jboss.netty.buffer.ChannelBuffer;
@@ -102,6 +104,9 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler {
 	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e)
 			throws Exception {
 
+		final InetSocketAddress clientAddress = (InetSocketAddress) e
+				.getRemoteAddress();
+
 		boolean close = false;
 		boolean isLastChunk = false;
 		ChannelBuffer content = null;
@@ -140,7 +145,7 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler {
 					.getEngine();
 
 			NettyServerCall httpCall = new NettyServerCall(this.helper
-					.getHelped(), content, request,
+					.getHelped(), content, request, clientAddress, 
 					(this.helper instanceof HttpsServerHelper), sslEngine);
 			this.helper.handle(httpCall);
 			response = httpCall.getResponse();

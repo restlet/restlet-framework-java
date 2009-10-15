@@ -35,6 +35,7 @@ import static org.jboss.netty.buffer.ChannelBuffers.dynamicBuffer;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
@@ -81,6 +82,8 @@ public class NettyServerCall extends HttpServerCall {
 
 	private final SSLEngine sslEngine;
 
+	private final InetSocketAddress remoteAddress;
+
 	/**
 	 * Constructor.
 	 * 
@@ -90,19 +93,33 @@ public class NettyServerCall extends HttpServerCall {
 	 *            The content buffer.
 	 * @param request
 	 *            The Netty request.
+	 * @param clientAddress
+	 *            client information.
 	 * @param isConfidential
 	 *            Indicates if the call is confidential or not.
 	 * @param sslEngine
 	 *            The SSL engine.
 	 */
 	public NettyServerCall(Server server, ChannelBuffer buffer,
-			HttpRequest request, boolean isConfidential, SSLEngine sslEngine) {
+			HttpRequest request, InetSocketAddress clientAddress,
+			boolean isConfidential, SSLEngine sslEngine) {
 		super(server);
 		setConfidential(isConfidential);
 		this.content = buffer;
 		this.request = request;
 		this.sslEngine = sslEngine;
+		this.remoteAddress = clientAddress;
 
+	}
+
+	@Override
+	public String getClientAddress() {
+		return this.remoteAddress.getAddress().getHostAddress();
+	}
+
+	@Override
+	public int getClientPort() {
+		return this.remoteAddress.getPort();
 	}
 
 	@Override
