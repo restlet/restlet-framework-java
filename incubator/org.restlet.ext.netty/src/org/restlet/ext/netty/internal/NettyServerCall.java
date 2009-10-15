@@ -51,8 +51,11 @@ import javax.net.ssl.SSLSession;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBufferInputStream;
 import org.jboss.netty.buffer.ChannelBufferOutputStream;
+import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
+import org.jboss.netty.handler.codec.http.HttpResponseStatus;
+import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Parameter;
@@ -68,196 +71,200 @@ import org.restlet.util.Series;
  */
 public class NettyServerCall extends HttpServerCall {
 
-    private final HttpRequest request;
+	private final HttpRequest request;
 
-    private final HttpResponse response;
+	private HttpResponse response;
 
-    private final ChannelBuffer content;
+	private final ChannelBuffer content;
 
-    private volatile boolean requestHeadersAdded;
+	private volatile boolean requestHeadersAdded;
 
-    private final SSLEngine sslEngine;
+	private final SSLEngine sslEngine;
 
-    /**
-     * Constructor.
-     * 
-     * @param server
-     *            The helped server.
-     * @param buffer
-     *            The content buffer.
-     * @param request
-     *            The Netty request.
-     * @param response
-     *            The Netty response.
-     * @param isConfidential
-     *            Indicates if the call is confidential or not.
-     * @param sslEngine
-     *            The SSL engine.
-     */
-    public NettyServerCall(Server server, ChannelBuffer buffer,
-            HttpRequest request, HttpResponse response, boolean isConfidential,
-            SSLEngine sslEngine) {
-        super(server);
-        setConfidential(isConfidential);
-        this.content = buffer;
-        this.request = request;
-        this.response = response;
-        this.sslEngine = sslEngine;
+	/**
+	 * Constructor.
+	 * 
+	 * @param server
+	 *            The helped server.
+	 * @param buffer
+	 *            The content buffer.
+	 * @param request
+	 *            The Netty request.
+	 * @param isConfidential
+	 *            Indicates if the call is confidential or not.
+	 * @param sslEngine
+	 *            The SSL engine.
+	 */
+	public NettyServerCall(Server server, ChannelBuffer buffer,
+			HttpRequest request, boolean isConfidential, SSLEngine sslEngine) {
+		super(server);
+		setConfidential(isConfidential);
+		this.content = buffer;
+		this.request = request;
+		this.sslEngine = sslEngine;
 
-    }
+	}
 
-    @Override
-    public String getMethod() {
-        return request.getMethod().getName();
-    }
+	@Override
+	public String getMethod() {
+		return request.getMethod().getName();
+	}
 
-    @Override
-    public ReadableByteChannel getRequestEntityChannel(long size) {
-        if (isRequestChunked()) {
-            return null;
-        } else {
-            return new ReadableEntityChannel(content.toByteBuffer(), null, size);
-        }
-    }
+	@Override
+	public ReadableByteChannel getRequestEntityChannel(long size) {
+		if (isRequestChunked()) {
+			return null;
+		} else {
+			return new ReadableEntityChannel(content.toByteBuffer(), null, size);
+		}
+	}
 
-    @Override
-    public InputStream getRequestEntityStream(long size) {
-        if (isRequestChunked()) {
-            InputStream entity = new ChannelBufferInputStream(content);
-            return entity;
-        } else {
-            return null;
-        }
-    }
+	@Override
+	public InputStream getRequestEntityStream(long size) {
+		if (isRequestChunked()) {
+			InputStream entity = new ChannelBufferInputStream(content);
+			return entity;
+		} else {
+			return null;
+		}
+	}
 
-    @Override
-    public ReadableByteChannel getRequestHeadChannel() {
-        return null;
-    }
+	@Override
+	public ReadableByteChannel getRequestHeadChannel() {
+		return null;
+	}
 
-    @Override
-    public Series<Parameter> getRequestHeaders() {
-        final Series<Parameter> result = super.getRequestHeaders();
+	@Override
+	public Series<Parameter> getRequestHeaders() {
+		final Series<Parameter> result = super.getRequestHeaders();
 
-        if (!this.requestHeadersAdded) {
-            final Set<String> names = this.request.getHeaderNames();
+		if (!this.requestHeadersAdded) {
+			final Set<String> names = this.request.getHeaderNames();
 
-            for (String name : names) {
-                result.add(new Parameter(name, this.request.getHeader(name)));
-            }
-            this.requestHeadersAdded = true;
-        }
+			for (String name : names) {
+				result.add(new Parameter(name, this.request.getHeader(name)));
+			}
+			this.requestHeadersAdded = true;
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    @Override
-    public InputStream getRequestHeadStream() {
-        return null;
-    }
+	@Override
+	public InputStream getRequestHeadStream() {
+		return null;
+	}
 
-    @Override
-    public String getRequestUri() {
-        return request.getUri();
-    }
+	@Override
+	public String getRequestUri() {
+		return request.getUri();
+	}
 
-    @Override
-    public WritableByteChannel getResponseEntityChannel() {
-        if (isResponseChunked()) {
-            return null;
-        } else {
-            return new WritableByteChannel() {
+	@Override
+	public WritableByteChannel getResponseEntityChannel() {
+		if (isResponseChunked()) {
+			return null;
+		} else {
+			return new WritableByteChannel() {
 
-                public void close() throws IOException {
-                    // TODO Auto-generated method stub
+				public void close() throws IOException {
+					// TODO Auto-generated method stub
 
-                }
+				}
 
-                public boolean isOpen() {
-                    return true;
-                }
+				public boolean isOpen() {
+					return true;
+				}
 
-                public int write(ByteBuffer src) throws IOException {
-                    ChannelBuffer buf = dynamicBuffer();
-                    buf.writeBytes(src);
-                    response.setContent(buf);
-                    return buf.readableBytes();
-                }
-            };
-        }
-    }
+				public int write(ByteBuffer src) throws IOException {
+					ChannelBuffer buf = dynamicBuffer();
+					buf.writeBytes(src);
+					response.setContent(buf);
+					return buf.readableBytes();
+				}
+			};
+		}
+	}
 
-    @Override
-    public OutputStream getResponseEntityStream() {
-        if (isResponseChunked()) {
-            ChannelBuffer buf = dynamicBuffer();
-            this.response.setContent(buf);
-            return new ChunkedOutputStream(new ChannelBufferOutputStream(
-                    response.getContent()));
-        } else {
-            return null;
-        }
+	@Override
+	public OutputStream getResponseEntityStream() {
+		if (isResponseChunked()) {
+			ChannelBuffer buf = dynamicBuffer();
+			this.response.setContent(buf);
+			return new ChunkedOutputStream(new ChannelBufferOutputStream(
+					response.getContent()));
+		} else {
+			return null;
+		}
 
-    }
+	}
 
-    @Override
-    public String getSslCipherSuite() {
-        final SSLEngine sslEngine = getSslEngine();
-        if (sslEngine != null) {
-            final SSLSession sslSession = sslEngine.getSession();
-            if (sslSession != null) {
-                return sslSession.getCipherSuite();
-            }
-        }
-        return null;
-    }
+	@Override
+	public String getSslCipherSuite() {
+		final SSLEngine sslEngine = getSslEngine();
+		if (sslEngine != null) {
+			final SSLSession sslSession = sslEngine.getSession();
+			if (sslSession != null) {
+				return sslSession.getCipherSuite();
+			}
+		}
+		return null;
+	}
 
-    @Override
-    public List<Certificate> getSslClientCertificates() {
-        final SSLEngine sslEngine = getSslEngine();
-        if (sslEngine != null) {
-            final SSLSession sslSession = sslEngine.getSession();
-            if (sslSession != null) {
-                try {
-                    final List<Certificate> clientCertificates = Arrays
-                            .asList(sslSession.getPeerCertificates());
+	@Override
+	public List<Certificate> getSslClientCertificates() {
+		final SSLEngine sslEngine = getSslEngine();
+		if (sslEngine != null) {
+			final SSLSession sslSession = sslEngine.getSession();
+			if (sslSession != null) {
+				try {
+					final List<Certificate> clientCertificates = Arrays
+							.asList(sslSession.getPeerCertificates());
 
-                    return clientCertificates;
-                } catch (SSLPeerUnverifiedException e) {
-                    getLogger().log(Level.FINE,
-                            "Can't get the client certificates.", e);
-                }
-            }
-        }
-        return null;
-    }
+					return clientCertificates;
+				} catch (SSLPeerUnverifiedException e) {
+					getLogger().log(Level.FINE,
+							"Can't get the client certificates.", e);
+				}
+			}
+		}
+		return null;
+	}
 
-    /**
-     * Returns the SSL engine.
-     * 
-     * @return The SSL engine.
-     */
-    private SSLEngine getSslEngine() {
-        return this.sslEngine;
-    }
+	/**
+	 * Returns the SSL engine.
+	 * 
+	 * @return The SSL engine.
+	 */
+	private SSLEngine getSslEngine() {
+		return this.sslEngine;
+	}
 
-    @Override
-    public String getVersion() {
-        return request.getProtocolVersion().getText();
-    }
+	@Override
+	public String getVersion() {
+		return request.getProtocolVersion().getText();
+	}
 
-    @Override
-    protected boolean isClientKeepAlive() {
-        return request.isKeepAlive();
-    }
+	@Override
+	protected boolean isClientKeepAlive() {
+		return request.isKeepAlive();
+	}
 
-    @Override
-    public void writeResponseHead(Response restletResponse) throws IOException {
-        this.response.clearHeaders();
-        for (final Parameter header : getResponseHeaders()) {
-            this.response.addHeader(header.getName(), header.getValue());
-        }
+	@Override
+	public void writeResponseHead(Response restletResponse) throws IOException {
+		if (this.response != null) {
+			this.response.clearHeaders();
+		} else {
+			final HttpResponseStatus status = new HttpResponseStatus(
+					restletResponse.getStatus().getCode(), restletResponse
+							.getStatus().getDescription());
+			this.response = new DefaultHttpResponse(HttpVersion.HTTP_1_1,
+					status);
+		}
+		for (final Parameter header : getResponseHeaders()) {
+			this.response.addHeader(header.getName(), header.getValue());
+		}
 
-    }
+	}
 
 }

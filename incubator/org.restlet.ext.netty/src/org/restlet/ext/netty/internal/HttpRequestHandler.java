@@ -63,138 +63,143 @@ import org.restlet.ext.netty.NettyServerHelper;
 @ChannelPipelineCoverage("one")
 public class HttpRequestHandler extends SimpleChannelUpstreamHandler {
 
-    /** The server helper. */
-    private volatile NettyServerHelper helper;
+	/** The server helper. */
+	private volatile NettyServerHelper helper;
 
-    /** Indicates if chunked encoding should be read. */
-    private volatile boolean readingChunks;
+	/** Indicates if chunked encoding should be read. */
+	private volatile boolean readingChunks;
 
-    /** The Netty HTTP request. */
-    private volatile HttpRequest request;
+	/** The Netty HTTP request. */
+	private volatile HttpRequest request;
 
-    /**
-     * Constructor. Creates a new handler instance wrapping server helper.
-     * 
-     * @param serverHelper
-     *            The server helper.
-     */
-    public HttpRequestHandler(NettyServerHelper serverHelper) {
-        this.helper = serverHelper;
-    }
+	/**
+	 * Constructor. Creates a new handler instance wrapping server helper.
+	 * 
+	 * @param serverHelper
+	 *            The server helper.
+	 */
+	public HttpRequestHandler(NettyServerHelper serverHelper) {
+		this.helper = serverHelper;
+	}
 
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e)
-            throws Exception {
-        Channel ch = e.getChannel();
-        Throwable cause = e.getCause();
-        if (cause instanceof TooLongFrameException) {
-            sendError(ctx, HttpResponseStatus.BAD_REQUEST);
-            return;
+	@Override
+	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e)
+			throws Exception {
+		Channel ch = e.getChannel();
+		Throwable cause = e.getCause();
+		if (cause instanceof TooLongFrameException) {
+			sendError(ctx, HttpResponseStatus.BAD_REQUEST);
+			return;
+		}
+
+		cause.printStackTrace();
+		if (ch.isConnected()) {
+			sendError(ctx, HttpResponseStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@Override
+	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e)
+			throws Exception {
+
+		boolean close = false;
+		boolean isLastChunk = false;
+		ChannelBuffer content = null;
+		if (!readingChunks) {
+			request = (HttpRequest) e.getMessage();
+
+			if (request.isChunked()) {
+				readingChunks = true;
+			} else {
+				content = request.getContent();
+			}
+		} else {
+			HttpChunk chunk = (HttpChunk) e.getMessage();
+			if (chunk.isLast()) {
+				readingChunks = false;
+				isLastChunk = true;
+				close = true;
+			}
+			content = chunk.getContent();
+
+		}
+
+		// Decide whether to close the connection or not.
+		close = HttpHeaders.Values.CLOSE.equalsIgnoreCase(request
+				.getHeader(HttpHeaders.Names.CONNECTION))
+				|| request.getProtocolVersion().equals(HttpVersion.HTTP_1_0)
+				&& !HttpHeaders.Values.KEEP_ALIVE.equalsIgnoreCase(request
+						.getHeader(HttpHeaders.Names.CONNECTION));
+
+		HttpResponse response = null;
+
+		if ((content != null) && (!isLastChunk)) {
+
+			SslHandler sslHandler = ctx.getPipeline().get(SslHandler.class);
+			SSLEngine sslEngine = sslHandler == null ? null : sslHandler
+					.getEngine();
+
+			NettyServerCall httpCall = new NettyServerCall(this.helper
+					.getHelped(), content, request,
+					(this.helper instanceof HttpsServerHelper), sslEngine);
+			this.helper.handle(httpCall);
+		}
+		
+		if (response == null) {
+            response = new DefaultHttpResponse(HttpVersion.HTTP_1_1,
+                    HttpResponseStatus.OK);
         }
+		
+		Channel ch = e.getChannel();
 
-        cause.printStackTrace();
-        if (ch.isConnected()) {
-            sendError(ctx, HttpResponseStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+		if (!close) {
+			response.setHeader(HttpHeaders.Names.CONTENT_LENGTH, String
+					.valueOf(-1));
 
-    @Override
-    public void messageReceived(ChannelHandlerContext ctx, MessageEvent e)
-            throws Exception {
+		}
+		// Close the connection after the write operation is done if
+		// necessary.
+		if (request.isChunked()) {
+			if (isLastChunk) {
+				ChannelFuture future = ch.close();
 
-        boolean close = false;
-        boolean isLastChunk = false;
-        ChannelBuffer content = null;
-        if (!readingChunks) {
-            request = (HttpRequest) e.getMessage();
+				if (close) {
+					future.addListener(ChannelFutureListener.CLOSE);
+				}
+			} else {
+				if (e.getMessage() instanceof HttpChunk) {
+					ch.write(response.getContent());
+				} else {
+					ch.write(response);
+				}
+			}
 
-            if (request.isChunked()) {
-                readingChunks = true;
-            } else {
-                content = request.getContent();
-            }
-        } else {
-            HttpChunk chunk = (HttpChunk) e.getMessage();
-            if (chunk.isLast()) {
-                readingChunks = false;
-                isLastChunk = true;
-                close = true;
-            }
-            content = chunk.getContent();
+		} else {
+			ChannelFuture future = ch.write(response);
+			future.addListener(ChannelFutureListener.CLOSE);
 
-        }
+		}
 
-        // Decide whether to close the connection or not.
-        close = HttpHeaders.Values.CLOSE.equalsIgnoreCase(request
-                .getHeader(HttpHeaders.Names.CONNECTION))
-                || request.getProtocolVersion().equals(HttpVersion.HTTP_1_0)
-                && !HttpHeaders.Values.KEEP_ALIVE.equalsIgnoreCase(request
-                        .getHeader(HttpHeaders.Names.CONNECTION));
+	}
 
-        HttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1,
-                HttpResponseStatus.OK);
+	/**
+	 * Sends an error to the client.
+	 * 
+	 * @param ctx
+	 *            The handler context.
+	 * @param status
+	 *            The HTTP status.
+	 */
+	private void sendError(ChannelHandlerContext ctx, HttpResponseStatus status) {
+		HttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1,
+				status);
+		response.setHeader(HttpHeaders.Names.CONTENT_TYPE,
+				"text/plain; charset=UTF-8");
+		response.setContent(ChannelBuffers.copiedBuffer("Failure: "
+				+ status.toString() + "\r\n", "UTF-8"));
 
-        if ((content != null) && (!isLastChunk)) {
-
-            SslHandler sslHandler = ctx.getPipeline().get(SslHandler.class);
-            SSLEngine sslEngine = sslHandler == null ? null : sslHandler
-                    .getEngine();
-
-            NettyServerCall httpCall = new NettyServerCall(this.helper
-                    .getHelped(), content, request, response,
-                    (this.helper instanceof HttpsServerHelper), sslEngine);
-            this.helper.handle(httpCall);
-        }
-        Channel ch = e.getChannel();
-
-        if (!close) {
-            response.setHeader(HttpHeaders.Names.CONTENT_LENGTH, String
-                    .valueOf(-1));
-
-        }
-        // Close the connection after the write operation is done if
-        // necessary.
-        if (request.isChunked()) {
-            if (isLastChunk) {
-                ChannelFuture future = ch.close();
-
-                if (close) {
-                    future.addListener(ChannelFutureListener.CLOSE);
-                }
-            } else {
-                if (e.getMessage() instanceof HttpChunk) {
-                    ch.write(response.getContent());
-                } else {
-                    ch.write(response);
-                }
-            }
-
-        } else {
-            ChannelFuture future = ch.write(response);
-            future.addListener(ChannelFutureListener.CLOSE);
-
-        }
-
-    }
-
-    /**
-     * Sends an error to the client.
-     * 
-     * @param ctx
-     *            The handler context.
-     * @param status
-     *            The HTTP status.
-     */
-    private void sendError(ChannelHandlerContext ctx, HttpResponseStatus status) {
-        HttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1,
-                status);
-        response.setHeader(HttpHeaders.Names.CONTENT_TYPE,
-                "text/plain; charset=UTF-8");
-        response.setContent(ChannelBuffers.copiedBuffer("Failure: "
-                + status.toString() + "\r\n", "UTF-8"));
-
-        // Close the connection as soon as the error message is sent.
-        ctx.getChannel().write(response).addListener(
-                ChannelFutureListener.CLOSE);
-    }
+		// Close the connection as soon as the error message is sent.
+		ctx.getChannel().write(response).addListener(
+				ChannelFutureListener.CLOSE);
+	}
 }
