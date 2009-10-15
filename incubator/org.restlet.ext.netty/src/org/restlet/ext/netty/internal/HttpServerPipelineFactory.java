@@ -66,10 +66,7 @@ public class HttpServerPipelineFactory implements ChannelPipelineFactory {
     public ChannelPipeline getPipeline() throws Exception {
         ChannelPipeline pipeline = pipeline();
         pipeline.addLast("decoder", new HttpRequestDecoder());
-        // pipeline.addLast("aggregator", new HttpChunkAggregator(1048576));
         pipeline.addLast("encoder", new HttpResponseEncoder());
-        // TODO review code to add chunked request/response support
-        // pipeline.addLast("streamer", new ChunkedWriteHandler());
         pipeline.addLast("handler", new HttpRequestHandler(this.helper));
         return pipeline;
     }

@@ -36,7 +36,6 @@ import javax.net.ssl.SSLEngine;
 
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.jboss.netty.handler.codec.http.HttpChunkAggregator;
 import org.jboss.netty.handler.codec.http.HttpRequestDecoder;
 import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
 import org.jboss.netty.handler.ssl.SslHandler;
@@ -80,7 +79,6 @@ public class HttpsServerPipelineFactory implements ChannelPipelineFactory {
         ChannelPipeline pipeline = pipeline();
         pipeline.addLast("ssl", new SslHandler(this.sslEngine));
         pipeline.addLast("decoder", new HttpRequestDecoder());
-        pipeline.addLast("aggregator", new HttpChunkAggregator(1048576));
         pipeline.addLast("encoder", new HttpResponseEncoder());
         pipeline.addLast("handler", new HttpRequestHandler(this.helper));
         return pipeline;
