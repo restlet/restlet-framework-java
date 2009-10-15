@@ -303,7 +303,7 @@ public class HttpDigestHelper extends AuthenticatorHelper {
 
     @Override
     public void formatParameters(StringBuilder sb,
-            Series<Parameter> parameters, ChallengeRequest request) {
+            Series<Parameter> parameters, ChallengeRequest challenge) {
         sb.append(", domain=\"").append(parameters.getFirstValue("domain"))
                 .append('"');
         sb.append(", qop=\"auth\"");
