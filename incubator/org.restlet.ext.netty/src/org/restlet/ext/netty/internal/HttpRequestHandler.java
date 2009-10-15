@@ -143,13 +143,14 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler {
 					.getHelped(), content, request,
 					(this.helper instanceof HttpsServerHelper), sslEngine);
 			this.helper.handle(httpCall);
+			response = httpCall.getResponse();
 		}
-		
+
 		if (response == null) {
-            response = new DefaultHttpResponse(HttpVersion.HTTP_1_1,
-                    HttpResponseStatus.OK);
-        }
-		
+			response = new DefaultHttpResponse(HttpVersion.HTTP_1_1,
+					HttpResponseStatus.OK);
+		}
+
 		Channel ch = e.getChannel();
 
 		if (!close) {

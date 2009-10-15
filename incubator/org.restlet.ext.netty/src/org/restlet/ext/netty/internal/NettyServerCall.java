@@ -267,4 +267,13 @@ public class NettyServerCall extends HttpServerCall {
 
 	}
 
+	/**
+	 * Get response.
+	 * 
+	 * @return the response
+	 */
+	public HttpResponse getResponse() {
+		return response;
+	}
+
 }
