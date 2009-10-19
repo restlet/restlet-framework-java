@@ -1,7 +1,7 @@
 <library id="netty">
 	<package name="org.jboss.netty" />
 	<version>3.1</version>
-	<release>5</release>
+	<release>5.GA</release>
 	<distributions>
 		<distribution id="classic" />
 	</distributions>

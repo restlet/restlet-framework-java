@@ -1,11 +1,13 @@
 <library id="grizzly" dir="com.sun.grizzly">
 	<package id="grizzly" name="com.sun.grizzly">
 		<maven>
+			<groupId>com.sun.grizzly</groupId>
 			<artifactId>grizzly-framework</artifactId>
 		</maven>
 	</package>
 	<package id="grizzly-util" name="com.sun.grizzly.util">
 		<maven>
+			<groupId>com.sun.grizzly</groupId>
 			<artifactId>grizzly-utils</artifactId>
 		</maven>
 	</package>
