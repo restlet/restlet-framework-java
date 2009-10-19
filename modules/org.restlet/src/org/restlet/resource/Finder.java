@@ -45,16 +45,15 @@ import org.restlet.data.Status;
 /**
  * Restlet that can find the target server resource that will effectively handle
  * incoming calls. Based on a given {@link ServerResource} (or the now
- * deprecated {@link Handler} subclass) available via the
- * {@link #getTargetClass()} method, it is also capable of instantiating the
- * target with the context, request and response without requiring the usage of
- * a Finder subclass. It will use the default constructor then invoke the
+ * deprecated {@link Handler}) subclass available via the
+ * {@link #getTargetClass()} method, it can instantiate for each incoming call
+ * the target resource using the default constructor and invoking the
  * {@link ServerResource#init(Context, Request, Response)} method.<br>
  * <br>
- * Once the target has been found, the call is automatically dispatched to the
- * appropriate {@link ServerResource#handle()} method (or for {@link Handler}
- * subclasses to the handle*() method (where the '*' character corresponds to
- * the method name) if the corresponding allow*() method returns true).<br>
+ * Once the target has been created, the call is automatically dispatched to the
+ * {@link ServerResource#handle()} method (or for {@link Handler} subclasses to
+ * the handle*() method (where the '*' character corresponds to the method name)
+ * if the corresponding allow*() method returns true).<br>
  * <br>
  * Once the call is handled, the {@link ServerResource#release()} method is
  * invoked to permit clean-up actions.<br>
