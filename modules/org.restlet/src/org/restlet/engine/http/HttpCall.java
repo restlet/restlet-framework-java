@@ -31,7 +31,6 @@
 package org.restlet.engine.http;
 
 import java.io.IOException;
-import java.security.Principal;
 import java.util.Date;
 import java.util.logging.Logger;
 
@@ -130,7 +129,7 @@ public abstract class HttpCall extends Call {
 
     // [ifndef gwt] member
     /** The user principal. */
-    private volatile Principal userPrincipal;
+    private volatile java.security.Principal userPrincipal;
 
     /** The protocol version. */
     private volatile String version;
@@ -345,7 +344,7 @@ public abstract class HttpCall extends Call {
      * 
      * @return The user principal.
      */
-    public Principal getUserPrincipal() {
+    public java.security.Principal getUserPrincipal() {
         return this.userPrincipal;
     }
 
@@ -569,7 +568,7 @@ public abstract class HttpCall extends Call {
      * @param principal
      *            The user principal.
      */
-    public void setUserPrincipal(Principal principal) {
+    public void setUserPrincipal(java.security.Principal principal) {
         this.userPrincipal = principal;
     }
 

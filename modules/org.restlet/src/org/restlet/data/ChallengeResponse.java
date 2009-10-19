@@ -30,8 +30,6 @@
 
 package org.restlet.data;
 
-import java.security.Principal;
-
 import org.restlet.engine.util.SystemUtils;
 import org.restlet.util.Series;
 
@@ -250,8 +248,8 @@ public final class ChallengeResponse {
      * 
      * @return The {@link org.restlet.security.UserPrincipal}.
      */
-    public Principal getPrincipal() {
-        return new Principal() {
+    public java.security.Principal getPrincipal() {
+        return new java.security.Principal() {
             public String getName() {
                 return getIdentifier();
             };
