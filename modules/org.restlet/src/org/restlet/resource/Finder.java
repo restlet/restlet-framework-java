@@ -43,24 +43,18 @@ import org.restlet.data.Method;
 import org.restlet.data.Status;
 
 /**
- * Restlet that can find the target server resource or handler that will
- * effectively handle the call. Based on a given {@link ServerResource} or
- * {@link Handler} subclass, it is also capable of instantiating the target with
- * the context, request and response without requiring the usage of a Finder
- * subclass. It will use the default constructor then invoke the
+ * Restlet that can find the target server resource that will effectively handle
+ * incoming calls. Based on a given {@link ServerResource} (or the now
+ * deprecated {@link Handler} subclass) available via the
+ * {@link #getTargetClass()} method, it is also capable of instantiating the
+ * target with the context, request and response without requiring the usage of
+ * a Finder subclass. It will use the default constructor then invoke the
  * {@link ServerResource#init(Context, Request, Response)} method.<br>
  * <br>
  * Once the target has been found, the call is automatically dispatched to the
- * appropriate {@link ServerResource#handle()} method or for {@link Handler}
+ * appropriate {@link ServerResource#handle()} method (or for {@link Handler}
  * subclasses to the handle*() method (where the '*' character corresponds to
- * the method name) if the corresponding allow*() method returns true.<br>
- * <br>
- * For example, if you want to support a MOVE method for a WebDAV server, you
- * just have to add a handleMove() method in your subclass of Handler and it
- * will be automatically be used by the Finder instance at runtime.<br>
- * <br>
- * If no matching handle*() method is found, then a
- * Status.CLIENT_ERROR_METHOD_NOT_ALLOWED is returned.<br>
+ * the method name) if the corresponding allow*() method returns true).<br>
  * <br>
  * Once the call is handled, the {@link ServerResource#release()} method is
  * invoked to permit clean-up actions.<br>
