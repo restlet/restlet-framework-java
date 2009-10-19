@@ -99,7 +99,11 @@ Changes log
           characters. Suggested by Bob Resendes.
     - Misc
         - Added velocity template in the org.restlet.example project.
-          Reported by Ben Vesco. 
+          Reported by Ben Vesco.
+        - Added extension "netty" which is a server connector based on 
+          Netty, a Java NIO client server framework developped at 
+          JBoss.
+          Contributed by Gabriel Ciuloaica.
 - 2.0 Milestone 5 (2009-09-28)
     - API changes
         - Moved Message, Request and Response classes from the
