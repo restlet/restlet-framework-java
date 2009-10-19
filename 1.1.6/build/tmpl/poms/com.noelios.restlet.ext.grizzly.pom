@@ -11,7 +11,12 @@
       </dependency>
       <dependency>
          <groupId>com.sun.grizzly</groupId>
-         <artifactId>com.sun.grizzly</artifactId>
+         <artifactId>grizzly-framework</artifactId>
+         <version>@lib-grizzly-version@</version>
+      </dependency>
+      <dependency>
+         <groupId>com.sun.grizzly</groupId>
+         <artifactId>grizzly-utils</artifactId>
          <version>@lib-grizzly-version@</version>
       </dependency>
    </dependencies>
