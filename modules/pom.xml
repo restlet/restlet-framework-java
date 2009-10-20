@@ -79,6 +79,7 @@
 		<lib-jetty-io-version>7.0.0</lib-jetty-io-version>
 		<lib-jetty-server-version>7.0.0</lib-jetty-server-version>
 		<lib-jetty-util-version>7.0.0</lib-jetty-util-version>
+		<lib-jetty4-version>4.2</lib-jetty4-version>
 		<lib-jibx-version>1.2.1</lib-jibx-version>
 		<lib-jline-version>0.9.94</lib-jline-version>
 		<lib-jpython-version>2.2.1</lib-jpython-version>
@@ -106,6 +107,7 @@
 		<lib-rhino-version>1.7R1</lib-rhino-version>
 		<lib-rhino-version>1.7.0.rc1</lib-rhino-version>
 		<lib-rome-version>1.0</lib-rome-version>
+		<lib-rowset-version>1.0</lib-rowset-version>
 		<lib-com.sun.script-version>1.0</lib-com.sun.script-version>
 		<lib-javax.script-version>1.0</lib-javax.script-version>
 		<lib-servlet-version>2.5</lib-servlet-version>
