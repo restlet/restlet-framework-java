@@ -162,7 +162,8 @@
 		</sequential>
 	</macrodef>
 
-	<target name="generate-poms" description="Generates the pom files">
+	<target name="generate-poms" description="Generates the pom files for the unique source code">
+		<!-- Parent pom file -->
 		<fmpp sourcefile="${tmpl}/poms/org.restlet.parent.pom.tmpl" outputfile="${modules}/pom.xml" dataroot="${basedir}" expert="true">
 			<data expandproperties="true">
 				values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
@@ -170,15 +171,16 @@
 				ant: antProperties()
 			</data>
 		</fmpp>
-		<!-- Generation of the pom.xml file for the source code
-		<copy file="${tmpl}/poms/${mod-@{name}-id}.pom" tofile="${mods}/${mod-@{name}-id}/pom.xml" overwrite="true" />
-		<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@parent-group-id@" value="${parent-maven-groupId}" />
-		<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@parent-artifact-id@" value="${parent-maven-artifactId}" />
-		<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@parent-version@" value="${parent-maven-version}" />
-		<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@lib-@{name}-version@" value="${mod-pom-@{name}-version}" />
-		<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@group-id@" value="${mod-maven-groupId}" />
-		<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@artifact-id@" value="${mod-pom-@{name}-artifactId}" />				
--->
+		<!-- Modules pom files -->
+		<fmpp sourceroot="${tmpl}/poms" outputroot="${modules}" dataroot="${basedir}" expert="true">
+			<data expandproperties="true">
+				values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
+				project: get(values, "project")
+				ant: antProperties()
+			</data>
+			<include name="pom.tmpl"/>
+		</fmpp>
+		<delete file="${modules}/pom.tmpl" />
 	</target>
 
 	<target name="prepare-stage-maven" if="do-prepare-stage-maven" description="Prepare the generation of the maven distributions.">
