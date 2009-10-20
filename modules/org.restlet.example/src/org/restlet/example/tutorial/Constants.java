@@ -36,5 +36,5 @@ package org.restlet.example.tutorial;
  * @author Jerome Louvel
  */
 public class Constants {
-    public static final String ROOT_URI = "file:///c:/restlet/docs/api/";
+    public static final String ROOT_URI = "file:///c:/";
 }

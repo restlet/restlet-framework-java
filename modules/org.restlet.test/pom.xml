@@ -55,6 +55,11 @@
 		</dependency>
 		<dependency>
 			<groupId>${groupId}</groupId>
+			<artifactId>org.restlet.ext.netty</artifactId>
+			<version>${version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${groupId}</groupId>
 			<artifactId>org.restlet.ext.gwt</artifactId>
 			<version>${version}</version>
 		</dependency>

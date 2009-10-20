@@ -61,7 +61,6 @@ import org.restlet.util.Series;
  * <td></td>
  * <td></td>
  * <td></td>
- * <td></td>
  * </tr>
  * </table>
  * 
@@ -99,6 +98,8 @@ public abstract class NettyServerHelper extends HttpServerHelper {
     public synchronized void start() throws Exception {
         ServerBootstrap bootstrap = new ServerBootstrap(factory);
         bootstrap.setPipelineFactory(getPipelineFatory());
+        
+        // Copy the parameters as channel options
         Series<Parameter> options = getHelpedParameters();
 
         for (Parameter option : options) {

@@ -54,6 +54,8 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
     private final boolean enableApacheClient = true;
 
     private final boolean enableGrizzlyServer = true;
+    
+    private final boolean enableNettyServer = true;
 
     private final boolean enableInternalClient = true;
 
@@ -129,6 +131,27 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
     public void testGrizzlyAndJdkNet() throws Exception {
         if (this.enableGrizzlyServer && this.enableJdkNetClient) {
             runTest(new org.restlet.ext.grizzly.HttpServerHelper(null),
+                    new org.restlet.ext.net.HttpClientHelper(null));
+        }
+    }
+    
+    public void testNettyAndApache() throws Exception {
+        if (this.enableNettyServer && this.enableApacheClient) {
+            runTest(new org.restlet.ext.netty.HttpServerHelper(null),
+                    new org.restlet.ext.httpclient.HttpClientHelper(null));
+        }
+    }
+    
+    public void testNettyAndInternal() throws Exception {
+        if (this.enableNettyServer && this.enableInternalClient) {
+            runTest(new  org.restlet.ext.netty.HttpServerHelper(null),
+                    new StreamClientHelper(null));
+        }
+    }
+    
+    public void testNettyAndJdkNet() throws Exception {
+        if (this.enableNettyServer && this.enableJdkNetClient) {
+            runTest(new org.restlet.ext.netty.HttpServerHelper(null),
                     new org.restlet.ext.net.HttpClientHelper(null));
         }
     }
