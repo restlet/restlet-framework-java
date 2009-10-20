@@ -1,11 +1,13 @@
 <library id="solr" dir="org.apache.solr">
 	<package id="solr" name="org.apache.solr">
 		<maven>
+			<groupId>org.apache.solr</groupId>
 			<artifactId>solr-core</artifactId>
 		</maven>
 	</package>
 	<package id="solr-common" name="org.apache.solr.common">
 		<maven>
+			<groupId>org.apache.solr</groupId>
 			<artifactId>solr-common</artifactId>
 		</maven>
 	</package>
