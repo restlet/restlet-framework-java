@@ -3,9 +3,9 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.restlet.dev</groupId>
-    <artifactId>org.restlet.parent</artifactId>
-    <version>2.0-SNAPSHOT</version>
+	<groupId>org.restlet.dev</groupId>
+	<artifactId>org.restlet.parent</artifactId>
+	<version>2.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Restlet project</name>
@@ -137,9 +137,9 @@
 	<modules>
 		<module>org.restlet.ext.atom</module>
 		<module>org.restlet</module>
-		<!-- <module>org.restlet.test</module> -->
+		<module>org.restlet.test</module>
 		<module>org.restlet.ext.dataservices</module>
-		<!-- <module>org.restlet.example</module> -->
+		<module>org.restlet.example</module>
 		<module>org.restlet.ext.fileupload</module>
 		<module>org.restlet.ext.freemarker</module>
 		<module>org.restlet.ext.grizzly</module>

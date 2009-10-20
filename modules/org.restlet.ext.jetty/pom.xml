@@ -3,50 +3,56 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-        <groupId>org.restlet.dev</groupId>
-        <artifactId>org.restlet.parent</artifactId>
-        <version>2.0-SNAPSHOT</version>
+		<groupId>org.restlet.dev</groupId>
+		<artifactId>org.restlet.parent</artifactId>
+		<version>2.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>org.restlet.ext.jetty</artifactId>
-	<name>Restlet extension: Jetty</name>
+	<name>Restlet Extension - Jetty</name>
 	<description>Integration with Jetty.</description>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-ajp</artifactId>
-			<version>${lib-jetty-ajp-version}</version>
+			<version>7.0.0.v20091005</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-continuation</artifactId>
-			<version>${lib-jetty-continuation-version}</version>
+			<version>7.0.0.v20091005</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-http</artifactId>
-			<version>${lib-jetty-http-version}</version>
+			<version>7.0.0.v20091005</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-io</artifactId>
-			<version>${lib-jetty-io-version}</version>
+			<version>7.0.0.v20091005</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-server</artifactId>
-			<version>${lib-jetty-server-version}</version>
+			<version>7.0.0.v20091005</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-util</artifactId>
-			<version>${lib-jetty-util-version}</version>
+			<version>7.0.0.v20091005</version>
 		</dependency>
 		<dependency>
-			<groupId>${groupId}</groupId>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.5</version>
+		</dependency>
+		<dependency>
+			<groupId>org.restlet.dev</groupId>
 			<artifactId>org.restlet</artifactId>
-			<version>${version}</version>
+			<version>2.0-SNAPSHOT</version>
+			
 		</dependency>
 	</dependencies>
 </project>

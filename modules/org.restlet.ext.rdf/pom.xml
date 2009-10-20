@@ -3,25 +3,27 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-        <groupId>org.restlet.dev</groupId>
-        <artifactId>org.restlet.parent</artifactId>
-        <version>2.0-SNAPSHOT</version>
+		<groupId>org.restlet.dev</groupId>
+		<artifactId>org.restlet.parent</artifactId>
+		<version>2.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>org.restlet.ext.rdf</artifactId>
-	<name>Restlet extension: RDF</name>
+	<name>Restlet Extension - RDF</name>
 	<description>Support for the RDF parsing and generation.</description>
 
 	<dependencies>
 		<dependency>
-			<groupId>${groupId}</groupId>
+			<groupId>org.restlet.dev</groupId>
 			<artifactId>org.restlet</artifactId>
-			<version>${version}</version>
+			<version>2.0-SNAPSHOT</version>
+			
 		</dependency>
 		<dependency>
-			<groupId>${groupId}</groupId>
+			<groupId>org.restlet.dev</groupId>
 			<artifactId>org.restlet.ext.xml</artifactId>
-			<version>${version}</version>
-        </dependency>
-    </dependencies>
+			<version>2.0-SNAPSHOT</version>
+			
+		</dependency>
+	</dependencies>
 </project>

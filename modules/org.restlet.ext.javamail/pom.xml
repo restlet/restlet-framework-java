@@ -3,30 +3,37 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-        <groupId>org.restlet.dev</groupId>
-        <artifactId>org.restlet.parent</artifactId>
-        <version>2.0-SNAPSHOT</version>
+		<groupId>org.restlet.dev</groupId>
+		<artifactId>org.restlet.parent</artifactId>
+		<version>2.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>org.restlet.ext.javamail</artifactId>
-	<name>Restlet extension: JavaMail</name>
+	<name>Restlet Extension - JavaMail</name>
 	<description>Integration with JavaMail.</description>
 
 	<dependencies>
 		<dependency>
+			<groupId>javax.activation</groupId>
+			<artifactId>activation</artifactId>
+			<version>1.1.1</version>
+		</dependency>
+		<dependency>
 			<groupId>javax.mail</groupId>
 			<artifactId>mail</artifactId>
-			<version>${lib-javamail-version}</version>
+			<version>1.4.2</version>
 		</dependency>
 		<dependency>
-			<groupId>${groupId}</groupId>
+			<groupId>org.restlet.dev</groupId>
 			<artifactId>org.restlet</artifactId>
-			<version>${version}</version>
+			<version>2.0-SNAPSHOT</version>
+			
 		</dependency>
 		<dependency>
-			<groupId>${groupId}</groupId>
+			<groupId>org.restlet.dev</groupId>
 			<artifactId>org.restlet.ext.xml</artifactId>
-			<version>${version}</version>
-		</dependency>        
+			<version>2.0-SNAPSHOT</version>
+			
+		</dependency>
 	</dependencies>
 </project>
