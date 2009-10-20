@@ -21,23 +21,23 @@
 		<repository>
 			<id>maven-central</id>
 			<name>Central Maven repository</name>
-			<url>http://repo1.maven.org/maven2/</url>
+			<url>http://repo1.maven.org/maven2</url>
 		</repository>
 		<repository>
 			<id>maven2-java</id>
 			<name>Java.net repository (Maven 2)</name>
-			<url>http://download.java.net/maven/2/</url>
+			<url>http://download.java.net/maven/2</url>
 		</repository>
         <repository>
             <id>maven1-java</id>
 			<name>Java.net repository (Maven 1)</name>
-            <url>http://download.java.net/maven/1/</url>
+            <url>http://download.java.net/maven/1</url>
             <layout>legacy</layout>
         </repository>
 		<repository>
 			<id>maven2-jboss</id>
 			<name>JBoss repository</name>
-			<url>http://repository.jboss.com/maven2/</url>
+			<url>http://repository.jboss.com/maven2</url>
 		</repository>
 		<repository>
 			<id>maven-restlet</id>
@@ -139,7 +139,7 @@
 		<module>org.restlet</module>
 		<!-- <module>org.restlet.test</module> -->
 		<module>org.restlet.ext.dataservices</module>
-		<module>org.restlet.example</module>
+		<!-- <module>org.restlet.example</module> -->
 		<module>org.restlet.ext.fileupload</module>
 		<module>org.restlet.ext.freemarker</module>
 		<module>org.restlet.ext.grizzly</module>

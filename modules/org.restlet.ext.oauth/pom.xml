@@ -22,8 +22,8 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>net.oauth</groupId>
-			<artifactId>oauth-core</artifactId>
+			<groupId>net.oauth.core</groupId>
+			<artifactId>oauth</artifactId>
 			<version>${lib-oauth-version}</version>
 		</dependency>
 		<dependency>
