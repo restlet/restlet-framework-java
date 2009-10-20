@@ -292,7 +292,7 @@
 
 	<!-- Compile using preferences -->
 	<macrodef name="compile">
-		<attribute name="compiler" default="javac1.5" />
+		<attribute name="target" default="1.5" />
 		<attribute name="debug" default="${debug}" />
 		<attribute name="debuglevel" default="${debuglevel}" />
 		<attribute name="optimize" default="${optimize}" />
@@ -303,7 +303,7 @@
 		<attribute name="verbose" default="${verbose}" />
 		<sequential>
 			<mkdir dir="@{destdir}" />
-			<javac compiler="@{compiler}" debug="@{debug}" deprecation="false" encoding="UTF-8" debuglevel="@{debuglevel}" optimize="@{optimize}" verbose="@{verbose}" srcdir="@{srcdir}" destdir="@{destdir}" includes="@{includes}" bootclasspath="${custombootclasspath}">
+			<javac target="@{target}" debug="@{debug}" deprecation="false" encoding="UTF-8" debuglevel="@{debuglevel}" optimize="@{optimize}" verbose="@{verbose}" srcdir="@{srcdir}" destdir="@{destdir}" includes="@{includes}" bootclasspath="${custombootclasspath}">
 				<classpath refid="@{classpathref}" />
 			</javac>
 		</sequential>
