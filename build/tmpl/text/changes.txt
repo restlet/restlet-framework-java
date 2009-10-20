@@ -84,6 +84,8 @@ Changes log
         - Fixed bug when sending entities with the GWT edition.
         - Fixed bug when normalizing References with the GWT edition.
           Reported by Guido Schmidt.
+        - Fixed OSGi dependency issue with the JAX-RS extension.
+          Reported by Stefan Maassen.
     - Enhancements
         - Improved JAXB converted. Contributed by Sanjay Acharya.
         - Upgraded Apache Commons Logging to version 1.1.1.
