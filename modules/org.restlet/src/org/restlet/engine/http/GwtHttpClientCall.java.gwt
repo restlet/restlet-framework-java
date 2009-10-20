@@ -213,7 +213,10 @@ public class GwtHttpClientCall extends HttpClientCall {
         final Representation entity = request.isEntityAvailable() ? request
                 .getEntity() : null;
         if (entity != null) {
-            getRequestBuilder().setRequestData(entity.getText());
+			String requestData = entity.getText();
+			if (requestData != null) {				
+				getRequestBuilder().setRequestData(""+requestData);
+			}
         }
 
         // Set the request headers
