@@ -2238,7 +2238,10 @@ public class Reference {
                     input.delete(0, max);
                 } else {
                     // End of input buffer reached
+                    // [ifndef gwt] instruction
                     output.append(input);
+                    // [ifdef gwt] instruction uncomment
+                    //output.append(input.toString());
                     input.delete(0, input.length());
                 }
             }
