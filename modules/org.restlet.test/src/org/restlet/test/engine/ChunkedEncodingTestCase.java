@@ -68,201 +68,199 @@ import org.w3c.dom.NodeList;
  */
 public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
 
-	private static int LOOP_NUMBER = 50;
+    public static class PutTestResource extends Resource {
 
-	public static class PutTestResource extends Resource {
+        public PutTestResource(Context ctx, Request request, Response response) {
+            super(ctx, request, response);
+            getVariants().add(new Variant(MediaType.TEXT_XML));
+        }
 
-		public PutTestResource(Context ctx, Request request, Response response) {
-			super(ctx, request, response);
-			getVariants().add(new Variant(MediaType.TEXT_XML));
-		}
+        @Override
+        public boolean allowPut() {
+            return true;
+        }
 
-		@Override
-		public boolean allowPut() {
-			return true;
-		}
+        @Override
+        public Representation represent(Variant variant) {
+            return createTestXml();
+        }
 
-		@Override
-		public Representation represent(Variant variant) {
-			return createTestXml();
-		}
+        @Override
+        public void storeRepresentation(Representation entity) {
+            checkForChunkedHeader(getRequest());
 
-		@Override
-		public void storeRepresentation(Representation entity) {
-			checkForChunkedHeader(getRequest());
+            final DomRepresentation dom = new DomRepresentation(entity);
+            try {
+                final Document doc = dom.getDocument();
+                assertXML(dom);
+                getResponse().setEntity(
+                        new DomRepresentation(MediaType.TEXT_XML, doc));
+            } catch (IOException ex) {
+                ex.printStackTrace();
+                fail(ex.getMessage());
+            }
+        }
+    }
 
-			final DomRepresentation dom = new DomRepresentation(entity);
-			try {
-				final Document doc = dom.getDocument();
-				assertXML(dom);
-				getResponse().setEntity(
-						new DomRepresentation(MediaType.TEXT_XML, doc));
-			} catch (IOException ex) {
-				ex.printStackTrace();
-				fail(ex.getMessage());
-			}
-		}
-	}
+    private static int LOOP_NUMBER = 50;
 
-	static void assertXML(DomRepresentation entity) {
-		try {
-			final Document document = entity.getDocument();
-			final Node root = document.getDocumentElement();
-			final NodeList children = root.getChildNodes();
+    static void assertXML(DomRepresentation entity) {
+        try {
+            final Document document = entity.getDocument();
+            final Node root = document.getDocumentElement();
+            final NodeList children = root.getChildNodes();
 
-			assertEquals("root", root.getNodeName());
-			assertEquals(2, children.getLength());
-			assertEquals("child-0", children.item(0).getNodeName());
-			assertEquals("name-0", children.item(0).getAttributes()
-					.getNamedItem("name").getNodeValue());
-			assertEquals("child-1", children.item(1).getNodeName());
-			assertEquals("name-1", children.item(1).getAttributes()
-					.getNamedItem("name").getNodeValue());
+            assertEquals("root", root.getNodeName());
+            assertEquals(2, children.getLength());
+            assertEquals("child-0", children.item(0).getNodeName());
+            assertEquals("name-0", children.item(0).getAttributes()
+                    .getNamedItem("name").getNodeValue());
+            assertEquals("child-1", children.item(1).getNodeName());
+            assertEquals("name-1", children.item(1).getAttributes()
+                    .getNamedItem("name").getNodeValue());
 
-		} catch (IOException ex) {
-			fail(ex.getMessage());
-		} finally {
-			entity.release();
-		}
-	}
+        } catch (IOException ex) {
+            fail(ex.getMessage());
+        } finally {
+            entity.release();
+        }
+    }
 
-	static void checkForChunkedHeader(Message message) {
-		final Form parameters = (Form) message.getAttributes().get(
-				"org.restlet.http.headers");
-		final Parameter p = parameters
-				.getFirst(HttpConstants.HEADER_TRANSFER_ENCODING);
-		assertFalse(p == null);
-		assertEquals("chunked", p.getValue());
-	}
+    static void checkForChunkedHeader(Message message) {
+        final Form parameters = (Form) message.getAttributes().get(
+                "org.restlet.http.headers");
+        final Parameter p = parameters
+                .getFirst(HttpConstants.HEADER_TRANSFER_ENCODING);
+        assertFalse(p == null);
+        assertEquals("chunked", p.getValue());
+    }
 
-	private static Document createDocument() {
-		try {
-			return DocumentBuilderFactory.newInstance().newDocumentBuilder()
-					.newDocument();
-		} catch (ParserConfigurationException ex) {
-			throw new RuntimeException(ex);
-		}
-	}
+    private static Document createDocument() {
+        try {
+            return DocumentBuilderFactory.newInstance().newDocumentBuilder()
+                    .newDocument();
+        } catch (ParserConfigurationException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
 
-	private static Representation createTestXml() {
-		final Document doc = createDocument();
-		final Element root = doc.createElement("root");
+    private static Representation createTestXml() {
+        final Document doc = createDocument();
+        final Element root = doc.createElement("root");
 
-		doc.appendChild(root);
+        doc.appendChild(root);
 
-		for (int i = 0; i < 2; i++) {
-			final Element e = doc.createElement("child-" + i);
-			e.setAttribute("name", "name-" + i);
-			root.appendChild(e);
-		}
+        for (int i = 0; i < 2; i++) {
+            final Element e = doc.createElement("child-" + i);
+            e.setAttribute("name", "name-" + i);
+            root.appendChild(e);
+        }
 
-		return new DomRepresentation(MediaType.TEXT_XML, doc);
-	}
+        return new DomRepresentation(MediaType.TEXT_XML, doc);
+    }
 
-	boolean checkedForChunkedResponse;
+    boolean checkedForChunkedResponse;
 
-	@Override
-	protected void call(String uri) throws Exception {
-		for (int i = 0; i < LOOP_NUMBER; i++) {
-			sendPut(uri);
-			sendGet(uri);
-		}
-	}
+    @Override
+    protected void call(String uri) throws Exception {
+        for (int i = 0; i < LOOP_NUMBER; i++) {
+            sendPut(uri);
+            sendGet(uri);
+        }
+    }
 
-	@Override
-	protected Application createApplication(Component component) {
-		final Application application = new Application() {
-			@Override
-			public Restlet createInboundRoot() {
-				final Router router = new Router(getContext());
-				router.attach("/test", PutTestResource.class);
-				return router;
-			}
-		};
-		return application;
-	}
+    @Override
+    protected Application createApplication(Component component) {
+        final Application application = new Application() {
+            @Override
+            public Restlet createInboundRoot() {
+                final Router router = new Router(getContext());
+                router.attach("/test", PutTestResource.class);
+                return router;
+            }
+        };
+        return application;
+    }
 
-	private void sendGet(String uri) throws Exception {
-		final Request request = new Request(Method.GET, uri);
-		final Response r = new Client(Protocol.HTTP).handle(request);
-		try {
-			assertEquals(r.getStatus().getDescription(), Status.SUCCESS_OK, r
-					.getStatus());
-			assertXML(new DomRepresentation(r.getEntity()));
-		} finally {
-			r.release();
-		}
+    private void sendGet(String uri) throws Exception {
+        final Request request = new Request(Method.GET, uri);
+        final Response r = new Client(Protocol.HTTP).handle(request);
+        try {
+            assertEquals(r.getStatus().getDescription(), Status.SUCCESS_OK, r
+                    .getStatus());
+            assertXML(new DomRepresentation(r.getEntity()));
+        } finally {
+            r.release();
+        }
 
-	}
+    }
 
-	private void sendPut(String uri) throws Exception {
-		final Request request = new Request(Method.PUT, uri, createTestXml());
-		final Response r = new Client(Protocol.HTTP).handle(request);
+    private void sendPut(String uri) throws Exception {
+        final Request request = new Request(Method.PUT, uri, createTestXml());
+        final Response r = new Client(Protocol.HTTP).handle(request);
 
-		try {
-			if (this.checkedForChunkedResponse) {
-				checkForChunkedHeader(r);
-			}
-			assertEquals(r.getStatus().getDescription(), Status.SUCCESS_OK, r
-					.getStatus());
-			assertXML(new DomRepresentation(r.getEntity()));
-		} finally {
-			r.release();
-		}
+        try {
+            if (this.checkedForChunkedResponse) {
+                checkForChunkedHeader(r);
+            }
+            assertEquals(r.getStatus().getDescription(), Status.SUCCESS_OK, r
+                    .getStatus());
+            assertXML(new DomRepresentation(r.getEntity()));
+        } finally {
+            r.release();
+        }
 
-	}
+    }
 
-	@Override
-	public void setUp() {
-		this.checkedForChunkedResponse = true;
-	}
+    @Override
+    public void setUp() {
+        this.checkedForChunkedResponse = true;
+    }
 
-	@Override
-	public void testJettyAndInternal() throws Exception {
-		// Jetty will not send a chunked response when a client sends
-		// Connection: close, which the default client helper does
-		this.checkedForChunkedResponse = false;
-		super.testJettyAndInternal();
-	}
+    @Override
+    public void testJettyAndApache() throws Exception {
+        // TODO to be fixed
+        // super.testJettyAndApache();
+    }
 
-	@Override
-	public void testSimpleAndInternal() throws Exception {
-		// Simple will not send a chunked response when a client sends
-		// Connection: close, which the default client helper does
-		this.checkedForChunkedResponse = false;
-		super.testSimpleAndInternal();
-	}
+    @Override
+    public void testJettyAndInternal() throws Exception {
+        // Jetty will not send a chunked response when a client sends
+        // Connection: close, which the default client helper does
+        this.checkedForChunkedResponse = false;
+        super.testJettyAndInternal();
+    }
 
-	@Override
-	public void testSimpleAndJdkNet() throws Exception {
-		// TODO to be fixed
-		// super.testSimpleAndJdkNet();
-	}
+    @Override
+    public void testNettyAndApache() throws Exception {
+        this.checkedForChunkedResponse = false;
+        super.testNettyAndApache();
+    }
 
-	@Override
-	public void testJettyAndApache() throws Exception {
-		// TODO to be fixed
-		// super.testJettyAndApache();
-	}
+    @Override
+    public void testNettyAndInternal() throws Exception {
+        this.checkedForChunkedResponse = false;
+        super.testNettyAndInternal();
+    }
 
-	@Override
-	public void testNettyAndApache() throws Exception {
-		this.checkedForChunkedResponse = false;
-		//super.testNettyAndApache();
-	}
+    @Override
+    public void testNettyAndJdkNet() throws Exception {
+        this.checkedForChunkedResponse = false;
+        super.testNettyAndJdkNet();
+    }
 
-	@Override
-	public void testNettyAndInternal() throws Exception {
-		// Netty will not send a chunked response when a client sends
-		// Connection: close, which the default client helper does
-		this.checkedForChunkedResponse = false;
-		super.testNettyAndInternal();
-	}
+    @Override
+    public void testSimpleAndInternal() throws Exception {
+        // Simple will not send a chunked response when a client sends
+        // Connection: close, which the default client helper does
+        this.checkedForChunkedResponse = false;
+        super.testSimpleAndInternal();
+    }
 
-	@Override
-	public void testNettyAndJdkNet() throws Exception {
-		//this.checkedForChunkedResponse = false;
-		//super.testNettyAndJdkNet();
-	}
+    @Override
+    public void testSimpleAndJdkNet() throws Exception {
+        // TODO to be fixed
+        // super.testSimpleAndJdkNet();
+    }
 
 }
