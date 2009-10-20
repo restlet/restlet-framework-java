@@ -1,8 +1,8 @@
 <library id="httpcore">
 	<package name="org.apache.httpcore">
 		<maven>
-			<groupId>commons-httpcore</groupId>
-			<artifactId>commons-httpcore</artifactId>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpcore</artifactId>
 		</maven>
 	</package>
 	<version>4.0</version>

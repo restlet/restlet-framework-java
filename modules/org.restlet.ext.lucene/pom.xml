@@ -20,8 +20,13 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.tika</groupId>
-			<artifactId>tika</artifactId>
+			<artifactId>tika-core</artifactId>
 			<version>${lib-tika-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tika</groupId>
+			<artifactId>tika-parsers</artifactId>
+			<version>${lib-tika-parsers-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${groupId}</groupId>

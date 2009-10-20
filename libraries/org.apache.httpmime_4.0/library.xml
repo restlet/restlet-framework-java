@@ -1,8 +1,8 @@
 <library id="httpmime">
 	<package name="org.apache.httpmime">
 		<maven>
-			<groupId>commons-httpmime</groupId>
-			<artifactId>commons-httpmime</artifactId>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpmime</artifactId>
 		</maven>
 	</package>
 	<version>4.0</version>

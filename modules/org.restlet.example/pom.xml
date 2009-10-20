@@ -14,12 +14,12 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>${groupId}</groupId>
+			<groupId>org.restlet.jse</groupId>
 			<artifactId>org.restlet.lib.com.db4o</artifactId>
 			<version>${lib-db4o-version}</version>
 		</dependency>
 		<dependency>
-			<groupId>${groupId}</groupId>
+			<groupId>org.restlet.jse</groupId>
 			<artifactId>org.restlet.lib.com.db4o.nativequery</artifactId>
 			<version>${lib-db4o-version}</version>
 		</dependency>

@@ -6,7 +6,6 @@
 		</maven>
 	</package>
 	<version>1.0</version>
-	<release>0</release>
 	<distributions>
 		<distribution id="classic" />
 	</distributions>

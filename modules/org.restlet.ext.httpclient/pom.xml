@@ -14,18 +14,18 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>commons-httpclient</groupId>
-			<artifactId>commons-httpclient</artifactId>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
 			<version>${lib-httpclient-version}</version>
 		</dependency>
 		<dependency>
-			<groupId>commons-httpcore</groupId>
-			<artifactId>commons-httpcore</artifactId>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpcore</artifactId>
 			<version>${lib-httpcore-version}</version>
 		</dependency>
 		<dependency>
-			<groupId>commons-httpmime</groupId>
-			<artifactId>commons-httpmime</artifactId>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpmime</artifactId>
 			<version>${lib-httpmime-version}</version>
 		</dependency>
 		<dependency>

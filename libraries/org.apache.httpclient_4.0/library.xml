@@ -1,8 +1,8 @@
 <library id="httpclient">
 	<package name="org.apache.httpclient">
 		<maven>
-			<groupId>commons-httpclient</groupId>
-			<artifactId>commons-httpclient</artifactId>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
 		</maven>
 	</package>
 	<version>4.0</version>

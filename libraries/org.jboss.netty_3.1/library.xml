@@ -1,5 +1,9 @@
 <library id="netty">
-	<package name="org.jboss.netty" />
+	<package name="org.jboss.netty">
+    	<maven>
+			<artifactId>netty</artifactId>
+		</maven>
+	</package>
 	<version>3.1</version>
 	<release>5.GA</release>
 	<distributions>
