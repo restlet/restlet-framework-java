@@ -1,6 +1,7 @@
 <library id="oauth">
-	<package name="net.oauth.core">
+	<package name="net.oauth">
 		<maven>
+            <groupId>net.oauth.core</groupId>
 			<artifactId>oauth</artifactId>
 			<version>20090617</version>
 		</maven>
