@@ -42,6 +42,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
 import org.restlet.resource.Directory;
 import org.restlet.routing.Router;
+import org.restlet.routing.Template;
 import org.restlet.security.ChallengeAuthenticator;
 import org.restlet.security.MapVerifier;
 
@@ -87,7 +88,8 @@ public class Part11 extends Application {
         ChallengeAuthenticator guard = new ChallengeAuthenticator(getContext(),
                 ChallengeScheme.HTTP_BASIC, "Tutorial");
         guard.setVerifier(verifier);
-        router.attach("/docs/", guard);
+        router.attach("/docs/", guard).setMatchingMode(
+                Template.MODE_STARTS_WITH);
 
         // Create a directory able to expose a hierarchy of files
         Directory directory = new Directory(getContext(), ROOT_URI);

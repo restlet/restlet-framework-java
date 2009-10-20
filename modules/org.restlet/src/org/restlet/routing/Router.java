@@ -37,6 +37,7 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.data.Status;
+import org.restlet.resource.Directory;
 import org.restlet.resource.Finder;
 import org.restlet.util.RouteList;
 
@@ -272,7 +273,12 @@ public class Router extends Restlet {
     }
 
     /**
-     * Creates a new route for the given URI pattern and target.
+     * Creates a new route for the given URI pattern and target. If the target
+     * is a {@link Directory}, then the matching mode of the created
+     * {@link Route} is set to {@link Template#MODE_STARTS_WITH}, otherwise it
+     * uses the {@link #getDefaultMatchingMode()} result. The route will match
+     * the URI query string depending on the result of
+     * {@link #getDefaultMatchQuery()}.
      * 
      * @param uriPattern
      *            The URI pattern that must match the relative part of the
@@ -284,8 +290,15 @@ public class Router extends Restlet {
     @SuppressWarnings("deprecation")
     protected Route createRoute(String uriPattern, Restlet target) {
         Route result = new Route(this, uriPattern, target);
-        result.getTemplate().setMatchingMode(getDefaultMatchingMode());
-        result.setMatchQuery(this.defaultMatchQuery);
+
+        if (target instanceof Directory) {
+            result.getTemplate().setMatchingMode(Template.MODE_STARTS_WITH);
+        } else {
+            result.getTemplate().setMatchingMode(getDefaultMatchingMode());
+        }
+
+        result.setMatchQuery(getDefaultMatchQuery());
+
         return result;
     }
 

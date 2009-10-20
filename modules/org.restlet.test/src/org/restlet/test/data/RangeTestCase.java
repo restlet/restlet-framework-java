@@ -52,8 +52,6 @@ import org.restlet.data.Status;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Directory;
 import org.restlet.routing.Router;
-import org.restlet.routing.Template;
-import org.restlet.routing.TemplateRoute;
 import org.restlet.test.RestletTestCase;
 
 /**
@@ -82,8 +80,7 @@ public class RangeTestCase extends RestletTestCase {
             Directory directory = new Directory(getContext(), LocalReference
                     .createFileReference(testDir));
             directory.setModifiable(true);
-            TemplateRoute route = router.attach("/testPut/", directory);
-            route.setMatchingMode(Template.MODE_STARTS_WITH);
+            router.attach("/testPut/", directory);
             return router;
         }
     }
