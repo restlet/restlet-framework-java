@@ -3,9 +3,9 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>org.restlet</groupId>
-	<artifactId>org.restlet.parent</artifactId>
-	<version>2.0-SNAPSHOT</version>
+    <groupId>org.restlet.dev</groupId>
+    <artifactId>org.restlet.parent</artifactId>
+    <version>2.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Restlet project</name>
@@ -74,7 +74,7 @@
 		<lib-jdom-version>1.1</lib-jdom-version>
 		<lib-jettison-version>1.1</lib-jettison-version>
 		<lib-jetty-ajp-version>7.0.0</lib-jetty-ajp-version>
-		<lib-jetty-continuations-version>7.0.0</lib-jetty-continuations-version>
+		<lib-jetty-continuation-version>7.0.0</lib-jetty-continuation-version>
 		<lib-jetty-http-version>7.0.0</lib-jetty-http-version>
 		<lib-jetty-io-version>7.0.0</lib-jetty-io-version>
 		<lib-jetty-server-version>7.0.0</lib-jetty-server-version>
