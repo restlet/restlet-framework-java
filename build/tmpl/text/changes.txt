@@ -10,6 +10,8 @@ Changes log
           at start time. Reported by Avi Flax.
         - Fixed issue with Grizzly Maven artifact ID. 
           Reported by Daniel Peters.
+        - Fixed issue with TransformRepresentation which should not use 
+          XMLFilter in getSaxSource(). Contributed by Warren Janssens. 
     - Misc
         - Updated license file to mention distribution under EPL 1.0 in
           addition to other licenses, like for Restlet 2.0.
