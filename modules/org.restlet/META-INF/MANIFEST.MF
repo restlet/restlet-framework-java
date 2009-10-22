@@ -120,6 +120,7 @@ Export-Package: org.restlet;
    org.restlet"
 Import-Package: javax.net,
  javax.net.ssl,
+ javax.xml.parsers,
  org.osgi.framework
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-Activator: org.restlet.engine.internal.Activator

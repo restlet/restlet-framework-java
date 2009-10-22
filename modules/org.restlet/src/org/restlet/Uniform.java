@@ -30,7 +30,6 @@
 
 package org.restlet;
 
-
 /**
  * Uniform REST interface. "The central feature that distinguishes the REST
  * architectural style from other network-based styles is its emphasis on a
