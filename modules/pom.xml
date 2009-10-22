@@ -138,6 +138,7 @@
 		<module>org.restlet.ext.atom</module>
 		<module>org.restlet</module>
 		<!-- <module>org.restlet.test</module> -->
+		<module>org.restlet.ext.crypto</module>
 		<module>org.restlet.ext.dataservices</module>
 		<module>org.restlet.example</module>
 		<module>org.restlet.ext.fileupload</module>
