@@ -44,6 +44,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.URIResolver;
+import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
@@ -53,10 +54,13 @@ import javax.xml.transform.stream.StreamSource;
 import org.restlet.Context;
 import org.restlet.Response;
 import org.restlet.data.Reference;
+import org.restlet.ext.xml.internal.AbstractXmlReader;
 import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 import org.xml.sax.XMLFilter;
+import org.xml.sax.XMLReader;
 
 /**
  * Representation able to apply an XSLT transformation. The internal JAXP
@@ -263,51 +267,46 @@ public class TransformRepresentation extends OutputRepresentation {
      * @throws IOException
      */
     public SAXSource getSaxSource() throws IOException {
-        SAXSource source = null;
+        SAXSource result = null;
 
         if (getSourceRepresentation() instanceof XmlRepresentation) {
-            source = ((XmlRepresentation) getSourceRepresentation())
+            result = ((XmlRepresentation) getSourceRepresentation())
                     .getSaxSource();
         } else if (getSourceRepresentation() instanceof TransformRepresentation) {
-            final TransformRepresentation lastTR = (TransformRepresentation) getSourceRepresentation();
-            TransformRepresentation rootTR = lastTR;
-            final XMLFilter lastFilter = lastTR.getXmlFilter();
-            XMLFilter rootFilter = lastFilter;
-            XMLFilter currFilter = null;
+            XMLReader reader = new AbstractXmlReader() {
 
-            // Walk up the transformation hierarchy while
-            // building the chain of SAX filters
-            while (rootTR.getSourceRepresentation() instanceof TransformRepresentation) {
-                rootTR = (TransformRepresentation) rootTR
-                        .getSourceRepresentation();
-                currFilter = rootTR.getXmlFilter();
-                rootFilter.setParent(currFilter);
-                rootFilter = currFilter;
-            }
+                public void parse(String systemId) throws IOException,
+                        SAXException {
+                    throw new IllegalStateException("Not implemented");
+                }
 
-            InputSource rootSource = null;
-            if (rootTR.getSourceRepresentation() instanceof XmlRepresentation) {
-                rootSource = ((XmlRepresentation) rootTR
-                        .getSourceRepresentation()).getSaxSource()
-                        .getInputSource();
-            } else {
-                rootSource = new InputSource(rootTR.getSourceRepresentation()
-                        .getStream());
-            }
+                public void parse(InputSource input) throws IOException,
+                        SAXException {
+                    try {
+                        TransformRepresentation source = (TransformRepresentation) getSourceRepresentation();
+                        source.getTransformer().transform(
+                                source.getSaxSource(),
+                                new SAXResult(getContentHandler()));
+                    } catch (TransformerException te) {
+                        throw new IOException("Transformer exception. "
+                                + te.getMessage());
+                    }
+                }
+            };
 
-            source = new SAXSource(lastFilter, rootSource);
+            result = new SAXSource(reader, null);
         } else {
             // Prepare the source and result documents
-            source = new SAXSource(new InputSource(getSourceRepresentation()
+            result = new SAXSource(new InputSource(getSourceRepresentation()
                     .getStream()));
         }
 
         if (getSourceRepresentation().getIdentifier() != null) {
-            source.setSystemId(getSourceRepresentation().getIdentifier()
+            result.setSystemId(getSourceRepresentation().getIdentifier()
                     .getTargetRef().toString());
         }
 
-        return source;
+        return result;
     }
 
     /**
