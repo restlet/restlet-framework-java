@@ -11,7 +11,9 @@ Changes log
         - Fixed issue with Grizzly Maven artifact ID. 
           Reported by Daniel Peters.
         - Fixed issue with TransformRepresentation which should not use 
-          XMLFilter in getSaxSource(). Contributed by Warren Janssens. 
+          XMLFilter in getSaxSource(). Contributed by Warren Janssens.
+        - Fixed bug in hours formatting in text elements of Atom feeds.
+          Reported by Moisei Rabinovich.
     - Misc
         - Updated license file to mention distribution under EPL 1.0 in
           addition to other licenses, like for Restlet 2.0.

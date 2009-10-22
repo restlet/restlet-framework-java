@@ -62,7 +62,7 @@ public class Text {
 
         if (date != null) {
             final SimpleDateFormat dateFormat = new SimpleDateFormat(
-                    "yyyy-MM-dd'T'hh:mm:ssZ");
+                    "yyyy-MM-dd'T'HH:mm:ssZ");
             writer.characters(dateFormat.format(date));
         }
 
