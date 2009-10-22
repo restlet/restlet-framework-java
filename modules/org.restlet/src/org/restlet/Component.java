@@ -42,6 +42,7 @@ import org.restlet.engine.Engine;
 import org.restlet.engine.RestletHelper;
 import org.restlet.engine.component.ComponentHelper;
 import org.restlet.engine.component.ComponentXmlParser;
+import org.restlet.engine.component.InternalRouter;
 import org.restlet.representation.FileRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Finder;
@@ -187,60 +188,8 @@ public class Component extends Restlet {
             if (this.helper != null) {
                 this.defaultHost = new VirtualHost(getContext()
                         .createChildContext());
-                this.internalRouter = new Router(getContext()
-                        .createChildContext()) {
-
-                    @SuppressWarnings("deprecation")
-                    @Override
-                    public org.restlet.routing.Route attach(Restlet target) {
-                        if (target.getContext() == null) {
-                            target
-                                    .setContext(getContext()
-                                            .createChildContext());
-                        }
-
-                        return super.attach(target);
-                    }
-
-                    @Override
-                    @SuppressWarnings("deprecation")
-                    public org.restlet.routing.Route attach(String uriPattern,
-                            Restlet target) {
-                        if (target.getContext() == null) {
-                            target
-                                    .setContext(getContext()
-                                            .createChildContext());
-                        }
-
-                        return super.attach(uriPattern, target);
-                    }
-
-                    @Override
-                    @SuppressWarnings("deprecation")
-                    public org.restlet.routing.Route attachDefault(
-                            Restlet defaultTarget) {
-                        if (defaultTarget.getContext() == null) {
-                            defaultTarget.setContext(getContext()
-                                    .createChildContext());
-                        }
-
-                        return super.attachDefault(defaultTarget);
-                    }
-
-                    @Override
-                    public Finder createFinder(Class<?> targetClass) {
-                        Finder result = super.createFinder(targetClass);
-                        result.setContext(getContext().createChildContext());
-                        return result;
-                    }
-
-                };
-
-                // Override Router's default modes
-                this.internalRouter
-                        .setDefaultMatchingMode(Template.MODE_STARTS_WITH);
-                this.internalRouter.setRoutingMode(Router.BEST);
-
+                this.internalRouter = new InternalRouter(getContext()
+                        .createChildContext());
                 this.logService = new LogService();
                 this.statusService = new StatusService();
                 this.clients.setContext(getContext());

@@ -86,6 +86,9 @@ Changes log
           Reported by Guido Schmidt.
         - Fixed OSGi dependency issue with the JAX-RS extension.
           Reported by Stefan Maassen.
+        - The rootRef attribute of a request was not set when handled by the 
+          Component's internal router.
+          Reported by Emily Toop.
     - Enhancements
         - Improved JAXB converted. Contributed by Sanjay Acharya.
         - Upgraded Apache Commons Logging to version 1.1.1.
