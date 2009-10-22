@@ -104,12 +104,9 @@ import org.restlet.util.Series;
  * <td>0</td>
  * <td>Sets traffic class or type-of-service octet in the IP header for packets
  * sent from this Socket. As the underlying network implementation may ignore
- * this value applications should consider it a hint.See
- * 
- * @see http://java.sun.com/javase/6/docs/api/java/net/Socket.html?is-
- *      external=true#setTrafficClass(int).</td>
- *      </tr>
- *      </table>
+ * this value applications should consider it a hint.</td>
+ * </tr>
+ * </table>
  * 
  * @see <a href="http://jboss.org/netty/">Netty home page</a>
  * @author Gabriel Ciuloaica (gciuloaica@gmail.com)
