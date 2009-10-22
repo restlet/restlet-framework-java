@@ -47,7 +47,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.dbcp.ConnectionFactory;
 import org.apache.commons.dbcp.DriverManagerConnectionFactory;
 import org.apache.commons.dbcp.PoolableConnectionFactory;
-import org.apache.commons.dbcp.PoolingDataSource;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.restlet.Client;
@@ -58,6 +57,7 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.engine.ClientHelper;
 import org.restlet.engine.Engine;
+import org.restlet.ext.jdbc.internal.ConnectionSource;
 import org.restlet.representation.Representation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -65,16 +65,19 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-
 /**
  * Client connector to a JDBC database. To send a request to the server, create
  * a new instance of a client supporting the JDBC Protocol and invoke the
- * handle() method. Alternatively, you can create a new Call with the JDBC URI
- * as the resource reference and use an XML request as the entity.
+ * handle() method. Alternatively, you can create a new {@link Request} with the
+ * JDBC URI as the resource reference and use an XML request as the entity.
  * <p>
  * Database connections are optionally pooled using Apache Commons DBCP. In this
  * case, a different connection pool is created for each unique combination of
  * JDBC URI and connection properties.
+ * <p>
+ * Paging is supported via two header elements: "start" for the index of the
+ * first result (0 by default) and "limit" for the maximum number of results
+ * retrieved (unlimited by default).
  * <p>
  * Do not forget to register your JDBC drivers before using this client. See <a
  * href="http://java.sun.com/j2se/1.5.0/docs/api/java/sql/DriverManager.html">
@@ -96,7 +99,8 @@ import org.xml.sax.SAXException;
  * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{@code <property
  * name="...">true</property >}<br>
  * &nbsp;&nbsp;&nbsp;&nbsp;{@code </connection>}<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;{@code
+ * &nbsp;&nbsp;&nbsp;&nbsp;{@code <start>10</start>}<br>
+ * <limit>20</limit>}<br>
  * <returnGeneratedKeys>true</returnGeneratedKeys>}<br>
  * &nbsp;&nbsp;{@code </header>}<br>
  * &nbsp;&nbsp;{@code <body>}<br>
@@ -117,49 +121,6 @@ import org.xml.sax.SAXException;
  */
 public class JdbcClientHelper extends ClientHelper {
     /**
-     * Pooling data source which remembers its connection properties and URI.
-     */
-    private static class ConnectionSource extends PoolingDataSource {
-        /** The connection properties. */
-        protected Properties properties;
-
-        /** The connection URI. */
-        protected String uri;
-
-        /**
-         * Constructor.
-         * 
-         * @param uri
-         *            The connection URI.
-         * @param properties
-         *            The connection properties.
-         */
-        public ConnectionSource(String uri, Properties properties) {
-            super(createConnectionPool(uri, properties));
-            this.uri = uri;
-            this.properties = properties;
-        }
-
-        /**
-         * Returns the connection properties.
-         * 
-         * @return The connection properties.
-         */
-        public Properties getProperties() {
-            return this.properties;
-        }
-
-        /**
-         * Returns the connection URI.
-         * 
-         * @return The connection URI.
-         */
-        public String getUri() {
-            return this.uri;
-        }
-    }
-
-    /**
      * Creates an uniform call.
      * 
      * @param jdbcURI
@@ -169,7 +130,7 @@ public class JdbcClientHelper extends ClientHelper {
      *            The request to send (valid XML request).
      */
     public static Request create(String jdbcURI, Representation request) {
-        final Request result = new Request();
+        Request result = new Request();
         result.getClientInfo().setAgent(Engine.VERSION_HEADER);
         result.setMethod(Method.POST);
         result.setResourceRef(jdbcURI);
@@ -186,21 +147,21 @@ public class JdbcClientHelper extends ClientHelper {
      *            The connection properties.
      * @return The new connection pool.
      */
-    protected static ObjectPool createConnectionPool(String uri,
+    public static ObjectPool createConnectionPool(String uri,
             Properties properties) {
         // Create an ObjectPool that will serve as the actual pool of
         // connections
-        final ObjectPool result = new GenericObjectPool(null);
+        ObjectPool result = new GenericObjectPool(null);
 
         // Create a ConnectionFactory that the pool will use to create
         // Connections
-        final ConnectionFactory connectionFactory = new DriverManagerConnectionFactory(
+        ConnectionFactory connectionFactory = new DriverManagerConnectionFactory(
                 uri, properties);
 
         // Create the PoolableConnectionFactory, which wraps the "real"
         // Connections created by the ConnectionFactory with
         // the classes that implement the pooling functionality.
-        final PoolableConnectionFactory poolableConnectionFactory = new PoolableConnectionFactory(
+        PoolableConnectionFactory poolableConnectionFactory = new PoolableConnectionFactory(
                 connectionFactory, result, null, null, false, false);
 
         // To remove warnings
@@ -217,7 +178,7 @@ public class JdbcClientHelper extends ClientHelper {
      * @return The escaped SQL query.
      */
     public static String sqlEncode(String query) {
-        final StringBuilder result = new StringBuilder(query.length() + 10);
+        StringBuilder result = new StringBuilder(query.length() + 10);
         char currentChar;
 
         for (int i = 0; i < query.length(); i++) {
@@ -267,14 +228,14 @@ public class JdbcClientHelper extends ClientHelper {
         Connection result = null;
 
         if (usePooling) {
-            for (final ConnectionSource c : this.connectionSources) {
+            for (ConnectionSource c : this.connectionSources) {
                 // Check if the connection URI is identical
                 // and if the same number of properties is present
                 if ((result == null) && c.getUri().equalsIgnoreCase(uri)
                         && (properties.size() == c.getProperties().size())) {
                     // Check that the properties tables are equivalent
                     boolean equal = true;
-                    for (final Object key : c.getProperties().keySet()) {
+                    for (Object key : c.getProperties().keySet()) {
                         if (equal && properties.containsKey(key)) {
                             equal = equal
                                     && (properties.get(key).equals(c
@@ -292,8 +253,7 @@ public class JdbcClientHelper extends ClientHelper {
 
             if (result == null) {
                 // No existing connection source found
-                final ConnectionSource cs = new ConnectionSource(uri,
-                        properties);
+                ConnectionSource cs = new ConnectionSource(uri, properties);
                 this.connectionSources.add(cs);
                 result = cs.getConnection();
             }
@@ -319,30 +279,44 @@ public class JdbcClientHelper extends ClientHelper {
         if (request.getMethod().equals(Method.POST)) {
             try {
                 // Parse the JDBC URI
-                final String connectionURI = request.getResourceRef()
-                        .toString();
+                String connectionURI = request.getResourceRef().toString();
 
                 // Parse the request to extract necessary info
-                final DocumentBuilder docBuilder = DocumentBuilderFactory
+                DocumentBuilder docBuilder = DocumentBuilderFactory
                         .newInstance().newDocumentBuilder();
-                final Document requestDoc = docBuilder.parse(request
-                        .getEntity().getStream());
+                Document requestDoc = docBuilder.parse(request.getEntity()
+                        .getStream());
 
-                final Element rootElt = (Element) requestDoc
-                        .getElementsByTagName("request").item(0);
-                final Element headerElt = (Element) rootElt
-                        .getElementsByTagName("header").item(0);
-                final Element connectionElt = (Element) headerElt
+                Element rootElt = (Element) requestDoc.getElementsByTagName(
+                        "request").item(0);
+                Element headerElt = (Element) rootElt.getElementsByTagName(
+                        "header").item(0);
+                Element connectionElt = (Element) headerElt
                         .getElementsByTagName("connection").item(0);
 
                 // Read the connection pooling setting
-                final Node usePoolingNode = connectionElt.getElementsByTagName(
+                Node usePoolingNode = connectionElt.getElementsByTagName(
                         "usePooling").item(0);
-                final boolean usePooling = usePoolingNode.getTextContent()
-                        .equals("true") ? true : false;
+                boolean usePooling = usePoolingNode.getTextContent().equals(
+                        "true") ? true : false;
+
+                // Read the paging setting
+                Node startNode = headerElt.getElementsByTagName("start")
+                        .item(0);
+                int start = startNode != null
+                        && startNode.getTextContent().trim().length() > 0 ? Integer
+                        .parseInt(startNode.getTextContent())
+                        : 0;
+
+                Node limitNode = headerElt.getElementsByTagName("limit")
+                        .item(0);
+                int limit = limitNode != null
+                        && limitNode.getTextContent().trim().length() > 0 ? Integer
+                        .parseInt(limitNode.getTextContent())
+                        : -1;
 
                 // Read the connection properties
-                final NodeList propertyNodes = connectionElt
+                NodeList propertyNodes = connectionElt
                         .getElementsByTagName("property");
                 Node propertyNode = null;
                 Properties properties = null;
@@ -360,30 +334,29 @@ public class JdbcClientHelper extends ClientHelper {
                     properties.setProperty(name, value);
                 }
 
-                final Node returnGeneratedKeysNode = headerElt
-                        .getElementsByTagName("returnGeneratedKeys").item(0);
-                final boolean returnGeneratedKeys = returnGeneratedKeysNode
+                Node returnGeneratedKeysNode = headerElt.getElementsByTagName(
+                        "returnGeneratedKeys").item(0);
+                boolean returnGeneratedKeys = returnGeneratedKeysNode
                         .getTextContent().equals("true") ? true : false;
 
                 // Read the SQL body and get the list of sql statements
-                final Element bodyElt = (Element) rootElt.getElementsByTagName(
-                        "body").item(0);
-                final NodeList statementNodes = bodyElt
+                Element bodyElt = (Element) rootElt
+                        .getElementsByTagName("body").item(0);
+                NodeList statementNodes = bodyElt
                         .getElementsByTagName("statement");
-                final List<String> sqlRequests = new ArrayList<String>();
+                List<String> sqlRequests = new ArrayList<String>();
                 for (int i = 0; i < statementNodes.getLength(); i++) {
-                    final String sqlRequest = statementNodes.item(i)
-                            .getTextContent();
+                    String sqlRequest = statementNodes.item(i).getTextContent();
                     sqlRequests.add(sqlRequest);
                 }
 
                 // Execute the List of SQL requests
                 connection = getConnection(connectionURI, properties,
                         usePooling);
-                final JdbcResult result = handleSqlRequests(connection,
+                JdbcResult result = handleSqlRequests(connection,
                         returnGeneratedKeys, sqlRequests);
-                response.setEntity(new RowSetRepresentation(result));
-
+                response.setEntity(new RowSetRepresentation(result, start,
+                        limit));
             } catch (SQLException se) {
                 getLogger().log(Level.WARNING,
                         "Error while processing the SQL request", se);
@@ -419,8 +392,8 @@ public class JdbcClientHelper extends ClientHelper {
         JdbcResult result = null;
         try {
             connection.setAutoCommit(true);
-            final Statement statement = connection.createStatement();
-            for (final String sqlRequest : sqlRequests) {
+            Statement statement = connection.createStatement();
+            for (String sqlRequest : sqlRequests) {
                 statement.execute(sqlRequest,
                         returnGeneratedKeys ? Statement.RETURN_GENERATED_KEYS
                                 : Statement.NO_GENERATED_KEYS);

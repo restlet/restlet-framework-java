@@ -61,10 +61,15 @@ public class RowSetRepresentation extends OutputRepresentation {
      * 
      * @param resultSet
      *            The result set to use to populate the Web row set.
+     * @param start
+     *            The start index of the page or 0 for the first result.
+     * @param limit
+     *            The page size or -1 if no limit is set.
      * @return A WebRowSet from a ResultSet.
      * @throws SQLException
      */
-    private static WebRowSet create(ResultSet resultSet) throws SQLException {
+    private static WebRowSet create(ResultSet resultSet, int start, int limit)
+            throws SQLException {
         WebRowSet result = null;
 
         try {
@@ -77,7 +82,12 @@ public class RowSetRepresentation extends OutputRepresentation {
         }
 
         if (resultSet != null) {
-            result.populate(resultSet);
+            if (limit > -1) {
+                result.setPageSize(limit);
+                result.setMaxRows(limit);
+            }
+
+            result.populate(resultSet, start < 0 ? 1 : start + 1);
         }
 
         return result;
@@ -97,7 +107,24 @@ public class RowSetRepresentation extends OutputRepresentation {
      * @throws SQLException
      */
     public RowSetRepresentation(JdbcResult jdbcResult) throws SQLException {
-        this(create((jdbcResult == null) ? null : jdbcResult.getResultSet()));
+        this(jdbcResult, -1, -1);
+    }
+
+    /**
+     * Constructor with paging.
+     * 
+     * @param jdbcResult
+     *            The inner JdbcResult.
+     * @param start
+     *            The start index of the page or 0 for the first result.
+     * @param limit
+     *            The page size or -1 if no limit is set.
+     * @throws SQLException
+     */
+    public RowSetRepresentation(JdbcResult jdbcResult, int start, int limit)
+            throws SQLException {
+        this(create((jdbcResult == null) ? null : jdbcResult.getResultSet(),
+                start, limit));
         this.jdbcResult = jdbcResult;
     }
 
@@ -109,7 +136,23 @@ public class RowSetRepresentation extends OutputRepresentation {
      * @throws SQLException
      */
     public RowSetRepresentation(ResultSet resultSet) throws SQLException {
-        this(create(resultSet));
+        this(resultSet, -1, -1);
+    }
+
+    /**
+     * Constructor with paging.
+     * 
+     * @param resultSet
+     *            The result set to use to populate the Web row set.
+     * @param start
+     *            The start index of the page or 1 for the first result.
+     * @param limit
+     *            The page size or -1 if no limit is set.
+     * @throws SQLException
+     */
+    public RowSetRepresentation(ResultSet resultSet, int start, int limit)
+            throws SQLException {
+        this(create(resultSet, start, limit));
     }
 
     /**

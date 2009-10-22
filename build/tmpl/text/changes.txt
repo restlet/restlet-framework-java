@@ -104,6 +104,8 @@ Changes log
         - Added Netty extension containing an HTTP server connector 
           based on this NIO client/server framework developed at JBoss.
           Contributed by Gabriel Ciuloaica.
+        - Added support for result set paging in JDBC client connector.
+          Contributed by Warren Janssens.
     - Misc
         - Added Velocity template in the org.restlet.example project.
           Reported by Ben Vesco.
