@@ -14,6 +14,8 @@ Changes log
           XMLFilter in getSaxSource(). Contributed by Warren Janssens.
         - Fixed bug in hours formatting in text elements of Atom feeds.
           Reported by Moisei Rabinovich.
+        - Fixed potential NPE in ContentType.
+          Reported by Eugeniy Chemezov. 
     - Misc
         - Updated license file to mention distribution under EPL 1.0 in
           addition to other licenses, like for Restlet 2.0.
