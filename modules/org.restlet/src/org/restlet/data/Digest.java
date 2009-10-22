@@ -33,8 +33,6 @@ package org.restlet.data;
 import java.util.Arrays;
 
 import org.restlet.representation.Representation;
-import org.restlet.security.DigestAuthenticator;
-import org.restlet.security.DigestVerifier;
 
 /**
  * Describes a digest value and the digest algorithm used. Digests can have
@@ -42,8 +40,6 @@ import org.restlet.security.DigestVerifier;
  * between resources, or for authentication purpose.
  * 
  * @see Representation#getDigest()
- * @see DigestAuthenticator
- * @see DigestVerifier
  * @author Jerome Louvel
  */
 public class Digest {

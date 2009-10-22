@@ -28,13 +28,14 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.security;
+package org.restlet.ext.crypto;
 
 import java.util.logging.Level;
 
 import org.restlet.Context;
 import org.restlet.data.Digest;
-import org.restlet.engine.security.DigestUtils;
+import org.restlet.security.LocalVerifier;
+import org.restlet.security.SecretVerifier;
 
 /**
  * Wrapper verifier that can verify digested secrets. If the provided secret is

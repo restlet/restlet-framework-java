@@ -118,9 +118,7 @@ Export-Package: org.restlet;
    org.restlet.data,
    org.restlet.representation,
    org.restlet"
-Import-Package: javax.crypto,
- javax.crypto.spec,
- javax.net,
+Import-Package: javax.net,
  javax.net.ssl,
  org.osgi.framework
 Bundle-RequiredExecutionEnvironment: J2SE-1.5

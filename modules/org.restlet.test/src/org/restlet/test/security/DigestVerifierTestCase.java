@@ -31,8 +31,8 @@
 package org.restlet.test.security;
 
 import org.restlet.data.Digest;
+import org.restlet.ext.crypto.DigestVerifier;
 import org.restlet.security.MapVerifier;
-import org.restlet.security.DigestVerifier;
 import org.restlet.test.RestletTestCase;
 
 /**

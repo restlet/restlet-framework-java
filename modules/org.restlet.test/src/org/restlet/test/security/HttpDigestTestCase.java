@@ -37,9 +37,9 @@ import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Status;
+import org.restlet.ext.crypto.DigestAuthenticator;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
-import org.restlet.security.DigestAuthenticator;
 import org.restlet.security.MapVerifier;
 
 /**

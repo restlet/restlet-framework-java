@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.security;
+package org.restlet.ext.crypto;
 
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;

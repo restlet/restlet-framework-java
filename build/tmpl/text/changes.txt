@@ -64,6 +64,10 @@ Changes log
           Note that for easier configuration, the router detects the
           attachment of Directory instances and automatically uses a 
           MODE_START_WITH mode in this case.
+        - Added "org.restlet.ext.crypto" extension including many digest
+          related features such as Amazon S3 and Azure client HTTP
+          authentication. This removes the dependency from the Restlet
+          core to javax.crypto.
       - Bugs fixed
         - Fixed bug when the deprecated method "createRoot" is 
           implemented instead of the "createInboundRoot".

@@ -38,7 +38,7 @@ import org.restlet.data.Form;
 import org.restlet.data.Method;
 import org.restlet.engine.http.HttpConstants;
 import org.restlet.engine.security.AuthenticatorUtils;
-import org.restlet.engine.security.HttpAwsS3Helper;
+import org.restlet.ext.crypto.HttpAwsS3Helper;
 import org.restlet.test.RestletTestCase;
 
 /**

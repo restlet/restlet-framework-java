@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.security;
+package org.restlet.ext.crypto.internal;
 
 import java.security.GeneralSecurityException;
 
@@ -42,7 +42,7 @@ import org.restlet.engine.util.Base64;
  * 
  * @author Remi Dewitte <remi@gide.net>
  */
-public class CryptoUtils {
+public final class CryptoUtils {
 
     /**
      * Creates a cipher for a given algorithm and secret.
@@ -57,7 +57,7 @@ public class CryptoUtils {
      * @return The new cipher.
      * @throws GeneralSecurityException
      */
-    protected static Cipher createCipher(String algo, String base64Secret,
+    private static Cipher createCipher(String algo, String base64Secret,
             int mode) throws GeneralSecurityException {
         Cipher cipher = Cipher.getInstance(algo);
         cipher.init(mode, new SecretKeySpec(Base64.decode(base64Secret), algo));
@@ -98,7 +98,7 @@ public class CryptoUtils {
      * @return The processed byte array.
      * @throws GeneralSecurityException
      */
-    protected static byte[] doFinal(String algo, String base64Secret, int mode,
+    private static byte[] doFinal(String algo, String base64Secret, int mode,
             byte[] what) throws GeneralSecurityException {
         return createCipher(algo, base64Secret, mode).doFinal(what);
     }

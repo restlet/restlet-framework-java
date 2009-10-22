@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.security;
+package org.restlet.ext.crypto;
 
 import java.util.Date;
 import java.util.Iterator;
@@ -43,14 +43,15 @@ import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.engine.http.HttpConstants;
+import org.restlet.engine.security.AuthenticatorHelper;
 import org.restlet.engine.util.Base64;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.engine.util.SystemUtils;
 import org.restlet.util.Series;
 
 /**
- * Implements the Microsoft Shared Key authentication for Azure services. This
- * concerns Blob and Queues on Azure Storage.<br>
+ * Implements the Shared Key authentication for Azure services. This concerns
+ * Blob and Queues on Azure Storage.<br>
  * <br>
  * More documentation is available <a
  * href="http://msdn.microsoft.com/en-us/library/dd179428.aspx">here</a>

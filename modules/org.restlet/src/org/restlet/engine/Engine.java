@@ -524,14 +524,6 @@ public class Engine {
         getRegisteredAuthenticators().add(
                 new org.restlet.engine.security.HttpBasicHelper());
         getRegisteredAuthenticators().add(
-                new org.restlet.engine.security.HttpDigestHelper());
-        getRegisteredAuthenticators().add(
-                new org.restlet.engine.security.HttpAwsS3Helper());
-        getRegisteredAuthenticators().add(
-                new org.restlet.engine.security.HttpSharedKeyHelper());
-        getRegisteredAuthenticators().add(
-                new org.restlet.engine.security.HttpSharedKeyLiteHelper());
-        getRegisteredAuthenticators().add(
                 new org.restlet.engine.security.SmtpPlainHelper());
     }
 
