@@ -27,6 +27,7 @@
  * 
  * Restlet is a registered trademark of Noelios Technologies.
  */
+
 package org.restlet.ext.netty.internal;
 
 import java.lang.reflect.Constructor;
@@ -39,7 +40,6 @@ import org.jboss.netty.buffer.ChannelBufferFactory;
  * </p>
  * 
  * @author Gabriel Ciuloaica (gciuloaica@gmail.com)
- * 
  */
 public enum NettyParams {
     keepAlive(Boolean.class), bufferFactoryClass(ChannelBufferFactory.class), connectTimeoutMillis(
@@ -47,8 +47,15 @@ public enum NettyParams {
             Integer.class), sendBufferSize(Integer.class), trafficClass(
             Integer.class);
 
+    /** The parameter type class. */
     private final Class<?> paramType;
 
+    /**
+     * Private constructor.
+     * 
+     * @param type
+     *            The parameter type class.
+     */
     private NettyParams(Class<?> type) {
         this.paramType = type;
     }
