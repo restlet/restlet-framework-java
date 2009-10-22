@@ -166,7 +166,9 @@ public abstract class Filter extends Restlet {
             response.setStatus(Status.SERVER_ERROR_INTERNAL);
             getLogger()
                     .warning(
-                            "A filter was executed without a next Restlet attached to it.");
+                            "The filter "
+                                    + getName()
+                                    + " was executed without a next Restlet attached to it.");
         }
 
         return result;

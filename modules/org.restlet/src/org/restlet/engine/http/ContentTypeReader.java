@@ -70,7 +70,8 @@ public class ContentTypeReader extends HeaderReader {
         CharacterSet characterSet = null;
 
         if (parameters != null) {
-            final String charSet = parameters.getFirstValue("charset");
+            String charSet = parameters.getFirstValue("charset");
+
             if (charSet != null) {
                 parameters.removeAll("charset");
                 characterSet = new CharacterSet(charSet);
@@ -95,13 +96,12 @@ public class ContentTypeReader extends HeaderReader {
         boolean readingParamName = false;
         boolean readingParamValue = false;
 
-        final StringBuilder mediaTypeBuffer = new StringBuilder();
+        StringBuilder mediaTypeBuffer = new StringBuilder();
         StringBuilder paramNameBuffer = null;
         StringBuilder paramValueBuffer = null;
 
         Series<Parameter> parameters = null;
-
-        final String nextValue = readValue();
+        String nextValue = readValue();
         int nextIndex = 0;
 
         if (nextValue != null) {
@@ -135,7 +135,9 @@ public class ContentTypeReader extends HeaderReader {
                     } else if (HttpUtils.isText(nextChar)) {
                         mediaTypeBuffer.append((char) nextChar);
                     } else {
-                        throw new IOException("The " + (char) nextChar
+                        throw new IOException(
+                                "The "
+                                        + (char) nextChar
                                         + " character isn't allowed in a media type name.");
                     }
                 } else if (readingParamName) {

@@ -109,6 +109,10 @@ Changes log
           Contributed by Gabriel Ciuloaica.
         - Added support for result set paging in JDBC client connector.
           Contributed by Warren Janssens.
+        - Restlet#name property now uses toString() as a default value
+          and Filter uses this property in its log traces.
+        - Improved Context#getLogger() to cover cases where the class's
+          canonical name is empty like for anonymous classes.
     - Misc
         - Added Velocity template in the org.restlet.example project.
           Reported by Ben Vesco.
