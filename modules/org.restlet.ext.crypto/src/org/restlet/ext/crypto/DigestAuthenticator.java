@@ -38,6 +38,8 @@ import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Digest;
 import org.restlet.data.Reference;
+import org.restlet.ext.crypto.internal.HttpDigestHelper;
+import org.restlet.ext.crypto.internal.HttpDigestVerifier;
 import org.restlet.security.ChallengeAuthenticator;
 import org.restlet.security.LocalVerifier;
 import org.restlet.security.Verifier;
