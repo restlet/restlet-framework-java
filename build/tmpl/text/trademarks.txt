@@ -4,7 +4,7 @@ Trademark notice
 ================
 
 
-Version 3.0, October 2008
+Version 3.1, October 2009
 
 The trademarks and service marks "Restlet" and "Noelios" are the sole property 
 of Noelios Technologies and can't be used to endorse or promote products derived 
@@ -16,8 +16,8 @@ their names without prior written permission. For licensing, please contact the
 owner:
 
     Noelios Technologies
-    69 rue Carnot
-    92300 Levallois-Perret
+    5 rue Salomon de Rothschild
+    92156 Suresnes Cedex
     FRANCE
 	http://www.restlet.org/about/legal
 	mailto:legal@noelios.com

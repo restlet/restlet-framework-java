@@ -4,7 +4,7 @@ License agreement
 =================
 
 
-Version 6.0, March 2009
+Version 6.1, October 2009
 
 This software distribution, including the "Restlet API" and the "Noelios 
 Restlet Engine", is provided to you under either the LGPL license version 
@@ -24,8 +24,8 @@ their respective license which are reproduced in the "lib/*/license.txt" files.
 For special licensing requests, please contact:
   
     Noelios Technologies
-    69 rue Carnot
-    92300 Levallois-Perret
+    5 rue Salomon de Rothschild
+    92156 Suresnes Cedex
     FRANCE
 	http://www.restlet.org/about/legal
 	mailto:legal@noelios.com
