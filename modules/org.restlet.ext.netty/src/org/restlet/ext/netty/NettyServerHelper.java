@@ -45,11 +45,15 @@ import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import org.restlet.Server;
 import org.restlet.data.Parameter;
 import org.restlet.engine.http.HttpServerHelper;
+import org.restlet.ext.netty.internal.NettyParams;
 import org.restlet.util.Series;
 
 /**
- * Abstract Netty Web server connector. Here is the list of parameters that are
- * supported. They should be set in the Server's context before it is started:
+ * Abstract Netty Web server connector. Parameters, listed below, are used to
+ * configure both a parent channel and its child channels. To configure the
+ * child channels, prepend "child." prefix to the actual parameter names of a
+ * child channel. They should be set in the Server's context before it is
+ * started:
  * <table>
  * <tr>
  * <th>Parameter name</th>
@@ -58,16 +62,61 @@ import org.restlet.util.Series;
  * <th>Description</th>
  * </tr>
  * <tr>
- * <td></td>
- * <td></td>
- * <td></td>
+ * <td>bufferFactoryClass</td>
+ * <td>String</td>
+ * <td>org.jboss.netty.buffer.HeapChannelBufferFactory</td>
+ * <td>Channel buffer allocation strategy.</td>
  * </tr>
- * </table>
+ * <tr>
+ * <td>connectTimeoutMillis</td>
+ * <td>int</td>
+ * <td>0</td>
+ * <td>Connect timeout of the channel in milliseconds. Sets to 0 to disable it.</td>
+ * </tr>
+ * <tr>
+ * <td>keepAlive</td>
+ * <td>boolean</td>
+ * <td>false</td>
+ * <td>Turn on/off socket keep alive.</td>
+ * </tr>
+ * <tr>
+ * <td>reuseAddress</td>
+ * <td>boolean</td>
+ * <td>false</td>
+ * <td>Enable/Disable reuse address for socket.</td>
+ * </tr>
+ * <tr>
+ * <td>receiveBufferSize</td>
+ * <td>int</td>
+ * <td>0</td>
+ * <td>Provide the size of the buffer actually used by the platform when
+ * receiving in data on this socket.</td>
+ * </tr>
+ * <tr>
+ * <td>sendBufferSize</td>
+ * <td>int</td>
+ * <td>0</td>
+ * <td>Set a hint the size of the underlying buffers for outgoing network I/O.</td>
+ * </tr>
+ * <tr>
+ * <td>trafficClass</td>
+ * <td>int</td>
+ * <td>0</td>
+ * <td>Sets traffic class or type-of-service octet in the IP header for packets
+ * sent from this Socket. As the underlying network implementation may ignore
+ * this value applications should consider it a hint.See
+ * 
+ * @see http://java.sun.com/javase/6/docs/api/java/net/Socket.html?is-
+ *      external=true#setTrafficClass(int).</td>
+ *      </tr>
+ *      </table>
  * 
  * @see <a href="http://jboss.org/netty/">Netty home page</a>
  * @author Gabriel Ciuloaica (gciuloaica@gmail.com)
  */
 public abstract class NettyServerHelper extends HttpServerHelper {
+
+    private static final String CHILD_CHANNEL_PREFIX = "child.";
 
     private static final String RESTLET_NETTY_SERVER = "restlet-netty-server";
 
@@ -98,13 +147,9 @@ public abstract class NettyServerHelper extends HttpServerHelper {
     public synchronized void start() throws Exception {
         ServerBootstrap bootstrap = new ServerBootstrap(factory);
         bootstrap.setPipelineFactory(getPipelineFatory());
-        
-        // Copy the parameters as channel options
-        Series<Parameter> options = getHelpedParameters();
 
-        for (Parameter option : options) {
-            bootstrap.setOption(option.getName(), option.getValue());
-        }
+        // Copy the parameters as channel options
+        setServerParameters(bootstrap);
 
         int port = getHelped().getPort();
         Channel channel = bootstrap.bind(new InetSocketAddress(port));
@@ -114,6 +159,34 @@ public abstract class NettyServerHelper extends HttpServerHelper {
         allChannels.add(channel);
         getLogger().log(Level.INFO,
                 "Started Netty " + getProtocols() + " server");
+    }
+
+    /**
+     * <p>
+     * Pass netty channel parameters through bootstrap.
+     * </p>
+     * 
+     * @param bootstrap
+     *            - server bootstrap instance
+     */
+    private void setServerParameters(final ServerBootstrap bootstrap) {
+        Series<Parameter> options = getHelpedParameters();
+
+        for (Parameter option : options) {
+            String paramName = option.getName();
+            if (paramName.startsWith(CHILD_CHANNEL_PREFIX)) {
+                paramName = option.getName().substring(
+                        CHILD_CHANNEL_PREFIX.length());
+            }
+            NettyParams param = NettyParams.valueOf(paramName);
+            if (param != null) {
+                final Object value = param.getValue(option.getValue());
+                if (value != null) {
+                    bootstrap.setOption(option.getName(), value);
+                }
+            }
+
+        }
     }
 
     @Override

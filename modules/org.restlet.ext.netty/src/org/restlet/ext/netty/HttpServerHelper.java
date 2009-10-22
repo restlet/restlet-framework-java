@@ -36,23 +36,7 @@ import org.restlet.data.Protocol;
 import org.restlet.ext.netty.internal.HttpServerPipelineFactory;
 
 /**
- * Netty HTTP server connector. Here is the list of additional parameters that
- * are supported. They should be set in the Server's context before it is
- * started:
- * <table>
- * <tr>
- * <th>Parameter name</th>
- * <th>Value type</th>
- * <th>Default value</th>
- * <th>Description</th>
- * </tr>
- * <tr>
- * <td></td>
- * <td></td>
- * <td></td>
- * <td></td>
- * </tr>
- * </table>
+ * Netty HTTP server connector. 
  * 
  * @see <a href="http://jboss.org/netty/">Netty home page</a>
  * @author Gabriel Ciuloaica (gciuloaica@gmail.com)
