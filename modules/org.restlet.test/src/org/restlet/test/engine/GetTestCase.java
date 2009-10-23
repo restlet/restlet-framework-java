@@ -81,8 +81,5 @@ public class GetTestCase extends BaseConnectorsTestCase {
         return application;
     }
 
-    @Override
-    public void testNettyAndApache() throws Exception {
-        // Disabled for now
-    }
+   
 }
