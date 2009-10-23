@@ -218,42 +218,34 @@
 		</delete>
 	</target>
 	<target name="build-current" depends="generate-poms, prepare-stage-maven" description="Build the editions with the current source code.">
-		<exec-edition edition="jse" target="build" />
-		<exec-edition edition="jee" target="build" />
-		<exec-edition edition="android" target="build" />
-		<exec-edition edition="gae" target="build" />
-		<exec-edition edition="gwt" target="build" />
+		<for param="edition" delimiter="," list="${editions}">
+			<sequential>
+				<exec-edition edition="@{edition}" target="build" />
+			</sequential>
+		</for>
 	</target>
 	<target name="build" depends="generate-poms, prepare-stage-maven" description="Regenerate the source code and build the editions.">
-		<generate-edition edition="jse" />
-		<exec-edition edition="jse" target="build" />
-		<generate-edition edition="jee" />
-		<exec-edition edition="jee" target="build" />
-		<generate-edition edition="android" />
-		<exec-edition edition="android" target="build" />
-		<generate-edition edition="gae" />
-		<exec-edition edition="gae" target="build" />
-		<generate-edition edition="gwt" />
-		<exec-edition edition="gwt" target="build" />
+		<for param="edition" delimiter="," list="${editions}">
+			<sequential>
+				<generate-edition edition="@{edition}" />
+				<exec-edition edition="@{edition}" target="build" />
+			</sequential>
+		</for>
 	</target>
 	<target name="rebuild" depends="clean-temp, generate-poms, prepare-stage-maven" description="Clean the temp files, regenerate the source code and build the editions.">
-		<generate-edition edition="jse" />
-		<exec-edition edition="jse" target="build" />
-		<generate-edition edition="jee" />
-		<exec-edition edition="jee" target="build" />
-		<generate-edition edition="android" />
-		<exec-edition edition="android" target="build" />
-		<generate-edition edition="gae" />
-		<exec-edition edition="gae" target="build" />
-		<generate-edition edition="gwt" />
-		<exec-edition edition="gwt" target="build" />
+		<for param="edition" delimiter="," list="${editions}">
+			<sequential>
+				<generate-edition edition="@{edition}" />
+				<exec-edition edition="@{edition}" target="build" />
+			</sequential>
+		</for>
 	</target>
 	<target name="generate" depends="generate-poms" description="Regenerate the source code.">
-		<generate-edition edition="jse" />
-		<generate-edition edition="jee" />
-		<generate-edition edition="android" />
-		<generate-edition edition="gae" />
-		<generate-edition edition="gwt" />
+		<for param="edition" delimiter="," list="${editions}">
+			<sequential>
+				<generate-edition edition="@{edition}" />
+			</sequential>
+		</for>
 	</target>
 	<target name="regenerate" depends="clean-temp, generate" description="Clean and regenerate the source code." />
 </project>
