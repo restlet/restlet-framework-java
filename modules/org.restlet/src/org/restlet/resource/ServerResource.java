@@ -298,13 +298,17 @@ public abstract class ServerResource extends UniformResource {
             throws ResourceException {
         RepresentationInfo result = null;
 
-        if (variant instanceof VariantInfo) {
-            result = doHandle(((VariantInfo) variant).getAnnotationInfo(),
-                    variant);
-        } else if (variant instanceof RepresentationInfo) {
-            result = (RepresentationInfo) variant;
+        if (variant != null) {
+            if (variant instanceof VariantInfo) {
+                result = doHandle(((VariantInfo) variant).getAnnotationInfo(),
+                        variant);
+            } else if (variant instanceof RepresentationInfo) {
+                result = (RepresentationInfo) variant;
+            } else {
+                result = getInfo(variant);
+            }
         } else {
-            result = getInfo(variant);
+            result = doGetInfo();
         }
 
         return result;
@@ -768,8 +772,8 @@ public abstract class ServerResource extends UniformResource {
 
                 for (AnnotationInfo annotationInfo : getAnnotations()) {
                     if (getMethod().equals(annotationInfo.getRestletMethod())) {
-                        annoVariants = annotationInfo
-                                .getResponseVariants(getRequestEntity(), getApplication());
+                        annoVariants = annotationInfo.getResponseVariants(
+                                getRequestEntity(), getApplication());
 
                         if (annoVariants != null) {
                             for (Variant v : annoVariants) {
