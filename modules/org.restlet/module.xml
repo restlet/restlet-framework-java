@@ -44,6 +44,7 @@
 		<files-sets>
 <![CDATA[
          <exclude name="src/com/**" />
+         <exclude name="**/*.gwt*" />
          <exclude name="src/org/restlet/engine/internal/Activator.java" />
          <exclude name="src/org/restlet/security/JaasVerifier.java" />
 ]]>
@@ -53,6 +54,7 @@
 		<files-sets>
 <![CDATA[
          <exclude name="src/com/**" />
+         <exclude name="**/*.gwt*" />
          <exclude name="src/org/restlet/engine/internal/Activator.java" />
          <exclude name="src/org/restlet/engine/http/StreamServer*" />
          <exclude name="src/org/restlet/engine/http/StreamClient*" />
@@ -153,6 +155,7 @@
 		<files-sets>
 <![CDATA[
          <exclude name="src/com/**" />
+         <exclude name="**/*.gwt*" />
 ]]>
 		</files-sets>
 	</source>
@@ -160,6 +163,7 @@
 		<files-sets>
 <![CDATA[
          <exclude name="src/com/**" />
+         <exclude name="**/*.gwt*" />
 ]]>
 		</files-sets>
 	</source>
