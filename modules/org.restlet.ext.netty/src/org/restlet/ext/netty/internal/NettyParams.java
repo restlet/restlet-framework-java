@@ -42,81 +42,102 @@ import org.jboss.netty.buffer.ChannelBufferFactory;
  * @author Gabriel Ciuloaica (gciuloaica@gmail.com)
  */
 public enum NettyParams {
-    keepAlive(Boolean.class), bufferFactoryClass(ChannelBufferFactory.class), connectTimeoutMillis(
-            Integer.class), reuseAddress(Boolean.class), receiveBufferSize(
-            Integer.class), sendBufferSize(Integer.class), trafficClass(
-            Integer.class);
+	keepAlive(Boolean.class, true), bufferFactoryClass(
+			ChannelBufferFactory.class, true), connectTimeoutMillis(
+			Integer.class, true), reuseAddress(Boolean.class, true), receiveBufferSize(
+			Integer.class, true), sendBufferSize(Integer.class, true), trafficClass(
+			Integer.class, true), sslContextFactory(String.class, false), keystorePath(
+			String.class, false), keystorePassword(String.class, false), keyPassword(
+			String.class, false), keystoreType(String.class, false), truststorePath(
+			String.class, false), truststorePassword(String.class, false), certAlgorithm(
+			String.class, false), sslProtocol(String.class, false), needClientAuthentication(
+			String.class, false), wantClientAuthentication(String.class, false);
 
-    /** The parameter type class. */
-    private final Class<?> paramType;
+	/** The parameter type class. */
+	private final Class<?> paramType;
 
-    /**
-     * Private constructor.
-     * 
-     * @param type
-     *            The parameter type class.
-     */
-    private NettyParams(Class<?> type) {
-        this.paramType = type;
-    }
+	/** Is the parameter a channel configuration option? */
+	private final Boolean isChannelOption;
 
-    /**
-     * <p>
-     * Get converted value from a string option value.
-     * </p>
-     * 
-     * @param value
-     *            - option value
-     * @return Object instance
-     */
-    public Object getValue(String value) {
-        Object ret = null;
-        try {
-            Constructor<?> constructor = paramType.getConstructor(String.class);
-            ret = constructor.newInstance(value);
-        } catch (Exception e) {
+	/**
+	 * Private constructor.
+	 * 
+	 * @param type
+	 *            The parameter type class.
+	 * @param isChannelParam
+	 *            The parameter is channel parameter or not.
+	 */
+	private NettyParams(Class<?> type, Boolean isChannelParam) {
+		this.paramType = type;
+		this.isChannelOption = isChannelParam;
+	}
 
-        }
+	/**
+	 * <p>
+	 * Get converted value from a string option value.
+	 * </p>
+	 * 
+	 * @param value
+	 *            - option value
+	 * @return Object instance
+	 */
+	public Object getValue(String value) {
+		Object ret = null;
+		try {
+			Constructor<?> constructor = paramType.getConstructor(String.class);
+			ret = constructor.newInstance(value);
+		} catch (Exception e) {
 
-        if (ret == null) {
-            ret = instantiateClass(value);
-        }
+		}
 
-        return ret;
+		if (ret == null) {
+			ret = instantiateClass(value);
+		}
 
-    }
+		return ret;
 
-    /**
-     * <p>
-     * Instantiate the class specified in the option value.
-     * </p>
-     * 
-     * @param value
-     *            - fully qualified class name.
-     * @return class instance
-     */
-    private Object instantiateClass(String value) {
-        Object ret = null;
+	}
 
-        Class<?> factory = null;
-        try {
-            factory = getClass().getClassLoader().loadClass(value);
+	/**
+	 * <p>
+	 * Instantiate the class specified in the option value.
+	 * </p>
+	 * 
+	 * @param value
+	 *            - fully qualified class name.
+	 * @return class instance
+	 */
+	private Object instantiateClass(String value) {
+		Object ret = null;
 
-        } catch (ClassNotFoundException e) {
+		Class<?> factory = null;
+		try {
+			factory = getClass().getClassLoader().loadClass(value);
 
-        }
-        if (factory != null) {
-            try {
-                Constructor<?> constructor = factory.getConstructor();
-                final Object ref = constructor.newInstance();
-                if (ref instanceof ChannelBufferFactory) {
-                    ret = ref;
-                }
-            } catch (Exception e) {
-            }
-        }
+		} catch (ClassNotFoundException e) {
 
-        return ret;
-    }
+		}
+		if (factory != null) {
+			try {
+				Constructor<?> constructor = factory.getConstructor();
+				final Object ref = constructor.newInstance();
+				if (ref instanceof ChannelBufferFactory) {
+					ret = ref;
+				}
+			} catch (Exception e) {
+			}
+		}
+
+		return ret;
+	}
+
+	/**
+	 * Is this a channel option or not?
+	 * 
+	 * @return true if the parameter is a channel option or false otherwise
+	 */
+	public Boolean isChannelOption() {
+		return isChannelOption;
+	}
 
 }

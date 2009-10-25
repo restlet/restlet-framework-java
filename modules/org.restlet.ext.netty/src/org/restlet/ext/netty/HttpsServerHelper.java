@@ -111,155 +111,155 @@ import org.restlet.ext.netty.internal.HttpsServerPipelineFactory;
  */
 public class HttpsServerHelper extends NettyServerHelper {
 
-    /**
-     * This is the SSL context.
-     */
-    private SSLContext sslContext;
+	/**
+	 * This is the SSL context.
+	 */
+	private SSLContext sslContext;
 
-    /**
-     * Constructor.
-     * 
-     * @param server
-     *            The helped server.
-     */
-    public HttpsServerHelper(Server server) {
-        super(server);
-        getProtocols().add(Protocol.HTTPS);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param server
+	 *            The helped server.
+	 */
+	public HttpsServerHelper(Server server) {
+		super(server);
+		getProtocols().add(Protocol.HTTPS);
+	}
 
-    /**
-     * Returns the SSL certificate algorithm.
-     * 
-     * @return The SSL certificate algorithm.
-     */
-    public String getCertAlgorithm() {
-        return getHelpedParameters().getFirstValue("certAlgorithm", "SunX509");
-    }
+	/**
+	 * Returns the SSL certificate algorithm.
+	 * 
+	 * @return The SSL certificate algorithm.
+	 */
+	public String getCertAlgorithm() {
+		return getHelpedParameters().getFirstValue("certAlgorithm", "SunX509");
+	}
 
-    /**
-     * Returns the SSL key password.
-     * 
-     * @return The SSL key password.
-     */
-    public String getKeyPassword() {
-        return getHelpedParameters().getFirstValue("keyPassword", "");
-    }
+	/**
+	 * Returns the SSL key password.
+	 * 
+	 * @return The SSL key password.
+	 */
+	public String getKeyPassword() {
+		return getHelpedParameters().getFirstValue("keyPassword", "");
+	}
 
-    /**
-     * Returns the SSL keystore password.
-     * 
-     * @return The SSL keystore password.
-     */
-    public String getKeystorePassword() {
-        return getHelpedParameters().getFirstValue("keystorePassword", "");
-    }
+	/**
+	 * Returns the SSL keystore password.
+	 * 
+	 * @return The SSL keystore password.
+	 */
+	public String getKeystorePassword() {
+		return getHelpedParameters().getFirstValue("keystorePassword", "");
+	}
 
-    /**
-     * Returns the SSL keystore path.
-     * 
-     * @return The SSL keystore path.
-     */
-    public String getKeystorePath() {
-        return getHelpedParameters().getFirstValue("keystorePath",
-                System.getProperty("user.home") + File.separator + ".keystore");
-    }
+	/**
+	 * Returns the SSL keystore path.
+	 * 
+	 * @return The SSL keystore path.
+	 */
+	public String getKeystorePath() {
+		return getHelpedParameters().getFirstValue("keystorePath",
+				System.getProperty("user.home") + File.separator + ".keystore");
+	}
 
-    /**
-     * Returns the SSL keystore type.
-     * 
-     * @return The SSL keystore type.
-     */
-    public String getKeystoreType() {
-        return getHelpedParameters().getFirstValue("keystoreType", "JKS");
-    }
+	/**
+	 * Returns the SSL keystore type.
+	 * 
+	 * @return The SSL keystore type.
+	 */
+	public String getKeystoreType() {
+		return getHelpedParameters().getFirstValue("keystoreType", "JKS");
+	}
 
-    @Override
-    public ChannelPipelineFactory getPipelineFatory() {
-        return new HttpsServerPipelineFactory(this, sslContext
-                .createSSLEngine());
-    }
+	@Override
+	public ChannelPipelineFactory getPipelineFatory() {
+		return new HttpsServerPipelineFactory(this, sslContext
+				.createSSLEngine());
+	}
 
-    /**
-     * Gets the SSL context used by this server.
-     * 
-     * @return this returns the SSL context.
-     */
-    public SSLContext getSslContext() {
-        return sslContext;
-    }
+	/**
+	 * Gets the SSL context used by this server.
+	 * 
+	 * @return this returns the SSL context.
+	 */
+	public SSLContext getSslContext() {
+		return sslContext;
+	}
 
-    /**
-     * Returns the SSL keystore type.
-     * 
-     * @return The SSL keystore type.
-     */
-    public String getSslProtocol() {
-        return getHelpedParameters().getFirstValue("sslProtocol", "TLS");
-    }
+	/**
+	 * Returns the SSL keystore type.
+	 * 
+	 * @return The SSL keystore type.
+	 */
+	public String getSslProtocol() {
+		return getHelpedParameters().getFirstValue("sslProtocol", "TLS");
+	}
 
-    /**
-     * Indicates if we require client certificate authentication.
-     * 
-     * @return True if we require client certificate authentication.
-     */
-    public boolean isNeedClientAuthentication() {
-        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
-                "needClientAuthentication", "false"));
-    }
+	/**
+	 * Indicates if we require client certificate authentication.
+	 * 
+	 * @return True if we require client certificate authentication.
+	 */
+	public boolean isNeedClientAuthentication() {
+		return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
+				"needClientAuthentication", "false"));
+	}
 
-    /**
-     * Indicates if we would like client certificate authentication.
-     * 
-     * @return True if we would like client certificate authentication.
-     */
-    public boolean isWantClientAuthentication() {
-        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
-                "wantClientAuthentication", "false"));
-    }
+	/**
+	 * Indicates if we would like client certificate authentication.
+	 * 
+	 * @return True if we would like client certificate authentication.
+	 */
+	public boolean isWantClientAuthentication() {
+		return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
+				"wantClientAuthentication", "false"));
+	}
 
-    /**
-     * Sets the SSL context for the server.
-     * 
-     * @param sslContext
-     *            the SSL context
-     */
-    public void setSslContext(SSLContext sslContext) {
-        this.sslContext = sslContext;
-    }
+	/**
+	 * Sets the SSL context for the server.
+	 * 
+	 * @param sslContext
+	 *            the SSL context
+	 */
+	public void setSslContext(SSLContext sslContext) {
+		this.sslContext = sslContext;
+	}
 
-    @Override
-    public void start() throws Exception {
-        // Initialize the SSL context
-        SslContextFactory sslContextFactory = HttpsUtils
-                .getSslContextFactory(this);
+	@Override
+	public void start() throws Exception {
+		// Initialize the SSL context
+		SslContextFactory sslContextFactory = HttpsUtils
+				.getSslContextFactory(this);
 
-        if (sslContextFactory == null) {
-            KeyStore keyStore = KeyStore.getInstance(getKeystoreType());
-            FileInputStream fis = getKeystorePath() == null ? null
-                    : new FileInputStream(getKeystorePath());
-            char[] password = getKeystorePassword() == null ? null
-                    : getKeystorePassword().toCharArray();
-            keyStore.load(fis, password);
-            if (fis != null) {
-                fis.close();
-            }
+		if (sslContextFactory == null) {
+			KeyStore keyStore = KeyStore.getInstance(getKeystoreType());
+			FileInputStream fis = getKeystorePath() == null ? null
+					: new FileInputStream(getKeystorePath());
+			char[] password = getKeystorePassword() == null ? null
+					: getKeystorePassword().toCharArray();
+			keyStore.load(fis, password);
+			if (fis != null) {
+				fis.close();
+			}
 
-            KeyManagerFactory keyManagerFactory = KeyManagerFactory
-                    .getInstance(getCertAlgorithm());
-            keyManagerFactory.init(keyStore, getKeyPassword().toCharArray());
+			KeyManagerFactory keyManagerFactory = KeyManagerFactory
+					.getInstance(getCertAlgorithm());
+			keyManagerFactory.init(keyStore, getKeyPassword().toCharArray());
 
-            TrustManagerFactory trustManagerFactory = TrustManagerFactory
-                    .getInstance(getCertAlgorithm());
-            trustManagerFactory.init(keyStore);
+			TrustManagerFactory trustManagerFactory = TrustManagerFactory
+					.getInstance(getCertAlgorithm());
+			trustManagerFactory.init(keyStore);
 
-            sslContext = SSLContext.getInstance(getSslProtocol());
-            sslContext.init(keyManagerFactory.getKeyManagers(),
-                    trustManagerFactory.getTrustManagers(), null);
-        } else {
-            sslContext = sslContextFactory.createSslContext();
-        }
+			sslContext = SSLContext.getInstance(getSslProtocol());
+			sslContext.init(keyManagerFactory.getKeyManagers(),
+					trustManagerFactory.getTrustManagers(), null);
+		} else {
+			sslContext = sslContextFactory.createSslContext();
+		}
 
-        super.start();
-    }
+		super.start();
+	}
 
 }

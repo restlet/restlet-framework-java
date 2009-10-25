@@ -113,87 +113,88 @@ import org.restlet.util.Series;
  */
 public abstract class NettyServerHelper extends HttpServerHelper {
 
-    private static final String CHILD_CHANNEL_PREFIX = "child.";
+	private static final String CHILD_CHANNEL_PREFIX = "child.";
 
-    private static final String RESTLET_NETTY_SERVER = "restlet-netty-server";
+	private static final String RESTLET_NETTY_SERVER = "restlet-netty-server";
 
-    private ChannelGroup allChannels = new DefaultChannelGroup(
-            RESTLET_NETTY_SERVER);
+	private ChannelGroup allChannels = new DefaultChannelGroup(
+			RESTLET_NETTY_SERVER);
 
-    private ChannelFactory factory = new NioServerSocketChannelFactory(
-            Executors.newCachedThreadPool(), Executors.newCachedThreadPool());
+	private ChannelFactory factory = new NioServerSocketChannelFactory(
+			Executors.newCachedThreadPool(), Executors.newCachedThreadPool());
 
-    /**
-     * Constructor.
-     * 
-     * @param server
-     *            The server that will be helped.
-     */
-    public NettyServerHelper(Server server) {
-        super(server);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param server
+	 *            The server that will be helped.
+	 */
+	public NettyServerHelper(Server server) {
+		super(server);
+	}
 
-    /**
-     * Returns the Netty pipeline factory.
-     * 
-     * @return The Netty pipeline factory.
-     */
-    protected abstract ChannelPipelineFactory getPipelineFatory();
+	/**
+	 * Returns the Netty pipeline factory.
+	 * 
+	 * @return The Netty pipeline factory.
+	 */
+	protected abstract ChannelPipelineFactory getPipelineFatory();
 
-    @Override
-    public synchronized void start() throws Exception {
-        ServerBootstrap bootstrap = new ServerBootstrap(factory);
-        bootstrap.setPipelineFactory(getPipelineFatory());
+	@Override
+	public synchronized void start() throws Exception {
+		ServerBootstrap bootstrap = new ServerBootstrap(factory);
+		bootstrap.setPipelineFactory(getPipelineFatory());
 
-        // Copy the parameters as channel options
-        setServerParameters(bootstrap);
+		// Copy the parameters as channel options
+		setServerParameters(bootstrap);
 
-        int port = getHelped().getPort();
-        Channel channel = bootstrap.bind(new InetSocketAddress(port));
-        InetSocketAddress address = (InetSocketAddress) channel
-                .getLocalAddress();
-        setEphemeralPort(address.getPort());
-        allChannels.add(channel);
-        getLogger().log(Level.INFO,
-                "Started Netty " + getProtocols() + " server");
-    }
+		int port = getHelped().getPort();
+		Channel channel = bootstrap.bind(new InetSocketAddress(port));
+		InetSocketAddress address = (InetSocketAddress) channel
+				.getLocalAddress();
+		setEphemeralPort(address.getPort());
+		allChannels.add(channel);
+		getLogger().log(Level.INFO,
+				"Started Netty " + getProtocols() + " server");
+	}
 
-    /**
-     * <p>
-     * Pass netty channel parameters through bootstrap.
-     * </p>
-     * 
-     * @param bootstrap
-     *            - server bootstrap instance
-     */
-    private void setServerParameters(final ServerBootstrap bootstrap) {
-        Series<Parameter> options = getHelpedParameters();
+	/**
+	 * <p>
+	 * Pass netty channel parameters through bootstrap.
+	 * </p>
+	 * 
+	 * @param bootstrap
+	 *            - server bootstrap instance
+	 */
+	private void setServerParameters(final ServerBootstrap bootstrap) {
+		Series<Parameter> options = getHelpedParameters();
 
-        for (Parameter option : options) {
-            String paramName = option.getName();
-            if (paramName.startsWith(CHILD_CHANNEL_PREFIX)) {
-                paramName = option.getName().substring(
-                        CHILD_CHANNEL_PREFIX.length());
-            }
-            NettyParams param = NettyParams.valueOf(paramName);
-            if (param != null) {
-                final Object value = param.getValue(option.getValue());
-                if (value != null) {
-                    bootstrap.setOption(option.getName(), value);
-                }
-            }
+		for (Parameter option : options) {
+			String paramName = option.getName();
 
-        }
-    }
+			if (paramName.startsWith(CHILD_CHANNEL_PREFIX)) {
+				paramName = option.getName().substring(
+						CHILD_CHANNEL_PREFIX.length());
+			}
+			NettyParams param = NettyParams.valueOf(paramName);
+			if (param != null) {
+				final Object value = param.getValue(option.getValue());
+				if ((value != null) && (param.isChannelOption())) {
+					bootstrap.setOption(option.getName(), value);
+				}
+			}
+		}
 
-    @Override
-    public synchronized void stop() throws Exception {
-        ChannelGroupFuture future = allChannels.close();
-        future.awaitUninterruptibly();
-        factory.releaseExternalResources();
-        getLogger().log(Level.INFO,
-                "Stopped Netty " + getProtocols() + " server");
-        super.stop();
-    }
+	}
+
+	@Override
+	public synchronized void stop() throws Exception {
+		ChannelGroupFuture future = allChannels.close();
+		future.awaitUninterruptibly();
+		factory.releaseExternalResources();
+		getLogger().log(Level.INFO,
+				"Stopped Netty " + getProtocols() + " server");
+		super.stop();
+	}
 
 }
