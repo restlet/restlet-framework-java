@@ -36,7 +36,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.security.cert.Certificate;
@@ -60,9 +59,9 @@ import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Parameter;
+import org.restlet.engine.http.ChunkedInputStream;
 import org.restlet.engine.http.ChunkedOutputStream;
 import org.restlet.engine.http.HttpServerCall;
-import org.restlet.engine.io.ReadableEntityChannel;
 import org.restlet.util.Series;
 
 /**
@@ -128,27 +127,14 @@ public class NettyServerCall extends HttpServerCall {
     }
 
     @Override
-    public ReadableByteChannel getRequestEntityChannel(long size) {
-        if (isRequestChunked()) {
-            return null;
-        } else {
-            return new ReadableEntityChannel(content.toByteBuffer(), null, size);
-        }
-    }
-
-    @Override
     public InputStream getRequestEntityStream(long size) {
+        InputStream stream = new ChannelBufferInputStream(content);
         if (isRequestChunked()) {
-            InputStream entity = new ChannelBufferInputStream(content);
-            return entity;
-        } else {
-            return null;
-        }
-    }
+            return new ChunkedInputStream(stream);
 
-    @Override
-    public ReadableByteChannel getRequestHeadChannel() {
-        return null;
+        } else {
+            return stream;
+        }
     }
 
     @Override
@@ -178,40 +164,16 @@ public class NettyServerCall extends HttpServerCall {
     }
 
     @Override
-    public WritableByteChannel getResponseEntityChannel() {
-        if (isResponseChunked()) {
-            return null;
-        } else {
-            return new WritableByteChannel() {
-
-                public void close() throws IOException {
-                    // TODO Auto-generated method stub
-
-                }
-
-                public boolean isOpen() {
-                    return true;
-                }
-
-                public int write(ByteBuffer src) throws IOException {
-                    ChannelBuffer buf = dynamicBuffer();
-                    buf.writeBytes(src);
-                    response.setContent(buf);
-                    return buf.readableBytes();
-                }
-            };
-        }
-    }
-
-    @Override
     public OutputStream getResponseEntityStream() {
+        ChannelBuffer buf = dynamicBuffer();
+        this.response.setContent(buf);
+        OutputStream stream = new ChannelBufferOutputStream(response
+                .getContent());
         if (isResponseChunked()) {
-            ChannelBuffer buf = dynamicBuffer();
-            this.response.setContent(buf);
-            return new ChunkedOutputStream(new ChannelBufferOutputStream(
-                    response.getContent()));
+
+            return new ChunkedOutputStream(stream);
         } else {
-            return null;
+            return stream;
         }
 
     }
@@ -291,6 +253,21 @@ public class NettyServerCall extends HttpServerCall {
      */
     public HttpResponse getResponse() {
         return response;
+    }
+
+    @Override
+    public ReadableByteChannel getRequestEntityChannel(long size) {
+       return null;
+    }
+
+    @Override
+    public ReadableByteChannel getRequestHeadChannel() {
+        return null;
+    }
+
+    @Override
+    public WritableByteChannel getResponseEntityChannel() {
+        return null;
     }
 
 }
