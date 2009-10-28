@@ -99,12 +99,18 @@ public class ChallengeCallbackHandler implements CallbackHandler {
         // [ifndef android]
         if (callback instanceof javax.security.auth.callback.NameCallback) {
             javax.security.auth.callback.NameCallback nc = (javax.security.auth.callback.NameCallback) callback;
-            nc.setName(getRequest().getChallengeResponse().getIdentifier());
+
+            if (getRequest().getChallengeResponse() != null) {
+                nc.setName(getRequest().getChallengeResponse().getIdentifier());
+            }
         } else
         // [enddef]
         if (callback instanceof PasswordCallback) {
             PasswordCallback pc = (PasswordCallback) callback;
-            pc.setPassword(getRequest().getChallengeResponse().getSecret());
+
+            if (getRequest().getChallengeResponse() != null) {
+                pc.setPassword(getRequest().getChallengeResponse().getSecret());
+            }
         } else {
             throw new UnsupportedCallbackException(callback,
                     "Unrecognized Callback");
