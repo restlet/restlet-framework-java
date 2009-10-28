@@ -705,7 +705,7 @@ public abstract class ServerResource extends UniformResource {
      * <br>
      * This method is only invoked if content negotiation has been enabled as
      * indicated by the {@link #isNegotiated()}, otherwise the
-     * {@link #put(Representation)} method is invoked.<br>
+     * {@link #getInfo(Variant)} method is invoked.<br>
      * <br>
      * The default behavior is to invoke the {@link #get(Variant)} method.
      * 
