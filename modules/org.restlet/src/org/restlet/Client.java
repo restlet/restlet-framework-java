@@ -248,7 +248,8 @@ public class Client extends Connector {
     }
 
     /**
-     * Returns the connection timeout.
+     * Returns the connection timeout in milliseconds. The default value is 0,
+     * meaning an infinite timeout.
      * 
      * @return The connection timeout.
      */

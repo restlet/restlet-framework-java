@@ -93,12 +93,6 @@ import org.restlet.ext.httpclient.internal.HttpMethodCall;
  * <td>The maximum number of active connections.</td>
  * </tr>
  * <tr>
- * <td>connectionTimeout</td>
- * <td>int</td>
- * <td>0</td>
- * <td>The timeout in milliseconds used when establishing an HTTP connection.</td>
- * </tr>
- * <tr>
  * <td>stopIdleTimeout</td>
  * <td>int</td>
  * <td>1000</td>
@@ -194,8 +188,7 @@ public class HttpClientHelper extends org.restlet.engine.http.HttpClientHelper {
         HttpClientParams.setCookiePolicy(params,
                 CookiePolicy.BROWSER_COMPATIBILITY);
         HttpConnectionParams.setTcpNoDelay(params, getTcpNoDelay());
-        HttpConnectionParams.setConnectionTimeout(params,
-                getConnectionTimeout());
+        HttpConnectionParams.setConnectionTimeout(params, getConnectTimeout());
         HttpConnectionParams.setSoTimeout(params, getSocketTimeout());
     }
 
@@ -252,17 +245,10 @@ public class HttpClientHelper extends org.restlet.engine.http.HttpClientHelper {
     }
 
     /**
-     * Returns the timeout in milliseconds used when establishing an HTTP
-     * connection.
+     * Returns the wrapped Apache HTTP Client.
      * 
-     * @return The timeout in milliseconds used when retrieving an HTTP
-     *         connection from the HTTP connection manager.
+     * @return The wrapped Apache HTTP Client.
      */
-    public int getConnectionTimeout() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "connectionTimeout", "0"));
-    }
-
     public HttpClient getHttpClient() {
         return this.httpClient;
     }

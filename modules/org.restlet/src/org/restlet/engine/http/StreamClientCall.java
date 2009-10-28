@@ -35,6 +35,7 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.channels.ReadableByteChannel;
@@ -163,8 +164,16 @@ public class StreamClientCall extends HttpClientCall {
      */
     public Socket createSocket(String hostDomain, int hostPort)
             throws UnknownHostException, IOException {
-        return (factory != null) ? factory.createSocket(hostDomain, hostPort)
-                : null;
+        Socket result = null;
+
+        if (factory != null) {
+            result = factory.createSocket();
+            InetSocketAddress address = new InetSocketAddress(hostDomain,
+                    hostPort);
+            result.connect(address, getHelper().getConnectTimeout());
+        }
+
+        return result;
     }
 
     @Override
@@ -320,8 +329,9 @@ public class StreamClientCall extends HttpClientCall {
                     : request.getResourceRef();
 
             // Extract the host info
-            final String hostDomain = resourceRef.getHostDomain();
+            String hostDomain = resourceRef.getHostDomain();
             int hostPort = resourceRef.getHostPort();
+
             if (hostPort == -1) {
                 if (resourceRef.getSchemeProtocol() != null) {
                     hostPort = resourceRef.getSchemeProtocol().getDefaultPort();
@@ -330,7 +340,7 @@ public class StreamClientCall extends HttpClientCall {
                 }
             }
 
-            // Create the client socket
+            // Create and connect the client socket
             this.socket = createSocket(hostDomain, hostPort);
 
             if (this.socket == null) {
@@ -340,6 +350,7 @@ public class StreamClientCall extends HttpClientCall {
                         "Unable to create the client socket.");
             } else {
                 this.socket.setTcpNoDelay(getHelper().getTcpNoDelay());
+
                 this.requestStream = new BufferedOutputStream(this.socket
                         .getOutputStream());
                 this.responseStream = new BufferedInputStream(this.socket
