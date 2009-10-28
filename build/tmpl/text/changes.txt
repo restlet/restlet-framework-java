@@ -16,8 +16,13 @@ Changes log
           Reported by Moisei Rabinovich.
         - Fixed potential NPE in ContentType.
           Reported by Eugeniy Chemezov. 
-        - Fixed bug in internal HTTP client causing the "connectTimeout"
+        - Fixed bug in engine causing "connectTimeout" property to 
+          always be zero, for all connectors. 
+          Reported by Evgeny Shepelyuk.
+        - Fixed bug in internal HTTP client causing "connectTimeout"
           property on Client to be ignored. Reported by Rahul Juneja.
+        - Fixed bug in Apache HTTP client causing "connectTimeout"
+          property on Client to be ignored. Reported by Jim Alateras.
     - Misc
         - Updated license file to mention distribution under EPL 1.0 in
           addition to other licenses, like for Restlet 2.0.

@@ -240,7 +240,7 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
         return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
                 "followRedirects", "false"));
     }
-    
+
     /**
      * Indicates if the protocol will use Nagle's algorithm
      * 
@@ -258,6 +258,7 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
 
         // Create the multi-threaded connection manager and configure it
         final MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
+        connectionManager.getParams().setConnectionTimeout(getConnectTimeout());
         connectionManager.getParams().setDefaultMaxConnectionsPerHost(
                 getMaxConnectionsPerHost());
         connectionManager.getParams().setMaxTotalConnections(

@@ -284,7 +284,7 @@ public class HttpMethodCall extends HttpClientCall {
                         header.getValue());
             }
 
-            // For those method that accept enclosing entites, provide it
+            // For those method that accept enclosing entities, provide it
             if ((entity != null)
                     && (getHttpMethod() instanceof EntityEnclosingMethod)) {
                 final EntityEnclosingMethod eem = (EntityEnclosingMethod) getHttpMethod();

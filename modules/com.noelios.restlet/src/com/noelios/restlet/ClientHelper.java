@@ -37,12 +37,6 @@ import org.restlet.Client;
 public class ClientHelper extends ConnectorHelper<Client> {
 
     /**
-     * The number of milliseconds the client should wait for a response before
-     * aborting the request and setting its status to an error status.
-     */
-    private volatile int connectTimeout = 0;
-
-    /**
      * Constructor.
      * 
      * @param client
@@ -50,9 +44,6 @@ public class ClientHelper extends ConnectorHelper<Client> {
      */
     public ClientHelper(Client client) {
         super(client);
-        if (client != null) {
-            this.connectTimeout = client.getConnectTimeout();
-        }
     }
 
     /**
@@ -61,17 +52,7 @@ public class ClientHelper extends ConnectorHelper<Client> {
      * @return The connection timeout.
      */
     public int getConnectTimeout() {
-        return this.connectTimeout;
-    }
-
-    /**
-     * Sets the connection timeout.
-     * 
-     * @param connectTimeout
-     *            The connection timeout.
-     */
-    public void setConnectTimeout(int connectTimeout) {
-        this.connectTimeout = connectTimeout;
+        return getHelped().getConnectTimeout();
     }
 
 }
