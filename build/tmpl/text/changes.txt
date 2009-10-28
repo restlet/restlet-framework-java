@@ -68,6 +68,9 @@ Changes log
           related features such as Amazon S3 and Azure client HTTP
           authentication. This removes the dependency from the Restlet
           core to javax.crypto.
+        - Improved the Resolver class to expose call attributes as 
+          objects instead of string for easier integration with template 
+          engines such as FreeMarker.          
       - Bugs fixed
         - Fixed bug when the deprecated method "createRoot" is 
           implemented instead of the "createInboundRoot".

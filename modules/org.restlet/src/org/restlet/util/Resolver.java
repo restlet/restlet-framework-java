@@ -51,7 +51,7 @@ public abstract class Resolver<T> {
      * 
      * @author Jerome Louvel
      */
-    private static class CallResolver extends Resolver<String> {
+    private static class CallResolver extends Resolver<Object> {
         /** The request to use as a model. */
         private final Request request;
 
@@ -110,23 +110,19 @@ public abstract class Resolver<T> {
         }
 
         @Override
-        public String resolve(String variableName) {
-            String result = null;
-
-            // Check for a matching request attribute
-            if (this.request != null) {
-                final Object variable = this.request.getAttributes().get(
-                        variableName);
-                if (variable != null) {
-                    result = variable.toString();
-                }
-            }
+        public Object resolve(String variableName) {
+            Object result = null;
 
             // Check for a matching response attribute
             if ((result == null) && (this.response != null)
                     && this.response.getAttributes().containsKey(variableName)) {
-                result = this.response.getAttributes().get(variableName)
-                        .toString();
+                result = this.response.getAttributes().get(variableName);
+            }
+
+            // Check for a matching request attribute
+            if ((result == null) && (this.request != null)
+                    && this.request.getAttributes().containsKey(variableName)) {
+                result = this.request.getAttributes().get(variableName);
             }
 
             // Check for a matching request or response property
@@ -351,7 +347,7 @@ public abstract class Resolver<T> {
      * 
      * @author Jerome Louvel
      */
-    private static class MapResolver extends Resolver<String> {
+    private static class MapResolver extends Resolver<Object> {
         /** The variables to use when formatting. */
         private final Map<String, ?> map;
 
@@ -366,9 +362,8 @@ public abstract class Resolver<T> {
         }
 
         @Override
-        public String resolve(String variableName) {
-            final Object value = this.map.get(variableName);
-            return (value == null) ? null : value.toString();
+        public Object resolve(String variableName) {
+            return this.map.get(variableName);
         }
     }
 
@@ -379,12 +374,14 @@ public abstract class Resolver<T> {
      *            Map between names and values.
      * @return The map resolver.
      */
-    public static Resolver<String> createResolver(Map<String, ?> map) {
+    public static Resolver<?> createResolver(Map<String, ?> map) {
         return new MapResolver(map);
     }
 
     /**
-     * Creates a resolver that is based on a call (request, response couple).
+     * Creates a resolver that is based on a call (request, response couple). It
+     * first looks up the response attributes, then the request attributes and
+     * finally the variables below:
      * 
      * <table>
      * <tr>
@@ -628,8 +625,7 @@ public abstract class Resolver<T> {
      *            The response.
      * @return The call resolver.
      */
-    public static Resolver<String> createResolver(Request request,
-            Response response) {
+    public static Resolver<?> createResolver(Request request, Response response) {
         return new CallResolver(request, response);
     }
 

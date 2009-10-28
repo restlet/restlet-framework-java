@@ -372,7 +372,7 @@ public class Template {
      *            The variable resolver to use.
      * @return The formatted string.
      */
-    public String format(Resolver<String> resolver) {
+    public String format(Resolver<?> resolver) {
         final StringBuilder result = new StringBuilder();
         StringBuilder varBuffer = null;
         char next;
@@ -393,7 +393,7 @@ public class Template {
                                         + this.regexPattern);
                     } else {
                         final String varName = varBuffer.toString();
-                        String varValue = resolver.resolve(varName);
+                        Object varValue = resolver.resolve(varName);
 
                         Variable var = getVariables().get(varName);
 
@@ -402,23 +402,27 @@ public class Template {
                             if (var == null) {
                                 var = getDefaultVariable();
                             }
+
                             if (var != null) {
                                 varValue = var.getDefaultValue();
                             }
                         }
 
+                        String varValueString = (varValue == null) ? null
+                                : varValue.toString();
+
                         if (this.encodeVariables) {
                             // In case the values must be encoded.
                             if (var != null) {
-                                result.append(var.encode(varValue));
+                                result.append(var.encode(varValueString));
                             } else {
-                                result.append(Reference.encode(varValue));
+                                result.append(Reference.encode(varValueString));
                             }
                         } else {
                             if ((var != null) && var.isEncodedOnFormat()) {
-                                result.append(Reference.encode(varValue));
+                                result.append(Reference.encode(varValueString));
                             } else {
-                                result.append(varValue);
+                                result.append(varValueString);
                             }
                         }
 
