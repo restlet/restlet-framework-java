@@ -132,7 +132,8 @@ public class Client extends Connector {
     }
 
     /**
-     * Returns the connection timeout.
+     * Returns the connection timeout in milliseconds. The default value is 0,
+     * meaning an infinite timeout.
      * 
      * @return The connection timeout.
      */
@@ -159,7 +160,8 @@ public class Client extends Connector {
     }
 
     /**
-     * Sets the connection timeout.
+     * Sets the connection timeout in milliseconds. The default value is 0,
+     * meaning an infinite timeout.
      * 
      * @param connectTimeout
      *            The connection timeout.
