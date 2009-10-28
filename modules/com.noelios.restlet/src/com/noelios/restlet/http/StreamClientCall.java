@@ -32,6 +32,7 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.channels.ReadableByteChannel;
@@ -145,7 +146,10 @@ public class StreamClientCall extends HttpClientCall {
      */
     public Socket createSocket(String hostDomain, int hostPort)
             throws UnknownHostException, IOException {
-        return new Socket(hostDomain, hostPort);
+        Socket result = new Socket();
+        InetSocketAddress address = new InetSocketAddress(hostDomain, hostPort);
+        result.connect(address, getHelper().getConnectTimeout());
+        return result;
     }
 
     @Override
@@ -305,8 +309,7 @@ public class StreamClientCall extends HttpClientCall {
             int hostPort = resourceRef.getHostPort();
             if (hostPort == -1) {
                 if (resourceRef.getSchemeProtocol() != null) {
-                    hostPort = resourceRef.getSchemeProtocol()
-                            .getDefaultPort();
+                    hostPort = resourceRef.getSchemeProtocol().getDefaultPort();
                 } else {
                     hostPort = getProtocol().getDefaultPort();
                 }
