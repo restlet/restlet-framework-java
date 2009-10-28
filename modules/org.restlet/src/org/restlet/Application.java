@@ -629,7 +629,8 @@ public class Application extends Restlet {
     }
 
     /**
-     * Starts the application then all the enabled associated services.
+     * Starts the application, all the enabled associated services then the
+     * inbound and outbound roots.
      */
     @Override
     public synchronized void start() throws Exception {
@@ -643,15 +644,32 @@ public class Application extends Restlet {
             for (Service service : getServices()) {
                 service.start();
             }
+
+            if (getInboundRoot() != null) {
+                getInboundRoot().start();
+            }
+
+            if (getOutboundRoot() != null) {
+                getOutboundRoot().start();
+            }
         }
     }
 
     /**
-     * Stops all the enabled associated services the the application itself.
+     * Starts the application, the inbound and outbound roots then all the
+     * enabled associated services.
      */
     @Override
     public synchronized void stop() throws Exception {
         if (isStarted()) {
+            if (getOutboundRoot() != null) {
+                getOutboundRoot().stop();
+            }
+
+            if (getInboundRoot() != null) {
+                getInboundRoot().stop();
+            }
+
             for (Service service : getServices()) {
                 service.stop();
             }

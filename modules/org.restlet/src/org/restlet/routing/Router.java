@@ -74,6 +74,7 @@ import org.restlet.util.RouteList;
  * @author Jerome Louvel
  */
 public class Router extends Restlet {
+
     /**
      * Each call will be routed to the route with the best score, if the
      * required score is reached.
@@ -647,6 +648,44 @@ public class Router extends Restlet {
      */
     public void setRoutingMode(int routingMode) {
         this.routingMode = routingMode;
+    }
+
+    /**
+     * Starts the filter and the attached routes.
+     */
+    @SuppressWarnings("deprecation")
+    @Override
+    public synchronized void start() throws Exception {
+        if (isStopped()) {
+            super.start();
+
+            for (Route route : getRoutes()) {
+                route.start();
+            }
+
+            if (getDefaultRoute() != null) {
+                getDefaultRoute().start();
+            }
+        }
+    }
+
+    /**
+     * Stops the filter and the attached routes.
+     */
+    @SuppressWarnings("deprecation")
+    @Override
+    public synchronized void stop() throws Exception {
+        if (isStarted()) {
+            if (getDefaultRoute() != null) {
+                getDefaultRoute().stop();
+            }
+
+            for (Route route : getRoutes()) {
+                route.stop();
+            }
+
+            super.stop();
+        }
     }
 
 }

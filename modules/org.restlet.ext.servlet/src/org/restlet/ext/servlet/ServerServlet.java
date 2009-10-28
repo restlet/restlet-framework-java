@@ -766,7 +766,7 @@ public class ServerServlet extends HttpServlet {
             try {
                 getComponent().stop();
             } catch (Exception e) {
-                log("Error during the stopping of the Restlet Component", e);
+                log("Error during the stopping of the Restlet component", e);
             }
         }
 
@@ -953,14 +953,11 @@ public class ServerServlet extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
-        if ((getComponent() != null)) {
-            if ((getApplication() != null) && (getApplication().isStopped())) {
-                try {
-                    getApplication().start();
-                } catch (Exception e) {
-                    log("Error during the starting of the Restlet Application",
-                            e);
-                }
+        if ((getComponent() != null) && (getComponent().isStopped())) {
+            try {
+                getComponent().stop();
+            } catch (Exception e) {
+                log("Error during the starting of the Restlet Application", e);
             }
         }
     }

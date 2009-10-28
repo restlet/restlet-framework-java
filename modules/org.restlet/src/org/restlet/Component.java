@@ -502,6 +502,7 @@ public class Component extends Restlet {
             startServers();
             startHelper();
             startServices();
+            startRouters();
             super.start();
         }
     }
@@ -527,6 +528,25 @@ public class Component extends Restlet {
     protected synchronized void startHelper() throws Exception {
         if (getHelper() != null) {
             getHelper().start();
+        }
+    }
+
+    /**
+     * Starts the virtual hosts and the internal router.
+     * 
+     * @throws Exception
+     */
+    protected synchronized void startRouters() throws Exception {
+        if (this.internalRouter != null) {
+            this.internalRouter.start();
+        }
+
+        if (this.defaultHost != null) {
+            this.defaultHost.start();
+        }
+
+        for (VirtualHost host : getHosts()) {
+            host.start();
         }
     }
 
@@ -573,6 +593,7 @@ public class Component extends Restlet {
         stopServers();
         stopClients();
         stopServices();
+        stopRouters();
         super.stop();
     }
 
@@ -597,6 +618,25 @@ public class Component extends Restlet {
     protected synchronized void stopHelper() throws Exception {
         if (getHelper() != null) {
             getHelper().stop();
+        }
+    }
+
+    /**
+     * Stops the virtual hosts and the internal router.
+     * 
+     * @throws Exception
+     */
+    protected synchronized void stopRouters() throws Exception {
+        for (VirtualHost host : getHosts()) {
+            host.stop();
+        }
+
+        if (this.defaultHost != null) {
+            this.defaultHost.stop();
+        }
+
+        if (this.internalRouter != null) {
+            this.internalRouter.stop();
         }
     }
 

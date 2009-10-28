@@ -261,4 +261,32 @@ public abstract class Filter extends Restlet {
         this.next = next;
     }
 
+    /**
+     * Starts the filter and the next Restlet if attached.
+     */
+    @Override
+    public synchronized void start() throws Exception {
+        if (isStopped()) {
+            super.start();
+
+            if (getNext() != null) {
+                getNext().start();
+            }
+        }
+    }
+
+    /**
+     * Stops the filter and the next Restlet if attached.
+     */
+    @Override
+    public synchronized void stop() throws Exception {
+        if (isStarted()) {
+            if (getNext() != null) {
+                getNext().stop();
+            }
+
+            super.stop();
+        }
+    }
+
 }

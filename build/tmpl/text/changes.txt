@@ -98,6 +98,9 @@ Changes log
           Reported by Emily Toop.
         - Fixed bug with conditional methods in ServerResource when no
           variant is available.
+        - ServerServlet life cycle is now correctly propagated to the 
+          embedded Restlet component and applications.
+          Reported by Rickard Oberg.
     - Enhancements
         - Improved JAXB converted. Contributed by Sanjay Acharya.
         - Upgraded Apache Commons Logging to version 1.1.1.
@@ -125,6 +128,9 @@ Changes log
         - The FreeMarker TemplateFilter is now more flexible with a
           createDataModel(Request, Response) method that can be 
           overridden and a "dataModel" property with getter and setter.
+        - Life cycle events are now propagated in all the Restlet 
+          routing system (filters, routers, virtual hosts, etc.).
+          Suggested by David Fogel
     - Misc
         - Added Velocity template in the org.restlet.example project.
           Reported by Ben Vesco.
