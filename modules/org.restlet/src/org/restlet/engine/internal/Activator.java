@@ -120,6 +120,10 @@ public class Activator implements BundleActivator {
         registerHelper(bundle, Engine.getInstance()
                 .getRegisteredAuthenticators(), null,
                 Engine.DESCRIPTOR_AUTHENTICATOR_PATH);
+
+        // Register converter helpers
+        registerHelper(bundle, Engine.getInstance().getRegisteredConverters(),
+                null, Engine.DESCRIPTOR_CONVERTER_PATH);
     }
 
     /**
@@ -157,7 +161,7 @@ public class Activator implements BundleActivator {
     }
 
     /**
-     * Stops the OSGi bundle by deregistering the engine with the bundle of the
+     * Stops the OSGi bundle by unregistering the engine with the bundle of the
      * Restlet API.
      * 
      * @param context
