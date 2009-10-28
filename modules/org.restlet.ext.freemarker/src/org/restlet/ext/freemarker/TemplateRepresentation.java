@@ -41,6 +41,7 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
+import org.restlet.ext.freemarker.internal.ResolverHashModel;
 import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.util.Resolver;
@@ -48,10 +49,6 @@ import org.restlet.util.Resolver;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import freemarker.template.TemplateHashModel;
-import freemarker.template.TemplateModel;
-import freemarker.template.TemplateModelException;
-import freemarker.template.TemplateScalarModel;
 
 /**
  * FreeMarker template representation. Useful for dynamic string-based
@@ -61,66 +58,6 @@ import freemarker.template.TemplateScalarModel;
  * @author Jerome Louvel
  */
 public class TemplateRepresentation extends OutputRepresentation {
-
-    /**
-     * Template Hash Model based on a Resolver instance.
-     */
-    private class ResolverHashModel implements TemplateHashModel {
-        /** The inner resolver instance. */
-        private final Resolver<? extends Object> resolver;
-
-        /**
-         * Constructor.
-         * 
-         * @param resolver
-         *            The inner resolver.
-         */
-        public ResolverHashModel(Resolver<? extends Object> resolver) {
-            super();
-            this.resolver = resolver;
-        }
-
-        /**
-         * Returns a scalar model based on the value returned by the resolver
-         * according to the key.
-         */
-        public TemplateModel get(String key) throws TemplateModelException {
-            return new ScalarModel(this.resolver.resolve(key));
-        }
-
-        /**
-         * Returns false.
-         * 
-         * @Return False.
-         */
-        public boolean isEmpty() throws TemplateModelException {
-            return false;
-        }
-    }
-
-    /**
-     * Data model that gives access to a Object value.
-     * 
-     */
-    private class ScalarModel implements TemplateScalarModel {
-        /** The inner value. */
-        private final Object value;
-
-        /**
-         * Constructor.
-         * 
-         * @param value
-         *            the provided value of this scalar model.
-         */
-        public ScalarModel(Object value) {
-            super();
-            this.value = value;
-        }
-
-        public String getAsString() throws TemplateModelException {
-            return this.value.toString();
-        }
-    }
 
     /**
      * Returns a FreeMarker template from a representation and a configuration.

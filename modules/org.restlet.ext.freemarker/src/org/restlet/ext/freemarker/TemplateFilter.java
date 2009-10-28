@@ -35,10 +35,12 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.data.Encoding;
+import org.restlet.ext.freemarker.internal.ResolverHashModel;
 import org.restlet.routing.Filter;
 import org.restlet.util.Resolver;
 
 import freemarker.template.Configuration;
+import freemarker.template.TemplateHashModel;
 
 /**
  * Filter response's entity and wrap it with a FreeMarker's template
@@ -129,18 +131,37 @@ public class TemplateFilter extends Filter {
         if (response.isEntityAvailable()
                 && response.getEntity().getEncodings().contains(
                         Encoding.FREEMARKER)) {
-            final TemplateRepresentation representation = new TemplateRepresentation(
+            TemplateRepresentation representation = new TemplateRepresentation(
                     response.getEntity(), this.configuration, response
                             .getEntity().getMediaType());
-
-            if (this.dataModel == null) {
-                representation.setDataModel(request, response);
-            } else {
-                representation.setDataModel(this.dataModel);
-            }
-
+            representation.setDataModel(createDataModel(request, response));
             response.setEntity(representation);
         }
+    }
+
+    /**
+     * Creates the FreeMarker data model for a given call. By default, it will
+     * create a {@link TemplateHashModel} based on the result of
+     * {@link Resolver#createResolver(Request, Response)}. If the
+     * {@link #getDataModel()} method has a non null value, it will be used.
+     * 
+     * @param request
+     *            The handled request.
+     * @param response
+     *            The handled response.
+     * @return The FreeMarker data model for the given call.
+     */
+    protected Object createDataModel(Request request, Response response) {
+        Object result = null;
+
+        if (this.dataModel == null) {
+            result = new ResolverHashModel(Resolver.createResolver(request,
+                    response));
+        } else {
+            result = this.dataModel;
+        }
+
+        return result;
     }
 
     /**
@@ -153,6 +174,16 @@ public class TemplateFilter extends Filter {
     }
 
     /**
+     * Returns the template data model common to all calls. If each call should
+     * have a specific model, you should set this property to null.
+     * 
+     * @return The template data model common to all calls.
+     */
+    public Object getDataModel() {
+        return dataModel;
+    }
+
+    /**
      * Sets the FreeMarker configuration.
      * 
      * @param config
@@ -160,6 +191,17 @@ public class TemplateFilter extends Filter {
      */
     public void setConfiguration(Configuration config) {
         this.configuration = config;
+    }
+
+    /**
+     * Sets the template data model common to all calls. If each call should
+     * have a specific model, you should set this property to null.
+     * 
+     * @param dataModel
+     *            The template data model common to all calls.
+     */
+    public void setDataModel(Object dataModel) {
+        this.dataModel = dataModel;
     }
 
 }
