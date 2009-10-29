@@ -32,11 +32,11 @@ package org.restlet.test.jaxrs.wrappers;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.logging.Logger;
 
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
+import org.restlet.engine.Engine;
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
 import org.restlet.ext.jaxrs.internal.util.PathRegExp;
 import org.restlet.ext.jaxrs.internal.wrappers.ResourceClasses;
@@ -63,7 +63,7 @@ public class RootResourceClassTest extends TestCase {
 
     public void testEncodePath() throws Exception {
         final ResourceClasses resourceClasses = new ResourceClasses(
-                new ThreadLocalizedContext(), null, null, Logger
+                new ThreadLocalizedContext(), null, null, Engine
                         .getAnonymousLogger());
         try {
             getPerRequestRootClassWrapper(resourceClasses,

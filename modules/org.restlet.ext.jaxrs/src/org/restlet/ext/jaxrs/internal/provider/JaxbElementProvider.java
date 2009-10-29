@@ -50,6 +50,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
+import org.restlet.Context;
 import org.restlet.ext.jaxrs.internal.exceptions.ImplementationException;
 import org.restlet.ext.jaxrs.internal.util.Util;
 
@@ -65,8 +66,7 @@ import org.restlet.ext.jaxrs.internal.util.Util;
 @Consumes( { "application/xml", MediaType.TEXT_XML, "application/*+xml" })
 public class JaxbElementProvider extends AbstractJaxbProvider<JAXBElement<?>> {
 
-    private final Logger logger = Logger.getLogger(JaxbElementProvider.class
-            .getName());
+    private final Logger logger = Context.getCurrentLogger();
 
     @Override
     Logger getLogger() {
@@ -114,7 +114,8 @@ public class JaxbElementProvider extends AbstractJaxbProvider<JAXBElement<?>> {
         try {
             final JAXBContext jaxbContext = getJaxbContext(clazz);
             final Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-            JAXBElement<?> je = unmarshaller.unmarshal(new StreamSource(entityStream), type);
+            JAXBElement<?> je = unmarshaller.unmarshal(new StreamSource(
+                    entityStream), type);
             return je;
         } catch (JAXBException e) {
             final String message = "Could not unmarshal to " + type.getName();

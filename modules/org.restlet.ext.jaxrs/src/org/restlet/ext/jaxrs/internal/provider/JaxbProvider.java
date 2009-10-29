@@ -49,6 +49,8 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.restlet.Context;
+
 /**
  * Provider for JAXB objects.
  * 
@@ -59,8 +61,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Consumes( { "application/xml", MediaType.TEXT_XML, "application/*+xml" })
 public class JaxbProvider extends AbstractJaxbProvider<Object> {
 
-    private final Logger logger = Logger
-            .getLogger(JaxbProvider.class.getName());
+    private final Logger logger = Context.getCurrentLogger();
 
     @Override
     Logger getLogger() {

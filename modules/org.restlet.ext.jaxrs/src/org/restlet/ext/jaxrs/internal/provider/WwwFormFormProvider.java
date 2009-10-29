@@ -45,11 +45,13 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
 
+import org.restlet.Context;
 import org.restlet.Message;
 import org.restlet.Request;
 import org.restlet.data.Form;
 import org.restlet.ext.jaxrs.internal.util.Converter;
 import org.restlet.ext.jaxrs.internal.util.Util;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.ProviderWrapper;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
 
@@ -67,7 +69,7 @@ import org.restlet.representation.Representation;
 @Produces(MediaType.APPLICATION_FORM_URLENCODED)
 public class WwwFormFormProvider extends AbstractProvider<Form> {
 
-    private static Logger logger = Logger.getLogger("WwwFormFormProvider");
+    private static Logger logger = Context.getCurrentLogger();
 
     /**
      * @see AbstractProvider#getSize(java.lang.Object)

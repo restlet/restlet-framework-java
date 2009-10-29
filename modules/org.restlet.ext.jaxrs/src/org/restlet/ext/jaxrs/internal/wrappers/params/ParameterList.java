@@ -85,8 +85,8 @@ import org.restlet.ext.jaxrs.internal.todo.NotYetImplementedException;
 import org.restlet.ext.jaxrs.internal.util.Converter;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.ext.jaxrs.internal.wrappers.WrapperUtil;
-import org.restlet.ext.jaxrs.internal.wrappers.provider.JaxRsProviders;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.ExtensionBackwardMapping;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.JaxRsProviders;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 
@@ -798,7 +798,8 @@ public class ParameterList {
 
     private static final Short DEFAULT_SHORT = 0;
 
-    private static final Logger localLogger = Logger.getAnonymousLogger();
+    private static final Logger localLogger = org.restlet.Context
+            .getCurrentLogger();
 
     private static final Collection<Class<? extends Annotation>> VALID_ANNOTATIONS = createValidAnnotations();
 

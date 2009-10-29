@@ -34,7 +34,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.data.Status;
-import org.restlet.engine.Edition;
 import org.restlet.engine.Engine;
 
 /**
@@ -170,26 +169,7 @@ public abstract class Restlet implements Uniform {
         }
 
         if (result == null) {
-            String loggerName = null;
-            Class<? extends Restlet> clazz = getClass();
-
-            if (clazz != null) {
-                if (Edition.CURRENT == Edition.GWT) {
-                    loggerName = clazz.getName();
-                } else {
-                    loggerName = clazz.getCanonicalName();
-                }
-            }
-
-            if (loggerName != null) {
-                result = Logger.getLogger(loggerName);
-            } else {
-                result = Logger.getAnonymousLogger();
-            }
-        }
-
-        if (result == null) {
-            result = Logger.getLogger("org.restlet.Restlet");
+            result = Engine.getLogger(this, "org.restlet");
         }
 
         return result;

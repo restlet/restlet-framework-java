@@ -91,11 +91,15 @@ public class PostPutTestCase extends BaseConnectorsTestCase {
         assertEquals("b", outputForm.getFirstValue("b"));
     }
 
-	@Override
-	public void testNettyAndJdkNet() throws Exception {
-		// TODO need review 
-		//super.testNettyAndJdkNet();
-	}
-    
-    
+    @Override
+    public void testNettyAndJdkNet() throws Exception {
+        // TODO need review
+        // super.testNettyAndJdkNet();
+    }    
+
+    @Override
+    public void testNettyAndApache() throws Exception {
+        // TODO need review
+        // super.testNettyAndApache();
+    }
 }

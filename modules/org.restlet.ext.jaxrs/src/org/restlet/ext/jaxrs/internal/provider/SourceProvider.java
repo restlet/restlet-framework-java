@@ -51,16 +51,18 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.restlet.Context;
+
 /**
- * JAX-RS ProviderWrapper to convert a {@link Source} to an object and vice versa.
+ * JAX-RS ProviderWrapper to convert a {@link Source} to an object and vice
+ * versa.
  * 
  * @author Stephan Koops
  */
 @Provider
 public class SourceProvider extends AbstractProvider<Source> {
 
-    private final Logger logger = Logger.getLogger(SourceProvider.class
-            .getName());
+    private final Logger logger = Context.getCurrentLogger();
 
     private final TransformerFactory transformerFactory = TransformerFactory
             .newInstance();

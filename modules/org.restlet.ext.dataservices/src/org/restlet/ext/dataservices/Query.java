@@ -34,6 +34,7 @@ import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.restlet.Context;
 import org.restlet.data.Parameter;
 import org.restlet.ext.atom.Entry;
 import org.restlet.ext.atom.Feed;
@@ -352,7 +353,7 @@ public class Query<T> implements Iterable<T> {
      */
     private Logger getLogger() {
         if (logger == null) {
-            logger = Logger.getLogger(this.getClass().getCanonicalName());
+            logger = Context.getCurrentLogger();
         }
         return logger;
     }

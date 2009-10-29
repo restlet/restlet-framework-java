@@ -53,6 +53,7 @@ import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Providers;
 
+import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.ext.jaxrs.InstantiateException;
 import org.restlet.ext.jaxrs.ObjectFactory;
@@ -75,8 +76,7 @@ import org.restlet.ext.jaxrs.internal.util.Converter;
 public class JaxRsProviders implements javax.ws.rs.ext.Providers,
         MessageBodyReaderSet {
 
-    private static final Logger localLogger = Logger
-            .getLogger("ExceptionsMapper");
+    private static final Logger localLogger = Context.getCurrentLogger();
 
     /**
      * Returns the generic class of the given {@link ContextResolver} class.

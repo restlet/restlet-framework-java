@@ -33,8 +33,8 @@ package org.restlet.test.util;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
+import org.restlet.engine.Engine;
 import org.restlet.routing.Template;
 import org.restlet.routing.Variable;
 import org.restlet.test.RestletTestCase;
@@ -90,7 +90,7 @@ public class TemplateTestCase extends RestletTestCase {
     public void testVariableNames() throws Exception {
         Template tpl = new Template(
                 "http://{userId}.noelios.com/invoices/{invoiceId}");
-        tpl.setLogger(Logger.getAnonymousLogger());
+        tpl.setLogger(Engine.getAnonymousLogger());
         List<String> names = tpl.getVariableNames();
 
         assertEquals(2, names.size());

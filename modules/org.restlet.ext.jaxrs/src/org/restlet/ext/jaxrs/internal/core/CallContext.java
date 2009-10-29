@@ -175,11 +175,11 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
     private static final int STATUS_PREC_FAILED = Status.CLIENT_ERROR_PRECONDITION_FAILED
             .getCode();
 
-    private static final Logger unexpectedLogger = Logger
-            .getLogger("JaxRsUriInfo.unexpected");
+    private static final Logger unexpectedLogger = org.restlet.Context
+            .getCurrentLogger();
 
     /**
-     * the unmodifiable List of accepted labuages. Lazy initialization by
+     * the unmodifiable List of accepted languages. Lazy initialization by
      * getter.
      * 
      * @see #getAcceptableLanguages()

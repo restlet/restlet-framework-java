@@ -39,6 +39,7 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Reference;
@@ -280,8 +281,7 @@ public class Template {
     public Template(String pattern, int matchingMode, int defaultType,
             String defaultDefaultValue, boolean defaultRequired,
             boolean defaultFixed, boolean encodeVariables) {
-        this.logger = (logger == null) ? Logger.getLogger(getClass()
-                .getCanonicalName()) : logger;
+        this.logger = (logger == null) ? Context.getCurrentLogger() : logger;
         this.pattern = pattern;
         this.defaultVariable = new Variable(defaultType, defaultDefaultValue,
                 defaultRequired, defaultFixed);

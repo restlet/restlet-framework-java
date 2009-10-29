@@ -34,8 +34,8 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Date;
 import java.util.Locale;
-import java.util.logging.Logger;
 
+import org.restlet.Context;
 import org.restlet.engine.util.DateUtils;
 
 /**
@@ -122,7 +122,7 @@ public class Type {
                 result = value;
             }
         } catch (Exception e) {
-            Logger.getLogger(Type.class.getCanonicalName()).warning(
+            Context.getCurrentLogger().warning(
                     "Cannot convert " + value + " from this EDM type "
                             + adoNetType);
         }
@@ -178,7 +178,7 @@ public class Type {
         try {
             result = Class.forName(fullClassName);
         } catch (ClassNotFoundException e) {
-            Logger.getLogger(Type.class.getCanonicalName()).warning(
+            Context.getCurrentLogger().warning(
                     "Can't find the following class in the class loader: "
                             + fullClassName);
         }
@@ -220,8 +220,7 @@ public class Type {
     }
 
     /**
-     * Converts a value to the String representation of the target ADO.NET
-     * type.
+     * Converts a value to the String representation of the target ADO.NET type.
      * 
      * @param value
      *            The value to convert.

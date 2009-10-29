@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.restlet.Context;
 import org.restlet.ext.atom.Entry;
 import org.restlet.ext.atom.Feed;
 import org.restlet.ext.atom.Link;
@@ -114,7 +115,7 @@ public class FeedParser<T> {
      */
     private Logger getLogger() {
         if (logger == null) {
-            logger = Logger.getLogger(this.getClass().getCanonicalName());
+            logger = Context.getCurrentLogger();
         }
         return logger;
     }

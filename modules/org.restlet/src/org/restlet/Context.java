@@ -38,6 +38,7 @@ import java.util.logging.Logger;
 
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
+import org.restlet.engine.Engine;
 import org.restlet.util.Series;
 
 /**
@@ -70,8 +71,7 @@ public class Context {
      * 
      * This variable is stored internally as a thread local variable and updated
      * each time a request is handled by a Restlet via the
-     * {@link Restlet#handle(org.restlet.Request, org.restlet.Response)}
-     * method.
+     * {@link Restlet#handle(org.restlet.Request, org.restlet.Response)} method.
      * 
      * @return The current context.
      */
@@ -90,11 +90,10 @@ public class Context {
     public static Logger getCurrentLogger() {
         // [ifndef gwt] instruction
         return (Context.getCurrent() != null) ? Context.getCurrent()
-                .getLogger() : Logger.getLogger(Context.class
-                .getCanonicalName());
+                .getLogger() : Engine.getLogger("org.restlet");
 
         // [ifdef gwt] instruction uncomment
-        // return Logger.getLogger(Context.class.getName());
+        // return Engine.getLogger("org.restlet");
     }
 
     // [ifndef gwt] method
@@ -171,7 +170,7 @@ public class Context {
      *            The name of the logger to use.
      */
     public Context(String loggerName) {
-        this(Logger.getLogger(loggerName));
+        this(Engine.getLogger(loggerName));
     }
 
     /**
@@ -340,7 +339,7 @@ public class Context {
      *            The name of the logger to use.
      */
     public void setLogger(String loggerName) {
-        setLogger(Logger.getLogger(loggerName));
+        setLogger(Engine.getLogger(loggerName));
     }
 
     /**

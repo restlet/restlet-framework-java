@@ -31,20 +31,19 @@
 package org.restlet.test.jaxrs.wrappers;
 
 import java.util.Collection;
-import java.util.logging.Logger;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
 import junit.framework.TestCase;
 
-import org.restlet.Context;
+import org.restlet.engine.Engine;
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
 import org.restlet.ext.jaxrs.internal.util.RemainingPath;
+import org.restlet.ext.jaxrs.internal.wrappers.ResourceClasses;
 import org.restlet.ext.jaxrs.internal.wrappers.ResourceMethod;
 import org.restlet.ext.jaxrs.internal.wrappers.RootResourceClass;
-import org.restlet.ext.jaxrs.internal.wrappers.ResourceClasses;
 
 /**
  * Tests for classes in package {@link org.restlet.ext.jaxrs.internal.wrappers}.
@@ -95,7 +94,7 @@ public class WrapperClassesTests extends TestCase {
     }
 
     private static final ResourceClasses resourceClasses = new ResourceClasses(
-            new ThreadLocalizedContext(), null, null, Logger
+            new ThreadLocalizedContext(), null, null, Engine
                     .getAnonymousLogger());
 
     public void testIllegalMethodPath() throws Exception {

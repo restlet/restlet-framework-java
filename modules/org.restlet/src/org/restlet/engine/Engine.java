@@ -39,15 +39,27 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.Response;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
+import org.restlet.engine.converter.ConverterHelper;
+import org.restlet.engine.log.LoggerFacade;
+import org.restlet.engine.security.AuthenticatorHelper;
 
 /**
- * Engine supporting the Restlet API.
+ * Engine supporting the Restlet API. The engine acts as a registry of various
+ * {@link Helper} types: {@link AuthenticatorHelper}, {@link ClientHelper},
+ * {@link ConverterHelper} and {@link ServerHelper} classes.<br>
+ * <br>
+ * Note that by default the JULI logging mechanism is used but it is possible to
+ * replace it by providing an alternate {@link LoggerFacade} implementation. For
+ * this, just pass a system property named
+ * "org.restlet.engine.loggerFacadeClass" with the qualified class name as a
+ * value.
  * 
  * @author Jerome Louvel
  */
@@ -104,6 +116,16 @@ public class Engine {
     /** Complete version header. */
     public static final String VERSION_HEADER = "Restlet-Framework/" + VERSION;
 
+    /**
+     * Returns an anonymous logger. By default it calls
+     * {@link #getLogger(String)} with a "" name.
+     * 
+     * @return The logger.
+     */
+    public static Logger getAnonymousLogger() {
+        return getInstance().getLoggerFacade().getAnonymousLogger();
+    }
+
     // [ifndef gwt] method
     /**
      * Returns the engine class loader. It uses the delegation model with the
@@ -132,6 +154,58 @@ public class Engine {
         }
 
         return result;
+    }
+
+    /**
+     * Returns a logger based on the class name of the given object.
+     * 
+     * @param clazz
+     *            The parent class.
+     * @return The logger.
+     */
+    public static Logger getLogger(Class<?> clazz) {
+        return getInstance().getLoggerFacade().getLogger(clazz);
+    }
+
+    /**
+     * Returns a logger based on the class name of the given object.
+     * 
+     * @param clazz
+     *            The parent class.
+     * @param defaultLoggerName
+     *            The default logger name to use if no one can be inferred from
+     *            the class.
+     * @return The logger.
+     */
+    public static Logger getLogger(Class<?> clazz, String defaultLoggerName) {
+        return getInstance().getLoggerFacade().getLogger(clazz,
+                defaultLoggerName);
+    }
+
+    /**
+     * Returns a logger based on the class name of the given object.
+     * 
+     * @param object
+     *            The parent object.
+     * @param The
+     *            default logger name to use if no one can be inferred from the
+     *            object class.
+     * @return The logger.
+     */
+    public static Logger getLogger(Object object, String defaultLoggerName) {
+        return getInstance().getLoggerFacade().getLogger(object,
+                defaultLoggerName);
+    }
+
+    /**
+     * Returns a logger based on the given logger name.
+     * 
+     * @param loggerName
+     *            The logger name.
+     * @return The logger.
+     */
+    public static Logger getLogger(String loggerName) {
+        return getInstance().getLoggerFacade().getLogger(loggerName);
     }
 
     // [ifndef gwt] method
@@ -202,6 +276,9 @@ public class Engine {
         userClassLoader = newClassLoader;
     }
 
+    /** The logger facade to use. */
+    private LoggerFacade loggerFacade;
+
     // [ifndef gwt] member
     /** List of available authenticator helpers. */
     private final List<org.restlet.engine.security.AuthenticatorHelper> registeredAuthenticators;
@@ -231,6 +308,18 @@ public class Engine {
      *            True if helpers should be automatically discovered.
      */
     public Engine(boolean discoverHelpers) {
+        // Instantiate the logger facade
+        String loggerFacadeClass = System.getProperty(
+                "org.restlet.engine.loggerFacadeClass",
+                "org.restlet.engine.log.LoggerFacade");
+        try {
+            this.loggerFacade = (LoggerFacade) loadClass(loggerFacadeClass)
+                    .newInstance();
+        } catch (Exception e) {
+            this.loggerFacade = new LoggerFacade();
+            // LOG ERROR!!
+        }
+
         this.registeredClients = new CopyOnWriteArrayList<ClientHelper>();
         // [ifndef gwt]
         this.registeredServers = new CopyOnWriteArrayList<ServerHelper>();
@@ -460,6 +549,15 @@ public class Engine {
         }
 
         return result;
+    }
+
+    /**
+     * Returns the logger facade to use.
+     * 
+     * @return The logger facade to use.
+     */
+    public LoggerFacade getLoggerFacade() {
+        return loggerFacade;
     }
 
     /**
@@ -733,6 +831,16 @@ public class Engine {
                     }
 
                 });
+    }
+
+    /**
+     * Sets the logger facade to use.
+     * 
+     * @param loggerFacade
+     *            The logger facade to use.
+     */
+    public void setLoggerFacade(LoggerFacade loggerFacade) {
+        this.loggerFacade = loggerFacade;
     }
 
     // [ifndef gwt] method

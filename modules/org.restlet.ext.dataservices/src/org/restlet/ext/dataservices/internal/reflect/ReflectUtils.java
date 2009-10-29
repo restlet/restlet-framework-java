@@ -41,6 +41,7 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.restlet.Context;
 import org.restlet.ext.atom.Category;
 import org.restlet.ext.atom.Entry;
 import org.restlet.ext.atom.Feed;
@@ -55,8 +56,7 @@ import org.restlet.ext.dataservices.internal.edm.Type;
 public class ReflectUtils {
 
     /** The internal logger. */
-    private final static Logger logger = Logger.getLogger(ReflectUtils.class
-            .getCanonicalName());
+    private final static Logger logger = Context.getCurrentLogger();
 
     /**
      * Returns the Java class of a set of entries contained inside a Feed.

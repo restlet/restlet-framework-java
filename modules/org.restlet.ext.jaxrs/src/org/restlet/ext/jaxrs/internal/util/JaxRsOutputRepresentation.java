@@ -40,6 +40,7 @@ import java.util.logging.Logger;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MultivaluedMap;
 
+import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyWriter;
 import org.restlet.representation.OutputRepresentation;
@@ -50,12 +51,11 @@ import org.restlet.representation.OutputRepresentation;
  * 
  * @author Stephan Koops
  * @param <T>
- *                type of the object to serialize.
+ *            type of the object to serialize.
  */
 public class JaxRsOutputRepresentation<T> extends OutputRepresentation {
 
-    private static final Logger LOGGER = Logger
-            .getLogger("JaxRsOutputRepresentation");
+    private static final Logger LOGGER = Context.getCurrentLogger();
 
     private final MessageBodyWriter mbw;
 
@@ -71,19 +71,19 @@ public class JaxRsOutputRepresentation<T> extends OutputRepresentation {
      * Creates a new JaxRsOutputRepresentation.
      * 
      * @param object
-     *                the object to serialize The generic {@link Type} to
-     *                convert to.
+     *            the object to serialize The generic {@link Type} to convert
+     *            to.
      * @param genericType
-     *                The generic {@link Type} to convert to.
+     *            The generic {@link Type} to convert to.
      * @param mediaType
-     *                the MediaType of the object. Must be concrete, see
-     *                {@link MediaType#isConcrete()}.
+     *            the MediaType of the object. Must be concrete, see
+     *            {@link MediaType#isConcrete()}.
      * @param annotations
-     *                the annotations of the artefact to convert to
+     *            the annotations of the artefact to convert to
      * @param mbw
-     *                the MessageBodyWriter which will serialize the object.
+     *            the MessageBodyWriter which will serialize the object.
      * @param httpHeaders
-     *                the mutable Map of HTTP response headers.
+     *            the mutable Map of HTTP response headers.
      */
     public JaxRsOutputRepresentation(T object, Type genericType,
             MediaType mediaType, Annotation[] annotations,

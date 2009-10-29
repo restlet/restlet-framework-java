@@ -40,6 +40,7 @@ import java.util.logging.Logger;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 
+import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.ChallengeResponse;
@@ -272,7 +273,7 @@ public class Session {
      */
     private Logger getLogger() {
         if (logger == null) {
-            logger = Logger.getLogger(this.getClass().getCanonicalName());
+            logger = Context.getCurrentLogger();
         }
         return logger;
     }

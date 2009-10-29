@@ -281,7 +281,7 @@ public class ContextInjector {
         }
     }
 
-    private static Logger logger = Logger.getAnonymousLogger();
+    private static Logger logger = org.restlet.Context.getCurrentLogger();
 
     /**
      * @param declaringClass
