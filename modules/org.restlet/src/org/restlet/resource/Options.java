@@ -46,8 +46,11 @@ import org.restlet.service.MetadataService;
  * Example:
  * 
  * <pre>
+ * &#064;Options
+ * public ApplicationInfo describe();
+ * 
  * &#064;Options(&quot;wadl|html&quot;)
- * public Representation toWadl();
+ * public Representation describe();
  * </pre>
  * 
  * @author Jerome Louvel

@@ -46,6 +46,9 @@ import org.restlet.service.MetadataService;
  * Example:
  * 
  * <pre>
+ * &#064;Get
+ * public MyBean represent();
+ * 
  * &#064;Get(&quot;json&quot;)
  * public String toJson();
  * 

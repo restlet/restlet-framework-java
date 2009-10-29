@@ -46,11 +46,14 @@ import org.restlet.service.MetadataService;
  * Example:
  * 
  * <pre>
+ * &#064;Post
+ * public MyOutputBean accept(MyInputBean input);
+ * 
  * &#064;Post(&quot;json&quot;)
  * public String acceptJson(String value);
  * 
  * &#064;Post(&quot;xml|json:xml|json&quot;)
- * public Representation acceptXml(Representation xmlValue);
+ * public Representation accept(Representation xmlValue);
  * </pre>
  * 
  * @author Jerome Louvel
