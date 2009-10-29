@@ -45,7 +45,9 @@ import org.restlet.engine.Edition;
 public class LoggerFacade {
 
     /**
-     * Returns an anonymous logger.
+     * Returns an anonymous logger. By default it calls
+     * {@link Logger#getAnonymousLogger()}. This method should be overridden by
+     * subclasses.
      * 
      * @return The logger.
      */
@@ -54,13 +56,15 @@ public class LoggerFacade {
     }
 
     /**
-     * Returns a logger based on the class name of the given object.
+     * Returns a logger based on the class name of the given object. By default,
+     * it calls {@link #getLogger(Class, String)} with a null default logger
+     * name.
      * 
      * @param clazz
      *            The parent class.
      * @return The logger.
      */
-    public Logger getLogger(Class<?> clazz) {
+    public final Logger getLogger(Class<?> clazz) {
         return getLogger(clazz, null);
     }
 
@@ -74,7 +78,7 @@ public class LoggerFacade {
      *            the class.
      * @return The logger.
      */
-    public Logger getLogger(Class<?> clazz, String defaultLoggerName) {
+    public final Logger getLogger(Class<?> clazz, String defaultLoggerName) {
         String loggerName = null;
 
         if (clazz != null) {
@@ -97,7 +101,9 @@ public class LoggerFacade {
     }
 
     /**
-     * Returns a logger based on the class name of the given object.
+     * Returns a logger based on the class name of the given object. By default,
+     * it calls {@link #getLogger(Class, String)} with the object's class as a
+     * first parameter.
      * 
      * @param object
      *            The parent object.
@@ -106,12 +112,14 @@ public class LoggerFacade {
      *            the object class.
      * @return The logger.
      */
-    public Logger getLogger(Object object, String defaultLoggerName) {
+    public final Logger getLogger(Object object, String defaultLoggerName) {
         return getLogger(object.getClass(), defaultLoggerName);
     }
 
     /**
-     * Returns a logger based on the given logger name.
+     * Returns a logger based on the given logger name. By default, it calls
+     * {@link Logger#getLogger(String)}. This method should be overridden by
+     * subclasses.
      * 
      * @param loggerName
      *            The logger name.

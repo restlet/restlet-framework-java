@@ -135,9 +135,11 @@ Changes log
         - Life cycle events are now propagated in all the Restlet 
           routing system (filters, routers, virtual hosts, etc.).
           Suggested by David Fogel
-        - Added a LogFacade class and a related property on the Engine
-          to allow the replacement of the default JULI logging 
+        - Added a LoggeFacade class and a related property on the 
+          Engine to allow the replacement of the default JULI logging 
           mechanism. 
+        - Added an SLF4J extension with a LoggerFacade for the Restlet 
+          Engine providing an optimal bridge to SLF4J.
     - Misc
         - Added Velocity template in the org.restlet.example project.
           Reported by Ben Vesco.

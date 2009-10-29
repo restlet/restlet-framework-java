@@ -118,6 +118,7 @@
 		<lib-javax.script-version>1.0</lib-javax.script-version>
 		<lib-servlet-version>2.5</lib-servlet-version>
 		<lib-simple-version>4.1.13</lib-simple-version>
+		<lib-slf4j-version>1.5.8</lib-slf4j-version>
 		<lib-solr-version>1.3.0</lib-solr-version>
 		<lib-solr-common-version>1.3.0</lib-solr-common-version>
 		<lib-spring-beans-version>2.5.6</lib-spring-beans-version>
@@ -162,6 +163,7 @@
 		<module>org.restlet.ext.rome</module>
 		<module>org.restlet.ext.servlet</module>
 		<module>org.restlet.ext.simple</module>
+		<module>org.restlet.ext.slf4j</module>
 		<module>org.restlet.ext.spring</module>
 		<module>org.restlet.ext.ssl</module>
 		<module>org.restlet.ext.velocity</module>
