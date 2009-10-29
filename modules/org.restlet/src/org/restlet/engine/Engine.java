@@ -308,18 +308,26 @@ public class Engine {
      */
     public Engine(boolean discoverHelpers) {
         // Instantiate the logger facade
-        String loggerFacadeClass = System.getProperty(
-                "org.restlet.engine.loggerFacadeClass",
-                "org.restlet.engine.log.LoggerFacade");
-        try {
-            this.loggerFacade = (LoggerFacade) loadClass(loggerFacadeClass)
-                    .newInstance();
-        } catch (Exception e) {
+        if (Edition.CURRENT == Edition.GWT) {
             this.loggerFacade = new LoggerFacade();
-            // LOG ERROR!!
+        } else {
+            // [ifndef gwt]
+            String loggerFacadeClass = System.getProperty(
+                    "org.restlet.engine.loggerFacadeClass",
+                    "org.restlet.engine.log.LoggerFacade");
+            try {
+                this.loggerFacade = (LoggerFacade) loadClass(loggerFacadeClass)
+                        .newInstance();
+            } catch (Exception e) {
+                this.loggerFacade = new LoggerFacade();
+                this.loggerFacade.getLogger("org.restlet").log(Level.WARNING,
+                        "Unable to register the logger facade", e);
+            }
+            // [enddef]
         }
 
         this.registeredClients = new CopyOnWriteArrayList<ClientHelper>();
+
         // [ifndef gwt]
         this.registeredServers = new CopyOnWriteArrayList<ServerHelper>();
         this.registeredAuthenticators = new CopyOnWriteArrayList<org.restlet.engine.security.AuthenticatorHelper>();
@@ -329,6 +337,7 @@ public class Engine {
         if (discoverHelpers) {
             try {
                 discoverConnectors();
+
                 // [ifndef gwt]
                 discoverAuthenticators();
                 discoverConverters();
