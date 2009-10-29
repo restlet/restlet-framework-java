@@ -46,14 +46,13 @@ import org.restlet.Context;
 import org.restlet.Response;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
-import org.restlet.engine.converter.ConverterHelper;
 import org.restlet.engine.log.LoggerFacade;
-import org.restlet.engine.security.AuthenticatorHelper;
 
 /**
  * Engine supporting the Restlet API. The engine acts as a registry of various
- * {@link Helper} types: {@link AuthenticatorHelper}, {@link ClientHelper},
- * {@link ConverterHelper} and {@link ServerHelper} classes.<br>
+ * {@link Helper} types: {@link org.restlet.engine.security.AuthenticatorHelper}
+ * , {@link ClientHelper}, {@link org.restlet.engine.converter.ConverterHelper}
+ * and {@link ServerHelper} classes.<br>
  * <br>
  * Note that by default the JULI logging mechanism is used but it is possible to
  * replace it by providing an alternate {@link LoggerFacade} implementation. For

@@ -98,7 +98,12 @@
          <exclude name="src/org/restlet/engine/internal/**" />
          <exclude name="src/org/restlet/engine/io/ByteUtils.java" />
          <exclude name="src/org/restlet/engine/local/**" />
-         <exclude name="src/org/restlet/engine/log/**" />
+         <exclude name="src/org/restlet/engine/log/AccessLogFileHandler.java" />
+         <exclude name="src/org/restlet/engine/log/AccessLogFormatter.java" />
+         <exclude name="src/org/restlet/engine/log/DefaultAccessLogFormatter.java" />
+         <exclude name="src/org/restlet/engine/log/IdentClient.java" />
+         <exclude name="src/org/restlet/engine/log/LogFilter.java" />
+         <exclude name="src/org/restlet/engine/log/TraceHandler.java" />
          <exclude name="src/org/restlet/engine/resource/**" />
          <exclude name="src/org/restlet/engine/Method.java" />
          <exclude name="src/org/restlet/engine/ServerHelper.java" />
