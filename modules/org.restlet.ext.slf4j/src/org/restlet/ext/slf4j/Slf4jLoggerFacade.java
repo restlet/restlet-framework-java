@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * Restlet log facade for the SLF4J {@link LoggerFactory}. In order to use SLF4J
  * as the logging facade for Restlet, you need to set the
  * "org.restlet.engine.loggerFacadeClass" system property with the
- * "org.restlet.ext.slf4j.Slf4jLogFacade" value.
+ * "org.restlet.ext.slf4j.Slf4jLoggerFacade" value.
  * 
  * @see Slf4jLogger
  * @author Jerome Louvel
