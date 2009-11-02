@@ -550,10 +550,11 @@ public class Resource extends Handler {
         if (canPut) {
             // Check the Content-Range HTTP Header
             // in order to prevent usage of partial PUTs
-            final Object oHeaders = getRequest().getAttributes().get(
+            Object oHeaders = getRequest().getAttributes().get(
                     "org.restlet.http.headers");
             if (oHeaders != null) {
-                final Series<Parameter> headers = (Series<Parameter>) oHeaders;
+                Series<Parameter> headers = (Series<Parameter>) oHeaders;
+
                 if (headers.getFirst("Content-Range", true) != null) {
                     getResponse()
                             .setStatus(
@@ -566,20 +567,15 @@ public class Resource extends Handler {
         }
 
         if (canPut) {
-            if (getRequest().isEntityAvailable()) {
-                try {
-                    storeRepresentation(getRequest().getEntity());
-                } catch (ResourceException re) {
-                    getResponse().setStatus(re.getStatus(), re);
-                }
-
-                // HTTP specification says that PUT may return
-                // the list of allowed methods
-                updateAllowedMethods();
-            } else {
-                getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,
-                        "Missing request entity");
+            try {
+                storeRepresentation(getRequest().getEntity());
+            } catch (ResourceException re) {
+                getResponse().setStatus(re.getStatus(), re);
             }
+
+            // HTTP specification says that PUT may return
+            // the list of allowed methods
+            updateAllowedMethods();
         }
     }
 

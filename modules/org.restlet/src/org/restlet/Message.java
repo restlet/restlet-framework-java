@@ -230,16 +230,16 @@ public abstract class Message {
     public abstract boolean isConfidential();
 
     /**
-     * Indicates if a content is available and can be sent. Several conditions
-     * must be met: the content must exists and have some available data.
+     * Indicates if a content is available and can be sent or received. Several
+     * conditions must be met: the content must exists and have some available
+     * data.
      * 
      * @return True if a content is available and can be sent.
      */
     public boolean isEntityAvailable() {
         // The declaration of the "result" variable is a workaround for the GWT
-        // platform.
-        boolean result = (getEntity() != null) && (getEntity().getSize() != 0)
-                && getEntity().isAvailable();
+        // platform. Please keep it!
+        boolean result = (getEntity() != null) && getEntity().isAvailable();
         return result;
     }
 
