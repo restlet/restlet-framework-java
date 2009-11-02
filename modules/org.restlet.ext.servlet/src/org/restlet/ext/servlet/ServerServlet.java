@@ -327,7 +327,7 @@ public class ServerServlet extends HttpServlet {
     @SuppressWarnings("unchecked")
     protected void init(Application application) {
         if (application != null) {
-            final Context applicationContext = application.getContext();
+            Context applicationContext = application.getContext();
 
             // Copies the ServletContext into an attribute
             applicationContext.getAttributes().put(
@@ -338,8 +338,8 @@ public class ServerServlet extends HttpServlet {
             String initParam;
 
             // Copy all the Servlet component initialization parameters
-            final javax.servlet.ServletConfig servletConfig = getServletConfig();
-            for (final Enumeration<String> enum1 = servletConfig
+            javax.servlet.ServletConfig servletConfig = getServletConfig();
+            for (Enumeration<String> enum1 = servletConfig
                     .getInitParameterNames(); enum1.hasMoreElements();) {
                 initParam = enum1.nextElement();
                 applicationContext.getParameters().add(initParam,
@@ -347,7 +347,7 @@ public class ServerServlet extends HttpServlet {
             }
 
             // Copy all the Servlet application initialization parameters
-            for (final Enumeration<String> enum1 = getServletContext()
+            for (Enumeration<String> enum1 = getServletContext()
                     .getInitParameterNames(); enum1.hasMoreElements();) {
                 initParam = enum1.nextElement();
                 applicationContext.getParameters().add(initParam,
@@ -425,13 +425,12 @@ public class ServerServlet extends HttpServlet {
 
         // Try to instantiate a new target application
         // First, find the application class name
-        final String applicationClassName = getInitParameter(APPLICATION_KEY,
-                null);
+        String applicationClassName = getInitParameter(APPLICATION_KEY, null);
 
         // Load the application class using the given class name
         if (applicationClassName != null) {
             try {
-                final Class<?> targetClass = loadClass(applicationClassName);
+                Class<?> targetClass = loadClass(applicationClassName);
 
                 try {
                     // Instantiate an application with the default constructor
@@ -513,13 +512,12 @@ public class ServerServlet extends HttpServlet {
         if (component == null) {
             // Try to instantiate a new target component
             // First, find the component class name
-            final String componentClassName = getInitParameter(COMPONENT_KEY,
-                    null);
+            String componentClassName = getInitParameter(COMPONENT_KEY, null);
 
             // Load the component class using the given class name
             if (componentClassName != null) {
                 try {
-                    final Class<?> targetClass = loadClass(componentClassName);
+                    Class<?> targetClass = loadClass(componentClassName);
 
                     // Create a new instance of the component class by
                     // invoking the constructor with the Context parameter.
@@ -580,30 +578,30 @@ public class ServerServlet extends HttpServlet {
      */
     protected HttpServerHelper createServer(HttpServletRequest request) {
         HttpServerHelper result = null;
-        final Component component = getComponent();
+        Component component = getComponent();
 
         if (component != null) {
             // First, let's create a pseudo server
-            final Server server = new Server(component.getContext()
+            Server server = new Server(component.getContext()
                     .createChildContext(), (List<Protocol>) null, this
                     .getLocalAddr(request), this.getLocalPort(request),
                     component);
             result = new HttpServerHelper(server);
 
             // Attach the hosted application(s) to the right path
-            final String uriPattern = this.getContextPath(request)
+            String uriPattern = this.getContextPath(request)
                     + request.getServletPath();
 
             if (isDefaultComponent()) {
-                if (this.application != null) {
-                    log("[Restlet] Attaching application: " + this.application
+                if (getApplication() != null) {
+                    log("[Restlet] Attaching application: " + getApplication()
                             + " to URI: " + uriPattern);
                     component.getDefaultHost().attach(uriPattern,
-                            this.application);
+                            getApplication());
                 }
             } else {
                 // According to the mode, configure correctly the component.
-                final String autoWire = getInitParameter(AUTO_WIRE_KEY,
+                String autoWire = getInitParameter(AUTO_WIRE_KEY,
                         AUTO_WIRE_KEY_DEFAULT);
                 if (AUTO_WIRE_KEY_DEFAULT.equalsIgnoreCase(autoWire)) {
                     // Translate all defined routes as much as possible
@@ -619,8 +617,8 @@ public class ServerServlet extends HttpServlet {
                         addFullServletPath = component.getDefaultHost()
                                 .getDefaultRoute() != null;
                     } else {
-                        for (final TemplateRoute route : component
-                                .getDefaultHost().getRoutes()) {
+                        for (TemplateRoute route : component.getDefaultHost()
+                                .getRoutes()) {
                             if (route.getTemplate().getPattern() == null) {
                                 addFullServletPath = true;
                                 continue;
@@ -639,15 +637,14 @@ public class ServerServlet extends HttpServlet {
                         }
                     }
                     if (!addContextPath) {
-                        for (final VirtualHost virtualHost : component
-                                .getHosts()) {
+                        for (VirtualHost virtualHost : component.getHosts()) {
                             if (virtualHost.getRoutes().isEmpty()) {
                                 // Case where the default host has a default
                                 // route (with an empty pattern).
                                 addFullServletPath = virtualHost
                                         .getDefaultRoute() != null;
                             } else {
-                                for (final TemplateRoute route : virtualHost
+                                for (TemplateRoute route : virtualHost
                                         .getRoutes()) {
                                     if (route.getTemplate().getPattern() == null) {
                                         addFullServletPath = true;
@@ -789,7 +786,7 @@ public class ServerServlet extends HttpServlet {
                     if (isDefaultComponent()) {
                         // Find the attribute name to use to store the
                         // application
-                        final String applicationAttributeName = getInitParameter(
+                        String applicationAttributeName = getInitParameter(
                                 NAME_APPLICATION_ATTRIBUTE,
                                 NAME_APPLICATION_ATTRIBUTE_DEFAULT + "."
                                         + getServletName());
@@ -955,7 +952,7 @@ public class ServerServlet extends HttpServlet {
     public void init() throws ServletException {
         if ((getComponent() != null) && (getComponent().isStopped())) {
             try {
-                getComponent().stop();
+                getComponent().start();
             } catch (Exception e) {
                 log("Error during the starting of the Restlet Application", e);
             }
@@ -978,8 +975,7 @@ public class ServerServlet extends HttpServlet {
 
         // The Component is provided via a context parameter in the "web.xml"
         // file.
-        final String componentAttributeName = getInitParameter(COMPONENT_KEY,
-                null);
+        String componentAttributeName = getInitParameter(COMPONENT_KEY, null);
         if (componentAttributeName != null) {
             return false;
         }
