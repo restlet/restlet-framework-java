@@ -348,7 +348,7 @@ public class MetadataReader extends DefaultHandler {
         } else if ("key".equalsIgnoreCase(localName)) {
             pushState(State.ENTITY_TYPE_KEY);
         } else if ("propertyRef".equalsIgnoreCase(localName)) {
-            if (getState() == State.ENTITY_TYPE) {
+            if (getState() == State.ENTITY_TYPE_KEY) {
             	if(currentEntityType.getKeys() == null){
                     currentEntityType.setKeys(new ArrayList<Property>());
                 }
