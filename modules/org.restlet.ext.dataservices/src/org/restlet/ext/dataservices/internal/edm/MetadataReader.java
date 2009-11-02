@@ -348,10 +348,12 @@ public class MetadataReader extends DefaultHandler {
         } else if ("key".equalsIgnoreCase(localName)) {
             pushState(State.ENTITY_TYPE_KEY);
         } else if ("propertyRef".equalsIgnoreCase(localName)) {
-            if(currentEntityType.getKeys() == null){
-                currentEntityType.setKeys(new ArrayList<Property>());
+            if (getState() == State.ENTITY_TYPE) {
+            	if(currentEntityType.getKeys() == null){
+                    currentEntityType.setKeys(new ArrayList<Property>());
+                }
+                currentEntityType.getKeys().add(new Property(attr.get("Name")));
             }
-            currentEntityType.getKeys().add(new Property(attr.get("Name")));
         } else if ("property".equalsIgnoreCase(localName)) {
             Property property = new Property(attr.get("Name"));
             property.setDefaultValue(attr.get("Default"));

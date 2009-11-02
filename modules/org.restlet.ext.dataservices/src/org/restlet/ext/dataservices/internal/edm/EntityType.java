@@ -44,222 +44,248 @@ import java.util.TreeSet;
  *      href="http://msdn.microsoft.com/en-us/library/bb399206.aspx">EntityType
  *      Element (CSDL)</a>
  */
-public class EntityType extends NamedObject {
+public class EntityType extends NamedObject implements Comparable<EntityType> {
 
-    /** Is this type abstract? */
-    private boolean abstractType;
+	/** Is this type abstract? */
+	private boolean abstractType;
 
-    /** The list of associations. */
-    private List<NavigationProperty> associations;
+	/** The list of associations. */
+	private List<NavigationProperty> associations;
 
-    /** The parent type this type inherits from. */
-    private EntityType baseType;
+	/** The parent type this type inherits from. */
+	private EntityType baseType;
 
-    /** The list of properties that identifies an instance of this type. */
-    private List<Property> keys;
+	/** The list of properties that identifies an instance of this type. */
+	private List<Property> keys;
 
-    /** The list of properties. */
-    private List<Property> properties;
+	/** The list of properties. */
+	private List<Property> properties;
 
-    /** The schema. */
-    private Schema schema;
+	/** The schema. */
+	private Schema schema;
 
-    /**
-     * Constructor.
-     * 
-     * @param name
-     *            The name of this entity type.
-     */
-    public EntityType(String name) {
-        super(name);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param name
+	 *            The name of this entity type.
+	 */
+	public EntityType(String name) {
+		super(name);
+	}
 
-    /**
-     * Returns the list of associations.
-     * 
-     * @return The list of associations.
-     */
-    public List<NavigationProperty> getAssociations() {
-        if (associations == null) {
-            associations = new ArrayList<NavigationProperty>();
-        }
-        return associations;
-    }
+	/**
+	 * Compares this object with the specified object for order. The comparison
+	 * is based on the computed full class name
+	 */
+	public int compareTo(EntityType o) {
+		if (o == null) {
+			return 1;
+		}
+		int result = 0;
 
-    /**
-     * Returns the parent type this type inherits from.
-     * 
-     * @return The parent type this type inherits from.
-     */
-    public EntityType getBaseType() {
-        return baseType;
-    }
+		String s1 = getFullClassName();
+		String s2 = o.getFullClassName();
+		if (s1 != null) {
+			result = s1.compareTo(s2);
+		} else if (s2 != null) {
+			result = -1 * s2.compareTo(s1);
+		}
+		return result;
+	}
 
-    /**
-     * Returns the package name related to this entity type.
-     * 
-     * @return The package name related to this entity type.
-     */
-    public String getFullClassName() {
-        return Type.getPackageName(getSchema()) + "." + getClassName();
-    }
+	/**
+	 * Returns the list of associations.
+	 * 
+	 * @return The list of associations.
+	 */
+	public List<NavigationProperty> getAssociations() {
+		if (associations == null) {
+			associations = new ArrayList<NavigationProperty>();
+		}
+		return associations;
+	}
 
-    /**
-     * Returns the Java class name related to this entity type.
-     * 
-     * @return The Java class name related to this entity type.
-     */
-    public String getClassName() {
-        return getNormalizedName().substring(0, 1).toUpperCase() + getNormalizedName().substring(1);
-    }
+	/**
+	 * Returns the parent type this type inherits from.
+	 * 
+	 * @return The parent type this type inherits from.
+	 */
+	public EntityType getBaseType() {
+		return baseType;
+	}
 
-    /**
-     * Returns the set of imported entity types.
-     * 
-     * @return The set of imported entity types.
-     */
-    public Set<EntityType> getImportedEntityTypes() {
-        Set<EntityType> result = new TreeSet<EntityType>();
+	/**
+	 * Returns the Java class name related to this entity type.
+	 * 
+	 * @return The Java class name related to this entity type.
+	 */
+	public String getClassName() {
+		return getNormalizedName().substring(0, 1).toUpperCase()
+				+ getNormalizedName().substring(1);
+	}
 
-        for (NavigationProperty property : getAssociations()) {
-            result.add(property.getToRole().getType());
-        }
-        return result;
-    }
+	/**
+	 * Returns the package name related to this entity type.
+	 * 
+	 * @return The package name related to this entity type.
+	 */
+	public String getFullClassName() {
+		return Type.getPackageName(getSchema()) + "." + getClassName();
+	}
 
-    /**
-     * Returns the set of imported Java classes.
-     * 
-     * @return The set of imported Java classes.
-     */
-    public Set<String> getImportedJavaClasses() {
-        Set<String> result = new TreeSet<String>();
+	/**
+	 * Returns the set of imported entity types.
+	 * 
+	 * @return The set of imported entity types.
+	 */
+	public Set<EntityType> getImportedEntityTypes() {
+		Set<EntityType> result = new TreeSet<EntityType>();
 
-        for (Property property : getProperties()) {
-            if (property.getType().getAdoNetType().endsWith("DateTime")) {
-                result.add(property.getType().getJavaClass().getName());
-            } else if (property.getType().getAdoNetType().endsWith(
-                    "DateTimeOffset")) {
-                result.add(property.getType().getJavaClass().getName());
-            }
-        }
+		for (NavigationProperty property : getAssociations()) {
+			try {
+				System.err.println(property.getToRole().getType());
+				result.add(property.getToRole().getType());
+			} catch (Throwable e) {
+				e.printStackTrace();
+				System.out.println(e.getMessage());
+			}
+		}
+		return result;
+	}
 
-        for (NavigationProperty property : getAssociations()) {
-            if (property.getToRole().isToMany()) {
-                result.add("java.util.List");
-                break;
-            }
-        }
+	/**
+	 * Returns the set of imported Java classes.
+	 * 
+	 * @return The set of imported Java classes.
+	 */
+	public Set<String> getImportedJavaClasses() {
+		Set<String> result = new TreeSet<String>();
 
-        return result;
-    }
+		for (Property property : getProperties()) {
+			if (property.getType().getAdoNetType().endsWith("DateTime")) {
+				result.add(property.getType().getJavaClass().getName());
+			} else if (property.getType().getAdoNetType().endsWith(
+					"DateTimeOffset")) {
+				result.add(property.getType().getJavaClass().getName());
+			}
+		}
 
-    /**
-     * Returns the "keys" property.
-     * 
-     * @return The "keys" property.
-     */
-    public List<Property> getKeys() {
-        return keys;
-    }
+		for (NavigationProperty property : getAssociations()) {
+			if (property.getToRole().isToMany()) {
+				result.add("java.util.List");
+				break;
+			}
+		}
 
-    /**
-     * Returns the package name related to this entity type.
-     * 
-     * @return The package name related to this entity type.
-     */
-    public String getPackageName() {
-        return Type.getPackageName(getSchema());
-    }
+		return result;
+	}
 
-    /**
-     * Returns the list of properties.
-     * 
-     * @return The list of properties.
-     */
-    public List<Property> getProperties() {
-        if (properties == null) {
-            properties = new ArrayList<Property>();
-        }
-        return properties;
-    }
+	/**
+	 * Returns the "keys" property.
+	 * 
+	 * @return The "keys" property.
+	 */
+	public List<Property> getKeys() {
+		return keys;
+	}
 
-    /**
-     * Returns the schema.
-     * 
-     * @return The schema.
-     */
-    public Schema getSchema() {
-        return schema;
-    }
+	/**
+	 * Returns the package name related to this entity type.
+	 * 
+	 * @return The package name related to this entity type.
+	 */
+	public String getPackageName() {
+		return Type.getPackageName(getSchema());
+	}
 
-    /**
-     * Returns true if this type is abstract.
-     * 
-     * @return True if this type is abstract
-     */
-    public boolean isAbstractType() {
-        return abstractType;
-    }
+	/**
+	 * Returns the list of properties.
+	 * 
+	 * @return The list of properties.
+	 */
+	public List<Property> getProperties() {
+		if (properties == null) {
+			properties = new ArrayList<Property>();
+		}
+		return properties;
+	}
 
-    /**
-     * Indicates if this type is abstract
-     * 
-     * @param abstractType
-     *            True if this type is abstract
-     */
-    public void setAbstractType(boolean abstractType) {
-        this.abstractType = abstractType;
-    }
+	/**
+	 * Returns the schema.
+	 * 
+	 * @return The schema.
+	 */
+	public Schema getSchema() {
+		return schema;
+	}
 
-    /**
-     * Sets the list of associations.
-     * 
-     * @param associations
-     *            The list of associations.
-     */
-    public void setAssociations(List<NavigationProperty> associations) {
-        this.associations = associations;
-    }
+	/**
+	 * Returns true if this type is abstract.
+	 * 
+	 * @return True if this type is abstract
+	 */
+	public boolean isAbstractType() {
+		return abstractType;
+	}
 
-    /**
-     * Sets the parent type this type inherits from.
-     * 
-     * @param baseType
-     *            The parent type this type inherits from.
-     */
-    public void setBaseType(EntityType baseType) {
-        this.baseType = baseType;
-    }
+	/**
+	 * Indicates if this type is abstract
+	 * 
+	 * @param abstractType
+	 *            True if this type is abstract
+	 */
+	public void setAbstractType(boolean abstractType) {
+		this.abstractType = abstractType;
+	}
 
-    /**
-     * Sets the "keys" property.
-     * 
-     * @param keys
-     *            The "keys" property.
-     */
-    public void setKeys(List<Property> keys) {
-        this.keys = keys;
-    }
+	/**
+	 * Sets the list of associations.
+	 * 
+	 * @param associations
+	 *            The list of associations.
+	 */
+	public void setAssociations(List<NavigationProperty> associations) {
+		this.associations = associations;
+	}
 
-    /**
-     * Sets the list of properties.
-     * 
-     * @param properties
-     *            The list of properties.
-     */
-    public void setProperties(List<Property> properties) {
-        this.properties = properties;
-    }
+	/**
+	 * Sets the parent type this type inherits from.
+	 * 
+	 * @param baseType
+	 *            The parent type this type inherits from.
+	 */
+	public void setBaseType(EntityType baseType) {
+		this.baseType = baseType;
+	}
 
-    /**
-     * Sets the schema.
-     * 
-     * @param schema
-     *            The schema.
-     */
-    public void setSchema(Schema schema) {
-        this.schema = schema;
-    }
+	/**
+	 * Sets the "keys" property.
+	 * 
+	 * @param keys
+	 *            The "keys" property.
+	 */
+	public void setKeys(List<Property> keys) {
+		this.keys = keys;
+	}
 
+	/**
+	 * Sets the list of properties.
+	 * 
+	 * @param properties
+	 *            The list of properties.
+	 */
+	public void setProperties(List<Property> properties) {
+		this.properties = properties;
+	}
+
+	/**
+	 * Sets the schema.
+	 * 
+	 * @param schema
+	 *            The schema.
+	 */
+	public void setSchema(Schema schema) {
+		this.schema = schema;
+	}
 }

@@ -105,6 +105,8 @@ Changes log
           converters. Reported by Adam Harrison.
         - Fixed NPE in ChallengeCallbackHandler when challenge response
           is null. Reported by Georges-Etienne Legendre.
+        - Fixed NPE in the dataservices extension due to bad parsing of
+          referential constraints.
     - Enhancements
         - Improved JAXB converted. Contributed by Sanjay Acharya.
         - Upgraded Apache Commons Logging to version 1.1.1.
