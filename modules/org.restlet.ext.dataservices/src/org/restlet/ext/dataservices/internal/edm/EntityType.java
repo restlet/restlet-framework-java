@@ -143,13 +143,7 @@ public class EntityType extends NamedObject implements Comparable<EntityType> {
 		Set<EntityType> result = new TreeSet<EntityType>();
 
 		for (NavigationProperty property : getAssociations()) {
-			try {
-				System.err.println(property.getToRole().getType());
-				result.add(property.getToRole().getType());
-			} catch (Throwable e) {
-				e.printStackTrace();
-				System.out.println(e.getMessage());
-			}
+			result.add(property.getToRole().getType());
 		}
 		return result;
 	}
