@@ -102,7 +102,12 @@ public class ContextTemplateLoader implements TemplateLoader {
      * @return The template source {@link Representation}.
      */
     public Object findTemplateSource(String name) throws IOException {
-        String fullUri = getBaseUri() + name;
+    	String fullUri;
+    	if(getBaseUri().endsWith("/")){
+    		fullUri = getBaseUri() + name;
+    	} else {
+    		fullUri = getBaseUri() + "/" + name;	
+    	}
         return getContext().getClientDispatcher().get(fullUri).getEntity();
     }
 
