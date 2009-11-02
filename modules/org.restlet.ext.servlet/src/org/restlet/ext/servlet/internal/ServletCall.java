@@ -379,8 +379,8 @@ public class ServletCall extends HttpServerCall {
             try {
                 // Add the response headers
                 Parameter header;
-                for (final Iterator<Parameter> iter = getResponseHeaders()
-                        .iterator(); iter.hasNext();) {
+                for (Iterator<Parameter> iter = getResponseHeaders().iterator(); iter
+                        .hasNext();) {
                     header = iter.next();
 
                     // We don't need to set the content length, especially
@@ -408,8 +408,8 @@ public class ServletCall extends HttpServerCall {
             Parameter header;
             Parameter contentLengthHeader = null;
 
-            for (final Iterator<Parameter> iter = getResponseHeaders()
-                    .iterator(); iter.hasNext();) {
+            for (Iterator<Parameter> iter = getResponseHeaders().iterator(); iter
+                    .hasNext();) {
                 header = iter.next();
 
                 if (header.getName()

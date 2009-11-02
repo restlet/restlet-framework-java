@@ -185,10 +185,10 @@ public class ServletAdapter extends HttpServerAdapter {
             Context.setCurrent(getContext());
 
             // Convert the Servlet call to a Restlet call
-            final ServletCall servletCall = new ServletCall(request
-                    .getLocalAddr(), request.getLocalPort(), request, response);
-            final HttpRequest httpRequest = toRequest(servletCall);
-            final HttpResponse httpResponse = new HttpResponse(servletCall,
+            ServletCall servletCall = new ServletCall(request.getLocalAddr(),
+                    request.getLocalPort(), request, response);
+            HttpRequest httpRequest = toRequest(servletCall);
+            HttpResponse httpResponse = new HttpResponse(servletCall,
                     httpRequest);
 
             // Adjust the relative reference
