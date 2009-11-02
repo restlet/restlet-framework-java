@@ -599,16 +599,11 @@ public class Resource extends Handler {
         }
 
         if (canPut) {
-            if (getRequest().isEntityAvailable()) {
-                put(getRequest().getEntity());
+            put(getRequest().getEntity());
 
-                // HTTP spec says that PUT may return
-                // the list of allowed methods
-                updateAllowedMethods();
-            } else {
-                getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,
-                        "Missing request entity");
-            }
+            // HTTP spec says that PUT may return
+            // the list of allowed methods
+            updateAllowedMethods();
         }
     }
 

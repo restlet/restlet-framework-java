@@ -23,6 +23,9 @@ Changes log
           property on Client to be ignored. Reported by Rahul Juneja.
         - Fixed bug in Apache HTTP client causing "connectTimeout"
           property on Client to be ignored. Reported by Jim Alateras.
+        - PUT with empty entities were causing 400 errors. The test
+          in Resource has been removed. 
+          Reported by Nicolas Rinaudo and Rhett Sutphin
     - Misc
         - Updated license file to mention distribution under EPL 1.0 in
           addition to other licenses, like for Restlet 2.0.
