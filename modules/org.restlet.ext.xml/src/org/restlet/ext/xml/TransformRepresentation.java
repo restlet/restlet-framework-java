@@ -298,7 +298,7 @@ public class TransformRepresentation extends OutputRepresentation {
         } else {
             // Prepare the source and result documents
             result = new SAXSource(new InputSource(getSourceRepresentation()
-                    .getStream()));
+                    .getReader()));
         }
 
         if (getSourceRepresentation().getIdentifier() != null) {

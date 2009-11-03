@@ -135,7 +135,7 @@ public class SaxRepresentation extends XmlRepresentation {
                         .getSaxSource();
             } else {
                 this.source = new SAXSource(new InputSource(xmlRepresentation
-                        .getStream()));
+                        .getReader()));
             }
 
             if (xmlRepresentation.getIdentifier() != null) {
@@ -174,7 +174,7 @@ public class SaxRepresentation extends XmlRepresentation {
     @Override
     public SAXSource getSaxSource() throws IOException {
         if (this.source == null) {
-            return new SAXSource(new InputSource(getStream()));
+            return new SAXSource(new InputSource(getReader()));
         } else {
             return this.source;
         }

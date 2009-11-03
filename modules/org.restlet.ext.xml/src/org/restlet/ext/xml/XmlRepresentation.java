@@ -290,7 +290,7 @@ public abstract class XmlRepresentation extends OutputRepresentation
         Node document = null;
 
         try {
-            document = getDocumentBuilder().parse(getStream());
+            document = getDocumentBuilder().parse(new InputSource(getReader()));
         } catch (SAXException se) {
             throw new IOException("Couldn't read the XML representation. "
                     + se.getMessage());
