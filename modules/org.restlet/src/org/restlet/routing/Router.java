@@ -50,8 +50,8 @@ import org.restlet.util.RouteList;
  * In addition, several routing modes are supported, implementing various
  * algorithms:
  * <ul>
- * <li>Best match (default)</li>
- * <li>First match</li>
+ * <li>Best match</li>
+ * <li>First match (default)</li>
  * <li>Last match</li>
  * <li>Random match</li>
  * <li>Round robin</li>
@@ -353,7 +353,7 @@ public class Router extends Restlet {
 
     /**
      * Returns the default matching mode to use when selecting routes based on
-     * URIs. By default it returns {@link Template#MODE_STARTS_WITH}.
+     * URIs. By default it returns {@link Template#MODE_EQUALS}.
      * 
      * @return The default matching mode.
      */
@@ -363,7 +363,8 @@ public class Router extends Restlet {
 
     /**
      * Returns the default setting for whether the routing should be done on
-     * URIs with or without taking into account query string.
+     * URIs with or without taking into account query string. By default, it
+     * returns false.
      * 
      * @return the default setting for whether the routing should be done on
      *         URIs with or without taking into account query string.
@@ -480,7 +481,8 @@ public class Router extends Restlet {
     }
 
     /**
-     * Returns the minimum score required to have a match.
+     * Returns the minimum score required to have a match. By default, it
+     * returns {@code 0.5}.
      * 
      * @return The minimum score required to have a match.
      */
@@ -509,7 +511,7 @@ public class Router extends Restlet {
     }
 
     /**
-     * Returns the routing mode.
+     * Returns the routing mode. By default, it returns the {@link #FIRST} mode.
      * 
      * @return The routing mode.
      */
@@ -556,7 +558,7 @@ public class Router extends Restlet {
 
     /**
      * Sets the default matching mode to use when selecting routes based on
-     * URIs.
+     * URIs. By default it is set to {@link Template#MODE_EQUALS}.
      * 
      * @param defaultMatchingMode
      *            The default matching mode.
@@ -567,7 +569,8 @@ public class Router extends Restlet {
 
     /**
      * Sets the default setting for whether the routing should be done on URIs
-     * with or without taking into account query string.
+     * with or without taking into account query string. By default, it is set
+     * to false.
      * 
      * @param defaultMatchQuery
      *            The default setting for whether the routing should be done on
@@ -611,7 +614,8 @@ public class Router extends Restlet {
     }
 
     /**
-     * Sets the score required to have a match.
+     * Sets the score required to have a match. By default, it is set to {@code
+     * 0.5}.
      * 
      * @param score
      *            The score required to have a match.
@@ -621,7 +625,8 @@ public class Router extends Restlet {
     }
 
     /**
-     * Sets the delay in milliseconds before a new attempt is made.
+     * Sets the delay in milliseconds before a new attempt is made. By default,
+     * it is set to {@code 500}.
      * 
      * @param retryDelay
      *            The delay in milliseconds before a new attempt is made.
@@ -641,7 +646,7 @@ public class Router extends Restlet {
     }
 
     /**
-     * Sets the routing mode.
+     * Sets the routing mode. By default, it is set to the {@link #FIRST} mode.
      * 
      * @param routingMode
      *            The routing mode.
