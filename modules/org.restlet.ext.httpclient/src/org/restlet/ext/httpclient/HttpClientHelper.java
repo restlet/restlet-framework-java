@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
+import org.apache.http.HttpHost;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.params.CookiePolicy;
@@ -41,6 +42,7 @@ import org.apache.http.client.params.HttpClientParams;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.params.ConnManagerParams;
 import org.apache.http.conn.params.ConnPerRouteBean;
+import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
@@ -91,6 +93,18 @@ import org.restlet.ext.httpclient.internal.HttpMethodCall;
  * <td>int</td>
  * <td>20 (uses HttpClient's default)</td>
  * <td>The maximum number of active connections.</td>
+ * </tr>
+ * <tr>
+ * <td>proxyHost</td>
+ * <td>String</td>
+ * <td>System property "http.proxyHost"</td>
+ * <td>The host name of the HTTP proxy.</td>
+ * </tr>
+ * <tr>
+ * <td>proxyPort</td>
+ * <td>int</td>
+ * <td>System property ""http.proxyPort" or "3128"</td>
+ * <td>The port of the HTTP proxy.</td>
  * </tr>
  * <tr>
  * <td>stopIdleTimeout</td>
@@ -190,6 +204,12 @@ public class HttpClientHelper extends org.restlet.engine.http.HttpClientHelper {
         HttpConnectionParams.setTcpNoDelay(params, getTcpNoDelay());
         HttpConnectionParams.setConnectionTimeout(params, getConnectTimeout());
         HttpConnectionParams.setSoTimeout(params, getSocketTimeout());
+
+        String httpProxyHost = getProxyHost();
+        if (httpProxyHost != null) {
+            HttpHost proxy = new HttpHost(httpProxyHost, getProxyPort());
+            params.setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+        }
     }
 
     /**
@@ -273,6 +293,26 @@ public class HttpClientHelper extends org.restlet.engine.http.HttpClientHelper {
     public int getMaxTotalConnections() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
                 "maxTotalConnections", "20"));
+    }
+
+    /**
+     * Returns the host name of the HTTP proxy, if specified.
+     * 
+     * @return the host name of the HTTP proxy, if specified.
+     */
+    public String getProxyHost() {
+        return getHelpedParameters().getFirstValue("proxyHost",
+                System.getProperty("http.proxyHost"));
+    }
+
+    /**
+     * Returns the port of the HTTP proxy, if specified, 3128 otherwise.
+     * 
+     * @return the port of the HTTP proxy.
+     */
+    public int getProxyPort() {
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "proxyPort", System.getProperty("http.proxyPort", "3128")));
     }
 
     /**

@@ -151,6 +151,8 @@ Changes log
         - Added an SLF4J extension with a LoggerFacade for the Restlet 
           Engine providing an optimal bridge to SLF4J.
         - Updated GWT to version 1.7.1.
+        - Added HTTP/HTTPS proxy configuration support to the Apache
+          HTTP Client 4.0 extension. Contributed by Bruno Harbulot.
     - Misc
         - Added Velocity template in the org.restlet.example project.
           Reported by Ben Vesco.
