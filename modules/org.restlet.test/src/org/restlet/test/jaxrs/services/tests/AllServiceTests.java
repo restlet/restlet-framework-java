@@ -71,6 +71,7 @@ public class AllServiceTests extends TestCase {
         mySuite.addTestSuite(OwnProviderTest.class);
         mySuite.addTestSuite(PathParamTest.class);
         mySuite.addTestSuite(PathParamTest2.class);
+        mySuite.addTestSuite(PathParamTest3.class);
         mySuite.addTestSuite(PersonsTest.class);
         mySuite.addTestSuite(PrimitiveWrapperEntityTest.class);
         mySuite.addTestSuite(ProviderTest.class);
