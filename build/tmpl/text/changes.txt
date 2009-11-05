@@ -70,7 +70,9 @@ Changes log
           core to javax.crypto.
         - Improved the Resolver class to expose call attributes as 
           objects instead of string for easier integration with template 
-          engines such as FreeMarker.          
+          engines such as FreeMarker.         
+        - Moved the OAuth extension to the incubator as it needs to go 
+          through a complete redesign with proper documentation.
       - Bugs fixed
         - Fixed bug when the deprecated method "createRoot" is 
           implemented instead of the "createInboundRoot".
