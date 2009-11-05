@@ -110,6 +110,9 @@ Changes log
         - Fixed potential exceptions raised when an XML document is 
           parsed using the default characterset instead of the parsed 
           document's one.
+        - Fixed bug that prevents the SimpleWeb server connector to 
+          retrieve the values of identical headers in the request.
+          Reported by Arjohn Kampman.
     - Enhancements
         - Improved JAXB converted. Contributed by Sanjay Acharya.
         - Upgraded Apache Commons Logging to version 1.1.1.
