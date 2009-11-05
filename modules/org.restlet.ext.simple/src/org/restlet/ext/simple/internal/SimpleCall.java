@@ -149,13 +149,13 @@ public class SimpleCall extends HttpServerCall {
 
     @Override
     public ReadableByteChannel getRequestEntityChannel(long size) {
-    	// No performance benefit getting request channel
-        //try {
-        //    return this.request.getByteChannel();
-        //} catch (Exception ex) {
-        //    return null;
-        //}
-    	return null;
+        // No performance benefit getting request channel
+        // try {
+        // return this.request.getByteChannel();
+        // } catch (Exception ex) {
+        // return null;
+        // }
+        return null;
     }
 
     @Override
@@ -169,13 +169,13 @@ public class SimpleCall extends HttpServerCall {
 
     @Override
     public ReadableByteChannel getRequestHeadChannel() {
-    	// No performance benefit getting request channel
-        //try {
-        //    return this.request.getByteChannel();
-        //} catch (Exception ex) {
-        //    return null;
-        //}
-    	return null;
+        // No performance benefit getting request channel
+        // try {
+        // return this.request.getByteChannel();
+        // } catch (Exception ex) {
+        // return null;
+        // }
+        return null;
     }
 
     /**
@@ -191,7 +191,9 @@ public class SimpleCall extends HttpServerCall {
             final List<String> names = this.request.getNames();
 
             for (String name : names) {
-                result.add(new Parameter(name, this.request.getValue(name)));
+                for (String value : this.request.getValues(name)) {
+                    result.add(new Parameter(name, value));
+                }
             }
             this.requestHeadersAdded = true;
         }
@@ -201,12 +203,12 @@ public class SimpleCall extends HttpServerCall {
 
     @Override
     public InputStream getRequestHeadStream() {
-        //try {
-        //    return this.request.getInputStream();
-        //} catch (Exception ex) {
-        //    return null;
-        //}
-    	return null;
+        // try {
+        // return this.request.getInputStream();
+        // } catch (Exception ex) {
+        // return null;
+        // }
+        return null;
     }
 
     /**
