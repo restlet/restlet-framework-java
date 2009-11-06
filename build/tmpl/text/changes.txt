@@ -115,6 +115,9 @@ Changes log
         - Fixed bug that prevents the SimpleWeb server connector to 
           retrieve the values of identical headers in the request.
           Reported by Arjohn Kampman.
+        - Fixed update of entities in the dataservices extension, due 
+          to the genration of a wrong entity.
+          Reported by Simon Guest.
     - Enhancements
         - Improved JAXB converted. Contributed by Sanjay Acharya.
         - Upgraded Apache Commons Logging to version 1.1.1.
