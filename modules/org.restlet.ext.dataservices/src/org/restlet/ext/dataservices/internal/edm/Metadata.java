@@ -186,7 +186,8 @@ public class Metadata extends SaxRepresentation {
 
         if (type.getKeys() != null && !type.getKeys().isEmpty()) {
             if (type.getKeys().size() == 1) {
-                String keyName = type.getKeys().get(0).getNormalizedName();
+                Property key = type.getKeys().get(0);
+                String keyName = key.getNormalizedName();
                 String getterName = "get"
                         + keyName.substring(0, 1).toUpperCase()
                         + keyName.substring(1);
@@ -194,8 +195,9 @@ public class Metadata extends SaxRepresentation {
                     Method getter = entity.getClass().getDeclaredMethod(
                             getterName, (Class[]) null);
                     Object value = getter.invoke(entity, (Object[]) null);
-                    if (value != null) {
-                        result.append("'").append(value.toString()).append("'");
+                    String strValue = Type.toEdmKey(value, key.getType());
+                    if (strValue != null) {
+                        result.append(strValue);
                     } else {
                         result.append("''");
                     }
@@ -215,9 +217,9 @@ public class Metadata extends SaxRepresentation {
                         Method getter = entity.getClass().getDeclaredMethod(
                                 getterName, (Class[]) null);
                         Object value = getter.invoke(entity, (Object[]) null);
-                        if (value != null) {
-                            result.append("'").append(value.toString()).append(
-                                    "'");
+                        String strValue = Type.toEdmKey(value, key.getType());
+                        if (strValue != null) {
+                            result.append(strValue);
                         } else {
                             result.append("''");
                         }

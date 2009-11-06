@@ -97,7 +97,7 @@ public class Generator {
 
             step = "step 4 - get the metadata descriptor";
             Session session = new Session(dataServiceUri);
-            if ((metadata = (Metadata) session.getMetadata()) == null) {
+            if ((metadata = session.getMetadata()) == null) {
                 error = true;
             } else {
                 step = "step 5 - generate source code";

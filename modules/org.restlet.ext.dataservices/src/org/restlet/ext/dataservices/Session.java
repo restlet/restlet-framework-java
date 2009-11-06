@@ -283,7 +283,7 @@ public class Session {
      * 
      * @return The metadata document related to the current service.
      */
-    protected Object getMetadata() {
+    protected Metadata getMetadata() {
         if (metadata == null) {
             String sRef = serviceRef.toString();
             if (!sRef.endsWith("/")) {
@@ -339,10 +339,9 @@ public class Session {
             return;
         }
 
-        EntityType type = ((Metadata) getMetadata()).getEntityType(entity
-                .getClass());
-        AssociationEnd association = ((Metadata) getMetadata()).getAssociation(
-                type, propertyName);
+        EntityType type = getMetadata().getEntityType(entity.getClass());
+        AssociationEnd association = getMetadata().getAssociation(type,
+                propertyName);
 
         if (association != null) {
             EntityType propertyEntityType = association.getType();
@@ -377,8 +376,8 @@ public class Session {
                     DomRepresentation xmlRep = new DomRepresentation(rep);
                     Node node = xmlRep.getNode("//" + propertyName);
                     if (node != null) {
-                        Property property = ((Metadata) getMetadata())
-                                .getProperty(entity, propertyName);
+                        Property property = getMetadata().getProperty(entity,
+                                propertyName);
                         try {
                             ReflectUtils.setProperty(entity, property, node
                                     .getTextContent());
@@ -417,7 +416,7 @@ public class Session {
      *         service.
      */
     private String getSubpath(Object entity) {
-        return ((Metadata) getMetadata()).getSubpath(entity);
+        return getMetadata().getSubpath(entity);
     }
 
     /**
@@ -432,7 +431,7 @@ public class Session {
      *         ADO.NET service.
      */
     private String getSubpath(Object entity, String propertyName) {
-        return ((Metadata) getMetadata()).getSubpath(entity, propertyName);
+        return getMetadata().getSubpath(entity, propertyName);
     }
 
     /**
@@ -450,8 +449,7 @@ public class Session {
      */
     private String getSubpath(Object source, String sourceProperty,
             Object target) {
-        return ((Metadata) getMetadata()).getSubpath(source, sourceProperty,
-                target);
+        return getMetadata().getSubpath(source, sourceProperty, target);
     }
 
     /**
@@ -492,9 +490,7 @@ public class Session {
      * @return The Atom content object that corresponds to the given entity.
      */
     private Content toContent(Object entity) throws Exception {
-        // Créer un objet Content correspondant à l'objet
         DomRepresentation dr = new DomRepresentation(MediaType.APPLICATION_XML) {
-
             @Override
             protected Transformer createTransformer() throws IOException {
                 Transformer transformer = super.createTransformer();
@@ -502,7 +498,6 @@ public class Session {
                         "yes");
                 return transformer;
             }
-
         };
         Document document = dr.getDocument();
         Element properties = document
@@ -514,21 +509,24 @@ public class Session {
             String getter = "get"
                     + field.getName().substring(0, 1).toUpperCase()
                     + field.getName().substring(1);
-
-            for (Method method : entity.getClass().getDeclaredMethods()) {
-                if (method.getReturnType() != null
-                        && getter.equals(method.getName())
-                        && method.getParameterTypes().length == 0) {
-                    Element property = document
-                            .createElementNS(
-                                    "http://schemas.microsoft.com/ado/2007/08/dataservices",
-                                    field.getName());
-                    Object value = method.invoke(entity, (Object[]) null);
-                    Text text = document.createTextNode((value != null) ? value
-                            .toString() : "");
-                    property.appendChild(text);
-                    properties.appendChild(property);
-                    break;
+            Property prop = getMetadata().getProperty(entity, field.getName());
+            if (prop != null) {
+                for (Method method : entity.getClass().getDeclaredMethods()) {
+                    if (method.getReturnType() != null
+                            && getter.equals(method.getName())
+                            && method.getParameterTypes().length == 0) {
+                        Element property = document
+                                .createElementNS(
+                                        "http://schemas.microsoft.com/ado/2007/08/dataservices",
+                                        prop.getName());
+                        Object value = method.invoke(entity, (Object[]) null);
+                        Text text = document
+                                .createTextNode((value != null) ? Type.toEdm(
+                                        value, prop.getType()) : "");
+                        property.appendChild(text);
+                        properties.appendChild(property);
+                        break;
+                    }
                 }
             }
         }

@@ -39,7 +39,6 @@ import org.restlet.data.Parameter;
 import org.restlet.ext.atom.Entry;
 import org.restlet.ext.atom.Feed;
 import org.restlet.ext.dataservices.internal.FeedParser;
-import org.restlet.ext.dataservices.internal.edm.Metadata;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
@@ -170,7 +169,6 @@ public class Query<T> implements Iterable<T> {
                     builder.append(param.getName());
                     builder.append("=");
                     builder.append(param.getValue());
-
                 }
             }
         }
@@ -261,7 +259,6 @@ public class Query<T> implements Iterable<T> {
                     // Another way is to guess from the result representation.
                     // Sometimes, it returns a set, an entity, or a an XML
                     // representation of a property.
-
                     break;
                 }
             }
@@ -452,7 +449,7 @@ public class Query<T> implements Iterable<T> {
         try {
             execute();
             result = new FeedParser<T>(getFeed(), this.entityClass,
-                    (Metadata) getSession().getMetadata()).parse();
+                    getSession().getMetadata()).parse();
         } catch (Exception e) {
             getLogger().log(Level.WARNING,
                     "Can't parse the content of " + createTargetUri(), e);

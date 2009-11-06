@@ -32,7 +32,9 @@ package org.restlet.ext.dataservices.internal.edm;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import org.restlet.Context;
@@ -47,6 +49,11 @@ import org.restlet.engine.util.DateUtils;
  */
 public class Type {
 
+    /** Formater for the EDM DateTime type. */
+    public static final List<String> dateTimeFormats = Arrays.asList(
+            "yyyy-MM-dd'T'HH:mm:ssz", "yyyy-MM-dd'T'HH:mm:ss",
+            "EEE, dd MMM yyyy HH:mm:ss zzz");
+
     /** Formater for the EDM Decimal type. */
     public static final NumberFormat decimalFormat = DecimalFormat
             .getNumberInstance(Locale.US);
@@ -54,18 +61,6 @@ public class Type {
     /** Formater for the EDM Double type. */
     public static final NumberFormat doubleFormat = DecimalFormat
             .getNumberInstance(Locale.US);
-
-    /** Formater for the EDM Int16 type. */
-    public static final NumberFormat int16Format = DecimalFormat
-            .getIntegerInstance(Locale.US);
-
-    /** Formater for the EDM Int32 type. */
-    public static final NumberFormat int32Format = DecimalFormat
-            .getIntegerInstance(Locale.US);
-
-    /** Formater for the EDM Int64 type. */
-    public static final NumberFormat int64Format = DecimalFormat
-            .getIntegerInstance(Locale.US);
 
     /** Formater for the EDM Single type. */
     public static final NumberFormat singleFormat = DecimalFormat
@@ -97,9 +92,9 @@ public class Type {
             } else if (adoNetType.endsWith("Boolean")) {
                 result = Boolean.valueOf(value);
             } else if (adoNetType.endsWith("DateTime")) {
-                result = DateUtils.parse(value, DateUtils.FORMAT_RFC_3339);
+                result = DateUtils.parse(value, dateTimeFormats);
             } else if (adoNetType.endsWith("DateTimeOffset")) {
-                result = DateUtils.parse(value, DateUtils.FORMAT_RFC_3339);
+                result = DateUtils.parse(value, dateTimeFormats);
             } else if (adoNetType.endsWith("Time")) {
                 result = timeFormat.parseObject(value);
             } else if (adoNetType.endsWith("Decimal")) {
@@ -139,7 +134,6 @@ public class Type {
      * @return The package name extracted from the given name.
      */
     public static String getFullClassName(String name) {
-        // TODO hum hum
         StringBuilder builder = new StringBuilder();
 
         String[] tab = name.split("\\.");
@@ -228,8 +222,9 @@ public class Type {
      *            The target ADO.NET type.
      * @return The converted value.
      */
-    public static String toEdm(Object value, String adoNetType) {
-        if (value == null) {
+    public static String toEdm(Object value, Type type) {
+        String adoNetType = type.getAdoNetType();
+        if (value == null && adoNetType == null) {
             return null;
         }
 
@@ -339,7 +334,7 @@ public class Type {
      * @return The value converted as String object.
      */
     public static String toEdmDateTime(Date value) {
-        return DateUtils.format(value, DateUtils.FORMAT_RFC_3339.get(0));
+        return DateUtils.format(value, dateTimeFormats.get(0));
     }
 
     /**
@@ -375,7 +370,7 @@ public class Type {
      * @return The value converted as String object.
      */
     public static String toEdmInt16(short value) {
-        return int16Format.format(value);
+        return Short.toString(value);
     }
 
     /**
@@ -387,7 +382,7 @@ public class Type {
      * @return The value converted as String object.
      */
     public static String toEdmInt32(int value) {
-        return int32Format.format(value);
+        return Integer.toString(value);
     }
 
     /**
@@ -399,7 +394,85 @@ public class Type {
      * @return The value converted as String object.
      */
     public static String toEdmInt64(long value) {
-        return int64Format.format(value);
+        return Long.toString(value);
+    }
+
+    /**
+     * Converts a value to the String representation of the target ADO.NET type
+     * when used a key in the URIs.
+     * 
+     * @param value
+     *            The value to convert.
+     * @param adoNetType
+     *            The target ADO.NET type.
+     * @return The converted value.
+     */
+    public static String toEdmKey(Object value, Type type) {
+        String adoNetType = type.getAdoNetType();
+        if (value == null && adoNetType == null) {
+            return null;
+        }
+
+        String result = null;
+        if (adoNetType.endsWith("Binary")) {
+            if ((byte[].class).isAssignableFrom(value.getClass())) {
+                result = toEdmBinary((byte[]) value);
+            }
+        } else if (adoNetType.endsWith("Boolean")) {
+            if ((Boolean.class).isAssignableFrom(value.getClass())) {
+                result = toEdmBoolean((Boolean) value);
+            }
+        } else if (adoNetType.endsWith("DateTime")) {
+            if ((Date.class).isAssignableFrom(value.getClass())) {
+                result = toEdmDateTime((Date) value);
+            }
+        } else if (adoNetType.endsWith("DateTimeOffset")) {
+            if ((Date.class).isAssignableFrom(value.getClass())) {
+                result = toEdmDateTime((Date) value);
+            }
+        } else if (adoNetType.endsWith("Time")) {
+            if ((Long.class).isAssignableFrom(value.getClass())) {
+                result = toEdmTime((Long) value);
+            }
+        } else if (adoNetType.endsWith("Decimal")) {
+            if ((Double.class).isAssignableFrom(value.getClass())) {
+                result = toEdmDecimal((Double) value);
+            }
+        } else if (adoNetType.endsWith("Single")) {
+            if ((Float.class).isAssignableFrom(value.getClass())) {
+                result = toEdmSingle((Float) value);
+            }
+        } else if (adoNetType.endsWith("Double")) {
+            if ((Double.class).isAssignableFrom(value.getClass())) {
+                result = toEdmDouble((Double) value);
+            }
+        } else if (adoNetType.endsWith("Guid")) {
+            result = value.toString();
+        } else if (adoNetType.endsWith("Int16")) {
+            if ((Short.class).isAssignableFrom(value.getClass())) {
+                result = toEdmInt16((Short) value);
+            }
+        } else if (adoNetType.endsWith("Int32")) {
+            if ((Integer.class).isAssignableFrom(value.getClass())) {
+                result = toEdmInt32((Integer) value);
+            }
+        } else if (adoNetType.endsWith("Int64")) {
+            if ((Long.class).isAssignableFrom(value.getClass())) {
+                result = toEdmInt64((Long) value);
+            }
+        } else if (adoNetType.endsWith("Byte")) {
+            if ((Byte.class).isAssignableFrom(value.getClass())) {
+                result = toEdmByte((Byte) value);
+            }
+        } else if (adoNetType.endsWith("String")) {
+            result = "'" + value.toString() + "'";
+        }
+
+        if (result == null) {
+            result = value.toString();
+        }
+
+        return result;
     }
 
     /**
