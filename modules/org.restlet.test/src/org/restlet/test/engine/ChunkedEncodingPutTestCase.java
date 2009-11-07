@@ -209,8 +209,7 @@ public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
 
     @Override
     public void testSimpleAndJdkNet() throws Exception {
-        // TODO to be fixed
-        // super.testSimpleAndJdkNet();
+        super.testSimpleAndJdkNet();
     }
 
 }
