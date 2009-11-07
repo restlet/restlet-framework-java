@@ -38,7 +38,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
-import org.restlet.Context;
 import org.restlet.Message;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -53,7 +52,7 @@ import org.restlet.engine.http.HttpConstants;
 import org.restlet.ext.xml.DomRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
-import org.restlet.resource.Resource;
+import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -68,37 +67,35 @@ import org.w3c.dom.NodeList;
  */
 public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
 
-    public static class PutTestResource extends Resource {
+    public static class PutTestResource extends ServerResource {
 
-        public PutTestResource(Context ctx, Request request, Response response) {
-            super(ctx, request, response);
+        public PutTestResource() {
             getVariants().add(new Variant(MediaType.TEXT_XML));
+            setNegotiated(false);
+
         }
 
         @Override
-        public boolean allowPut() {
-            return true;
-        }
-
-        @Override
-        public Representation represent(Variant variant) {
+        public Representation get() {
             return createTestXml();
         }
 
         @Override
-        public void storeRepresentation(Representation entity) {
+        public Representation put(Representation entity) {
             checkForChunkedHeader(getRequest());
 
             final DomRepresentation dom = new DomRepresentation(entity);
+            DomRepresentation rep = null;
             try {
                 final Document doc = dom.getDocument();
                 assertXML(dom);
-                getResponse().setEntity(
-                        new DomRepresentation(MediaType.TEXT_XML, doc));
+                rep = new DomRepresentation(MediaType.TEXT_XML, doc);
+                getResponse().setEntity(rep);
             } catch (IOException ex) {
                 ex.printStackTrace();
                 fail(ex.getMessage());
             }
+            return rep;
         }
     }
 
@@ -219,8 +216,7 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
 
     @Override
     public void testJettyAndApache() throws Exception {
-        // TODO to be fixed
-        // super.testJettyAndApache();
+        super.testJettyAndApache();
     }
 
     @Override
@@ -259,8 +255,7 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
 
     @Override
     public void testSimpleAndJdkNet() throws Exception {
-        // TODO to be fixed
-        // super.testSimpleAndJdkNet();
+        super.testSimpleAndJdkNet();
     }
 
 }
