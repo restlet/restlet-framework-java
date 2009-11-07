@@ -154,8 +154,7 @@ public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
 
     @Override
     public void testNettyAndApache() throws Exception {
-        // TODO to be fixed
-        // super.testNettyAndApache();
+        super.testNettyAndApache();
     }
 
     @Override
