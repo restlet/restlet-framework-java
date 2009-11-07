@@ -30,30 +30,25 @@
 
 package org.restlet.test.engine;
 
-import org.restlet.Context;
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.MediaType;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
-import org.restlet.resource.Resource;
 import org.restlet.resource.ResourceException;
+import org.restlet.resource.ServerResource;
 
 /**
  * Simple resource that returns at least text/html and text/xml representations.
  */
-public class UserAgentTestResource extends Resource {
+public class UserAgentTestResource extends ServerResource {
 
-    public UserAgentTestResource(Context context, Request request,
-            Response response) {
-        super(context, request, response);
+    public UserAgentTestResource() {
         getVariants().add(new Variant(MediaType.TEXT_XML));
         getVariants().add(new Variant(MediaType.TEXT_HTML));
     }
 
     @Override
-    public Representation represent(Variant variant) throws ResourceException {
+    public Representation get(Variant variant) throws ResourceException {
         final MediaType mediaType = variant.getMediaType();
         if (mediaType.equals(MediaType.TEXT_XML)) {
             return new StringRepresentation("<a>b</a>", mediaType);

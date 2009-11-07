@@ -33,7 +33,6 @@ package org.restlet.test.engine;
 import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
-import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
@@ -44,7 +43,7 @@ import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
-import org.restlet.resource.Resource;
+import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
 
 /**
@@ -54,15 +53,15 @@ import org.restlet.routing.Router;
  * @author Bruno Harbulot (Bruno.Harbulot@manchester.ac.uk)
  */
 public class SslGetTestCase extends SslBaseConnectorsTestCase {
-    public static class GetTestResource extends Resource {
+    public static class GetTestResource extends ServerResource {
 
-        public GetTestResource(Context ctx, Request request, Response response) {
-            super(ctx, request, response);
+        public GetTestResource() {
+
             getVariants().add(new Variant(MediaType.TEXT_PLAIN));
         }
 
         @Override
-        public Representation represent(Variant variant) {
+        public Representation get(Variant variant) {
             return new StringRepresentation("Hello world", MediaType.TEXT_PLAIN);
         }
     }
