@@ -33,7 +33,6 @@ package org.restlet.test.engine;
 import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
-import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
@@ -41,11 +40,11 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
+import org.restlet.ext.xml.TransformRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
-import org.restlet.ext.xml.TransformRepresentation;
 import org.restlet.representation.Variant;
-import org.restlet.resource.Resource;
+import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
 
 /**
@@ -55,16 +54,14 @@ import org.restlet.routing.Router;
  */
 public class GetChunkedTestCase extends BaseConnectorsTestCase {
 
-    public static class GetChunkedTestResource extends Resource {
+    public static class GetChunkedTestResource extends ServerResource {
 
-        public GetChunkedTestResource(Context ctx, Request request,
-                Response response) {
-            super(ctx, request, response);
+        public GetChunkedTestResource() {
             getVariants().add(new Variant(MediaType.TEXT_PLAIN));
         }
 
         @Override
-        public Representation represent(Variant variant) {
+        public Representation get(Variant variant) {
             // Get the source XML
             final Representation source = new StringRepresentation(
                     "<?xml version='1.0'?><mail>Hello world</mail>",
