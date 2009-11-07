@@ -49,6 +49,7 @@ import org.jboss.netty.handler.codec.frame.TooLongFrameException;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpChunk;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
+import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
@@ -187,7 +188,7 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler {
 
         } else {
             ChannelFuture future = ch.write(response);
-            if (shouldCloseConnection()) {
+            if (shouldCloseConnection() || (request.getMethod() == HttpMethod.GET)) {
                 future.addListener(ChannelFutureListener.CLOSE);
             }
 
