@@ -34,7 +34,6 @@ import org.junit.Assert;
 import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
-import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
@@ -45,7 +44,7 @@ import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
-import org.restlet.resource.Resource;
+import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
 
 /**
@@ -55,16 +54,15 @@ import org.restlet.routing.Router;
  */
 public class RemoteClientAddressTestCase extends BaseConnectorsTestCase {
 
-    public static class RemoteClientAddressResource extends Resource {
+    public static class RemoteClientAddressResource extends ServerResource {
 
-        public RemoteClientAddressResource(Context ctx, Request request,
-                Response response) {
-            super(ctx, request, response);
+        public RemoteClientAddressResource() {
+
             getVariants().add(new Variant(MediaType.TEXT_PLAIN));
         }
 
         @Override
-        public Representation represent(Variant variant) {
+        public Representation get(Variant variant) {
             Assert.assertEquals("127.0.0.1", getRequest().getClientInfo()
                     .getAddress());
             Assert.assertTrue(getRequest().getClientInfo().getPort() > 0);
