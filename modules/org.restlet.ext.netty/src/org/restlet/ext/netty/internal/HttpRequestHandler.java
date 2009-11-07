@@ -65,187 +65,199 @@ import org.restlet.ext.netty.NettyServerHelper;
  */
 @ChannelPipelineCoverage("one")
 public class HttpRequestHandler extends SimpleChannelUpstreamHandler {
-	/**
-	 * Carriage return
-	 */
-	static final byte CR = 13;
+    /**
+     * Carriage return
+     */
+    static final byte CR = 13;
 
-	/**
-	 * Line feed character
-	 */
-	static final byte LF = 10;
+    /**
+     * Line feed character
+     */
+    static final byte LF = 10;
 
-	/** The server helper. */
-	private volatile NettyServerHelper helper;
+    /** The server helper. */
+    private volatile NettyServerHelper helper;
 
-	/** Indicates if chunked encoding should be read. */
-	private volatile boolean readingChunks;
+    /** Indicates if chunked encoding should be read. */
+    private volatile boolean readingChunks;
 
-	/** The Netty HTTP request. */
-	private volatile HttpRequest request;
+    /** The Netty HTTP request. */
+    private volatile HttpRequest request;
 
-	/** Content accumulator. */
-	private volatile ChannelBuffer content;
+    /** Content accumulator. */
+    private volatile ChannelBuffer content;
 
-	/** Client address. */
-	private volatile InetSocketAddress clientAddress;
+    /** Client address. */
+    private volatile InetSocketAddress clientAddress;
 
-	/**
-	 * Constructor. Creates a new handler instance wrapping server helper.
-	 * 
-	 * @param serverHelper
-	 *            The server helper.
-	 */
-	public HttpRequestHandler(NettyServerHelper serverHelper) {
-		this.helper = serverHelper;
-	}
+    /**
+     * Constructor. Creates a new handler instance wrapping server helper.
+     * 
+     * @param serverHelper
+     *            The server helper.
+     */
+    public HttpRequestHandler(NettyServerHelper serverHelper) {
+        this.helper = serverHelper;
+    }
 
-	@Override
-	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e)
-			throws Exception {
-		Channel ch = e.getChannel();
-		Throwable cause = e.getCause();
-		if (cause instanceof TooLongFrameException) {
-			sendError(ctx, HttpResponseStatus.BAD_REQUEST);
-			return;
-		}
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e)
+            throws Exception {
+        Channel ch = e.getChannel();
+        Throwable cause = e.getCause();
+        if (cause instanceof TooLongFrameException) {
+            sendError(ctx, HttpResponseStatus.BAD_REQUEST);
+            return;
+        }
 
-		cause.printStackTrace();
-		if (ch.isConnected()) {
-			sendError(ctx, HttpResponseStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
+        cause.printStackTrace();
+        if (ch.isConnected()) {
+            sendError(ctx, HttpResponseStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
-	@Override
-	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e)
-			throws Exception {
+    @Override
+    public void messageReceived(ChannelHandlerContext ctx, MessageEvent e)
+            throws Exception {
 
-		if (clientAddress == null) {
-			clientAddress = (InetSocketAddress) e.getRemoteAddress();
-		}
+        if (clientAddress == null) {
+            clientAddress = (InetSocketAddress) e.getRemoteAddress();
+        }
 
-		boolean isLastChunk = false;
+        boolean isLastChunk = false;
 
-		if (!readingChunks) {
-			request = (HttpRequest) e.getMessage();
+        if (!readingChunks) {
+            request = (HttpRequest) e.getMessage();
 
-			if (request.isChunked()) {
-				readingChunks = true;
-			} else {
-				content = request.getContent();
-			}
-		} else {
-			HttpChunk chunk = (HttpChunk) e.getMessage();
-			if (chunk.isLast()) {
-				readingChunks = false;
-				isLastChunk = true;
-			}
+            if (request.isChunked()) {
+                readingChunks = true;
+            } else {
+                content = request.getContent();
+            }
+        } else {
+            HttpChunk chunk = (HttpChunk) e.getMessage();
+            if (chunk.isLast()) {
+                readingChunks = false;
+                isLastChunk = true;
+            }
 
-			long chunkSize = chunk.getContent().readableBytes();
+            long chunkSize = chunk.getContent().readableBytes();
 
-			content.writeBytes(longToHex(chunkSize));
-			content.writeByte(CR);
-			content.writeByte(LF);
+            content.writeBytes(longToHex(chunkSize));
+            content.writeByte(CR);
+            content.writeByte(LF);
 
-			content.writeBytes(chunk.getContent());
-			content.writeByte(CR);
-			content.writeByte(LF);
+            content.writeBytes(chunk.getContent());
+            content.writeByte(CR);
+            content.writeByte(LF);
 
-		}
+        }
 
-		if (content == null) {
-			content = ChannelBuffers.dynamicBuffer();
-		}
+        if (content == null) {
+            content = ChannelBuffers.dynamicBuffer();
+        }
 
-		HttpResponse response = null;
+        HttpResponse response = null;
 
-		// let restlet engine to handle this call only after last chunk has been
-		// read.
-		if ((!request.isChunked()) || isLastChunk) {
+        // let restlet engine to handle this call only after last chunk has been
+        // read.
+        if ((!request.isChunked()) || isLastChunk) {
 
-			SslHandler sslHandler = ctx.getPipeline().get(SslHandler.class);
-			SSLEngine sslEngine = sslHandler == null ? null : sslHandler
-					.getEngine();
+            SslHandler sslHandler = ctx.getPipeline().get(SslHandler.class);
+            SSLEngine sslEngine = sslHandler == null ? null : sslHandler
+                    .getEngine();
 
-			NettyServerCall httpCall = new NettyServerCall(this.helper
-					.getHelped(), content, request, clientAddress,
-					(this.helper instanceof HttpsServerHelper), sslEngine);
-			this.helper.handle(httpCall);
-			response = httpCall.getResponse();
+            NettyServerCall httpCall = new NettyServerCall(this.helper
+                    .getHelped(), content, request, clientAddress,
+                    (this.helper instanceof HttpsServerHelper), sslEngine);
+            this.helper.handle(httpCall);
+            response = httpCall.getResponse();
 
-		}
+        }
 
-		Channel ch = e.getChannel();
+        Channel ch = e.getChannel();
 
-		// Close the connection after the write operation is done.
-		if (request.isChunked()) {
-			if (isLastChunk) {
-				ChannelFuture future = ch.write(response);
-				future.addListener(ChannelFutureListener.CLOSE);
-			}
+        // Close the connection after the write operation is done.
+        if (request.isChunked()) {
+            if (isLastChunk) {
+                ChannelFuture future = ch.write(response);
+                future.addListener(ChannelFutureListener.CLOSE);
 
-		} else {
-			ChannelFuture future = ch.write(response);
-			future.addListener(ChannelFutureListener.CLOSE);
+            }
 
-		}
+        } else {
+            ChannelFuture future = ch.write(response);
+            if (shouldCloseConnection()) {
+                future.addListener(ChannelFutureListener.CLOSE);
+            }
 
-	}
+        }
 
-	/**
-	 * Sends an error to the client.
-	 * 
-	 * @param ctx
-	 *            The handler context.
-	 * @param status
-	 *            The HTTP status.
-	 */
-	private void sendError(ChannelHandlerContext ctx, HttpResponseStatus status) {
-		HttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1,
-				status);
-		response.setHeader(HttpHeaders.Names.CONTENT_TYPE,
-				"text/plain; charset=UTF-8");
-		response.setContent(ChannelBuffers.copiedBuffer("Failure: "
-				+ status.toString() + "\r\n", "UTF-8"));
+    }
 
-		// Close the connection as soon as the error message is sent.
-		ctx.getChannel().write(response).addListener(
-				ChannelFutureListener.CLOSE);
-	}
+    private boolean shouldCloseConnection() {
+        boolean close = HttpHeaders.Values.CLOSE.equalsIgnoreCase(request
+                .getHeader(HttpHeaders.Names.CONNECTION))
+                || request.getProtocolVersion().equals(HttpVersion.HTTP_1_0)
+                && !HttpHeaders.Values.KEEP_ALIVE.equalsIgnoreCase(request
+                        .getHeader(HttpHeaders.Names.CONNECTION));
+        return close;
+    }
 
-	/**
-	 * Convert a long value to hex byte array.
-	 * 
-	 * @param l
-	 *            - value to be converted
-	 * @return hex representation
-	 */
-	public static byte[] longToHex(final long l) {
-		long v = l & 0xFFFFFFFFFFFFFFFFL;
+    /**
+     * Sends an error to the client.
+     * 
+     * @param ctx
+     *            The handler context.
+     * @param status
+     *            The HTTP status.
+     */
+    private void sendError(ChannelHandlerContext ctx, HttpResponseStatus status) {
+        HttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1,
+                status);
+        response.setHeader(HttpHeaders.Names.CONTENT_TYPE,
+                "text/plain; charset=UTF-8");
+        response.setContent(ChannelBuffers.copiedBuffer("Failure: "
+                + status.toString() + "\r\n", "UTF-8"));
 
-		byte[] result = new byte[16];
-		Arrays.fill(result, 0, result.length, (byte) 0);
+        // Close the connection as soon as the error message is sent.
+        ctx.getChannel().write(response).addListener(
+                ChannelFutureListener.CLOSE);
+    }
 
-		for (int i = 0; i < result.length; i += 2) {
-			byte b = (byte) ((v & 0xFF00000000000000L) >> 56);
+    /**
+     * Convert a long value to hex byte array.
+     * 
+     * @param l
+     *            - value to be converted
+     * @return hex representation
+     */
+    public static byte[] longToHex(final long l) {
+        long v = l & 0xFFFFFFFFFFFFFFFFL;
 
-			byte b2 = (byte) (b & 0x0F);
-			byte b1 = (byte) ((b >> 4) & 0x0F);
+        byte[] result = new byte[16];
+        Arrays.fill(result, 0, result.length, (byte) 0);
 
-			if (b1 > 9)
-				b1 += 39;
-			b1 += 48;
+        for (int i = 0; i < result.length; i += 2) {
+            byte b = (byte) ((v & 0xFF00000000000000L) >> 56);
 
-			if (b2 > 9)
-				b2 += 39;
-			b2 += 48;
+            byte b2 = (byte) (b & 0x0F);
+            byte b1 = (byte) ((b >> 4) & 0x0F);
 
-			result[i] = (byte) (b1 & 0xFF);
-			result[i + 1] = (byte) (b2 & 0xFF);
+            if (b1 > 9)
+                b1 += 39;
+            b1 += 48;
 
-			v <<= 8;
-		}
+            if (b2 > 9)
+                b2 += 39;
+            b2 += 48;
 
-		return result;
-	}
+            result[i] = (byte) (b1 & 0xFF);
+            result[i + 1] = (byte) (b2 & 0xFF);
+
+            v <<= 8;
+        }
+
+        return result;
+    }
 }
