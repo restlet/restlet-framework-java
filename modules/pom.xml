@@ -158,7 +158,6 @@
 		<module>org.restlet.ext.lucene</module>
 		<module>org.restlet.ext.net</module>
 		<module>org.restlet.ext.netty</module>
-		<module>org.restlet.ext.oauth</module>
 		<module>org.restlet.ext.rdf</module>
 		<module>org.restlet.ext.rome</module>
 		<module>org.restlet.ext.servlet</module>
