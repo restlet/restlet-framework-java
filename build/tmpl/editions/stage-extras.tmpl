@@ -5,7 +5,7 @@
       <mkdir dir="<#noparse>${temp}</#noparse>/jar-extras/${module.id}" />
       <copy todir="<#noparse>${temp}</#noparse>/jar-extras/${module.id}" overwrite="true">
          <fileset dir="<#noparse>${mods}</#noparse>/${module.package}">
-            ${module.stage[editionKey].sets}
+            <#if module.stage[editionKey].sets??>${module.stage[editionKey].sets}</#if>
          </fileset>
       <#if module.stage[editionKey].mappers??><chainedmapper>${module.stage[editionKey].mappers}</chainedmapper></#if>
       <#if module.stage[editionKey].filters??><filterchain>${module.stage[editionKey].filters}</filterchain></#if>
