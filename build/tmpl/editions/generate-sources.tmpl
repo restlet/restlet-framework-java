@@ -15,6 +15,7 @@
             <filterreader classname="filter.EditionFilterReader" classpathref="forge-path">
                <param name="edition" value="${editionKey}" />
             </filterreader>
+       <#if (module.source[editionKey]??) && (module.source[editionKey].filters??)>${module.source[editionKey].filters}</#if>
          </filterchain>
       </copy>
       <copy todir="<#noparse>${mod}</#noparse>/${module.package}" overwrite="true">
@@ -23,6 +24,7 @@
             <exclude name="**/*.java" />
          </fileset>
    <#if (module.source[editionKey]??) && (module.source[editionKey].mappers??)><chainedmapper>${module.source[editionKey].mappers}</chainedmapper></#if>
+       <#if (module.source[editionKey]??) && (module.source[editionKey].filters??)><filterchain>${module.source[editionKey].filters}</filterchain></#if>
       </copy>
    <#if module.primaryLibrary??>
       <replace dir="<#noparse>${mod}</#noparse>/${module.package}" includes="**/package.html" token="@minor-version@" value="${module.primaryLibrary.minorVersion}" />

@@ -64,9 +64,7 @@
 
 	<modules>
 <#list project.modules?values?sort_by("id") as module>
-   <#if (module.editions??) && (module.editions?size > 0)>
 		<module>${module.package}</module>
-   </#if>
 </#list>
 	</modules>
 
