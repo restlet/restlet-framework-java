@@ -66,13 +66,6 @@
 		</files-sets>
 	</source>
 	<source edition="gwt">
-		<files-filters>
-<![CDATA[
-      <tokenfilter>
-          <replacestring from="com.google.gwt.emul." to=""/>
-      </tokenfilter>
-]]>
-		</files-filters>
 		<files-mappers>
 <![CDATA[
       <mapper classname="mapper.ReplaceStringMapper" classpathref="forge-path" from=".java.gwt" to=".java" />
@@ -182,6 +175,13 @@
 	</source>
 	<compile edition="gwt" excludes="**/com/google/**" />
 	<stage edition="gwt" includesource="true">
+		<files-filters>
+<![CDATA[
+      <tokenfilter>
+          <replacestring from="com.google.gwt.emul." to=""/>
+      </tokenfilter>
+]]>
+		</files-filters>
 		<files-mappers>
 <![CDATA[
       <globmapper from="src/*" to="*" handledirsep="true"/>
