@@ -1,7 +1,8 @@
 <module id="core" type="core" package="org.restlet">
 	<name>Restlet API</name>
 	<description>
-		Restlet API is a Java framework for the REST architectural style.
+		Restlet API is a Java framework for the REST architectural
+		style.
 	</description>
 	<distributions>
 		<distribution id="classic" />
@@ -9,7 +10,8 @@
 	</distributions>
 
 	<dependencies>
-		<dependency excludes="android, gae, gwt" type="library" id="osgi" maven-scope="compile" />
+		<dependency excludes="android, gae, gwt" type="library" id="osgi"
+			maven-scope="compile" />
 		<dependency includes="gwt" type="library" id="gwt" />
 	</dependencies>
 	<osgi>
@@ -64,6 +66,13 @@
 		</files-sets>
 	</source>
 	<source edition="gwt">
+		<files-filters>
+<![CDATA[
+      <tokenfilter>
+          <replacestring from="com.google.gwt.emul." to=""/>
+      </tokenfilter>
+]]>
+		</files-filters>
 		<files-mappers>
 <![CDATA[
       <mapper classname="mapper.ReplaceStringMapper" classpathref="forge-path" from=".java.gwt" to=".java" />
@@ -76,7 +85,6 @@
          <custom classname="selector.EditionFileSelector" classpathref="forge-path">
             <param name="edition" value="gwt"/>
          </custom>
-         <exclude name="src/com/**" />
          <exclude name="src/org/restlet/Application.java" />
          <exclude name="src/org/restlet/Component.java" />
          <exclude name="src/org/restlet/Component.xsd" />
@@ -172,24 +180,13 @@
 ]]>
 		</files-sets>
 	</source>
-
+	<compile edition="gwt" excludes="**/com/google/**" />
 	<stage edition="gwt" includesource="true">
-		<files-filters>
-<![CDATA[
-      <tokenfilter>
-          <replacestring from="com.google.gwt.emul." to=""/>
-      </tokenfilter>
-]]>
-		</files-filters>
-		<files-sets>
-<![CDATA[
-         <include name="src/com/**" />
-]]>
-		</files-sets>
 		<files-mappers>
 <![CDATA[
       <globmapper from="src/*" to="*" handledirsep="true"/>
 ]]>
 		</files-mappers>
 	</stage>
+
 </module>
