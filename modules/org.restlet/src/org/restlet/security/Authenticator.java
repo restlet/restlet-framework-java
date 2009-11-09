@@ -68,7 +68,7 @@ public abstract class Authenticator extends Filter {
      *            The authentication mode.
      */
     public Authenticator(Context context, boolean optional) {
-        this(context, optional, context.getEnroler());
+        this(context, optional, (context != null) ? context.getEnroler() : null);
     }
 
     /**
