@@ -300,10 +300,11 @@
 		<attribute name="destdir" />
 		<attribute name="classpathref" default="path-none" />
 		<attribute name="includes" default="*/**" />
+		<attribute name="excludes" default="" />
 		<attribute name="verbose" default="${verbose}" />
 		<sequential>
 			<mkdir dir="@{destdir}" />
-			<javac target="@{target}" debug="@{debug}" deprecation="false" encoding="UTF-8" debuglevel="@{debuglevel}" optimize="@{optimize}" verbose="@{verbose}" srcdir="@{srcdir}" destdir="@{destdir}" includes="@{includes}" bootclasspath="${custombootclasspath}">
+			<javac target="@{target}" debug="@{debug}" deprecation="false" encoding="UTF-8" debuglevel="@{debuglevel}" optimize="@{optimize}" verbose="@{verbose}" srcdir="@{srcdir}" destdir="@{destdir}" includes="@{includes}" excludes="@{excludes}" bootclasspath="${custombootclasspath}">
 				<classpath refid="@{classpathref}" />
 			</javac>
 		</sequential>
@@ -313,7 +314,7 @@
 	<macrodef name="compileModule">
 		<attribute name="name" />
 		<sequential>
-			<compile srcdir="${mod}/${mod-@{name}-id}/src" destdir="${classes}/${mod-@{name}-id}" classpathref="mod-@{name}-path" />
+			<compile srcdir="${mod}/${mod-@{name}-id}/src" destdir="${classes}/${mod-@{name}-id}" classpathref="mod-@{name}-path" excludes="${mod-@{name}-compile-excludes}" />
 		</sequential>
 	</macrodef>
 
