@@ -1,4 +1,4 @@
-<module id="json" excludes="android" type="standard" package="org.restlet.ext.json">
+<module id="json" type="standard" package="org.restlet.ext.json">
 	<name>Restlet Extension - JSON</name>
 	<description>
 		Support for JSON representations.
@@ -28,6 +28,7 @@
             <param name="edition" value="gwt"/>
          </custom>
          <exclude name="src/org/restlet/ext/json/JsonRepresentation.java" />
+         <exclude name="src/org/restlet/ext/json/JsonConverter.java" />
 ]]>
 		</files-sets>
 	</source>

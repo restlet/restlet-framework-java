@@ -121,6 +121,7 @@ public class JsonRepresentation extends WriterRepresentation {
         this(new JSONObject(map));
     }
 
+    // [ifndef android] method
     /**
      * Constructor from a bean using reflection to generate JSON names.
      * 

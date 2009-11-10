@@ -127,7 +127,6 @@
          <exclude name="src/org/restlet/representation/OutputRepresentation.java" />
          <exclude name="src/org/restlet/representation/ReadableRepresentation.java" />
          <exclude name="src/org/restlet/representation/ReaderRepresentation.java" />
-         <exclude name="src/org/restlet/representation/XmlRepresentation.java" />
          <exclude name="src/org/restlet/representation/WritableRepresentation.java" />
          <exclude name="src/org/restlet/representation/WriterRepresentation.java" />
          <exclude name="src/org/restlet/resource/**" />
