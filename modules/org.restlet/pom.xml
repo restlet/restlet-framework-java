@@ -9,8 +9,8 @@
 	</parent>
 
 	<artifactId>org.restlet</artifactId>
-	<name>Restlet Core</name>
-	<description>RESTful Web framework for Java (API and engine).</description>
+	<name>Restlet API</name>
+	<description>Restlet API is a Java framework for the REST architecturalstyle.</description>
 
 	<dependencies>
 		<dependency>

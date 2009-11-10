@@ -25,25 +25,4 @@
 ]]>
       </files-sets>
    </source>
-   <source edition="gae">
-      <files-sets>
-<![CDATA[
-         <exclude name="**/*.android" />
-]]>
-      </files-sets>
-   </source>
-   <source edition="jee">
-      <files-sets>
-<![CDATA[
-         <exclude name="**/*.android" />
-]]>
-      </files-sets>
-   </source>
-   <source edition="jse">
-      <files-sets>
-<![CDATA[
-         <exclude name="**/*.android" />
-]]>
-      </files-sets>
-   </source>
 </module>

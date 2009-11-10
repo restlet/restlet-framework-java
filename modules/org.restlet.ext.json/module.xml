@@ -1,15 +1,34 @@
-<module id="json" excludes="android,gwt" type="standard" package="org.restlet.ext.json">
-   <name>Restlet Extension - JSON</name>
-   <description>
-      Support for JSON representations.
+<module id="json" excludes="android" type="standard" package="org.restlet.ext.json">
+	<name>Restlet Extension - JSON</name>
+	<description>
+		Support for JSON representations.
 	</description>
-   <distributions>
-      <distribution id="classic" />
-      <distribution id="maven" />
-   </distributions>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+	</distributions>
 
-   <dependencies>
-      <dependency type="library" id="json" primary="true" />
-      <dependency type="module" id="core" />
-   </dependencies>
+	<dependencies>
+		<dependency type="library" id="gwt" includes="gwt" primary="true" />
+		<dependency type="library" id="json" excludes="gwt"
+			primary="true" />
+		<dependency type="module" id="core" />
+	</dependencies>
+	<source edition="gwt">
+		<files-mappers>
+<![CDATA[
+      <mapper classname="mapper.ReplaceStringMapper" classpathref="forge-path" from=".java.gwt" to=".java" />
+      <mapper classname="mapper.ReplaceStringMapper" classpathref="forge-path" from=".MF.gwt" to=".MF" />
+]]>
+		</files-mappers>
+		<files-sets>
+<![CDATA[
+         <exclude name="META-INF/MANIFEST.MF" />
+         <custom classname="selector.EditionFileSelector" classpathref="forge-path">
+            <param name="edition" value="gwt"/>
+         </custom>
+         <exclude name="src/org/restlet/ext/json/JsonRepresentation.java" />
+]]>
+		</files-sets>
+	</source>
 </module>

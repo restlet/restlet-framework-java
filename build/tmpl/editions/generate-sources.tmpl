@@ -5,6 +5,7 @@
       </delete>
 </#noparse>
 <#list edition.modules as module>
+      <!-- copy and filter the java source code -->
       <copy todir="<#noparse>${mod}</#noparse>/${module.package}" overwrite="true">
          <fileset dir="<#noparse>${mods}</#noparse>/${module.package}" excludes="bin/**">
    <#if module.source[editionKey]??>${module.source[editionKey].sets!""}</#if>
@@ -20,6 +21,11 @@
       </copy>
       <copy todir="<#noparse>${mod}</#noparse>/${module.package}" overwrite="true">
          <fileset dir="<#noparse>${mods}</#noparse>/${module.package}" excludes="bin/**">
+   <#compress>
+         <#list editions?keys as ed>
+            <#if ed != edition.id><exclude name="**/*.${ed}*" /></#if>
+         </#list>
+   </#compress>
    <#if module.source[editionKey]??>${module.source[editionKey].sets!""}</#if>
             <exclude name="**/*.java" />
          </fileset>
