@@ -34,6 +34,7 @@ import java.util.Map;
 
 import org.restlet.Restlet;
 import org.restlet.resource.Finder;
+import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
@@ -47,7 +48,7 @@ import org.springframework.context.ApplicationContextAware;
 /**
  * Restlet {@link Router} which behaves like Spring's
  * {@link org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping}. It
- * takes every bean of type {@link org.restlet.resource.Resource} or
+ * takes every bean of type {@link org.restlet.resource.ServerResource} or
  * {@link Restlet} defined in a particular context and examines its aliases
  * (generally speaking, its name and id). If one of the aliases begins with a
  * forward slash, the resource will be attached to that URI.
@@ -233,9 +234,10 @@ public class SpringBeanRouter extends Router implements
     }
 
     /**
-     * Attaches all Resource and Restlet beans found in the surrounding bean
-     * factory for which {@link #resolveUri} finds a usable URI. Also attaches
-     * everything explicitly routed in the attachments property.
+     * Attaches all {@link ServerResource} and {@link Restlet} beans found in
+     * the surrounding bean factory for which {@link #resolveUri} finds a usable
+     * URI. Also attaches everything explicitly routed in the attachments
+     * property.
      * 
      * @param beanFactory
      *            The Spring bean factory.

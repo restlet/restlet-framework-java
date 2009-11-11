@@ -34,6 +34,8 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
+import javax.net.ssl.SSLContext;
+
 import org.apache.http.HttpHost;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpRequestRetryHandler;
@@ -57,6 +59,8 @@ import org.restlet.Request;
 import org.restlet.data.Protocol;
 import org.restlet.engine.Engine;
 import org.restlet.engine.http.HttpClientCall;
+import org.restlet.engine.http.HttpsUtils;
+import org.restlet.engine.security.SslContextFactory;
 import org.restlet.ext.httpclient.internal.HttpMethodCall;
 
 /**
@@ -137,8 +141,7 @@ import org.restlet.ext.httpclient.internal.HttpMethodCall;
  * </tr>
  * </table>
  * 
- * @see <a href=
- *      "http://jakarta.apache.org/httpcomponents/httpclient-3.x/tutorial.html"
+ * @see <a href= "http://hc.apache.org/httpcomponents-client/tutorial/html/"
  *      >Apache HTTP Client tutorial</a>
  * @see <a
  *      href="http://java.sun.com/j2se/1.5.0/docs/guide/net/index.html">Networking
@@ -222,8 +225,23 @@ public class HttpClientHelper extends org.restlet.engine.http.HttpClientHelper {
     protected void configure(SchemeRegistry schemeRegistry) {
         schemeRegistry.register(new Scheme("http", PlainSocketFactory
                 .getSocketFactory(), 80));
-        schemeRegistry.register(new Scheme("https", SSLSocketFactory
-                .getSocketFactory(), 443));
+
+        SSLSocketFactory sslSocketFactory = null;
+        SslContextFactory sslContextFactory = HttpsUtils
+                .getSslContextFactory(this);
+
+        if (sslContextFactory != null) {
+            try {
+                SSLContext sslContext = sslContextFactory.createSslContext();
+                sslSocketFactory = new SSLSocketFactory(sslContext);
+            } catch (Exception e) {
+                throw new RuntimeException("Unable to create SSLContext.", e);
+            }
+        } else {
+            sslSocketFactory = SSLSocketFactory.getSocketFactory();
+        }
+
+        schemeRegistry.register(new Scheme("https", sslSocketFactory, 443));
     }
 
     /**

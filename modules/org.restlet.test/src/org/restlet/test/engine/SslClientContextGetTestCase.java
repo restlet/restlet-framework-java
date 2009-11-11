@@ -73,7 +73,7 @@ public class SslClientContextGetTestCase extends SslBaseConnectorsTestCase {
         if (client.getContext() == null) {
             client.setContext(new Context());
         }
-        configureSslParameters(client.getContext());
+        configureSslServerParameters(client.getContext());
         final Response r = client.handle(request);
 
         assertEquals(r.getStatus().getDescription(), Status.SUCCESS_OK, r

@@ -33,6 +33,7 @@ package org.restlet.test.engine;
 import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
+import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
@@ -70,6 +71,8 @@ public class SslGetTestCase extends SslBaseConnectorsTestCase {
     protected void call(String uri) throws Exception {
         final Request request = new Request(Method.GET, uri);
         final Client client = new Client(Protocol.HTTPS);
+        client.setContext(new Context());
+        configureSslClientParameters(client.getContext());
         final Response r = client.handle(request);
 
         assertEquals(r.getStatus().getDescription(), Status.SUCCESS_OK, r

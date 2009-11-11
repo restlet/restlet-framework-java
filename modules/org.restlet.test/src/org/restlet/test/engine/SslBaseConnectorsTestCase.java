@@ -46,6 +46,7 @@ import org.restlet.engine.ClientHelper;
 import org.restlet.engine.Engine;
 import org.restlet.engine.ServerHelper;
 import org.restlet.engine.local.ClapClientHelper;
+import org.restlet.engine.security.DefaultSslContextFactory;
 import org.restlet.test.RestletTestCase;
 import org.restlet.util.Series;
 
@@ -63,7 +64,7 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
     private final boolean enableApacheClient = true;
 
     private final boolean enableGrizzlyServer = true;
-    
+
     private final boolean enableNettyServer = true;
 
     private final boolean enableJdkNetClient = true;
@@ -79,7 +80,7 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
 
     protected abstract void call(String uri) throws Exception;
 
-    protected void configureSslParameters(Context context) {
+    protected void configureSslServerParameters(Context context) {
         Series<Parameter> parameters = context.getParameters();
         parameters.add("sslContextFactory",
                 "org.restlet.engine.security.DefaultSslContextFactory");
@@ -91,12 +92,20 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
         parameters.add("truststorePassword", "testtest");
     }
 
+    protected void configureSslClientParameters(Context context) {
+        DefaultSslContextFactory sslContextFactory = new DefaultSslContextFactory();
+        sslContextFactory.setKeyStorePath(null);
+        sslContextFactory.setTrustStorePath(testKeystoreFile.getPath());
+        sslContextFactory.setTrustStorePassword("testtest");
+
+        context.getAttributes().put("sslContextFactory", sslContextFactory);
+    }
+
     protected abstract Application createApplication(Component component);
 
     // Helper methods
     private void runTest(ServerHelper server, ClientHelper client)
             throws Exception {
-
         final Engine nre = new Engine(false);
         nre.getRegisteredClients().add(new ClapClientHelper(null));
         nre.getRegisteredServers().add(server);
@@ -142,15 +151,11 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
     }
 
     private String start() throws Exception {
-        System.setProperty("javax.net.ssl.trustStore", testKeystoreFile
-                .getPath());
-        System.setProperty("javax.net.ssl.trustStorePassword", "testtest");
-
         this.component = new Component();
 
         final Server server = this.component.getServers()
                 .add(Protocol.HTTPS, 0);
-        configureSslParameters(server.getContext());
+        configureSslServerParameters(server.getContext());
         final Application application = createApplication(this.component);
 
         this.component.getDefaultHost().attach(application);
@@ -188,7 +193,7 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
                     new org.restlet.ext.net.HttpClientHelper(null));
         }
     }
-    
+
     public void testSslNettyAndApache() throws Exception {
         if (this.enableNettyServer && this.enableApacheClient) {
             runTest(new org.restlet.ext.netty.HttpsServerHelper(null),
