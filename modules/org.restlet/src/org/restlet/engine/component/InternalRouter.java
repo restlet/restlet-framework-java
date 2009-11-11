@@ -39,8 +39,8 @@ import org.restlet.routing.Router;
 import org.restlet.routing.Template;
 
 /**
- * Provides the behaviour of the internal router of a Component. It overrides
- * the default behaviour of a classic Router.
+ * Provides the behavior of the internal router of a Component. It overrides
+ * the default behavior of a classic Router.
  * 
  * @author Thierry Boileau
  */
@@ -55,7 +55,7 @@ public class InternalRouter extends Router {
         super(context);
         // Override Router's default modes
         setDefaultMatchingMode(Template.MODE_STARTS_WITH);
-        setRoutingMode(Router.BEST);
+        setRoutingMode(Router.MODE_BEST_MATCH);
     }
 
     @SuppressWarnings("deprecation")

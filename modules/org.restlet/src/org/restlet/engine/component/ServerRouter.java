@@ -65,7 +65,7 @@ public class ServerRouter extends Router {
         super((component == null) ? null : component.getContext()
                 .createChildContext());
         this.component = component;
-        setRoutingMode(FIRST);
+        setRoutingMode(MODE_FIRST_MATCH);
     }
 
     /**

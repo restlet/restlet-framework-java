@@ -66,8 +66,10 @@ import org.restlet.util.Resolver;
  */
 public class Template {
 
+    /** Mode where all characters must match the template and size be identical. */
     public static final int MODE_EQUALS = 2;
 
+    /** Mode where characters at the beginning must match the template. */
     public static final int MODE_STARTS_WITH = 1;
 
     /**

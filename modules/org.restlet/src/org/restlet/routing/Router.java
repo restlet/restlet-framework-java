@@ -79,26 +79,26 @@ public class Router extends Restlet {
      * Each call will be routed to the route with the best score, if the
      * required score is reached.
      */
-    public static final int BEST = 1;
+    public static final int MODE_BEST_MATCH = 1;
 
     /**
      * Each call will be routed according to a custom mode.
      */
-    public static final int CUSTOM = 6;
+    public static final int MODE_CUSTOM = 6;
 
     /**
      * Each call is routed to the first route if the required score is reached.
      * If the required score is not reached, then the route is skipped and the
      * next one is considered.
      */
-    public static final int FIRST = 2;
+    public static final int MODE_FIRST_MATCH = 2;
 
     /**
      * Each call will be routed to the last route if the required score is
      * reached. If the required score is not reached, then the route is skipped
      * and the previous one is considered.
      */
-    public static final int LAST = 3;
+    public static final int MODE_LAST_MATCH = 3;
 
     /**
      * Each call is be routed to the next route target if the required score is
@@ -107,7 +107,7 @@ public class Router extends Restlet {
      * skipped and the next one is considered. If the last route is reached, the
      * first route will be considered.
      */
-    public static final int NEXT = 4;
+    public static final int MODE_NEXT_MATCH = 4;
 
     /**
      * Each call will be randomly routed to one of the routes that reached the
@@ -116,6 +116,67 @@ public class Router extends Restlet {
      * we get back to the initial random route selected with no match, then we
      * return null.
      */
+    public static final int MODE_RANDOM_MATCH = 5;
+
+    /**
+     * Each call will be routed to the route with the best score, if the
+     * required score is reached.
+     * 
+     * @deprecated Use {@link #MODE_BEST_MATCH} instead.
+     */
+    @Deprecated
+    public static final int BEST = 1;
+
+    /**
+     * Each call will be routed according to a custom mode.
+     * 
+     * @deprecated Use {@link #MODE_CUSTOM} instead.
+     */
+    @Deprecated
+    public static final int CUSTOM = 6;
+
+    /**
+     * Each call is routed to the first route if the required score is reached.
+     * If the required score is not reached, then the route is skipped and the
+     * next one is considered.
+     * 
+     * @deprecated Use {@link #MODE_FIRST_MATCH} instead.
+     */
+    @Deprecated
+    public static final int FIRST = 2;
+
+    /**
+     * Each call will be routed to the last route if the required score is
+     * reached. If the required score is not reached, then the route is skipped
+     * and the previous one is considered.
+     * 
+     * @deprecated Use {@link #MODE_LAST_MATCH} instead.
+     */
+    @Deprecated
+    public static final int LAST = 3;
+
+    /**
+     * Each call is be routed to the next route target if the required score is
+     * reached. The next route is relative to the previous call routed (round
+     * robin mode). If the required score is not reached, then the route is
+     * skipped and the next one is considered. If the last route is reached, the
+     * first route will be considered.
+     * 
+     * @deprecated Use {@link #MODE_NEXT_MATCH} instead.
+     */
+    @Deprecated
+    public static final int NEXT = 4;
+
+    /**
+     * Each call will be randomly routed to one of the routes that reached the
+     * required score. If the random route selected is not a match then the
+     * immediate next route is evaluated until one matching route is found. If
+     * we get back to the initial random route selected with no match, then we
+     * return null.
+     * 
+     * @deprecated Use {@link #MODE_RANDOM_MATCH} instead.
+     */
+    @Deprecated
     public static final int RANDOM = 5;
 
     /** The default matching mode to use when selecting routes based on URIs. */
@@ -175,7 +236,7 @@ public class Router extends Restlet {
         this.defaultMatchQuery = false;
         this.defaultRoute = null;
         this.finderClass = Finder.class;
-        this.routingMode = FIRST;
+        this.routingMode = MODE_FIRST_MATCH;
         this.requiredScore = 0.5F;
         this.maxAttempts = 1;
         this.retryDelay = 500L;
@@ -337,8 +398,8 @@ public class Router extends Restlet {
 
     /**
      * Returns the matched route according to a custom algorithm. To use in
-     * combination of the {@link #CUSTOM} option. The default implementation (to
-     * be overridden), returns null.
+     * combination of the {@link #MODE_CUSTOM} option. The default
+     * implementation (to be overridden), returns null.
      * 
      * @param request
      *            The request to handle.
@@ -432,32 +493,32 @@ public class Router extends Restlet {
             if (this.routes != null) {
                 // Select the routing mode
                 switch (getRoutingMode()) {
-                case BEST:
+                case MODE_BEST_MATCH:
                     result = getRoutes().getBest(request, response,
                             getRequiredScore());
                     break;
 
-                case FIRST:
+                case MODE_FIRST_MATCH:
                     result = getRoutes().getFirst(request, response,
                             getRequiredScore());
                     break;
 
-                case LAST:
+                case MODE_LAST_MATCH:
                     result = getRoutes().getLast(request, response,
                             getRequiredScore());
                     break;
 
-                case NEXT:
+                case MODE_NEXT_MATCH:
                     result = getRoutes().getNext(request, response,
                             getRequiredScore());
                     break;
 
-                case RANDOM:
+                case MODE_RANDOM_MATCH:
                     result = getRoutes().getRandom(request, response,
                             getRequiredScore());
                     break;
 
-                case CUSTOM:
+                case MODE_CUSTOM:
                     result = getCustom(request, response);
                     break;
                 }
@@ -511,7 +572,8 @@ public class Router extends Restlet {
     }
 
     /**
-     * Returns the routing mode. By default, it returns the {@link #FIRST} mode.
+     * Returns the routing mode. By default, it returns the
+     * {@link #MODE_FIRST_MATCH} mode.
      * 
      * @return The routing mode.
      */
@@ -646,7 +708,8 @@ public class Router extends Restlet {
     }
 
     /**
-     * Sets the routing mode. By default, it is set to the {@link #FIRST} mode.
+     * Sets the routing mode. By default, it is set to the
+     * {@link #MODE_FIRST_MATCH} mode.
      * 
      * @param routingMode
      *            The routing mode.

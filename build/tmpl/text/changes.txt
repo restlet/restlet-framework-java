@@ -73,6 +73,9 @@ Changes log
           engines such as FreeMarker.         
         - Moved the OAuth extension to the incubator as it needs to go 
           through a complete redesign with proper documentation.
+        - Renamed routing mode constants of Router to follow the 
+          MODE_*_MATCH pattern such as MODE_BEST_MATCH instead of BEST.
+          Deprecated older values. Suggested by Arjohn Kampman.
       - Bugs fixed
         - Fixed bug when the deprecated method "createRoot" is 
           implemented instead of the "createInboundRoot".

@@ -228,7 +228,7 @@ public class VirtualHost extends Router {
         
         // Override Router's default modes 
         setDefaultMatchingMode(Template.MODE_STARTS_WITH);
-        setRoutingMode(BEST);
+        setRoutingMode(MODE_BEST_MATCH);
 
         this.parentContext = parentContext;
 
