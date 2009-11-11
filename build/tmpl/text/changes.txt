@@ -26,6 +26,8 @@ Changes log
         - PUT with empty entities were causing 400 errors. The test
           in Resource has been removed. 
           Reported by Nicolas Rinaudo and Rhett Sutphin
+        - Fixed bug in InputEntityStream causing issue with mark/reset
+          logic. Reported by Arjohn Kampman.
     - Misc
         - Updated license file to mention distribution under EPL 1.0 in
           addition to other licenses, like for Restlet 2.0.

@@ -28,6 +28,7 @@
 package com.noelios.restlet.test;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 import junit.framework.TestCase;
@@ -48,5 +49,37 @@ public class InputEntityStreamTestCase extends TestCase {
         final InputStream input = new ByteArrayInputStream(data.getBytes());
         assertEquals("test", ByteUtils
                 .toString(new InputEntityStream(input, 4)));
+    }
+
+    public void testReset() throws IOException {
+        String data = "12345678";
+        InputStream input = new ByteArrayInputStream(data.getBytes());
+        InputEntityStream ies = new InputEntityStream(input, 4);
+
+        assertEquals(true, ies.markSupported());
+
+        ies.mark(10);
+
+        assertEquals('1', (char) ies.read());
+        assertEquals('2', (char) ies.read());
+        assertEquals('3', (char) ies.read());
+        assertEquals('4', (char) ies.read());
+        assertEquals(-1, ies.read());
+        assertEquals(-1, ies.read());
+
+        ies.reset();
+
+        assertEquals('1', (char) ies.read());
+        assertEquals('2', (char) ies.read());
+
+        ies.mark(10);
+
+        assertEquals('3', (char) ies.read());
+        assertEquals('4', (char) ies.read());
+
+        ies.reset();
+
+        assertEquals('3', (char) ies.read());
+        assertEquals('4', (char) ies.read());
     }
 }
