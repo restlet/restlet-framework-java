@@ -670,16 +670,6 @@ public abstract class ServerResource extends UniformResource {
     }
 
     /**
-     * Returns the application's converter service or create a new one.
-     * 
-     * @return The converter service.
-     */
-    public ConverterService getConverterService() {
-        return getApplication() == null ? new ConverterService()
-                : getApplication().getConverterService();
-    }
-
-    /**
      * Returns information about the resource's representation. Those metadata
      * are important for conditional method processing. The advantage over the
      * complete {@link Representation} class is that it is much lighter to
@@ -717,16 +707,6 @@ public abstract class ServerResource extends UniformResource {
     protected RepresentationInfo getInfo(Variant variant)
             throws ResourceException {
         return get(variant);
-    }
-
-    /**
-     * Returns the application's metadata service or create a new one.
-     * 
-     * @return The metadata service.
-     */
-    public MetadataService getMetadataService() {
-        return getApplication() == null ? new MetadataService()
-                : getApplication().getMetadataService();
     }
 
     /**
@@ -773,7 +753,8 @@ public abstract class ServerResource extends UniformResource {
                 for (AnnotationInfo annotationInfo : getAnnotations()) {
                     if (getMethod().equals(annotationInfo.getRestletMethod())) {
                         annoVariants = annotationInfo.getResponseVariants(
-                                getRequestEntity(), getApplication());
+                                getRequestEntity(), getMetadataService(),
+                                getConverterService());
 
                         if (annoVariants != null) {
                             for (Variant v : annoVariants) {

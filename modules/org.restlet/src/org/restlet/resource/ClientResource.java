@@ -32,7 +32,6 @@ package org.restlet.resource;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -60,7 +59,6 @@ import org.restlet.engine.resource.AnnotationInfo;
 import org.restlet.engine.resource.AnnotationUtils;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
-import org.restlet.service.ConverterService;
 import org.restlet.util.Series;
 
 /**
@@ -74,7 +72,6 @@ import org.restlet.util.Series;
  */
 public class ClientResource extends UniformResource {
 
-    // [ifndef gwt] method
     /**
      * Creates a client resource that proxy calls to the given Java interface
      * into Restlet method calls.
@@ -94,7 +91,6 @@ public class ClientResource extends UniformResource {
         return clientResource.wrap(resourceInterface);
     }
 
-    // [ifndef gwt] method
     /**
      * Creates a client resource that proxy calls to the given Java interface
      * into Restlet method calls.
@@ -109,7 +105,6 @@ public class ClientResource extends UniformResource {
         return create(null, reference, resourceInterface);
     }
 
-    // [ifndef gwt] method
     /**
      * Creates a client resource that proxy calls to the given Java interface
      * into Restlet method calls.
@@ -183,6 +178,7 @@ public class ClientResource extends UniformResource {
         this(context, method, new Reference(uri));
     }
 
+    // [ifndef gwt] method
     /**
      * Constructor.
      * 
@@ -193,7 +189,7 @@ public class ClientResource extends UniformResource {
      * @param uri
      *            The target URI.
      */
-    public ClientResource(Context context, Method method, URI uri) {
+    public ClientResource(Context context, Method method, java.net.URI uri) {
         this(context, method, new Reference(uri));
     }
 
@@ -236,6 +232,7 @@ public class ClientResource extends UniformResource {
         this(context, Method.GET, uri);
     }
 
+    // [ifndef gwt] method
     /**
      * Constructor.
      * 
@@ -244,7 +241,7 @@ public class ClientResource extends UniformResource {
      * @param uri
      *            The target URI.
      */
-    public ClientResource(Context context, URI uri) {
+    public ClientResource(Context context, java.net.URI uri) {
         this(context, Method.GET, uri);
     }
 
@@ -272,6 +269,7 @@ public class ClientResource extends UniformResource {
         this(Context.getCurrent(), method, uri);
     }
 
+    // [ifndef gwt] method
     /**
      * Constructor.
      * 
@@ -280,7 +278,7 @@ public class ClientResource extends UniformResource {
      * @param uri
      *            The target URI.
      */
-    public ClientResource(Method method, URI uri) {
+    public ClientResource(Method method, java.net.URI uri) {
         this(Context.getCurrent(), method, uri);
     }
 
@@ -316,13 +314,14 @@ public class ClientResource extends UniformResource {
         this(Context.getCurrent(), null, uri);
     }
 
+    // [ifndef gwt] method
     /**
      * Constructor.
      * 
      * @param uri
      *            The target URI.
      */
-    public ClientResource(URI uri) {
+    public ClientResource(java.net.URI uri) {
         this(Context.getCurrent(), null, uri);
     }
 
@@ -510,23 +509,6 @@ public class ClientResource extends UniformResource {
     }
 
     /**
-     * Returns the converter service. Creates one if necessary.
-     * 
-     * @return The converter service.
-     */
-    private ConverterService getConverterService() {
-        ConverterService cs = null;
-
-        if (getApplication() != null) {
-            cs = getApplication().getConverterService();
-        } else {
-            cs = new ConverterService();
-        }
-
-        return cs;
-    }
-
-    /**
      * Returns the next Restlet. By default, it is the client dispatcher if a
      * context is available.
      * 
@@ -536,7 +518,6 @@ public class ClientResource extends UniformResource {
         return this.next;
     }
 
-    // [ifndef gwt] method
     /**
      * Returns the parent resource. The parent resource is defined in the sense
      * of hierarchical URIs. If the resource URI is not hierarchical, then an
@@ -1329,7 +1310,7 @@ public class ClientResource extends UniformResource {
 
         if (source != null) {
             try {
-                ConverterService cs = getConverterService();
+                org.restlet.service.ConverterService cs = getConverterService();
                 result = cs.toObject(source, target, this);
             } catch (Exception e) {
                 throw new ResourceException(e);
@@ -1350,7 +1331,7 @@ public class ClientResource extends UniformResource {
         Representation result = null;
 
         if (source != null) {
-            ConverterService cs = getConverterService();
+            org.restlet.service.ConverterService cs = getConverterService();
             result = cs.toRepresentation(source);
         }
 
@@ -1364,7 +1345,7 @@ public class ClientResource extends UniformResource {
      *            The result class to match.
      */
     private <T> void updateClientInfo(Class<T> resultClass) {
-        ConverterService cs = getConverterService();
+        org.restlet.service.ConverterService cs = getConverterService();
         updateClientInfo(cs.getVariants(resultClass, null));
     }
 
@@ -1426,7 +1407,8 @@ public class ClientResource extends UniformResource {
 
                         List<Variant> responseVariants = annotation
                                 .getResponseVariants(requestEntity,
-                                        getApplication());
+                                        getMetadataService(),
+                                        getConverterService());
 
                         if (responseVariants != null) {
                             updateClientInfo(responseVariants);

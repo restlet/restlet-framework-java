@@ -31,24 +31,58 @@
 package org.restlet.test.engine;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 import org.restlet.engine.io.ByteUtils;
 import org.restlet.engine.io.InputEntityStream;
 import org.restlet.test.RestletTestCase;
 
-
 /**
  * Test cases for the input entity stream.
  * 
  * @author <a href="mailto:kevin.a.conaway@gmail.com">Kevin Conaway</a>
+ * @author Jerome Louvel
  */
 public class InputEntityStreamTestCase extends RestletTestCase {
 
     public void testRead() {
-        final String data = "test data";
-        final InputStream input = new ByteArrayInputStream(data.getBytes());
+        String data = "test data";
+        InputStream input = new ByteArrayInputStream(data.getBytes());
         assertEquals("test", ByteUtils
                 .toString(new InputEntityStream(input, 4)));
     }
+
+    public void testReset() throws IOException {
+        String data = "12345678";
+        InputStream input = new ByteArrayInputStream(data.getBytes());
+        InputEntityStream ies = new InputEntityStream(input, 4);
+
+        assertEquals(true, ies.markSupported());
+
+        ies.mark(10);
+
+        assertEquals('1', (char) ies.read());
+        assertEquals('2', (char) ies.read());
+        assertEquals('3', (char) ies.read());
+        assertEquals('4', (char) ies.read());
+        assertEquals(-1, ies.read());
+        assertEquals(-1, ies.read());
+
+        ies.reset();
+
+        assertEquals('1', (char) ies.read());
+        assertEquals('2', (char) ies.read());
+
+        ies.mark(10);
+
+        assertEquals('3', (char) ies.read());
+        assertEquals('4', (char) ies.read());
+
+        ies.reset();
+
+        assertEquals('3', (char) ies.read());
+        assertEquals('4', (char) ies.read());
+    }
+
 }

@@ -36,7 +36,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -56,6 +55,8 @@ import org.restlet.data.Reference;
 import org.restlet.data.ServerInfo;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
+import org.restlet.service.ConverterService;
+import org.restlet.service.MetadataService;
 import org.restlet.service.StatusService;
 import org.restlet.util.Series;
 
@@ -116,7 +117,8 @@ public abstract class UniformResource {
     /**
      * Invoked when an error or an exception is caught during initialization,
      * handling or releasing. By default, updates the responses's status with
-     * the result of {@link StatusService#getStatus(Throwable, UniformResource)}
+     * the result of
+     * {@link org.restlet.service.StatusService#getStatus(Throwable, UniformResource)}
      * .
      * 
      * @param throwable
@@ -140,10 +142,9 @@ public abstract class UniformResource {
         getLogger().log(level, "Exception or error caught in resource",
                 throwable);
 
-        if (getResponse() != null && getApplication() != null) {
+        if (getResponse() != null) {
             getResponse().setStatus(
-                    getApplication().getStatusService().getStatus(throwable,
-                            this));
+                    getStatusService().getStatus(throwable, this));
         }
     }
 
@@ -176,15 +177,17 @@ public abstract class UniformResource {
         return getResponse() == null ? null : getResponse().getAllowedMethods();
     }
 
+    // [ifndef gwt] method
     /**
      * Returns the parent application if it exists, or instantiates a new one if
      * needed.
      * 
      * @return The parent application if it exists, or a new one.
      */
-    public Application getApplication() {
-        Application result = Application.getCurrent();
-        return (result == null) ? new Application(getContext()) : result;
+    public org.restlet.Application getApplication() {
+        org.restlet.Application result = org.restlet.Application.getCurrent();
+        return (result == null) ? new org.restlet.Application(getContext())
+                : result;
     }
 
     /**
@@ -239,6 +242,16 @@ public abstract class UniformResource {
      */
     public Context getContext() {
         return context;
+    }
+
+    /**
+     * Returns the application's converter service or create a new one.
+     * 
+     * @return The converter service.
+     */
+    public ConverterService getConverterService() {
+        return getApplication() == null ? new ConverterService()
+                : getApplication().getConverterService();
     }
 
     /**
@@ -317,6 +330,16 @@ public abstract class UniformResource {
      */
     public Form getMatrix() {
         return getReference() == null ? null : getReference().getMatrixAsForm();
+    }
+
+    /**
+     * Returns the application's metadata service or create a new one.
+     * 
+     * @return The metadata service.
+     */
+    public MetadataService getMetadataService() {
+        return getApplication() == null ? new MetadataService()
+                : getApplication().getMetadataService();
     }
 
     /**
@@ -474,6 +497,16 @@ public abstract class UniformResource {
      */
     public Status getStatus() {
         return getResponse() == null ? null : getResponse().getStatus();
+    }
+
+    /**
+     * Returns the application's status service or create a new one.
+     * 
+     * @return The metadata service.
+     */
+    public StatusService getStatusService() {
+        return getApplication() == null ? new StatusService()
+                : getApplication().getStatusService();
     }
 
     /**

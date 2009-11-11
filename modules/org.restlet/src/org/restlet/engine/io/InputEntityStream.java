@@ -43,6 +43,9 @@ public class InputEntityStream extends FilterInputStream {
     /** The total size that should be read from the source stream. */
     private volatile long availableSize;
 
+    /** The total size when the {@link #mark(int)} method was called. */
+    private volatile long markedAvailableSize;
+
     /**
      * Constructor.
      * 
@@ -54,6 +57,7 @@ public class InputEntityStream extends FilterInputStream {
     public InputEntityStream(InputStream source, long size) {
         super(source);
         this.availableSize = size;
+        this.markedAvailableSize = -1;
     }
 
     @Override
@@ -64,6 +68,15 @@ public class InputEntityStream extends FilterInputStream {
     @Override
     public void close() throws IOException {
         // Don't close it directly
+    }
+
+    @Override
+    public synchronized void mark(int readlimit) {
+        if (markSupported()) {
+            this.markedAvailableSize = availableSize;
+        }
+
+        super.mark(readlimit);
     }
 
     /**
@@ -100,6 +113,18 @@ public class InputEntityStream extends FilterInputStream {
         }
 
         return result;
+    }
+
+    @Override
+    public synchronized void reset() throws IOException {
+        if (markSupported()) {
+            if (this.markedAvailableSize != -1) {
+                this.availableSize = markedAvailableSize;
+                this.markedAvailableSize = -1;
+            }
+        }
+
+        super.reset();
     }
 
 }

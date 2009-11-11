@@ -37,11 +37,9 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
-import org.restlet.engine.application.StatusFilter;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.UniformResource;
-import org.restlet.routing.Filter;
 
 /**
  * Service to handle error statuses. If an exception is thrown within your
@@ -96,9 +94,10 @@ public class StatusService extends Service {
         this.overwrite = false;
     }
 
+    // [ifndef gwt] method
     @Override
-    public Filter createInboundFilter(Context context) {
-        return new StatusFilter(context, this);
+    public org.restlet.routing.Filter createInboundFilter(Context context) {
+        return new org.restlet.engine.application.StatusFilter(context, this);
     }
 
     /**

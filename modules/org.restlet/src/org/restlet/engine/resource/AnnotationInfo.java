@@ -33,7 +33,6 @@ package org.restlet.engine.resource;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.restlet.Application;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.representation.Representation;
@@ -149,13 +148,15 @@ public class AnnotationInfo {
      * 
      * @param requestEntity
      *            Optional request entity.
-     * @param application
-     *            The application to use.
+     * @param metadataService
+     *            The metadata service to use.
+     * @param converterService
+     *            The converter service to use.
      * @return A list of response variants.
      */
     @SuppressWarnings("unchecked")
     public List<Variant> getResponseVariants(Representation requestEntity,
-            Application application) {
+            MetadataService metadataService, ConverterService converterService) {
         List<Variant> result = null;
         String value = getValue();
         boolean compatibleRequestEntity = true;
@@ -171,8 +172,7 @@ public class AnnotationInfo {
                 String[] extensions = value.split("\\|");
 
                 if (requestEntity != null) {
-                    List<Variant> requestVariants = getRequestVariants(application
-                            .getMetadataService());
+                    List<Variant> requestVariants = getRequestVariants(metadataService);
 
                     if ((requestVariants != null) && !requestVariants.isEmpty()) {
                         // Check that the compatibility
@@ -189,9 +189,8 @@ public class AnnotationInfo {
                 if (compatibleRequestEntity) {
                     if (extensions != null) {
                         for (String extension : extensions) {
-                            List<MediaType> mediaTypes = application
-                                    .getMetadataService().getAllMediaTypes(
-                                            extension);
+                            List<MediaType> mediaTypes = metadataService
+                                    .getAllMediaTypes(extension);
 
                             if (mediaTypes != null) {
                                 if (result == null) {
@@ -209,8 +208,8 @@ public class AnnotationInfo {
         }
 
         if (compatibleRequestEntity && (result == null)) {
-            ConverterService cs = application.getConverterService();
-            result = (List<Variant>) cs.getVariants(getJavaOutputType(), null);
+            result = (List<Variant>) converterService.getVariants(
+                    getJavaOutputType(), null);
         }
 
         return result;
