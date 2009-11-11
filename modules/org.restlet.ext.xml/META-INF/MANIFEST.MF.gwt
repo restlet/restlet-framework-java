@@ -20,6 +20,7 @@ Export-Package: org.restlet.ext.xml;
 Import-Package: com.google.gwt.xml.client,
  org.restlet,
  org.restlet.data,
+ org.restlet.engine,
  org.restlet.engine.util,
  org.restlet.representation,
  org.restlet.service,

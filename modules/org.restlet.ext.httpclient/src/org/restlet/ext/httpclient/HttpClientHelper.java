@@ -107,7 +107,7 @@ import org.restlet.ext.httpclient.internal.HttpMethodCall;
  * <tr>
  * <td>proxyPort</td>
  * <td>int</td>
- * <td>System property ""http.proxyPort" or "3128"</td>
+ * <td>System property "http.proxyPort" or "3128"</td>
  * <td>The port of the HTTP proxy.</td>
  * </tr>
  * <tr>
