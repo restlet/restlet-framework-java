@@ -250,8 +250,16 @@ public abstract class UniformResource {
      * @return The converter service.
      */
     public ConverterService getConverterService() {
-        return getApplication() == null ? new ConverterService()
-                : getApplication().getConverterService();
+        ConverterService result = null;
+
+        // [ifndef gwt] instruction
+        result = getApplication().getConverterService();
+
+        if (result == null) {
+            result = new ConverterService();
+        }
+
+        return result;
     }
 
     /**
@@ -338,8 +346,16 @@ public abstract class UniformResource {
      * @return The metadata service.
      */
     public MetadataService getMetadataService() {
-        return getApplication() == null ? new MetadataService()
-                : getApplication().getMetadataService();
+        MetadataService result = null;
+
+        // [ifndef gwt] instruction
+        result = getApplication().getMetadataService();
+
+        if (result == null) {
+            result = new MetadataService();
+        }
+
+        return result;
     }
 
     /**
@@ -502,11 +518,19 @@ public abstract class UniformResource {
     /**
      * Returns the application's status service or create a new one.
      * 
-     * @return The metadata service.
+     * @return The status service.
      */
     public StatusService getStatusService() {
-        return getApplication() == null ? new StatusService()
-                : getApplication().getStatusService();
+        StatusService result = null;
+
+        // [ifndef gwt] instruction
+        result = getApplication().getStatusService();
+
+        if (result == null) {
+            result = new StatusService();
+        }
+
+        return result;
     }
 
     /**
