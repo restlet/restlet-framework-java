@@ -93,6 +93,18 @@ public class JsonRepresentation extends Representation {
     }
 
     /**
+     * Constructor from a JSON string.
+     * 
+     * @param jsonString
+     *            The JSON string.
+     */
+    public JsonRepresentation(String jsonString) {
+        super(MediaType.APPLICATION_JSON);
+        setCharacterSet(CharacterSet.UTF_8);
+        this.jsonRepresentation = new StringRepresentation(jsonString);
+    }
+    
+    /**
      * Converts the representation to a JSON object. This method will trigger
      * the serialization of any wrapped JSON object.
      * 
