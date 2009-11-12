@@ -39,6 +39,7 @@ import org.restlet.data.Conditions;
 import org.restlet.data.Cookie;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
+import org.restlet.data.Range;
 import org.restlet.data.Reference;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
@@ -134,9 +135,8 @@ public class Request extends Message {
     /** The original reference. */
     private volatile Reference originalRef;
 
-    // [ifndef gwt] member
     /** The ranges to return from the target resource's representation. */
-    private volatile List<org.restlet.data.Range> ranges;
+    private volatile List<Range> ranges;
 
     /** The referrer reference. */
     private volatile Reference referrerRef;
@@ -354,7 +354,6 @@ public class Request extends Message {
         return this.proxyChallengeResponse;
     }
 
-    // [ifndef gwt] method
     /**
      * Returns the ranges to return from the target resource's representation.<br>
      * <br>
@@ -363,14 +362,14 @@ public class Request extends Message {
      * 
      * @return The ranges to return.
      */
-    public List<org.restlet.data.Range> getRanges() {
+    public List<Range> getRanges() {
         // Lazy initialization with double-check.
-        List<org.restlet.data.Range> r = this.ranges;
+        List<Range> r = this.ranges;
         if (r == null) {
             synchronized (this) {
                 r = this.ranges;
                 if (r == null) {
-                    this.ranges = r = new CopyOnWriteArrayList<org.restlet.data.Range>();
+                    this.ranges = r = new CopyOnWriteArrayList<Range>();
                 }
             }
         }
@@ -568,7 +567,6 @@ public class Request extends Message {
         this.proxyChallengeResponse = challengeResponse;
     }
 
-    // [ifndef gwt] method
     /**
      * Sets the ranges to return from the target resource's representation.<br>
      * <br>

@@ -1,8 +1,7 @@
 <module id="core" type="core" package="org.restlet">
-	<name>Restlet API</name>
+	<name>Restlet Core</name>
 	<description>
-		Restlet API is a Java framework for the REST architectural
-		style.
+		RESTful Web framework for Java (API and engine).
 	</description>
 	<distributions>
 		<distribution id="classic" />
@@ -94,7 +93,6 @@
          <exclude name="src/org/restlet/data/agent.properties" />
          <exclude name="src/org/restlet/data/Digest.java" />
          <exclude name="src/org/restlet/data/LocalReference.java" />
-         <exclude name="src/org/restlet/data/Range.java" />
          <exclude name="src/org/restlet/engine/ChainHelper.java" />
          <exclude name="src/org/restlet/engine/component/**" />
          <exclude name="src/org/restlet/engine/converter/**" />

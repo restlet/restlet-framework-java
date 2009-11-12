@@ -60,7 +60,7 @@ import org.restlet.util.Resolver;
  * {@link #parse(String, Request)}.
  * 
  * @see Resolver
- * @see <a href="http://bitworking.org/projects/URI-Templates/">URI Template
+ * @see <a href="http://code.google.com/p/uri-templates/">URI Template
  *      specification</a>
  * @author Jerome Louvel
  */
