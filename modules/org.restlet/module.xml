@@ -81,6 +81,13 @@
       <mapper classname="mapper.ReplaceStringMapper" classpathref="forge-path" from=".MF.gwt" to=".MF" />
 ]]>
 		</files-mappers>
+		<files-filters>
+<![CDATA[
+      <tokenfilter>
+          <replacestring from="com.google.gwt.emul." to=""/>
+      </tokenfilter>
+]]>
+		</files-filters>
 		<files-sets>
 <![CDATA[
          <exclude name="META-INF/MANIFEST.MF" />
@@ -180,13 +187,6 @@
 	</source>
 	<compile edition="gwt" excludes="**/com/google/**" />
 	<stage edition="gwt" includesource="true">
-		<files-filters>
-<![CDATA[
-      <tokenfilter>
-          <replacestring from="com.google.gwt.emul." to=""/>
-      </tokenfilter>
-]]>
-		</files-filters>
 		<files-mappers>
 <![CDATA[
       <globmapper from="src/*" to="*" handledirsep="true"/>
