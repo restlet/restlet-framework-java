@@ -121,8 +121,9 @@ Changes log
         - Fixed update of entities in the dataservices extension, due 
           to the generation of a wrong entity.
           Reported by Simon Guest.
-        - Fixed issues with SSL test cases. 
+        - Fixed issues with SSL test cases.
           Contributed by Bruno Harbulot.
+        - Fixed bug with the setIdent method of class DomRepresentation.
     - Enhancements
         - Improved JAXB converted. Contributed by Sanjay Acharya.
         - Upgraded Apache Commons Logging to version 1.1.1.
