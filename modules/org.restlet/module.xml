@@ -43,8 +43,14 @@
 		<activator includes="*" excludes="android" />
 	</osgi>
 	<source edition="android">
+		<files-mappers>
+<![CDATA[
+      <mapper classname="mapper.ReplaceStringMapper" classpathref="forge-path" from=".MF.android" to=".MF" />
+]]>
+		</files-mappers>
 		<files-sets>
 <![CDATA[
+         <exclude name="META-INF/MANIFEST.MF" />
          <exclude name="src/com/**" />
          <exclude name="src/org/restlet/engine/internal/Activator.java" />
          <exclude name="src/org/restlet/security/JaasVerifier.java" />
@@ -52,8 +58,14 @@
 		</files-sets>
 	</source>
 	<source edition="gae">
+		<files-mappers>
+<![CDATA[
+      <mapper classname="mapper.ReplaceStringMapper" classpathref="forge-path" from=".MF.gae" to=".MF" />
+]]>
+		</files-mappers>
 		<files-sets>
 <![CDATA[
+         <exclude name="META-INF/MANIFEST.MF" />
          <exclude name="src/com/**" />
          <exclude name="src/org/restlet/engine/internal/Activator.java" />
          <exclude name="src/org/restlet/engine/http/StreamServer*" />

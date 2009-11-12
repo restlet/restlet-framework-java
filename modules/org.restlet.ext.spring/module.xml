@@ -17,15 +17,27 @@
       <dependency type="module" id="servlet" includes="jee" />
    </dependencies>
    <source edition="jse">
-      <files-sets>
+		<files-mappers>
 <![CDATA[
+      <mapper classname="mapper.ReplaceStringMapper" classpathref="forge-path" from=".MF.jse" to=".MF" />
+]]>
+		</files-mappers>
+		<files-sets>
+<![CDATA[
+         <exclude name="META-INF/MANIFEST.MF" />
          <exclude name="src/org/restlet/ext/spring/*Servlet.java" />
 ]]>
       </files-sets>
    </source>
    <source edition="gae">
-      <files-sets>
+		<files-mappers>
 <![CDATA[
+      <mapper classname="mapper.ReplaceStringMapper" classpathref="forge-path" from=".MF.gae" to=".MF" />
+]]>
+		</files-mappers>
+		<files-sets>
+<![CDATA[
+         <exclude name="META-INF/MANIFEST.MF" />
          <exclude name="src/org/restlet/ext/spring/*Servlet.java" />
 ]]>
       </files-sets>
