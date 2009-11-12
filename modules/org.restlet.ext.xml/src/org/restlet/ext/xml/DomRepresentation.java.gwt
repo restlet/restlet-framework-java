@@ -47,7 +47,7 @@ import com.google.gwt.xml.client.XMLParser;
  * 
  * @author Jerome Louvel
  */
-public class XmlRepresentation extends Representation {
+public class DomRepresentation extends Representation {
     /** The wrapped DOM document. */
     private Document dom;
 
@@ -60,7 +60,7 @@ public class XmlRepresentation extends Representation {
      * @param mediaType
      *            The representation's media type.
      */
-    public XmlRepresentation(MediaType mediaType) {
+    public DomRepresentation(MediaType mediaType) {
         super(mediaType);
         this.dom = XMLParser.createDocument();
     }
@@ -73,7 +73,7 @@ public class XmlRepresentation extends Representation {
      * @param xmlDocument
      *            The source DOM document.
      */
-    public XmlRepresentation(MediaType mediaType, Document xmlDocument) {
+    public DomRepresentation(MediaType mediaType, Document xmlDocument) {
         super(mediaType);
         this.dom = xmlDocument;
     }
@@ -84,7 +84,7 @@ public class XmlRepresentation extends Representation {
      * @param xmlRepresentation
      *            A source XML representation to parse.
      */
-    public XmlRepresentation(Representation xmlRepresentation) {
+    public DomRepresentation(Representation xmlRepresentation) {
         super((xmlRepresentation == null) ? null : xmlRepresentation
                 .getMediaType());
         this.xmlRepresentation = xmlRepresentation;
