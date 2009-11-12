@@ -115,6 +115,9 @@ public class DomRepresentation extends XmlRepresentation {
 					.newInstance().newTransformer();
 			transformer.setOutputProperty(
 					javax.xml.transform.OutputKeys.METHOD, "xml");
+                        transformer.setOutputProperty(
+                                javax.xml.transform.OutputKeys.INDENT, Boolean
+                                                .toString(isIndent()));
 
 			DocumentType docType = getDocument().getDoctype();
 			if (docType != null) {
@@ -129,10 +132,6 @@ public class DomRepresentation extends XmlRepresentation {
 							javax.xml.transform.OutputKeys.DOCTYPE_PUBLIC,
 							getDocument().getDoctype().getPublicId());
 				}
-
-				transformer.setOutputProperty(
-						javax.xml.transform.OutputKeys.INDENT, Boolean
-								.toString(isIndent()));
 			}
 
 			return transformer;
