@@ -83,7 +83,7 @@ public class LoggerFacade {
             // [ifndef gwt] instruction
             loggerName = clazz.getCanonicalName();
 
-            // [ifndef gwt] instruction uncomment
+            // [ifdef gwt] instruction uncomment
             // loggerName = clazz.getName();
         }
 
