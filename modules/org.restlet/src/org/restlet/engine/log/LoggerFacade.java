@@ -32,8 +32,6 @@ package org.restlet.engine.log;
 
 import java.util.logging.Logger;
 
-import org.restlet.engine.Edition;
-
 /**
  * Logger facade to the underlying logging framework used by the Restlet
  * Framework. By default, it relies on the JULI mechanism built in Java SE. You
@@ -82,11 +80,11 @@ public class LoggerFacade {
         String loggerName = null;
 
         if (clazz != null) {
-            if (Edition.CURRENT == Edition.GWT) {
-                loggerName = clazz.getName();
-            } else {
-                loggerName = clazz.getCanonicalName();
-            }
+            // [ifndef gwt] instruction
+            loggerName = clazz.getCanonicalName();
+
+            // [ifndef gwt] instruction uncomment
+            // loggerName = clazz.getName();
         }
 
         if (loggerName == null) {
