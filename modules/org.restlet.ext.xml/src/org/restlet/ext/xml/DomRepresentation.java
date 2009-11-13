@@ -250,7 +250,7 @@ public class DomRepresentation extends XmlRepresentation {
     /**
      * Indicates if the XML serialization should be indented.
      * 
-     * @param indent
+     * @param indenting
      *            True if the XML serialization should be indented.
      */
     public void setIndenting(boolean indenting) {
