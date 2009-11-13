@@ -64,7 +64,7 @@ public class RdfN3Writer extends GraphHandler {
     private Reference precSource;
 
     /** Indicates if the end of the statement is to be written. */
-    private boolean writeExtraDot;
+    private boolean writingExtraDot;
 
     /**
      * Constructor.
@@ -148,7 +148,7 @@ public class RdfN3Writer extends GraphHandler {
                     this.bw.write(" ");
                 }
             } else {
-                this.writeExtraDot = true;
+                this.writingExtraDot = true;
                 this.bw.write(".\n");
                 write(source, this.context.getPrefixes());
                 this.bw.write(" ");
@@ -170,7 +170,7 @@ public class RdfN3Writer extends GraphHandler {
     public void link(Reference source, Reference typeRef, Reference target) {
         try {
             if (source.equals(this.precSource)) {
-                this.writeExtraDot = false;
+                this.writingExtraDot = false;
                 if (typeRef.equals(this.precPredicate)) {
                     this.bw.write(", ");
                 } else {
@@ -179,7 +179,7 @@ public class RdfN3Writer extends GraphHandler {
                     this.bw.write(" ");
                 }
             } else {
-                this.writeExtraDot = true;
+                this.writingExtraDot = true;
                 this.bw.write(".\n");
                 write(source, this.context.getPrefixes());
                 this.bw.write(" ");
@@ -199,7 +199,7 @@ public class RdfN3Writer extends GraphHandler {
 
     @Override
     public void endGraph() throws IOException {
-        if (writeExtraDot) {
+        if (writingExtraDot) {
             this.bw.write(".\n");
         }
         this.bw.flush();
@@ -217,7 +217,7 @@ public class RdfN3Writer extends GraphHandler {
             if (link.hasReferenceSource()) {
                 if (!link.getSourceAsReference().equals(this.precSource)) {
                     this.bw.write(".\n");
-                    this.writeExtraDot = true;
+                    this.writingExtraDot = true;
                 }
                 if (link.hasReferenceTarget()) {
                     link(link.getSourceAsReference(), link.getTypeRef(), link
@@ -234,7 +234,7 @@ public class RdfN3Writer extends GraphHandler {
                                     "Cannot write the representation of a statement due to the fact that the object is neither a Reference nor a literal.");
                 }
             } else if (link.hasGraphSource()) {
-                this.writeExtraDot = false;
+                this.writingExtraDot = false;
                 if (link.hasReferenceTarget()) {
                     link(link.getSourceAsGraph(), link.getTypeRef(), link
                             .getTargetAsReference());

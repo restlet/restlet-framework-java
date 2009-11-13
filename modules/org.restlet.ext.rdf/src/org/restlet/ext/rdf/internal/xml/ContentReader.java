@@ -76,7 +76,7 @@ class ContentReader extends DefaultHandler {
     private StringBuilder builder;
 
     /** Indicates if the string content must be consumed. */
-    private boolean consumeContent;
+    private boolean consumingContent;
 
     /** Current data type. */
     private String currentDataType;
@@ -146,7 +146,7 @@ class ContentReader extends DefaultHandler {
     @Override
     public void characters(char[] ch, int start, int length)
             throws SAXException {
-        if (consumeContent) {
+        if (consumingContent) {
             builder.append(ch, start, length);
         }
     }
@@ -195,10 +195,10 @@ class ContentReader extends DefaultHandler {
         if (state == State.SUBJECT) {
             popSubject();
         } else if (state == State.PREDICATE) {
-            if (this.consumeContent) {
+            if (this.consumingContent) {
                 link(getCurrentSubject(), this.currentPredicate, getLiteral(
                         builder.toString(), null, this.language.getValue()));
-                this.consumeContent = false;
+                this.consumingContent = false;
             }
         } else if (state == State.OBJECT) {
         } else if (state == State.LITERAL) {
@@ -556,7 +556,7 @@ class ContentReader extends DefaultHandler {
         ContentReader.State state = getCurrentState();
         this.base.incrDepth();
         this.language.incrDepth();
-        if (!this.consumeContent && this.builder != null) {
+        if (!this.consumingContent && this.builder != null) {
             this.builder = null;
         }
         if (state == State.NONE) {
@@ -575,27 +575,27 @@ class ContentReader extends DefaultHandler {
             // Parse the current predicate
             List<String[]> arcs = new ArrayList<String[]>();
             pushState(State.PREDICATE);
-            this.consumeContent = true;
+            this.consumingContent = true;
             Reference currentSubject = getCurrentSubject();
             this.currentPredicate = resolve(uri, name);
             Reference currentObject = null;
             for (int i = 0; i < attributes.getLength(); i++) {
                 String qName = attributes.getQName(i);
                 if (checkRdfQName("resource", qName)) {
-                    this.consumeContent = false;
+                    this.consumingContent = false;
                     currentObject = resolve(attributes.getValue(i), false);
                     popState();
                     pushState(State.OBJECT);
                 } else if (checkRdfQName("datatype", qName)) {
                     // The object is a literal
-                    this.consumeContent = true;
+                    this.consumingContent = true;
                     popState();
                     pushState(State.LITERAL);
                     this.currentDataType = attributes.getValue(i);
                 } else if (checkRdfQName("parseType", qName)) {
                     String value = attributes.getValue(i);
                     if ("Literal".equals(value)) {
-                        this.consumeContent = true;
+                        this.consumingContent = true;
                         // The object is an XML literal
                         popState();
                         pushState(State.LITERAL);
@@ -603,7 +603,7 @@ class ContentReader extends DefaultHandler {
                                 + "XMLLiteral";
                         nodeDepth = 0;
                     } else if ("Resource".equals(value)) {
-                        this.consumeContent = false;
+                        this.consumingContent = false;
                         // Create a new blank node
                         currentObject = Link.createBlankRef(ContentReader
                                 .newBlankNodeId());
@@ -611,11 +611,11 @@ class ContentReader extends DefaultHandler {
                         pushState(State.SUBJECT);
                         pushSubject(currentObject);
                     } else {
-                        this.consumeContent = false;
+                        this.consumingContent = false;
                         // Error
                     }
                 } else if (checkRdfQName("nodeID", qName)) {
-                    this.consumeContent = false;
+                    this.consumingContent = false;
                     currentObject = Link.createBlankRef(attributes.getValue(i));
                     popState();
                     pushState(State.SUBJECT);
@@ -660,11 +660,11 @@ class ContentReader extends DefaultHandler {
                     pushState(State.OBJECT);
                 }
             }
-            if (this.consumeContent) {
+            if (this.consumingContent) {
                 builder = new StringBuilder();
             }
         } else if (state == State.PREDICATE) {
-            this.consumeContent = false;
+            this.consumingContent = false;
             // Parse the current object, create the current link
             Reference object = parseNode(uri, localName, name, attributes);
             this.currentObject = object;

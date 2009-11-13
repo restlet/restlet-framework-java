@@ -47,7 +47,7 @@ public class Group {
      * Indicates if the roles of the parent group should be inherited. Those
      * roles indirectly cover the granted or denied permissions.
      */
-    private volatile boolean inheritRoles;
+    private volatile boolean inheritingRoles;
 
     /** The modifiable list of child groups. */
     private final List<Group> memberGroups;
@@ -84,14 +84,14 @@ public class Group {
      *            The display name.
      * @param description
      *            The description.
-     * @param inheritRoles
+     * @param inheritingRoles
      *            Indicates if the roles of the parent group should be
      *            inherited.
      */
-    public Group(String name, String description, boolean inheritRoles) {
+    public Group(String name, String description, boolean inheritingRoles) {
         this.name = name;
         this.description = description;
-        this.inheritRoles = inheritRoles;
+        this.inheritingRoles = inheritingRoles;
         this.memberGroups = new CopyOnWriteArrayList<Group>();
         this.memberUsers = new CopyOnWriteArrayList<User>();
     }
@@ -133,8 +133,20 @@ public class Group {
      * 
      * @return True if the roles of the parent group should be inherited.
      */
+    public boolean isInheritingRoles() {
+        return isInheritRoles();
+    }
+
+    /**
+     * Indicates if the roles of the parent group should be inherited. Those
+     * roles indirectly cover the granted or denied permissions.
+     * 
+     * @return True if the roles of the parent group should be inherited.
+     * @deprecated Use {@link #isInheritingRoles()} instead.
+     */
+    @Deprecated
     public boolean isInheritRoles() {
-        return inheritRoles;
+        return inheritingRoles;
     }
 
     /**
@@ -151,11 +163,24 @@ public class Group {
      * Indicates if the roles of the parent group should be inherited. Those
      * roles indirectly cover the granted or denied permissions.
      * 
-     * @param inheritPermissions
+     * @param inheritingRoles
      *            True if the roles of the parent group should be inherited.
      */
-    public void setInheritRoles(boolean inheritPermissions) {
-        this.inheritRoles = inheritPermissions;
+    public void setInheritingRoles(boolean inheritingRoles) {
+        setInheritRoles(inheritingRoles);
+    }
+
+    /**
+     * Indicates if the roles of the parent group should be inherited. Those
+     * roles indirectly cover the granted or denied permissions.
+     * 
+     * @param inheritingRoles
+     *            True if the roles of the parent group should be inherited.
+     * @deprecated Use {@link #setInheritingRoles(boolean)} instead.
+     */
+    @Deprecated
+    public void setInheritRoles(boolean inheritingRoles) {
+        this.inheritingRoles = inheritingRoles;
     }
 
     /**

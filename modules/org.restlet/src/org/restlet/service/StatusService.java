@@ -72,7 +72,7 @@ public class StatusService extends Service {
     private volatile Reference homeRef;
 
     /** True if an existing entity should be overwritten. */
-    private volatile boolean overwrite;
+    private volatile boolean overwriting;
 
     /**
      * Constructor.
@@ -91,7 +91,7 @@ public class StatusService extends Service {
         super(enabled);
         this.contactEmail = null;
         this.homeRef = new Reference("/");
-        this.overwrite = false;
+        this.overwriting = false;
     }
 
     // [ifndef gwt] method
@@ -192,9 +192,20 @@ public class StatusService extends Service {
      * Indicates if an existing entity should be overwritten. False by default.
      * 
      * @return True if an existing entity should be overwritten.
+     * @deprecated Use {@link #isOverwriting()} instead.
      */
+    @Deprecated
     public boolean isOverwrite() {
-        return this.overwrite;
+        return this.overwriting;
+    }
+
+    /**
+     * Indicates if an existing entity should be overwritten. False by default.
+     * 
+     * @return True if an existing entity should be overwritten.
+     */
+    public boolean isOverwriting() {
+        return isOverwrite();
     }
 
     /**
@@ -221,11 +232,23 @@ public class StatusService extends Service {
     /**
      * Indicates if an existing entity should be overwritten.
      * 
-     * @param overwrite
+     * @param overwriting
      *            True if an existing entity should be overwritten.
+     * @deprecated Use {@link #setOverwriting(boolean)} instead.
      */
-    public void setOverwrite(boolean overwrite) {
-        this.overwrite = overwrite;
+    @Deprecated
+    public void setOverwrite(boolean overwriting) {
+        this.overwriting = overwriting;
     }
 
+    /**
+     * Indicates if an existing entity should be overwritten.
+     * 
+     * @param overwriting
+     *            True if an existing entity should be overwritten.
+     */
+    public void setOverwriting(boolean overwriting) {
+        setOverwrite(overwriting);
+    }
+    
 }

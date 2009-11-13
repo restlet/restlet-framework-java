@@ -111,7 +111,7 @@ public class Directory extends Finder {
     private volatile boolean modifiable;
 
     /** Indicates if the best content is automatically negotiated. */
-    private volatile boolean negotiateContent;
+    private volatile boolean negotiatingContent;
 
     /** The absolute root reference (file, clap URI). */
     private volatile Reference rootRef;
@@ -145,7 +145,7 @@ public class Directory extends Finder {
         this.indexName = "index";
         this.listingAllowed = false;
         this.modifiable = false;
-        this.negotiateContent = true;
+        this.negotiatingContent = true;
         setTargetClass(DirectoryServerResource.class);
     }
 
@@ -280,9 +280,21 @@ public class Directory extends Finder {
      * is true.
      * 
      * @return True if the best content is automatically negotiated.
+     * @deprecated Use {@link #isNegotiatingContent()} instead.
      */
+    @Deprecated
     public boolean isNegotiateContent() {
-        return this.negotiateContent;
+        return this.negotiatingContent;
+    }
+
+    /**
+     * Indicates if the best content is automatically negotiated. Default value
+     * is true.
+     * 
+     * @return True if the best content is automatically negotiated.
+     */
+    public boolean isNegotiatingContent() {
+        return isNegotiateContent();
     }
 
     /**
@@ -364,11 +376,24 @@ public class Directory extends Finder {
      * Indicates if the best content is automatically negotiated. Default value
      * is true.
      * 
-     * @param negotiateContent
+     * @param negotiatingContent
+     *            True if the best content is automatically negotiated.
+     * @deprecated Use {@link #setNegotiatingContent(boolean)} instead.
+     */
+    @Deprecated
+    public void setNegotiateContent(boolean negotiatingContent) {
+        this.negotiatingContent = negotiatingContent;
+    }
+
+    /**
+     * Indicates if the best content is automatically negotiated. Default value
+     * is true.
+     * 
+     * @param negotiatingContent
      *            True if the best content is automatically negotiated.
      */
-    public void setNegotiateContent(boolean negotiateContent) {
-        this.negotiateContent = negotiateContent;
+    public void setNegotiatingContent(boolean negotiatingContent) {
+        setNegotiateContent(negotiatingContent);
     }
 
     /**

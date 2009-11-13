@@ -57,6 +57,7 @@ import org.restlet.engine.resource.AnnotationInfo;
 import org.restlet.engine.resource.AnnotationUtils;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
+import org.restlet.service.ConverterService;
 import org.restlet.util.Series;
 
 /**
@@ -118,20 +119,20 @@ public class ClientResource extends UniformResource {
         return create(null, new Reference(uri), resourceInterface);
     }
 
-    /** Indicates if idempotent requests should be retried on error. */
-    private volatile boolean retryOnError;
+    /** Indicates if redirections should be automatically followed. */
+    private volatile boolean followingRedirects;
 
-    /** Delay in milliseconds between two retry attempts. */
-    private volatile long retryDelay;
+    /** The next Restlet. */
+    private volatile Uniform next;
 
     /** Number of retry attempts before reporting an error. */
     private volatile int retryAttempts;
 
-    /** Indicates if redirections should be automatically followed. */
-    private volatile boolean followRedirects;
+    /** Delay in milliseconds between two retry attempts. */
+    private volatile long retryDelay;
 
-    /** The next Restlet. */
-    private volatile Uniform next;
+    /** Indicates if idempotent requests should be retried on error. */
+    private volatile boolean retryOnError;
 
     // [ifndef gwt] method
     /**
@@ -183,7 +184,7 @@ public class ClientResource extends UniformResource {
             this.next = context.getClientDispatcher();
         }
 
-        this.followRedirects = true;
+        this.followingRedirects = true;
         this.retryOnError = true;
         this.retryDelay = 2000L;
         this.retryAttempts = 2;
@@ -227,7 +228,7 @@ public class ClientResource extends UniformResource {
      *            The handled response.
      */
     public ClientResource(Context context, Request request, Response response) {
-        this.followRedirects = true;
+        this.followingRedirects = true;
         init(context, request, response);
     }
 
@@ -635,7 +636,7 @@ public class ClientResource extends UniformResource {
         getNext().handle(request, response);
 
         // Check for redirections
-        if (isFollowRedirects() && response.getStatus().isRedirection()
+        if (isFollowingRedirects() && response.getStatus().isRedirection()
                 && (response.getLocationRef() != null)
                 && request.getMethod().isSafe()) {
             Reference newTargetRef = response.getLocationRef();
@@ -772,8 +773,19 @@ public class ClientResource extends UniformResource {
      * 
      * @return True if redirections are followed.
      */
+    public boolean isFollowingRedirects() {
+        return isFollowRedirects();
+    }
+
+    /**
+     * Indicates if redirections are followed.
+     * 
+     * @return True if redirections are followed.
+     * @deprecated Use {@link #isFollowingRedirects()} instead.
+     */
+    @Deprecated
     public boolean isFollowRedirects() {
-        return followRedirects;
+        return followingRedirects;
     }
 
     /**
@@ -1160,11 +1172,23 @@ public class ClientResource extends UniformResource {
     /**
      * Indicates if redirections are followed.
      * 
-     * @param followRedirects
+     * @param followingRedirects
      *            True if redirections are followed.
      */
-    public void setFollowRedirects(boolean followRedirects) {
-        this.followRedirects = followRedirects;
+    public void setFollowingRedirects(boolean followingRedirects) {
+        setFollowRedirects(followingRedirects);
+    }
+
+    /**
+     * Indicates if redirections are followed.
+     * 
+     * @param followingRedirects
+     *            True if redirections are followed.
+     * @deprecated Use {@link #setFollowingRedirects(boolean)} instead.
+     */
+    @Deprecated
+    public void setFollowRedirects(boolean followingRedirects) {
+        this.followingRedirects = followingRedirects;
     }
 
     /**

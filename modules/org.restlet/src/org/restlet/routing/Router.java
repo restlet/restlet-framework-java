@@ -340,7 +340,7 @@ public class Router extends Restlet {
      * {@link Route} is set to {@link Template#MODE_STARTS_WITH}, otherwise it
      * uses the {@link #getDefaultMatchingMode()} result. The route will match
      * the URI query string depending on the result of
-     * {@link #getDefaultMatchQuery()}.
+     * {@link #getDefaultMatchingQuery()}.
      * 
      * @param uriPattern
      *            The URI pattern that must match the relative part of the
@@ -359,7 +359,7 @@ public class Router extends Restlet {
             result.getTemplate().setMatchingMode(getDefaultMatchingMode());
         }
 
-        result.setMatchingQuery(getDefaultMatchQuery());
+        result.setMatchingQuery(getDefaultMatchingQuery());
 
         return result;
     }

@@ -130,13 +130,14 @@ public class MemoryRealm extends Realm {
                 userGroups.add(currentGroup);
 
                 // Add the ancestor groups as well
-                boolean inherit = !inheritOnly || currentGroup.isInheritRoles();
+                boolean inherit = !inheritOnly
+                        || currentGroup.isInheritingRoles();
                 Group group;
 
                 for (int i = stack.size() - 2; inherit && (i >= 0); i--) {
                     group = stack.get(i);
                     userGroups.add(group);
-                    inherit = !inheritOnly || group.isInheritRoles();
+                    inherit = !inheritOnly || group.isInheritingRoles();
                 }
             }
 

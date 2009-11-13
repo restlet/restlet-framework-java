@@ -105,7 +105,7 @@ public class StatusFilter extends Filter {
      *            The helped status service.
      */
     public StatusFilter(Context context, StatusService statusService) {
-        this(context, statusService.isOverwrite(), statusService
+        this(context, statusService.isOverwriting(), statusService
                 .getContactEmail(), statusService.getHomeRef());
         this.statusService = statusService;
     }

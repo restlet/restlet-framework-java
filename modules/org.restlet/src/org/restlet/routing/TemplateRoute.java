@@ -104,7 +104,7 @@ public class TemplateRoute extends Filter {
     public TemplateRoute(Router router, Template template, Restlet next) {
         super(router == null ? null : router.getContext(), next);
         this.matchingQuery = (router == null) ? true : router
-                .getDefaultMatchQuery();
+                .getDefaultMatchingQuery();
         this.router = router;
         this.template = template;
     }
