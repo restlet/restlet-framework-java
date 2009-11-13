@@ -158,6 +158,7 @@ public class Activator implements BundleActivator {
 
         Engine.getInstance().registerDefaultConnectors();
         Engine.getInstance().registerDefaultAuthentications();
+        Engine.getInstance().registerDefaultConverters();
     }
 
     /**

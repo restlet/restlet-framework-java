@@ -42,14 +42,14 @@ import org.restlet.resource.ServerResource;
  * Finder that is specialized for easier usage by Spring wiring services. The
  * idea is to create a singleton Spring bean based on that SpringFinder and
  * configure it using Spring's "lookup-method" element to return instances of a
- * "prototype" bean for {@link #createResource()}. Finally, attach the
- * SpringFinder to your Router. When the createResource() method is invoked, a
- * new instance of your prototype bean will be created and returned. A sample
- * xml for "lookup-method":
+ * "prototype" bean for {@link #create()}. Finally, attach the SpringFinder to
+ * your Router. When the {@link #create()} method is invoked, a new instance of
+ * your prototype bean will be created and returned. A sample XML for
+ * "lookup-method":
  * 
  * <pre>
  *      &lt;bean id=&quot;myFinder&quot; class=&quot;org.restlet.ext.spring.SpringFinder&quot;&gt; 
- *              &lt;lookup-method name=&quot;createResource&quot; bean=&quot;myResource&quot;/&gt; 
+ *              &lt;lookup-method name=&quot;create&quot; bean=&quot;myResource&quot;/&gt; 
  *      &lt;/bean&gt;
  *       
  *      &lt;bean id=&quot;myResource&quot; class=&quot;com.mycompany.rest.resource.MyResource&quot; scope=&quot;prototype&quot;&gt; 
@@ -60,8 +60,8 @@ import org.restlet.resource.ServerResource;
  * 
  * Note that the <a href="http://cglib.sourceforge.net/">Code Generation
  * Library</a> (cglib) will be required in order to use the Spring's lookup
- * method mechanism.
- * 
+ * method mechanism.<br>
+ * <br>
  * Concurrency note: instances of this class or its subclasses can be invoked by
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.

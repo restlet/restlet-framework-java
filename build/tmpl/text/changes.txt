@@ -134,6 +134,8 @@ Changes log
         - Fixed bug with the setIdent method of class DomRepresentation.
         - Fixed manifest files varying by editions.
           Reported by Thierry Templier.
+        - Fixed bug in OSGi activator causing default converters not to
+          be registered. Reported by Thierry Templier.
     - Enhancements
         - Improved JAXB converted. Contributed by Sanjay Acharya.
         - Upgraded Apache Commons Logging to version 1.1.1.
