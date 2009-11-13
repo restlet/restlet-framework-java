@@ -1,0 +1,14 @@
+<module id="guice.examples" excludes="*" type="integration" package="org.restlet.ext.guice.examples">
+   <label>Restlet Extension - Guice (Examples)</label>
+   <description>
+      Integration with Google Guice (Examples).
+    </description>
+   <distributions>
+      <distribution id="classic" />
+      <distribution id="maven" />
+   </distributions>
+
+   <dependencies>
+      <dependency type="module" id="core" />
+   </dependencies>
+</module>
