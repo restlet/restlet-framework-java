@@ -234,7 +234,10 @@ public class JsonRepresentation extends WriterRepresentation {
             try {
                 result = this.jsonRepresentation.getText();
             } catch (IOException e) {
+                // [ifndef android] instruction
                 throw new JSONException(e);
+                // [ifdef android] instruction uncomment
+                //throw new JSONException(e.getMessage());                
             }
         }
 
