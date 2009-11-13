@@ -76,6 +76,14 @@ Changes log
         - Renamed routing mode constants of Router to follow the 
           MODE_*_MATCH pattern such as MODE_BEST_MATCH instead of BEST.
           Deprecated older values. Suggested by Arjohn Kampman.
+        - Added asynchronous support in the Restlet API for all editions.
+          New "onContinue" and "onSent" callback properties added to the
+          Message class. New "onReceived" callback property added to the
+          Response class. Exposed those properties in the ClientResource
+          and ServerResource classes. Added asynchronous methods to the
+          Client class like the GWT edition already had. 
+        - Refactored the GWT edition to be more inline with the other 
+          editions. Especially, we ported the ClientResource class.
       - Bugs fixed
         - Fixed bug when the deprecated method "createRoot" is 
           implemented instead of the "createInboundRoot".
