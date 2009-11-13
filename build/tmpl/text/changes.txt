@@ -172,6 +172,8 @@ Changes log
         - Updated GWT to version 1.7.1.
         - Added HTTP/HTTPS proxy configuration support to the Apache
           HTTP Client 4.0 extension. Contributed by Bruno Harbulot.
+        - Added the Net client extension to the Android edition 
+          (without the FTP connector though).
     - Misc
         - Added Velocity template in the org.restlet.example project.
           Reported by Ben Vesco.
