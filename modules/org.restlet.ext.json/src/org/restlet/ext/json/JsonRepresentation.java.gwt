@@ -35,6 +35,7 @@ import java.io.StringReader;
 
 import org.restlet.data.MediaType;
 import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
 
 import com.google.gwt.json.client.JSONNull;
 import com.google.gwt.json.client.JSONObject;
