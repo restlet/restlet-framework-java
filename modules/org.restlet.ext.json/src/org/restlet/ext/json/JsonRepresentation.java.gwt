@@ -101,6 +101,7 @@ public class JsonRepresentation extends Representation {
      */
     public JsonRepresentation(String jsonString) {
         super(MediaType.APPLICATION_JSON);
+        setCharacterSet(CharacterSet.UTF_8);
         this.jsonRepresentation = new StringRepresentation(jsonString);
     }
     
