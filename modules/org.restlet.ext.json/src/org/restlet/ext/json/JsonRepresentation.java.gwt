@@ -33,6 +33,7 @@ import java.io.Reader;
 import java.io.StringBufferInputStream;
 import java.io.StringReader;
 
+import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
