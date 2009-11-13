@@ -57,7 +57,6 @@ import org.restlet.engine.resource.AnnotationInfo;
 import org.restlet.engine.resource.AnnotationUtils;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
-import org.restlet.service.ConverterService;
 import org.restlet.util.Series;
 
 /**
@@ -888,7 +887,7 @@ public class ClientResource extends UniformResource {
 
     /**
      * Posts an object entity. Automatically serializes the object using the
-     * {@link ConverterService}.
+     * {@link org.restlet.service.ConverterService}.
      * 
      * @param entity
      *            The object entity to post.
