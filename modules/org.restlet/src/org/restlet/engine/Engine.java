@@ -186,9 +186,9 @@ public class Engine {
      * 
      * @param object
      *            The parent object.
-     * @param The
-     *            default logger name to use if no one can be inferred from the
-     *            object class.
+     * @param defaultLoggerName
+     *            The default logger name to use if no one can be inferred from
+     *            the object class.
      * @return The logger.
      */
     public static Logger getLogger(Object object, String defaultLoggerName) {
