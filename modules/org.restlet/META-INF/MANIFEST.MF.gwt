@@ -43,8 +43,6 @@ Export-Package: org.restlet;uses:="org.restlet.data,org.restlet.representation,o
    org.restlet",
  org.restlet.util;uses:="org.restlet.data,org.restlet.representation,org.restlet"
 Import-Package: com.google.gwt.core.client,
- com.google.gwt.core.ext,
- com.google.gwt.core.ext.typeinfo,
  com.google.gwt.http.client,
  com.google.gwt.i18n.client,
  com.google.gwt.json.client,
