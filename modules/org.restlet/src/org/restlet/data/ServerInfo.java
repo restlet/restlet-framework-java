@@ -37,7 +37,7 @@ package org.restlet.data;
  */
 public final class ServerInfo {
     /** Indicates if the server accepts range requests for a resource. */
-    private volatile boolean acceptRanges;
+    private volatile boolean acceptingRanges;
 
     /** The IP address. */
     private volatile String address;
@@ -55,7 +55,7 @@ public final class ServerInfo {
         this.address = null;
         this.agent = null;
         this.port = -1;
-        this.acceptRanges = false;
+        this.acceptingRanges = false;
     }
 
     /**
@@ -97,8 +97,22 @@ public final class ServerInfo {
      * 
      * @return True if the server accepts range requests for a resource.
      */
+    public boolean isAcceptingRanges() {
+        return isAcceptRanges();
+    }
+
+    /**
+     * Return true if the server accepts range requests for a resource.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Accept-Ranges" header.
+     * 
+     * @return True if the server accepts range requests for a resource.
+     * @deprecated Use {@link #isAcceptingRanges()} instead.
+     */
+    @Deprecated
     public boolean isAcceptRanges() {
-        return acceptRanges;
+        return acceptingRanges;
     }
 
     /**
@@ -107,11 +121,26 @@ public final class ServerInfo {
      * Note that when used with HTTP connectors, this property maps to the
      * "Accept-Ranges" header.
      * 
-     * @param acceptRanges
+     * @param acceptingRanges
      *            True if the server accepts range requests for a resource.
      */
-    public void setAcceptRanges(boolean acceptRanges) {
-        this.acceptRanges = acceptRanges;
+    public void setAcceptingRanges(boolean acceptingRanges) {
+        setAcceptRanges(acceptingRanges);
+    }
+
+    /**
+     * Indicates if the server accepts range requests for a resource.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Accept-Ranges" header.
+     * 
+     * @param acceptingRanges
+     *            True if the server accepts range requests for a resource.
+     * @deprecated Use {@link #setAcceptingRanges(boolean)} instead.
+     */
+    @Deprecated
+    public void setAcceptRanges(boolean acceptingRanges) {
+        this.acceptingRanges = acceptingRanges;
     }
 
     /**

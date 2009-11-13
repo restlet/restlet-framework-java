@@ -81,7 +81,7 @@ public class BookmarkResource extends UserResource {
             this.bookmark = getUser().getBookmark(this.uri);
 
             if (this.bookmark != null) {
-                if ((checkAuthorization() != 1) && this.bookmark.isRestrict()) {
+                if ((checkAuthorization() != 1) && this.bookmark.isRestricting()) {
                     // Intentionally hide the bookmark existence
                     setStatus(Status.CLIENT_ERROR_NOT_FOUND);
                 }
@@ -116,7 +116,7 @@ public class BookmarkResource extends UserResource {
             sb.append("Date:     ").append(this.bookmark.getDateTime()).append(
                     '\n');
             sb.append("Restrict: ").append(
-                    Boolean.toString(this.bookmark.isRestrict())).append('\n');
+                    Boolean.toString(this.bookmark.isRestricting())).append('\n');
             result = new StringRepresentation(sb);
         }
 
@@ -146,7 +146,7 @@ public class BookmarkResource extends UserResource {
                 this.bookmark.setLongDescription(form
                         .getFirstValue("bookmark[long_description]"));
                 this.bookmark.setDateTime(new Date());
-                this.bookmark.setRestrict(new Boolean(form
+                this.bookmark.setRestricting(new Boolean(form
                         .getFirstValue("bookmark[restrict]")));
 
                 // Commit the changes

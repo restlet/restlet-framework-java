@@ -317,7 +317,16 @@ public class ParameterList {
             return Collections.unmodifiableCollection(coll);
         }
 
-        protected abstract boolean decode();
+        /**
+         * 
+         * @return
+         * @deprecated Use {@link #decoding()} instead.
+         */
+        protected boolean decode() {
+            return decoding();
+        }
+
+        protected abstract boolean decoding();
 
         /**
          * @return the concrete value of this parameter for the current request.
@@ -478,19 +487,20 @@ public class ParameterList {
      */
     abstract static class EncParamGetter extends AbstractParamGetter {
 
-        private final boolean decode;
+        private final boolean decoding;
 
         EncParamGetter(DefaultValue defaultValue, Class<?> convToCl,
                 Type convToGen, ThreadLocalizedContext tlContext,
                 boolean leaveEncoded) {
             super(defaultValue, convToCl, convToGen, tlContext);
-            this.decode = !leaveEncoded;
+            this.decoding = !leaveEncoded;
         }
 
         @Override
-        protected boolean decode() {
-            return this.decode;
+        protected boolean decoding() {
+            return this.decoding;
         }
+
     }
 
     static abstract class FormOrQueryParamGetter extends EncParamGetter {
@@ -651,7 +661,7 @@ public class ParameterList {
         }
 
         @Override
-        protected boolean decode() {
+        protected boolean decoding() {
             return false;
         }
     }
@@ -763,19 +773,19 @@ public class ParameterList {
      */
     private static class UriInfoGetter implements ParamGetter {
 
-        private final boolean allMustBeAvailable;
+        private final boolean availableMandatory;
 
         private final ThreadLocalizedUriInfo uriInfo;
 
         private UriInfoGetter(ThreadLocalizedContext tlContext,
-                boolean allMustBeAvailable) {
+                boolean availableMandatory) {
             this.uriInfo = new ThreadLocalizedUriInfo(tlContext);
-            this.allMustBeAvailable = allMustBeAvailable;
+            this.availableMandatory = availableMandatory;
         }
 
         public Object getValue() throws InvocationTargetException,
                 ConvertRepresentationException, WebApplicationException {
-            this.uriInfo.saveStateForCurrentThread(this.allMustBeAvailable);
+            this.uriInfo.saveStateForCurrentThread(this.availableMandatory);
             return this.uriInfo;
         }
     }

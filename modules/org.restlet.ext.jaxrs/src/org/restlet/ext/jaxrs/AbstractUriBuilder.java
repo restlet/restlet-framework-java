@@ -69,7 +69,7 @@ import org.restlet.util.Resolver;
 public abstract class AbstractUriBuilder extends UriBuilder {
 
     private class ArrayVariableResolver extends Resolver<String> {
-        private final boolean encode;
+        private final boolean encoding;
 
         private int i = 0;
 
@@ -77,9 +77,9 @@ public abstract class AbstractUriBuilder extends UriBuilder {
 
         private final Object[] values;
 
-        ArrayVariableResolver(Object[] values, boolean encode) {
+        ArrayVariableResolver(Object[] values, boolean encoding) {
             this.values = values;
-            this.encode = encode;
+            this.encoding = encoding;
         }
 
         @Override
@@ -100,7 +100,7 @@ public abstract class AbstractUriBuilder extends UriBuilder {
                                     + this.i + ")");
                 }
                 varValue = value.toString();
-                varValue = EncodeOrCheck.all(varValue, this.encode);
+                varValue = EncodeOrCheck.all(varValue, this.encoding);
                 this.i++;
                 this.retrievedValues.put(variableName, varValue);
             }

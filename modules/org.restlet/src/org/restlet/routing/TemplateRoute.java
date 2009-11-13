@@ -55,7 +55,7 @@ public class TemplateRoute extends Filter {
      * Indicates whether the query part should be taken into account when
      * matching a reference with the template.
      */
-    private volatile boolean matchQuery;
+    private volatile boolean matchingQuery;
 
     /** The parent router. */
     private volatile Router router;
@@ -103,7 +103,7 @@ public class TemplateRoute extends Filter {
      */
     public TemplateRoute(Router router, Template template, Restlet next) {
         super(router == null ? null : router.getContext(), next);
-        this.matchQuery = (router == null) ? true : router
+        this.matchingQuery = (router == null) ? true : router
                 .getDefaultMatchQuery();
         this.router = router;
         this.template = template;
@@ -125,7 +125,7 @@ public class TemplateRoute extends Filter {
         // 1 - Parse the template variables and adjust the base reference
         if (getTemplate() != null) {
             final String remainingPart = request.getResourceRef()
-                    .getRemainingPart(false, getMatchQuery());
+                    .getRemainingPart(false, isMatchingQuery());
             final int matchedLength = getTemplate().parse(remainingPart,
                     request);
 
@@ -159,7 +159,7 @@ public class TemplateRoute extends Filter {
                             "New remaining part: "
                                     + request.getResourceRef()
                                             .getRemainingPart(false,
-                                                    getMatchQuery()));
+                                                    isMatchingQuery()));
                 }
 
                 if (getLogger().isLoggable(Level.FINE)) {
@@ -190,9 +190,11 @@ public class TemplateRoute extends Filter {
      * 
      * @return True if the query part of the reference should be taken into
      *         account, false otherwise.
+     * @deprecated Use {@link #isMatchingQuery()} instead.
      */
+    @Deprecated
     public boolean getMatchQuery() {
-        return this.matchQuery;
+        return this.matchingQuery;
     }
 
     /**
@@ -214,6 +216,17 @@ public class TemplateRoute extends Filter {
     }
 
     /**
+     * Indicates whether the query part should be taken into account when
+     * matching a reference with the template.
+     * 
+     * @return True if the query part of the reference should be taken into
+     *         account, false otherwise.
+     */
+    public boolean isMatchingQuery() {
+        return getMatchQuery();
+    }
+
+    /**
      * Returns the score for a given call (between 0 and 1.0).
      * 
      * @param request
@@ -228,7 +241,7 @@ public class TemplateRoute extends Filter {
         if ((getRouter() != null) && (request.getResourceRef() != null)
                 && (getTemplate() != null)) {
             final String remainingPart = request.getResourceRef()
-                    .getRemainingPart(false, getMatchQuery());
+                    .getRemainingPart(false, isMatchingQuery());
             if (remainingPart != null) {
                 final int matchedLength = getTemplate().match(remainingPart);
 
@@ -270,12 +283,26 @@ public class TemplateRoute extends Filter {
      * Sets whether the matching should be done on the URI with or without query
      * string.
      * 
-     * @param matchQuery
+     * @param matchingQuery
      *            True if the matching should be done with the query string,
      *            false otherwise.
      */
-    public void setMatchQuery(boolean matchQuery) {
-        this.matchQuery = matchQuery;
+    public void setMatchingQuery(boolean matchingQuery) {
+        setMatchQuery(matchingQuery);
+    }
+
+    /**
+     * Sets whether the matching should be done on the URI with or without query
+     * string.
+     * 
+     * @param matchingQuery
+     *            True if the matching should be done with the query string,
+     *            false otherwise.
+     * @deprecated Use {@link #setMatchingQuery(boolean)} instead.
+     */
+    @Deprecated
+    public void setMatchQuery(boolean matchingQuery) {
+        this.matchingQuery = matchingQuery;
     }
 
     /**

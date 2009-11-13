@@ -54,17 +54,17 @@ import org.restlet.representation.WriterRepresentation;
  */
 public class JsonRepresentation extends WriterRepresentation {
 
+    /** Indicates if JSON objects and arrays should be indented. */
+    private boolean indenting;
+
+    /** Number of spaces to use for indentation. */
+    private int indentSize;
+
     /** The wrapped JSON object. */
     private Object jsonObject;
 
     /** The wrapped JSON representation. */
     private Representation jsonRepresentation;
-
-    /** Number of spaces to use for indentation. */
-    private int indentSize;
-
-    /** Indicates if JSON objects and arrays should be indented. */
-    private boolean indent;
 
     /**
      * Constructor from a JSON array.
@@ -210,7 +210,7 @@ public class JsonRepresentation extends WriterRepresentation {
             if (this.jsonObject instanceof JSONArray) {
                 JSONArray jsonArray = (JSONArray) this.jsonObject;
 
-                if (isIndent()) {
+                if (isIndenting()) {
                     result = jsonArray.toString(getIndentSize());
                 } else {
                     result = jsonArray.toString();
@@ -218,7 +218,7 @@ public class JsonRepresentation extends WriterRepresentation {
             } else if (this.jsonObject instanceof JSONObject) {
                 JSONObject jsonObject = (JSONObject) this.jsonObject;
 
-                if (isIndent()) {
+                if (isIndenting()) {
                     result = jsonObject.toString(getIndentSize());
                 } else {
                     result = jsonObject.toString();
@@ -237,7 +237,7 @@ public class JsonRepresentation extends WriterRepresentation {
                 // [ifndef android] instruction
                 throw new JSONException(e);
                 // [ifdef android] instruction uncomment
-                //throw new JSONException(e.getMessage());                
+                // throw new JSONException(e.getMessage());
             }
         }
 
@@ -266,7 +266,7 @@ public class JsonRepresentation extends WriterRepresentation {
     private void init(Object jsonObject) {
         setCharacterSet(CharacterSet.UTF_8);
         this.jsonObject = jsonObject;
-        this.indent = false;
+        this.indenting = false;
         this.indentSize = 3;
     }
 
@@ -274,9 +274,32 @@ public class JsonRepresentation extends WriterRepresentation {
      * Indicates if JSON objects and arrays should be indented.
      * 
      * @return True if JSON objects and arrays should be indented.
+     * @deprecated Use {@link #isIndenting()} instead.
      */
+    @Deprecated
     public boolean isIndent() {
-        return indent;
+        return indenting;
+    }
+
+    /**
+     * Indicates if JSON objects and arrays should be indented.
+     * 
+     * @return True if JSON objects and arrays should be indented.
+     */
+    public boolean isIndenting() {
+        return isIndent();
+    }
+
+    /**
+     * Indicates if JSON objects and arrays should be indented.
+     * 
+     * @param indenting
+     *            True if JSON objects and arrays should be indented.
+     * @deprecated Use {@link #setIndenting(boolean)} instead.
+     */
+    @Deprecated
+    public void setIndent(boolean indenting) {
+        this.indenting = indenting;
     }
 
     /**
@@ -285,8 +308,8 @@ public class JsonRepresentation extends WriterRepresentation {
      * @param indent
      *            True if JSON objects and arrays should be indented.
      */
-    public void setIndent(boolean indent) {
-        this.indent = indent;
+    public void setIndenting(boolean indenting) {
+        setIndent(indenting);
     }
 
     /**

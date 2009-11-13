@@ -136,7 +136,7 @@ public class PathRegExp {
         }
     }
 
-    private final boolean isEmptyOrSlash;
+    private final boolean emptyOrSlash;
 
     /** Contains the number of literal chars in this Regular Expression */
     private final Integer noLitChars;
@@ -228,7 +228,7 @@ public class PathRegExp {
         pathPattern.append("(.*)");
 
         this.pattern = Pattern.compile(pathPattern.toString());
-        this.isEmptyOrSlash = Util.isEmptyOrSlash(pathTemplate);
+        this.emptyOrSlash = Util.isEmptyOrSlash(pathTemplate);
         if (l > 0) {
             if (pathTemplate.charAt(0) != '/') {
                 pathTemplate = '/' + pathTemplate;
@@ -309,7 +309,7 @@ public class PathRegExp {
      * @return if this path regular expression is empty or "/"
      */
     public boolean isEmptyOrSlash() {
-        return this.isEmptyOrSlash;
+        return this.emptyOrSlash;
     }
 
     /**

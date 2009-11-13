@@ -78,6 +78,43 @@ public class Router extends Restlet {
     /**
      * Each call will be routed to the route with the best score, if the
      * required score is reached.
+     * 
+     * @deprecated Use {@link #MODE_BEST_MATCH} instead.
+     */
+    @Deprecated
+    public static final int BEST = 1;
+
+    /**
+     * Each call will be routed according to a custom mode.
+     * 
+     * @deprecated Use {@link #MODE_CUSTOM} instead.
+     */
+    @Deprecated
+    public static final int CUSTOM = 6;
+
+    /**
+     * Each call is routed to the first route if the required score is reached.
+     * If the required score is not reached, then the route is skipped and the
+     * next one is considered.
+     * 
+     * @deprecated Use {@link #MODE_FIRST_MATCH} instead.
+     */
+    @Deprecated
+    public static final int FIRST = 2;
+
+    /**
+     * Each call will be routed to the last route if the required score is
+     * reached. If the required score is not reached, then the route is skipped
+     * and the previous one is considered.
+     * 
+     * @deprecated Use {@link #MODE_LAST_MATCH} instead.
+     */
+    @Deprecated
+    public static final int LAST = 3;
+
+    /**
+     * Each call will be routed to the route with the best score, if the
+     * required score is reached.
      */
     public static final int MODE_BEST_MATCH = 1;
 
@@ -119,43 +156,6 @@ public class Router extends Restlet {
     public static final int MODE_RANDOM_MATCH = 5;
 
     /**
-     * Each call will be routed to the route with the best score, if the
-     * required score is reached.
-     * 
-     * @deprecated Use {@link #MODE_BEST_MATCH} instead.
-     */
-    @Deprecated
-    public static final int BEST = 1;
-
-    /**
-     * Each call will be routed according to a custom mode.
-     * 
-     * @deprecated Use {@link #MODE_CUSTOM} instead.
-     */
-    @Deprecated
-    public static final int CUSTOM = 6;
-
-    /**
-     * Each call is routed to the first route if the required score is reached.
-     * If the required score is not reached, then the route is skipped and the
-     * next one is considered.
-     * 
-     * @deprecated Use {@link #MODE_FIRST_MATCH} instead.
-     */
-    @Deprecated
-    public static final int FIRST = 2;
-
-    /**
-     * Each call will be routed to the last route if the required score is
-     * reached. If the required score is not reached, then the route is skipped
-     * and the previous one is considered.
-     * 
-     * @deprecated Use {@link #MODE_LAST_MATCH} instead.
-     */
-    @Deprecated
-    public static final int LAST = 3;
-
-    /**
      * Each call is be routed to the next route target if the required score is
      * reached. The next route is relative to the previous call routed (round
      * robin mode). If the required score is not reached, then the route is
@@ -186,7 +186,7 @@ public class Router extends Restlet {
      * The default setting for whether the routing should be done on URIs with
      * or without taking into account query string.
      */
-    private volatile boolean defaultMatchQuery;
+    private volatile boolean defaultMatchingQuery;
 
     /** The default route tested if no other one was available. */
     @SuppressWarnings("deprecation")
@@ -233,7 +233,7 @@ public class Router extends Restlet {
         super(context);
         this.routes = new RouteList();
         this.defaultMatchingMode = Template.MODE_EQUALS;
-        this.defaultMatchQuery = false;
+        this.defaultMatchingQuery = false;
         this.defaultRoute = null;
         this.finderClass = Finder.class;
         this.routingMode = MODE_FIRST_MATCH;
@@ -359,7 +359,7 @@ public class Router extends Restlet {
             result.getTemplate().setMatchingMode(getDefaultMatchingMode());
         }
 
-        result.setMatchQuery(getDefaultMatchQuery());
+        result.setMatchingQuery(getDefaultMatchQuery());
 
         return result;
     }
@@ -430,8 +430,22 @@ public class Router extends Restlet {
      * @return the default setting for whether the routing should be done on
      *         URIs with or without taking into account query string.
      */
+    public boolean getDefaultMatchingQuery() {
+        return getDefaultMatchQuery();
+    }
+    
+    /**
+     * Returns the default setting for whether the routing should be done on
+     * URIs with or without taking into account query string. By default, it
+     * returns false.
+     * 
+     * @return the default setting for whether the routing should be done on
+     *         URIs with or without taking into account query string.
+      * @deprecated Use {@link #getDefaultMatchingQuery()} instead.
+     */
+    @Deprecated
     public boolean getDefaultMatchQuery() {
-        return this.defaultMatchQuery;
+        return this.defaultMatchingQuery;
     }
 
     /**
@@ -634,14 +648,30 @@ public class Router extends Restlet {
      * with or without taking into account query string. By default, it is set
      * to false.
      * 
-     * @param defaultMatchQuery
+     * @param defaultMatchingQuery
      *            The default setting for whether the routing should be done on
      *            URIs with or without taking into account query string.
+     *            
      */
-    public void setDefaultMatchQuery(boolean defaultMatchQuery) {
-        this.defaultMatchQuery = defaultMatchQuery;
+    public void setDefaultMatchingQuery(boolean defaultMatchingQuery) {
+        setDefaultMatchQuery(defaultMatchingQuery);
     }
 
+    /**
+     * Sets the default setting for whether the routing should be done on URIs
+     * with or without taking into account query string. By default, it is set
+     * to false.
+     * 
+     * @param defaultMatchingQuery
+     *            The default setting for whether the routing should be done on
+     *            URIs with or without taking into account query string.
+     * @deprecated Use {@link #setDefaultMatchingQuery(boolean)} instead.
+     */
+    @Deprecated
+    public void setDefaultMatchQuery(boolean defaultMatchingQuery) {
+        this.defaultMatchingQuery = defaultMatchingQuery;
+    }
+    
     /**
      * Sets the default route tested if no other one was available.
      * 

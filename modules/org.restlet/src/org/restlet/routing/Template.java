@@ -241,7 +241,7 @@ public class Template {
     private volatile Variable defaultVariable;
 
     /** True if the variables must be encoded when formatting the template. */
-    private volatile boolean encodeVariables;
+    private volatile boolean encodingVariables;
 
     /** The logger to use. */
     private volatile Logger logger;
@@ -260,38 +260,6 @@ public class Template {
 
     /** The map of variables associated to the route's template. */
     private final Map<String, Variable> variables;
-
-    /**
-     * Constructor.
-     * 
-     * @param pattern
-     *            The pattern to use for formatting or parsing.
-     * @param matchingMode
-     *            The matching mode to use when parsing a formatted reference.
-     * @param defaultType
-     *            The default type of variables with no descriptor.
-     * @param defaultDefaultValue
-     *            The default value for null variables with no descriptor.
-     * @param defaultRequired
-     *            The default required flag for variables with no descriptor.
-     * @param defaultFixed
-     *            The default fixed value for variables with no descriptor.
-     * @param encodeVariables
-     *            True if the variables must be encoded when formatting the
-     *            template.
-     */
-    public Template(String pattern, int matchingMode, int defaultType,
-            String defaultDefaultValue, boolean defaultRequired,
-            boolean defaultFixed, boolean encodeVariables) {
-        this.logger = (logger == null) ? Context.getCurrentLogger() : logger;
-        this.pattern = pattern;
-        this.defaultVariable = new Variable(defaultType, defaultDefaultValue,
-                defaultRequired, defaultFixed);
-        this.matchingMode = matchingMode;
-        this.variables = new ConcurrentHashMap<String, Variable>();
-        this.regexPattern = null;
-        this.encodeVariables = encodeVariables;
-    }
 
     /**
      * Default constructor. Each variable matches any sequence of characters by
@@ -339,6 +307,38 @@ public class Template {
             boolean defaultFixed) {
         this(pattern, matchingMode, defaultType, defaultDefaultValue,
                 defaultRequired, defaultFixed, false);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param pattern
+     *            The pattern to use for formatting or parsing.
+     * @param matchingMode
+     *            The matching mode to use when parsing a formatted reference.
+     * @param defaultType
+     *            The default type of variables with no descriptor.
+     * @param defaultDefaultValue
+     *            The default value for null variables with no descriptor.
+     * @param defaultRequired
+     *            The default required flag for variables with no descriptor.
+     * @param defaultFixed
+     *            The default fixed value for variables with no descriptor.
+     * @param encodingVariables
+     *            True if the variables must be encoded when formatting the
+     *            template.
+     */
+    public Template(String pattern, int matchingMode, int defaultType,
+            String defaultDefaultValue, boolean defaultRequired,
+            boolean defaultFixed, boolean encodingVariables) {
+        this.logger = (logger == null) ? Context.getCurrentLogger() : logger;
+        this.pattern = pattern;
+        this.defaultVariable = new Variable(defaultType, defaultDefaultValue,
+                defaultRequired, defaultFixed);
+        this.matchingMode = matchingMode;
+        this.variables = new ConcurrentHashMap<String, Variable>();
+        this.regexPattern = null;
+        this.encodingVariables = encodingVariables;
     }
 
     /**
@@ -413,7 +413,7 @@ public class Template {
                         String varValueString = (varValue == null) ? null
                                 : varValue.toString();
 
-                        if (this.encodeVariables) {
+                        if (this.encodingVariables) {
                             // In case the values must be encoded.
                             if (var != null) {
                                 result.append(var.encode(varValueString));
@@ -421,7 +421,7 @@ public class Template {
                                 result.append(Reference.encode(varValueString));
                             }
                         } else {
-                            if ((var != null) && var.isEncodedOnFormat()) {
+                            if ((var != null) && var.isEncodingOnFormat()) {
                                 result.append(Reference.encode(varValueString));
                             } else {
                                 result.append(varValueString);
@@ -664,9 +664,21 @@ public class Template {
      * 
      * @return True if the variables must be encoded when formatting the
      *         template, false otherwise.
+     * @deprecated Use {@link #isEncodingVariables()} instead.
      */
+    @Deprecated
     public boolean isEncodeVariables() {
-        return this.encodeVariables;
+        return this.encodingVariables;
+    }
+
+    /**
+     * Indicates if the variables must be encoded when formatting the template.
+     * 
+     * @return True if the variables must be encoded when formatting the
+     *         template, false otherwise.
+     */
+    public boolean isEncodingVariables() {
+        return isEncodeVariables();
     }
 
     /**
@@ -739,7 +751,7 @@ public class Template {
                         attributeValue = matcher.group(i + 1);
 
                         final Variable var = getVariables().get(attributeName);
-                        if ((var != null) && var.isDecodedOnParse()) {
+                        if ((var != null) && var.isDecodingOnParse()) {
                             variables.put(attributeName, Reference
                                     .decode(attributeValue));
                         } else {
@@ -835,12 +847,25 @@ public class Template {
     /**
      * Indicates if the variables must be encoded when formatting the template.
      * 
-     * @param encodeVariables
+     * @param encodingVariables
+     *            True if the variables must be encoded when formatting the
+     *            template.
+     * @deprecated Use {@link #setEncodingVariables(boolean)} instead.
+     */
+    @Deprecated
+    public void setEncodeVariables(boolean encodingVariables) {
+        this.encodingVariables = encodingVariables;
+    }
+
+    /**
+     * Indicates if the variables must be encoded when formatting the template.
+     * 
+     * @param encodingVariables
      *            True if the variables must be encoded when formatting the
      *            template.
      */
-    public void setEncodeVariables(boolean encodeVariables) {
-        this.encodeVariables = encodeVariables;
+    public void setEncodingVariables(boolean encodingVariables) {
+        setEncodeVariables(encodingVariables);
     }
 
     /**

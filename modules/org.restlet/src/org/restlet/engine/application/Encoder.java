@@ -106,12 +106,12 @@ public class Encoder extends Filter {
     /**
      * Indicates if the request entity should be encoded.
      */
-    private volatile boolean encodeRequest;
+    private volatile boolean encodingRequest;
 
     /**
      * Indicates if the response entity should be encoded.
      */
-    private volatile boolean encodeResponse;
+    private volatile boolean encodingResponse;
 
     /**
      * The media types that should be ignored.
@@ -141,9 +141,9 @@ public class Encoder extends Filter {
      * 
      * @param context
      *            The context.
-     * @param encodeInput
+     * @param encodingInput
      *            Indicates if the request entities should be encoded.
-     * @param encodeOutput
+     * @param encodingOutput
      *            Indicates if the response entities should be encoded.
      * @param minimumSize
      *            The minimal size of the representation where compression
@@ -153,12 +153,13 @@ public class Encoder extends Filter {
      * @param ignoredMediaTypes
      *            The media types that should be ignored.
      */
-    public Encoder(Context context, boolean encodeInput, boolean encodeOutput,
-            long minimumSize, List<MediaType> acceptedMediaTypes,
+    public Encoder(Context context, boolean encodingInput,
+            boolean encodingOutput, long minimumSize,
+            List<MediaType> acceptedMediaTypes,
             List<MediaType> ignoredMediaTypes) {
         super(context);
-        this.encodeRequest = encodeInput;
-        this.encodeResponse = encodeOutput;
+        this.encodingRequest = encodingInput;
+        this.encodingResponse = encodingOutput;
         this.mininumSize = minimumSize;
         this.acceptedMediaTypes = acceptedMediaTypes;
         this.ignoredMediaTypes = ignoredMediaTypes;
@@ -176,7 +177,7 @@ public class Encoder extends Filter {
     @Override
     public void afterHandle(Request request, Response response) {
         // Check if encoding of the response entity is needed
-        if (isEncodeResponse() && canEncode(response.getEntity())) {
+        if (isEncodingResponse() && canEncode(response.getEntity())) {
             response.setEntity(encode(request.getClientInfo(), response
                     .getEntity()));
         }
@@ -195,7 +196,7 @@ public class Encoder extends Filter {
     @Override
     public int beforeHandle(Request request, Response response) {
         // Check if encoding of the request entity is needed
-        if (isEncodeRequest() && canEncode(request.getEntity())) {
+        if (isEncodingRequest() && canEncode(request.getEntity())) {
             request.setEntity(encode(request.getClientInfo(), request
                     .getEntity()));
         }
@@ -347,9 +348,31 @@ public class Encoder extends Filter {
      * Indicates if the request entity should be encoded.
      * 
      * @return True if the request entity should be encoded.
+     * @deprecated Use {@link #isEncodingRequest()} instead.
      */
+    @Deprecated
     public boolean isEncodeRequest() {
-        return this.encodeRequest;
+        return this.encodingRequest;
+    }
+
+    /**
+     * Indicates if the response entity should be encoded.
+     * 
+     * @return True if the response entity should be encoded.
+     * @deprecated Use {@link #isEncodingResponse()} instead.
+     */
+    @Deprecated
+    public boolean isEncodeResponse() {
+        return this.encodingResponse;
+    }
+
+    /**
+     * Indicates if the request entity should be encoded.
+     * 
+     * @return True if the request entity should be encoded.
+     */
+    public boolean isEncodingRequest() {
+        return isEncodeRequest();
     }
 
     /**
@@ -357,28 +380,52 @@ public class Encoder extends Filter {
      * 
      * @return True if the response entity should be encoded.
      */
-    public boolean isEncodeResponse() {
-        return this.encodeResponse;
+    public boolean isEncodingResponse() {
+        return isEncodeResponse();
     }
 
     /**
      * Indicates if the request entity should be encoded.
      * 
-     * @param encodeRequest
+     * @param encodingRequest
      *            True if the request entity should be encoded.
+     * @deprecated Use {@link #setEncodingRequest(boolean)} instead.
      */
-    public void setEncodeRequest(boolean encodeRequest) {
-        this.encodeRequest = encodeRequest;
+    @Deprecated
+    public void setEncodeRequest(boolean encodingRequest) {
+        this.encodingRequest = encodingRequest;
     }
 
     /**
      * Indicates if the response entity should be encoded.
      * 
-     * @param encodeResponse
+     * @param encodingResponse
+     *            True if the response entity should be encoded.
+     * @deprecated Use {@link #setEncodingResponse(boolean)} instead.
+     */
+    @Deprecated
+    public void setEncodeResponse(boolean encodingResponse) {
+        this.encodingResponse = encodingResponse;
+    }
+
+    /**
+     * Indicates if the request entity should be encoded.
+     * 
+     * @param encodingRequest
+     *            True if the request entity should be encoded.
+     */
+    public void setEncodingRequest(boolean encodingRequest) {
+        setEncodeRequest(encodingRequest);
+    }
+
+    /**
+     * Indicates if the response entity should be encoded.
+     * 
+     * @param encodingResponse
      *            True if the response entity should be encoded.
      */
-    public void setEncodeResponse(boolean encodeResponse) {
-        this.encodeResponse = encodeResponse;
+    public void setEncodingResponse(boolean encodingResponse) {
+        setEncodeResponse(encodingResponse);
     }
 
     /**

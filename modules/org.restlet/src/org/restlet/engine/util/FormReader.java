@@ -52,11 +52,11 @@ import org.restlet.util.Series;
  * @author Jerome Louvel
  */
 public class FormReader {
-    /** The encoding to use, decoding is enabled, see {@link #decode}. */
+    /** The encoding to use, decoding is enabled, see {@link #decoding}. */
     private volatile CharacterSet characterSet;
 
     /** Indicates if the parameters should be decoded. */
-    private volatile boolean decode;
+    private volatile boolean decoding;
 
     /** The form stream. */
     private volatile InputStream stream;
@@ -75,7 +75,7 @@ public class FormReader {
      *             if the stream of the representation could not be opened.
      */
     public FormReader(Representation representation) throws IOException {
-        this.decode = true;
+        this.decoding = true;
         this.stream = representation.getStream();
         this.separator = '&';
 
@@ -93,7 +93,7 @@ public class FormReader {
      *            The parameters string.
      */
     public FormReader(String parametersString, char separator) {
-        this.decode = false;
+        this.decoding = false;
         // [ifndef gwt] line
         this.stream = new ByteArrayInputStream(parametersString.getBytes());
         // [ifdef gwt] line uncomment
@@ -113,7 +113,7 @@ public class FormReader {
      */
     public FormReader(String parametersString, CharacterSet characterSet,
             char separator) {
-        this.decode = true;
+        this.decoding = true;
         // [ifndef gwt] line
         this.stream = new ByteArrayInputStream(parametersString.getBytes());
         // [ifdef gwt] line uncomment
@@ -238,7 +238,7 @@ public class FormReader {
                     } else if ((nextChar == this.separator) || (nextChar == -1)) {
                         if (nameBuffer.length() > 0) {
                             result = FormUtils.create(nameBuffer, null,
-                                    this.decode, this.characterSet);
+                                    this.decoding, this.characterSet);
                         } else if (nextChar == -1) {
                             // Do nothing return null preference
                         } else {
@@ -254,10 +254,10 @@ public class FormReader {
                     if ((nextChar == this.separator) || (nextChar == -1)) {
                         if (valueBuffer.length() > 0) {
                             result = FormUtils.create(nameBuffer, valueBuffer,
-                                    this.decode, this.characterSet);
+                                    this.decoding, this.characterSet);
                         } else {
                             result = FormUtils.create(nameBuffer, null,
-                                    this.decode, this.characterSet);
+                                    this.decoding, this.characterSet);
                         }
                     } else {
                         valueBuffer.append((char) nextChar);

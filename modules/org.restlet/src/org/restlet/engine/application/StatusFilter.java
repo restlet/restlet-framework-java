@@ -68,7 +68,7 @@ public class StatusFilter extends Filter {
     private volatile Reference homeRef;
 
     /** Indicates if existing representations should be overwritten. */
-    private volatile boolean overwrite;
+    private volatile boolean overwriting;
 
     /** The helped status service. */
     private volatile StatusService statusService;
@@ -78,7 +78,7 @@ public class StatusFilter extends Filter {
      * 
      * @param context
      *            The context.
-     * @param overwrite
+     * @param overwriting
      *            Indicates whether an existing representation should be
      *            overwritten.
      * @param email
@@ -87,10 +87,10 @@ public class StatusFilter extends Filter {
      * @param homeRef
      *            The home URI to propose in case of error.
      */
-    public StatusFilter(Context context, boolean overwrite, String email,
+    public StatusFilter(Context context, boolean overwriting, String email,
             Reference homeRef) {
         super(context);
-        this.overwrite = overwrite;
+        this.overwriting = overwriting;
         this.contactEmail = email;
         this.homeRef = homeRef;
         this.statusService = null;
@@ -128,7 +128,7 @@ public class StatusFilter extends Filter {
 
         // Do we need to get a representation for the current status?
         if (response.getStatus().isError()
-                && ((response.getEntity() == null) || isOverwrite())) {
+                && ((response.getEntity() == null) || isOverwriting())) {
             response.setEntity(getRepresentation(response.getStatus(), request,
                     response));
         }
@@ -286,9 +286,20 @@ public class StatusFilter extends Filter {
      * Indicates if existing representations should be overwritten.
      * 
      * @return True if existing representations should be overwritten.
+     * @deprecated Use {@link #isOverwriting()} instead.
      */
+    @Deprecated
     public boolean isOverwrite() {
-        return overwrite;
+        return overwriting;
+    }
+
+    /**
+     * Indicates if existing representations should be overwritten.
+     * 
+     * @return True if existing representations should be overwritten.
+     */
+    public boolean isOverwriting() {
+        return isOverwrite();
     }
 
     /**
@@ -314,11 +325,23 @@ public class StatusFilter extends Filter {
     /**
      * Indicates if existing representations should be overwritten.
      * 
-     * @param overwrite
+     * @param overwriting
+     *            True if existing representations should be overwritten.
+     * @deprecated Use {@link #setOverwriting(boolean)} instead.
+     */
+    @Deprecated
+    public void setOverwrite(boolean overwriting) {
+        this.overwriting = overwriting;
+    }
+
+    /**
+     * Indicates if existing representations should be overwritten.
+     * 
+     * @param overwriting
      *            True if existing representations should be overwritten.
      */
-    public void setOverwrite(boolean overwrite) {
-        this.overwrite = overwrite;
+    public void setOverwriting(boolean overwriting) {
+        setOverwrite(overwriting);
     }
 
     /**

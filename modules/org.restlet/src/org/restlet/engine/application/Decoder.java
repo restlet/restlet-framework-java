@@ -53,12 +53,12 @@ public class Decoder extends Filter {
     /**
      * Indicates if the request entity should be decoded.
      */
-    private volatile boolean decodeRequest;
+    private volatile boolean decodingRequest;
 
     /**
      * Indicates if the response entity should be decoded.
      */
-    private volatile boolean decodeResponse;
+    private volatile boolean decodingResponse;
 
     /**
      * Constructor to only decode request entities before handling.
@@ -75,16 +75,16 @@ public class Decoder extends Filter {
      * 
      * @param context
      *            The context.
-     * @param decodeRequest
+     * @param decodingRequest
      *            Indicates if the request entity should be decoded.
-     * @param decodeResponse
+     * @param decodingResponse
      *            Indicates if the response entity should be decoded.
      */
-    public Decoder(Context context, boolean decodeRequest,
-            boolean decodeResponse) {
+    public Decoder(Context context, boolean decodingRequest,
+            boolean decodingResponse) {
         super(context);
-        this.decodeRequest = decodeRequest;
-        this.decodeResponse = decodeResponse;
+        this.decodingRequest = decodingRequest;
+        this.decodingResponse = decodingResponse;
     }
 
     /**
@@ -99,7 +99,7 @@ public class Decoder extends Filter {
     @Override
     public void afterHandle(Request request, Response response) {
         // Check if decoding of the response entity is needed
-        if (isDecodeResponse() && canDecode(response.getEntity())) {
+        if (isDecodingResponse() && canDecode(response.getEntity())) {
             response.setEntity(decode(response.getEntity()));
         }
     }
@@ -117,7 +117,7 @@ public class Decoder extends Filter {
     @Override
     public int beforeHandle(Request request, Response response) {
         // Check if decoding of the request entity is needed
-        if (isDecodeRequest() && canDecode(request.getEntity())) {
+        if (isDecodingRequest() && canDecode(request.getEntity())) {
             request.setEntity(decode(request.getEntity()));
         }
 
@@ -184,38 +184,82 @@ public class Decoder extends Filter {
      * Indicates if the request entity should be decoded.
      * 
      * @return True if the request entity should be decoded.
+     * @deprecated Use {@link #isDecodingRequest()} instead.
      */
+    @Deprecated
     public boolean isDecodeRequest() {
-        return this.decodeRequest;
+        return this.decodingRequest;
     }
-
+    
     /**
      * Indicates if the response entity should be decoded.
      * 
      * @return True if the response entity should be decoded.
+     * @deprecated Use {@link #isDecodingResponse()} instead.
      */
+    @Deprecated
     public boolean isDecodeResponse() {
-        return this.decodeResponse;
+        return this.decodingResponse;
     }
 
     /**
      * Indicates if the request entity should be decoded.
      * 
-     * @param decodeRequest
+     * @return True if the request entity should be decoded.
+     */
+    public boolean isDecodingRequest() {
+        return isDecodeRequest();
+    }
+    /**
+     * Indicates if the response entity should be decoded.
+     * 
+     * @return True if the response entity should be decoded.
+     */
+    public boolean isDecodingResponse() {
+        return isDecodeResponse();
+    }
+
+    /**
+     * Indicates if the request entity should be decoded.
+     * 
+     * @param decodingRequest
+     *            True if the request entity should be decoded.
+     * @deprecated Use {@link #setDecodingRequest(boolean)} instead.
+     */
+    @Deprecated
+    public void setDecodeRequest(boolean decodingRequest) {
+        this.decodingRequest = decodingRequest;
+    }
+    /**
+     * Indicates if the response entity should be decoded.
+     * 
+     * @param decodingResponse
+     *            True if the response entity should be decoded.
+     * @deprecated Use {@link #setDecodingResponse(boolean)} instead.
+     */
+    @Deprecated
+    public void setDecodeResponse(boolean decodingResponse) {
+        this.decodingResponse = decodingResponse;
+    }
+
+    /**
+     * Indicates if the request entity should be decoded.
+     * 
+     * @param decodingRequest
      *            True if the request entity should be decoded.
      */
-    public void setDecodeRequest(boolean decodeRequest) {
-        this.decodeRequest = decodeRequest;
+    public void setDecodingRequest(boolean decodingRequest) {
+        setDecodeRequest(decodingRequest);
     }
 
     /**
      * Indicates if the response entity should be decoded.
      * 
-     * @param decodeResponse
+     * @param decodingResponse
      *            True if the response entity should be decoded.
      */
-    public void setDecodeResponse(boolean decodeResponse) {
-        this.decodeResponse = decodeResponse;
+    public void setDecodingResponse(boolean decodingResponse) {
+        setDecodeResponse(decodingResponse);
     }
 
 }

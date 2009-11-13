@@ -61,7 +61,7 @@ public class RangeFilter extends Filter {
     @Override
     protected void afterHandle(Request request, Response response) {
         if (getRangeService().isEnabled()) {
-            response.getServerInfo().setAcceptRanges(true);
+            response.getServerInfo().setAcceptingRanges(true);
 
             if (request.getMethod().isSafe() && response.isEntityAvailable()) {
                 boolean rangedEntity = response.getEntity().getRange() != null;

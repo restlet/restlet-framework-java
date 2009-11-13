@@ -51,7 +51,7 @@ public class PathSegmentImpl implements PathSegment {
     /**
      * @param matrParamString
      *            The string to parse the matrix parameters
-     * @param decode
+     * @param decoding
      *            if true, than the keys and values are decoded, if false, than
      *            not.
      * @param encodeAndCheckWhenNotDecode
@@ -63,7 +63,7 @@ public class PathSegmentImpl implements PathSegment {
      *         visible.
      */
     public static MultivaluedMapImpl<String, String> parseMatrixParams(
-            String matrParamString, boolean decode) {
+            String matrParamString, boolean decoding) {
         final MultivaluedMapImpl<String, String> matrixParameters = new MultivaluedMapImpl<String, String>();
         if (matrParamString == null) {
             return matrixParameters;
@@ -85,7 +85,7 @@ public class PathSegmentImpl implements PathSegment {
             }
             String name;
             String value;
-            if (decode) {
+            if (decoding) {
                 name = Reference.decode(nameEnc);
                 value = Reference.decode(valueEnc);
             } else {

@@ -48,7 +48,6 @@ import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
-import org.restlet.security.*;
 import org.restlet.Restlet;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
@@ -65,6 +64,9 @@ import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.engine.io.ByteUtils;
 import org.restlet.representation.Representation;
+import org.restlet.security.ChallengeAuthenticator;
+import org.restlet.security.MemoryRealm;
+import org.restlet.security.User;
 import org.restlet.util.WrapperRepresentation;
 
 /**
@@ -113,7 +115,7 @@ public abstract class RestletServerTestCase extends TestCase {
      * 
      * @see #setServerWrapperFactory(ServerWrapperFactory)
      */
-    private static boolean useTcp = false;
+    private static boolean usingTcp = false;
 
     /**
      * Adds the given media types to the accepted media types.
@@ -189,7 +191,7 @@ public abstract class RestletServerTestCase extends TestCase {
 
     public static ServerWrapperFactory getServerWrapperFactory() {
         if (serverWrapperFactory == null) {
-            if (useTcp) {
+            if (usingTcp) {
                 serverWrapperFactory = new RestletServerWrapperFactory();
             } else {
                 serverWrapperFactory = new DirectServerWrapperFactory();
@@ -212,11 +214,11 @@ public abstract class RestletServerTestCase extends TestCase {
     }
 
     /**
-     * @param useTcp
+     * @param usingTcp
      *            the useTcp to set
      */
-    public static void setUseTcp(boolean useTcp) {
-        if (useTcp) {
+    public static void setUseTcp(boolean usingTcp) {
+        if (usingTcp) {
             if ((serverWrapperFactory != null)
                     && !serverWrapperFactory.usesTcp()) {
                 serverWrapperFactory = null;
@@ -227,7 +229,7 @@ public abstract class RestletServerTestCase extends TestCase {
                 serverWrapperFactory = null;
             }
         }
-        RestletServerTestCase.useTcp = useTcp;
+        RestletServerTestCase.usingTcp = usingTcp;
     }
 
     /**
@@ -274,7 +276,7 @@ public abstract class RestletServerTestCase extends TestCase {
      * @return the useTcp
      */
     public static boolean usesTcp() {
-        return useTcp;
+        return usingTcp;
     }
 
     /**
@@ -363,7 +365,7 @@ public abstract class RestletServerTestCase extends TestCase {
         }
         Response response = new Response(request);
         connector.handle(request, response);
-        if (!useTcp && request.getMethod().equals(Method.HEAD)) {
+        if (!usingTcp && request.getMethod().equals(Method.HEAD)) {
             response.setEntity(new WrapperRepresentation(response.getEntity()) {
 
                 @Override

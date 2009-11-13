@@ -192,7 +192,7 @@ public class Route extends TemplateRoute {
         // 1 - Parse the template variables and adjust the base reference
         if (getTemplate() != null) {
             final String remainingPart = request.getResourceRef()
-                    .getRemainingPart(false, getMatchQuery());
+                    .getRemainingPart(false, isMatchingQuery());
             final int matchedLength = getTemplate().parse(remainingPart,
                     request);
 
@@ -226,7 +226,7 @@ public class Route extends TemplateRoute {
                             "New remaining part: "
                                     + request.getResourceRef()
                                             .getRemainingPart(false,
-                                                    getMatchQuery()));
+                                                    isMatchingQuery()));
                 }
 
                 if (getLogger().isLoggable(Level.FINE)) {

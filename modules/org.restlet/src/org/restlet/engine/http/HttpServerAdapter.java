@@ -253,7 +253,7 @@ public class HttpServerAdapter extends HttpAdapter {
         }
 
         // Add the accept-ranges header
-        if (response.getServerInfo().isAcceptRanges()) {
+        if (response.getServerInfo().isAcceptingRanges()) {
             responseHeaders.add(HttpConstants.HEADER_ACCEPT_RANGES, "bytes");
         }
     }

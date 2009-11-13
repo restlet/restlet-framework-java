@@ -49,12 +49,12 @@ public class Bookmark {
 
     private Date dateTime;
 
-    private boolean restrict;
+    private boolean restricting;
 
     public Bookmark(User user, String uri) {
         this.user = user;
         this.uri = uri;
-        this.restrict = true;
+        this.restricting = true;
         this.dateTime = null;
         this.shortDescription = null;
         this.longDescription = null;
@@ -96,10 +96,10 @@ public class Bookmark {
     }
 
     /**
-     * @return the restrict
+     * @return the restricting
      */
-    public boolean isRestrict() {
-        return this.restrict;
+    public boolean isRestricting() {
+        return this.restricting;
     }
 
     /**
@@ -119,11 +119,11 @@ public class Bookmark {
     }
 
     /**
-     * @param restrict
-     *            the restrict to set
+     * @param restricting
+     *            the restricting to set
      */
-    public void setRestrict(boolean restrict) {
-        this.restrict = restrict;
+    public void setRestricting(boolean restricting) {
+        this.restricting = restricting;
     }
 
     /**

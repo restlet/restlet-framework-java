@@ -64,7 +64,7 @@ public class BookmarksResource extends UserResource {
             // Copy the bookmark URIs into a reference list. Make sure that we
             // only expose public bookmarks if the client isn't the owner.
             for (Bookmark bookmark : getUser().getBookmarks()) {
-                if (!bookmark.isRestrict() || (code == 1)) {
+                if (!bookmark.isRestricting() || (code == 1)) {
                     rl.add(bookmark.getUri());
                 }
             }

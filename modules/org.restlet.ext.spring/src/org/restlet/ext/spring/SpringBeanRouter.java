@@ -96,7 +96,7 @@ public class SpringBeanRouter extends Router implements
     private Map<String, String> attachments;
 
     /** If beans should be searched for higher up in the BeanFactory hierarchy. */
-    private volatile boolean findInAncestors = true;
+    private volatile boolean findingInAncestors = true;
 
     /**
      * Attaches all the resources.
@@ -203,7 +203,7 @@ public class SpringBeanRouter extends Router implements
      */
     private String[] getBeanNamesByType(Class<?> beanClass,
             ListableBeanFactory beanFactory) {
-        return isFindInAncestors() ? BeanFactoryUtils
+        return isFindingInAncestors() ? BeanFactoryUtils
                 .beanNamesForTypeIncludingAncestors(beanFactory, beanClass,
                         true, true) : beanFactory.getBeanNamesForType(
                 beanClass, true, true);
@@ -228,9 +228,22 @@ public class SpringBeanRouter extends Router implements
      * 
      * @return True if bean names will be searched for higher up in the
      *         BeanFactory hierarchy.
+     * @deprecated Use {@link #isFindingInAncestors()} instead.
      */
+    @Deprecated
     public boolean isFindInAncestors() {
-        return this.findInAncestors;
+        return this.findingInAncestors;
+    }
+
+    /**
+     * Returns true if bean names will be searched for higher up in the
+     * BeanFactory hierarchy. Default is true.
+     * 
+     * @return True if bean names will be searched for higher up in the
+     *         BeanFactory hierarchy.
+     */
+    public boolean isFindingInAncestors() {
+        return isFindInAncestors();
     }
 
     /**
@@ -332,10 +345,24 @@ public class SpringBeanRouter extends Router implements
      * Sets if bean names will be searched for higher up in the BeanFactory
      * hierarchy.
      * 
+     * @param findingInAncestors
+     *            Search for beans higher up in the BeanFactory hierarchy.
+     * @deprecated Use {@link #setFindingInAncestors(boolean)} instead.
+     */
+    @Deprecated
+    public void setFindInAncestors(boolean findingInAncestors) {
+        this.findingInAncestors = findingInAncestors;
+    }
+
+    /**
+     * Sets if bean names will be searched for higher up in the BeanFactory
+     * hierarchy.
+     * 
      * @param findInAncestors
      *            Search for beans higher up in the BeanFactory hierarchy.
      */
-    public void setFindInAncestors(boolean findInAncestors) {
-        this.findInAncestors = findInAncestors;
+    public void setFindingInAncestors(boolean findingInAncestors) {
+        setFindInAncestors(findingInAncestors);
     }
+
 }
