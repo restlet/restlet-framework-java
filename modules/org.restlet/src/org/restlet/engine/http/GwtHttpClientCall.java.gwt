@@ -95,7 +95,8 @@ public class GwtHttpClientCall extends HttpClientCall {
                 || requestRef.getScheme().startsWith("http")) {
             this.requestBuilder = new RequestBuilder(method, requestUri) {
             };
-            this.requestBuilder.setTimeoutMillis(getHelper().getConnectTimeout());
+            this.requestBuilder.setTimeoutMillis(getHelper()
+                    .getConnectTimeout());
             this.responseHeadersAdded = false;
         } else {
             throw new IllegalArgumentException(
@@ -168,7 +169,8 @@ public class GwtHttpClientCall extends HttpClientCall {
 
     @Override
     public InputStream getResponseEntityStream(long size) {
-        return (getResponse() == null) ? null : new StringBufferInputStream(getResponse().getText());
+        return (getResponse() == null) ? null : new StringBufferInputStream(
+                getResponse().getText());
     }
 
     /**
@@ -208,15 +210,15 @@ public class GwtHttpClientCall extends HttpClientCall {
 
     @Override
     public void sendRequest(final org.restlet.Request request,
-            final org.restlet.Response response, final Uniform callback)
-            throws Exception {
+            final org.restlet.Response response,
+            final Uniform onReceivedCallback) throws Exception {
         final Representation entity = request.isEntityAvailable() ? request
                 .getEntity() : null;
         if (entity != null) {
-			String requestData = entity.getText();
-			if (requestData != null) {				
-				getRequestBuilder().setRequestData(""+requestData);
-			}
+            String requestData = entity.getText();
+            if (requestData != null) {
+                getRequestBuilder().setRequestData("" + requestData);
+            }
         }
 
         // Set the request headers
@@ -233,14 +235,14 @@ public class GwtHttpClientCall extends HttpClientCall {
                 setErrorStatusCode(Status.CONNECTOR_ERROR_INTERNAL.getCode());
                 setErrorReasonPhrase(exception == null ? "Unknown GWT HTTP communication error."
                         : exception.getMessage());
-                callback.handle(request, response, null);
+                onReceivedCallback.handle(request, response);
             }
 
             public void onResponseReceived(
                     com.google.gwt.http.client.Request gwtRequest,
                     Response gwtResponse) {
                 setResponse(gwtResponse);
-                callback.handle(request, response, null);
+                onReceivedCallback.handle(request, response);
             }
 
         });

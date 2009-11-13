@@ -97,6 +97,7 @@ public abstract class HttpClientHelper extends ClientHelper {
             this.adapter = (HttpClientAdapter) Class.forName(adapterClass)
                     .getConstructor(Context.class).newInstance(getContext());
             // [enddef]
+
             // [ifdef gwt] instruction uncomment
             // this.adapter = new HttpClientAdapter(getContext());
         }
@@ -104,7 +105,6 @@ public abstract class HttpClientHelper extends ClientHelper {
         return this.adapter;
     }
 
-    // [ifndef gwt] method
     @Override
     public void handle(Request request, Response response) {
         try {
@@ -117,21 +117,6 @@ public abstract class HttpClientHelper extends ClientHelper {
             response.setStatus(Status.CONNECTOR_ERROR_INTERNAL, e);
         }
     }
-
-    // [ifdef gwt] method uncomment
-    // @Override
-    // public void handle(Request request, Response response,
-    // org.restlet.Uniform callback) {
-    // try {
-    // final HttpClientCall httpCall = getAdapter().toSpecific(this,
-    // request);
-    // getAdapter().commit(httpCall, request, response, callback);
-    // } catch (Exception e) {
-    // getLogger().log(Level.INFO,
-    // "Error while handling an HTTP client call", e);
-    // response.setStatus(Status.CONNECTOR_ERROR_INTERNAL, e);
-    // }
-    // }
 
     /**
      * Sets the adapter from uniform calls to HTTP calls.

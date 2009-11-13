@@ -120,8 +120,6 @@
          <exclude name="src/org/restlet/engine/log/IdentClient.java" />
          <exclude name="src/org/restlet/engine/log/LogFilter.java" />
          <exclude name="src/org/restlet/engine/log/TraceHandler.java" />
-         <exclude name="src/org/restlet/engine/resource/**" />
-         <exclude name="src/org/restlet/engine/Method.java" />
          <exclude name="src/org/restlet/engine/ServerHelper.java" />
          <exclude name="src/org/restlet/engine/security/**" />
          <exclude name="src/org/restlet/engine/TemplateDispatcher.java" />
@@ -146,7 +144,11 @@
          <exclude name="src/org/restlet/representation/ReaderRepresentation.java" />
          <exclude name="src/org/restlet/representation/WritableRepresentation.java" />
          <exclude name="src/org/restlet/representation/WriterRepresentation.java" />
-         <exclude name="src/org/restlet/resource/**" />
+         <exclude name="src/org/restlet/resource/Directory.java" />
+         <exclude name="src/org/restlet/resource/Finder.java" />
+         <exclude name="src/org/restlet/resource/Handler.java" />
+         <exclude name="src/org/restlet/resource/Resource.java" />
+         <exclude name="src/org/restlet/resource/ServerResource.java" />
          <exclude name="src/org/restlet/routing/**" />
          <exclude name="src/org/restlet/security/**" />
          <exclude name="src/org/restlet/Server.java" />
@@ -157,7 +159,6 @@
          <exclude name="src/org/restlet/service/LogService.java" />
          <exclude name="src/org/restlet/service/RangeService.java" />
          <exclude name="src/org/restlet/service/RealmService.java" />
-         <exclude name="src/org/restlet/service/StatusService.java" />
          <exclude name="src/org/restlet/service/TaskService.java" />
          <exclude name="src/org/restlet/service/TunnelService.java" />
          <exclude name="src/org/restlet/util/Resolver.java" />

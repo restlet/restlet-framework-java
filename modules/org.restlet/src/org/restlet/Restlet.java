@@ -193,7 +193,6 @@ public abstract class Restlet implements Uniform {
         return this.owner;
     }
 
-    // [ifndef gwt] method
     /**
      * Handles a call. The default behavior is to initialize the Restlet by
      * setting the current context using the {@link Context#setCurrent(Context)}
@@ -210,6 +209,7 @@ public abstract class Restlet implements Uniform {
      *            The response to update.
      */
     public void handle(Request request, Response response) {
+        // [ifndef gwt]
         // Associate the response to the current thread
         Response.setCurrent(response);
 
@@ -217,6 +217,7 @@ public abstract class Restlet implements Uniform {
         if (getContext() != null) {
             Context.setCurrent(getContext());
         }
+        // [enddef]
 
         // Check if the Restlet was started
         if (isStopped()) {
@@ -225,38 +226,6 @@ public abstract class Restlet implements Uniform {
             } catch (Exception e) {
                 // Occurred while starting the Restlet
                 getContext().getLogger().log(Level.WARNING, UNABLE_TO_START, e);
-                response.setStatus(Status.SERVER_ERROR_INTERNAL);
-            }
-
-            if (!isStarted()) {
-                // No exception raised but the Restlet somehow couldn't be
-                // started
-                getContext().getLogger().log(Level.WARNING, UNABLE_TO_START);
-                response.setStatus(Status.SERVER_ERROR_INTERNAL);
-            }
-        }
-    }
-
-    // [ifdef gwt] method
-    /**
-     * Handles a call. Subclasses overriding this method should make sure that
-     * they call super.handle(request, response) before adding their own logic.
-     * 
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The response to update.
-     * @param callback
-     *            The callback invoked upon request completion.
-     */
-    public void handle(Request request, Response response, Uniform callback) {
-        // Check if the Restlet was started
-        if (isStopped()) {
-            try {
-                start();
-            } catch (Exception e) {
-                // Occurred while starting the Restlet
-                getContext().getLogger().log(Level.WARNING, UNABLE_TO_START);
                 response.setStatus(Status.SERVER_ERROR_INTERNAL);
             }
 

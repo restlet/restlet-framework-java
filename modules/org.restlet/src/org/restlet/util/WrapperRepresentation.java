@@ -32,7 +32,6 @@ package org.restlet.util;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.Reader;
 import java.util.Date;
 import java.util.List;
@@ -295,7 +294,7 @@ public class WrapperRepresentation extends Representation {
 
     // [ifndef gwt] method
     @Override
-    public void write(OutputStream outputStream) throws IOException {
+    public void write(java.io.OutputStream outputStream) throws IOException {
         getWrappedRepresentation().write(outputStream);
     }
 

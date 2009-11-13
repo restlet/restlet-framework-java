@@ -42,6 +42,7 @@ import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
+import org.restlet.Uniform;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.CookieSetting;
@@ -710,6 +711,24 @@ public abstract class ServerResource extends UniformResource {
     }
 
     /**
+     * Returns the callback invoked before sending the response entity.
+     * 
+     * @return The callback invoked before sending the response entity.
+     */
+    public Uniform getOnContinue() {
+        return getResponse().getOnContinue();
+    }
+
+    /**
+     * Returns the callback invoked after sending the response.
+     * 
+     * @return The callback invoked after sending the response.
+     */
+    public Uniform getOnSent() {
+        return getResponse().getOnSent();
+    }
+
+    /**
      * Returns the preferred variant among a list of available variants. The
      * selection is based on the client preferences using the
      * {@link ClientInfo#getPreferredVariant(List, MetadataService)} method.
@@ -1334,6 +1353,26 @@ public abstract class ServerResource extends UniformResource {
      */
     public void setNegotiated(boolean negotiateContent) {
         this.negotiated = negotiateContent;
+    }
+
+    /**
+     * Sets the callback invoked before sending the response entity.
+     * 
+     * @param onContinueCallback
+     *            The callback invoked before sending the response entity.
+     */
+    public void setOnContinue(Uniform onContinueCallback) {
+        getResponse().setOnContinue(onContinueCallback);
+    }
+
+    /**
+     * Sets the callback invoked after sending the response.
+     * 
+     * @param onSentCallback
+     *            The callback invoked after sending the response.
+     */
+    public void setOnSent(Uniform onSentCallback) {
+        getResponse().setOnSent(onSentCallback);
     }
 
     /**

@@ -38,7 +38,6 @@ import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
-import org.restlet.Uniform;
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.service.MetadataService;
@@ -147,6 +146,7 @@ public abstract class RestletHelper<T extends Restlet> extends Helper {
             }
         }
         // [enddef]
+
         if (result == null) {
             result = new MetadataService();
         }
@@ -154,7 +154,6 @@ public abstract class RestletHelper<T extends Restlet> extends Helper {
         return result;
     }
 
-    // [ifndef gwt] method
     /**
      * Handles a call.
      * 
@@ -164,6 +163,7 @@ public abstract class RestletHelper<T extends Restlet> extends Helper {
      *            The response to update.
      */
     public void handle(Request request, Response response) {
+        // [ifndef gwt]
         // Associate the response to the current thread
         Response.setCurrent(response);
 
@@ -171,21 +171,7 @@ public abstract class RestletHelper<T extends Restlet> extends Helper {
         if (getContext() != null) {
             Context.setCurrent(getContext());
         }
-    }
-
-    // [ifdef gwt] method
-    /**
-     * Handles a call.
-     * 
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The response to update.
-     * @param callback
-     *            The callback invoked upon request completion.
-     */
-    public void handle(Request request, Response response, Uniform callback) {
-
+        // [enddef]
     }
 
     /**

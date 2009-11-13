@@ -37,7 +37,6 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
-import org.restlet.service.ConverterService;
 import org.restlet.service.MetadataService;
 
 /**
@@ -143,6 +142,7 @@ public class AnnotationInfo {
         return result;
     }
 
+    // [ifndef gwt] method
     /**
      * Returns a list of response variants based on the annotation value.
      * 
@@ -156,7 +156,7 @@ public class AnnotationInfo {
      */
     @SuppressWarnings("unchecked")
     public List<Variant> getResponseVariants(Representation requestEntity,
-            MetadataService metadataService, ConverterService converterService) {
+            MetadataService metadataService, org.restlet.service.ConverterService converterService) {
         List<Variant> result = null;
         String value = getValue();
         boolean compatibleRequestEntity = true;

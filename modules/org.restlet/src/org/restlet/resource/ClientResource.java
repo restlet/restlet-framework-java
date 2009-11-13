@@ -30,8 +30,6 @@
 
 package org.restlet.resource;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -135,6 +133,34 @@ public class ClientResource extends UniformResource {
     /** The next Restlet. */
     private volatile Uniform next;
 
+    // [ifndef gwt] method
+    /**
+     * Constructor.
+     * 
+     * @param context
+     *            The context.
+     * @param uri
+     *            The target URI.
+     */
+    public ClientResource(Context context, java.net.URI uri) {
+        this(context, Method.GET, uri);
+    }
+
+    // [ifndef gwt] method
+    /**
+     * Constructor.
+     * 
+     * @param context
+     *            The context.
+     * @param method
+     *            The method to call.
+     * @param uri
+     *            The target URI.
+     */
+    public ClientResource(Context context, Method method, java.net.URI uri) {
+        this(context, method, new Reference(uri));
+    }
+
     /**
      * Constructor.
      * 
@@ -175,21 +201,6 @@ public class ClientResource extends UniformResource {
      *            The target URI.
      */
     public ClientResource(Context context, Method method, String uri) {
-        this(context, method, new Reference(uri));
-    }
-
-    // [ifndef gwt] method
-    /**
-     * Constructor.
-     * 
-     * @param context
-     *            The context.
-     * @param method
-     *            The method to call.
-     * @param uri
-     *            The target URI.
-     */
-    public ClientResource(Context context, Method method, java.net.URI uri) {
         this(context, method, new Reference(uri));
     }
 
@@ -236,13 +247,24 @@ public class ClientResource extends UniformResource {
     /**
      * Constructor.
      * 
-     * @param context
-     *            The context.
      * @param uri
      *            The target URI.
      */
-    public ClientResource(Context context, java.net.URI uri) {
-        this(context, Method.GET, uri);
+    public ClientResource(java.net.URI uri) {
+        this(Context.getCurrent(), null, uri);
+    }
+
+    // [ifndef gwt] method
+    /**
+     * Constructor.
+     * 
+     * @param method
+     *            The method to call.
+     * @param uri
+     *            The target URI.
+     */
+    public ClientResource(Method method, java.net.URI uri) {
+        this(Context.getCurrent(), method, uri);
     }
 
     /**
@@ -266,19 +288,6 @@ public class ClientResource extends UniformResource {
      *            The target URI.
      */
     public ClientResource(Method method, String uri) {
-        this(Context.getCurrent(), method, uri);
-    }
-
-    // [ifndef gwt] method
-    /**
-     * Constructor.
-     * 
-     * @param method
-     *            The method to call.
-     * @param uri
-     *            The target URI.
-     */
-    public ClientResource(Method method, java.net.URI uri) {
         this(Context.getCurrent(), method, uri);
     }
 
@@ -314,17 +323,6 @@ public class ClientResource extends UniformResource {
         this(Context.getCurrent(), null, uri);
     }
 
-    // [ifndef gwt] method
-    /**
-     * Constructor.
-     * 
-     * @param uri
-     *            The target URI.
-     */
-    public ClientResource(java.net.URI uri) {
-        this(Context.getCurrent(), null, uri);
-    }
-
     /**
      * Deletes the target resource and all its representations. If a success
      * status is not returned, then a resource exception is thrown.
@@ -345,6 +343,7 @@ public class ClientResource extends UniformResource {
         return result;
     }
 
+    // [ifndef gwt] method
     /**
      * Deletes the target resource and all its representations. If a success
      * status is not returned, then a resource exception is thrown.
@@ -435,6 +434,7 @@ public class ClientResource extends UniformResource {
         return result;
     }
 
+    // [ifndef gwt] method
     /**
      * Represents the resource in the given object class. Note that the client
      * preferences will be automatically adjusted, but only for this request. If
@@ -516,6 +516,34 @@ public class ClientResource extends UniformResource {
      */
     public Uniform getNext() {
         return this.next;
+    }
+
+    /**
+     * Returns the callback invoked before sending the request entity.
+     * 
+     * @return The callback invoked before sending the request entity.
+     */
+    public Uniform getOnContinue() {
+        return getRequest().getOnContinue();
+    }
+
+    /**
+     * Returns the callback invoked on response reception. If the value is not
+     * null, then the associated request will be executed asynchronously.
+     * 
+     * @return The callback invoked on response reception.
+     */
+    public Uniform getOnReceived() {
+        return getResponse().getOnReceived();
+    }
+
+    /**
+     * Returns the callback invoked after sending the request.
+     * 
+     * @return The callback invoked after sending the request.
+     */
+    public Uniform getOnSent() {
+        return getRequest().getOnSent();
     }
 
     /**
@@ -780,6 +808,7 @@ public class ClientResource extends UniformResource {
         return result;
     }
 
+    // [ifndef gwt] method
     /**
      * Describes the resource using a given media type. If a success status is
      * not returned, then a resource exception is thrown.
@@ -861,6 +890,7 @@ public class ClientResource extends UniformResource {
         return post(toRepresentation(entity));
     }
 
+    // [ifndef gwt] method
     /**
      * Posts an object entity. Automatically serializes the object using the
      * {@link ConverterService}.
@@ -970,6 +1000,7 @@ public class ClientResource extends UniformResource {
         return put(toRepresentation(entity));
     }
 
+    // [ifndef gwt] method
     /**
      * Puts an object entity. Automatically serializes the object using the
      * {@link ConverterService}.
@@ -1191,6 +1222,37 @@ public class ClientResource extends UniformResource {
     }
 
     /**
+     * Sets the callback invoked before sending the request entity.
+     * 
+     * @param onContinueCallback
+     *            The callback invoked before sending the request entity.
+     */
+    public void setOnContinue(Uniform onContinueCallback) {
+        getRequest().setOnContinue(onContinueCallback);
+    }
+
+    /**
+     * Sets the callback invoked on response reception. If the value is not
+     * null, then the associated request will be executed asynchronously.
+     * 
+     * @param onReceivedCallback
+     *            The callback invoked on response reception.
+     */
+    public void setOnReceived(Uniform onReceivedCallback) {
+        getResponse().setOnReceived(onReceivedCallback);
+    }
+
+    /**
+     * Sets the callback invoked after sending the request.
+     * 
+     * @param onSentCallback
+     *            The callback invoked after sending the request.
+     */
+    public void setOnSent(Uniform onSentCallback) {
+        getRequest().setOnSent(onSentCallback);
+    }
+
+    /**
      * Sets the original reference requested by the client.
      * 
      * @param originalRef
@@ -1291,6 +1353,7 @@ public class ClientResource extends UniformResource {
         this.retryOnError = retryOnError;
     }
 
+    // [ifndef gwt] method
     /**
      * Converts a representation into a Java object. Leverages the
      * {@link ConverterService}.
@@ -1331,13 +1394,16 @@ public class ClientResource extends UniformResource {
         Representation result = null;
 
         if (source != null) {
+            // [ifndef gwt]
             org.restlet.service.ConverterService cs = getConverterService();
             result = cs.toRepresentation(source);
+            // [enddef]
         }
 
         return result;
     }
 
+    // [ifndef gwt] method
     /**
      * Update the client preferences to match the given response class.
      * 
@@ -1380,12 +1446,15 @@ public class ClientResource extends UniformResource {
      */
     @SuppressWarnings("unchecked")
     public <T> T wrap(Class<? extends T> resourceInterface) {
+        T result = null;
+
+        // [ifndef gwt]
         // Introspect the interface for Restlet annotations
         final List<AnnotationInfo> annotations = AnnotationUtils
                 .getAnnotationDescriptors(resourceInterface);
 
         // Create the client resource proxy
-        InvocationHandler h = new InvocationHandler() {
+        java.lang.reflect.InvocationHandler h = new java.lang.reflect.InvocationHandler() {
 
             public Object invoke(Object proxy,
                     java.lang.reflect.Method javaMethod, Object[] args)
@@ -1439,7 +1508,10 @@ public class ClientResource extends UniformResource {
         };
 
         // Instantiate our dynamic proxy
-        return (T) Proxy.newProxyInstance(Engine.getClassLoader(),
-                new Class<?>[] { resourceInterface }, h);
+        result = (T) java.lang.reflect.Proxy.newProxyInstance(Engine
+                .getClassLoader(), new Class<?>[] { resourceInterface }, h);
+        // [enddef]
+
+        return result;
     }
 }

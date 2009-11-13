@@ -35,6 +35,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.logging.Level;
 
+import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Encoding;
@@ -479,20 +480,22 @@ public abstract class HttpClientCall extends HttpCall {
         return result;
     }
 
-    // [ifdef gwt] method uncomment
-    // /**
-    // * Sends the request to the client. Commits the request line, headers and
-    // * optional entity and send them over the network.
-    // *
-    // * @param request
-    // * The high-level request.
-    // * @param response
-    // * The high-level response.
-    // * @param callback
-    // * The callback invoked upon request completion.
-    // */
-    // public abstract void sendRequest(Request request, Response response,
-    // org.restlet.Uniform callback) throws Exception;
+    /**
+     * Sends the request to the client. Commits the request line, headers and
+     * optional entity and send them over the network.
+     * 
+     * @param request
+     *            The high-level request.
+     * @param response
+     *            The high-level response.
+     * @param callback
+     *            The callback invoked upon request completion.
+     */
+    public void sendRequest(Request request, Response response,
+            org.restlet.Uniform callback) throws Exception {
+        Context.getCurrentLogger().warning(
+                "Currently callbacks are only implemented in the GWT edition.");
+    }
 
     /**
      * Indicates if the request entity should be chunked.

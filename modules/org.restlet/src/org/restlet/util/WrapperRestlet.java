@@ -77,18 +77,10 @@ public class WrapperRestlet extends Restlet {
         return wrappedRestlet.getLogger();
     }
 
-    // [ifndef gwt] method
     @Override
     public void handle(Request request, Response response) {
         wrappedRestlet.handle(request, response);
     }
-
-    // [ifdef gwt] method uncomment
-    // @Override
-    // public void handle(Request request, Response response,
-    // org.restlet.Uniform callback) {
-    // wrappedRestlet.handle(request, response, callback);
-    // }
 
     @Override
     public boolean isStarted() {

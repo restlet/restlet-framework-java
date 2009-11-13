@@ -55,7 +55,6 @@ import org.restlet.data.Reference;
 import org.restlet.data.ServerInfo;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
-import org.restlet.service.ConverterService;
 import org.restlet.service.MetadataService;
 import org.restlet.service.StatusService;
 import org.restlet.util.Series;
@@ -244,19 +243,20 @@ public abstract class UniformResource {
         return context;
     }
 
+    // [ifndef gwt] method
     /**
      * Returns the application's converter service or create a new one.
      * 
      * @return The converter service.
      */
-    public ConverterService getConverterService() {
-        ConverterService result = null;
+    public org.restlet.service.ConverterService getConverterService() {
+        org.restlet.service.ConverterService result = null;
 
         // [ifndef gwt] instruction
         result = getApplication().getConverterService();
 
         if (result == null) {
-            result = new ConverterService();
+            result = new org.restlet.service.ConverterService();
         }
 
         return result;

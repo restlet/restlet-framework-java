@@ -30,10 +30,8 @@
 
 package org.restlet;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.logging.Level;
 
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
@@ -58,6 +56,12 @@ public abstract class Message {
     /** The optional cached text. */
     private volatile String entityText;
 
+    /** Callback invoked before sending the response entity. */
+    private volatile Uniform onContinue;
+
+    /** Callback invoked after sending the response. */
+    private volatile Uniform onSent;
+
     /**
      * Constructor.
      */
@@ -76,6 +80,8 @@ public abstract class Message {
         this.entity = entity;
         this.entityForm = null;
         this.entityText = null;
+        this.onContinue = null;
+        this.onSent = null;
     }
 
     /**
@@ -166,13 +172,31 @@ public abstract class Message {
         if (this.entityText == null) {
             try {
                 this.entityText = getEntity().getText();
-            } catch (IOException e) {
-                Context.getCurrentLogger().log(Level.FINE,
+            } catch (java.io.IOException e) {
+                Context.getCurrentLogger().log(java.util.logging.Level.FINE,
                         "Unable to get the entity text.", e);
             }
         }
 
         return this.entityText;
+    }
+
+    /**
+     * Returns the callback invoked before sending the message entity.
+     * 
+     * @return The callback invoked before sending the message entity.
+     */
+    public Uniform getOnContinue() {
+        return onContinue;
+    }
+
+    /**
+     * Returns the callback invoked after sending the message.
+     * 
+     * @return The callback invoked after sending the message.
+     */
+    public Uniform getOnSent() {
+        return onSent;
     }
 
     /**
@@ -238,6 +262,26 @@ public abstract class Message {
      */
     public void setEntity(String value, MediaType mediaType) {
         setEntity(new StringRepresentation(value, mediaType));
+    }
+
+    /**
+     * Sets the callback invoked before sending the message entity.
+     * 
+     * @param onContinueCallback
+     *            The callback invoked before sending the message entity.
+     */
+    public void setOnContinue(Uniform onContinueCallback) {
+        this.onContinue = onContinueCallback;
+    }
+
+    /**
+     * Sets the callback invoked after sending the message.
+     * 
+     * @param onSentCallback
+     *            The callback invoked after sending the message.
+     */
+    public void setOnSent(Uniform onSentCallback) {
+        this.onSent = onSentCallback;
     }
 
 }

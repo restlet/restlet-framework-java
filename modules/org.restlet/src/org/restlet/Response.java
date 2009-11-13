@@ -68,8 +68,7 @@ public class Response extends Message {
      * 
      * This variable is stored internally as a thread local variable and updated
      * each time a call is handled by a Restlet via the
-     * {@link Restlet#handle(org.restlet.Request, org.restlet.Response)}
-     * method.
+     * {@link Restlet#handle(org.restlet.Request, org.restlet.Response)} method.
      * 
      * @return The current context.
      */
@@ -115,6 +114,9 @@ public class Response extends Message {
     /** The status. */
     private volatile Status status;
 
+    /** Callback invoked on response reception. */
+    private volatile Uniform onReceived;
+
     /**
      * Constructor.
      * 
@@ -131,6 +133,7 @@ public class Response extends Message {
         this.request = request;
         this.serverInfo = null;
         this.status = Status.SUCCESS_OK;
+        this.onReceived = null;
     }
 
     /**
@@ -233,6 +236,16 @@ public class Response extends Message {
      */
     public Reference getLocationRef() {
         return this.locationRef;
+    }
+
+    /**
+     * Returns the callback invoked on response reception. If the value is not
+     * null, then the associated request will be executed asynchronously.
+     * 
+     * @return The callback invoked on response reception.
+     */
+    public Uniform getOnReceived() {
+        return onReceived;
     }
 
     /**
@@ -506,6 +519,17 @@ public class Response extends Message {
         }
 
         setLocationRef(new Reference(baseRef, locationUri).getTargetRef());
+    }
+
+    /**
+     * Sets the callback invoked on response reception. If the value is not
+     * null, then the associated request will be executed asynchronously.
+     * 
+     * @param onReceivedCallback
+     *            The callback invoked on response reception.
+     */
+    public void setOnReceived(Uniform onReceivedCallback) {
+        this.onReceived = onReceivedCallback;
     }
 
     /**

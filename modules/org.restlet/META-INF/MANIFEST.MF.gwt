@@ -9,7 +9,7 @@ Export-Package: org.restlet;uses:="org.restlet.data,org.restlet.representation,o
  org.restlet.data;uses:="org.restlet.representation,org.restlet.util",
  org.restlet.engine;
   uses:="org.restlet.service,
-   org.restlet.data,
+   org.restlet.engine.log,
    org.restlet.representation,
    org.restlet.util,
    org.restlet",
@@ -17,27 +17,41 @@ Export-Package: org.restlet;uses:="org.restlet.data,org.restlet.representation,o
  org.restlet.engine.http;
   uses:="org.restlet.data,
    org.restlet.representation,
-   org.restlet.util,
    org.restlet,
+   org.restlet.util,
    org.restlet.engine,
    com.google.gwt.http.client",
  org.restlet.engine.io;uses:="org.restlet.data",
+ org.restlet.engine.log,
+ org.restlet.engine.resource;
+  uses:="org.restlet.service,
+   org.restlet.data,
+   org.restlet.representation,
+   com.google.gwt.core.ext",
  org.restlet.engine.util;uses:="org.restlet.data,org.restlet.representation,org.restlet.util",
- org.restlet.representation;
+ org.restlet.representation;uses:="org.restlet.data,com.google.gwt.user.client.rpc",
+ org.restlet.resource;
+  uses:="org.restlet.service,
+   org.restlet.data,
+   org.restlet.representation,
+   org.restlet.util,
+   org.restlet",
+ org.restlet.service;
   uses:="org.restlet.data,
-   com.google.gwt.xml.client,
-   com.google.gwt.json.client,
-   com.google.gwt.user.client.rpc",
- org.restlet.service;uses:="org.restlet.data",
+   org.restlet.resource,
+   org.restlet.representation,
+   org.restlet",
  org.restlet.util;uses:="org.restlet.data,org.restlet.representation,org.restlet"
-Import-Package: javax.net,
- javax.net.ssl,
- org.osgi.framework,
- com.google.gwt.core.client,
+Import-Package: com.google.gwt.core.client,
+ com.google.gwt.core.ext,
+ com.google.gwt.core.ext.typeinfo,
  com.google.gwt.http.client,
  com.google.gwt.i18n.client,
  com.google.gwt.json.client,
  com.google.gwt.user.client.rpc,
  com.google.gwt.user.client.rpc.impl,
- com.google.gwt.xml.client
+ com.google.gwt.xml.client,
+ javax.net,
+ javax.net.ssl,
+ org.osgi.framework
 Bundle-RequiredExecutionEnvironment: J2SE-1.5

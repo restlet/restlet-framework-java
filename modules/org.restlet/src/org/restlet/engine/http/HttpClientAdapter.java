@@ -37,6 +37,7 @@ import java.util.logging.Level;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
+import org.restlet.Uniform;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ClientInfo;
@@ -47,6 +48,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
+import org.restlet.engine.Edition;
 import org.restlet.engine.Engine;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.util.Series;
@@ -473,7 +475,6 @@ public class HttpClientAdapter extends HttpAdapter {
         }
     }
 
-    // [ifndef gwt] method
     /**
      * Commits the changes to a handled HTTP client call back into the original
      * uniform call. The default implementation first invokes the
@@ -486,56 +487,47 @@ public class HttpClientAdapter extends HttpAdapter {
      *            The high-level request.
      * @param response
      *            The high-level response.
+     * @throws Exception
      */
-    public void commit(HttpClientCall httpCall, Request request,
-            Response response) {
+    public void commit(final HttpClientCall httpCall, Request request,
+            Response response) throws Exception {
         if (httpCall != null) {
-            updateResponse(response, httpCall.sendRequest(request), httpCall);
+            // Check if the call is asynchronous
+            if (response.getOnReceived() != null) {
+                final Uniform userCallback = response.getOnReceived();
+
+                // Send the request to the client
+                httpCall.sendRequest(request, response, new Uniform() {
+                    public void handle(Request request, Response response) {
+                        try {
+                            updateResponse(response, new Status(httpCall
+                                    .getStatusCode(), null, httpCall
+                                    .getReasonPhrase(), null), httpCall);
+                            userCallback.handle(request, response);
+                        } catch (Exception e) {
+                            // Unexpected exception occurred
+                            if ((response.getStatus() == null)
+                                    || !response.getStatus().isError()) {
+                                response.setStatus(
+                                        Status.CONNECTOR_ERROR_INTERNAL, e);
+                                userCallback.handle(request, response);
+                            }
+                        }
+                    }
+                });
+            } else {
+                if (Edition.CURRENT == Edition.GWT) {
+                    System.err
+                            .println("HTTP client calls must have a callback in the GWT edition");
+                } else {
+                    // [ifndef gwt]
+                    updateResponse(response, httpCall.sendRequest(request),
+                            httpCall);
+                    // [enddef]
+                }
+            }
         }
     }
-
-    // [ifdef gwt] method uncomment
-    // /**
-    // * Commits the changes to a handled HTTP client call back into the
-    // original
-    // * uniform call. The default implementation first invokes the
-    // * "addResponseHeaders" then asks the "htppCall" to send the response back
-    // * to the client.
-    // *
-    // * @param httpCall
-    // * The original HTTP call.
-    // * @param request
-    // * The high-level request.
-    // * @param response
-    // * The high-level response.
-    // * @param callback
-    // * The callback invoked upon request completion.
-    // */
-    // public void commit(final HttpClientCall httpCall, Request request,
-    // Response response, final org.restlet.Uniform userCallback) throws
-    // Exception{
-    // if (httpCall != null) {
-    // // Send the request to the client
-    // httpCall.sendRequest(request, response, new org.restlet.Uniform() {
-    // public void handle(Request request, Response response,
-    // org.restlet.Uniform callback) {
-    // try {
-    // updateResponse(response, new Status(httpCall
-    // .getStatusCode(), null, httpCall
-    // .getReasonPhrase(), null), httpCall);
-    // userCallback.handle(request, response, null);
-    // } catch (Exception e) {
-    // // Unexpected exception occurred
-    // if ((response.getStatus() == null)
-    // || !response.getStatus().isError()) {
-    // response.setStatus(Status.CONNECTOR_ERROR_INTERNAL, e);
-    // userCallback.handle(request, response, null);
-    // }
-    // }
-    // }
-    // });
-    // }
-    // }
 
     /**
      * Reads the response headers of a handled HTTP client call to update the
