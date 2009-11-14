@@ -92,6 +92,7 @@ Changes log
           header. Suggested by Carlos Alexandre Moscoso.
         - Added org.restlet.data.Warning class and Message#warnings 
           property corresponding to the "Warning" HTTP header.
+        - Added HTTP warning status codes to the Status class.
       - Bugs fixed
         - Fixed bug when the deprecated method "createRoot" is 
           implemented instead of the "createInboundRoot".

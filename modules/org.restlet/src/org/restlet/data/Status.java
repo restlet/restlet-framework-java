@@ -276,7 +276,8 @@ public final class Status {
     public static final Status CONNECTOR_ERROR_COMMUNICATION = new Status(1001);
 
     /**
-     * A client connector can not connect to the remote server. The status code is 1000.
+     * A client connector can not connect to the remote server. The status code
+     * is 1000.
      */
     public static final Status CONNECTOR_ERROR_CONNECTION = new Status(1000);
 
@@ -319,6 +320,59 @@ public final class Status {
      *      RFC - 10.1.1 101 Switching Protocols</a>
      */
     public static final Status INFO_SWITCHING_PROTOCOL = new Status(101);
+
+    /**
+     * Warning status code, typically returned by a cache, indicating that the
+     * response is stale.
+     * 
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.46">HTTP
+     *      RFC - 14.46 Warning</a>
+     */
+    public static final Status INFO_STALE_RESPONSE = new Status(110);
+
+    /**
+     * Warning status code, typically returned by a cache, indicating that the
+     * response is stale because an attempt to revalidate the response failed,
+     * due to an inability to reach the server.
+     * 
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.46">HTTP
+     *      RFC - 14.46 Warning</a>
+     */
+    public static final Status INFO_REVALIDATION_FAILED = new Status(111);
+
+    /**
+     * Warning status code, typically returned by a cache, indicating that it is
+     * intentionally disconnected from the rest of the network for a period of
+     * time.
+     * 
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.46">HTTP
+     *      RFC - 14.46 Warning</a>
+     */
+    public static final Status INFO_DISCONNECTED_OPERATION = new Status(112);
+
+    /**
+     * Warning status code, typically returned by a cache, indicating that it
+     * heuristically chose a freshness lifetime greater than 24 hours and the
+     * response's age is greater than 24 hours.
+     * 
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.46">HTTP
+     *      RFC - 14.46 Warning</a>
+     */
+    public static final Status INFO_HEURISTIC_EXPIRATION = new Status(113);
+
+    /**
+     * Warning status code, optionally including arbitrary information to be
+     * presented to a human user, typically returned by a cache.
+     * 
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.46">HTTP
+     *      RFC - 14.46 Warning</a>
+     */
+    public static final Status INFO_MISC_WARNING = new Status(199);
 
     /**
      * The requested resource resides temporarily under a different URI which
@@ -527,6 +581,26 @@ public final class Status {
     public static final Status SUCCESS_OK = new Status(200);
 
     /**
+     * Warning status code, typically returned by a cache or a proxy, indicating
+     * that the response has been transformed.
+     * 
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.46">HTTP
+     *      RFC - 14.46 Warning</a>
+     */
+    public static final Status SUCCESS_TRANSFORMATION_APPLIED = new Status(214);
+
+    /**
+     * Warning status code, optionally including arbitrary information to be
+     * presented to a human user, typically returned by a cache.
+     * 
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.46">HTTP
+     *      RFC - 14.46 Warning</a>
+     */
+    public static final Status SUCCESS_MISC_PERSISTENT_WARNING = new Status(299);
+
+    /**
      * The server has fulfilled the partial GET request for the resource
      * assuming the request has included a Range header field indicating the
      * desired range.
@@ -675,6 +749,21 @@ public final class Status {
         case 102:
             result = INFO_PROCESSING;
             break;
+        case 110:
+            result = INFO_STALE_RESPONSE;
+            break;
+        case 111:
+            result = INFO_REVALIDATION_FAILED;
+            break;
+        case 112:
+            result = INFO_DISCONNECTED_OPERATION;
+            break;
+        case 113:
+            result = INFO_HEURISTIC_EXPIRATION;
+            break;
+        case 199:
+            result = INFO_MISC_WARNING;
+            break;
 
         case 200:
             result = SUCCESS_OK;
@@ -699,6 +788,12 @@ public final class Status {
             break;
         case 207:
             result = SUCCESS_MULTI_STATUS;
+            break;
+        case 214:
+            result = SUCCESS_TRANSFORMATION_APPLIED;
+            break;
+        case 299:
+            result = SUCCESS_MISC_PERSISTENT_WARNING;
             break;
 
         case 300:
@@ -986,6 +1081,21 @@ public final class Status {
             case 102:
                 result = "Interim response used to inform the client that the server has accepted the complete request, but has not yet completed it";
                 break;
+            case 110:
+                result = "MUST be included whenever the returned response is stale";
+                break;
+            case 111:
+                result = "MUST be included if a cache returns a stale response because an attempt to revalidate the response failed, due to an inability to reach the server";
+                break;
+            case 112:
+                result = "SHOULD be included if the cache is intentionally disconnected from the rest of the network for a period of time";
+                break;
+            case 113:
+                result = "MUST be included if the cache heuristically chose a freshness lifetime greater than 24 hours and the response's age is greater than 24 hours";
+                break;
+            case 199:
+                result = "The warning text MAY include arbitrary information to be presented to a human user, or logged. A system receiving this warning MUST NOT take any automated action, besides presenting the warning to the user";
+                break;
 
             case 200:
                 result = "The request has succeeded";
@@ -1010,6 +1120,12 @@ public final class Status {
                 break;
             case 207:
                 result = "Provides status for multiple independent operations";
+                break;
+            case 214:
+                result = "MUST be added by an intermediate cache or proxy if it applies any transformation changing the content-coding (as specified in the Content-Encoding header) or media-type (as specified in the Content-Type header) of the response, or the entity-body of the response, unless this Warning code already appears in the response";
+                break;
+            case 299:
+                result = "The warning text MAY include arbitrary information to be presented to a human user, or logged. A system receiving this warning MUST NOT take any automated action";
                 break;
 
             case 300:
@@ -1154,6 +1270,21 @@ public final class Status {
             case 102:
                 result = "Processing";
                 break;
+            case 110:
+                result = "Response is stale";
+                break;
+            case 111:
+                result = "Revalidation failed";
+                break;
+            case 112:
+                result = "Disconnected operation";
+                break;
+            case 113:
+                result = "Heuristic expiration";
+                break;
+            case 199:
+                result = "Miscellaneous warning";
+                break;
 
             case 200:
                 result = "OK";
@@ -1178,6 +1309,12 @@ public final class Status {
                 break;
             case 207:
                 result = "Multi-Status";
+                break;
+            case 214:
+                result = "Transformation applied";
+                break;
+            case 299:
+                result = "Miscellaneous persistent warning";
                 break;
 
             case 300:
@@ -1330,6 +1467,15 @@ public final class Status {
                 break;
             case 102:
                 result = BASE_WEBDAV + "#STATUS_102";
+                break;
+            case 110:
+            case 111:
+            case 112:
+            case 113:
+            case 199:
+            case 214:
+            case 299:
+                result = "http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.46";
                 break;
 
             case 200:
