@@ -1,4 +1,4 @@
-package org.restlet.ext.guice.examples;
+package org.restlet.ext.guice.example;
 
 import org.restlet.ext.guice.*;
 import org.restlet.*;

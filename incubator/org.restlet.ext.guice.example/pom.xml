@@ -8,9 +8,9 @@
 		<version>2.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>org.restlet.ext.guice.examples</artifactId>
-	<name>Restlet extension: Guice (Examples)</name>
-	<description>Integration with Google Guice (Examples).</description>
+	<artifactId>org.restlet.ext.guice.example</artifactId>
+	<name>Restlet extension: Guice (Example)</name>
+	<description>Integration with Google Guice (Example).</description>
 	
 	<dependencies>
 		<dependency>

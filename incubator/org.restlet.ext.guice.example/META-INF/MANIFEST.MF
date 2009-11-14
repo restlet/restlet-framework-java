@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Restlet Extension - Guice (Examples)
-Bundle-SymbolicName: org.restlet.ext.guice.examples
+Bundle-Name: Restlet Extension - Guice (Example)
+Bundle-SymbolicName: org.restlet.ext.guice.example
 Bundle-Version: 2.0
 Bundle-Vendor: Noelios Technologies
 Import-Package: com.google.inject,

@@ -1,7 +1,7 @@
-<module id="guice.examples" excludes="*" type="integration" package="org.restlet.ext.guice.examples">
-   <label>Restlet Extension - Guice (Examples)</label>
+<module id="guice.example" excludes="*" type="integration" package="org.restlet.ext.guice.example">
+   <label>Restlet Extension - Guice (Example)</label>
    <description>
-      Integration with Google Guice (Examples).
+      Integration with Google Guice (Example).
     </description>
    <distributions>
       <distribution id="classic" />

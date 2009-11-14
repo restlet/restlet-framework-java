@@ -1,4 +1,4 @@
-package org.restlet.ext.guice.examples;
+package org.restlet.ext.guice.example;
 
 import com.google.inject.*;
 import com.google.inject.name.Named;
