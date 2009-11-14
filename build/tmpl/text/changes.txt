@@ -86,6 +86,8 @@ Changes log
           editions. Especially, we ported the ClientResource class.
         - Added ClientInfo#from property corresponding to the "From" HTTP
           header.
+        - Added Response#age and #retryAfter properties corresponding to 
+          the "Age" and "Retry-After" HTTP headers.
       - Bugs fixed
         - Fixed bug when the deprecated method "createRoot" is 
           implemented instead of the "createInboundRoot".

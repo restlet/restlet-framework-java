@@ -188,8 +188,9 @@ public class HttpServerAdapter extends HttpAdapter {
         if (response.getStatus().equals(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED)
                 || Method.OPTIONS.equals(response.getRequest().getMethod())) {
             // Format the "Allow" header
-            final StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder();
             boolean first = true;
+
             for (final Method method : response.getAllowedMethods()) {
                 if (first) {
                     first = false;
@@ -207,8 +208,20 @@ public class HttpServerAdapter extends HttpAdapter {
         responseHeaders.add(HttpConstants.HEADER_DATE, DateUtils
                 .format(new Date()));
 
+        // Add the age
+        if (response.getAge() > 0) {
+            responseHeaders.add(HttpConstants.HEADER_AGE, Long
+                    .toString(response.getAge()));
+        }
+
+        // Add the retry after date
+        if (response.getRetryAfter() != null) {
+            responseHeaders.add(HttpConstants.HEADER_RETRY_AFTER, DateUtils
+                    .format(response.getRetryAfter()));
+        }
+
         // Add the cookie settings
-        final List<CookieSetting> cookies = response.getCookieSettings();
+        List<CookieSetting> cookies = response.getCookieSettings();
         for (int i = 0; i < cookies.size(); i++) {
             responseHeaders.add(HttpConstants.HEADER_SET_COOKIE, CookieUtils
                     .format(cookies.get(i)));
@@ -296,7 +309,7 @@ public class HttpServerAdapter extends HttpAdapter {
             addResponseHeaders(response, responseHeaders);
 
             // Add user-defined extension headers
-            final Series<Parameter> additionalHeaders = (Series<Parameter>) response
+            Series<Parameter> additionalHeaders = (Series<Parameter>) response
                     .getAttributes().get(HttpConstants.ATTRIBUTE_HEADERS);
             addAdditionalHeaders(responseHeaders, additionalHeaders);
 

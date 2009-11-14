@@ -177,6 +177,18 @@ public final class DateUtils {
     }
 
     /**
+     * Parses a formatted date into a Date object using the default HTTP format
+     * (RFC 1123).
+     * 
+     * @param date
+     *            The date to parse.
+     * @return The parsed date.
+     */
+    public static Date parse(String date) {
+        return parse(date, FORMAT_RFC_1123);
+    }
+
+    /**
      * Parses a formatted date into a Date object.
      * 
      * @param date
@@ -185,7 +197,7 @@ public final class DateUtils {
      *            The date formats to use sorted by completeness.
      * @return The parsed date.
      */
-    public static Date parse(final String date, final List<String> formats) {
+    public static Date parse(String date, List<String> formats) {
         Date result = null;
 
         if (date == null) {

@@ -31,6 +31,8 @@
 package org.restlet.engine.http;
 
 import java.io.IOException;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -74,6 +76,37 @@ public class HttpClientAdapter extends HttpAdapter {
             if (header.getName()
                     .equalsIgnoreCase(HttpConstants.HEADER_LOCATION)) {
                 response.setLocationRef(header.getValue());
+            } else if (header.getName().equalsIgnoreCase(
+                    HttpConstants.HEADER_AGE)) {
+                try {
+                    response.setAge(Long.parseLong(header.getValue()));
+                } catch (NumberFormatException nfe) {
+                    Context.getCurrentLogger().log(
+                            Level.WARNING,
+                            "Error during Age header parsing. Header: "
+                                    + header.getValue(), nfe);
+                }
+            } else if (header.getName().equalsIgnoreCase(
+                    HttpConstants.HEADER_RETRY_AFTER)) {
+                Date retryAfter = DateUtils.parse(header.getValue());
+
+                if (retryAfter == null) {
+                    // The date might be expressed as a number of seconds
+                    try {
+                        int retryAfterSecs = Integer
+                                .parseInt(header.getValue());
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.add(Calendar.SECOND, retryAfterSecs);
+                        retryAfter = calendar.getTime();
+                    } catch (NumberFormatException nfe) {
+                        Context.getCurrentLogger().log(
+                                Level.WARNING,
+                                "Error during Retry-After header parsing. Header: "
+                                        + header.getValue(), nfe);
+                    }
+                }
+
+                response.setRetryAfter(retryAfter);
             } else if ((header.getName()
                     .equalsIgnoreCase(HttpConstants.HEADER_SET_COOKIE))
                     || (header.getName()
@@ -434,54 +467,6 @@ public class HttpClientAdapter extends HttpAdapter {
     }
 
     /**
-     * Updates the response with information from the lower-level HTTP client
-     * call.
-     * 
-     * @param response
-     *            The response to update.
-     * @param status
-     *            The response status to apply.
-     * @param httpCall
-     *            The source HTTP client call.
-     * @throws IOException
-     */
-    public void updateResponse(Response response, Status status,
-            HttpClientCall httpCall) {
-        // Send the request to the client
-        response.setStatus(status);
-
-        // Get the server address
-        response.getServerInfo().setAddress(httpCall.getServerAddress());
-        response.getServerInfo().setPort(httpCall.getServerPort());
-
-        // Read the response headers
-        readResponseHeaders(httpCall, response);
-
-        // Set the entity
-        response.setEntity(httpCall.getResponseEntity(response));
-        // Release the representation's content for some obvious cases
-        if (response.getEntity() != null) {
-            if (response.getEntity().getSize() == 0) {
-                response.getEntity().release();
-            } else if (response.getRequest().getMethod().equals(Method.HEAD)) {
-                response.getEntity().release();
-            } else if (response.getStatus().equals(Status.SUCCESS_NO_CONTENT)) {
-                response.getEntity().release();
-            } else if (response.getStatus()
-                    .equals(Status.SUCCESS_RESET_CONTENT)) {
-                response.getEntity().release();
-                response.setEntity(null);
-            } else if (response.getStatus().equals(
-                    Status.REDIRECTION_NOT_MODIFIED)) {
-                response.getEntity().release();
-            } else if (response.getStatus().isInformational()) {
-                response.getEntity().release();
-                response.setEntity(null);
-            }
-        }
-    }
-
-    /**
      * Commits the changes to a handled HTTP client call back into the original
      * uniform call. The default implementation first invokes the
      * "addResponseHeaders" then asks the "htppCall" to send the response back
@@ -579,5 +564,53 @@ public class HttpClientAdapter extends HttpAdapter {
         addRequestHeaders(result, request);
 
         return result;
+    }
+
+    /**
+     * Updates the response with information from the lower-level HTTP client
+     * call.
+     * 
+     * @param response
+     *            The response to update.
+     * @param status
+     *            The response status to apply.
+     * @param httpCall
+     *            The source HTTP client call.
+     * @throws IOException
+     */
+    public void updateResponse(Response response, Status status,
+            HttpClientCall httpCall) {
+        // Send the request to the client
+        response.setStatus(status);
+
+        // Get the server address
+        response.getServerInfo().setAddress(httpCall.getServerAddress());
+        response.getServerInfo().setPort(httpCall.getServerPort());
+
+        // Read the response headers
+        readResponseHeaders(httpCall, response);
+
+        // Set the entity
+        response.setEntity(httpCall.getResponseEntity(response));
+        // Release the representation's content for some obvious cases
+        if (response.getEntity() != null) {
+            if (response.getEntity().getSize() == 0) {
+                response.getEntity().release();
+            } else if (response.getRequest().getMethod().equals(Method.HEAD)) {
+                response.getEntity().release();
+            } else if (response.getStatus().equals(Status.SUCCESS_NO_CONTENT)) {
+                response.getEntity().release();
+            } else if (response.getStatus()
+                    .equals(Status.SUCCESS_RESET_CONTENT)) {
+                response.getEntity().release();
+                response.setEntity(null);
+            } else if (response.getStatus().equals(
+                    Status.REDIRECTION_NOT_MODIFIED)) {
+                response.getEntity().release();
+            } else if (response.getStatus().isInformational()) {
+                response.getEntity().release();
+                response.setEntity(null);
+            }
+        }
     }
 }

@@ -30,6 +30,7 @@
 
 package org.restlet;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -118,12 +119,25 @@ public class Response extends Message {
     private volatile Uniform onReceived;
 
     /**
+     * Estimated amount of time since the response was generated or revalidated
+     * by the origin server.
+     */
+    private volatile long age;
+
+    /**
+     * Indicates how long the service is expected to be unavailable to the
+     * requesting client.
+     */
+    private volatile Date retryAfter;
+
+    /**
      * Constructor.
      * 
      * @param request
      *            The request associated to this response.
      */
     public Response(Request request) {
+        this.age = 0;
         this.allowedMethods = null;
         this.challengeRequests = null;
         this.cookieSettings = null;
@@ -131,9 +145,24 @@ public class Response extends Message {
         this.locationRef = null;
         this.proxyChallengeRequests = null;
         this.request = request;
+        this.retryAfter = null;
         this.serverInfo = null;
         this.status = Status.SUCCESS_OK;
         this.onReceived = null;
+    }
+
+    /**
+     * Returns the estimated amount of time since the response was generated or
+     * revalidated by the origin server. Origin servers should leave the 0
+     * default value. Only caches are expected to set this property.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the "Age"
+     * header.
+     * 
+     * @return The response age.
+     */
+    public long getAge() {
+        return age;
     }
 
     /**
@@ -281,6 +310,19 @@ public class Response extends Message {
     }
 
     /**
+     * Indicates how long the service is expected to be unavailable to the
+     * requesting client. Default value is null.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Retry-After" header.
+     * 
+     * @return Date after with a retry attempt could occur.
+     */
+    public Date getRetryAfter() {
+        return retryAfter;
+    }
+
+    /**
      * Returns the server-specific information. Creates a new instance if no one
      * has been set.
      * 
@@ -402,6 +444,21 @@ public class Response extends Message {
     public void redirectTemporary(String targetUri) {
         setLocationRef(targetUri);
         setStatus(Status.REDIRECTION_TEMPORARY);
+    }
+
+    /**
+     * Sets the estimated amount of time since the response was generated or
+     * revalidated by the origin server. Origin servers should leave the 0
+     * default value. Only caches are expected to set this property.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the "Age"
+     * header.
+     * 
+     * @param age
+     *            The response age.
+     */
+    public void setAge(long age) {
+        this.age = age;
     }
 
     /**
@@ -556,6 +613,20 @@ public class Response extends Message {
      */
     public void setRequest(Request request) {
         this.request = request;
+    }
+
+    /**
+     * Indicates how long the service is expected to be unavailable to the
+     * requesting client. Default value is null.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Retry-After" header.
+     * 
+     * @param retryAfter
+     *            Date after with a retry attempt could occur.
+     */
+    public void setRetryAfter(Date retryAfter) {
+        this.retryAfter = retryAfter;
     }
 
     /**
