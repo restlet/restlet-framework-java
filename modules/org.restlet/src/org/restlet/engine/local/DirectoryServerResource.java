@@ -200,7 +200,7 @@ public class DirectoryServerResource extends ServerResource {
             this.directory = (Directory) getRequestAttributes().get(
                     "org.restlet.directory");
             this.relativePart = getReference().getRemainingPart(false, false);
-            setNegotiated(this.directory.isNegotiateContent());
+            setNegotiated(this.directory.isNegotiatingContent());
 
             // Restore the original URI in case the call has been tunneled.
             if ((getApplication() != null)

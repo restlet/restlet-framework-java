@@ -200,6 +200,12 @@ public class HttpClientAdapter extends HttpAdapter {
                         Engine.VERSION_HEADER);
             }
 
+            // Add the from header
+            if (request.getClientInfo().getFrom() != null) {
+                requestHeaders.add(HttpConstants.HEADER_FROM, request
+                        .getClientInfo().getFrom());
+            }
+
             // Add the conditions
             Conditions condition = request.getConditions();
             if (!condition.getMatch().isEmpty()) {

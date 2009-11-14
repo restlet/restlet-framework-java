@@ -224,6 +224,8 @@ public class HttpRequest extends Request {
             // Set other properties
             result.setAgent(getHttpCall().getRequestHeaders().getValues(
                     HttpConstants.HEADER_USER_AGENT));
+            result.setFrom(getHttpCall().getRequestHeaders().getValues(
+                    HttpConstants.HEADER_FROM));
             result.setAddress(getHttpCall().getClientAddress());
             result.setPort(getHttpCall().getClientPort());
 

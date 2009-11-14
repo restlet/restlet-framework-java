@@ -41,6 +41,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Range;
 import org.restlet.data.Reference;
+import org.restlet.engine.util.CookieSeries;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 
@@ -55,44 +56,6 @@ import org.restlet.util.Series;
  * @author Jerome Louvel
  */
 public class Request extends Message {
-
-    /**
-     * Private cookie series.
-     * 
-     * @author Jerome Louvel
-     */
-    private static class CookieSeries extends Series<Cookie> {
-        /**
-         * Constructor.
-         */
-        public CookieSeries() {
-            super();
-        }
-
-        /**
-         * Constructor.
-         * 
-         * @param delegate
-         *            The delegate list.
-         */
-        public CookieSeries(List<Cookie> delegate) {
-            super(delegate);
-        }
-
-        @Override
-        public Cookie createEntry(String name, String value) {
-            return new Cookie(name, value);
-        }
-
-        @Override
-        public Series<Cookie> createSeries(List<Cookie> delegate) {
-            if (delegate != null) {
-                return new CookieSeries(delegate);
-            }
-
-            return new CookieSeries();
-        }
-    }
 
     // [ifndef gwt] method
     /**
@@ -177,8 +140,18 @@ public class Request extends Message {
      */
     public Request(Method method, Reference resourceRef, Representation entity) {
         super(entity);
-        setMethod(method);
-        setResourceRef(resourceRef);
+        this.challengeResponse = null;
+        this.clientInfo = null;
+        this.conditions = null;
+        this.cookies = null;
+        this.hostRef = null;
+        this.method = method;
+        this.originalRef = null;
+        this.proxyChallengeResponse = null;
+        this.ranges = null;
+        this.referrerRef = null;
+        this.resourceRef = resourceRef;
+        this.rootRef = null;
     }
 
     /**
@@ -576,7 +549,7 @@ public class Request extends Message {
      * @param ranges
      *            The ranges.
      */
-    public void setRanges(List<org.restlet.data.Range> ranges) {
+    public void setRanges(List<Range> ranges) {
         this.ranges = ranges;
     }
 

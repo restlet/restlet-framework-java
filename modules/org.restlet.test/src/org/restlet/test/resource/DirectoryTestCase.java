@@ -75,7 +75,7 @@ public class DirectoryTestCase extends RestletTestCase {
             // Create a DirectoryHandler that manages a local Directory
             this.directory = new Directory(getContext(), LocalReference
                     .createFileReference(testDirectory));
-            this.directory.setNegotiateContent(true);
+            this.directory.setNegotiatingContent(true);
         }
 
         @Override
@@ -418,7 +418,7 @@ public class DirectoryTestCase extends RestletTestCase {
         // Test 7b : put another representation of the base file (in French
         // language) but the extensions are mixed
         // and there is no content negotiation
-        directory.setNegotiateContent(false);
+        directory.setNegotiatingContent(false);
         response = handle(application, this.webSiteURL, this.baseFileUrlFrBis,
                 Method.PUT, new StringRepresentation("message de test"), "7b-1");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
@@ -452,7 +452,7 @@ public class DirectoryTestCase extends RestletTestCase {
         // Test 7d : put another representation of the base file (in French
         // language) but the extensions are mixed
         // and there is content negotiation
-        directory.setNegotiateContent(true);
+        directory.setNegotiatingContent(true);
         response = handle(application, this.webSiteURL, this.baseFileUrlFr,
                 Method.PUT, new StringRepresentation("message de test"), "7d-1");
         assertEquals(Status.SUCCESS_CREATED, response.getStatus());
@@ -470,14 +470,14 @@ public class DirectoryTestCase extends RestletTestCase {
 
         // TBOI : not sure this test is correct
         // Check if only one resource has been created
-        directory.setNegotiateContent(false);
+        directory.setNegotiatingContent(false);
         response = handle(application, this.webSiteURL, this.baseFileUrlFr,
                 Method.HEAD, null, "7d-5");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
 
         // Test 7e : delete the file representation of the resources with
         // content negotiation
-        directory.setNegotiateContent(true);
+        directory.setNegotiatingContent(true);
         response = handle(application, this.webSiteURL, this.baseFileUrlFr,
                 Method.DELETE, null, "7e-1");
         assertEquals(Status.SUCCESS_NO_CONTENT, response.getStatus());

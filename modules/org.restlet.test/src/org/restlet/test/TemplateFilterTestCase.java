@@ -74,7 +74,7 @@ public class TemplateFilterTestCase extends RestletTestCase {
             // Create a Directory that manages a local directory
             this.directory = new Directory(getContext(), LocalReference
                     .createFileReference(getTestDirectory()));
-            this.directory.setNegotiateContent(true);
+            this.directory.setNegotiatingContent(true);
             return new org.restlet.ext.freemarker.TemplateFilter(getContext(),
                     this.directory);
         }
@@ -110,7 +110,7 @@ public class TemplateFilterTestCase extends RestletTestCase {
             // Create a Directory that manages a local directory
             this.directory = new Directory(getContext(), LocalReference
                     .createFileReference(getTestDirectory()));
-            this.directory.setNegotiateContent(true);
+            this.directory.setNegotiatingContent(true);
             return new org.restlet.ext.velocity.TemplateFilter(getContext(),
                     this.directory);
         }

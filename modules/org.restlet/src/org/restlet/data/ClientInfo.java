@@ -210,6 +210,9 @@ public final class ClientInfo {
     /** The immediate IP addresses. */
     private volatile String address;
 
+    /** The email address of the human user controlling the user agent. */
+    private volatile String from;
+
     /** The agent name. */
     private volatile String agent;
 
@@ -263,6 +266,7 @@ public final class ClientInfo {
         this.acceptedLanguages = null;
         this.acceptedMediaTypes = null;
         this.forwardedAddresses = null;
+        this.from = null;
         // [ifndef gwt]
         this.agentProducts = null;
         this.principals = null;
@@ -545,6 +549,16 @@ public final class ClientInfo {
             }
         }
         return a;
+    }
+
+    /**
+     * Returns the email address of the human user controlling the user agent.
+     * Default value is null.
+     * 
+     * @return The email address of the human user controlling the user agent.
+     */
+    public String getFrom() {
+        return from;
     }
 
     // [ifndef gwt] method
@@ -881,6 +895,17 @@ public final class ClientInfo {
      */
     public void setForwardedAddresses(List<String> forwardedAddresses) {
         this.forwardedAddresses = forwardedAddresses;
+    }
+
+    /**
+     * Sets the email address of the human user controlling the user agent.
+     * 
+     * @param from
+     *            The email address of the human user controlling the user
+     *            agent.
+     */
+    public void setFrom(String from) {
+        this.from = from;
     }
 
     /**

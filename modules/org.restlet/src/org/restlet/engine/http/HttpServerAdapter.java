@@ -226,8 +226,8 @@ public class HttpServerAdapter extends HttpAdapter {
             for (final ChallengeRequest challengeRequest : response
                     .getChallengeRequests()) {
                 responseHeaders.add(HttpConstants.HEADER_WWW_AUTHENTICATE,
-                        AuthenticatorUtils.formatRequest(challengeRequest, response,
-                                responseHeaders));
+                        AuthenticatorUtils.formatRequest(challengeRequest,
+                                response, responseHeaders));
             }
         }
 
@@ -235,8 +235,8 @@ public class HttpServerAdapter extends HttpAdapter {
             for (final ChallengeRequest challengeRequest : response
                     .getProxyChallengeRequests()) {
                 responseHeaders.add(HttpConstants.HEADER_PROXY_AUTHENTICATE,
-                        AuthenticatorUtils.formatRequest(challengeRequest, response,
-                                responseHeaders));
+                        AuthenticatorUtils.formatRequest(challengeRequest,
+                                response, responseHeaders));
             }
         }
 
@@ -342,13 +342,10 @@ public class HttpServerAdapter extends HttpAdapter {
                     && response.getStatus().equals(Status.SUCCESS_OK)
                     && (!response.isEntityAvailable())) {
                 addEntityHeaders(response);
-
                 getLogger()
-                        .warning(
-                                "A response with a 200 (Ok) status should have an entity. Make sure that resource \""
-                                        + response.getRequest()
-                                                .getResourceRef()
-                                        + "\" returns one or sets the status to 204 (No content).");
+                        .fine(
+                                "A response with a 200 (Ok) status should have an entity. Changing the status to 204 (No content).");
+                response.setStatus(Status.SUCCESS_NO_CONTENT);
             } else if (response.getStatus().equals(Status.SUCCESS_NO_CONTENT)) {
                 addEntityHeaders(response);
 

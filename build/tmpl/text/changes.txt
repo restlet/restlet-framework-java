@@ -84,6 +84,8 @@ Changes log
           Client class like the GWT edition already had. 
         - Refactored the GWT edition to be more inline with the other 
           editions. Especially, we ported the ClientResource class.
+        - Added ClientInfo#from property corresponding to the "From" HTTP
+          header.
       - Bugs fixed
         - Fixed bug when the deprecated method "createRoot" is 
           implemented instead of the "createInboundRoot".
@@ -135,7 +137,7 @@ Changes log
         - Fixed manifest files varying by editions.
           Reported by Thierry Templier.
         - Fixed bug in OSGi activator causing default converters not to
-          be registered. Reported by Thierry Templier.
+          be registered. Reported by Bryan Hunt.
     - Enhancements
         - Improved JAXB converted. Contributed by Sanjay Acharya.
         - Upgraded Apache Commons Logging to version 1.1.1.
@@ -176,6 +178,9 @@ Changes log
           HTTP Client 4.0 extension. Contributed by Bruno Harbulot.
         - Added the Net client extension to the Android edition 
           (without the FTP connector though).
+        - Response with a 200 (success, ok) status and no content now log a fine trace
+          instead of a warning and automatically change the status to 
+          204 (success, no content).
     - Misc
         - Added Velocity template in the org.restlet.example project.
           Reported by Ben Vesco.
