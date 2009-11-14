@@ -30,11 +30,15 @@
 
 package org.restlet;
 
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
+import org.restlet.data.Warning;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 
@@ -62,6 +66,12 @@ public abstract class Message {
     /** Callback invoked after sending the response. */
     private volatile Uniform onSent;
 
+    /** The additional warnings information. */
+    private volatile List<Warning> warnings;
+
+    /** The date and time at which the message was originated. */
+    private volatile Date date;
+
     /**
      * Constructor.
      */
@@ -77,11 +87,13 @@ public abstract class Message {
      */
     public Message(Representation entity) {
         this.attributes = null;
+        this.date = null;
         this.entity = entity;
         this.entityForm = null;
         this.entityText = null;
         this.onContinue = null;
         this.onSent = null;
+        this.warnings = null;
     }
 
     /**
@@ -134,6 +146,15 @@ public abstract class Message {
         }
 
         return this.attributes;
+    }
+
+    /**
+     * Returns the date and time at which the message was originated.
+     * 
+     * @return The date and time at which the message was originated.
+     */
+    public Date getDate() {
+        return date;
     }
 
     /**
@@ -200,6 +221,28 @@ public abstract class Message {
     }
 
     /**
+     * Returns the additional warnings information.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Warning" headers.
+     * 
+     * @return The additional warnings information.
+     */
+    public List<Warning> getWarnings() {
+        // Lazy initialization with double-check.
+        List<Warning> r = this.warnings;
+        if (r == null) {
+            synchronized (this) {
+                r = this.warnings;
+                if (r == null) {
+                    this.warnings = r = new CopyOnWriteArrayList<Warning>();
+                }
+            }
+        }
+        return r;
+    }
+
+    /**
      * Indicates if the message was or will be exchanged confidentially, for
      * example via a SSL-secured connection.
      * 
@@ -243,6 +286,16 @@ public abstract class Message {
     }
 
     /**
+     * Sets the date and time at which the message was originated.
+     * 
+     * @param date
+     *            The date and time at which the message was originated.
+     */
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    /**
      * Sets the entity representation.
      * 
      * @param entity
@@ -282,6 +335,19 @@ public abstract class Message {
      */
     public void setOnSent(Uniform onSentCallback) {
         this.onSent = onSentCallback;
+    }
+
+    /**
+     * Sets the additional warnings information.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Warning" headers.
+     * 
+     * @param warnings
+     *            The warnings.
+     */
+    public void setWarnings(List<Warning> warnings) {
+        this.warnings = warnings;
     }
 
 }

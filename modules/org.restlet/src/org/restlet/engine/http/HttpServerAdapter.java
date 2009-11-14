@@ -205,8 +205,9 @@ public class HttpServerAdapter extends HttpAdapter {
         }
 
         // Add the date
+        response.setDate(new Date());
         responseHeaders.add(HttpConstants.HEADER_DATE, DateUtils
-                .format(new Date()));
+                .format(response.getDate()));
 
         // Add the age
         if (response.getAge() > 0) {

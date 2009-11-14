@@ -47,6 +47,7 @@ import org.restlet.data.Range;
 import org.restlet.data.Reference;
 import org.restlet.data.Tag;
 import org.restlet.engine.security.AuthenticatorUtils;
+import org.restlet.engine.util.DateUtils;
 import org.restlet.engine.util.RangeUtils;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
@@ -127,7 +128,7 @@ public class HttpRequest extends Request {
         setMethod(Method.valueOf(httpCall.getMethod()));
 
         // Set the host reference
-        final StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         sb.append(httpCall.getProtocol().getSchemeName()).append("://");
         sb.append(httpCall.getHostDomain());
         if ((httpCall.getHostPort() != -1)
@@ -154,6 +155,20 @@ public class HttpRequest extends Request {
 
             setOriginalRef(getResourceRef().getTargetRef());
         }
+
+        // Set the request date
+        String dateHeader = httpCall.getRequestHeaders().getFirstValue(
+                HttpConstants.HEADER_DATE);
+        Date date = null;
+        if (dateHeader != null) {
+            date = DateUtils.parse(dateHeader);
+        }
+
+        if (date == null) {
+            date = new Date();
+        }
+
+        setDate(date);
     }
 
     @Override

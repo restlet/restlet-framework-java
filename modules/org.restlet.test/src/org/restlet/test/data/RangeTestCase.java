@@ -375,28 +375,33 @@ public class RangeTestCase extends RestletTestCase {
         Request request = new Request(Method.GET, "http://localhost:"
                 + TEST_PORT + "/test?range=0-500");
         request.setRanges(Arrays.asList(new Range(0, 500)));
-        assertEquals(Status.SUCCESS_OK, client.handle(request).getStatus());
+        assertEquals(Status.SUCCESS_NO_CONTENT, client.handle(request)
+                .getStatus());
 
         request = new Request(Method.GET, "http://localhost:" + TEST_PORT
                 + "/test?range=-500");
         request.setRanges(Arrays.asList(new Range(Range.INDEX_LAST, 500)));
-        assertEquals(Status.SUCCESS_OK, client.handle(request).getStatus());
+        assertEquals(Status.SUCCESS_NO_CONTENT, client.handle(request)
+                .getStatus());
 
         request = new Request(Method.GET, "http://localhost:" + TEST_PORT
                 + "/test?range=500-");
         request.setRanges(Arrays.asList(new Range(500, Range.SIZE_MAX)));
-        assertEquals(Status.SUCCESS_OK, client.handle(request).getStatus());
+        assertEquals(Status.SUCCESS_NO_CONTENT, client.handle(request)
+                .getStatus());
 
         request = new Request(Method.GET, "http://localhost:" + TEST_PORT
                 + "/test?range=500-1000");
         request.setRanges(Arrays.asList(new Range(500, 500)));
-        assertEquals(Status.SUCCESS_OK, client.handle(request).getStatus());
+        assertEquals(Status.SUCCESS_NO_CONTENT, client.handle(request)
+                .getStatus());
 
         request = new Request(Method.GET, "http://localhost:" + TEST_PORT
                 + "/test?range=500-1000&range=500-");
         request.setRanges(Arrays.asList(new Range(500, 500), new Range(500,
                 Range.SIZE_MAX)));
-        assertEquals(Status.SUCCESS_OK, client.handle(request).getStatus());
+        assertEquals(Status.SUCCESS_NO_CONTENT, client.handle(request)
+                .getStatus());
 
     }
 }

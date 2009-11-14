@@ -88,6 +88,10 @@ Changes log
           header.
         - Added Response#age and #retryAfter properties corresponding to 
           the "Age" and "Retry-After" HTTP headers.
+        - Added Message#date property corresponding to the "Date" HTTP 
+          header. Suggested by Carlos Alexandre Moscoso.
+        - Added org.restlet.data.Warning class and Message#warnings 
+          property corresponding to the "Warning" HTTP header.
       - Bugs fixed
         - Fixed bug when the deprecated method "createRoot" is 
           implemented instead of the "createInboundRoot".

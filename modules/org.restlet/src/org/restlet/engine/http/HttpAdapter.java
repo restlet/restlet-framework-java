@@ -75,6 +75,8 @@ public class HttpAdapter extends Adapter {
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_ACCEPT_RANGES)
                         || param.getName().equalsIgnoreCase(
+                                HttpConstants.HEADER_AGE)
+                        || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_ALLOW)
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_AUTHORIZATION)
@@ -103,6 +105,8 @@ public class HttpAdapter extends Adapter {
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_EXPIRES)
                         || param.getName().equalsIgnoreCase(
+                                HttpConstants.HEADER_FROM)
+                        || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_HOST)
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_IF_MATCH)
@@ -125,6 +129,8 @@ public class HttpAdapter extends Adapter {
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_REFERRER)
                         || param.getName().equalsIgnoreCase(
+                                HttpConstants.HEADER_RETRY_AFTER)
+                        || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_SERVER)
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_SET_COOKIE)
@@ -141,23 +147,17 @@ public class HttpAdapter extends Adapter {
                             .warning(
                                     "Addition of the standard header \""
                                             + param.getName()
-                                            + "\" is not allowed. Please use the Restlet API instead.");
+                                            + "\" is not allowed. Please use the equivalent property in the Restlet API.");
                 } else if (param.getName().equalsIgnoreCase(
-                        HttpConstants.HEADER_AGE)
-                        || param.getName().equalsIgnoreCase(
-                                HttpConstants.HEADER_CACHE_CONTROL)
+                        HttpConstants.HEADER_CACHE_CONTROL)
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_EXPECT)
-                        || param.getName().equalsIgnoreCase(
-                                HttpConstants.HEADER_FROM)
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_IF_RANGE)
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_MAX_FORWARDS)
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_PRAGMA)
-                        || param.getName().equalsIgnoreCase(
-                                HttpConstants.HEADER_RETRY_AFTER)
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_TRAILER)
                         || param.getName().equalsIgnoreCase(
@@ -175,7 +175,7 @@ public class HttpAdapter extends Adapter {
                             .info(
                                     "Addition of the standard header \""
                                             + param.getName()
-                                            + "\" is discouraged. Future versions of the Restlet API will directly support it.");
+                                            + "\" is discouraged as a future versions of the Restlet API will directly support it.");
                     existingHeaders.add(param);
                 } else {
                     existingHeaders.add(param);

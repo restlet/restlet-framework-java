@@ -67,6 +67,7 @@
 		<lib-grizzly-version>1.9.18b</lib-grizzly-version>
 		<lib-grizzly-util-version>1.9.18b</lib-grizzly-util-version>
 		<lib-groovy-version>1.6.0</lib-groovy-version>
+		<lib-guice-version>1.0</lib-guice-version>
 		<lib-gwt-version>1.7.1</lib-gwt-version>
 		<lib-httpclient-version>4.0</lib-httpclient-version>
 		<lib-httpcore-version>4.0.1</lib-httpcore-version>

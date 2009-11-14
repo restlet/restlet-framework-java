@@ -87,6 +87,15 @@ public class HttpClientAdapter extends HttpAdapter {
                                     + header.getValue(), nfe);
                 }
             } else if (header.getName().equalsIgnoreCase(
+                    HttpConstants.HEADER_DATE)) {
+                Date date = DateUtils.parse(header.getValue());
+
+                if (date == null) {
+                    date = new Date();
+                }
+
+                response.setDate(date);
+            } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_RETRY_AFTER)) {
                 Date retryAfter = DateUtils.parse(header.getValue());
 
@@ -223,6 +232,11 @@ public class HttpClientAdapter extends HttpAdapter {
 
                 requestHeaders.add(HttpConstants.HEADER_HOST, host);
             }
+
+            // Add the date
+            request.setDate(new Date());
+            requestHeaders.add(HttpConstants.HEADER_DATE, DateUtils
+                    .format(request.getDate()));
 
             // Add the user agent header
             if (request.getClientInfo().getAgent() != null) {
