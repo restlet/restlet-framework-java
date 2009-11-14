@@ -1,9 +1,13 @@
 package org.restlet.ext.guice.example;
 
-import com.google.inject.*;
-import java.lang.annotation.*;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
-import static java.lang.annotation.ElementType.*;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import com.google.inject.BindingAnnotation;
 
 @Retention(RUNTIME)
 @Target( { FIELD, PARAMETER })

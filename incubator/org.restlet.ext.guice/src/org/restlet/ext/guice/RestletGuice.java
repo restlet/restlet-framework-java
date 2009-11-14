@@ -16,7 +16,7 @@ public class RestletGuice {
      * instances.
      */
     public static Injector createInjector(Module... modules) {
-        return injectorFor(null, new FinderFactoryModule(modules));
+        return injectorFor(null, new RestletGuiceModule(modules));
     }
 
     /**
@@ -25,7 +25,7 @@ public class RestletGuice {
      * Finder instances.
      */
     public static Injector createInjector(Stage stage, Module... modules) {
-        return injectorFor(stage, new FinderFactoryModule(modules));
+        return injectorFor(stage, new RestletGuiceModule(modules));
     }
 
     /**
@@ -34,7 +34,7 @@ public class RestletGuice {
      * instances.
      */
     public static Injector createInjector(Iterable<Module> modules) {
-        return injectorFor(null, new FinderFactoryModule(modules));
+        return injectorFor(null, new RestletGuiceModule(modules));
     }
 
     /**
@@ -43,10 +43,10 @@ public class RestletGuice {
      * Finder instances.
      */
     public static Injector createInjector(Stage stage, Iterable<Module> modules) {
-        return injectorFor(stage, new FinderFactoryModule(modules));
+        return injectorFor(stage, new RestletGuiceModule(modules));
     }
 
-    private static Injector injectorFor(Stage stage, FinderFactoryModule module) {
+    private static Injector injectorFor(Stage stage, RestletGuiceModule module) {
         if (stage == null) {
             return Guice.createInjector(module);
         } else {

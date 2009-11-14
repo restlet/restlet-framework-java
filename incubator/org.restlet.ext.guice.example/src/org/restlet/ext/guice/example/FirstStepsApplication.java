@@ -1,11 +1,19 @@
 package org.restlet.ext.guice.example;
 
-import org.restlet.ext.guice.*;
-import org.restlet.*;
-import org.restlet.resource.*;
-import org.restlet.routing.*;
-import com.google.inject.*;
 import static com.google.inject.name.Names.named;
+
+import org.restlet.Application;
+import org.restlet.Restlet;
+import org.restlet.ext.guice.FinderFactory;
+import org.restlet.ext.guice.RestletGuice;
+import org.restlet.ext.guice.RestletGuiceModule;
+import org.restlet.resource.Handler;
+import org.restlet.resource.ServerResource;
+import org.restlet.routing.Router;
+
+import com.google.inject.Binder;
+import com.google.inject.Key;
+import com.google.inject.Module;
 
 public class FirstStepsApplication extends Application implements Module {
 
@@ -30,7 +38,7 @@ public class FirstStepsApplication extends Application implements Module {
         case AUTO_INJECTOR: // (2) Use a special module that is also a
             // FinderFactory and
             // that automatically creates the Injector when needed.
-            factory = new FinderFactoryModule(this);
+            factory = new RestletGuiceModule(this);
             break;
 
         default:
@@ -43,7 +51,7 @@ public class FirstStepsApplication extends Application implements Module {
         // Route /hello/resource to whatever is bound to ServerResource
         // annotated with @HelloWorld.
         router.attach("/hello/resource", factory.finderOf(Key.get(
-                ServerResource.class, HelloWorld.class), getContext()));
+                ServerResource.class, HelloWorld.class)));
 
         // Route /hello/handler to whatever is bound to Handler annotated with
         // @HelloWorld.

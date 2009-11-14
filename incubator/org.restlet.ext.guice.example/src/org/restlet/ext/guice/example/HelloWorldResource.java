@@ -1,14 +1,19 @@
 package org.restlet.ext.guice.example;
 
-import com.google.inject.*;
-import com.google.inject.name.Named;
-
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.restlet.*;
-import org.restlet.data.*;
-import org.restlet.representation.*;
-import org.restlet.resource.*;
+import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.data.MediaType;
+import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
+import org.restlet.representation.Variant;
+import org.restlet.resource.Resource;
+import org.restlet.resource.ResourceException;
+
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
 
 /**
  * Resource which has only one representation.
