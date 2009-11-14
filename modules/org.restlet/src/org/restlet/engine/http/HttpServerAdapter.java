@@ -211,7 +211,7 @@ public class HttpServerAdapter extends HttpAdapter {
 
         // Add the age
         if (response.getAge() > 0) {
-            responseHeaders.add(HttpConstants.HEADER_AGE, Long
+            responseHeaders.add(HttpConstants.HEADER_AGE, Integer
                     .toString(response.getAge()));
         }
 

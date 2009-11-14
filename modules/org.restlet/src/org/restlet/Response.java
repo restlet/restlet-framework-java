@@ -88,6 +88,12 @@ public class Response extends Message {
         CURRENT.set(response);
     }
 
+    /**
+     * Estimated amount of time since a response was generated or revalidated by
+     * the origin server.
+     */
+    private volatile int age;
+
     /** The set of methods allowed on the requested resource. */
     private volatile Set<Method> allowedMethods;
 
@@ -119,12 +125,6 @@ public class Response extends Message {
     private volatile Uniform onReceived;
 
     /**
-     * Estimated amount of time since the response was generated or revalidated
-     * by the origin server.
-     */
-    private volatile long age;
-
-    /**
      * Indicates how long the service is expected to be unavailable to the
      * requesting client.
      */
@@ -152,7 +152,7 @@ public class Response extends Message {
     }
 
     /**
-     * Returns the estimated amount of time since the response was generated or
+     * Returns the estimated amount of time since a response was generated or
      * revalidated by the origin server. Origin servers should leave the 0
      * default value. Only caches are expected to set this property.<br>
      * <br>
@@ -161,7 +161,7 @@ public class Response extends Message {
      * 
      * @return The response age.
      */
-    public long getAge() {
+    public int getAge() {
         return age;
     }
 
@@ -447,7 +447,7 @@ public class Response extends Message {
     }
 
     /**
-     * Sets the estimated amount of time since the response was generated or
+     * Sets the estimated amount of time since a response was generated or
      * revalidated by the origin server. Origin servers should leave the 0
      * default value. Only caches are expected to set this property.<br>
      * <br>
@@ -457,7 +457,7 @@ public class Response extends Message {
      * @param age
      *            The response age.
      */
-    public void setAge(long age) {
+    public void setAge(int age) {
         this.age = age;
     }
 

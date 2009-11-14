@@ -79,7 +79,7 @@ public class HttpClientAdapter extends HttpAdapter {
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_AGE)) {
                 try {
-                    response.setAge(Long.parseLong(header.getValue()));
+                    response.setAge(Integer.parseInt(header.getValue()));
                 } catch (NumberFormatException nfe) {
                     Context.getCurrentLogger().log(
                             Level.WARNING,
