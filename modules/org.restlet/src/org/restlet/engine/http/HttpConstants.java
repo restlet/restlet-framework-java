@@ -132,6 +132,34 @@ public final class HttpConstants {
 
     public static final int STATUS_SERVER_ERROR_INSUFFICIENT_STORAGE = 507;
 
+    // ------------------------
+    // --- Cache directives ---
+    // ------------------------
+
+    public static final String CACHE_NO_CACHE = "no-cache";
+
+    public static final String CACHE_NO_STORE = "no-store";
+
+    public static final String CACHE_MAX_AGE = "max-age";
+
+    public static final String CACHE_MAX_STALE = "max-stale";
+
+    public static final String CACHE_MIN_FRESH = "min-fresh";
+
+    public static final String CACHE_NO_TRANSFORM = "no-transform";
+
+    public static final String CACHE_ONLY_IF_CACHED = "only-if-cached";
+
+    public static final String CACHE_PUBLIC = "public";
+
+    public static final String CACHE_PRIVATE = "private";
+
+    public static final String CACHE_MUST_REVALIDATE = "must-revalidate";
+
+    public static final String CACHE_PROXY_MUST_REVALIDATE = "proxy-revalidate";
+
+    public static final String CACHE_SHARED_MAX_AGE = "s-maxage";
+
     // ---------------------
     // --- Header names ---
     // ---------------------
