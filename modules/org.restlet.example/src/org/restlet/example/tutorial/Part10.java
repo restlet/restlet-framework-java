@@ -34,12 +34,12 @@ import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Restlet;
 import org.restlet.data.Protocol;
+import org.restlet.routing.Extractor;
 import org.restlet.routing.Redirector;
-import org.restlet.routing.Route;
 import org.restlet.routing.Router;
 
 /**
- * URI rewriting and redirection.
+ * URI rewriting, attribute extraction and redirection.
  * 
  * @author Jerome Louvel
  */
@@ -75,15 +75,16 @@ public class Part10 extends Application {
         Redirector redirector = new Redirector(getContext(), target,
                 Redirector.MODE_CLIENT_TEMPORARY);
 
-        // Attach the redirector to the router
-        Route route = router.attach("/search", redirector);
-
-        // While routing requests to the application, extract a query parameter
-        // For instance :
+        // While routing requests to the redirector, extract the "kwd" query
+        // parameter. For instance :
         // http://localhost:8182/search?kwd=myKeyword1+myKeyword2
         // will be routed to
         // http://www.google.com/search?q=site:mysite.org+myKeyword1%20myKeyword2
-        route.extractQuery("keywords", "kwd", true);
+        Extractor extractor = new Extractor(getContext(), redirector);
+        extractor.extractQuery("keywords", "kwd", true);
+
+        // Attach the extractor to the router
+        router.attach("/search", extractor);
 
         // Return the root router
         return router;

@@ -39,9 +39,9 @@ import org.restlet.routing.Router;
 import org.restlet.routing.TemplateRoute;
 import org.restlet.routing.Variable;
 
-import com.db4o.Db4o;
+import com.db4o.Db4oEmbedded;
 import com.db4o.ObjectContainer;
-import com.db4o.config.Configuration;
+import com.db4o.config.EmbeddedConfiguration;
 
 /**
  * The main Web application.
@@ -67,9 +67,10 @@ public class Application extends org.restlet.Application {
      */
     public Application() {
         /** Open and keep the db4o object container. */
-        final Configuration config = Db4o.newConfiguration();
-        config.updateDepth(2);
-        this.container = Db4o.openFile(config, System.getProperty("user.home")
+        EmbeddedConfiguration config = Db4oEmbedded.newConfiguration();
+        config.common().updateDepth(2);
+        this.container = Db4oEmbedded.openFile(config, System
+                .getProperty("user.home")
                 + File.separator + "restbook.dbo");
     }
 
