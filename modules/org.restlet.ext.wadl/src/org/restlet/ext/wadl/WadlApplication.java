@@ -723,10 +723,15 @@ public class WadlApplication extends Application {
      */
     @Override
     public void handle(Request request, Response response) {
+        // Preserve the resource reference.
+        Reference rr = request.getResourceRef().clone();
+        
         super.handle(request, response);
 
+        // Restore the resource reference
+        request.setResourceRef(rr);
+        
         // Handle OPTIONS requests.
-        Reference rr = request.getResourceRef();
         String rp = rr.getRemainingPart(false, false);
         if (isAutoDescribed()
                 && Method.OPTIONS.equals(request.getMethod())
