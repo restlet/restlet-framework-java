@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.restlet.data.CacheDirective;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Warning;
@@ -50,6 +51,9 @@ import org.restlet.representation.StringRepresentation;
 public abstract class Message {
     /** The modifiable attributes map. */
     private volatile Map<String, Object> attributes;
+
+    /** The caching directives. */
+    private volatile List<CacheDirective> cacheDirectives;
 
     /** The payload of the message. */
     private volatile Representation entity;
@@ -87,6 +91,7 @@ public abstract class Message {
      */
     public Message(Representation entity) {
         this.attributes = null;
+        this.cacheDirectives = null;
         this.date = null;
         this.entity = entity;
         this.entityForm = null;
@@ -146,6 +151,28 @@ public abstract class Message {
         }
 
         return this.attributes;
+    }
+
+    /**
+     * Returns the cache directives.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Cache-Control" header.
+     * 
+     * @return The cache directives.
+     */
+    public List<CacheDirective> getCacheDirectives() {
+        // Lazy initialization with double-check.
+        List<CacheDirective> r = this.cacheDirectives;
+        if (r == null) {
+            synchronized (this) {
+                r = this.cacheDirectives;
+                if (r == null) {
+                    this.cacheDirectives = r = new CopyOnWriteArrayList<CacheDirective>();
+                }
+            }
+        }
+        return r;
     }
 
     /**
@@ -283,6 +310,19 @@ public abstract class Message {
      */
     public void setAttributes(Map<String, Object> attributes) {
         this.attributes = attributes;
+    }
+
+    /**
+     * Sets the cache directives.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Cache-Control" header.
+     * 
+     * @param cacheDirectives
+     *            The cache directives.
+     */
+    public void setCacheDirectives(List<CacheDirective> cacheDirectives) {
+        this.cacheDirectives = cacheDirectives;
     }
 
     /**
