@@ -44,22 +44,26 @@ import java.util.Date;
  */
 public class Warning {
 
-    /** The special status. */
-    private volatile Status status;
-
     /** The agent. Typically a caching agent. */
     private volatile String agent;
 
     /** The warning date. */
     private volatile Date date;
 
+    /** The special status. */
+    private volatile Status status;
+
+    /** The warning text. */
+    private volatile String text;
+
     /**
      * Constructor.
      */
     public Warning() {
-        this.status = null;
         this.agent = null;
         this.date = null;
+        this.status = null;
+        this.text = null;
     }
 
     /**
@@ -90,6 +94,15 @@ public class Warning {
     }
 
     /**
+     * Returns the warning text.
+     * 
+     * @return The warning text.
+     */
+    public String getText() {
+        return text;
+    }
+
+    /**
      * Sets the agent. Typically a caching agent.
      * 
      * @param agent
@@ -117,6 +130,16 @@ public class Warning {
      */
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    /**
+     * Sets the warning text.
+     * 
+     * @param text
+     *            The warning text.
+     */
+    public void setText(String text) {
+        this.text = text;
     }
 
 }

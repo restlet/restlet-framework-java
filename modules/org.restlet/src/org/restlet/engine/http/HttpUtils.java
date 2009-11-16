@@ -46,7 +46,6 @@ import org.restlet.data.Reference;
  * @author Jerome Louvel
  */
 public class HttpUtils {
-
     /**
      * Appends a source string as an HTTP comment.
      * 
@@ -108,7 +107,6 @@ public class HttpUtils {
         destination.append('"');
         return destination;
     }
-
     /**
      * Appends a source string as an URI encoded string.
      * 
@@ -258,6 +256,18 @@ public class HttpUtils {
     }
 
     /**
+     * Indicates if the given character is a comment text. It means
+     * {@link #isText(int)} returns true and the character is not '(' or ')'.
+     * 
+     * @param character
+     *            The character to test.
+     * @return True if the given character is a quoted text.
+     */
+    public static boolean isCommentText(int character) {
+        return isText(character) && (character != '(') && (character != ')');
+    }
+
+    /**
      * Indicates if the given character is a control character.
      * 
      * @param character
@@ -321,6 +331,19 @@ public class HttpUtils {
      */
     public static boolean isLowerCase(int character) {
         return (character >= 'a') && (character <= 'z');
+    }
+
+    /**
+     * Indicates if the given character is a quoted text. It means
+     * {@link #isText(int)} returns true and {@link #isDoubleQuote(int)} returns
+     * false.
+     * 
+     * @param character
+     *            The character to test.
+     * @return True if the given character is a quoted text.
+     */
+    public static boolean isQuotedText(int character) {
+        return isText(character) && !isDoubleQuote(character);
     }
 
     /**

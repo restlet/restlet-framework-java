@@ -47,6 +47,7 @@ import org.restlet.data.Encoding;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Status;
+import org.restlet.data.Warning;
 import org.restlet.engine.security.AuthenticatorUtils;
 import org.restlet.engine.util.Base64;
 import org.restlet.engine.util.DateUtils;
@@ -269,6 +270,14 @@ public class HttpServerAdapter extends HttpAdapter {
         // Add the accept-ranges header
         if (response.getServerInfo().isAcceptingRanges()) {
             responseHeaders.add(HttpConstants.HEADER_ACCEPT_RANGES, "bytes");
+        }
+
+        // Add the warning headers
+        if (!response.getWarnings().isEmpty()) {
+            for (Warning warning : response.getWarnings()) {
+                responseHeaders.add(HttpConstants.HEADER_WARNING, WarningUtils
+                        .format(warning));
+            }
         }
     }
 

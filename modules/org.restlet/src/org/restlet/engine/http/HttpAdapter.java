@@ -141,6 +141,8 @@ public class HttpAdapter extends Adapter {
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_VARY)
                         || param.getName().equalsIgnoreCase(
+                                HttpConstants.HEADER_WARNING)
+                        || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_WWW_AUTHENTICATE)) {
                     // Standard headers that can't be overridden
                     getLogger()
@@ -167,9 +169,7 @@ public class HttpAdapter extends Adapter {
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_UPGRADE)
                         || param.getName().equalsIgnoreCase(
-                                HttpConstants.HEADER_VIA)
-                        || param.getName().equalsIgnoreCase(
-                                HttpConstants.HEADER_WARNING)) {
+                                HttpConstants.HEADER_VIA)) {
                     // Standard headers that shouldn't be overridden
                     getLogger()
                             .info(

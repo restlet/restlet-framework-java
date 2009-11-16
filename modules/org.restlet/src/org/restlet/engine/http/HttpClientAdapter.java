@@ -186,6 +186,17 @@ public class HttpClientAdapter extends HttpAdapter {
 
                     value = hr.readValue();
                 }
+            } else if (header.getName().equalsIgnoreCase(
+                    HttpConstants.HEADER_WARNING)) {
+                WarningReader hr = new WarningReader(header.getValue());
+                try {
+                    response.getWarnings().add(hr.readWarning());
+                } catch (Exception e) {
+                    Context.getCurrentLogger().log(
+                            Level.WARNING,
+                            "Error during warning parsing. Header: "
+                                    + header.getValue(), e);
+                }
             }
         }
     }
