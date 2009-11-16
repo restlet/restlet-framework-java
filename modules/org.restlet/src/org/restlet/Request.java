@@ -147,6 +147,7 @@ public class Request extends Message {
         this.hostRef = null;
         this.method = method;
         this.originalRef = null;
+        // [ifndef gwt] instruction
         this.proxyChallengeResponse = null;
         this.ranges = null;
         this.referrerRef = null;
