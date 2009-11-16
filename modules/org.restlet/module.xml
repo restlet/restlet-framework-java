@@ -187,12 +187,6 @@
 		</files-sets>
 	</source>
 	<compile edition="gwt" excludes="**/com/google/**" />
-	<stage edition="gwt" includesource="true">
-		<files-mappers>
-<![CDATA[
-      <globmapper from="src/*" to="*" handledirsep="true"/>
-]]>
-		</files-mappers>
-	</stage>
+	<stage edition="gwt" includesource="true" />
 
 </module>

@@ -32,4 +32,5 @@
 ]]>
 		</files-sets>
 	</source>
+	<stage edition="gwt" includesource="true" />
 </module>
