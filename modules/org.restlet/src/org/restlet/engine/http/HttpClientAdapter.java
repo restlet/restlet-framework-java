@@ -50,6 +50,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
+import org.restlet.data.Warning;
 import org.restlet.engine.Edition;
 import org.restlet.engine.Engine;
 import org.restlet.engine.util.DateUtils;
@@ -488,6 +489,14 @@ public class HttpClientAdapter extends HttpAdapter {
                                         request, requestHeaders));
             }
             // [enddef]
+
+            // Add the warning headers
+            if (!request.getWarnings().isEmpty()) {
+                for (Warning warning : request.getWarnings()) {
+                    requestHeaders.add(HttpConstants.HEADER_WARNING,
+                            WarningUtils.format(warning));
+                }
+            }
         }
     }
 

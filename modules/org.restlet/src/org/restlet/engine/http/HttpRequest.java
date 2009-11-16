@@ -46,6 +46,7 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Range;
 import org.restlet.data.Reference;
 import org.restlet.data.Tag;
+import org.restlet.data.Warning;
 import org.restlet.engine.security.AuthenticatorUtils;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.engine.util.RangeUtils;
@@ -93,6 +94,9 @@ public class HttpRequest extends Request {
     /** The low-level HTTP call. */
     private volatile HttpCall httpCall;
 
+    /** Indicates if the proxy security data was parsed and added. */
+    private volatile boolean proxySecurityAdded;
+
     /** Indicates if the ranges data was parsed and added. */
     private volatile boolean rangesAdded;
 
@@ -102,8 +106,8 @@ public class HttpRequest extends Request {
     /** Indicates if the security data was parsed and added. */
     private volatile boolean securityAdded;
 
-    /** Indicates if the proxy security data was parsed and added. */
-    private volatile boolean proxySecurityAdded;
+    /** Indicates if the warning data was parsed and added. */
+    private volatile boolean warningsAdded;
 
     /**
      * Constructor.
@@ -122,6 +126,7 @@ public class HttpRequest extends Request {
         this.referrerAdded = false;
         this.securityAdded = false;
         this.proxySecurityAdded = false;
+        this.warningsAdded = false;
         this.httpCall = httpCall;
 
         // Set the properties
@@ -506,6 +511,26 @@ public class HttpRequest extends Request {
     }
 
     @Override
+    public List<Warning> getWarnings() {
+        List<Warning> result = super.getWarnings();
+        if (!warningsAdded) {
+            for (String string : getHttpCall().getRequestHeaders()
+                    .getValuesArray(HttpConstants.HEADER_WARNING)) {
+                WarningReader hr = new WarningReader(string);
+                try {
+                    result.add(hr.readWarning());
+                } catch (Exception e) {
+                    Context.getCurrentLogger().log(Level.WARNING,
+                            "Error during warning parsing. Header: " + string,
+                            e);
+                }
+            }
+            setWarnings(result);
+        }
+        return result;
+    }
+
+    @Override
     public void setChallengeResponse(ChallengeResponse response) {
         super.setChallengeResponse(response);
         this.securityAdded = true;
@@ -522,4 +547,11 @@ public class HttpRequest extends Request {
         super.setProxyChallengeResponse(response);
         this.proxySecurityAdded = true;
     }
+
+    @Override
+    public void setWarnings(List<Warning> warnings) {
+        super.setWarnings(warnings);
+        this.warningsAdded = true;
+    }
+
 }
