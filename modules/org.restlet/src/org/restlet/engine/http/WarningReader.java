@@ -43,16 +43,6 @@ import org.restlet.engine.util.DateUtils;
  */
 public class WarningReader extends HeaderReader {
 
-    public static void main(String[] args) throws IOException {
-        WarningReader hr = new WarningReader(
-                "100 localhost:8182 \"Ceci est mon texte\" \"Ceci est mon texte\"");
-        Warning warning = hr.readWarning();
-        System.out.println(warning.getStatus());
-        System.out.println(warning.getAgent());
-        System.out.println(warning.getText());
-        System.out.println(warning.getDate());
-    }
-
     public WarningReader(String header) {
         super(header);
     }
