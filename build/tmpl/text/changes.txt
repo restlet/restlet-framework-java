@@ -28,6 +28,8 @@ Changes log
           Reported by Nicolas Rinaudo and Rhett Sutphin
         - Fixed bug in InputEntityStream causing issue with mark/reset
           logic. Reported by Arjohn Kampman.
+        - Fixed bug that generates WADL documentation with wrong base 
+          ref. Reported by Carsten Lohmann.
     - Misc
         - Updated license file to mention distribution under EPL 1.0 in
           addition to other licenses, like for Restlet 2.0.
