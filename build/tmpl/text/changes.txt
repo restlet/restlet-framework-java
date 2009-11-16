@@ -191,6 +191,7 @@ Changes log
         - Response with a 200 (success, ok) status and no content now log a fine trace
           instead of a warning and automatically change the status to 
           204 (success, no content).
+        - Added support of the warning header.
     - Misc
         - Added Velocity template in the org.restlet.example project.
           Reported by Ben Vesco.
