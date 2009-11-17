@@ -52,20 +52,29 @@ import org.restlet.representation.RepresentationInfo;
  *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.26"
  *      >If-None-Match</a>
  * @see <a
+ *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.27"
+ *      >If-Range</a>
+ * @see <a
  *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.28"
  *      >If-Unmodified-Since</a>
  * 
  * @author Jerome Louvel
  */
 public final class Conditions {
-    /** The "if-match" condition */
+    /** The "if-match" condition. */
     private volatile List<Tag> match;
 
-    /** The "if-modified-since" condition */
+    /** The "if-modified-since" condition. */
     private volatile Date modifiedSince;
 
-    /** The "if-none-match" condition */
+    /** The "if-none-match" condition. */
     private volatile List<Tag> noneMatch;
+
+    /** The "if-range" condition as a Date. */
+    private volatile Date rangeDate;
+
+    /** The "if-range" condition as an entity tag. */
+    private volatile Tag rangeTag;
 
     /** The "if-unmodified-since" condition */
     private volatile Date unmodifiedSince;
@@ -136,20 +145,73 @@ public final class Conditions {
     }
 
     /**
-     * Returns the conditional status of a variant using a given method.
+     * Returns the range condition based on the modification date of the
+     * requested variant.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "If-Range" header.
      * 
-     * @param method
-     *            The request method.
+     * @return The range condition date.
+     */
+    public Date getRangeDate() {
+        return rangeDate;
+    }
+
+    /**
+     * Returns the range conditional status of an entity.
+     * 
      * @param representationInfo
      *            The representation information that will be tested.
-     * @return Null if the requested method can be performed, the status of the
-     *         response otherwise.
+     * @return the status of the response.
      */
-    public Status getStatus(Method method, RepresentationInfo representationInfo) {
-        return getStatus(method, representationInfo != null,
+    public Status getRangeStatus(RepresentationInfo representationInfo) {
+        return getRangeStatus((representationInfo == null) ? null
+                : representationInfo.getTag(),
                 (representationInfo == null) ? null : representationInfo
-                        .getTag(), (representationInfo == null) ? null
-                        : representationInfo.getModificationDate());
+                        .getModificationDate());
+    }
+
+    /**
+     * Returns the range conditional status of an entity.
+     * 
+     * @param tag
+     *            The tag of the entity.
+     * @param modificationDate
+     *            The modification date of the entity.
+     * @return The status of the response.
+     */
+    public Status getRangeStatus(Tag tag, Date modificationDate) {
+        Status result = Status.CLIENT_ERROR_PRECONDITION_FAILED;
+        if (getRangeTag() != null) {
+            boolean all = getRangeTag().equals(Tag.ALL);
+
+            // If a tag exists
+            if (tag != null) {
+                if (all || getRangeTag().equals(tag)) {
+                    result = Status.SUCCESS_OK;
+                }
+            }
+        } else if (getRangeDate() != null) {
+            // If a modification date exists
+            if (getRangeDate().equals(modificationDate)) {
+                result = Status.SUCCESS_OK;
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the range condition based on the entity tag of the requested
+     * variant.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "If-Range" header.
+     * 
+     * @return The range entity tag.
+     */
+    public Tag getRangeTag() {
+        return rangeTag;
     }
 
     /**
@@ -286,6 +348,23 @@ public final class Conditions {
     }
 
     /**
+     * Returns the conditional status of a variant using a given method.
+     * 
+     * @param method
+     *            The request method.
+     * @param representationInfo
+     *            The representation information that will be tested.
+     * @return Null if the requested method can be performed, the status of the
+     *         response otherwise.
+     */
+    public Status getStatus(Method method, RepresentationInfo representationInfo) {
+        return getStatus(method, representationInfo != null,
+                (representationInfo == null) ? null : representationInfo
+                        .getTag(), (representationInfo == null) ? null
+                        : representationInfo.getModificationDate());
+    }
+
+    /**
      * Returns the condition based on the modification date of the requested
      * variant.<br>
      * <br>
@@ -307,6 +386,15 @@ public final class Conditions {
         return (((this.match != null) && !this.match.isEmpty())
                 || ((this.noneMatch != null) && !this.noneMatch.isEmpty())
                 || (getModifiedSince() != null) || (getUnmodifiedSince() != null));
+    }
+
+    /**
+     * Indicates if there are some range conditions set.
+     * 
+     * @return True if there are some range conditions set.
+     */
+    public boolean hasSomeRange() {
+        return getRangeTag() != null || getRangeDate() != null;
     }
 
     /**
@@ -348,6 +436,34 @@ public final class Conditions {
      */
     public void setNoneMatch(List<Tag> tags) {
         this.noneMatch = tags;
+    }
+
+    /**
+     * Sets the range condition based on the modification date of the requested
+     * variant.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "If-Range" header.
+     * 
+     * @param rangeDate
+     *            The date of the range condition.
+     */
+    public void setRangeDate(Date rangeDate) {
+        this.rangeDate = rangeDate;
+    }
+
+    /**
+     * Sets the range condition based on the entity tag of the requested
+     * variant.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "If-Range" header.
+     * 
+     * @param rangeTag
+     *            The entity tag of the range condition.
+     */
+    public void setRangeTag(Tag rangeTag) {
+        this.rangeTag = rangeTag;
     }
 
     /**

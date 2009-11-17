@@ -322,6 +322,8 @@ public class HttpRequest extends Request {
                     .getValues(HttpConstants.HEADER_IF_NONE_MATCH);
             Date ifModifiedSince = null;
             Date ifUnmodifiedSince = null;
+            String ifRangeHeader = getHttpCall().getRequestHeaders()
+                    .getFirstValue(HttpConstants.HEADER_IF_RANGE);
 
             for (final Parameter header : getHttpCall().getRequestHeaders()) {
                 if (header.getName().equalsIgnoreCase(
@@ -401,6 +403,16 @@ public class HttpRequest extends Request {
                             Level.INFO,
                             "Unable to process the if-none-match header: "
                                     + ifNoneMatchHeader);
+                }
+            }
+
+            if (ifRangeHeader != null && ifRangeHeader.length() > 0) {
+                Tag tag = Tag.parse(ifRangeHeader);
+                if (tag != null) {
+                    result.setRangeTag(tag);
+                } else {
+                    Date date = HttpCall.parseDate(ifRangeHeader, false);
+                    result.setRangeDate(date);
                 }
             }
 

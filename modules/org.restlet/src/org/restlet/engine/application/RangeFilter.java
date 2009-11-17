@@ -69,8 +69,11 @@ public class RangeFilter extends Filter {
                 if (response.getStatus().isSuccess()
                         && !Status.SUCCESS_PARTIAL_CONTENT.equals(response
                                 .getStatus())) {
-                    if (request.getRanges().size() == 1) {
-                        // At this time, list of ranges are not supported.
+                    // At this time, list of ranges are not supported.
+                    if (request.getRanges().size() == 1
+                            && (!request.getConditions().hasSomeRange() || request
+                                    .getConditions().getRangeStatus(
+                                            response.getEntity()).isSuccess())) {
                         Range requestedRange = request.getRanges().get(0);
 
                         if (response.getEntity().getSize() == Representation.UNKNOWN_SIZE) {

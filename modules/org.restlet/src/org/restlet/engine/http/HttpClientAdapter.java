@@ -323,6 +323,23 @@ public class HttpClientAdapter extends HttpAdapter {
                         .toString());
             }
 
+            if (condition.getRangeTag() != null
+                    && condition.getRangeDate() != null) {
+                getLogger()
+                        .log(
+                                Level.WARNING,
+                                "Unable to format the HTTP If-Range header due to the presence of both entity tag and modification date.");
+            } else {
+                if (condition.getRangeTag() != null) {
+                    requestHeaders.add(HttpConstants.HEADER_IF_RANGE, condition
+                            .getRangeTag().format());
+                } else if (condition.getRangeDate() != null) {
+                    String rDate = DateUtils.format(condition.getRangeDate(),
+                            DateUtils.FORMAT_RFC_1123.get(0));
+                    requestHeaders.add(HttpConstants.HEADER_IF_RANGE, rDate);
+                }
+            }
+
             if (condition.getUnmodifiedSince() != null) {
                 String iusDate = DateUtils
                         .format(condition.getUnmodifiedSince(),

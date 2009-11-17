@@ -117,6 +117,8 @@ public class HttpAdapter extends Adapter {
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_IF_NONE_MATCH)
                         || param.getName().equalsIgnoreCase(
+                                HttpConstants.HEADER_IF_RANGE)
+                        || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_IF_UNMODIFIED_SINCE)
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_LAST_MODIFIED)
@@ -154,8 +156,6 @@ public class HttpAdapter extends Adapter {
                                             + "\" is not allowed. Please use the equivalent property in the Restlet API.");
                 } else if (param.getName().equalsIgnoreCase(
                         HttpConstants.HEADER_EXPECT)
-                        || param.getName().equalsIgnoreCase(
-                                HttpConstants.HEADER_IF_RANGE)
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_MAX_FORWARDS)
                         || param.getName().equalsIgnoreCase(
