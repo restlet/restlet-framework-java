@@ -102,7 +102,8 @@ Changes log
           parent ChallengeMessage class.
         - Added org.restlet.data.AuthenticationInfo class to support
           preemptive HTTP DIGEST authentication. 
-          Initially contributed by Kelly McLaughlin
+          Initially contributed by Kelly McLaughlin.
+        - Added support of the If-Range header.
       - Bugs fixed
         - Fixed bug when the deprecated method "createRoot" is 
           implemented instead of the "createInboundRoot".
