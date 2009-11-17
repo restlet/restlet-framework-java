@@ -35,7 +35,8 @@ import java.util.List;
 import org.restlet.engine.http.HttpConstants;
 
 /**
- * Directive that must be obeyed by all caching mechanisms along the call chain.<br>
+ * Directive for caching mechanisms along the call chain. This overrides the
+ * default behavior of those caches and proxies.<br>
  * <br>
  * Note that when used with HTTP connectors, this class maps to the
  * "Cache-Control" header.
