@@ -780,17 +780,6 @@ public class ClientResource extends UniformResource {
      * @return True if redirections are followed.
      */
     public boolean isFollowingRedirects() {
-        return isFollowRedirects();
-    }
-
-    /**
-     * Indicates if redirections are followed.
-     * 
-     * @return True if redirections are followed.
-     * @deprecated Use {@link #isFollowingRedirects()} instead.
-     */
-    @Deprecated
-    public boolean isFollowRedirects() {
         return followingRedirects;
     }
 
@@ -1182,18 +1171,6 @@ public class ClientResource extends UniformResource {
      *            True if redirections are followed.
      */
     public void setFollowingRedirects(boolean followingRedirects) {
-        setFollowRedirects(followingRedirects);
-    }
-
-    /**
-     * Indicates if redirections are followed.
-     * 
-     * @param followingRedirects
-     *            True if redirections are followed.
-     * @deprecated Use {@link #setFollowingRedirects(boolean)} instead.
-     */
-    @Deprecated
-    public void setFollowRedirects(boolean followingRedirects) {
         this.followingRedirects = followingRedirects;
     }
 

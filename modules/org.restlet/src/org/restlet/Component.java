@@ -80,7 +80,7 @@ import org.restlet.util.ServerList;
  * 
  * <pre>
  * &lt;?xml version=&quot;1.0&quot;?&gt;
- * &lt;component xmlns=&quot;http://www.restlet.org/schemas/1.2/Component&quot;&gt;
+ * &lt;component xmlns=&quot;http://www.restlet.org/schemas/2.0/Component&quot;&gt;
  *    &lt;client protocol=&quot;CLAP&quot; /&gt;
  *    &lt;client protocol=&quot;FILE&quot; /&gt;
  *    &lt;client protocols=&quot;HTTP HTTPS&quot; /&gt;

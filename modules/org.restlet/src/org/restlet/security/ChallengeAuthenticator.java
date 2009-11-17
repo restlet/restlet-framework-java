@@ -104,9 +104,8 @@ public class ChallengeAuthenticator extends Authenticator {
 
     /**
      * Authenticates the call, relying on the verifier to check the credentials
-     * provided (in general an identifier + secret couple).<br>
-     * <br>
-     * If the credentials are valid, the next Restlet attached is invoked.<br>
+     * provided (in general an identifier + secret couple). If the credentials
+     * are valid, the next Restlet attached is invoked.<br>
      * <br>
      * If the credentials are missing, then
      * {@link #challenge(Response, boolean)} is invoked.<br>
@@ -267,23 +266,9 @@ public class ChallengeAuthenticator extends Authenticator {
      * {@link #forbid(Response)} will be called.
      * 
      * @return True if invalid credentials result in a new challenge.
-     * @deprecated Use {@link #isRechallenging()} instead.
-     */
-    @Deprecated
-    public boolean isRechallenge() {
-        return this.rechallenging;
-    }
-
-    /**
-     * Indicates if a new challenge should be sent when invalid credentials are
-     * received (true by default to conform to HTTP recommendations). If set to
-     * false, upon reception of invalid credentials, the method
-     * {@link #forbid(Response)} will be called.
-     * 
-     * @return True if invalid credentials result in a new challenge.
      */
     public boolean isRechallenging() {
-        return isRechallenge();
+        return this.rechallenging;
     }
 
     /**
@@ -302,23 +287,10 @@ public class ChallengeAuthenticator extends Authenticator {
      * 
      * @param rechallenging
      *            True if invalid credentials result in a new challenge.
-     * @deprecated Use {@link #setRechallenging(boolean)} instead.
-     */
-    @Deprecated
-    public void setRechallenge(boolean rechallenging) {
-        this.rechallenging = rechallenging;
-    }
-
-    /**
-     * Indicates if a new challenge should be sent when invalid credentials are
-     * received.
-     * 
-     * @param rechallenging
-     *            True if invalid credentials result in a new challenge.
      * @see #isRechallenging()
      */
     public void setRechallenging(boolean rechallenging) {
-        setRechallenge(rechallenging);
+        this.rechallenging = rechallenging;
     }
 
     /**

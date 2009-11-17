@@ -275,8 +275,8 @@ public class Response extends Message {
     }
 
     /**
-     * Returns the reference that the client should follow for redirections or
-     * resource creations.<br>
+     * Returns the location reference. This is the reference that the client
+     * should follow for redirections or resource creations.<br>
      * <br>
      * Note that when used with HTTP connectors, this property maps to the
      * "Location" header.
@@ -544,10 +544,9 @@ public class Response extends Message {
     }
 
     /**
-     * Sets the cookie settings provided by the server.<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
-     * "Set-Cookie" and "Set-Cookie2" headers.
+     * Sets the cookie settings provided by the server. Note that when used with
+     * HTTP connectors, this property maps to the "Set-Cookie" and "Set-Cookie2"
+     * headers.
      * 
      * @param cookieSettings
      *            The cookie settings provided by the server.
@@ -573,10 +572,8 @@ public class Response extends Message {
 
     /**
      * Sets the reference that the client should follow for redirections or
-     * resource creations.<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
-     * "Location" header.
+     * resource creations. Note that when used with HTTP connectors, this
+     * property maps to the "Location" header.
      * 
      * @param locationRef
      *            The reference to set.

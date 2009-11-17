@@ -134,18 +134,6 @@ public class Group {
      * @return True if the roles of the parent group should be inherited.
      */
     public boolean isInheritingRoles() {
-        return isInheritRoles();
-    }
-
-    /**
-     * Indicates if the roles of the parent group should be inherited. Those
-     * roles indirectly cover the granted or denied permissions.
-     * 
-     * @return True if the roles of the parent group should be inherited.
-     * @deprecated Use {@link #isInheritingRoles()} instead.
-     */
-    @Deprecated
-    public boolean isInheritRoles() {
         return inheritingRoles;
     }
 
@@ -167,19 +155,6 @@ public class Group {
      *            True if the roles of the parent group should be inherited.
      */
     public void setInheritingRoles(boolean inheritingRoles) {
-        setInheritRoles(inheritingRoles);
-    }
-
-    /**
-     * Indicates if the roles of the parent group should be inherited. Those
-     * roles indirectly cover the granted or denied permissions.
-     * 
-     * @param inheritingRoles
-     *            True if the roles of the parent group should be inherited.
-     * @deprecated Use {@link #setInheritingRoles(boolean)} instead.
-     */
-    @Deprecated
-    public void setInheritRoles(boolean inheritingRoles) {
         this.inheritingRoles = inheritingRoles;
     }
 

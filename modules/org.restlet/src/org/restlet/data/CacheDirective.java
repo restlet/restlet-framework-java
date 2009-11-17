@@ -46,10 +46,10 @@ import org.restlet.engine.http.HttpConstants;
 public final class CacheDirective extends Parameter {
 
     /**
-     * Creates a directive indicating that the client is willing to accept a
-     * response whose age is no greater than the specified time in seconds.
-     * Unless "max-stale" directive is also included, the client is not willing
-     * to accept a stale response.<br>
+     * Creates a "max-age" directive. Indicates that the client is willing to
+     * accept a response whose age is no greater than the specified time in
+     * seconds. Unless "max-stale" directive is also included, the client is not
+     * willing to accept a stale response.<br>
      * <br>
      * Note that this directive can be used on requests or responses.
      * 
@@ -69,8 +69,9 @@ public final class CacheDirective extends Parameter {
     }
 
     /**
-     * Creates a directive indicating that the client is willing to accept a
-     * response that has exceeded its expiration time by any amount of time.<br>
+     * Creates a "max-stale" directive. Indicates that the client is willing to
+     * accept a response that has exceeded its expiration time by any amount of
+     * time.<br>
      * <br>
      * Note that this directive can be used on requests only.
      * 
@@ -84,8 +85,9 @@ public final class CacheDirective extends Parameter {
     }
 
     /**
-     * Creates a directive indicating that the client is willing to accept a
-     * response that has exceeded its expiration time by a given amount of time.<br>
+     * Creates a "max-stale" directive. Indicates that the client is willing to
+     * accept a response that has exceeded its expiration time by a given amount
+     * of time.<br>
      * <br>
      * Note that this directive can be used on requests only.
      * 
@@ -102,10 +104,11 @@ public final class CacheDirective extends Parameter {
     }
 
     /**
-     * Creates a directive indicating that the client is willing to accept a
-     * response whose freshness lifetime is no less than its current age plus
-     * the specified time in seconds. That is, the client wants a response that
-     * will still be fresh for at least the specified number of seconds.<br>
+     * Creates a "min-fresh" directive. Indicates that the client is willing to
+     * accept a response whose freshness lifetime is no less than its current
+     * age plus the specified time in seconds. That is, the client wants a
+     * response that will still be fresh for at least the specified number of
+     * seconds.<br>
      * <br>
      * Note that this directive can be used on requests only.
      * 
@@ -122,8 +125,8 @@ public final class CacheDirective extends Parameter {
     }
 
     /**
-     * Creates a directive indicating that the origin server requires
-     * revalidation of a cache entry on any subsequent use.<br>
+     * Creates a "must-revalidate" directive. Indicates that the origin server
+     * requires revalidation of a cache entry on any subsequent use.<br>
      * <br>
      * Note that this directive can be used on responses only.
      * 
@@ -137,9 +140,9 @@ public final class CacheDirective extends Parameter {
     }
 
     /**
-     * Creates a directive indicating that a cache must not use the response to
-     * satisfy subsequent requests without successful revalidation with the
-     * origin server.<br>
+     * Creates a "no-cache" directive. Indicates that a cache must not use the
+     * response to satisfy subsequent requests without successful revalidation
+     * with the origin server.<br>
      * <br>
      * Note that this directive can be used on requests or responses.
      * 
@@ -153,9 +156,9 @@ public final class CacheDirective extends Parameter {
     }
 
     /**
-     * Creates a directive indicating that a cache must not use the response to
-     * satisfy subsequent requests without successful revalidation with the
-     * origin server.<br>
+     * Creates a "no-cache" directive. Indicates that a cache must not use the
+     * response to satisfy subsequent requests without successful revalidation
+     * with the origin server.<br>
      * <br>
      * Note that this directive can be used on requests or responses.
      * 
@@ -184,9 +187,9 @@ public final class CacheDirective extends Parameter {
     }
 
     /**
-     * Creates a directive indicating that a cache must not use the response to
-     * satisfy subsequent requests without successful revalidation with the
-     * origin server.<br>
+     * Creates a "no-cache" directive. Indicates that a cache must not use the
+     * response to satisfy subsequent requests without successful revalidation
+     * with the origin server.<br>
      * <br>
      * Note that this directive can be used on requests or responses.
      * 
@@ -204,9 +207,9 @@ public final class CacheDirective extends Parameter {
     }
 
     /**
-     * Creates a directive indicating that a cache must not release or retain
-     * any information about the call. This applies to both private and shared
-     * caches.<br>
+     * Creates a "no-store" directive. Indicates that a cache must not release
+     * or retain any information about the call. This applies to both private
+     * and shared caches.<br>
      * <br>
      * Note that this directive can be used on requests or responses.
      * 
@@ -220,8 +223,8 @@ public final class CacheDirective extends Parameter {
     }
 
     /**
-     * Creates a directive indicating that a cache or intermediary proxy must
-     * not transform the response entity.<br>
+     * Creates a "no-transform" directive. Indicates that a cache or
+     * intermediary proxy must not transform the response entity.<br>
      * <br>
      * Note that this directive can be used on requests or responses.
      * 
@@ -235,8 +238,8 @@ public final class CacheDirective extends Parameter {
     }
 
     /**
-     * Creates a directive indicating that only cached responses should be
-     * returned to the client.<br>
+     * Creates a "onlyIfCached" directive. Indicates that only cached responses
+     * should be returned to the client.<br>
      * <br>
      * Note that this directive can be used on requests only.
      * 
@@ -250,8 +253,9 @@ public final class CacheDirective extends Parameter {
     }
 
     /**
-     * Creates a directive indicating that all or part of the response message
-     * is intended for a single user and must not be cached by a shared cache.<br>
+     * Creates a "private" directive. Indicates that all or part of the response
+     * message is intended for a single user and must not be cached by a shared
+     * cache.<br>
      * <br>
      * Note that this directive can be used on responses only.
      * 
@@ -265,8 +269,9 @@ public final class CacheDirective extends Parameter {
     }
 
     /**
-     * Creates a directive indicating that all or part of the response message
-     * is intended for a single user and must not be cached by a shared cache.<br>
+     * Creates a "private" directive. Indicates that all or part of the response
+     * message is intended for a single user and must not be cached by a shared
+     * cache.<br>
      * <br>
      * Note that this directive can be used on responses only.
      * 
@@ -295,8 +300,9 @@ public final class CacheDirective extends Parameter {
     }
 
     /**
-     * Creates a directive indicating that all or part of the response message
-     * is intended for a single user and must not be cached by a shared cache.<br>
+     * Creates a "private" directive. Indicates that all or part of the response
+     * message is intended for a single user and must not be cached by a shared
+     * cache.<br>
      * <br>
      * Note that this directive can be used on responses only.
      * 
@@ -313,9 +319,9 @@ public final class CacheDirective extends Parameter {
     }
 
     /**
-     * Creates a directive indicating that the origin server requires
-     * revalidation of a cache entry on any subsequent use, except that it does
-     * not apply to non-shared user agent caches<br>
+     * Creates a "proxy-revalidate" directive. Indicates that the origin server
+     * requires revalidation of a cache entry on any subsequent use, except that
+     * it does not apply to non-shared user agent caches<br>
      * <br>
      * Note that this directive can be used on responses only.
      * 
@@ -329,9 +335,9 @@ public final class CacheDirective extends Parameter {
     }
 
     /**
-     * Creates a directive indicating that the response may be cached by any
-     * cache, even if it would normally be non-cacheable or cacheable only
-     * within a non-shared cache.<br>
+     * Creates a "public" directive. Indicates that the response may be cached
+     * by any cache, even if it would normally be non-cacheable or cacheable
+     * only within a non-shared cache.<br>
      * <br>
      * Note that this directive can be used on responses only.
      * 
@@ -345,9 +351,9 @@ public final class CacheDirective extends Parameter {
     }
 
     /**
-     * Creates a directive indicating that the client is willing to accept a
-     * response from a shared cache (but not a private cache) whose age is no
-     * greater than the specified time in seconds.<br>
+     * Creates a "s-maxage" directive. Indicates that the client is willing to
+     * accept a response from a shared cache (but not a private cache) whose age
+     * is no greater than the specified time in seconds.<br>
      * <br>
      * Note that this directive can be used on responses only.
      * 

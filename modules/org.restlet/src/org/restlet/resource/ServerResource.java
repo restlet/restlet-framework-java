@@ -937,7 +937,7 @@ public abstract class ServerResource extends UniformResource {
     }
 
     /**
-     * Indicates the communication options available for this resource.This
+     * Indicates the communication options available for this resource. This
      * method is only invoked if content negotiation has been disabled as
      * indicated by the {@link #isNegotiated()}, otherwise the
      * {@link #options(Variant)} method is invoked.<br>

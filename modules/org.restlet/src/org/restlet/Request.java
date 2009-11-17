@@ -182,8 +182,7 @@ public class Request extends Message {
     }
 
     /**
-     * Returns the authentication response sent by a client to an origin server.<br>
-     * <br>
+     * Returns the authentication response sent by a client to an origin server.
      * Note that when used with HTTP connectors, this property maps to the
      * "Authorization" header.
      * 
@@ -317,9 +316,8 @@ public class Request extends Message {
 
     // [ifndef gwt] method
     /**
-     * Returns the authentication response sent by a client to a proxy.<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
+     * Returns the authentication response sent by a client to a proxy. Note
+     * that when used with HTTP connectors, this property maps to the
      * "Proxy-Authorization" header.
      * 
      * @return The authentication response sent by a client to a proxy.
@@ -329,8 +327,7 @@ public class Request extends Message {
     }
 
     /**
-     * Returns the ranges to return from the target resource's representation.<br>
-     * <br>
+     * Returns the ranges to return from the target resource's representation.
      * Note that when used with HTTP connectors, this property maps to the
      * "Range" header.
      * 
@@ -351,10 +348,8 @@ public class Request extends Message {
     }
 
     /**
-     * Returns the referrer reference if available.<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
-     * "Referer" header.
+     * Returns the referrer reference if available. Note that when used with
+     * HTTP connectors, this property maps to the "Referer" header.
      * 
      * @return The referrer reference.
      */
@@ -434,8 +429,7 @@ public class Request extends Message {
     }
 
     /**
-     * Sets the authentication response sent by a client to an origin server.<br>
-     * <br>
+     * Sets the authentication response sent by a client to an origin server.
      * Note that when used with HTTP connectors, this property maps to the
      * "Authorization" header.
      * 
@@ -468,10 +462,8 @@ public class Request extends Message {
     }
 
     /**
-     * Sets the cookies provided by the client.<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
-     * "Cookie" header.
+     * Sets the cookies provided by the client. Note that when used with HTTP
+     * connectors, this property maps to the "Cookie" header.
      * 
      * @param cookies
      *            The cookies provided by the client.
@@ -481,10 +473,8 @@ public class Request extends Message {
     }
 
     /**
-     * Sets the host reference.<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
-     * "Host" header.
+     * Sets the host reference. Note that when used with HTTP connectors, this
+     * property maps to the "Host" header.
      * 
      * @param hostRef
      *            The host reference.
@@ -494,10 +484,8 @@ public class Request extends Message {
     }
 
     /**
-     * Sets the host reference using an URI string.<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
-     * "Host" header.
+     * Sets the host reference using an URI string. Note that when used with
+     * HTTP connectors, this property maps to the "Host" header.
      * 
      * @param hostUri
      *            The host URI.
@@ -529,9 +517,8 @@ public class Request extends Message {
 
     // [ifndef gwt] method
     /**
-     * Sets the authentication response sent by a client to a proxy.<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
+     * Sets the authentication response sent by a client to a proxy. Note that
+     * when used with HTTP connectors, this property maps to the
      * "Proxy-Authorization" header.
      * 
      * @param challengeResponse
@@ -542,10 +529,9 @@ public class Request extends Message {
     }
 
     /**
-     * Sets the ranges to return from the target resource's representation.<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
-     * "Range" header.
+     * Sets the ranges to return from the target resource's representation. Note
+     * that when used with HTTP connectors, this property maps to the "Range"
+     * header.
      * 
      * @param ranges
      *            The ranges.
@@ -555,10 +541,8 @@ public class Request extends Message {
     }
 
     /**
-     * Sets the referrer reference if available.<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
-     * "Referer" header.
+     * Sets the referrer reference if available. Note that when used with HTTP
+     * connectors, this property maps to the "Referer" header.
      * 
      * @param referrerRef
      *            The referrer reference.
@@ -574,10 +558,9 @@ public class Request extends Message {
     }
 
     /**
-     * Sets the referrer reference if available using an URI string.<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
-     * "Referer" header.
+     * Sets the referrer reference if available using an URI string. Note that
+     * when used with HTTP connectors, this property maps to the "Referer"
+     * header.
      * 
      * @param referrerUri
      *            The referrer URI.
