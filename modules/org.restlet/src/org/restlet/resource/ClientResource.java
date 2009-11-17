@@ -673,12 +673,21 @@ public class ClientResource extends UniformResource {
 
             // Wait before attempting again
             if (getRetryDelay() > 0) {
+                // [ifndef gwt]
                 try {
                     Thread.sleep(getRetryDelay());
                 } catch (InterruptedException e) {
                     getLogger().log(Level.FINE,
                             "Retry delay sleep was interrupted", e);
                 }
+                // [enddef]
+                // [ifndef gwt] uncomment
+                // com.google.gwt.user.client.Timer timer = new
+                // com.google.gwt.user.client.Timer() {
+                // public void run() {}
+                // };
+                // timer.schedule((int) getRetryDelay());
+                // [enddef]
             }
 
             // Retry the call
