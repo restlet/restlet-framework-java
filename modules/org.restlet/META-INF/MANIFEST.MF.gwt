@@ -23,7 +23,6 @@ Export-Package: org.restlet;uses:="org.restlet.data,org.restlet.representation,o
    com.google.gwt.http.client",
  org.restlet.engine.io;uses:="org.restlet.data",
  org.restlet.engine.log,
- org.restlet.engine.resource,
  org.restlet.engine.util;uses:="org.restlet.data,org.restlet.representation,org.restlet.util",
  org.restlet.representation;uses:="org.restlet.data,com.google.gwt.user.client.rpc",
  org.restlet.resource;
