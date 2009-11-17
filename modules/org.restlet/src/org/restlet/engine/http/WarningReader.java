@@ -43,6 +43,12 @@ import org.restlet.engine.util.DateUtils;
  */
 public class WarningReader extends HeaderReader {
 
+    /**
+     * Constructor.
+     * 
+     * @param header
+     *            The header to read.
+     */
     public WarningReader(String header) {
         super(header);
     }
@@ -71,9 +77,10 @@ public class WarningReader extends HeaderReader {
     }
 
     /**
-     * Read the content type.
+     * Read the warning header.
      * 
-     * @return The next preference.
+     * @return The next warning.
+     * @throws IOException
      */
     public Warning readWarning() throws IOException {
         Warning result = new Warning();

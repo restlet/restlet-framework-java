@@ -37,6 +37,7 @@ import java.util.logging.Level;
 
 import org.restlet.Context;
 import org.restlet.Request;
+import org.restlet.data.CacheDirective;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
@@ -75,6 +76,9 @@ public class HttpRequest extends Request {
             ((HttpRequest) request).getHeaders().add(headerName, headerValue);
         }
     }
+
+    /** Indicates if the cache control data was parsed and added. */
+    private volatile boolean cacheDirectivesAdded;
 
     /** Indicates if the client data was parsed and added. */
     private volatile boolean clientAdded;
@@ -174,6 +178,27 @@ public class HttpRequest extends Request {
         }
 
         setDate(date);
+    }
+
+    @Override
+    public List<CacheDirective> getCacheDirectives() {
+        List<CacheDirective> result = super.getCacheDirectives();
+        if (!cacheDirectivesAdded) {
+            for (String string : getHttpCall().getRequestHeaders()
+                    .getValuesArray(HttpConstants.HEADER_CACHE_CONTROL)) {
+                CacheControlReader ccr = new CacheControlReader(string);
+                try {
+                    result.addAll(ccr.readDirectives());
+                } catch (Exception e) {
+                    Context.getCurrentLogger().log(
+                            Level.WARNING,
+                            "Error during cache control parsing. Header: "
+                                    + string, e);
+                }
+            }
+            setCacheDirectives(result);
+        }
+        return result;
     }
 
     @Override

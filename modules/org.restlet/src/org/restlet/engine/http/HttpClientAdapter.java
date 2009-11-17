@@ -198,6 +198,17 @@ public class HttpClientAdapter extends HttpAdapter {
                             "Error during warning parsing. Header: "
                                     + header.getValue(), e);
                 }
+            } else if (header.getName().equalsIgnoreCase(
+                    HttpConstants.HEADER_CACHE_CONTROL)) {
+                CacheControlReader ccr = new CacheControlReader(header.getValue());
+                try {
+                    response.getCacheDirectives().addAll(ccr.readDirectives());
+                } catch (Exception e) {
+                    Context.getCurrentLogger().log(
+                            Level.WARNING,
+                            "Error during cache control parsing. Header: "
+                                    + header.getValue(), e);
+                }
             }
         }
     }
@@ -496,6 +507,11 @@ public class HttpClientAdapter extends HttpAdapter {
                     requestHeaders.add(HttpConstants.HEADER_WARNING,
                             WarningUtils.format(warning));
                 }
+            }
+            // Add the Cache-control headers
+            if (!request.getCacheDirectives().isEmpty()) {
+                requestHeaders.add(HttpConstants.HEADER_CACHE_CONTROL,
+                        CacheControlUtils.format(request.getCacheDirectives()));
             }
         }
     }

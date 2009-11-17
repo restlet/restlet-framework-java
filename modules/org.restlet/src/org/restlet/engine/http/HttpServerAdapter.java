@@ -279,6 +279,13 @@ public class HttpServerAdapter extends HttpAdapter {
                         .format(warning));
             }
         }
+
+        // Add the Cache-control headers
+        if (!response.getCacheDirectives().isEmpty()) {
+            responseHeaders.add(HttpConstants.HEADER_CACHE_CONTROL, CacheControlUtils
+                    .format(response.getCacheDirectives()));
+        }
+
     }
 
     /**
