@@ -53,8 +53,6 @@ import org.restlet.data.Range;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.engine.Engine;
-import org.restlet.engine.resource.AnnotationInfo;
-import org.restlet.engine.resource.AnnotationUtils;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.util.Series;
@@ -1473,7 +1471,7 @@ public class ClientResource extends UniformResource {
 
         // [ifndef gwt]
         // Introspect the interface for Restlet annotations
-        final List<AnnotationInfo> annotations = AnnotationUtils
+        final List<org.restlet.engine.resource.AnnotationInfo> annotations = org.restlet.engine.resource.AnnotationUtils
                 .getAnnotationDescriptors(resourceInterface);
 
         // Create the client resource proxy
@@ -1483,8 +1481,8 @@ public class ClientResource extends UniformResource {
                     java.lang.reflect.Method javaMethod, Object[] args)
                     throws Throwable {
                 Object result = null;
-                AnnotationInfo annotation = AnnotationUtils.getAnnotation(
-                        annotations, javaMethod);
+                org.restlet.engine.resource.AnnotationInfo annotation = org.restlet.engine.resource.AnnotationUtils
+                        .getAnnotation(annotations, javaMethod);
 
                 if (annotation != null) {
                     // Save the current client info
