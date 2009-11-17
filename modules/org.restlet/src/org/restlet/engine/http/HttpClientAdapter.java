@@ -31,7 +31,6 @@
 package org.restlet.engine.http;
 
 import java.io.IOException;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Set;
 import java.util.logging.Level;
@@ -98,6 +97,7 @@ public class HttpClientAdapter extends HttpAdapter {
                 response.setDate(date);
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_RETRY_AFTER)) {
+                // [ifndef gwt]
                 Date retryAfter = DateUtils.parse(header.getValue());
 
                 if (retryAfter == null) {
@@ -105,8 +105,9 @@ public class HttpClientAdapter extends HttpAdapter {
                     try {
                         int retryAfterSecs = Integer
                                 .parseInt(header.getValue());
-                        Calendar calendar = Calendar.getInstance();
-                        calendar.add(Calendar.SECOND, retryAfterSecs);
+                        java.util.Calendar calendar = java.util.Calendar
+                                .getInstance();
+                        calendar.add(java.util.Calendar.SECOND, retryAfterSecs);
                         retryAfter = calendar.getTime();
                     } catch (NumberFormatException nfe) {
                         Context.getCurrentLogger().log(
@@ -117,6 +118,7 @@ public class HttpClientAdapter extends HttpAdapter {
                 }
 
                 response.setRetryAfter(retryAfter);
+                // [enddef]
             } else if ((header.getName()
                     .equalsIgnoreCase(HttpConstants.HEADER_SET_COOKIE))
                     || (header.getName()
@@ -200,7 +202,8 @@ public class HttpClientAdapter extends HttpAdapter {
                 }
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_CACHE_CONTROL)) {
-                CacheControlReader ccr = new CacheControlReader(header.getValue());
+                CacheControlReader ccr = new CacheControlReader(header
+                        .getValue());
                 try {
                     response.getCacheDirectives().addAll(ccr.readDirectives());
                 } catch (Exception e) {

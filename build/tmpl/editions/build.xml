@@ -344,7 +344,7 @@
 			<property name="source-exclude-patterns" value="**/package.html" />
 
 			<mkdir dir="${temp}/jar-extras/@{name}" />
-			<condition property="jar-extras" value="${temp}/jar-extras/@{name}" />
+			<property name="jar-extras" value="${temp}/jar-extras/@{name}" />
 
 			<delete failonerror="false" file="${dist-classic}/lib/${mod-@{name}-id}.jar" />
 			<jar destfile="${dist-classic}/lib/${mod-@{name}-id}.jar" filesetmanifest="merge">
