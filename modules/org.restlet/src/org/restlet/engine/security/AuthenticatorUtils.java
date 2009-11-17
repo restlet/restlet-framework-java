@@ -30,17 +30,20 @@
 
 package org.restlet.engine.security;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.io.IOException;
+import java.util.logging.Level;
 
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
+import org.restlet.data.AuthenticationInfo;
+import org.restlet.data.ChallengeMessage;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Parameter;
 import org.restlet.engine.Engine;
+import org.restlet.engine.http.HeaderReader;
 import org.restlet.engine.http.HttpConstants;
 import org.restlet.security.Guard;
 import org.restlet.util.Series;
@@ -53,16 +56,6 @@ import org.restlet.util.Series;
  */
 @SuppressWarnings("deprecation")
 public class AuthenticatorUtils {
-
-    /**
-     * General regex pattern to extract comma separated name-value components.
-     * This pattern captures one name and value per match(), and is repeatedly
-     * applied to the input string to extract all components. Must handle both
-     * quoted and unquoted values as RFC2617 isn't consistent in this respect.
-     * Pattern is immutable and thread-safe so reuse one static instance.
-     */
-    private static final Pattern PATTERN_RFC_2617 = Pattern
-            .compile("([^=]+)=\"?([^\",]+)(?:\"\\s*)?,?\\s*");
 
     /**
      * Indicates if any of the objects is null.
@@ -179,11 +172,19 @@ public class AuthenticatorUtils {
         String result = null;
 
         if (challenge != null) {
-            final AuthenticatorHelper helper = Engine.getInstance().findHelper(
+            AuthenticatorHelper helper = Engine.getInstance().findHelper(
                     challenge.getScheme(), false, true);
 
             if (helper != null) {
-                result = helper.formatRequest(challenge, response, httpHeaders);
+                try {
+                    result = helper.formatRequest(challenge, response,
+                            httpHeaders);
+                } catch (IOException e) {
+                    Context.getCurrentLogger().log(
+                            Level.WARNING,
+                            "Unable to format the challenge request: "
+                                    + challenge, e);
+                }
             } else {
                 result = "?";
                 Context.getCurrentLogger().warning(
@@ -206,11 +207,12 @@ public class AuthenticatorUtils {
      * @param httpHeaders
      *            The current request HTTP headers.
      * @return The {@link HttpConstants#HEADER_AUTHORIZATION} header value.
+     * @throws IOException
      */
     public static String formatResponse(ChallengeResponse challenge,
-            Request request, Series<Parameter> httpHeaders) {
+            Request request, Series<Parameter> httpHeaders) throws IOException {
         String result = null;
-        final AuthenticatorHelper helper = Engine.getInstance().findHelper(
+        AuthenticatorHelper helper = Engine.getInstance().findHelper(
                 challenge.getScheme(), true, false);
 
         if (helper != null) {
@@ -226,48 +228,59 @@ public class AuthenticatorUtils {
     }
 
     /**
-     * Parses an authenticate header into a challenge request. The header is
-     * {@link HttpConstants#HEADER_WWW_AUTHENTICATE}.
+     * Parses the "Authentication-Info" header.
      * 
      * @param header
-     *            The HTTP header value to parse.
-     * @param httpHeaders
-     *            The current response HTTP headers.
-     * @return The parsed challenge request.
+     *            The header value to parse.
+     * @return The equivalent {@link AuthenticationInfo} instance.
+     * @throws IOException
      */
-    public static ChallengeRequest parseRequest(String header,
-            Series<Parameter> httpHeaders) {
-        ChallengeRequest result = null;
+    public static AuthenticationInfo parseAuthenticationInfo(String header) {
+        AuthenticationInfo result = null;
+        HeaderReader hr = new HeaderReader(header);
 
-        if (header != null) {
-            int space = header.indexOf(' ');
+        try {
+            Parameter param;
+            param = hr.readParameter();
 
-            if (space != -1) {
-                String scheme = header.substring(0, space);
-                result = new ChallengeRequest(new ChallengeScheme("HTTP_"
-                        + scheme, scheme), null);
+            while (param != null) {
 
-                // Parse the parameters to extract the realm
-                String rest = header.substring(space + 1);
-                parseParameters(rest, result.getParameters());
-                result.setRealm(result.getParameters().getFirstValue("realm"));
-            } else {
-                String scheme = header.substring(0);
-                result = new ChallengeRequest(new ChallengeScheme("HTTP_"
-                        + scheme, scheme), null);
+                param = hr.readParameter();
             }
-        }
 
-        // Give a chance to the authentication helper to do further parsing
-        AuthenticatorHelper helper = Engine.getInstance().findHelper(
-                result.getScheme(), true, false);
+            String nextNonce = null;
+            int nonceCount = 0;
+            String cnonce = null;
+            String qop = null;
+            String responseAuth = null;
 
-        if (helper != null) {
-            helper.parseRequest(result, header, httpHeaders);
-        } else {
-            Context.getCurrentLogger().warning(
-                    "Challenge scheme " + result.getScheme()
-                            + " not supported by the Restlet engine.");
+            String[] authFields = header.split(",");
+            for (String field : authFields) {
+                String[] nameValuePair = field.trim().split("=");
+                if (nameValuePair[0].equals("nextnonce")) {
+                    nextNonce = nameValuePair[1];
+                } else if (nameValuePair[0].equals("nc")) {
+                    nonceCount = Integer.parseInt(nameValuePair[1], 16);
+                } else if (nameValuePair[0].equals("cnonce")) {
+                    cnonce = nameValuePair[1];
+                    if (cnonce.charAt(0) == '"') {
+                        cnonce = cnonce.substring(1, cnonce.length() - 1);
+                    }
+                } else if (nameValuePair[0].equals("qop")) {
+                    qop = nameValuePair[1];
+                } else if (nameValuePair[0].equals("responseAuth")) {
+                    responseAuth = nameValuePair[1];
+                }
+            }
+
+            result = new AuthenticationInfo(nextNonce, nonceCount, cnonce, qop,
+                    responseAuth);
+        } catch (IOException e) {
+            Context.getCurrentLogger()
+                    .log(
+                            Level.WARNING,
+                            "Unable to parse the authentication info header: "
+                                    + header, e);
         }
 
         return result;
@@ -285,31 +298,47 @@ public class AuthenticatorUtils {
      *            The current request HTTP headers.
      * @return The parsed challenge response.
      */
-    public static ChallengeResponse parseResponse(Request request,
-            String header, Series<Parameter> httpHeaders) {
-        ChallengeResponse result = null;
+    private static ChallengeMessage parseMessage(boolean isChallengeResponse,
+            Request request, Response response, String header,
+            Series<Parameter> httpHeaders) {
+        ChallengeMessage result = null;
 
         if (header != null) {
             int space = header.indexOf(' ');
 
             if (space != -1) {
                 String scheme = header.substring(0, space);
-                String credentials = header.substring(space + 1);
-                result = new ChallengeResponse(new ChallengeScheme("HTTP_"
-                        + scheme, scheme), credentials);
+                String rawValue = header.substring(space + 1);
 
-                // Give a chance to the authentication helper to do further
-                // parsing
-                AuthenticatorHelper helper = Engine.getInstance().findHelper(
-                        result.getScheme(), true, false);
-
-                if (helper != null) {
-                    helper.parseResponse(result, request, httpHeaders);
+                if (isChallengeResponse) {
+                    result = new ChallengeResponse(new ChallengeScheme("HTTP_"
+                            + scheme, scheme));
                 } else {
-                    Context.getCurrentLogger().warning(
-                            "Challenge scheme " + result.getScheme()
-                                    + " not supported by the Restlet engine.");
+                    result = new ChallengeRequest(new ChallengeScheme("HTTP_"
+                            + scheme, scheme));
                 }
+
+                result.setRawValue(rawValue);
+            }
+        }
+
+        if (result != null) {
+            // Give a chance to the authenticator helper to do further parsing
+            AuthenticatorHelper helper = Engine.getInstance().findHelper(
+                    result.getScheme(), true, false);
+
+            if (helper != null) {
+                if (isChallengeResponse) {
+                    helper.parseResponse((ChallengeResponse) result, request,
+                            httpHeaders);
+                } else {
+                    helper.parseRequest((ChallengeRequest) result, response,
+                            httpHeaders);
+                }
+            } else {
+                Context.getCurrentLogger().warning(
+                        "Couldn't find any helper support the "
+                                + result.getScheme() + " challenge scheme.");
             }
         }
 
@@ -317,21 +346,37 @@ public class AuthenticatorUtils {
     }
 
     /**
-     * Parsed the parameters of a credentials string and updates the series of
-     * parameters.
+     * Parses an authenticate header into a challenge request. The header is
+     * {@link HttpConstants#HEADER_WWW_AUTHENTICATE}.
      * 
-     * @param paramString
-     *            The parameters string to parse.
-     * @param parameters
-     *            The series to update.
+     * @param header
+     *            The HTTP header value to parse.
+     * @param httpHeaders
+     *            The current response HTTP headers.
+     * @return The parsed challenge request.
      */
-    public static void parseParameters(String paramString,
-            Series<Parameter> parameters) {
-        final Matcher matcher = PATTERN_RFC_2617.matcher(paramString);
+    public static ChallengeRequest parseRequest(Response response,
+            String header, Series<Parameter> httpHeaders) {
+        return (ChallengeRequest) parseMessage(false, null, response, header,
+                httpHeaders);
+    }
 
-        while (matcher.find() && (matcher.groupCount() == 2)) {
-            parameters.add(matcher.group(1), matcher.group(2));
-        }
+    /**
+     * Parses an authorization header into a challenge response. The header is
+     * {@link HttpConstants#HEADER_AUTHORIZATION}.
+     * 
+     * @param challenge
+     *            The challenge response to update.
+     * @param request
+     *            The parent request.
+     * @param httpHeaders
+     *            The current request HTTP headers.
+     * @return The parsed challenge response.
+     */
+    public static ChallengeResponse parseResponse(Request request,
+            String header, Series<Parameter> httpHeaders) {
+        return (ChallengeResponse) parseMessage(true, request, null, header,
+                httpHeaders);
     }
 
     /**

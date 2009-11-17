@@ -32,6 +32,8 @@ package org.restlet.engine.http;
 
 import java.io.IOException;
 
+import org.restlet.data.Parameter;
+
 /**
  * HTTP-style header reader.
  * 
@@ -56,13 +58,116 @@ public class HeaderReader {
     }
 
     /**
+     * Indicates if the given character is a value separator.
+     * 
+     * @param character
+     *            The character to test.
+     * @return True if the given character is a value separator.
+     * @see HttpUtils#isValueSeparator(int)
+     */
+    public boolean isValueSeparator(int character) {
+        return HttpUtils.isValueSeparator(character);
+    }
+
+    /**
+     * Reads the next character.
+     * 
+     * @return The next character.
+     */
+    public int read() {
+        int result = -1;
+
+        if (this.index != -1) {
+            result = this.header.charAt(this.index++);
+            if (this.index >= this.header.length()) {
+                this.index = -1;
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Reads the next pair as a parameter.
+     * 
+     * @return The next pair as a parameter.
+     * @throws IOException
+     */
+    public Parameter readParameter() throws IOException {
+        Parameter result = null;
+
+        boolean readingName = true;
+        boolean readingValue = false;
+        StringBuilder nameBuffer = new StringBuilder();
+        StringBuilder valueBuffer = new StringBuilder();
+        int nextChar = 0;
+
+        while ((result == null) && (nextChar != -1)) {
+            nextChar = read();
+
+            if (readingName) {
+                if ((HttpUtils.isSpace(nextChar)) && (nameBuffer.length() == 0)) {
+                    // Skip spaces
+                } else if ((nextChar == -1) || (nextChar == ',')) {
+                    if (nameBuffer.length() > 0) {
+                        // End of pair with no value
+                        result = Parameter.create(nameBuffer, null);
+                    } else if (nextChar == -1) {
+                        // Do nothing return null preference
+                    } else {
+                        throw new IOException(
+                                "Empty parameter name detected. Please check your HTTP header");
+                    }
+                } else if (nextChar == '=') {
+                    readingName = false;
+                    readingValue = true;
+                } else if (HttpUtils.isTokenChar(nextChar)) {
+                    nameBuffer.append((char) nextChar);
+                } else {
+                    throw new IOException(
+                            "Separator and control characters are not allowed within a token. Please check your HTTP header");
+                }
+            } else if (readingValue) {
+                if ((HttpUtils.isSpace(nextChar))
+                        && (valueBuffer.length() == 0)) {
+                    // Skip spaces
+                } else if ((nextChar == -1) || (nextChar == ',')) {
+                    // End of pair
+                    result = Parameter.create(nameBuffer, valueBuffer);
+                } else if ((nextChar == '"') && (valueBuffer.length() == 0)) {
+                    valueBuffer.append(readQuotedString());
+                } else if (HttpUtils.isTokenChar(nextChar)) {
+                    valueBuffer.append((char) nextChar);
+                } else {
+                    throw new IOException(
+                            "Separator and control characters are not allowed within a token. Please check your HTTP header");
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Reads the next quoted string.
+     * 
+     * @return The next quoted string.
+     * @throws IOException
+     */
+    public String readQuotedString() throws IOException {
+        final StringBuilder sb = new StringBuilder();
+        readQuotedString(sb);
+        return sb.toString();
+    }
+
+    /**
      * Appends the next quoted string.
      * 
      * @param buffer
      *            The buffer to append.
      * @throws IOException
      */
-    protected void appendQuotedString(Appendable buffer) throws IOException {
+    public void readQuotedString(Appendable buffer) throws IOException {
         boolean done = false;
         boolean quotedPair = false;
         int nextChar = 0;
@@ -95,58 +200,29 @@ public class HeaderReader {
     }
 
     /**
-     * Indicates if the given character is a value separator.
+     * Reads the next token.
      * 
-     * @param character
-     *            The character to test.
-     * @return True if the given character is a value separator.
+     * @return The next token or null.
      */
-    protected boolean isLinearWhiteSpace(int character) {
-        return (HttpUtils.isCarriageReturn(character)
-                || HttpUtils.isSpace(character)
-                || HttpUtils.isLineFeed(character) || HttpUtils
-                .isHorizontalTab(character));
-    }
+    public String readToken() {
+        StringBuilder sb = null;
+        int next = read();
 
-    /**
-     * Indicates if the given character is a value separator.
-     * 
-     * @param character
-     *            The character to test.
-     * @return True if the given character is a value separator.
-     */
-    protected boolean isValueSeparator(int character) {
-        return (character == ',');
-    }
-
-    /**
-     * Reads the next character.
-     * 
-     * @return The next character.
-     */
-    public int read() {
-        int result = -1;
-
-        if (this.index != -1) {
-            result = this.header.charAt(this.index++);
-            if (this.index >= this.header.length()) {
-                this.index = -1;
-            }
+        // Skip leading spaces
+        while ((next != -1) && HttpUtils.isLinearWhiteSpace(next)) {
+            next = read();
         }
 
-        return result;
-    }
+        while ((next != -1) && HttpUtils.isTokenChar(next)) {
+            if (sb == null) {
+                sb = new StringBuilder();
+            }
 
-    /**
-     * Reads the next quoted string.
-     * 
-     * @return The next quoted string.
-     * @throws IOException
-     */
-    protected String readQuotedString() throws IOException {
-        final StringBuilder sb = new StringBuilder();
-        appendQuotedString(sb);
-        return sb.toString();
+            sb.append((char) next);
+            next = read();
+        }
+
+        return (sb == null) ? null : sb.toString();
     }
 
     /**
@@ -164,7 +240,7 @@ public class HeaderReader {
         int next = read();
 
         // Skip leading spaces
-        while ((next != -1) && isLinearWhiteSpace(next)) {
+        while ((next != -1) && HttpUtils.isLinearWhiteSpace(next)) {
             next = read();
         }
 
@@ -172,6 +248,7 @@ public class HeaderReader {
             if (sb == null) {
                 sb = new StringBuilder();
             }
+
             sb.append((char) next);
             next = read();
         }
@@ -179,7 +256,7 @@ public class HeaderReader {
         // Remove trailing spaces
         if (sb != null) {
             for (int i = sb.length() - 1; (i >= 0)
-                    && isLinearWhiteSpace(sb.charAt(i)); i--) {
+                    && HttpUtils.isLinearWhiteSpace(sb.charAt(i)); i--) {
                 sb.deleteCharAt(i);
             }
         }

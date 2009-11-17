@@ -37,6 +37,7 @@ import org.restlet.test.data.ConnegTestCase;
 import org.restlet.test.data.CookieTestCase;
 import org.restlet.test.data.FileReferenceTestCase;
 import org.restlet.test.data.LanguageTestCase;
+import org.restlet.test.data.AuthenticationInfoTestCase;
 import org.restlet.test.data.MediaTypeTestCase;
 import org.restlet.test.data.ProductTokenTestCase;
 import org.restlet.test.data.RangeTestCase;
@@ -87,6 +88,7 @@ public class RestletTestSuite extends TestSuite {
         addTest(ResourceTestSuite.suite());
         addTestSuite(AppendableTestCase.class);
         addTestSuite(AtomTestCase.class);
+        addTestSuite(AuthenticationInfoTestCase.class);
         addTestSuite(CallTestCase.class);
         addTestSuite(ComponentXmlConfigTestCase.class);
         addTestSuite(CookieTestCase.class);

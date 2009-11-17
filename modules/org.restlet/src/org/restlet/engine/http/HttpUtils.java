@@ -47,38 +47,6 @@ import org.restlet.data.Reference;
  */
 public class HttpUtils {
     /**
-     * Appends a source string as an HTTP comment.
-     * 
-     * @param source
-     *            The source string to format.
-     * @param destination
-     *            The appendable destination.
-     * @throws IOException
-     */
-    public static Appendable appendComment(CharSequence source,
-            Appendable destination) throws IOException {
-        destination.append('(');
-
-        char c;
-        for (int i = 0; i < source.length(); i++) {
-            c = source.charAt(i);
-
-            if (c == '(') {
-                destination.append("\\(");
-            } else if (c == ')') {
-                destination.append("\\)");
-            } else if (c == '\\') {
-                destination.append("\\\\");
-            } else {
-                destination.append(c);
-            }
-        }
-
-        destination.append(')');
-        return destination;
-    }
-
-    /**
      * Appends a source string as an HTTP quoted string.
      * 
      * @param source
@@ -123,25 +91,6 @@ public class HttpUtils {
             throws IOException {
         destination.append(Reference.encode(source.toString(), characterSet));
         return destination;
-    }
-
-    /**
-     * Creates a parameter.
-     * 
-     * @param name
-     *            The parameter name buffer.
-     * @param value
-     *            The parameter value buffer (can be null).
-     * @return The created parameter.
-     * @throws IOException
-     */
-    public static Parameter createParameter(CharSequence name,
-            CharSequence value) {
-        if (value != null) {
-            return new Parameter(name.toString(), value.toString());
-        } else {
-            return new Parameter(name.toString(), null);
-        }
     }
 
     /**
@@ -312,6 +261,20 @@ public class HttpUtils {
     }
 
     /**
+     * Indicates if the given character is a value separator.
+     * 
+     * @param character
+     *            The character to test.
+     * @return True if the given character is a value separator.
+     */
+    public static boolean isLinearWhiteSpace(int character) {
+        return (HttpUtils.isCarriageReturn(character)
+                || HttpUtils.isSpace(character)
+                || HttpUtils.isLineFeed(character) || HttpUtils
+                .isHorizontalTab(character));
+    }
+
+    /**
      * Indicates if the given character is a line feed.
      * 
      * @param character
@@ -445,6 +408,17 @@ public class HttpUtils {
      */
     public static boolean isUpperCase(int character) {
         return (character >= 'A') && (character <= 'Z');
+    }
+
+    /**
+     * Indicates if the given character is a value separator.
+     * 
+     * @param character
+     *            The character to test.
+     * @return True if the given character is a value separator.
+     */
+    public static boolean isValueSeparator(int character) {
+        return (character == ',');
     }
 
     /**

@@ -97,6 +97,12 @@ Changes log
           Message#cacheDirectives property corresponding to the 
           "Cache-Control" HTTP header.
         - Added support of CacheControl header.
+        - Properly exposed HTTP Digest properties in the 
+          ChallengeRequest and ChallengeResponse classes. Added a
+          parent ChallengeMessage class.
+        - Added org.restlet.data.AuthenticationInfo class to support
+          preemptive HTTP DIGEST authentication. 
+          Initially contributed by Kelly McLaughlin
       - Bugs fixed
         - Fixed bug when the deprecated method "createRoot" is 
           implemented instead of the "createInboundRoot".
@@ -442,17 +448,21 @@ Changes log
           register helpers.
         - UniformResource#doCatch now logs at INFO level all exceptions 
           and errors caught.
-      - Breaking changes
+        - The JAX-RS extension now leverages the new ConverterService.
+          For example you can now leverage the converter of the XStream
+          extension for better serialization to JSON than the existing
+          JSON provider based on the more limited JSON.org library.
+          Reported by Juergen Zimmermann.
+        - Added extension based on ROME library to support several 
+          versions of syndication feed formats RSS and Atom.
+          Contributed by Tal Liron.
+        - Fully automated the port of Restlet to each edition (GAE, 
+          GWT, Android, JSE and JEE). Using a custom Restlet Forge
+          mechanism. Conditional compilation mechanism suggested by
+          Philippe Mougin.
+    - Breaking changes
         - The default language, defined in MetadataService is now based
           on the JVM's default locale, instead of English/US.
-      - The JAX-RS extension now leverages the new ConverterService.
-        For example you can now leverage the converter of the XStream
-        extension for better serialization to JSON than the existing
-        JSON provider based on the more limited JSON.org library.
-        Reported by Juergen Zimmermann.
-      - Added extension based on ROME library to support several 
-        versions of syndication feed formats RSS and Atom.
-        Contributed by Tal Liron.
     - API changes
         - Added client and server RIAP connectors.
           Suggested by John Logsdon and Nirav Shah.

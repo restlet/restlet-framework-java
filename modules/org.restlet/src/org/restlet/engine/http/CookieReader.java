@@ -31,7 +31,6 @@
 package org.restlet.engine.http;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.logging.Level;
 
@@ -260,65 +259,57 @@ public class CookieReader extends HeaderReader {
             result = this.cachedPair;
             this.cachedPair = null;
         } else {
-            try {
-                boolean readingName = true;
-                boolean readingValue = false;
-                final StringBuilder nameBuffer = new StringBuilder();
-                final StringBuilder valueBuffer = new StringBuilder();
+            boolean readingName = true;
+            boolean readingValue = false;
+            StringBuilder nameBuffer = new StringBuilder();
+            StringBuilder valueBuffer = new StringBuilder();
+            int nextChar = 0;
 
-                int nextChar = 0;
-                while ((result == null) && (nextChar != -1)) {
-                    nextChar = read();
+            while ((result == null) && (nextChar != -1)) {
+                nextChar = read();
 
-                    if (readingName) {
-                        if ((HttpUtils.isSpace(nextChar))
-                                && (nameBuffer.length() == 0)) {
-                            // Skip spaces
-                        } else if ((nextChar == -1) || (nextChar == ';')
-                                || (nextChar == ',')) {
-                            if (nameBuffer.length() > 0) {
-                                // End of pair with no value
-                                result = HttpUtils.createParameter(nameBuffer,
-                                        null);
-                            } else if (nextChar == -1) {
-                                // Do nothing return null preference
-                            } else {
-                                throw new IOException(
-                                        "Empty cookie name detected. Please check your cookies");
-                            }
-                        } else if (nextChar == '=') {
-                            readingName = false;
-                            readingValue = true;
-                        } else if (HttpUtils.isTokenChar(nextChar)
-                                || (this.globalVersion < 1)) {
-                            nameBuffer.append((char) nextChar);
+                if (readingName) {
+                    if ((HttpUtils.isSpace(nextChar))
+                            && (nameBuffer.length() == 0)) {
+                        // Skip spaces
+                    } else if ((nextChar == -1) || (nextChar == ';')
+                            || (nextChar == ',')) {
+                        if (nameBuffer.length() > 0) {
+                            // End of pair with no value
+                            result = Parameter.create(nameBuffer, null);
+                        } else if (nextChar == -1) {
+                            // Do nothing return null preference
                         } else {
                             throw new IOException(
-                                    "Separator and control characters are not allowed within a token. Please check your cookie header");
+                                    "Empty cookie name detected. Please check your cookies");
                         }
-                    } else if (readingValue) {
-                        if ((HttpUtils.isSpace(nextChar))
-                                && (valueBuffer.length() == 0)) {
-                            // Skip spaces
-                        } else if ((nextChar == -1) || (nextChar == ';')) {
-                            // End of pair
-                            result = HttpUtils.createParameter(nameBuffer,
-                                    valueBuffer);
-                        } else if ((nextChar == '"')
-                                && (valueBuffer.length() == 0)) {
-                            valueBuffer.append(readQuotedString());
-                        } else if (HttpUtils.isTokenChar(nextChar)
-                                || (this.globalVersion < 1)) {
-                            valueBuffer.append((char) nextChar);
-                        } else {
-                            throw new IOException(
-                                    "Separator and control characters are not allowed within a token. Please check your cookie header");
-                        }
+                    } else if (nextChar == '=') {
+                        readingName = false;
+                        readingValue = true;
+                    } else if (HttpUtils.isTokenChar(nextChar)
+                            || (this.globalVersion < 1)) {
+                        nameBuffer.append((char) nextChar);
+                    } else {
+                        throw new IOException(
+                                "Separator and control characters are not allowed within a token. Please check your cookie header");
+                    }
+                } else if (readingValue) {
+                    if ((HttpUtils.isSpace(nextChar))
+                            && (valueBuffer.length() == 0)) {
+                        // Skip spaces
+                    } else if ((nextChar == -1) || (nextChar == ';')) {
+                        // End of pair
+                        result = Parameter.create(nameBuffer, valueBuffer);
+                    } else if ((nextChar == '"') && (valueBuffer.length() == 0)) {
+                        valueBuffer.append(readQuotedString());
+                    } else if (HttpUtils.isTokenChar(nextChar)
+                            || (this.globalVersion < 1)) {
+                        valueBuffer.append((char) nextChar);
+                    } else {
+                        throw new IOException(
+                                "Separator and control characters are not allowed within a token. Please check your cookie header");
                     }
                 }
-            } catch (UnsupportedEncodingException uee) {
-                throw new IOException(
-                        "Unsupported encoding. Please contact the administrator");
             }
         }
 

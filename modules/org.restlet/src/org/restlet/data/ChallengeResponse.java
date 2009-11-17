@@ -30,6 +30,7 @@
 
 package org.restlet.data;
 
+import org.restlet.Request;
 import org.restlet.engine.util.SystemUtils;
 import org.restlet.util.Series;
 
@@ -46,7 +47,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
-public final class ChallengeResponse {
+public final class ChallengeResponse extends ChallengeMessage {
 
     /**
      * Indicates if the identifier or principal has been authenticated. The
@@ -55,20 +56,26 @@ public final class ChallengeResponse {
      */
     private volatile boolean authenticated;
 
-    /** The raw credentials for custom challenge schemes. */
-    private volatile String credentials;
-
     /** The user identifier, such as a login name or an access key. */
     private volatile String identifier;
 
-    /** The additional scheme parameters. */
-    private volatile Series<Parameter> parameters;
-
-    /** The challenge scheme. */
-    private volatile ChallengeScheme scheme;
-
     /** The user secret, such as a password or a secret key. */
     private volatile char[] secret;
+
+    /**
+     * The {@link Request#getResourceRef()} value duplicated here in case a
+     * proxy changed it.
+     */
+    private volatile Reference digestRef;
+
+    /** The chosen quality of protection. */
+    private volatile String quality;
+
+    /** The client nonce value. */
+    private volatile String clientNonce;
+
+    /** The server nonce count. */
+    private volatile int serverNounceCount;
 
     /**
      * Constructor with no credentials.
@@ -77,7 +84,14 @@ public final class ChallengeResponse {
      *            The challenge scheme.
      */
     public ChallengeResponse(ChallengeScheme scheme) {
-        this(scheme, null);
+        super(scheme);
+        this.identifier = null;
+        this.secret = null;
+        this.authenticated = false;
+        this.clientNonce = null;
+        this.digestRef = null;
+        this.quality = null;
+        this.serverNounceCount = 1;
     }
 
     /**
@@ -87,13 +101,12 @@ public final class ChallengeResponse {
      *            The challenge scheme.
      * @param credentials
      *            The raw credentials for custom challenge schemes.
+     * @deprecated Use {@link #setRawValue(String)} instead.
      */
+    @Deprecated
     public ChallengeResponse(ChallengeScheme scheme, String credentials) {
-        this.scheme = scheme;
-        this.credentials = credentials;
-        this.identifier = null;
-        this.secret = null;
-        this.parameters = null;
+        this(scheme);
+        setRawValue(credentials);
     }
 
     /**
@@ -108,11 +121,9 @@ public final class ChallengeResponse {
      */
     public ChallengeResponse(final ChallengeScheme scheme,
             final String identifier, char[] secret) {
-        this.scheme = scheme;
-        this.credentials = null;
+        super(scheme);
         this.identifier = identifier;
         this.secret = secret;
-        this.parameters = null;
     }
 
     /**
@@ -127,11 +138,9 @@ public final class ChallengeResponse {
      */
     public ChallengeResponse(final ChallengeScheme scheme,
             final String identifier, Series<Parameter> parameters) {
-        this.scheme = scheme;
-        this.credentials = null;
+        super(scheme, parameters);
         this.identifier = identifier;
         this.secret = null;
-        this.parameters = parameters;
     }
 
     /**
@@ -146,11 +155,9 @@ public final class ChallengeResponse {
      */
     public ChallengeResponse(final ChallengeScheme scheme,
             final String identifier, String secret) {
-        this.scheme = scheme;
-        this.credentials = null;
+        super(scheme);
         this.identifier = identifier;
         this.secret = (secret != null) ? secret.toCharArray() : null;
-        this.parameters = null;
     }
 
     /** {@inheritDoc} */
@@ -211,12 +218,33 @@ public final class ChallengeResponse {
     }
 
     /**
-     * Returns the credentials.
+     * Returns the client nonce.
      * 
-     * @return The credentials.
+     * @return The client nonce.
      */
+    public String getClientNonce() {
+        return this.clientNonce;
+    }
+
+    /**
+     * Returns the raw credentials.
+     * 
+     * @return The raw credentials.
+     * @deprecated Use {@link #getRawValue()} instead.
+     */
+    @Deprecated
     public String getCredentials() {
-        return this.credentials;
+        return getRawValue();
+    }
+
+    /**
+     * Returns the {@link Request#getResourceRef()} value duplicated here in
+     * case a proxy changed it.
+     * 
+     * @return The digest URI reference.
+     */
+    public Reference getDigestRef() {
+        return digestRef;
     }
 
     /**
@@ -228,25 +256,11 @@ public final class ChallengeResponse {
         return this.identifier;
     }
 
-    /**
-     * Returns the modifiable series of scheme parameters. Creates a new
-     * instance if no one has been set.
-     * 
-     * @return The modifiable series of scheme parameters.
-     */
-    public Series<Parameter> getParameters() {
-        if (this.parameters == null) {
-            this.parameters = new Form();
-        }
-
-        return this.parameters;
-    }
-
     // [ifndef gwt] method
     /**
      * Gets the principal associated to the identifier property.
      * 
-     * @return The {@link org.restlet.security.UserPrincipal}.
+     * @return The principal associated to the identifier property.
      */
     public java.security.Principal getPrincipal() {
         return new java.security.Principal() {
@@ -257,12 +271,12 @@ public final class ChallengeResponse {
     }
 
     /**
-     * Returns the scheme used.
+     * Returns the chosen quality of protection.
      * 
-     * @return The scheme used.
+     * @return The chosen quality of protection.
      */
-    public ChallengeScheme getScheme() {
-        return this.scheme;
+    public String getQuality() {
+        return quality;
     }
 
     /**
@@ -275,6 +289,32 @@ public final class ChallengeResponse {
      */
     public char[] getSecret() {
         return this.secret;
+    }
+
+    /**
+     * Returns the server nonce count.
+     * 
+     * @return The server nonce count.
+     */
+    public int getServerNounceCount() {
+        return serverNounceCount;
+    }
+
+    /**
+     * Returns the server nonce count as an hexadecimal string of eight
+     * characters.
+     * 
+     * @return The server nonce count as an hexadecimal string.
+     */
+    public String getServerNounceCountAsHex() {
+        StringBuilder result = new StringBuilder(Integer
+                .toHexString(getServerNounceCount()));
+
+        while (result.length() < 8) {
+            result.insert(0, '0');
+        }
+
+        return result.toString();
     }
 
     /** {@inheritDoc} */
@@ -315,23 +355,34 @@ public final class ChallengeResponse {
     }
 
     /**
-     * Sets the credentials components.
+     * Sets the client nonce.
      * 
-     * @param credentialComponents
-     *            The credentials components.
+     * @param clientNonce
+     *            The client nonce.
      */
-    public void setCredentialComponents(Series<Parameter> credentialComponents) {
-        this.parameters = credentialComponents;
+    public void setClientNonce(String clientNonce) {
+        this.clientNonce = clientNonce;
     }
 
     /**
-     * Sets the credentials.
+     * Sets the raw credentials.
      * 
      * @param credentials
      *            The credentials.
+     * @deprecated Use {@link #getRawValue()} instead.
      */
+    @Deprecated
     public void setCredentials(String credentials) {
-        this.credentials = credentials;
+        setRawValue(credentials);
+    }
+
+    /**
+     * Sets the digest URI reference.
+     * 
+     * @return The digest URI reference.
+     */
+    public void setDigestRef(Reference digestRef) {
+        this.digestRef = digestRef;
     }
 
     /**
@@ -345,13 +396,13 @@ public final class ChallengeResponse {
     }
 
     /**
-     * Sets the scheme used.
+     * Sets the chosen quality of protection.
      * 
-     * @param scheme
-     *            The scheme used.
+     * @param quality
+     *            The chosen quality of protection.
      */
-    public void setScheme(ChallengeScheme scheme) {
-        this.scheme = scheme;
+    public void setQuality(String quality) {
+        this.quality = quality;
     }
 
     /**
@@ -372,6 +423,16 @@ public final class ChallengeResponse {
      */
     public void setSecret(String secret) {
         this.secret = (secret == null) ? null : secret.toCharArray();
+    }
+
+    /**
+     * Sets the server nonce count.
+     * 
+     * @param serverNounceCount
+     *            The server nonce count.
+     */
+    public void setServerNounceCount(int serverNounceCount) {
+        this.serverNounceCount = serverNounceCount;
     }
 
 }

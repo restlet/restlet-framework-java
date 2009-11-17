@@ -36,6 +36,7 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.restlet.engine.util.Base64;
+import org.restlet.ext.crypto.DigestUtils;
 
 /**
  * Simple usage of standard cipher features from JRE.
@@ -119,6 +120,24 @@ public final class CryptoUtils {
             String content) throws GeneralSecurityException {
         return doFinal(algo, base64Secret, Cipher.ENCRYPT_MODE, content
                 .getBytes());
+    }
+
+    /**
+     * Generates a nonce as recommended in section 3.2.1 of RFC-2617, but
+     * without the ETag field. The format is: <code><pre>
+     * Base64.encodeBytes(currentTimeMS + &quot;:&quot;
+     *         + md5String(currentTimeMS + &quot;:&quot; + secretKey))
+     * </pre></code>
+     * 
+     * @param secretKey
+     *            a secret value known only to the creator of the nonce. It's
+     *            inserted into the nonce, and can be used later to validate the
+     *            nonce.
+     */
+    public static String makeNonce(String secretKey) {
+        final long currentTimeMS = System.currentTimeMillis();
+        return Base64.encode((currentTimeMS + ":" + DigestUtils
+                .toMd5(currentTimeMS + ":" + secretKey)).getBytes(), true);
     }
 
     /**

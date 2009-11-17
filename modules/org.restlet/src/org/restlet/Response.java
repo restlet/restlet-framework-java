@@ -36,6 +36,7 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import org.restlet.data.AuthenticationInfo;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Dimension;
@@ -121,6 +122,12 @@ public class Response extends Message {
     /** The status. */
     private volatile Status status;
 
+    /**
+     * The authentication information sent by an origin server to a client in
+     * the case of a successful authentication attempt.
+     */
+    private volatile AuthenticationInfo authenticationInfo;
+
     /** Callback invoked on response reception. */
     private volatile Uniform onReceived;
 
@@ -188,6 +195,19 @@ public class Response extends Message {
             }
         }
         return a;
+    }
+
+    /**
+     * Returns information sent by an origin server related to an successful
+     * authentication attempt. If none is available, null is returned.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Authentication-Info" header.
+     * 
+     * @return The authentication information provided by the server.
+     */
+    public AuthenticationInfo getAuthenticationInfo() {
+        return this.authenticationInfo;
     }
 
     /**
@@ -477,6 +497,21 @@ public class Response extends Message {
     }
 
     /**
+     * Sets the authentication information sent by an origin server to a client
+     * after a successful authentication attempt.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Authentication-Info" header.
+     * 
+     * @param authenticationInfo
+     *            The data returned by the server in response to successful
+     *            authentication.
+     */
+    public void setAuthenticationInfo(AuthenticationInfo authenticationInfo) {
+        this.authenticationInfo = authenticationInfo;
+    }
+
+    /**
      * Sets the authentication request sent by an origin server to a client.
      * 
      * @param request
@@ -686,5 +721,4 @@ public class Response extends Message {
     public void setStatus(Status status, Throwable throwable, String message) {
         setStatus(new Status(status, throwable, message));
     }
-
 }

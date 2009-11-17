@@ -38,6 +38,7 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
+import org.restlet.engine.http.HeaderBuilder;
 import org.restlet.engine.http.HttpConstants;
 import org.restlet.engine.security.AuthenticatorHelper;
 import org.restlet.engine.util.Base64;
@@ -83,7 +84,7 @@ public class HttpSharedKeyLiteHelper extends AuthenticatorHelper {
     }
 
     @Override
-    public void formatCredentials(StringBuilder sb,
+    public void formatRawResponse(HeaderBuilder hb,
             ChallengeResponse challenge, Request request,
             Series<Parameter> httpHeaders) {
 
@@ -113,7 +114,7 @@ public class HttpSharedKeyLiteHelper extends AuthenticatorHelper {
                 challenge.getIdentifier()).append(canonicalizedResource);
 
         // Append the SharedKey credentials
-        sb.append(challenge.getIdentifier()).append(':').append(
+        hb.append(challenge.getIdentifier()).append(':').append(
                 Base64.encode(DigestUtils.toHMac256(rest.toString(), Base64
                         .decode(challenge.getSecret())), true));
     }

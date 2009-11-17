@@ -30,8 +30,9 @@
 
 package org.restlet.data;
 
-import org.restlet.engine.util.SystemUtils;
-import org.restlet.util.Series;
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Authentication challenge sent by an origin server to a client. Upon reception
@@ -43,15 +44,26 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
-public final class ChallengeRequest {
-    /** The challenge scheme. */
-    private volatile ChallengeScheme scheme;
+public final class ChallengeRequest extends ChallengeMessage {
 
-    /** The authentication realm. */
-    private volatile String realm;
+    /** The available options for quality of protection. */
+    private volatile List<String> qualityOptions;
 
-    /** The additional scheme parameters. */
-    private volatile Series<Parameter> parameters;
+    /** The URI references that define the protection domains. */
+    private volatile List<Reference> domainRefs;
+
+    /** Indicates if the previous request from the client was stale. */
+    private volatile boolean stale;
+
+    /**
+     * Constructor.
+     * 
+     * @param scheme
+     *            The challenge scheme.
+     */
+    public ChallengeRequest(ChallengeScheme scheme) {
+        this(scheme, null);
+    }
 
     /**
      * Constructor.
@@ -62,14 +74,15 @@ public final class ChallengeRequest {
      *            The authentication realm.
      */
     public ChallengeRequest(ChallengeScheme scheme, String realm) {
-        this.scheme = scheme;
-        this.realm = realm;
-        this.parameters = null;
+        super(scheme, realm);
+        this.domainRefs = null;
+        this.qualityOptions = null;
+        this.stale = false;
     }
 
     /** {@inheritDoc} */
     @Override
-    public final boolean equals(final Object obj) {
+    public boolean equals(final Object obj) {
         boolean result = (obj == this);
 
         // if obj == this no need to go further
@@ -102,77 +115,109 @@ public final class ChallengeRequest {
     }
 
     /**
-     * Returns the modifiable series of scheme parameters. Creates a new
-     * instance if no one has been set.
+     * Returns the base URI references that collectively define the protected
+     * domains for the digest authentication. By default it return a list with a
+     * single "/" URI reference.
      * 
-     * @return The modifiable series of scheme parameters.
+     * @return The base URI references.
      */
-    public Series<Parameter> getParameters() {
+    public List<Reference> getDomainRefs() {
         // Lazy initialization with double-check.
-        Series<Parameter> p = this.parameters;
-        if (p == null) {
+        List<Reference> r = this.domainRefs;
+        if (r == null) {
             synchronized (this) {
-                p = this.parameters;
-                if (p == null) {
-                    this.parameters = p = new Form();
+                r = this.domainRefs;
+                if (r == null) {
+                    this.domainRefs = r = new CopyOnWriteArrayList<Reference>();
+                    this.domainRefs.add(new Reference("/"));
                 }
             }
         }
-        return p;
+        return r;
     }
 
     /**
-     * Returns the realm name.
+     * Returns the available options for quality of protection. The default
+     * value is {@link #QUALITY_AUTHENTICATION}.
      * 
-     * @return The realm name.
+     * @return The available options for quality of protection.
      */
-    public String getRealm() {
-        return this.realm;
+    public List<String> getQualityOptions() {
+        // Lazy initialization with double-check.
+        List<String> r = this.qualityOptions;
+        if (r == null) {
+            synchronized (this) {
+                r = this.qualityOptions;
+                if (r == null) {
+                    this.qualityOptions = r = new CopyOnWriteArrayList<String>();
+                    this.qualityOptions.add(QUALITY_AUTHENTICATION);
+                }
+            }
+        }
+        return r;
     }
 
     /**
-     * Returns the scheme used.
+     * Indicates if the previous request from the client was stale.
      * 
-     * @return The scheme used.
+     * @return True if the previous request from the client was stale.
      */
-    public ChallengeScheme getScheme() {
-        return this.scheme;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public int hashCode() {
-        return SystemUtils.hashCode(getScheme(), getRealm(), getParameters());
+    public boolean isStale() {
+        return stale;
     }
 
     /**
-     * Sets the modifiable series of scheme parameters.
+     * Sets the URI references that define the protection domains for the digest
+     * authentication.
      * 
-     * @param parameters
-     *            The modifiable series of scheme parameters.
+     * @param domainRefs
+     *            The base URI references.
      */
-    public void setParameters(Series<Parameter> parameters) {
-        this.parameters = parameters;
+    public void setDomainRefs(List<Reference> domainRefs) {
+        this.domainRefs = domainRefs;
     }
 
     /**
-     * Sets the realm name.
+     * Sets the URI references that define the protection domains for the digest
+     * authentication.
      * 
-     * @param realm
-     *            The realm name.
+     * @param domainUris
+     *            The base URI references.
+     * @see #setDomainRefs(List)
      */
-    public void setRealm(String realm) {
-        this.realm = realm;
+    public void setDomainUris(Collection<String> domainUris) {
+        List<Reference> domainRefs = null;
+
+        if (domainUris != null) {
+            domainRefs = new CopyOnWriteArrayList<Reference>();
+
+            for (String domainUri : domainUris) {
+                domainRefs.add(new Reference(domainUri));
+            }
+        }
+
+        setDomainRefs(domainRefs);
     }
 
     /**
-     * Sets the scheme used.
+     * Sets the available options for quality of protection. The default value
+     * is {@link #QUALITY_AUTHENTICATION}.
      * 
-     * @param scheme
-     *            The scheme used.
+     * @param qualityOptions
+     *            The available options for quality of protection.
      */
-    public void setScheme(ChallengeScheme scheme) {
-        this.scheme = scheme;
+    public void setQualityOptions(List<String> qualityOptions) {
+        this.qualityOptions = qualityOptions;
+    }
+
+    /**
+     * Indicates if the previous request from the client was stale.
+     * 
+     * @param stale
+     *            True if the previous request from the client was stale.
+     */
+    public void setStale(boolean stale) {
+        this.stale = stale;
     }
 
 }

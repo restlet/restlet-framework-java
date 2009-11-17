@@ -321,9 +321,9 @@ public class CookieUtils {
      * @throws IllegalArgumentException
      *             Thrown if the String can not be parsed as Cookie.
      */
-    public static Cookie parse(String cookie)
-            throws IllegalArgumentException {
-        final CookieReader cr = new CookieReader(cookie);
+    public static Cookie parse(String cookie) throws IllegalArgumentException {
+        CookieReader cr = new CookieReader(cookie);
+
         try {
             return cr.readCookie();
         } catch (IOException e) {
@@ -341,7 +341,8 @@ public class CookieUtils {
      */
     public static CookieSetting parseSetting(String cookieSetting)
             throws IllegalArgumentException {
-        final CookieReader cr = new CookieReader(cookieSetting);
+        CookieReader cr = new CookieReader(cookieSetting);
+
         try {
             return cr.readCookieSetting();
         } catch (IOException e) {

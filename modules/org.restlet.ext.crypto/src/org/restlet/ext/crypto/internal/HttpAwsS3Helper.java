@@ -42,6 +42,7 @@ import org.restlet.data.Form;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
+import org.restlet.engine.http.HeaderBuilder;
 import org.restlet.engine.http.HttpConstants;
 import org.restlet.engine.io.ByteUtils;
 import org.restlet.engine.security.AuthenticatorHelper;
@@ -130,7 +131,7 @@ public class HttpAwsS3Helper extends AuthenticatorHelper {
     }
 
     @Override
-    public void formatCredentials(StringBuilder sb,
+    public void formatRawResponse(HeaderBuilder sb,
             ChallengeResponse challenge, Request request,
             Series<Parameter> httpHeaders) {
 

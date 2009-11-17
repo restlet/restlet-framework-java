@@ -71,14 +71,14 @@ public class CacheControlReader extends HeaderReader {
                 String value = directive.substring(index + 1);
                 HeaderReader hr = new HeaderReader(value) {
                     @Override
-                    protected void appendQuotedString(Appendable buffer)
+                    public void readQuotedString(Appendable buffer)
                             throws IOException {
                         int nextChar = read();
                         while (nextChar != '"' && (nextChar != -1)) {
                             nextChar = read();
                         }
                         if (nextChar == '"') {
-                            super.appendQuotedString(buffer);
+                            super.readQuotedString(buffer);
                         }
                     }
                 };

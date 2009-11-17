@@ -42,13 +42,17 @@ import org.restlet.data.Parameter;
  */
 public class HeaderBuilder implements Appendable {
     /** The header buffer. */
-    private final StringBuilder header;
+    private final StringBuilder wrappedBuilder;
+
+    /** Indicates if the first parameter is written. */
+    private volatile boolean firstParameter;
 
     /**
      * Constructor.
      */
     public HeaderBuilder() {
-        this.header = new StringBuilder();
+        this.firstParameter = true;
+        this.wrappedBuilder = new StringBuilder();
     }
 
     /**
@@ -58,8 +62,8 @@ public class HeaderBuilder implements Appendable {
      *            The character to append.
      * @return The current builder.
      */
-    public HeaderBuilder append(char c) throws IOException {
-        this.header.append(c);
+    public HeaderBuilder append(char c) {
+        this.wrappedBuilder.append(c);
         return this;
     }
 
@@ -70,8 +74,8 @@ public class HeaderBuilder implements Appendable {
      *            The sequence of characters.
      * @return The current builder.
      */
-    public HeaderBuilder append(CharSequence csq) throws IOException {
-        this.header.append(csq);
+    public HeaderBuilder append(CharSequence csq) {
+        this.wrappedBuilder.append(csq);
         return this;
     }
 
@@ -86,9 +90,8 @@ public class HeaderBuilder implements Appendable {
      *            The end index.
      * @return The current builder.
      */
-    public HeaderBuilder append(CharSequence csq, int start, int end)
-            throws IOException {
-        this.header.append(csq, start, end);
+    public HeaderBuilder append(CharSequence csq, int start, int end) {
+        this.wrappedBuilder.append(csq, start, end);
         return this;
     }
 
@@ -98,23 +101,24 @@ public class HeaderBuilder implements Appendable {
      * 
      * @param content
      *            The comment to write.
+     * @return The current builder.
      * @throws IOException
      */
     public HeaderBuilder appendComment(String content) throws IOException {
-        this.header.append('(');
+        this.wrappedBuilder.append('(');
 
         char c;
         for (int i = 0; i < content.length(); i++) {
             c = content.charAt(i);
 
             if (HttpUtils.isCommentText(c)) {
-                this.header.append(c);
+                this.wrappedBuilder.append(c);
             } else {
                 appendQuotedPair(c);
             }
         }
 
-        this.header.append(')');
+        this.wrappedBuilder.append(')');
         return this;
     }
 
@@ -124,92 +128,7 @@ public class HeaderBuilder implements Appendable {
      * 
      * @param parameter
      *            The parameter.
-     * @throws IOException
-     */
-    public HeaderBuilder appendFirstParameter(Parameter parameter)
-            throws IOException {
-        return appendFirstParameter(parameter.getName(), parameter.getValue());
-    }
-
-    /**
-     * Appends a new parameter, prefixed with a comma.
-     * 
-     * @param name
-     *            The parameter name.
-     * @throws IOException
-     */
-    public HeaderBuilder appendFirstParameter(String name) throws IOException {
-        return appendToken(name);
-    }
-
-    /**
-     * Appends a new parameter, prefixed with a comma. The value is separated
-     * from the name by an '=' character.
-     * 
-     * @param name
-     *            The parameter name.
-     * @param value
-     *            The parameter value.
-     * @throws IOException
-     */
-    public HeaderBuilder appendFirstParameter(String name, String value)
-            throws IOException {
-        if (name != null) {
-            appendToken(name);
-        }
-
-        if (value != null) {
-            this.header.append('=');
-            appendToken(value);
-        }
-
-        return this;
-    }
-
-    /**
-     * Appends a new parameter, prefixed with a comma. The value is separated
-     * from the name by an '=' character.
-     * 
-     * @param parameter
-     *            The parameter.
-     * @throws IOException
-     */
-    public HeaderBuilder appendFirstQuotedParameter(Parameter parameter)
-            throws IOException {
-        return appendFirstQuotedParameter(parameter.getName(), parameter
-                .getValue());
-    }
-
-    /**
-     * Appends a new parameter, prefixed with a comma. The value is quoted and
-     * separated from the name by an '=' character.
-     * 
-     * @param name
-     *            The parameter name.
-     * @param value
-     *            The parameter value to quote.
-     * @throws IOException
-     */
-    public HeaderBuilder appendFirstQuotedParameter(String name, String value)
-            throws IOException {
-        if (name != null) {
-            appendToken(name);
-        }
-
-        if (value != null) {
-            this.header.append('=');
-            appendQuotedString(value);
-        }
-
-        return this;
-    }
-
-    /**
-     * Appends a new parameter, prefixed with a comma. The value is separated
-     * from the name by an '=' character.
-     * 
-     * @param parameter
-     *            The parameter.
+     * @return The current builder.
      * @throws IOException
      */
     public HeaderBuilder appendParameter(Parameter parameter)
@@ -222,11 +141,12 @@ public class HeaderBuilder implements Appendable {
      * 
      * @param name
      *            The parameter name.
+     * @return The current builder.
      * @throws IOException
      */
     public HeaderBuilder appendParameter(String name) throws IOException {
-        this.header.append(',');
-        return appendParameter(name);
+        appendParameterSeparator();
+        return appendToken(name);
     }
 
     /**
@@ -237,12 +157,40 @@ public class HeaderBuilder implements Appendable {
      *            The parameter name.
      * @param value
      *            The parameter value.
+     * @return The current builder.
      * @throws IOException
      */
     public HeaderBuilder appendParameter(String name, String value)
             throws IOException {
-        this.header.append(',');
-        return appendFirstParameter(name, value);
+        appendParameterSeparator();
+
+        if (name != null) {
+            appendToken(name);
+        }
+
+        if (value != null) {
+            this.wrappedBuilder.append('=');
+            appendToken(value);
+        }
+
+        return this;
+    }
+
+    /**
+     * Appends a comma as a separator if the first parameter has already been
+     * written.
+     * 
+     * @return The current builder.
+     * @throws IOException
+     */
+    public HeaderBuilder appendParameterSeparator() throws IOException {
+        if (isFirstParameter()) {
+            setFirstParameter(false);
+        } else {
+            this.wrappedBuilder.append(", ");
+        }
+
+        return this;
     }
 
     /**
@@ -250,9 +198,10 @@ public class HeaderBuilder implements Appendable {
      * 
      * @param character
      *            The character to quote.
+     * @return The current builder.
      */
     protected HeaderBuilder appendQuotedPair(char character) {
-        this.header.append('\\').append(character);
+        this.wrappedBuilder.append('\\').append(character);
         return this;
     }
 
@@ -263,6 +212,7 @@ public class HeaderBuilder implements Appendable {
      * @param parameter
      *            The parameter.
      * @throws IOException
+     * @return The current builder.
      */
     public HeaderBuilder appendQuotedParameter(Parameter parameter)
             throws IOException {
@@ -278,11 +228,22 @@ public class HeaderBuilder implements Appendable {
      * @param value
      *            The parameter value to quote.
      * @throws IOException
+     * @return The current builder.
      */
     public HeaderBuilder appendQuotedParameter(String name, String value)
             throws IOException {
-        this.header.append(',');
-        return appendFirstQuotedParameter(name, value);
+        appendParameterSeparator();
+
+        if (name != null) {
+            appendToken(name);
+        }
+
+        if (value != null) {
+            this.wrappedBuilder.append('=');
+            appendQuotedString(value);
+        }
+
+        return this;
     }
 
     /**
@@ -290,30 +251,33 @@ public class HeaderBuilder implements Appendable {
      * 
      * @param content
      *            The string to quote and write.
+     * @return The current builder.
      */
     public HeaderBuilder appendQuotedString(String content) {
-        this.header.append('"');
+        this.wrappedBuilder.append('"');
 
         char c;
         for (int i = 0; i < content.length(); i++) {
             c = content.charAt(i);
 
             if (HttpUtils.isQuotedText(c)) {
-                this.header.append(c);
+                this.wrappedBuilder.append(c);
             } else {
                 appendQuotedPair(c);
             }
         }
 
-        this.header.append('"');
+        this.wrappedBuilder.append('"');
         return this;
     }
 
     /**
      * Appends a space character.
+     * 
+     * @return The current builder.
      */
     public HeaderBuilder appendSpace() {
-        this.header.append(' ');
+        this.wrappedBuilder.append(' ');
         return this;
     }
 
@@ -322,11 +286,12 @@ public class HeaderBuilder implements Appendable {
      * 
      * @param token
      *            The token to write.
+     * @return The current builder.
      * @throws IOException
      */
     public HeaderBuilder appendToken(String token) throws IOException {
         if (HttpUtils.isToken(token)) {
-            this.header.append(token);
+            this.wrappedBuilder.append(token);
         } else {
             throw new IOException("Unexpected character found in token: "
                     + token);
@@ -336,12 +301,40 @@ public class HeaderBuilder implements Appendable {
     }
 
     /**
+     * Returns the wrapped string builder.
+     * 
+     * @return The wrapped string builder.
+     */
+    public StringBuilder getWrappedBuilder() {
+        return wrappedBuilder;
+    }
+
+    /**
+     * Indicates if the first parameter is written.
+     * 
+     * @return True if the first parameter is written.
+     */
+    public boolean isFirstParameter() {
+        return firstParameter;
+    }
+
+    /**
+     * Indicates if the first parameter is written.
+     * 
+     * @param firstParameter
+     *            True if the first parameter is written.
+     */
+    public void setFirstParameter(boolean firstParameter) {
+        this.firstParameter = firstParameter;
+    }
+
+    /**
      * Returns the header value built.
      * 
      * @return The header value built.
      */
     public String toString() {
-        return this.header.toString();
+        return this.wrappedBuilder.toString();
     }
 
 }

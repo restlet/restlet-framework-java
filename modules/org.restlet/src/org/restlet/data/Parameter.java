@@ -51,6 +51,24 @@ public class Parameter extends Couple<String, String> implements
     }
 
     /**
+     * Creates a parameter.
+     * 
+     * @param name
+     *            The parameter name buffer.
+     * @param value
+     *            The parameter value buffer (can be null).
+     * @return The created parameter.
+     * @throws IOException
+     */
+    public static Parameter create(CharSequence name, CharSequence value) {
+        if (value != null) {
+            return new Parameter(name.toString(), value.toString());
+        } else {
+            return new Parameter(name.toString(), null);
+        }
+    }
+
+    /**
      * Preferred constructor.
      * 
      * @param name

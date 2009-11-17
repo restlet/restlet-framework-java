@@ -30,15 +30,15 @@
 
 package org.restlet.ext.crypto;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.restlet.Context;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Digest;
 import org.restlet.data.Reference;
-import org.restlet.ext.crypto.internal.HttpDigestHelper;
+import org.restlet.ext.crypto.internal.CryptoUtils;
 import org.restlet.ext.crypto.internal.HttpDigestVerifier;
 import org.restlet.security.ChallengeAuthenticator;
 import org.restlet.security.LocalVerifier;
@@ -55,13 +55,13 @@ import org.restlet.security.Verifier;
 public class DigestAuthenticator extends ChallengeAuthenticator {
 
     /** Default lifespan for generated nonces (5 minutes). */
-    private static final long DEFAULT_NONCE_LIFESPAN_MILLIS = 5 * 60 * 1000L;
+    private static final long DEFAULT_MAX_SERVER_NONCE_AGE = 5 * 60 * 1000L;
 
     /** The URI references that define the protection domains. */
     private volatile List<Reference> domainRefs;
 
     /** Lifespan of nonce in milliseconds */
-    private volatile long nonceLifespan;
+    private volatile long maxServerNonceAge;
 
     /** The secret key known only to server. */
     private volatile String serverKey;
@@ -86,7 +86,7 @@ public class DigestAuthenticator extends ChallengeAuthenticator {
             List<Reference> domainRefs, String serverKey) {
         super(context, optional, ChallengeScheme.HTTP_DIGEST, realm);
         this.domainRefs = domainRefs;
-        this.nonceLifespan = DEFAULT_NONCE_LIFESPAN_MILLIS;
+        this.maxServerNonceAge = DEFAULT_MAX_SERVER_NONCE_AGE;
         this.serverKey = serverKey;
         setVerifier(new HttpDigestVerifier(this, null, null));
     }
@@ -109,13 +109,19 @@ public class DigestAuthenticator extends ChallengeAuthenticator {
     @Override
     protected ChallengeRequest createChallengeRequest(boolean stale) {
         ChallengeRequest result = super.createChallengeRequest(stale);
-
-        if (ChallengeScheme.HTTP_DIGEST.equals(getScheme())) {
-            HttpDigestHelper.addParameters(result, getDomainUris(),
-                    getServerKey(), stale);
-        }
-
+        result.setDomainRefs(getDomainRefs());
+        result.setStale(stale);
+        result.setServerNonce(generateServerNonce());
         return result;
+    }
+
+    /**
+     * Generates a server nonce.
+     * 
+     * @return A new server nonce.
+     */
+    public String generateServerNonce() {
+        return CryptoUtils.makeNonce(getServerKey());
     }
 
     /**
@@ -126,27 +132,18 @@ public class DigestAuthenticator extends ChallengeAuthenticator {
      * @return The base URI references.
      */
     public List<Reference> getDomainRefs() {
-        if (this.domainRefs == null) {
-            this.domainRefs = new ArrayList<Reference>();
-            this.domainRefs.add(new Reference("/"));
+        // Lazy initialization with double-check.
+        List<Reference> r = this.domainRefs;
+        if (r == null) {
+            synchronized (this) {
+                r = this.domainRefs;
+                if (r == null) {
+                    this.domainRefs = r = new CopyOnWriteArrayList<Reference>();
+                    this.domainRefs.add(new Reference("/"));
+                }
+            }
         }
-
-        return this.domainRefs;
-    }
-
-    /**
-     * Returns the protection domain references as strings.
-     * 
-     * @return The protection domain references as strings.
-     */
-    private List<String> getDomainUris() {
-        List<String> result = new ArrayList<String>();
-
-        for (Reference ref : getDomainRefs()) {
-            result.add(ref.toString());
-        }
-
-        return result;
+        return r;
     }
 
     /**
@@ -173,10 +170,10 @@ public class DigestAuthenticator extends ChallengeAuthenticator {
     /**
      * Returns the number of milliseconds between each mandatory nonce refresh.
      * 
-     * @return The nonce lifespan.
+     * @return The server nonce lifespan.
      */
-    public long getNonceLifespan() {
-        return this.nonceLifespan;
+    public long getMaxServerNonceAge() {
+        return this.maxServerNonceAge;
     }
 
     /**
@@ -208,11 +205,11 @@ public class DigestAuthenticator extends ChallengeAuthenticator {
     /**
      * Sets the number of milliseconds between each mandatory nonce refresh.
      * 
-     * @param lifespan
-     *            The nonce lifespan in ms.
+     * @param maxServerNonceAge
+     *            The nonce lifespan in milliseconds.
      */
-    public void setNonceLifespan(long lifespan) {
-        this.nonceLifespan = lifespan;
+    public void setMaxServerNonceAge(long maxServerNonceAge) {
+        this.maxServerNonceAge = maxServerNonceAge;
     }
 
     /**

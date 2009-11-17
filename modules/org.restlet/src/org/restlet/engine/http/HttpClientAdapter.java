@@ -39,6 +39,7 @@ import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Uniform;
+import org.restlet.data.AuthenticationInfo;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ClientInfo;
@@ -136,15 +137,22 @@ public class HttpClientAdapter extends HttpAdapter {
                     HttpConstants.HEADER_WWW_AUTHENTICATE)) {
                 // [ifndef gwt]
                 ChallengeRequest request = org.restlet.engine.security.AuthenticatorUtils
-                        .parseRequest(header.getValue(), headers);
+                        .parseRequest(response, header.getValue(), headers);
                 response.getChallengeRequests().add(request);
                 // [enddef]
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_PROXY_AUTHENTICATE)) {
                 // [ifndef gwt]
                 ChallengeRequest request = org.restlet.engine.security.AuthenticatorUtils
-                        .parseRequest(header.getValue(), headers);
+                        .parseRequest(response, header.getValue(), headers);
                 response.getProxyChallengeRequests().add(request);
+                // [enddef]
+            } else if (header.getName().equalsIgnoreCase(
+                    HttpConstants.HEADER_AUTHENTICATION_INFO)) {
+                // [ifndef gwt]
+                AuthenticationInfo authenticationInfo = org.restlet.engine.security.AuthenticatorUtils
+                        .parseAuthenticationInfo(header.getValue());
+                response.setAuthenticationInfo(authenticationInfo);
                 // [enddef]
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_SERVER)) {
@@ -488,19 +496,34 @@ public class HttpClientAdapter extends HttpAdapter {
             ChallengeResponse challengeResponse = request
                     .getChallengeResponse();
             if (challengeResponse != null) {
-                requestHeaders.add(HttpConstants.HEADER_AUTHORIZATION,
-                        org.restlet.engine.security.AuthenticatorUtils
-                                .formatResponse(challengeResponse, request,
-                                        requestHeaders));
+                try {
+                    requestHeaders.add(HttpConstants.HEADER_AUTHORIZATION,
+                            org.restlet.engine.security.AuthenticatorUtils
+                                    .formatResponse(challengeResponse, request,
+                                            requestHeaders));
+                } catch (IOException e) {
+                    Context.getCurrentLogger().log(Level.WARNING,
+                            "Unable to write the Authorization header", e);
+                }
             }
 
             ChallengeResponse proxyChallengeResponse = request
                     .getProxyChallengeResponse();
             if (proxyChallengeResponse != null) {
-                requestHeaders.add(HttpConstants.HEADER_PROXY_AUTHORIZATION,
-                        org.restlet.engine.security.AuthenticatorUtils
-                                .formatResponse(proxyChallengeResponse,
-                                        request, requestHeaders));
+                try {
+                    requestHeaders.add(
+                            HttpConstants.HEADER_PROXY_AUTHORIZATION,
+                            org.restlet.engine.security.AuthenticatorUtils
+                                    .formatResponse(proxyChallengeResponse,
+                                            request, requestHeaders));
+                } catch (IOException e) {
+                    Context
+                            .getCurrentLogger()
+                            .log(
+                                    Level.WARNING,
+                                    "Unable to write the Proxy-Authorization header",
+                                    e);
+                }
             }
             // [enddef]
 

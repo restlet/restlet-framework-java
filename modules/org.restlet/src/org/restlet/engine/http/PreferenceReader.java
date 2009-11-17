@@ -268,8 +268,8 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader {
                     } else if (nextChar == -1) {
                         if (paramNameBuffer.length() > 0) {
                             // End of parameters section
-                            parameters.add(HttpUtils.createParameter(
-                                    paramNameBuffer, null));
+                            parameters.add(Parameter.create(paramNameBuffer,
+                                    null));
                             result = createPreference(metadataBuffer,
                                     parameters);
                         } else {
@@ -278,8 +278,7 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader {
                         }
                     } else if (nextChar == ';') {
                         // End of parameter
-                        parameters.add(HttpUtils.createParameter(
-                                paramNameBuffer, null));
+                        parameters.add(Parameter.create(paramNameBuffer, null));
                         paramNameBuffer = new StringBuilder();
                         readingParamName = true;
                         readingParamValue = false;
@@ -296,8 +295,8 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader {
                     if (nextChar == -1) {
                         if (paramValueBuffer.length() > 0) {
                             // End of parameters section
-                            parameters.add(HttpUtils.createParameter(
-                                    paramNameBuffer, paramValueBuffer));
+                            parameters.add(Parameter.create(paramNameBuffer,
+                                    paramValueBuffer));
                             result = createPreference(metadataBuffer,
                                     parameters);
                         } else {
@@ -306,8 +305,8 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader {
                         }
                     } else if (nextChar == ';') {
                         // End of parameter
-                        parameters.add(HttpUtils.createParameter(
-                                paramNameBuffer, paramValueBuffer));
+                        parameters.add(Parameter.create(paramNameBuffer,
+                                paramValueBuffer));
                         paramNameBuffer = new StringBuilder();
                         readingParamName = true;
                         readingParamValue = false;

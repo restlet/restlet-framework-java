@@ -126,7 +126,7 @@ public class HttpDigestVerifier extends DigestVerifier<LocalVerifier> {
             try {
                 if (!HttpDigestHelper.isNonceValid(nonce,
                         getDigestAuthenticator().getServerKey(),
-                        getDigestAuthenticator().getNonceLifespan())) {
+                        getDigestAuthenticator().getMaxServerNonceAge())) {
                     // Nonce expired, send challenge request with stale=true
                     result = RESULT_STALE;
                 }

@@ -35,10 +35,15 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Level;
 
+import org.restlet.Context;
 import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Parameter;
+import org.restlet.engine.http.HeaderBuilder;
+import org.restlet.engine.http.HeaderReader;
 import org.restlet.engine.util.Base64;
 import org.restlet.util.Series;
 
@@ -57,7 +62,16 @@ public class HttpBasicHelper extends AuthenticatorHelper {
     }
 
     @Override
-    public void formatCredentials(StringBuilder sb,
+    public void formatRawRequest(HeaderBuilder hb, ChallengeRequest challenge,
+            Response response, Series<Parameter> httpHeaders)
+            throws IOException {
+        if (challenge.getRealm() != null) {
+            hb.appendQuotedParameter("realm", challenge.getRealm());
+        }
+    }
+
+    @Override
+    public void formatRawResponse(HeaderBuilder hb,
             ChallengeResponse challenge, Request request,
             Series<Parameter> httpHeaders) {
         try {
@@ -65,7 +79,7 @@ public class HttpBasicHelper extends AuthenticatorHelper {
             credentials.write(challenge.getIdentifier());
             credentials.write(":");
             credentials.write(challenge.getSecret());
-            sb.append(Base64.encode(credentials.toCharArray(), "US-ASCII",
+            hb.append(Base64.encode(credentials.toCharArray(), "US-ASCII",
                     false));
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(
@@ -77,16 +91,54 @@ public class HttpBasicHelper extends AuthenticatorHelper {
     }
 
     @Override
+    public void parseRequest(ChallengeRequest challenge, Response response,
+            Series<Parameter> httpHeaders) {
+        if (challenge.getRawValue() != null) {
+            HeaderReader hr = new HeaderReader(challenge.getRawValue());
+
+            try {
+                Parameter param = hr.readParameter();
+
+                while (param != null) {
+                    try {
+                        if ("realm".equals(param.getName())) {
+                            challenge.setRealm(param.getValue());
+                        } else {
+                            challenge.getParameters().add(param);
+                        }
+
+                        param = hr.readParameter();
+                    } catch (Exception e) {
+                        Context
+                                .getCurrentLogger()
+                                .log(
+                                        Level.WARNING,
+                                        "Unable to parse the challenge request header parameter",
+                                        e);
+                    }
+                }
+            } catch (Exception e) {
+                Context
+                        .getCurrentLogger()
+                        .log(
+                                Level.WARNING,
+                                "Unable to parse the challenge request header parameter",
+                                e);
+            }
+        }
+    }
+
+    @Override
     public void parseResponse(ChallengeResponse challenge, Request request,
             Series<Parameter> httpHeaders) {
         try {
-            byte[] credentialsEncoded = Base64.decode(challenge
-                    .getCredentials());
+            byte[] credentialsEncoded = Base64.decode(challenge.getRawValue());
 
             if (credentialsEncoded == null) {
-                getLogger().warning(
-                        "Cannot decode credentials: "
-                                + challenge.getCredentials());
+                getLogger()
+                        .warning(
+                                "Cannot decode credentials: "
+                                        + challenge.getRawValue());
             }
 
             String credentials = new String(credentialsEncoded, "US-ASCII");

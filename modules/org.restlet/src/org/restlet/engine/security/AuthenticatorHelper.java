@@ -30,6 +30,7 @@
 
 package org.restlet.engine.security;
 
+import java.io.IOException;
 import java.util.logging.Logger;
 
 import org.restlet.Context;
@@ -41,6 +42,7 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Parameter;
 import org.restlet.data.Status;
 import org.restlet.engine.Helper;
+import org.restlet.engine.http.HeaderBuilder;
 import org.restlet.engine.http.HttpConstants;
 import org.restlet.security.Guard;
 import org.restlet.util.Series;
@@ -145,25 +147,44 @@ public abstract class AuthenticatorHelper extends Helper {
      * @param httpHeaders
      *            The current response HTTP headers.
      * @return The {@link HttpConstants#HEADER_WWW_AUTHENTICATE} header value.
+     * @throws IOException
      */
     public String formatRequest(ChallengeRequest challenge, Response response,
-            Series<Parameter> httpHeaders) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(challenge.getScheme().getTechnicalName());
+            Series<Parameter> httpHeaders) throws IOException {
+        HeaderBuilder hb = new HeaderBuilder();
+        hb.append(challenge.getScheme().getTechnicalName()).appendSpace();
 
-        if (challenge.getRealm() != null) {
-            sb.append(" realm=\"").append(challenge.getRealm()).append('"');
+        if (challenge.getRawValue() != null) {
+            hb.append(challenge.getRawValue());
+        } else {
+            formatRawRequest(hb, challenge, response, httpHeaders);
         }
 
-        formatParameters(sb, challenge.getParameters(), challenge);
-        return sb.toString();
+        return hb.toString();
+    }
+
+    /**
+     * Formats a challenge request as raw credentials.
+     * 
+     * @param hb
+     *            The header builder to update.
+     * @param challenge
+     *            The challenge request to format.
+     * @param response
+     *            The parent response.
+     * @param httpHeaders
+     *            The current request HTTP headers.
+     */
+    public void formatRawRequest(HeaderBuilder hb, ChallengeRequest challenge,
+            Response response, Series<Parameter> httpHeaders)
+            throws IOException {
     }
 
     /**
      * Formats a challenge response as a HTTP header value. The header is
      * {@link HttpConstants#HEADER_AUTHORIZATION}. The default implementation
      * relies on
-     * {@link #formatCredentials(StringBuilder, ChallengeResponse, Request, Series)}
+     * {@link #formatRawResponse(StringBuilder, ChallengeResponse, Request, Series)}
      * unless some custom credentials are provided via
      * {@link ChallengeResponse#getCredentials()}.
      * 
@@ -174,26 +195,27 @@ public abstract class AuthenticatorHelper extends Helper {
      * @param httpHeaders
      *            The current request HTTP headers.
      * @return The {@link HttpConstants#HEADER_AUTHORIZATION} header value.
+     * @throws IOException
      */
     public String formatResponse(ChallengeResponse challenge, Request request,
-            Series<Parameter> httpHeaders) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(challenge.getScheme().getTechnicalName()).append(' ');
+            Series<Parameter> httpHeaders) throws IOException {
+        HeaderBuilder hb = new HeaderBuilder();
+        hb.append(challenge.getScheme().getTechnicalName()).appendSpace();
 
-        if (challenge.getCredentials() != null) {
-            sb.append(challenge.getCredentials());
+        if (challenge.getRawValue() != null) {
+            hb.append(challenge.getRawValue());
         } else {
-            formatCredentials(sb, challenge, request, httpHeaders);
+            formatRawResponse(hb, challenge, request, httpHeaders);
         }
 
-        return sb.toString();
+        return hb.toString();
     }
 
     /**
      * Formats a challenge response as raw credentials.
      * 
-     * @param sb
-     *            The String builder to update.
+     * @param hb
+     *            The header builder to update.
      * @param challenge
      *            The challenge response to format.
      * @param request
@@ -201,23 +223,9 @@ public abstract class AuthenticatorHelper extends Helper {
      * @param httpHeaders
      *            The current request HTTP headers.
      */
-    protected abstract void formatCredentials(StringBuilder sb,
+    public void formatRawResponse(HeaderBuilder hb,
             ChallengeResponse challenge, Request request,
-            Series<Parameter> httpHeaders);
-
-    /**
-     * Formats the parameters of a challenge request, to be appended to the
-     * scheme technical name and realm.
-     * 
-     * @param sb
-     *            The string builder to update.
-     * @param parameters
-     *            The parameters to format.
-     * @param request
-     *            The challenger request.
-     */
-    protected void formatParameters(StringBuilder sb,
-            Series<Parameter> parameters, ChallengeRequest request) {
+            Series<Parameter> httpHeaders) throws IOException {
     }
 
     /**
@@ -262,12 +270,12 @@ public abstract class AuthenticatorHelper extends Helper {
      * 
      * @param challenge
      *            The challenge request to update.
-     * @param header
-     *            The HTTP header value to parse.
+     * @param response
+     *            The parent response.
      * @param httpHeaders
      *            The current response HTTP headers.
      */
-    public void parseRequest(ChallengeRequest challenge, String header,
+    public void parseRequest(ChallengeRequest challenge, Response response,
             Series<Parameter> httpHeaders) {
     }
 

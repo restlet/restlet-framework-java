@@ -38,6 +38,7 @@ import org.restlet.Request;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Parameter;
+import org.restlet.engine.http.HeaderBuilder;
 import org.restlet.engine.util.Base64;
 import org.restlet.util.Series;
 
@@ -56,23 +57,24 @@ public class SmtpPlainHelper extends AuthenticatorHelper {
     }
 
     @Override
-    public void formatCredentials(StringBuilder sb,
+    public void formatRawResponse(HeaderBuilder sb,
             ChallengeResponse challenge, Request request,
             Series<Parameter> httpHeaders) {
         try {
-        	final CharArrayWriter credentials = new CharArrayWriter();
-        	credentials.write("^@");
-        	credentials.write(challenge.getIdentifier());
-        	credentials.write("^@");
-        	credentials.write(challenge.getSecret());
-            sb.append(Base64.encode(credentials.toCharArray(), "US-ASCII", false));
+            final CharArrayWriter credentials = new CharArrayWriter();
+            credentials.write("^@");
+            credentials.write(challenge.getIdentifier());
+            credentials.write("^@");
+            credentials.write(challenge.getSecret());
+            sb.append(Base64.encode(credentials.toCharArray(), "US-ASCII",
+                    false));
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(
                     "Unsupported encoding, unable to encode credentials");
         } catch (IOException e) {
-        	throw new RuntimeException(
-        			"Unexpected exception, unable to encode credentials",e);
-		}
+            throw new RuntimeException(
+                    "Unexpected exception, unable to encode credentials", e);
+        }
     }
 
 }

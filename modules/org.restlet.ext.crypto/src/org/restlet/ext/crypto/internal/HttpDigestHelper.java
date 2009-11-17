@@ -31,15 +31,20 @@
 package org.restlet.ext.crypto.internal;
 
 import java.io.IOException;
-import java.util.Collection;
+import java.util.logging.Level;
 
+import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
+import org.restlet.data.Digest;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
+import org.restlet.engine.http.HeaderBuilder;
+import org.restlet.engine.http.HeaderReader;
+import org.restlet.engine.http.HttpUtils;
 import org.restlet.engine.security.AuthenticatorHelper;
 import org.restlet.engine.security.AuthenticatorUtils;
 import org.restlet.engine.util.Base64;
@@ -54,40 +59,6 @@ import org.restlet.util.Series;
  */
 @SuppressWarnings("deprecation")
 public class HttpDigestHelper extends AuthenticatorHelper {
-
-    /**
-     * Add parameters to the given challenge request.
-     * 
-     * @param challengeRequest
-     *            The challenge request to update.
-     * @param domainUris
-     *            The URIs that define the protection domains.
-     * @param serverKey
-     *            The secret key known only to server.
-     * @param stale
-     *            Indicates if the given authentication was stale.
-     */
-    public static void addParameters(ChallengeRequest challengeRequest,
-            Collection<String> domainUris, String serverKey, boolean stale) {
-        Series<Parameter> parameters = challengeRequest.getParameters();
-        StringBuffer domain = new StringBuffer();
-
-        for (String baseUri : domainUris) {
-            domain.append(baseUri).append(' ');
-        }
-
-        if (domain.length() > 0) {
-            domain.delete(domain.length() - 1, domain.length());
-            parameters.add("domain", domain.toString());
-        }
-
-        parameters.add("nonce", makeNonce(serverKey));
-
-        if (stale) {
-            // indicate stale nonce was found in challenge response
-            parameters.add("stale", "true");
-        }
-    }
 
     /**
      * Return the hashed secret.
@@ -149,24 +120,6 @@ public class HttpDigestHelper extends AuthenticatorHelper {
         }
 
         throw new Exception("The nonce does not match secretKey");
-    }
-
-    /**
-     * Generates a nonce as recommended in section 3.2.1 of RFC-2617, but
-     * without the ETag field. The format is: <code><pre>
-     * Base64.encodeBytes(currentTimeMS + &quot;:&quot;
-     *         + md5String(currentTimeMS + &quot;:&quot; + secretKey))
-     * </pre></code>
-     * 
-     * @param secretKey
-     *            a secret value known only to the creator of the nonce. It's
-     *            inserted into the nonce, and can be used later to validate the
-     *            nonce.
-     */
-    public static String makeNonce(String secretKey) {
-        final long currentTimeMS = System.currentTimeMillis();
-        return Base64.encode((currentTimeMS + ":" + DigestUtils
-                .toMd5(currentTimeMS + ":" + secretKey)).getBytes(), true);
     }
 
     /**
@@ -258,90 +211,241 @@ public class HttpDigestHelper extends AuthenticatorHelper {
             }
         }
 
-        addParameters(mainChallengeRequest, guard.getDomainUris(), guard
-                .getServerKey(), stale);
+        if (mainChallengeRequest != null) {
+            mainChallengeRequest.setDomainUris(guard.getDomainUris());
+            mainChallengeRequest.setStale(stale);
+            mainChallengeRequest.setServerNonce(CryptoUtils.makeNonce(guard
+                    .getServerKey()));
+        }
     }
 
     @Override
-    public void formatCredentials(StringBuilder sb,
+    public void formatRawRequest(HeaderBuilder hb, ChallengeRequest challenge,
+            Response response, Series<Parameter> httpHeaders)
+            throws IOException {
+
+        if (challenge.getRealm() != null) {
+            hb.appendQuotedParameter("realm", challenge.getRealm());
+        }
+
+        if (!challenge.getDomainRefs().isEmpty()) {
+            hb.append(", domain=\"");
+
+            for (int i = 0; i < challenge.getDomainRefs().size(); i++) {
+                if (i > 0) {
+                    hb.append(' ');
+                }
+
+                hb.append(challenge.getDomainRefs().get(i).toString());
+            }
+
+            hb.append('"');
+        }
+
+        if (challenge.getServerNonce() != null) {
+            hb.appendQuotedParameter("nonce", challenge.getServerNonce());
+        }
+
+        if (challenge.getOpaque() != null) {
+            hb.appendQuotedParameter("opaque", challenge.getOpaque());
+        }
+
+        if (challenge.isStale()) {
+            hb.appendParameter("stale", "true");
+        }
+
+        if (challenge.getDigestAlgorithm() != null) {
+            hb.appendParameter("algorithm", challenge.getDigestAlgorithm());
+        }
+
+        if (!challenge.getQualityOptions().isEmpty()) {
+            hb.append(", qop=\"");
+
+            for (int i = 0; i < challenge.getQualityOptions().size(); i++) {
+                if (i > 0) {
+                    hb.append(',');
+                }
+
+                hb.appendToken(challenge.getQualityOptions().get(i).toString());
+            }
+
+            hb.append('"');
+        }
+
+        for (Parameter param : challenge.getParameters()) {
+            if (HttpUtils.isToken(param.getValue())) {
+                hb.appendParameter(param);
+            } else {
+                hb.appendQuotedParameter(param);
+            }
+        }
+    }
+
+    @Override
+    public void formatRawResponse(HeaderBuilder hb,
             ChallengeResponse challenge, Request request,
-            Series<Parameter> httpHeaders) {
-        Series<Parameter> params = challenge.getParameters();
+            Series<Parameter> httpHeaders) throws IOException {
 
-        appendParameter(sb, "username", challenge.getIdentifier());
-        appendParameter(sb, "response", new String(challenge.getSecret()));
-
-        for (Parameter param : params) {
-            appendParameter(sb, param.getName(), param.getValue());
+        if (challenge.getIdentifier() != null) {
+            hb.appendQuotedParameter("username", challenge.getIdentifier());
         }
 
-        // Remove the trailing comma
-        if (sb.length() > 0) {
-            sb.deleteCharAt(sb.length() - 1);
+        if (challenge.getRealm() != null) {
+            hb.appendQuotedParameter("realm", challenge.getRealm());
         }
-    }
 
-    /**
-     * Appends a HTTP DIGEST parameter to the credentials string.
-     * 
-     * @param credentials
-     *            The credentials to append.
-     * @param name
-     *            The parameter name.
-     * @param value
-     *            The parameter value.
-     * @throws IOException
-     */
-    private static void appendParameter(StringBuilder credentials, String name,
-            String value) {
-        credentials.append(name).append('=');
+        if (challenge.getServerNonce() != null) {
+            hb.appendQuotedParameter("nonce", challenge.getServerNonce());
+        }
 
-        if (name.equals("qop") || name.equals("algorithm") || name.equals("nc")) {
-            // These values are left unquoted as per RC2617
-            credentials.append(value).append(",");
-        } else {
-            credentials.append('"').append(value).append('"').append(",");
+        if (challenge.getDigestRef() != null) {
+            hb
+                    .appendQuotedParameter("uri", challenge.getDigestRef()
+                            .toString());
+        }
+
+        if (challenge.getSecret() != null) {
+            hb.appendQuotedParameter("response", new String(challenge
+                    .getSecret()));
+        }
+
+        if ((challenge.getDigestAlgorithm() != null)
+                && !Digest.ALGORITHM_MD5.equals(challenge.getDigestAlgorithm())) {
+            hb.appendParameter("algorithm", challenge.getDigestAlgorithm());
+        }
+
+        if (challenge.getClientNonce() != null) {
+            hb.appendQuotedParameter("cnonce", challenge.getClientNonce());
+        }
+
+        if (challenge.getOpaque() != null) {
+            hb.appendQuotedParameter("opaque", challenge.getOpaque());
+        }
+
+        if (challenge.getQuality() != null) {
+            hb.appendParameter("qop", challenge.getQuality());
+        }
+
+        if ((challenge.getQuality() != null)
+                && (challenge.getServerNounceCount() > 0)) {
+            hb.appendParameter("nc", challenge.getServerNounceCountAsHex());
+        }
+
+        for (Parameter param : challenge.getParameters()) {
+            if (HttpUtils.isToken(param.getValue())) {
+                hb.appendParameter(param);
+            } else {
+                hb.appendQuotedParameter(param);
+            }
         }
     }
 
     @Override
-    public void formatParameters(StringBuilder sb,
-            Series<Parameter> parameters, ChallengeRequest challenge) {
-        sb.append(", domain=\"").append(parameters.getFirstValue("domain"))
-                .append('"');
-        sb.append(", qop=\"auth\"");
-        sb.append(", algorithm=MD5"); // leave this value unquoted as per
-        // RFC-2617
-        sb.append(", nonce=\"").append(parameters.getFirstValue("nonce"))
-                .append('"');
+    public void parseRequest(ChallengeRequest challenge, Response response,
+            Series<Parameter> httpHeaders) {
+        if (challenge.getRawValue() != null) {
+            HeaderReader hr = new HeaderReader(challenge.getRawValue());
 
-        if (parameters.getFirst("stale") != null) {
-            sb.append(", stale=\"true\"");
+            try {
+                Parameter param = hr.readParameter();
+
+                while (param != null) {
+                    try {
+                        if ("realm".equals(param.getName())) {
+                            challenge.setRealm(param.getValue());
+                        } else if ("domain".equals(param.getName())) {
+                            challenge.setRealm(param.getValue());
+                        } else if ("nonce".equals(param.getName())) {
+                            challenge.setServerNonce(param.getValue());
+                        } else if ("opaque".equals(param.getName())) {
+                            challenge.setOpaque(param.getValue());
+                        } else if ("stale".equals(param.getName())) {
+                            challenge.setStale(Boolean
+                                    .valueOf(param.getValue()));
+                        } else if ("algorithm".equals(param.getName())) {
+                            challenge.setDigestAlgorithm(param.getValue());
+                        } else if ("qop".equals(param.getName())) {
+                            // challenge.setDigestAlgorithm(param.getValue());
+                        } else {
+                            challenge.getParameters().add(param);
+                        }
+
+                        param = hr.readParameter();
+                    } catch (Exception e) {
+                        Context
+                                .getCurrentLogger()
+                                .log(
+                                        Level.WARNING,
+                                        "Unable to parse the challenge request header parameter",
+                                        e);
+                    }
+                }
+            } catch (Exception e) {
+                Context
+                        .getCurrentLogger()
+                        .log(
+                                Level.WARNING,
+                                "Unable to parse the challenge request header parameter",
+                                e);
+            }
         }
     }
 
     @Override
     public void parseResponse(ChallengeResponse challenge, Request request,
             Series<Parameter> httpHeaders) {
-        Series<Parameter> parameters = challenge.getParameters();
-        AuthenticatorUtils.parseParameters(challenge.getCredentials(),
-                parameters);
+        if (challenge.getCredentials() != null) {
+            HeaderReader hr = new HeaderReader(challenge.getCredentials());
 
-        // Extract the identifier and secret parameters and remove them
-        String username = parameters.getFirstValue("username");
-        parameters.removeAll("username");
-        String response = parameters.getFirstValue("response");
-        parameters.removeAll("response");
+            try {
+                Parameter param = hr.readParameter();
 
-        if ((username != null) && (response != null)) {
-            challenge.setIdentifier(username);
-            challenge.setSecret(response);
-        } else {
-            // Log the blocking
-            getLogger().warning(
-                    "Invalid credentials given by client with IP: "
-                            + ((request != null) ? request.getClientInfo()
-                                    .getAddress() : "?"));
+                while (param != null) {
+                    try {
+                        if ("username".equals(param.getName())) {
+                            challenge.setIdentifier(param.getValue());
+                        } else if ("realm".equals(param.getName())) {
+                            challenge.setRealm(param.getValue());
+                        } else if ("nonce".equals(param.getName())) {
+                            challenge.setServerNonce(param.getValue());
+                        } else if ("uri".equals(param.getName())) {
+                            challenge.setDigestRef(new Reference(param
+                                    .getValue()));
+                        } else if ("response".equals(param.getName())) {
+                            challenge.setSecret(param.getValue());
+                        } else if ("algorithm".equals(param.getName())) {
+                            challenge.setDigestAlgorithm(param.getValue());
+                        } else if ("cnonce".equals(param.getName())) {
+                            challenge.setClientNonce(param.getValue());
+                        } else if ("opaque".equals(param.getName())) {
+                            challenge.setOpaque(param.getValue());
+                        } else if ("qop".equals(param.getName())) {
+                            challenge.setQuality(param.getValue());
+                        } else if ("nc".equals(param.getName())) {
+                            challenge.setServerNounceCount(Integer
+                                    .valueOf(param.getValue()));
+                        } else {
+                            challenge.getParameters().add(param);
+                        }
+
+                        param = hr.readParameter();
+                    } catch (Exception e) {
+                        Context
+                                .getCurrentLogger()
+                                .log(
+                                        Level.WARNING,
+                                        "Unable to parse the challenge request header parameter",
+                                        e);
+                    }
+                }
+            } catch (Exception e) {
+                Context
+                        .getCurrentLogger()
+                        .log(
+                                Level.WARNING,
+                                "Unable to parse the challenge request header parameter",
+                                e);
+            }
         }
     }
 

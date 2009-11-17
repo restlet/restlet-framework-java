@@ -54,13 +54,13 @@ public class WarningReader extends HeaderReader {
     }
 
     @Override
-    protected void appendQuotedString(Appendable buffer) throws IOException {
+    public void readQuotedString(Appendable buffer) throws IOException {
         int nextChar = read();
         while (nextChar != '"' && (nextChar != -1)) {
             nextChar = read();
         }
         if (nextChar == '"') {
-            super.appendQuotedString(buffer);
+            super.readQuotedString(buffer);
         }
     }
 
@@ -72,7 +72,7 @@ public class WarningReader extends HeaderReader {
      * @return True if the given character is a value separator.
      */
     @Override
-    final protected boolean isValueSeparator(int character) {
+    public final boolean isValueSeparator(int character) {
         return (character == ' ');
     }
 
