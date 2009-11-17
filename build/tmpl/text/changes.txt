@@ -96,6 +96,7 @@ Changes log
         - Added org.restlet.data.CacheDirective class and 
           Message#cacheDirectives property corresponding to the 
           "Cache-Control" HTTP header.
+        - Added support of CacheControl header.
       - Bugs fixed
         - Fixed bug when the deprecated method "createRoot" is 
           implemented instead of the "createInboundRoot".
@@ -195,6 +196,8 @@ Changes log
     - Misc
         - Added Velocity template in the org.restlet.example project.
           Reported by Ben Vesco.
+        - Updated the Simple framework library to version 4.1.15.
+
 - 2.0 Milestone 5 (2009-09-28)
     - API changes
         - Moved Message, Request and Response classes from the
