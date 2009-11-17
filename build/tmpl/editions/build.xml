@@ -343,13 +343,11 @@
 			</condition>
 			<property name="source-exclude-patterns" value="**/package.html" />
 
-			<condition property="jar-extras" value="${temp}/jar-extras/@{name}">
-				<available file="${temp}/jar-extras/@{name}" type="dir" />
-			</condition>
-			<property name="jar-extras" value="${classes}/${mod-@{name}-id}" />
+			<mkdir dir="${temp}/jar-extras/@{name}" />
+			<condition property="jar-extras" value="${temp}/jar-extras/@{name}" />
 
 			<delete failonerror="false" file="${dist-classic}/lib/${mod-@{name}-id}.jar" />
-			<jar destfile="${dist-classic}/lib/${mod-@{name}-id}.jar" filesetmanifest="merge" duplicate="preserve" >
+			<jar destfile="${dist-classic}/lib/${mod-@{name}-id}.jar" filesetmanifest="merge">
 				<fileset dir="${classes}/${mod-@{name}-id}" />
 				<fileset dir="${temp}/jar/" />
 				<fileset dir="${jar-extras}" />
