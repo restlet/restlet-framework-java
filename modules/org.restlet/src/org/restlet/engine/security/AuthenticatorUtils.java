@@ -43,6 +43,7 @@ import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Parameter;
 import org.restlet.engine.Engine;
+import org.restlet.engine.http.HeaderBuilder;
 import org.restlet.engine.http.HeaderReader;
 import org.restlet.engine.http.HttpConstants;
 import org.restlet.security.Guard;
@@ -156,6 +157,60 @@ public class AuthenticatorUtils {
     }
 
     /**
+     * Formats an authentication information as a HTTP header value. The header
+     * is {@link HttpConstants#HEADER_AUTHENTICATION_INFO}.
+     * 
+     * @param info
+     *            The authentication information to format.
+     * @return The {@link HttpConstants#HEADER_AUTHENTICATION_INFO} header
+     *         value.
+     * @throws IOException
+     */
+    public static String formatAuthenticationInfo(AuthenticationInfo info)
+            throws IOException {
+        HeaderBuilder hb = new HeaderBuilder();
+        boolean firstParameter = true;
+
+        if (info != null) {
+            if (info.getNextServerNonce() != null
+                    && info.getNextServerNonce().length() > 0) {
+                hb.setFirstParameter(firstParameter);
+                hb
+                        .appendQuotedParameter("nextnonce", info
+                                .getNextServerNonce());
+                firstParameter = false;
+            }
+            if (info.getQuality() != null && info.getQuality().length() > 0) {
+                hb.setFirstParameter(firstParameter);
+                hb.appendParameter("qop", info.getQuality());
+                firstParameter = false;
+                if (info.getNonceCount() > 0) {
+                    StringBuilder result = new StringBuilder(Integer
+                            .toHexString(info.getNonceCount()));
+                    while (result.length() < 8) {
+                        result.insert(0, '0');
+                    }
+                    hb.appendParameter("nc", result.toString());
+                }
+            }
+            if (info.getResponseDigest() != null
+                    && info.getResponseDigest().length() > 0) {
+                hb.setFirstParameter(firstParameter);
+                hb.appendQuotedParameter("rspauth", info.getResponseDigest());
+                firstParameter = false;
+            }
+            if (info.getClientNonce() != null
+                    && info.getClientNonce().length() > 0) {
+                hb.setFirstParameter(firstParameter);
+                hb.appendParameter("cnonce", info.getClientNonce());
+                firstParameter = false;
+            }
+        }
+
+        return hb.toString();
+    }
+
+    /**
      * Formats a challenge request as a HTTP header value. The header is
      * {@link HttpConstants#HEADER_WWW_AUTHENTICATE}.
      * 
@@ -238,41 +293,38 @@ public class AuthenticatorUtils {
     public static AuthenticationInfo parseAuthenticationInfo(String header) {
         AuthenticationInfo result = null;
         HeaderReader hr = new HeaderReader(header);
-
         try {
-            Parameter param;
-            param = hr.readParameter();
-
-            while (param != null) {
-
-                param = hr.readParameter();
-            }
-
             String nextNonce = null;
-            int nonceCount = 0;
-            String cnonce = null;
             String qop = null;
             String responseAuth = null;
+            String cnonce = null;
+            int nonceCount = 0;
 
-            String[] authFields = header.split(",");
-            for (String field : authFields) {
-                String[] nameValuePair = field.trim().split("=");
-                if (nameValuePair[0].equals("nextnonce")) {
-                    nextNonce = nameValuePair[1];
-                } else if (nameValuePair[0].equals("nc")) {
-                    nonceCount = Integer.parseInt(nameValuePair[1], 16);
-                } else if (nameValuePair[0].equals("cnonce")) {
-                    cnonce = nameValuePair[1];
-                    if (cnonce.charAt(0) == '"') {
-                        cnonce = cnonce.substring(1, cnonce.length() - 1);
+            Parameter param = hr.readParameter();
+            while (param != null) {
+                try {
+                    if ("nextnonce".equals(param.getName())) {
+                        nextNonce = param.getValue();
+                    } else if ("qop".equals(param.getName())) {
+                        qop = param.getValue();
+                    } else if ("rspauth".equals(param.getName())) {
+                        responseAuth = param.getValue();
+                    } else if ("cnonce".equals(param.getName())) {
+                        cnonce = param.getValue();
+                    } else if ("nc".equals(param.getName())) {
+                        nonceCount = Integer.parseInt(param.getValue(), 16);
                     }
-                } else if (nameValuePair[0].equals("qop")) {
-                    qop = nameValuePair[1];
-                } else if (nameValuePair[0].equals("responseAuth")) {
-                    responseAuth = nameValuePair[1];
+
+                    param = hr.readParameter();
+                } catch (Exception e) {
+                    Context
+                            .getCurrentLogger()
+                            .log(
+                                    Level.WARNING,
+                                    "Unable to parse the authentication info header parameter",
+                                    e);
                 }
             }
-
             result = new AuthenticationInfo(nextNonce, nonceCount, cnonce, qop,
                     responseAuth);
         } catch (IOException e) {

@@ -79,6 +79,8 @@ public class HttpAdapter extends Adapter {
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_ALLOW)
                         || param.getName().equalsIgnoreCase(
+                                HttpConstants.HEADER_AUTHENTICATION_INFO)
+                        || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_AUTHORIZATION)
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_CACHE_CONTROL)

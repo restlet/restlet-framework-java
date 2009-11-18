@@ -282,8 +282,21 @@ public class HttpServerAdapter extends HttpAdapter {
 
         // Add the Cache-control headers
         if (!response.getCacheDirectives().isEmpty()) {
-            responseHeaders.add(HttpConstants.HEADER_CACHE_CONTROL, CacheControlUtils
-                    .format(response.getCacheDirectives()));
+            responseHeaders.add(HttpConstants.HEADER_CACHE_CONTROL,
+                    CacheControlUtils.format(response.getCacheDirectives()));
+        }
+
+        // Add the Authentication-Info header
+        if (response.getAuthenticationInfo() != null) {
+            try {
+                responseHeaders.add(HttpConstants.HEADER_AUTHENTICATION_INFO,
+                        org.restlet.engine.security.AuthenticatorUtils
+                                .formatAuthenticationInfo(response
+                                        .getAuthenticationInfo()));
+            } catch (IOException e) {
+                Context.getCurrentLogger().log(Level.WARNING,
+                        "Unable to write the Authentication-Info header", e);
+            }
         }
 
     }

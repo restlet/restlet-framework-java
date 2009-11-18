@@ -206,6 +206,7 @@ Changes log
           204 (success, no content).
         - Added support of the warning header.
         - Added support of the ranges in the gwt edition.
+        - Added support of the Authentication-Info header.
     - Misc
         - Added Velocity template in the org.restlet.example project.
           Reported by Ben Vesco.
