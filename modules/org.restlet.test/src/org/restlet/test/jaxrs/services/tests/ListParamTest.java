@@ -52,6 +52,8 @@ import org.restlet.test.jaxrs.services.resources.ListParamService;
  */
 public class ListParamTest extends JaxRsTestCase {
 
+    public static final boolean LATER = true;
+
     /**
      * @param response
      * @throws IOException
@@ -72,6 +74,7 @@ public class ListParamTest extends JaxRsTestCase {
         };
         return appConfig;
     }
+
     public void testCookieParams() throws IOException {
         final List<Cookie> cookies = new ArrayList<Cookie>();
         cookies.add(new Cookie("c", "c1"));
@@ -104,8 +107,10 @@ public class ListParamTest extends JaxRsTestCase {
         }
     }
 
-    /** @see ListParamService#getMatrix(String, java.util.Collection) 
-     * @throws IOException */
+    /**
+     * @see ListParamService#getMatrix(String, java.util.Collection)
+     * @throws IOException
+     */
     public void testMatrixParams() throws IOException {
         final Response response = get("matrix;m=m1;m=m2;mm=mm1;mm=mm2");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
@@ -129,14 +134,13 @@ public class ListParamTest extends JaxRsTestCase {
      * @see ListParamService#getPath(String, java.util.SortedSet)
      */
     public void testPathParams() throws IOException {
-        if (true) {
-            return;
-        }
-        Response response = get("path/p1/p2/pp1/pp2");
-        checkPathParam(response);
+        if (!LATER) {
+            Response response = get("path/p1/p2/pp1/pp2");
+            checkPathParam(response);
 
-        response = get("path/p1/p2/pp2/pp1");
-        checkPathParam(response);
+            response = get("path/p1/p2/pp2/pp1");
+            checkPathParam(response);
+        }
     }
 
     public void testQueryParams() throws IOException {

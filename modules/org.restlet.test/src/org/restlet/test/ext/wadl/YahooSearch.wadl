@@ -18,7 +18,7 @@
   </grammars>
   
   <resources base="http://api.search.yahoo.com/NewsSearchService/V1/">
-    <resource id="org.restlet.test.NewsSearchResource" path="newsSearch">
+    <resource id="org.restlet.test.ext.wadl.NewsSearchResource" path="newsSearch">
       <doc>Sample Request Url: <html:a href="http://api.search.yahoo.com/NewsSearchService/V1/newsSearch?appid=YahooDemo&amp;query=madonna&amp;results=2&amp;language=en">http://api.search.yahoo.com/NewsSearchService/V1/newsSearch?appid=YahooDemo&amp;query=madonna&amp;results=2&amp;language=en</html:a></doc>
       <param name="appid" type="xsd:string" required="true" style="query">
         <doc>The application ID. See <html:a href="http://developer.yahoo.com/faq/index.html#appid">Application IDs</html:a> for more information.</doc>

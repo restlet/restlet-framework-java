@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.test;
+package org.restlet.test.connector;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,6 +41,7 @@ import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.StringRepresentation;
+import org.restlet.test.RestletTestCase;
 
 /**
  * Unit test case for the Zip client connector.

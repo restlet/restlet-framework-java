@@ -28,23 +28,15 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.test;
+package org.restlet.test.component;
 
-import org.restlet.Request;
-import org.restlet.Response;
+import org.restlet.Application;
 import org.restlet.Restlet;
-import org.restlet.data.MediaType;
 
-/**
- * Reusable hello world Restlet.
- * 
- * @author Jerome Louvel
- */
-public class HelloWorldRestlet extends Restlet {
+public class HelloWorldApplication extends Application {
 
     @Override
-    public void handle(Request request, Response response) {
-        response.setEntity("hello, world", MediaType.TEXT_PLAIN);
+    public synchronized Restlet createInboundRoot() {
+        return new HelloWorldRestlet();
     }
-
 }

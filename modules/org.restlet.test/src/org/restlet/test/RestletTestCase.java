@@ -40,8 +40,7 @@ import junit.framework.TestCase;
 /**
  * Marker class. All Restlet tests should be derived from this class.
  * 
- * @author Lars Heuer (heuer[at]semagia.com) <a
- *         href="http://www.semagia.com/">Semagia</a>
+ * @author Lars Heuer (heuer[at]semagia.com)
  */
 public abstract class RestletTestCase extends TestCase {
 

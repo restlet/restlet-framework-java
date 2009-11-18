@@ -71,27 +71,25 @@ public class SimpleTrainTest extends JaxRsTestCase {
     }
 
     public void testGetHtmlText() throws Exception {
-        if (ONLY_M2 || ONLY_TEXT_ALL) {
-            return;
+        if (!ONLY_M2 && !ONLY_TEXT_ALL) {
+            final Response response = get(MediaType.TEXT_HTML);
+            sysOutEntityIfError(response);
+            assertTrue(response.getStatus().isSuccess());
+            final Representation entity = response.getEntity();
+            assertEquals(SimpleTrain.RERP_HTML_TEXT, entity.getText());
+            assertEqualMediaType(MediaType.TEXT_HTML, entity.getMediaType());
         }
-        final Response response = get(MediaType.TEXT_HTML);
-        sysOutEntityIfError(response);
-        assertTrue(response.getStatus().isSuccess());
-        final Representation entity = response.getEntity();
-        assertEquals(SimpleTrain.RERP_HTML_TEXT, entity.getText());
-        assertEqualMediaType(MediaType.TEXT_HTML, entity.getMediaType());
     }
 
     public void testGetPlainText() throws Exception {
-        if (ONLY_M2 || ONLY_TEXT_ALL) {
-            return;
+        if (!ONLY_M2 && !ONLY_TEXT_ALL) {
+            final Response response = get(MediaType.TEXT_PLAIN);
+            sysOutEntityIfError(response);
+            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            final Representation entity = response.getEntity();
+            assertEquals(SimpleTrain.RERP_PLAIN_TEXT, entity.getText());
+            assertEqualMediaType(MediaType.TEXT_PLAIN, entity.getMediaType());
         }
-        final Response response = get(MediaType.TEXT_PLAIN);
-        sysOutEntityIfError(response);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
-        final Representation entity = response.getEntity();
-        assertEquals(SimpleTrain.RERP_PLAIN_TEXT, entity.getText());
-        assertEqualMediaType(MediaType.TEXT_PLAIN, entity.getMediaType());
     }
 
     public void testGetTextAll() throws Exception {
@@ -115,17 +113,16 @@ public class SimpleTrainTest extends JaxRsTestCase {
     }
 
     public void testGetTextMultiple1() throws Exception {
-        if (ONLY_M2 || ONLY_TEXT_ALL) {
-            return;
+        if (!ONLY_M2 && !ONLY_TEXT_ALL) {
+            final Response response = accessServer(Method.GET,
+                    SimpleTrain.class, TestUtils.createList(new Object[] {
+                            PREF_TEXTPLAIN_QUAL05, MediaType.TEXT_CALENDAR }));
+            sysOutEntityIfError(response);
+            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            final Representation entity = response.getEntity();
+            assertEqualMediaType(MediaType.TEXT_PLAIN, entity.getMediaType());
+            assertEquals(SimpleTrain.RERP_PLAIN_TEXT, entity.getText());
         }
-        final Response response = accessServer(Method.GET, SimpleTrain.class,
-                TestUtils.createList(new Object[] { PREF_TEXTPLAIN_QUAL05,
-                        MediaType.TEXT_CALENDAR }));
-        sysOutEntityIfError(response);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
-        final Representation entity = response.getEntity();
-        assertEqualMediaType(MediaType.TEXT_PLAIN, entity.getMediaType());
-        assertEquals(SimpleTrain.RERP_PLAIN_TEXT, entity.getText());
     }
 
     public void testGetTextMultiple2() throws Exception {
@@ -143,23 +140,22 @@ public class SimpleTrainTest extends JaxRsTestCase {
     }
 
     public void testHead() throws Exception {
-        if (ONLY_M2 || ONLY_TEXT_ALL) {
-            return;
+        if (!ONLY_M2 && !ONLY_TEXT_ALL) {
+            final Response responseHead = accessServer(Method.HEAD,
+                    SimpleTrain.class, TestUtils.createList(new Object[] {
+                            PREF_TEXTPLAIN_QUAL05, MediaType.TEXT_HTML }));
+            final Response responseGett = accessServer(Method.GET,
+                    SimpleTrain.class, TestUtils.createList(new Object[] {
+                            PREF_TEXTPLAIN_QUAL05, MediaType.TEXT_HTML }));
+            assertEquals(Status.SUCCESS_OK, responseHead.getStatus());
+            assertEquals(Status.SUCCESS_OK, responseGett.getStatus());
+            final Representation entityHead = responseHead.getEntity();
+            final Representation entityGett = responseGett.getEntity();
+            assertNotNull(entityHead);
+            assertNotNull(entityGett);
+            assertEqualMediaType(MediaType.TEXT_HTML, entityGett.getMediaType());
+            assertEquals(SimpleTrain.RERP_HTML_TEXT, entityGett.getText());
         }
-        final Response responseHead = accessServer(Method.HEAD,
-                SimpleTrain.class, TestUtils.createList(new Object[] {
-                        PREF_TEXTPLAIN_QUAL05, MediaType.TEXT_HTML }));
-        final Response responseGett = accessServer(Method.GET,
-                SimpleTrain.class, TestUtils.createList(new Object[] {
-                        PREF_TEXTPLAIN_QUAL05, MediaType.TEXT_HTML }));
-        assertEquals(Status.SUCCESS_OK, responseHead.getStatus());
-        assertEquals(Status.SUCCESS_OK, responseGett.getStatus());
-        final Representation entityHead = responseHead.getEntity();
-        final Representation entityGett = responseGett.getEntity();
-        assertNotNull(entityHead);
-        assertNotNull(entityGett);
-        assertEqualMediaType(MediaType.TEXT_HTML, entityGett.getMediaType());
-        assertEquals(SimpleTrain.RERP_HTML_TEXT, entityGett.getText());
     }
 
     public void testOptions() throws Exception {

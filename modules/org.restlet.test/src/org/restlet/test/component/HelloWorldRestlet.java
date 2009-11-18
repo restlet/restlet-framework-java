@@ -28,40 +28,23 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.test;
+package org.restlet.test.component;
 
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.Restlet;
-import org.restlet.Server;
-import org.restlet.data.Protocol;
+import org.restlet.data.MediaType;
 
 /**
- * Test the ability of a connector to be restarted.
+ * Reusable hello world Restlet.
  * 
  * @author Jerome Louvel
  */
-public class RestartTestCase extends RestletTestCase {
+public class HelloWorldRestlet extends Restlet {
 
-    public void testRestart() throws Exception {
-        final int waitTime = 100;
-
-        final Server connector = new Server(Protocol.HTTP, TEST_PORT,
-                (Restlet) null);
-
-        System.out.print("Starting connector... ");
-        connector.start();
-        System.out.println("done");
-        Thread.sleep(waitTime);
-
-        System.out.print("Stopping connector... ");
-        connector.stop();
-        System.out.println("done");
-        Thread.sleep(waitTime);
-
-        System.out.print("Restarting connector... ");
-        connector.start();
-        System.out.println("done");
-        Thread.sleep(waitTime);
-        connector.stop();
+    @Override
+    public void handle(Request request, Response response) {
+        response.setEntity("hello, world", MediaType.TEXT_PLAIN);
     }
 
 }

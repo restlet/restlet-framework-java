@@ -68,6 +68,8 @@ import org.w3c.dom.NodeList;
  */
 public class ProviderTest extends JaxRsTestCase {
 
+    public static final boolean LATER = true;
+
     private static Form createForm() {
         final Form form = new Form();
         form.add("firstname", "Angela");
@@ -245,9 +247,10 @@ public class ProviderTest extends JaxRsTestCase {
 
     /** @see ProviderTestService#jaxbPost(javax.xml.bind.JAXBElement) */
     public void testJaxbElementPost() throws Exception {
-        if (true) // LATER conversion to JAXBElement doesn't work
-            return;
-        postAndCheckXml("jaxbElement");
+        if (!LATER) {
+            // LATER conversion to JAXBElement doesn't work
+            postAndCheckXml("jaxbElement");
+        }
     }
 
     /**
@@ -256,16 +259,16 @@ public class ProviderTest extends JaxRsTestCase {
      * @see ProviderTestService#jaxbPostNamespace(javax.xml.bind.JAXBElement)
      */
     public void testJaxbElementPostRootElement() throws Exception {
-        if (true) // LATER conversion to JAXBElement doesn't work
-            return;
-        final Representation send = new DomRepresentation(
-                new StringRepresentation(
-                        "<person><firstname>Helmut</firstname><lastname>Kohl</lastname></person>\n",
-                        MediaType.TEXT_XML));
-        final Response response = post("jaxbElement/rootElement", send);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
-        final Representation respEntity = response.getEntity();
-        assertEquals("person", respEntity.getText());
+        if (!LATER) {
+            final Representation send = new DomRepresentation(
+                    new StringRepresentation(
+                            "<person><firstname>Helmut</firstname><lastname>Kohl</lastname></person>\n",
+                            MediaType.TEXT_XML));
+            final Response response = post("jaxbElement/rootElement", send);
+            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            final Representation respEntity = response.getEntity();
+            assertEquals("person", respEntity.getText());
+        }
     }
 
     @SuppressWarnings("all")

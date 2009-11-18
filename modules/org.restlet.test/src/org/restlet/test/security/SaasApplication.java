@@ -39,7 +39,7 @@ import org.restlet.security.Authorizer;
 import org.restlet.security.ChallengeAuthenticator;
 import org.restlet.security.Role;
 import org.restlet.security.RoleAuthorizer;
-import org.restlet.test.HelloWorldRestlet;
+import org.restlet.test.component.HelloWorldRestlet;
 
 /**
  * Sample SAAS application with a Basic authenticator guarding a hello world

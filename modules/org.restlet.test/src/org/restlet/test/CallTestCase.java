@@ -44,8 +44,7 @@ import org.restlet.engine.http.HttpCall;
 /**
  * Test {@link org.restlet.Call}.
  * 
- * @author Lars Heuer (heuer[at]semagia.com) <a
- *         href="http://www.semagia.com/">Semagia</a>
+ * @author Lars Heuer (heuer[at]semagia.com)
  */
 public class CallTestCase extends RestletTestCase {
     /**

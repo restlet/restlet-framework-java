@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.test;
+package org.restlet.test.component;
 
 import java.util.List;
 
@@ -41,11 +41,12 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.routing.TemplateRoute;
 import org.restlet.routing.VirtualHost;
+import org.restlet.test.RestletTestCase;
 import org.restlet.util.ClientList;
 import org.restlet.util.ServerList;
 
 /**
- * JUnit test case for the newly added (Component.xsd version 1.2) parameter
+ * JUnit test case for the newly added (Component.xsd version 2.0) parameter
  * elements in a restlet.xml configuration file.
  * <p>
  * Note that the XML data validation IS active but DOES NOT affect the outcome
@@ -60,14 +61,14 @@ import org.restlet.util.ServerList;
  * CONFIG: [ERROR] - Unexpected exception while parsing an instance of PUBLIC \
  *     [null], SYSTEM [null] - line #7, column #75: cvc-complex-type.2.4.a: \
  *     Invalid content was found starting with element 'illegal-element'. \
- *     One of '{&quot;http://www.restlet.org/schemas/1.2/Component&quot;:client, \
- *     &quot;http://www.restlet.org/schemas/1.2/Component&quot;:server, \
- *     &quot;http://www.restlet.org/schemas/1.2/Component&quot;:parameter, \
- *     &quot;http://www.restlet.org/schemas/1.2/Component&quot;:defaultHost, \
- *     &quot;http://www.restlet.org/schemas/1.2/Component&quot;:host, \
- *     &quot;http://www.restlet.org/schemas/1.2/Component&quot;:internalRouter, \
- *     &quot;http://www.restlet.org/schemas/1.2/Component&quot;:logService, \
- *     &quot;http://www.restlet.org/schemas/1.2/Component&quot;:statusService}' is expected.
+ *     One of '{&quot;http://www.restlet.org/schemas/2.0/Component&quot;:client, \
+ *     &quot;http://www.restlet.org/schemas/2.0/Component&quot;:server, \
+ *     &quot;http://www.restlet.org/schemas/2.0/Component&quot;:parameter, \
+ *     &quot;http://www.restlet.org/schemas/2.0/Component&quot;:defaultHost, \
+ *     &quot;http://www.restlet.org/schemas/2.0/Component&quot;:host, \
+ *     &quot;http://www.restlet.org/schemas/2.0/Component&quot;:internalRouter, \
+ *     &quot;http://www.restlet.org/schemas/2.0/Component&quot;:logService, \
+ *     &quot;http://www.restlet.org/schemas/2.0/Component&quot;:statusService}' is expected.
  * </pre>
  */
 public class ComponentXmlConfigTestCase extends RestletTestCase {
@@ -104,7 +105,7 @@ public class ComponentXmlConfigTestCase extends RestletTestCase {
 
     /** Correct restlet.xml test instances. */
     private static final String RESTLET_XML = "<?xml version=\"1.0\"?>\n"
-            + "<component xmlns=\"http://www.restlet.org/schemas/1.2/Component\">\n"
+            + "<component xmlns=\"http://www.restlet.org/schemas/2.0/Component\">\n"
             + "<client protocol=\"HTTP\">\n" + "<parameter name=\""
             + CON_NAME
             + "3\" value=\""
@@ -158,7 +159,7 @@ public class ComponentXmlConfigTestCase extends RestletTestCase {
             + "2\" value=\""
             + R_VALUE
             + "2\"/>\n"
-            + "<attach uriPattern=\"/abcd\" targetClass=\"org.restlet.test.HelloWorldApplication\">\n"
+            + "<attach uriPattern=\"/abcd\" targetClass=\"org.restlet.test.component.HelloWorldApplication\">\n"
             + "<parameter name=\""
             + A_NAME
             + "1\" value=\""
@@ -170,7 +171,7 @@ public class ComponentXmlConfigTestCase extends RestletTestCase {
             + A_VALUE
             + "2\"/>\n"
             + "</attach>\n"
-            + "<attach uriPattern=\"/foo\" targetClass=\"org.restlet.test.HelloWorldApplication\">\n"
+            + "<attach uriPattern=\"/foo\" targetClass=\"org.restlet.test.component.HelloWorldApplication\">\n"
             + "<parameter name=\""
             + A_NAME
             + "3\" value=\""
@@ -196,7 +197,7 @@ public class ComponentXmlConfigTestCase extends RestletTestCase {
             + "4\" value=\""
             + R_VALUE
             + "4\"/>\n"
-            + "<attach uriPattern=\"/efgh\" targetClass=\"org.restlet.test.HelloWorldApplication\">\n"
+            + "<attach uriPattern=\"/efgh\" targetClass=\"org.restlet.test.component.HelloWorldApplication\">\n"
             + "<parameter name=\""
             + A_NAME
             + "5\" value=\""

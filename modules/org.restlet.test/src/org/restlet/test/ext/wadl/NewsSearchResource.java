@@ -28,15 +28,15 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.test;
+package org.restlet.test.ext.wadl;
 
-import org.restlet.resource.Resource;
+import org.restlet.resource.ServerResource;
 
 /**
  * Empty resource for the WADL test case.
  * 
  * @author Jerome Louvel
  */
-public class NewsSearchResource extends Resource {
+public class NewsSearchResource extends ServerResource {
 
 }

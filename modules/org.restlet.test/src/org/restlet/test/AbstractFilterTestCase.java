@@ -38,8 +38,7 @@ import org.restlet.routing.Filter;
 /**
  * Tests where every Filter should run through.
  * 
- * @author Lars Heuer (heuer[at]semagia.com) <a
- *         href="http://www.semagia.com/">Semagia</a>
+ * @author Lars Heuer
  */
 public abstract class AbstractFilterTestCase extends RestletTestCase {
     /**

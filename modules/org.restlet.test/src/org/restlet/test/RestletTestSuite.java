@@ -33,6 +33,12 @@ package org.restlet.test;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.restlet.test.component.ComponentXmlConfigTestCase;
+import org.restlet.test.component.ComponentXmlTestCase;
+import org.restlet.test.connector.FileClientTestCase;
+import org.restlet.test.connector.RestartTestCase;
+import org.restlet.test.connector.RiapTestCase;
+import org.restlet.test.connector.ZipClientTestCase;
 import org.restlet.test.data.ConnegTestCase;
 import org.restlet.test.data.CookieTestCase;
 import org.restlet.test.data.FileReferenceTestCase;

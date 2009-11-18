@@ -28,13 +28,14 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.test;
+package org.restlet.test.component;
 
 import org.restlet.Client;
 import org.restlet.Component;
 import org.restlet.Response;
 import org.restlet.data.Protocol;
 import org.restlet.representation.AppendableRepresentation;
+import org.restlet.test.RestletTestCase;
 
 /**
  * Unit test case for the configuration of a component with an XML file.
@@ -58,11 +59,11 @@ public class ComponentXmlTestCase extends RestletTestCase {
                 + "\" />");
         config.append("<defaultHost hostPort=\"" + this.port2 + "\">");
         config
-                .append("<attach uriPattern=\"/abcd\" targetClass=\"org.restlet.test.HelloWorldApplication\" /> ");
+                .append("<attach uriPattern=\"/abcd\" targetClass=\"org.restlet.test.component.HelloWorldApplication\" /> ");
         config.append("</defaultHost>");
         config.append("<host hostPort=\"" + this.port + "\">");
         config
-                .append("<attach uriPattern=\"/efgh\" targetClass=\"org.restlet.test.HelloWorldApplication\" /> ");
+                .append("<attach uriPattern=\"/efgh\" targetClass=\"org.restlet.test.component.HelloWorldApplication\" /> ");
         config.append("</host>");
 
         config.append("</component>");

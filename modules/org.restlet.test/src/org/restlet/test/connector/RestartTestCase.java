@@ -28,43 +28,41 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.test;
+package org.restlet.test.connector;
 
-import java.io.File;
-import java.io.IOException;
-
-import org.restlet.Client;
-import org.restlet.Response;
-import org.restlet.data.Language;
-import org.restlet.data.LocalReference;
+import org.restlet.Restlet;
+import org.restlet.Server;
 import org.restlet.data.Protocol;
-import org.restlet.data.Status;
-import org.restlet.representation.StringRepresentation;
+import org.restlet.test.RestletTestCase;
 
 /**
- * Unit test case for the File client connector.
+ * Test the ability of a connector to be restarted.
  * 
  * @author Jerome Louvel
  */
-public class FileClientTestCase extends RestletTestCase {
+public class RestartTestCase extends RestletTestCase {
 
-    public void testFileClient() throws IOException {
-        final String text = "Test content\r\nLine 2\r\nLine2";
-        final Client fc = new Client(Protocol.FILE);
-        final LocalReference fr = LocalReference
-                .createFileReference(File.createTempFile("Restlet", ".txt."
-                        + Language.DEFAULT.getName()));
+    public void testRestart() throws Exception {
+        final int waitTime = 100;
 
-        // Update the text of the temporary file
-        Response response = fc.put(fr, new StringRepresentation(text));
-        assertEquals(Status.SUCCESS_CREATED, response.getStatus());
+        final Server connector = new Server(Protocol.HTTP, TEST_PORT,
+                (Restlet) null);
 
-        // Get the text and compare to the original
-        response = fc.get(fr);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        System.out.print("Starting connector... ");
+        connector.start();
+        System.out.println("done");
+        Thread.sleep(waitTime);
 
-        // Delete the file
-        response = fc.delete(fr);
-        assertEquals(Status.SUCCESS_NO_CONTENT, response.getStatus());
+        System.out.print("Stopping connector... ");
+        connector.stop();
+        System.out.println("done");
+        Thread.sleep(waitTime);
+
+        System.out.print("Restarting connector... ");
+        connector.start();
+        System.out.println("done");
+        Thread.sleep(waitTime);
+        connector.stop();
     }
+
 }
