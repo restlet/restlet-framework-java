@@ -474,6 +474,10 @@ public class Application extends Restlet {
      */
     public synchronized void setInboundRoot(Restlet inboundRoot) {
         this.inboundRoot = inboundRoot;
+
+        if ((inboundRoot != null) && (inboundRoot.getContext() == null)) {
+            inboundRoot.setContext(getContext());
+        }
     }
 
     /**
@@ -494,6 +498,10 @@ public class Application extends Restlet {
      */
     public synchronized void setOutboundRoot(Restlet outboundRoot) {
         this.outboundRoot = outboundRoot;
+
+        if ((outboundRoot != null) && (outboundRoot.getContext() == null)) {
+            outboundRoot.setContext(getContext());
+        }
     }
 
     /**

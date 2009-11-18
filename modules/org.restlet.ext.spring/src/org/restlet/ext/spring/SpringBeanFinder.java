@@ -30,6 +30,7 @@
 
 package org.restlet.ext.spring;
 
+import org.restlet.Context;
 import org.restlet.resource.ServerResource;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -61,21 +62,28 @@ public class SpringBeanFinder extends SpringFinder implements BeanFactoryAware,
     /** The bean name. */
     private volatile String beanName;
 
+    /** The associated router. */
+    private volatile SpringBeanRouter springBeanRouter;
+
     /**
      * Default constructor.
      */
     public SpringBeanFinder() {
     }
-
+   
     /**
      * Constructor.
      * 
+     * @param springBeanRouter
+     *            The associated router used to retrieve the context.
      * @param beanFactory
      *            The Spring bean factory.
      * @param beanName
      *            The bean name.
      */
-    public SpringBeanFinder(BeanFactory beanFactory, String beanName) {
+    public SpringBeanFinder(SpringBeanRouter springBeanRouter,
+            BeanFactory beanFactory, String beanName) {
+        this.springBeanRouter = springBeanRouter;
         setBeanFactory(beanFactory);
         setBeanName(beanName);
     }
@@ -142,6 +150,20 @@ public class SpringBeanFinder extends SpringFinder implements BeanFactoryAware,
      */
     public String getBeanName() {
         return this.beanName;
+    }
+
+    @Override
+    public Context getContext() {
+        return getSpringBeanRouter().getContext();
+    }
+
+    /**
+     * Returns the associated router.
+     * 
+     * @return The associated router.
+     */
+    public SpringBeanRouter getSpringBeanRouter() {
+        return springBeanRouter;
     }
 
     /**

@@ -78,7 +78,7 @@ public class SpringHost extends VirtualHost {
      * Constructor.
      * 
      * @param context
-     *            The context to use.
+     *            The parent context.
      */
     public SpringHost(Context context) {
         super(context);

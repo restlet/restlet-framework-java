@@ -122,6 +122,9 @@ public class SpringRouter extends Router {
 
     /**
      * Constructor with a parent context.
+     * 
+     * @param context
+     *            The parent context.
      */
     public SpringRouter(Context context) {
         super(context);
@@ -129,6 +132,9 @@ public class SpringRouter extends Router {
 
     /**
      * Constructor with a parent Restlet.
+     * 
+     * @param parent
+     *            The parent Restlet.
      */
     public SpringRouter(Restlet parent) {
         super(parent.getContext());

@@ -32,6 +32,7 @@ package org.restlet.ext.spring;
 
 import java.util.Map;
 
+import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.resource.Finder;
 import org.restlet.resource.ServerResource;
@@ -97,6 +98,27 @@ public class SpringBeanRouter extends Router implements
 
     /** If beans should be searched for higher up in the BeanFactory hierarchy. */
     private volatile boolean findingInAncestors = true;
+
+    /**
+     * Constructor.
+     */
+    public SpringBeanRouter() {
+        super();
+    }
+
+    /**
+     * Constructor with a parent context.
+     */
+    public SpringBeanRouter(Context context) {
+        super(context);
+    }
+
+    /**
+     * Constructor with a parent Restlet.
+     */
+    public SpringBeanRouter(Restlet parent) {
+        super(parent.getContext());
+    }
 
     /**
      * Attaches all the resources.
@@ -180,7 +202,7 @@ public class SpringBeanRouter extends Router implements
      * @see #attachResource
      */
     protected Finder createFinder(BeanFactory beanFactory, String beanName) {
-        return new SpringBeanFinder(beanFactory, beanName);
+        return new SpringBeanFinder(this, beanFactory, beanName);
     }
 
     /**

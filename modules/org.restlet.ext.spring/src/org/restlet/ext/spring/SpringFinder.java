@@ -35,6 +35,7 @@ import java.util.logging.Level;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
+import org.restlet.Restlet;
 import org.restlet.resource.Finder;
 import org.restlet.resource.ServerResource;
 
@@ -82,7 +83,7 @@ public class SpringFinder extends Finder {
      * Constructor.
      * 
      * @param context
-     *            The context.
+     *            The parent context.
      */
     public SpringFinder(Context context) {
         super(context);
@@ -98,6 +99,16 @@ public class SpringFinder extends Finder {
      */
     public SpringFinder(Context context, Class<?> targetClass) {
         super(context, targetClass);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param restlet
+     *            The parent Restlet.
+     */
+    public SpringFinder(Restlet restlet) {
+        super(restlet.getContext());
     }
 
     /**
