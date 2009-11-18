@@ -2,6 +2,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
+
 	<bean id="component" class="org.restlet.ext.spring.SpringComponent">
 		<property name="clientsList">
 			<list>
@@ -16,6 +17,7 @@
 			</list>
 		</property>
 	</bean>
+
 	<bean id="server" class="org.restlet.ext.spring.SpringServer">
 		<constructor-arg value="http" />
 		<constructor-arg>
@@ -30,6 +32,7 @@
 			</props>
 		</property>
 	</bean>
+
 	<bean id="virtualHost" class="org.restlet.ext.spring.SpringHost">
 		<constructor-arg ref="component" />
 		<property name="hostDomain" value="mydomain.com|www.mydomain.com" />
@@ -41,6 +44,7 @@
 			</map>
 		</property>
 	</bean>
+
 	<!-- Create a child context of the component's one. -->
 	<bean id="componentChildContext" class="org.restlet.Context">
 		<lookup-method name="createChildContext" bean="component.context" />

@@ -30,6 +30,10 @@
 
 package org.restlet.test.ext.spring;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
@@ -37,27 +41,22 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Method;
 import org.restlet.ext.spring.SpringBeanFinder;
 import org.restlet.ext.spring.SpringBeanRouter;
-import org.restlet.resource.Resource;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Filter;
-import org.restlet.routing.Route;
-import org.restlet.security.Guard;
+import org.restlet.routing.TemplateRoute;
+import org.restlet.security.ChallengeAuthenticator;
 import org.restlet.test.RestletTestCase;
 import org.restlet.util.RouteList;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 /**
  * @author Rhett Sutphin
  */
 public class SpringBeanRouterTestCase extends RestletTestCase {
     private static final String ORE_URI = "/non-renewable/ore/{ore_type}";
+
     private static final String FISH_URI = "/renewable/fish/{fish_name}";
 
     private DefaultListableBeanFactory factory;
@@ -65,7 +64,8 @@ public class SpringBeanRouterTestCase extends RestletTestCase {
     private SpringBeanRouter router;
 
     private void assertFinderForBean(String expectedBeanName, Restlet restlet) {
-        assertTrue("Restlet is not a bean finder restlet: " + restlet.getClass().getName(),
+        assertTrue("Restlet is not a bean finder restlet: "
+                + restlet.getClass().getName(),
                 restlet instanceof SpringBeanFinder);
         final SpringBeanFinder actualFinder = (SpringBeanFinder) restlet;
         assertEquals("Finder does not point to correct bean", expectedBeanName,
@@ -86,15 +86,19 @@ public class SpringBeanRouterTestCase extends RestletTestCase {
         this.router = new SpringBeanRouter();
     }
 
+    @SuppressWarnings("deprecation")
     private void registerResourceBeanDefinition(String id, String alias) {
-        registerBeanDefinition(id, alias, Resource.class, BeanDefinition.SCOPE_PROTOTYPE);
+        registerBeanDefinition(id, alias, org.restlet.resource.Resource.class,
+                BeanDefinition.SCOPE_PROTOTYPE);
     }
 
     private void registerServerResourceBeanDefinition(String id, String alias) {
-        registerBeanDefinition(id, alias, ServerResource.class, BeanDefinition.SCOPE_PROTOTYPE);
+        registerBeanDefinition(id, alias, ServerResource.class,
+                BeanDefinition.SCOPE_PROTOTYPE);
     }
 
-    private void registerBeanDefinition(String id, String alias, Class<?> beanClass, String scope) {
+    private void registerBeanDefinition(String id, String alias,
+            Class<?> beanClass, String scope) {
         BeanDefinition bd = new RootBeanDefinition(beanClass);
         bd.setScope(scope == null ? BeanDefinition.SCOPE_SINGLETON : scope);
         this.factory.registerBeanDefinition(id, bd);
@@ -112,9 +116,9 @@ public class SpringBeanRouterTestCase extends RestletTestCase {
         return this.router.getRoutes();
     }
 
-    private Set<String> routeUris(List<Route> routes) {
+    private Set<String> routeUris(RouteList routes) {
         final Set<String> uris = new HashSet<String>();
-        for (final Route actualRoute : routes) {
+        for (final TemplateRoute actualRoute : routes) {
             uris.add(actualRoute.getTemplate().getPattern());
         }
         return uris;
@@ -132,17 +136,18 @@ public class SpringBeanRouterTestCase extends RestletTestCase {
     public void testRoutesCreatedForBeanIdsIfAppropriate() throws Exception {
         String grain = "/renewable/grain/{grain_type}";
         registerResourceBeanDefinition(grain, null);
-        
+
         final Set<String> actualUris = routeUris(actualRoutes());
         assertEquals("Wrong number of URIs", 3, actualUris.size());
-        assertTrue("Missing grain URI: " + actualUris, actualUris.contains(grain));
+        assertTrue("Missing grain URI: " + actualUris, actualUris
+                .contains(grain));
     }
 
     public void testRoutesPointToFindersForBeans() throws Exception {
         final RouteList actualRoutes = actualRoutes();
         assertEquals("Wrong number of routes", 2, actualRoutes.size());
-        Route oreRoute = matchRouteFor(ORE_URI);
-        Route fishRoute = matchRouteFor(FISH_URI);
+        TemplateRoute oreRoute = matchRouteFor(ORE_URI);
+        TemplateRoute fishRoute = matchRouteFor(FISH_URI);
         assertNotNull("ore route not present: " + actualRoutes, oreRoute);
         assertNotNull("fish route not present: " + actualRoutes, fishRoute);
 
@@ -152,7 +157,7 @@ public class SpringBeanRouterTestCase extends RestletTestCase {
 
     public void testRoutingSkipsResourcesWithoutAppropriateAliases()
             throws Exception {
-        final BeanDefinition bd = new RootBeanDefinition(Resource.class);
+        final BeanDefinition bd = new RootBeanDefinition(ServerResource.class);
         bd.setScope(BeanDefinition.SCOPE_PROTOTYPE);
         this.factory.registerBeanDefinition("timber", bd);
         this.factory.registerAlias("timber", "no-slash");
@@ -162,18 +167,20 @@ public class SpringBeanRouterTestCase extends RestletTestCase {
                 actualRoutes.size());
     }
 
-    public void testRoutingIncludesSpringRouterStyleExplicitlyMappedBeans() throws Exception {
-        final BeanDefinition bd = new RootBeanDefinition(Resource.class);
+    public void testRoutingIncludesSpringRouterStyleExplicitlyMappedBeans()
+            throws Exception {
+        final BeanDefinition bd = new RootBeanDefinition(ServerResource.class);
         bd.setScope(BeanDefinition.SCOPE_PROTOTYPE);
         this.factory.registerBeanDefinition("timber", bd);
         this.factory.registerAlias("timber", "no-slash");
 
         String expectedTemplate = "/renewable/timber/{farm_type}";
-        router.setAttachments(Collections.singletonMap(expectedTemplate, "timber"));
+        router.setAttachments(Collections.singletonMap(expectedTemplate,
+                "timber"));
         final RouteList actualRoutes = actualRoutes();
 
         assertEquals("Wrong number of routes", 3, actualRoutes.size());
-        Route timberRoute = matchRouteFor(expectedTemplate);
+        TemplateRoute timberRoute = matchRouteFor(expectedTemplate);
         assertNotNull("Missing timber route: " + actualRoutes, timberRoute);
         assertFinderForBean("timber", timberRoute.getNext());
     }
@@ -183,31 +190,32 @@ public class SpringBeanRouterTestCase extends RestletTestCase {
         RouteList actualRoutes = actualRoutes();
         assertEquals("Wrong number of routes", 2, actualRoutes.size());
 
-        Route oreRoute = matchRouteFor(ORE_URI);
+        TemplateRoute oreRoute = matchRouteFor(ORE_URI);
         assertNotNull("No route for " + ORE_URI, oreRoute);
         assertFinderForBean("fish", oreRoute.getNext());
     }
 
     public void testRoutingIncludesResourceSubclasses() throws Exception {
         String expected = "/renewable/timber/{id}";
-        registerBeanDefinition("timber", expected,
-            TestResource.class, BeanDefinition.SCOPE_PROTOTYPE);
+        registerBeanDefinition("timber", expected, TestResource.class,
+                BeanDefinition.SCOPE_PROTOTYPE);
 
         doPostProcess();
-        Route timberRoute = matchRouteFor("/renewable/timber/sycamore");
+        TemplateRoute timberRoute = matchRouteFor("/renewable/timber/sycamore");
         assertNotNull("No route for timber", timberRoute);
         assertFinderForBean("timber", timberRoute.getNext());
     }
 
-    public void testRoutingIncludesGuards() throws Exception {
+    public void testRoutingIncludesAuthenticators() throws Exception {
         String expected = "/protected/timber";
-        registerBeanDefinition("timber", expected, TestGuard.class, null);
+        registerBeanDefinition("timber", expected, TestAuthenticator.class,
+                null);
         doPostProcess();
 
-        Route guardRoute = matchRouteFor(expected);
-        assertNotNull("No route for guard", guardRoute);
-        assertTrue("Route is not for guard",
-            guardRoute.getNext() instanceof TestGuard);
+        TemplateRoute authenticatorRoute = matchRouteFor(expected);
+        assertNotNull("No route for authenticator", authenticatorRoute);
+        assertTrue("Route is not for authenticator", authenticatorRoute
+                .getNext() instanceof TestAuthenticator);
     }
 
     public void testRoutingIncludesFilters() throws Exception {
@@ -215,10 +223,10 @@ public class SpringBeanRouterTestCase extends RestletTestCase {
         registerBeanDefinition("timber", expected, TestFilter.class, null);
         doPostProcess();
 
-        Route filterRoute = matchRouteFor(expected);
+        TemplateRoute filterRoute = matchRouteFor(expected);
         assertNotNull("No route for filter", filterRoute);
         assertTrue("Route is not for filter",
-            filterRoute.getNext() instanceof Filter);
+                filterRoute.getNext() instanceof Filter);
     }
 
     public void testRoutingIncludesOtherRestlets() throws Exception {
@@ -226,47 +234,56 @@ public class SpringBeanRouterTestCase extends RestletTestCase {
         registerBeanDefinition("timber", expected, TestRestlet.class, null);
         doPostProcess();
 
-        Route restletRoute = matchRouteFor(expected);
+        TemplateRoute restletRoute = matchRouteFor(expected);
         assertNotNull("No route for restlet", restletRoute);
         assertTrue("Route is not for restlet",
-            restletRoute.getNext() instanceof TestRestlet);
+                restletRoute.getNext() instanceof TestRestlet);
     }
 
     public void testExplicitAttachmentsMayBeRestlets() throws Exception {
         String expected = "/protected/timber";
-        this.router.setAttachments(Collections.singletonMap(expected, "timber"));
-        registerBeanDefinition("timber", null, TestGuard.class, null);
+        this.router
+                .setAttachments(Collections.singletonMap(expected, "timber"));
+        registerBeanDefinition("timber", null, TestAuthenticator.class, null);
 
         doPostProcess();
-        Route timberRoute = matchRouteFor(expected);
+        TemplateRoute timberRoute = matchRouteFor(expected);
         assertNotNull("No route for " + expected, timberRoute);
         assertTrue("Route is not for correct restlet",
-            timberRoute.getNext() instanceof TestGuard);
+                timberRoute.getNext() instanceof TestAuthenticator);
     }
 
-    public void testExplicitRoutingForNonResourceNonRestletBeansFails() throws Exception {
-        this.router.setAttachments(Collections.singletonMap("/fail", "someOtherBean"));
+    public void testExplicitRoutingForNonResourceNonRestletBeansFails()
+            throws Exception {
+        this.router.setAttachments(Collections.singletonMap("/fail",
+                "someOtherBean"));
         try {
             doPostProcess();
             fail("Exception not thrown");
         } catch (IllegalStateException ise) {
             assertEquals(
-                "someOtherBean is not routable.  It must be either a Resource, a ServerResource or a Restlet.",
-                ise.getMessage());
+                    "someOtherBean is not routable.  It must be either a Resource, a ServerResource or a Restlet.",
+                    ise.getMessage());
         }
     }
 
-    private Route matchRouteFor(String uri) {
+    private TemplateRoute matchRouteFor(String uri) {
         Request req = new Request(Method.GET, uri);
-        return (Route) router.getNext(req, new Response(req));
+        return (TemplateRoute) router.getNext(req, new Response(req));
     }
 
-    private static class TestResource extends Resource { }
-    private static class TestRestlet extends Restlet { }
-    private static class TestGuard extends Guard {
-        private TestGuard() throws IllegalArgumentException {
+    private static class TestResource extends ServerResource {
+    }
+
+    private static class TestRestlet extends Restlet {
+    }
+
+    private static class TestAuthenticator extends ChallengeAuthenticator {
+        private TestAuthenticator() throws IllegalArgumentException {
             super(null, ChallengeScheme.HTTP_BASIC, "Test");
         }
     }
-    private static class TestFilter extends Filter { }
+
+    private static class TestFilter extends Filter {
+    }
 }
