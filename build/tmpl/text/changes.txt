@@ -205,6 +205,7 @@ Changes log
           instead of a warning and automatically change the status to 
           204 (success, no content).
         - Added support of the warning header.
+        - Added support of the ranges in the gwt edition.
     - Misc
         - Added Velocity template in the org.restlet.example project.
           Reported by Ben Vesco.

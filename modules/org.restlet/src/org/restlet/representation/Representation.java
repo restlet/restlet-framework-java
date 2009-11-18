@@ -39,6 +39,7 @@ import java.util.logging.Level;
 
 import org.restlet.Context;
 import org.restlet.data.MediaType;
+import org.restlet.data.Range;
 import org.restlet.data.Tag;
 import org.restlet.engine.io.ByteUtils;
 import org.restlet.engine.util.DateUtils;
@@ -112,7 +113,7 @@ public abstract class Representation extends RepresentationInfo {
      * Indicates where in the full content the partial content available should
      * be applied.
      */
-    private volatile org.restlet.data.Range range;
+    private volatile Range range;
 
     /**
      * The expected size. Dynamic representations can have any size, but
@@ -338,7 +339,7 @@ public abstract class Representation extends RepresentationInfo {
     /**
      * Returns the size effectively available. This returns the same value as
      * {@link #getSize()} if no range is defined, otherwise it returns the size
-     * of the range using {@link org.restlet.data.Range#getSize()}.
+     * of the range using {@link Range#getSize()}.
      * 
      * @return The available size.
      */
@@ -346,10 +347,10 @@ public abstract class Representation extends RepresentationInfo {
         // [ifndef gwt]
         if (getRange() == null) {
             return getSize();
-        } else if (getRange().getSize() != org.restlet.data.Range.SIZE_MAX) {
+        } else if (getRange().getSize() != Range.SIZE_MAX) {
             return getRange().getSize();
         } else if (getSize() != Representation.UNKNOWN_SIZE) {
-            if (getRange().getIndex() != org.restlet.data.Range.INDEX_LAST) {
+            if (getRange().getIndex() != Range.INDEX_LAST) {
                 return getSize() - getRange().getIndex();
             } else {
                 return getSize();
@@ -472,7 +473,7 @@ public abstract class Representation extends RepresentationInfo {
      * 
      * @return The content range or null if the full content is available.
      */
-    public org.restlet.data.Range getRange() {
+    public Range getRange() {
         return this.range;
     }
 
@@ -667,7 +668,7 @@ public abstract class Representation extends RepresentationInfo {
      * @param range
      *            The content range.
      */
-    public void setRange(org.restlet.data.Range range) {
+    public void setRange(Range range) {
         this.range = range;
     }
 
