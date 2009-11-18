@@ -64,7 +64,7 @@
          <distribution id="maven" />
       </distributions>
    </edition>
-   <edition id="gwt">
+   <edition id="gwt" translate="true">
       <label>
          <full>Google Web Toolkit</full>
          <medium>GWT</medium>

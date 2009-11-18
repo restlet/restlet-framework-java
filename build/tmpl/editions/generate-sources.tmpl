@@ -11,14 +11,23 @@
    <#if module.source[editionKey]??>${module.source[editionKey].sets!""}</#if>
             <include name="**/*.java" />
          </fileset>
+   <#if edition.translatePackages>
+         <chainedmapper>
+            <mapper classname="mapper.ReplaceStringMapper" classpathref="forge-path" from="org/restlet" to="org/restlet/${editionKey}" />
+<#if (module.source[editionKey]??) && (module.source[editionKey].mappers??)>${module.source[editionKey].mappers}</#if>
+         </chainedmapper>
+   <#else>
    <#if (module.source[editionKey]??) && (module.source[editionKey].mappers??)><chainedmapper>${module.source[editionKey].mappers}</chainedmapper></#if>
+   </#if>
          <filterchain>
             <filterreader classname="filter.EditionFilterReader" classpathref="forge-path">
                <param name="edition" value="${editionKey}" />
             </filterreader>
+   <#if edition.translatePackages><replacestring from="org.restlet" to="org.restlet.gwt"/></#if>
        <#if (module.source[editionKey]??) && (module.source[editionKey].filters??)>${module.source[editionKey].filters}</#if>
          </filterchain>
       </copy>
+      <!-- copy and filter the non Java code -->
       <copy todir="<#noparse>${mod}</#noparse>/${module.package}" overwrite="true">
          <fileset dir="<#noparse>${mods}</#noparse>/${module.package}" excludes="bin/**">
    <#compress>
@@ -29,8 +38,24 @@
    <#if module.source[editionKey]??>${module.source[editionKey].sets!""}</#if>
             <exclude name="**/*.java" />
          </fileset>
+   <#if edition.translatePackages>
+         <chainedmapper>
+            <mapper classname="mapper.ReplaceStringMapper" classpathref="forge-path" from="org/restlet" to="org/restlet/${editionKey}" />
+<#if (module.source[editionKey]??) && (module.source[editionKey].mappers??)>${module.source[editionKey].mappers}</#if>
+         </chainedmapper>
+   <#else>
    <#if (module.source[editionKey]??) && (module.source[editionKey].mappers??)><chainedmapper>${module.source[editionKey].mappers}</chainedmapper></#if>
+   </#if>
+
+   <#if edition.translatePackages>
+         <filterchain>
+   	        <replacestring from="org.restlet" to="org.restlet.gwt"/>
+       <#if (module.source[editionKey]??) && (module.source[editionKey].filters??)>${module.source[editionKey].filters}</#if>
+   	     </filterchain>
+   <#else>
        <#if (module.source[editionKey]??) && (module.source[editionKey].filters??)><filterchain>${module.source[editionKey].filters}</filterchain></#if>
+   </#if>
+
       </copy>
    <#if module.primaryLibrary??>
       <replace dir="<#noparse>${mod}</#noparse>/${module.package}" includes="**/package.html" token="@minor-version@" value="${module.primaryLibrary.minorVersion}" />
