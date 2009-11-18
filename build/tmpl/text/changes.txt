@@ -104,6 +104,8 @@ Changes log
           preemptive HTTP DIGEST authentication. 
           Initially contributed by Kelly McLaughlin.
         - Added support of the If-Range header.
+        - Translated the packages of the gwt edition from 
+          org.restlet.* to org.restlet.gwt.*.
       - Bugs fixed
         - Fixed bug when the deprecated method "createRoot" is 
           implemented instead of the "createInboundRoot".
