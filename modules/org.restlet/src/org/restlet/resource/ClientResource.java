@@ -681,7 +681,7 @@ public class ClientResource extends UniformResource {
                             "Retry delay sleep was interrupted", e);
                 }
                 // [enddef]
-                // [ifndef gwt] uncomment
+                // [ifdef gwt] uncomment
                 // com.google.gwt.user.client.Timer timer = new
                 // com.google.gwt.user.client.Timer() {
                 // public void run() {}
