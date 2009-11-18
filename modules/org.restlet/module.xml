@@ -131,7 +131,6 @@
          <exclude name="src/org/restlet/engine/util/DigestUtils.java" />
          <exclude name="src/org/restlet/engine/util/EngineClassLoader.java" />
          <exclude name="src/org/restlet/engine/util/InternetDateFormat.java" />
-         <exclude name="src/org/restlet/engine/util/RangeUtils.java" />
          <exclude name="src/org/restlet/engine/util/Base64.java" />
          <exclude name="src/org/restlet/representation/AppendableRepresentation.java" />
          <exclude name="src/org/restlet/representation/ChannelRepresentation.java" />

@@ -108,7 +108,6 @@ public abstract class Representation extends RepresentationInfo {
     /** Indicates if the representation's content is transient. */
     private volatile boolean isTransient;
 
-    // [ifndef gwt] member
     /**
      * Indicates where in the full content the partial content available should
      * be applied.
@@ -464,7 +463,6 @@ public abstract class Representation extends RepresentationInfo {
         return this.expirationDate;
     }
 
-    // [ifndef gwt] method
     /**
      * Returns the range where in the full content the partial content available
      * should be applied.<br>
@@ -659,7 +657,6 @@ public abstract class Representation extends RepresentationInfo {
         this.expirationDate = DateUtils.unmodifiable(expirationDate);
     }
 
-    // [ifndef gwt] method
     /**
      * Sets the range where in the full content the partial content available
      * should be applied.<br>

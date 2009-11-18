@@ -409,14 +409,12 @@ public class HttpClientAdapter extends HttpAdapter {
                 }
             }
 
-            // [ifndef gwt]
             // Add Range header
             if (!request.getRanges().isEmpty()) {
                 requestHeaders.add(HttpConstants.HEADER_RANGE,
                         org.restlet.engine.util.RangeUtils.formatRanges(request
                                 .getRanges()));
             }
-            // [enddef]
 
             // Add entity headers
             if (request.isEntityAvailable()) {
@@ -470,7 +468,6 @@ public class HttpClientAdapter extends HttpAdapter {
                     requestHeaders.add(HttpConstants.HEADER_CONTENT_LENGTH,
                             String.valueOf(request.getEntity().getSize()));
                 }
-                // [ifndef gwt]
                 if (request.getEntity().getRange() != null) {
                     try {
                         requestHeaders.add(HttpConstants.HEADER_CONTENT_RANGE,
@@ -486,7 +483,6 @@ public class HttpClientAdapter extends HttpAdapter {
                                         e);
                     }
                 }
-                // [enddef]
 
                 // [ifndef gwt]
                 // Add Checksum
