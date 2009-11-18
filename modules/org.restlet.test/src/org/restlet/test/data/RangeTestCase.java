@@ -198,8 +198,8 @@ public class RangeTestCase extends RestletTestCase {
      * 
      * @throws IOException
      */
-
-    public void dtestGet() throws IOException {
+    @Test
+    public void testGet() throws IOException {
         Client client = new Client(Protocol.HTTP);
         // Test partial Get.
         Request request = new Request(Method.GET, "http://localhost:"
@@ -296,8 +296,8 @@ public class RangeTestCase extends RestletTestCase {
      * 
      * @throws IOException
      */
-
-    public void dtestPut() throws IOException {
+    @Test
+    public void testPut() throws IOException {
         deleteDir(testDir);
 
         Client client = new Client(Protocol.HTTP);
@@ -399,8 +399,8 @@ public class RangeTestCase extends RestletTestCase {
     /**
      * Tests ranges.
      */
-
-    public void dtestRanges() {
+    @Test
+    public void testRanges() {
 
         Client client = new Client(Protocol.HTTP);
 
