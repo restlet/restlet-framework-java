@@ -161,6 +161,9 @@ Changes log
         - Fixed SpringBeanRouter and SpringBeanFinder to ensure that the 
           context is available in the target resources. 
           Reported by Dustin Jenkins.
+        - Fixed ClassCastException in the 
+          Series#getValuesArray(String, boolean) method.
+          Reported by Arjohn Kampman.
    - Enhancements
         - Improved JAXB converted. Contributed by Sanjay Acharya.
         - Upgraded Apache Commons Logging to version 1.1.1.
