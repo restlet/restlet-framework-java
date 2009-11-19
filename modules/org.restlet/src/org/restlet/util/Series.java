@@ -375,6 +375,27 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
     }
 
     /**
+     * Returns an array of all the values associated to the given parameter
+     * name.
+     * 
+     * @param name
+     *            The parameter name to match.
+     * @param ignoreCase
+     *            Indicates if the name comparison is case sensitive.
+     * @return The array of values.
+     */
+    public String[] getValuesArray(String name, boolean ignoreCase) {
+        final List<E> params = subList(name, ignoreCase);
+        final String[] result = new String[params.size()];
+
+        for (int i = 0; i < params.size(); i++) {
+            result[i] = params.get(i).getValue();
+        }
+
+        return result;
+    }
+
+    /**
      * Returns a map of name, value pairs. The order of the map keys is
      * respected based on the series order. When a name has multiple values,
      * only the first one is put in the map.

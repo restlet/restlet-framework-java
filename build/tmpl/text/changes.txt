@@ -33,6 +33,7 @@ Changes log
     - Misc
         - Updated license file to mention distribution under EPL 1.0 in
           addition to other licenses, like for Restlet 2.0.
+        - Added Series#getValuesArray(String, boolean) method.
 
 - 1.1.6 (2009-09-28)
     - Bugs fixed
