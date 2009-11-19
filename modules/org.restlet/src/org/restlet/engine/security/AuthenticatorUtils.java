@@ -185,12 +185,8 @@ public class AuthenticatorUtils {
                 hb.appendParameter("qop", info.getQuality());
                 firstParameter = false;
                 if (info.getNonceCount() > 0) {
-                    StringBuilder result = new StringBuilder(Integer
-                            .toHexString(info.getNonceCount()));
-                    while (result.length() < 8) {
-                        result.insert(0, '0');
-                    }
-                    hb.appendParameter("nc", result.toString());
+                    hb.appendParameter("nc", formatNonceCount(info
+                            .getNonceCount()));
                 }
             }
             if (info.getResponseDigest() != null
@@ -208,6 +204,23 @@ public class AuthenticatorUtils {
         }
 
         return hb.toString();
+    }
+
+    /**
+     * Formats a given nonce count as a HTTP header value. The header is
+     * {@link HttpConstants#HEADER_AUTHENTICATION_INFO}.
+     * 
+     * @param nonceCount
+     *            The given nonce count.
+     * @return The formatted value of the given nonce count.
+     */
+    public static String formatNonceCount(int nonceCount) {
+        StringBuilder result = new StringBuilder(Integer
+                .toHexString(nonceCount));
+        while (result.length() < 8) {
+            result.insert(0, '0');
+        }
+        return result.toString();
     }
 
     /**

@@ -88,11 +88,13 @@ public class HttpDigestTestCase extends TestCase {
             // c2.getParameters().add("opaque", opaque);
             c2.getParameters().add("uri", "/");
             c2.getParameters().add("qop", "auth");
-            c2.getParameters().add("nc", "");
-            c2.getParameters().add("cnonce", "");
+            c2.getParameters().add("nc", "00000001");
+            c2.getParameters().add("cnonce", "123456");
             c2.getParameters().add("response", "");
 
             cr.setChallengeResponse(c2);
+            cr.get();
+            assertTrue(cr.getStatus().isSuccess());
         }
     }
 }

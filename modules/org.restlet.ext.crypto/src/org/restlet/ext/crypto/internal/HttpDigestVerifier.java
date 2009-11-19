@@ -34,14 +34,12 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.Digest;
-import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.engine.security.AuthenticatorUtils;
 import org.restlet.ext.crypto.DigestAuthenticator;
 import org.restlet.ext.crypto.DigestUtils;
 import org.restlet.ext.crypto.DigestVerifier;
 import org.restlet.security.LocalVerifier;
-import org.restlet.util.Series;
 
 /**
  * Verifier for the HTTP DIGEST authentication scheme. Note that the "A1" hash
@@ -114,12 +112,12 @@ public class HttpDigestVerifier extends DigestVerifier<LocalVerifier> {
         if (cr == null) {
             result = RESULT_MISSING;
         } else {
-            Series<Parameter> parameters = cr.getParameters();
-            String nonce = parameters.getFirstValue("nonce");
-            String uri = parameters.getFirstValue("uri");
-            String qop = parameters.getFirstValue("qop");
-            String nc = parameters.getFirstValue("nc");
-            String cnonce = parameters.getFirstValue("cnonce");
+            String nonce = cr.getServerNonce();
+            String uri = (cr.getDigestRef() == null) ? null : cr.getDigestRef()
+                    .toString();
+            String qop = cr.getQuality();
+            int nc = cr.getServerNounceCount();
+            String cnonce = cr.getClientNonce();
             String username = getIdentifier(request, response);
             String cresponse = new String(getSecret(request, response));
 
@@ -161,15 +159,18 @@ public class HttpDigestVerifier extends DigestVerifier<LocalVerifier> {
                                     .append(a1).append(':').append(nonce);
 
                             if (!AuthenticatorUtils.anyNull(qop, cnonce, nc)) {
-                                expectedResponse.append(':').append(nc).append(
-                                        ':').append(cnonce).append(':').append(
-                                        qop);
+                                expectedResponse.append(':')
+                                        .append(
+                                                AuthenticatorUtils
+                                                        .formatNonceCount(nc))
+                                        .append(':').append(cnonce).append(':')
+                                        .append(qop);
                             }
 
                             expectedResponse.append(':').append(a2);
 
-                            if (!cresponse.equals(DigestUtils
-                                    .toMd5(expectedResponse.toString()))) {
+                            if (!DigestUtils.toMd5(expectedResponse.toString())
+                                    .equals(cresponse)) {
                                 result = RESULT_INVALID;
                             }
                         } else {
