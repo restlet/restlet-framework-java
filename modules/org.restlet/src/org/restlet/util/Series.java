@@ -364,14 +364,7 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      * @return The array of values.
      */
     public String[] getValuesArray(String name) {
-        final List<E> params = subList(name);
-        final String[] result = new String[params.size()];
-
-        for (int i = 0; i < params.size(); i++) {
-            result[i] = params.get(i).getValue();
-        }
-
-        return result;
+        return getValuesArray(name, false);
     }
 
     /**
