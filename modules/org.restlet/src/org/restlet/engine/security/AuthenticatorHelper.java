@@ -230,14 +230,20 @@ public abstract class AuthenticatorHelper extends Helper {
 
     /**
      * Formats the secret of a challenge response. By default, it returns the
-     * current challenge response secret.
+     * given password.
      * 
      * @param challengeResponse
      *            The challenge response.
+     * @param password
+     *            The password used to compute the secret.
      * @return The formatted secret of a challenge response.
      */
-    public String formatSecret(ChallengeResponse challengeResponse) {
-        return new String(challengeResponse.getSecret());
+    public char[] formatSecret(ChallengeResponse challengeResponse,
+            String password) {
+        if (password != null) {
+            return password.toCharArray();
+        }
+        return null;
     }
 
     /**

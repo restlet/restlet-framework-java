@@ -45,7 +45,6 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
-import org.restlet.engine.security.AuthenticatorUtils;
 import org.restlet.ext.crypto.DigestAuthenticator;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
@@ -84,7 +83,6 @@ public class HttpDigestTestCase extends TestCase {
             router.attach("/", da);
             return router;
         }
-
     }
 
     @Override
@@ -135,13 +133,9 @@ public class HttpDigestTestCase extends TestCase {
             // assertEquals("auth", qop);
 
             // Try authenticated request
-            ChallengeResponse c2 = new ChallengeResponse(
+            ChallengeResponse c2 = new ChallengeResponse(c1, cr.getRequest(),
+                    cr.getResponse(), "scott", "tiger",
                     ChallengeScheme.HTTP_DIGEST);
-            c2.setIdentifier("scott");
-            c2.setPassword("tiger");
-
-            AuthenticatorUtils.update(c2, cr.getRequest(), cr.getResponse());
-
             cr.setChallengeResponse(c2);
             cr.get();
             assertTrue(cr.getStatus().isSuccess());

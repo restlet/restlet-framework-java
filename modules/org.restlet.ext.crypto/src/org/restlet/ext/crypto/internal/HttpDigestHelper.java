@@ -361,12 +361,13 @@ public class HttpDigestHelper extends AuthenticatorHelper {
     }
 
     @Override
-    public String formatSecret(ChallengeResponse challengeResponse) {
+    public char[] formatSecret(ChallengeResponse challengeResponse,
+            String password) {
         if (!AuthenticatorUtils.anyNull(challengeResponse.getIdentifier(),
-                challengeResponse.getPassword(), challengeResponse.getRealm())) {
+                password, challengeResponse.getRealm())) {
             return DigestUtils.toHttpDigest(challengeResponse.getIdentifier(),
-                    challengeResponse.getPassword().toCharArray(),
-                    challengeResponse.getRealm());
+                    password.toCharArray(), challengeResponse.getRealm())
+                    .toCharArray();
         }
 
         return null;

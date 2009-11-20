@@ -60,43 +60,6 @@ import org.restlet.util.Series;
 public class AuthenticatorUtils {
 
     /**
-     * Updates a ChallengeResponse object according to given request and
-     * response.
-     * 
-     * @param challengeResponse
-     * @param request
-     * @param response
-     */
-    public static void update(ChallengeResponse challengeResponse,
-            Request request, Response response) {
-        ChallengeRequest challengeRequest = null;
-        for (ChallengeRequest c : response.getChallengeRequests()) {
-            if (challengeResponse.getScheme().equals(c.getScheme())) {
-                challengeRequest = c;
-                break;
-            }
-        }
-
-        String realm = null;
-        String nonce = null;
-        if (challengeRequest != null) {
-            realm = challengeRequest.getRealm();
-            nonce = challengeRequest.getServerNonce();
-            challengeResponse.setOpaque(challengeRequest.getOpaque());
-        }
-        challengeResponse.setRealm(realm);
-        challengeResponse.setServerNonce(nonce);
-        
-        // Compute the new secret.
-        final AuthenticatorHelper helper = Engine.getInstance().findHelper(
-                challengeResponse.getScheme(), false, true);
-        challengeResponse.setSecret(helper.formatSecret(challengeResponse));
-
-        challengeResponse.setDigestRef(new Reference(request.getResourceRef()
-                .getPath()));
-    }
-
-    /**
      * Indicates if any of the objects is null.
      * 
      * @param objects
@@ -481,6 +444,68 @@ public class AuthenticatorUtils {
             String header, Series<Parameter> httpHeaders) {
         return (ChallengeResponse) parseMessage(true, request, null, header,
                 httpHeaders);
+    }
+
+    /**
+     * Updates a ChallengeResponse object according to given request and
+     * response.
+     * 
+     * @param challengeResponse
+     *            The challengeResponse to update.
+     * @param request
+     *            The request.
+     * @param response
+     *            The response.
+     */
+    public static void update(ChallengeResponse challengeResponse,
+            Request request, Response response) {
+        ChallengeRequest challengeRequest = null;
+        for (ChallengeRequest c : response.getChallengeRequests()) {
+            if (challengeResponse.getScheme().equals(c.getScheme())) {
+                challengeRequest = c;
+                break;
+            }
+        }
+
+        String realm = null;
+        String nonce = null;
+        if (challengeRequest != null) {
+            realm = challengeRequest.getRealm();
+            nonce = challengeRequest.getServerNonce();
+            challengeResponse.setOpaque(challengeRequest.getOpaque());
+        }
+        challengeResponse.setRealm(realm);
+        challengeResponse.setServerNonce(nonce);
+
+        challengeResponse.setDigestRef(new Reference(request.getResourceRef()
+                .getPath()));
+    }
+
+    /**
+     * Updates a ChallengeResponse object according to given request and
+     * response and compute a new secret according to the response sent by the
+     * server.
+     * 
+     * @param challengeResponse
+     *            The challengeResponse to update.
+     * @param request
+     *            The request.
+     * @param response
+     *            The response.
+     * @param identifier
+     * @param password
+     * @param passwordScheme
+     */
+    public static void update(ChallengeResponse challengeResponse,
+            Request request, Response response, String identifier,
+            String password, ChallengeScheme passwordScheme) {
+        update(challengeResponse, request, response);
+
+        // Compute the new secret.
+        final AuthenticatorHelper helper = Engine.getInstance().findHelper(
+                passwordScheme, false, true);
+        challengeResponse.setSecret(helper.formatSecret(challengeResponse,
+                password));
     }
 
     /**

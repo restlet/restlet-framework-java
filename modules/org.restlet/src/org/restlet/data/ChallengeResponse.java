@@ -31,6 +31,7 @@
 package org.restlet.data;
 
 import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.engine.security.AuthenticatorUtils;
 import org.restlet.engine.util.SystemUtils;
 import org.restlet.util.Series;
@@ -69,9 +70,6 @@ public final class ChallengeResponse extends ChallengeMessage {
     /** The user identifier, such as a login name or an access key. */
     private volatile String identifier;
 
-    /** The user password, if any. */
-    private volatile String password;
-
     /** The chosen quality of protection. */
     private volatile String quality;
 
@@ -80,6 +78,78 @@ public final class ChallengeResponse extends ChallengeMessage {
 
     /** The server nonce count. */
     private volatile int serverNounceCount;
+
+    /**
+     * Constructor.
+     * 
+     * @param challengeRequest
+     *            The challenge request.
+     * @param request
+     *            The request.
+     * @param response
+     *            The response.
+     * @param identifier
+     *            The user identifier, such as a login name or an access key.
+     * @param secret
+     *            The user secret, such as a password or a secret key.
+     */
+    public ChallengeResponse(final ChallengeRequest challengeRequest,
+            final Request request, final Response response,
+            final String identifier, char[] secret) {
+        super(challengeRequest.getScheme());
+        this.identifier = identifier;
+        this.secret = secret;
+        AuthenticatorUtils.update(this, request, response);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param challengeRequest
+     *            The challenge request.
+     * @param request
+     *            The request.
+     * @param response
+     *            The response.
+     * @param identifier
+     *            The user identifier, such as a login name or an access key.
+     * @param secret
+     *            The user secret, such as a password or a secret key.
+     */
+    public ChallengeResponse(final ChallengeRequest challengeRequest,
+            final Request request, final Response response,
+            final String identifier, String secret) {
+        super(challengeRequest.getScheme());
+        this.identifier = identifier;
+        this.secret = (secret != null) ? secret.toCharArray() : null;
+        AuthenticatorUtils.update(this, request, response);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param challengeRequest
+     *            The challenge request.
+     * @param request
+     *            The request.
+     * @param response
+     *            The response.
+     * @param identifier
+     *            The user identifier, such as a login name or an access key.
+     * @param password
+     *            The user password.
+     * @param passwordScheme
+     *            Scheme used to compute the secret.
+     */
+    public ChallengeResponse(final ChallengeRequest challengeRequest,
+            final Request request, final Response response,
+            final String identifier, String password,
+            ChallengeScheme passwordScheme) {
+        super(challengeRequest.getScheme());
+        this.identifier = identifier;
+        AuthenticatorUtils.update(this, request, response, identifier,
+                password, passwordScheme);
+    }
 
     /**
      * Constructor with no credentials.
@@ -260,15 +330,6 @@ public final class ChallengeResponse extends ChallengeMessage {
         return this.identifier;
     }
 
-    /**
-     * Returns the user password, if any.
-     * 
-     * @return The user password, if any.
-     */
-    public String getPassword() {
-        return password;
-    }
-
     // [ifndef gwt] method
     /**
      * Gets the principal associated to the identifier property.
@@ -399,16 +460,6 @@ public final class ChallengeResponse extends ChallengeMessage {
      */
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
-    }
-
-    /**
-     * Sets the user password.
-     * 
-     * @param password
-     *            The user password.
-     */
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     /**
