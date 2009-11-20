@@ -44,7 +44,6 @@ import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
 import org.restlet.data.Reference;
-import org.restlet.ext.jaxrs.AbstractUriBuilder;
 import org.restlet.ext.jaxrs.ExtendedUriBuilder;
 import org.restlet.ext.jaxrs.internal.core.UriBuilderImpl;
 import org.restlet.test.jaxrs.services.car.CarListResource;

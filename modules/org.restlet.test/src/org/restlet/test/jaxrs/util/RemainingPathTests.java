@@ -30,7 +30,6 @@
 
 package org.restlet.test.jaxrs.util;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import junit.framework.TestCase;
@@ -52,9 +51,10 @@ public class RemainingPathTests extends TestCase {
      */
     public void aear(String expected, String actual) {
         try {
-            Method removeMatrixParams = RemainingPath.class.getDeclaredMethod("removeMatrixParams", String.class);
+            Method removeMatrixParams = RemainingPath.class.getDeclaredMethod(
+                    "removeMatrixParams", String.class);
             removeMatrixParams.setAccessible(true);
-            String removed = (String)removeMatrixParams.invoke(null, actual);
+            String removed = (String) removeMatrixParams.invoke(null, actual);
             assertEquals(expected, removed);
         } catch (Exception e) {
             throw new RuntimeException(e);

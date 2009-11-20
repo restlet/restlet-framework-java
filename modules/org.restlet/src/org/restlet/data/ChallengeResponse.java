@@ -31,6 +31,7 @@
 package org.restlet.data;
 
 import org.restlet.Request;
+import org.restlet.engine.security.AuthenticatorUtils;
 import org.restlet.engine.util.SystemUtils;
 import org.restlet.util.Series;
 
@@ -56,11 +57,8 @@ public final class ChallengeResponse extends ChallengeMessage {
      */
     private volatile boolean authenticated;
 
-    /** The user identifier, such as a login name or an access key. */
-    private volatile String identifier;
-
-    /** The user secret, such as a password or a secret key. */
-    private volatile char[] secret;
+    /** The client nonce value. */
+    private volatile String clientNonce;
 
     /**
      * The {@link Request#getResourceRef()} value duplicated here in case a
@@ -68,11 +66,17 @@ public final class ChallengeResponse extends ChallengeMessage {
      */
     private volatile Reference digestRef;
 
+    /** The user identifier, such as a login name or an access key. */
+    private volatile String identifier;
+
+    /** The user password, if any. */
+    private volatile String password;
+
     /** The chosen quality of protection. */
     private volatile String quality;
 
-    /** The client nonce value. */
-    private volatile String clientNonce;
+    /** The user secret, such as a password or a secret key. */
+    private volatile char[] secret;
 
     /** The server nonce count. */
     private volatile int serverNounceCount;
@@ -256,6 +260,15 @@ public final class ChallengeResponse extends ChallengeMessage {
         return this.identifier;
     }
 
+    /**
+     * Returns the user password, if any.
+     * 
+     * @return The user password, if any.
+     */
+    public String getPassword() {
+        return password;
+    }
+
     // [ifndef gwt] method
     /**
      * Gets the principal associated to the identifier property.
@@ -307,22 +320,15 @@ public final class ChallengeResponse extends ChallengeMessage {
      * @return The server nonce count as an hexadecimal string.
      */
     public String getServerNounceCountAsHex() {
-        StringBuilder result = new StringBuilder(Integer
-                .toHexString(getServerNounceCount()));
-
-        while (result.length() < 8) {
-            result.insert(0, '0');
-        }
-
-        return result.toString();
+        return AuthenticatorUtils.formatNonceCount(getServerNounceCount());
     }
 
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
         return SystemUtils.hashCode(getScheme(), getIdentifier(),
-        // Secret is simply discarded from hash code calculation because
-                // we don't want it to be materialized as a string
+        // Secret is simply discarded from hash code calculation because we
+                // don't want it to be materialized as a string
                 // (getSecret() == null) ? null : new String(getSecret()),
                 getCredentials());
     }
@@ -396,6 +402,16 @@ public final class ChallengeResponse extends ChallengeMessage {
     }
 
     /**
+     * Sets the user password.
+     * 
+     * @param password
+     *            The user password.
+     */
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    /**
      * Sets the chosen quality of protection.
      * 
      * @param quality
@@ -434,5 +450,4 @@ public final class ChallengeResponse extends ChallengeMessage {
     public void setServerNounceCount(int serverNounceCount) {
         this.serverNounceCount = serverNounceCount;
     }
-
 }

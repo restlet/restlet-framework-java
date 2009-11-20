@@ -39,10 +39,9 @@ import javax.ws.rs.core.Application;
 import org.restlet.Response;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
-import org.restlet.ext.jaxrs.internal.todo.NotYetImplementedException;
 import org.restlet.representation.Representation;
-import org.restlet.test.jaxrs.services.providers.TextCrazyPersonProvider;
 import org.restlet.test.jaxrs.services.providers.AppCrazyPersonProvider;
+import org.restlet.test.jaxrs.services.providers.TextCrazyPersonProvider;
 import org.restlet.test.jaxrs.services.resources.MessageBodyWriterTestResource;
 import org.restlet.test.jaxrs.util.TestUtils;
 

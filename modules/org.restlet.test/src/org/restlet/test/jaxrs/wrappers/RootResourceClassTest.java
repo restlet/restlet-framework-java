@@ -79,7 +79,8 @@ public class RootResourceClassTest extends TestCase {
     }
 
     static RootResourceClass getPerRequestRootClassWrapper(
-            ResourceClasses resourceClasses, Class<?> jaxRsRootResourceClass) throws Exception {
+            ResourceClasses resourceClasses, Class<?> jaxRsRootResourceClass)
+            throws Exception {
         Method method = ResourceClasses.class.getDeclaredMethod(
                 "getPerRequestRootClassWrapper", Class.class);
         method.setAccessible(true);
@@ -88,12 +89,12 @@ public class RootResourceClassTest extends TestCase {
                     jaxRsRootResourceClass);
         } catch (InvocationTargetException e) {
             final Throwable cause = e.getCause();
-            if(cause instanceof Exception)
-                throw (Exception)cause;
-            if(cause instanceof Error)
-                throw (Error)cause;
-            else
-                throw new RuntimeException(cause);
+            if (cause instanceof Exception)
+                throw (Exception) cause;
+            if (cause instanceof Error)
+                throw (Error) cause;
+
+            throw new RuntimeException(cause);
         }
     }
 }

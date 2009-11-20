@@ -42,6 +42,7 @@ import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Parameter;
+import org.restlet.data.Reference;
 import org.restlet.engine.Engine;
 import org.restlet.engine.http.HeaderBuilder;
 import org.restlet.engine.http.HeaderReader;
@@ -57,6 +58,43 @@ import org.restlet.util.Series;
  */
 @SuppressWarnings("deprecation")
 public class AuthenticatorUtils {
+
+    /**
+     * Updates a ChallengeResponse object according to given request and
+     * response.
+     * 
+     * @param challengeResponse
+     * @param request
+     * @param response
+     */
+    public static void update(ChallengeResponse challengeResponse,
+            Request request, Response response) {
+        ChallengeRequest challengeRequest = null;
+        for (ChallengeRequest c : response.getChallengeRequests()) {
+            if (challengeResponse.getScheme().equals(c.getScheme())) {
+                challengeRequest = c;
+                break;
+            }
+        }
+
+        String realm = null;
+        String nonce = null;
+        if (challengeRequest != null) {
+            realm = challengeRequest.getRealm();
+            nonce = challengeRequest.getServerNonce();
+            challengeResponse.setOpaque(challengeRequest.getOpaque());
+        }
+        challengeResponse.setRealm(realm);
+        challengeResponse.setServerNonce(nonce);
+        
+        // Compute the new secret.
+        final AuthenticatorHelper helper = Engine.getInstance().findHelper(
+                challengeResponse.getScheme(), false, true);
+        challengeResponse.setSecret(helper.formatSecret(challengeResponse));
+
+        challengeResponse.setDigestRef(new Reference(request.getResourceRef()
+                .getPath()));
+    }
 
     /**
      * Indicates if any of the objects is null.
@@ -220,6 +258,7 @@ public class AuthenticatorUtils {
         while (result.length() < 8) {
             result.insert(0, '0');
         }
+
         return result.toString();
     }
 

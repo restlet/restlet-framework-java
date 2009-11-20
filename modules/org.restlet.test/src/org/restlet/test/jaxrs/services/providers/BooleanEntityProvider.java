@@ -60,11 +60,7 @@ public class BooleanEntityProvider implements MessageBodyReader<Boolean>,
         if (b == null) {
             return 0;
         }
-        if (b) {
-            return 4;
-        } else {
-            return 5;
-        }
+        return (b) ? 4 : 5;
     }
 
     /**

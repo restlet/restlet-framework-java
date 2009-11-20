@@ -30,11 +30,8 @@
 
 package org.restlet.test.jaxrs.util;
 
-import java.util.Arrays;
-
 import junit.framework.TestCase;
 
-import org.restlet.ext.jaxrs.internal.util.PathRegExp;
 import org.restlet.ext.jaxrs.internal.util.SortedOrderedBag;
 
 /**

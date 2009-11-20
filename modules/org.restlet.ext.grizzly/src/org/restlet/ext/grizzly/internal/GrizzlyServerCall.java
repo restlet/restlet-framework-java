@@ -27,7 +27,7 @@
  * 
  * Restlet is a registered trademark of Noelios Technologies.
  */
- 
+
 package org.restlet.ext.grizzly.internal;
 
 import java.io.ByteArrayOutputStream;
@@ -134,20 +134,20 @@ public class GrizzlyServerCall extends HttpServerCall {
         if (isRequestChunked()) {
             // Leave chunked encoding to the stream mode
             return null;
-        } else {
-            return new ReadableEntityChannel(this.byteBuffer,
-                    getSocketChannel(), size);
         }
+
+        return new ReadableEntityChannel(this.byteBuffer, getSocketChannel(),
+                size);
     }
 
     @Override
     public InputStream getRequestEntityStream(long size) {
         if (isRequestChunked()) {
             return new ChunkedInputStream(this.requestStream);
-        } else {
-            // Leave normal encoding to the channel mode
-            return null;
         }
+
+        // Leave normal encoding to the channel mode
+        return null;
     }
 
     @Override
@@ -165,9 +165,9 @@ public class GrizzlyServerCall extends HttpServerCall {
         if (isResponseChunked()) {
             // Leave chunked encoding to the stream mode
             return null;
-        } else {
-            return getWritableChannel();
         }
+
+        return getWritableChannel();
     }
 
     @Override
@@ -175,10 +175,9 @@ public class GrizzlyServerCall extends HttpServerCall {
         if (isResponseChunked()) {
             return new ChunkedOutputStream(ByteUtils
                     .getStream(getWritableChannel()));
-        } else {
-            // Leave normal encoding to the channel mode
-            return null;
         }
+        // Leave normal encoding to the channel mode
+        return null;
     }
 
     /**
@@ -255,9 +254,9 @@ public class GrizzlyServerCall extends HttpServerCall {
                     return nWrite;
                 }
             };
-        } else {
-            return getSocketChannel();
         }
+
+        return getSocketChannel();
     }
 
     @Override

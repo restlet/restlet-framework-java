@@ -30,7 +30,6 @@
 
 package org.restlet.test.jaxrs.util;
 
-import javax.ws.rs.Path;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
 
@@ -40,8 +39,6 @@ import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.ext.jaxrs.internal.core.MultivaluedMapImpl;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathException;
-import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
-import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.util.Converter;
 import org.restlet.ext.jaxrs.internal.util.PathRegExp;
 import org.restlet.ext.jaxrs.internal.util.Util;
@@ -54,19 +51,32 @@ import org.restlet.ext.jaxrs.internal.util.Util;
 public class UtilTests extends TestCase {
 
     /** test interface for test of {@link Util#doesImplement(Class, Class)}. */
-    private static interface I1 { }
+    private static interface I1 {
+    }
+
     /** test interface for test of {@link Util#doesImplement(Class, Class)}. */
-    private static interface I2 extends I1 {}
+    private static interface I2 extends I1 {
+    }
+
     /** test interface for test of {@link Util#doesImplement(Class, Class)}. */
-    private static class C1 { }
+    private static class C1 {
+    }
+
     /** test class for test of {@link Util#doesImplement(Class, Class)}. */
-    private static class C2 extends C1 implements I1 {}
+    private static class C2 extends C1 implements I1 {
+    }
+
     /** test class for test of {@link Util#doesImplement(Class, Class)}. */
-    private static class C3 implements I1 {}
+    private static class C3 implements I1 {
+    }
+
     /** test class for test of {@link Util#doesImplement(Class, Class)}. */
-    private static class C4 extends C3 {}
+    private static class C4 extends C3 {
+    }
+
     /** test class for test of {@link Util#doesImplement(Class, Class)}. */
-    private static class C5 extends C3 implements I2 {}
+    private static class C5 extends C3 implements I2 {
+    }
 
     private MultivaluedMap<String, Object> httpHeaders;
 
@@ -78,7 +88,7 @@ public class UtilTests extends TestCase {
     private void checkPathTemplateWithoutRegExpIllegal(String in) {
         try {
             Util.getPathTemplateWithoutRegExps(in, null);
-            fail("\""+in+"\" must not be allowed");
+            fail("\"" + in + "\" must not be allowed");
         } catch (IllegalPathException e) {
             // wonderful
         }
@@ -133,7 +143,7 @@ public class UtilTests extends TestCase {
         assertFalse(Util.doesImplement(CharSequence.class, String.class));
         assertFalse(Util.doesImplement(Object.class, CharSequence.class));
         assertTrue(Util.doesImplement(Integer.class, Comparable.class));
-        
+
         assertFalse(Util.doesImplement(C1.class, I1.class));
         assertFalse(Util.doesImplement(C1.class, I2.class));
         assertTrue(Util.doesImplement(C2.class, I1.class));

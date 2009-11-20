@@ -141,9 +141,8 @@ public class RangeTestCase extends RestletTestCase {
                 }
                 if (!found) {
                     break;
-                } else {
-                    match = true;
                 }
+                match = true;
             }
             if (match) {
                 response.setStatus(Status.SUCCESS_OK);

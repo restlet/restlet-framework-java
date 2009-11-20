@@ -165,9 +165,9 @@ public class BaseResource extends ServerResource {
     protected Reference getChildReference(Reference parentRef, String childId) {
         if (parentRef.getIdentifier().endsWith("/")) {
             return new Reference(parentRef.getIdentifier() + childId);
-        } else {
-            return new Reference(parentRef.getIdentifier() + "/" + childId);
         }
+
+        return new Reference(parentRef.getIdentifier() + "/" + childId);
     }
 
     /**

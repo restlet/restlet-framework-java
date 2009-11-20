@@ -134,6 +134,40 @@ public abstract class AuthenticatorHelper extends Helper {
     }
 
     /**
+     * Formats a challenge request as raw credentials.
+     * 
+     * @param hb
+     *            The header builder to update.
+     * @param challenge
+     *            The challenge request to format.
+     * @param response
+     *            The parent response.
+     * @param httpHeaders
+     *            The current request HTTP headers.
+     */
+    public void formatRawRequest(HeaderBuilder hb, ChallengeRequest challenge,
+            Response response, Series<Parameter> httpHeaders)
+            throws IOException {
+    }
+
+    /**
+     * Formats a challenge response as raw credentials.
+     * 
+     * @param hb
+     *            The header builder to update.
+     * @param challenge
+     *            The challenge response to format.
+     * @param request
+     *            The parent request.
+     * @param httpHeaders
+     *            The current request HTTP headers.
+     */
+    public void formatRawResponse(HeaderBuilder hb,
+            ChallengeResponse challenge, Request request,
+            Series<Parameter> httpHeaders) throws IOException {
+    }
+
+    /**
      * Formats a challenge request as a HTTP header value. The header is
      * {@link HttpConstants#HEADER_WWW_AUTHENTICATE}. The default implementation
      * relies on
@@ -161,23 +195,6 @@ public abstract class AuthenticatorHelper extends Helper {
         }
 
         return hb.toString();
-    }
-
-    /**
-     * Formats a challenge request as raw credentials.
-     * 
-     * @param hb
-     *            The header builder to update.
-     * @param challenge
-     *            The challenge request to format.
-     * @param response
-     *            The parent response.
-     * @param httpHeaders
-     *            The current request HTTP headers.
-     */
-    public void formatRawRequest(HeaderBuilder hb, ChallengeRequest challenge,
-            Response response, Series<Parameter> httpHeaders)
-            throws IOException {
     }
 
     /**
@@ -212,20 +229,15 @@ public abstract class AuthenticatorHelper extends Helper {
     }
 
     /**
-     * Formats a challenge response as raw credentials.
+     * Formats the secret of a challenge response. By default, it returns the
+     * current challenge response secret.
      * 
-     * @param hb
-     *            The header builder to update.
-     * @param challenge
-     *            The challenge response to format.
-     * @param request
-     *            The parent request.
-     * @param httpHeaders
-     *            The current request HTTP headers.
+     * @param challengeResponse
+     *            The challenge response.
+     * @return The formatted secret of a challenge response.
      */
-    public void formatRawResponse(HeaderBuilder hb,
-            ChallengeResponse challenge, Request request,
-            Series<Parameter> httpHeaders) throws IOException {
+    public String formatSecret(ChallengeResponse challengeResponse) {
+        return new String(challengeResponse.getSecret());
     }
 
     /**

@@ -178,7 +178,11 @@ public class DigestUtils {
      */
     public static String toHttpDigest(String identifier, char[] secret,
             String realm) {
-        return toMd5(identifier + ":" + realm + ":" + new String(secret));
+        if (secret != null) {
+            return toMd5(identifier + ":" + realm + ":" + new String(secret));
+        }
+
+        return null;
     }
 
     /**

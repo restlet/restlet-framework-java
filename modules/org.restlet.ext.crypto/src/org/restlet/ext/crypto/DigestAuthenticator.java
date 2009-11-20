@@ -162,9 +162,9 @@ public class DigestAuthenticator extends ChallengeAuthenticator {
     public String getHashedSecret(String identifier, char[] secret) {
         if (ChallengeScheme.HTTP_DIGEST.equals(getScheme())) {
             return DigestUtils.toHttpDigest(identifier, secret, getRealm());
-        } else {
-            return null;
         }
+
+        return null;
     }
 
     /**
@@ -235,16 +235,16 @@ public class DigestAuthenticator extends ChallengeAuthenticator {
             if (!(verifier instanceof HttpDigestVerifier)) {
                 throw new IllegalArgumentException(
                         "Only subclasses on HttpDigestVerifier are allowed. You might want to set the \"wrappedVerifier\" property instead.");
-            } else {
-                super.setVerifier(verifier);
             }
+
+            super.setVerifier(verifier);
         } else {
             if (!(verifier instanceof DigestVerifier<?>)) {
                 throw new IllegalArgumentException(
                         "Only subclasses on DigestVerifier are allowed. You might want to set the \"wrappedVerifier\" property instead.");
-            } else {
-                super.setVerifier(verifier);
             }
+
+            super.setVerifier(verifier);
         }
     }
 

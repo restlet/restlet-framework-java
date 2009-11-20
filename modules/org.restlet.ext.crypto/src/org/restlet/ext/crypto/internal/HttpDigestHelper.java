@@ -79,10 +79,10 @@ public class HttpDigestHelper extends AuthenticatorHelper {
         if (secret != null) {
             return DigestUtils.toHttpDigest(identifier, secret, guard
                     .getRealm());
-        } else {
-            // The given identifier is not known
-            return null;
         }
+
+        // The given identifier is not known
+        return null;
     }
 
     /**
@@ -305,8 +305,28 @@ public class HttpDigestHelper extends AuthenticatorHelper {
         }
 
         if (challenge.getSecret() != null) {
-            hb.appendQuotedParameter("response", new String(challenge
-                    .getSecret()));
+            if (challenge.getSecret() != null) {
+                String a1 = new String(challenge.getSecret());
+                String a2 = DigestUtils.toMd5(request.getMethod() + ":"
+                        + challenge.getDigestRef().toString());
+                StringBuilder response = new StringBuilder().append(a1).append(
+                        ':').append(challenge.getServerNonce());
+
+                if (!AuthenticatorUtils.anyNull(challenge.getQuality(),
+                        challenge.getClientNonce(), challenge
+                                .getServerNounceCount())) {
+                    response.append(':').append(
+                            AuthenticatorUtils.formatNonceCount(challenge
+                                    .getServerNounceCount())).append(':')
+                            .append(challenge.getClientNonce()).append(':')
+                            .append(challenge.getQuality());
+                }
+
+                response.append(':').append(a2);
+
+                hb.appendQuotedParameter("response", DigestUtils.toMd5(response
+                        .toString()));
+            }
         }
 
         if ((challenge.getDigestAlgorithm() != null)
@@ -341,6 +361,18 @@ public class HttpDigestHelper extends AuthenticatorHelper {
     }
 
     @Override
+    public String formatSecret(ChallengeResponse challengeResponse) {
+        if (!AuthenticatorUtils.anyNull(challengeResponse.getIdentifier(),
+                challengeResponse.getPassword(), challengeResponse.getRealm())) {
+            return DigestUtils.toHttpDigest(challengeResponse.getIdentifier(),
+                    challengeResponse.getPassword().toCharArray(),
+                    challengeResponse.getRealm());
+        }
+
+        return null;
+    }
+
+    @Override
     public void parseRequest(ChallengeRequest challenge, Response response,
             Series<Parameter> httpHeaders) {
         if (challenge.getRawValue() != null) {
@@ -354,7 +386,8 @@ public class HttpDigestHelper extends AuthenticatorHelper {
                         if ("realm".equals(param.getName())) {
                             challenge.setRealm(param.getValue());
                         } else if ("domain".equals(param.getName())) {
-                            challenge.setRealm(param.getValue());
+                            challenge.getDomainRefs().add(
+                                    new Reference(param.getValue()));
                         } else if ("nonce".equals(param.getName())) {
                             challenge.setServerNonce(param.getValue());
                         } else if ("opaque".equals(param.getName())) {
