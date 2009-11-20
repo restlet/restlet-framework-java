@@ -10,7 +10,6 @@ Changes log
           HTTP_AZURE_SHAREDKEY_LITE.
         - DataServices.Session#getMetadata() now returns on Object 
           to prevent link to internal class.
-        - OAuthProvider methods are now public.
         - Upgraded the "org.restlet.ext.httpclient" extension to
           leverage Apache HTTP Client 4.0. WARNING: some parameters 
           were renamed due to API changes.
@@ -164,9 +163,11 @@ Changes log
         - Fixed ClassCastException in the 
           Series#getValuesArray(String, boolean) method.
           Reported by Arjohn Kampman.
+        - Updated SpringFinder Javadocs to mention the need to use
+          create() as a lookup-method instead of createResource().
+          Reported by Kevin Pauli.
     - Enhancements
-        - Improved JAXB converted. Contributed by Sanjay Acharya.
-        - Upgraded Apache Commons Logging to version 1.1.1.
+        - Improved JAXB converter. Contributed by Sanjay Acharya.
         - Added library jcip-annotations 1.0.
         - ServerSevlet now automatically supports the declaration of 
           several adapters in the same web.xml. Reworked the Javadocs
@@ -174,7 +175,6 @@ Changes log
           context parameters.
         - Refactored connector extensions to move implementation 
           classes in "internal" packages hidden from the Javadocs.
-        - Upgraded Jetty to version 7.0.0.
         - The default status page and directory listings are now using
           a sans-serif font.
         - Add support for annotations values separated by a ":" and "|"
@@ -194,12 +194,11 @@ Changes log
         - Life cycle events are now propagated in all the Restlet 
           routing system (filters, routers, virtual hosts, etc.).
           Suggested by David Fogel
-        - Added a LoggeFacade class and a related property on the 
+        - Added a LoggerFacade class and a related property on the 
           Engine to allow the replacement of the default JULI logging 
           mechanism. 
         - Added an SLF4J extension with a LoggerFacade for the Restlet 
           Engine providing an optimal bridge to SLF4J.
-        - Updated GWT to version 1.7.1.
         - Added HTTP/HTTPS proxy configuration support to the Apache
           HTTP Client 4.0 extension. Contributed by Bruno Harbulot.
         - Added the Net client extension to the Android edition 
@@ -207,8 +206,8 @@ Changes log
         - Response with a 200 (success, ok) status and no content now 
           log a fine trace instead of a warning and automatically 
           change the status to 204 (success, no content).
-        - Added support of the warning header.
-        - Added support of the ranges in the gwt edition.
+        - Added support of the Warning header.
+        - Added support of the ranges in the GWT edition.
         - Added support of the Authentication-Info header.
         - Added support of "inline" disposition type in the 
           Content-Disposition header. This is based on the value of the
@@ -219,10 +218,10 @@ Changes log
     - Misc
         - Added Velocity template in the org.restlet.example project.
           Reported by Ben Vesco.
-        - Updated the Simple framework library to version 4.1.15.
-        - Updated SpringFinder Javadocs to mention the need to use
-          create() as a lookup-method instead of createResource().
-          Reported by Kevin Pauli.
+        - Updated Apache Commons Logging to version 1.1.1.
+        - Updated Simple framework library to version 4.1.15.
+        - Updated GWT to version 1.7.1.
+        - Updated Jetty to version 7.0.0.
 
 - 2.0 Milestone 5 (2009-09-28)
     - API changes
