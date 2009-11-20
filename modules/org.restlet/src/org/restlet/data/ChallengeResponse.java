@@ -79,6 +79,7 @@ public final class ChallengeResponse extends ChallengeMessage {
     /** The server nonce count. */
     private volatile int serverNounceCount;
 
+    // [ifndef gwt] method
     /**
      * Constructor.
      * 
@@ -102,6 +103,7 @@ public final class ChallengeResponse extends ChallengeMessage {
         AuthenticatorUtils.update(this, request, response);
     }
 
+    // [ifndef gwt] method
     /**
      * Constructor.
      * 
@@ -125,6 +127,7 @@ public final class ChallengeResponse extends ChallengeMessage {
         AuthenticatorUtils.update(this, request, response);
     }
 
+    // [ifndef gwt] method
     /**
      * Constructor.
      * 
