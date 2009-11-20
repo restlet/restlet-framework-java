@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Java Architecture for XML Binding
+Bundle-SymbolicName: javax.xml.bind
+Bundle-Version: 2.1.12
+Bundle-ClassPath: javax.xml.bind.jar,
+ com.sun.jaxb.jar
+Bundle-Vendor: Sun Microsystems Inc.
+Export-Package: javax.xml.bind;version="2.1.12",
+ javax.xml.bind.annotation;version="2.1.12",
+ javax.xml.bind.annotation.adapters;version="2.1.12",
+ javax.xml.bind.attachment;version="2.1.12",
+ javax.xml.bind.helpers;version="2.1.12",
+ javax.xml.bind.util;version="2.1.12"
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
