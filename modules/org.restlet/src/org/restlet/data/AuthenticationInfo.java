@@ -33,8 +33,8 @@ package org.restlet.data;
 import org.restlet.engine.util.SystemUtils;
 
 /**
- * Authentication information sent by an origin server to a client after a
- * successful digest authentication attempt.<br>
+ * Preemptive authentication information. Sent by an origin server to a client
+ * after a successful digest authentication attempt.<br>
  * <br>
  * Note that when used with HTTP connectors, this class maps to the
  * "Authentication-Info" header.
