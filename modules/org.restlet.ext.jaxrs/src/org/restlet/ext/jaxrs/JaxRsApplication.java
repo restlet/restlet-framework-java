@@ -195,8 +195,7 @@ public class JaxRsApplication extends org.restlet.Application {
      * Returns the current RoleChecker
      * 
      * @return the current RoleChecker
-     * @deprecated Use {@link ClientInfo#isInRole(org.restlet.security.Role)}
-     *             instead
+     * @deprecated Use {@link ClientInfo#getRoles()} instead
      */
     @Deprecated
     public RoleChecker getRoleChecker() {
@@ -313,8 +312,7 @@ public class JaxRsApplication extends org.restlet.Application {
      * @param roleChecker
      * @see #setAuthentication(Authenticator, RoleChecker)
      * @see #setGuard(Authenticator)
-     * @deprecated Use {@link ClientInfo#isInRole(org.restlet.security.Role)}
-     *             instead
+     * @deprecated Use {@link ClientInfo#getRoles()} instead
      */
     @Deprecated
     public void setRoleChecker(RoleChecker roleChecker) {

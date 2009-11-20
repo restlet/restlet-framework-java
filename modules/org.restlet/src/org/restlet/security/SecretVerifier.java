@@ -81,7 +81,7 @@ public abstract class SecretVerifier implements Verifier {
      *            The request to inspect.
      * @param response
      *            The response to inspect.
-     * @return
+     * @return The user identifier.
      */
     protected String getIdentifier(Request request, Response response) {
         return request.getChallengeResponse().getIdentifier();
@@ -94,7 +94,7 @@ public abstract class SecretVerifier implements Verifier {
      *            The request to inspect.
      * @param response
      *            The response to inspect.
-     * @return
+     * @return The secret provided by the user.
      */
     protected char[] getSecret(Request request, Response response) {
         return request.getChallengeResponse().getSecret();
@@ -104,8 +104,8 @@ public abstract class SecretVerifier implements Verifier {
      * Verifies that the proposed secret is correct for the specified request.
      * By default, it compares the inputSecret of the request's authentication
      * response with the one obtain by the {@link ChallengeResponse#getSecret()}
-     * method and adds a new {@link RolePrincipal} instance to the subject if
-     * successful.
+     * method and adds a new {@link org.restlet.ext.jaas.RolePrincipal} instance
+     * to the subject if successful.
      * 
      * @param request
      *            The request to inspect.

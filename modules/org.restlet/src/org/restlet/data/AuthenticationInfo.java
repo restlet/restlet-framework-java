@@ -177,9 +177,9 @@ public class AuthenticationInfo {
 
     /**
      * Returns the quality of protection. The value can be
-     * {@link #QUALITY_AUTHENTICATION} for authentication or
-     * {@link #QUALITY_AUTHENTICATION_INTEGRITY} for authentication with
-     * integrity protection.
+     * {@link ChallengeMessage#QUALITY_AUTHENTICATION} for authentication or
+     * {@link ChallengeMessage#QUALITY_AUTHENTICATION_INTEGRITY} for
+     * authentication with integrity protection.
      * 
      * @return The quality of protection.
      */
@@ -240,8 +240,8 @@ public class AuthenticationInfo {
 
     /**
      * Sets the quality of protection. The value can be
-     * {@link #QUALITY_AUTHENTICATION} for authentication or
-     * {@link #QUALITY_AUTHENTICATION_INTEGRITY} for authentication with
+     * {@link ChallengeMessage#QUALITY_AUTHENTICATION} for authentication or
+     * {@link ChallengeMessage#QUALITY_AUTHENTICATION_INTEGRITY} for authentication with
      * integrity protection.
      * 
      * @param qop

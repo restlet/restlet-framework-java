@@ -99,8 +99,7 @@ public abstract class ChallengeMessage {
      * @param scheme
      *            The challenge scheme.
      * @param realm
-     * @param parameters
-     *            The additional scheme parameters.
+     *            The authentication realm.
      */
     public ChallengeMessage(ChallengeScheme scheme, String realm) {
         this(scheme, realm, null);
@@ -112,6 +111,7 @@ public abstract class ChallengeMessage {
      * @param scheme
      *            The challenge scheme.
      * @param realm
+     *            The authentication realm.
      * @param parameters
      *            The additional scheme parameters.
      */

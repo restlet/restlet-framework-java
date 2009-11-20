@@ -663,8 +663,7 @@ public class JaxRsRestlet extends Restlet {
      * 
      * @return the currently used RoleChecker.
      * @see #setRoleChecker(RoleChecker)
-     * @deprecated Use {@link ClientInfo#isInRole(org.restlet.security.Role)}
-     *             instead
+     * @deprecated Use {@link ClientInfo#getRoles()} instead
      */
     @Deprecated
     public RoleChecker getRoleChecker() {
@@ -1217,8 +1216,7 @@ public class JaxRsRestlet extends Restlet {
      *            Restlet security API will be used.
      * @see RoleChecker
      * @see #getRoleChecker()
-     * @deprecated Use {@link ClientInfo#isInRole(org.restlet.security.Role)}
-     *             instead
+     * @deprecated Use {@link ClientInfo#getRoles()} instead
      */
     @Deprecated
     public void setRoleChecker(RoleChecker roleChecker) {

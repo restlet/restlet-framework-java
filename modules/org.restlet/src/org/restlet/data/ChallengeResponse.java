@@ -452,7 +452,8 @@ public final class ChallengeResponse extends ChallengeMessage {
     /**
      * Sets the digest URI reference.
      * 
-     * @return The digest URI reference.
+     * @param digestRef
+     *            The digest URI reference.
      */
     public void setDigestRef(Reference digestRef) {
         this.digestRef = digestRef;

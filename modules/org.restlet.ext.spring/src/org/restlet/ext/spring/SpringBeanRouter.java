@@ -380,7 +380,7 @@ public class SpringBeanRouter extends Router implements
      * Sets if bean names will be searched for higher up in the BeanFactory
      * hierarchy.
      * 
-     * @param findInAncestors
+     * @param findingInAncestors
      *            Search for beans higher up in the BeanFactory hierarchy.
      */
     public void setFindingInAncestors(boolean findingInAncestors) {

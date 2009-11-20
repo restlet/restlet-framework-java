@@ -177,9 +177,9 @@ public class JsonRepresentation extends WriterRepresentation {
     public JSONArray getJsonArray() throws JSONException {
         if (this.jsonObject != null) {
             return (JSONArray) this.jsonObject;
-        } else {
-            return toJsonArray();
         }
+
+        return toJsonArray();
     }
 
     /**
@@ -192,9 +192,9 @@ public class JsonRepresentation extends WriterRepresentation {
     public JSONObject getJsonObject() throws JSONException {
         if (this.jsonObject != null) {
             return (JSONObject) this.jsonObject;
-        } else {
-            return toJsonObject();
         }
+
+        return toJsonObject();
     }
 
     /**
@@ -254,9 +254,9 @@ public class JsonRepresentation extends WriterRepresentation {
     public JSONTokener getJsonTokener() throws JSONException {
         if (this.jsonObject != null) {
             return (JSONTokener) this.jsonObject;
-        } else {
-            return toJsonTokener();
         }
+
+        return toJsonTokener();
     }
 
     /**
@@ -305,7 +305,7 @@ public class JsonRepresentation extends WriterRepresentation {
     /**
      * Indicates if JSON objects and arrays should be indented.
      * 
-     * @param indent
+     * @param indenting
      *            True if JSON objects and arrays should be indented.
      */
     public void setIndenting(boolean indenting) {

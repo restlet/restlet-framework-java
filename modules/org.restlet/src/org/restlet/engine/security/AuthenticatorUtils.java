@@ -432,10 +432,10 @@ public class AuthenticatorUtils {
      * Parses an authorization header into a challenge response. The header is
      * {@link HttpConstants#HEADER_AUTHORIZATION}.
      * 
-     * @param challenge
-     *            The challenge response to update.
      * @param request
      *            The parent request.
+     * @param header
+     *            The authorization header.
      * @param httpHeaders
      *            The current request HTTP headers.
      * @return The parsed challenge response.

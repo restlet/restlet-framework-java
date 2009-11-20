@@ -171,8 +171,8 @@ public abstract class AuthenticatorHelper extends Helper {
      * Formats a challenge request as a HTTP header value. The header is
      * {@link HttpConstants#HEADER_WWW_AUTHENTICATE}. The default implementation
      * relies on
-     * {@link #formatParameters(StringBuilder, Series, ChallengeRequest)} to
-     * append all parameters from {@link ChallengeRequest#getParameters()}.
+     * {@link #formatRawRequest(HeaderBuilder, ChallengeRequest, Response, Series)}
+     * to append all parameters from {@link ChallengeRequest#getParameters()}.
      * 
      * @param challenge
      *            The challenge request to format.
@@ -201,7 +201,7 @@ public abstract class AuthenticatorHelper extends Helper {
      * Formats a challenge response as a HTTP header value. The header is
      * {@link HttpConstants#HEADER_AUTHORIZATION}. The default implementation
      * relies on
-     * {@link #formatRawResponse(StringBuilder, ChallengeResponse, Request, Series)}
+     * {@link #formatRawResponse(HeaderBuilder, ChallengeResponse, Request, Series)}
      * unless some custom credentials are provided via
      * {@link ChallengeResponse#getCredentials()}.
      * 
