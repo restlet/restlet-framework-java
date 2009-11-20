@@ -305,28 +305,8 @@ public class HttpDigestHelper extends AuthenticatorHelper {
         }
 
         if (challenge.getSecret() != null) {
-            if (challenge.getSecret() != null) {
-                String a1 = new String(challenge.getSecret());
-                String a2 = DigestUtils.toMd5(request.getMethod() + ":"
-                        + challenge.getDigestRef().toString());
-                StringBuilder response = new StringBuilder().append(a1).append(
-                        ':').append(challenge.getServerNonce());
-
-                if (!AuthenticatorUtils.anyNull(challenge.getQuality(),
-                        challenge.getClientNonce(), challenge
-                                .getServerNounceCount())) {
-                    response.append(':').append(
-                            AuthenticatorUtils.formatNonceCount(challenge
-                                    .getServerNounceCount())).append(':')
-                            .append(challenge.getClientNonce()).append(':')
-                            .append(challenge.getQuality());
-                }
-
-                response.append(':').append(a2);
-
-                hb.appendQuotedParameter("response", DigestUtils.toMd5(response
-                        .toString()));
-            }
+            hb.appendQuotedParameter("response", new String(challenge
+                    .getSecret()));
         }
 
         if ((challenge.getDigestAlgorithm() != null)
@@ -362,12 +342,38 @@ public class HttpDigestHelper extends AuthenticatorHelper {
 
     @Override
     public char[] formatSecret(ChallengeResponse challengeResponse,
-            String password) {
-        if (!AuthenticatorUtils.anyNull(challengeResponse.getIdentifier(),
-                password, challengeResponse.getRealm())) {
-            return DigestUtils.toHttpDigest(challengeResponse.getIdentifier(),
-                    password.toCharArray(), challengeResponse.getRealm())
-                    .toCharArray();
+            Request previousRequest, Response previousResponse,
+            String identifier, char[] baseSecret, String baseSecretAlgorithm) {
+        String a1 = null;
+        if (!Digest.ALGORITHM_HTTP_DIGEST.equals(baseSecretAlgorithm)) {
+            if (!AuthenticatorUtils.anyNull(challengeResponse.getIdentifier(),
+                    baseSecret, challengeResponse.getRealm())) {
+                a1 = DigestUtils.toHttpDigest(identifier, baseSecret,
+                        challengeResponse.getRealm());
+            }
+        } else {
+            new String(baseSecret);
+        }
+
+        if (a1 != null) {
+            String a2 = DigestUtils.toMd5(previousRequest.getMethod() + ":"
+                    + challengeResponse.getDigestRef().toString());
+            StringBuilder response = new StringBuilder().append(a1).append(':')
+                    .append(challengeResponse.getServerNonce());
+
+            if (!AuthenticatorUtils.anyNull(challengeResponse.getQuality(),
+                    challengeResponse.getClientNonce(), challengeResponse
+                            .getServerNounceCount())) {
+                response.append(':').append(
+                        AuthenticatorUtils.formatNonceCount(challengeResponse
+                                .getServerNounceCount())).append(':').append(
+                        challengeResponse.getClientNonce()).append(':').append(
+                        challengeResponse.getQuality());
+            }
+
+            response.append(':').append(a2);
+
+            return DigestUtils.toMd5(response.toString()).toCharArray();
         }
 
         return null;

@@ -41,6 +41,7 @@ import org.restlet.data.ChallengeMessage;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
+import org.restlet.data.Digest;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.engine.Engine;
@@ -488,24 +489,29 @@ public class AuthenticatorUtils {
      * 
      * @param challengeResponse
      *            The challengeResponse to update.
-     * @param request
-     *            The request.
-     * @param response
-     *            The response.
+     * @param previousRequest
+     *            The previous request if available.
+     * @param previousResponse
+     *            The previous response if available.
      * @param identifier
-     * @param password
-     * @param passwordScheme
+     *            The identifier.
+     * @param baseSecret
+     *            The base secret used to compute the secret.
+     * @param baseSecretAlgorithm
+     *            The digest algorithm of the base secret (@see {@link Digest}
+     *            class).
      */
     public static void update(ChallengeResponse challengeResponse,
-            Request request, Response response, String identifier,
-            String password, ChallengeScheme passwordScheme) {
-        update(challengeResponse, request, response);
+            Request previousRequest, Response previousResponse,
+            String identifier, char[] baseSecret, String baseSecretAlgorithm) {
+        update(challengeResponse, previousRequest, previousResponse);
 
         // Compute the new secret.
         final AuthenticatorHelper helper = Engine.getInstance().findHelper(
-                passwordScheme, false, true);
+                challengeResponse.getScheme(), false, true);
         challengeResponse.setSecret(helper.formatSecret(challengeResponse,
-                password));
+                previousRequest, previousResponse, identifier, baseSecret,
+                baseSecretAlgorithm));
     }
 
     /**

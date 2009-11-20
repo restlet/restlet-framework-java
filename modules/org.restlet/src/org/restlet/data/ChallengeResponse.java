@@ -90,17 +90,14 @@ public final class ChallengeResponse extends ChallengeMessage {
      *            The response.
      * @param identifier
      *            The user identifier, such as a login name or an access key.
-     * @param secret
+     * @param baseSecret
      *            The user secret, such as a password or a secret key.
      */
     public ChallengeResponse(final ChallengeRequest challengeRequest,
             final Request request, final Response response,
-            final String identifier, char[] secret) {
-        super(challengeRequest.getScheme());
-        this.identifier = identifier;
-        this.secret = secret;
-        org.restlet.engine.security.AuthenticatorUtils.update(this, request,
-                response);
+            final String identifier, char[] baseSecret) {
+        this(challengeRequest, request, response, identifier, baseSecret,
+                Digest.ALGORITHM_NONE);
     }
 
     // [ifndef gwt] method
@@ -115,17 +112,14 @@ public final class ChallengeResponse extends ChallengeMessage {
      *            The response.
      * @param identifier
      *            The user identifier, such as a login name or an access key.
-     * @param secret
+     * @param baseSecret
      *            The user secret, such as a password or a secret key.
      */
     public ChallengeResponse(final ChallengeRequest challengeRequest,
             final Request request, final Response response,
-            final String identifier, String secret) {
-        super(challengeRequest.getScheme());
-        this.identifier = identifier;
-        this.secret = (secret != null) ? secret.toCharArray() : null;
-        org.restlet.engine.security.AuthenticatorUtils.update(this, request,
-                response);
+            final String identifier, String baseSecret) {
+        this(challengeRequest, request, response, identifier, baseSecret
+                .toCharArray(), Digest.ALGORITHM_NONE);
     }
 
     // [ifndef gwt] method
@@ -140,19 +134,20 @@ public final class ChallengeResponse extends ChallengeMessage {
      *            The response.
      * @param identifier
      *            The user identifier, such as a login name or an access key.
-     * @param password
-     *            The user password.
-     * @param passwordScheme
-     *            Scheme used to compute the secret.
+     * @param baseSecret
+     *            The base secret used to compute the secret.
+     * @param baseSecretAlgorithm
+     *            The digest algorithm of the base secret (@see {@link Digest}
+     *            class).
      */
     public ChallengeResponse(final ChallengeRequest challengeRequest,
             final Request request, final Response response,
-            final String identifier, String password,
-            ChallengeScheme passwordScheme) {
+            final String identifier, char[] baseSecret,
+            String baseSecretAlgorithm) {
         super(challengeRequest.getScheme());
         this.identifier = identifier;
         org.restlet.engine.security.AuthenticatorUtils.update(this, request,
-                response, identifier, password, passwordScheme);
+                response, identifier, baseSecret, baseSecretAlgorithm);
     }
 
     /**

@@ -39,6 +39,7 @@ import org.restlet.Response;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
+import org.restlet.data.Digest;
 import org.restlet.data.Parameter;
 import org.restlet.data.Status;
 import org.restlet.engine.Helper;
@@ -145,6 +146,7 @@ public abstract class AuthenticatorHelper extends Helper {
      * @param httpHeaders
      *            The current request HTTP headers.
      */
+    @SuppressWarnings("unused")
     public void formatRawRequest(HeaderBuilder hb, ChallengeRequest challenge,
             Response response, Series<Parameter> httpHeaders)
             throws IOException {
@@ -162,6 +164,7 @@ public abstract class AuthenticatorHelper extends Helper {
      * @param httpHeaders
      *            The current request HTTP headers.
      */
+    @SuppressWarnings("unused")
     public void formatRawResponse(HeaderBuilder hb,
             ChallengeResponse challenge, Request request,
             Series<Parameter> httpHeaders) throws IOException {
@@ -234,14 +237,24 @@ public abstract class AuthenticatorHelper extends Helper {
      * 
      * @param challengeResponse
      *            The challenge response.
-     * @param password
-     *            The password used to compute the secret.
+     * @param previousRequest
+     *            The previous request if available.
+     * @param previousResponse
+     *            The previous response if available.
+     * @param identifier
+     *            The identifier.
+     * @param baseSecret
+     *            The base secret used to compute the secret.
+     * @param baseSecretAlgorithm
+     *            The digest algorithm of the base secret (@see {@link Digest}
+     *            class).
      * @return The formatted secret of a challenge response.
      */
     public char[] formatSecret(ChallengeResponse challengeResponse,
-            String password) {
-        if (password != null) {
-            return password.toCharArray();
+            Request previousRequest, Response previousResponse,
+            String identifier, char[] baseSecret, String baseSecretAlgorithm) {
+        if (baseSecret != null) {
+            return baseSecret;
         }
         return null;
     }
