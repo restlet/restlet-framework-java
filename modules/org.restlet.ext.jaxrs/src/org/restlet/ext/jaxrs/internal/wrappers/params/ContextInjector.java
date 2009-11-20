@@ -363,10 +363,10 @@ public class ContextInjector {
         }
         if (declaringClass.equals(ExtendedUriInfo.class)) {
             return new ExtendedUriInfoInjector(aim, tlContext);
-        } else {
-            return new EverSameInjector(aim, getInjectObject(declaringClass,
-                    tlContext, allProviders, extensionBackwardMapping));
         }
+
+        return new EverSameInjector(aim, getInjectObject(declaringClass,
+                tlContext, allProviders, extensionBackwardMapping));
     }
 
     /**

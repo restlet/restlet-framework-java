@@ -776,10 +776,12 @@ public class ServerServlet extends HttpServlet {
      * @return The application.
      */
     public Application getApplication() {
+        // Lazy initialization with double-check.
         Application result = this.application;
 
         if (result == null) {
-            synchronized (ServerServlet.class) {
+            synchronized (this) {
+                result = this.application;
                 if (result == null) {
                     // In case a component is explicitly defined, it cannot be
                     // completed.
@@ -818,10 +820,12 @@ public class ServerServlet extends HttpServlet {
      * @return The component.
      */
     public Component getComponent() {
+        // Lazy initialization with double-check.
         Component result = this.component;
 
         if (result == null) {
-            synchronized (ServerServlet.class) {
+            synchronized (this) {
+                result = this.component;
                 if (result == null) {
                     // Find the attribute name to use to store the component
                     final String componentAttributeName = getInitParameter(
@@ -918,10 +922,12 @@ public class ServerServlet extends HttpServlet {
      * @return The HTTP server handling calls.
      */
     public HttpServerHelper getServer(HttpServletRequest request) {
+        // Lazy initialization with double-check.
         HttpServerHelper result = this.helper;
 
         if (result == null) {
-            synchronized (ServerServlet.class) {
+            synchronized (this) {
+                result = this.helper;
                 if (result == null) {
                     // Find the attribute name to use to store the server
                     // reference

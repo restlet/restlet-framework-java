@@ -105,33 +105,31 @@ public class ResourceMethod extends AbstractMethodWrapper implements
      * Creates a wrapper for a resource method.
      * 
      * @param executeMethod
-     *                the Java method to wrap.
+     *            the Java method to wrap.
      * @param annotatedMethod
-     *                the java method that contains the annotations for this
-     *                method.
+     *            the java method that contains the annotations for this method.
      * @param resourceClass
-     *                the wrapped class of the method.
+     *            the wrapped class of the method.
      * @param httpMethod
-     *                the HTTP method of the Java method. It will be checked be
-     *                the {@link org.restlet.ext.jaxrs.JaxRsRestlet}, so
-     *                avoiding double work. It will be requested from the
-     *                javaMethod.
+     *            the HTTP method of the Java method. It will be checked be the
+     *            {@link org.restlet.ext.jaxrs.JaxRsRestlet}, so avoiding double
+     *            work. It will be requested from the javaMethod.
      * @param tlContext
-     *                the {@link ThreadLocalizedContext} of the
-     *                {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
+     *            the {@link ThreadLocalizedContext} of the
+     *            {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
      * @param jaxRsProviders
-     *                all entity providers
+     *            all entity providers
      * @param extensionBackwardMapping
-     *                the extension backward mapping
+     *            the extension backward mapping
      * @param logger
      * @throws IllegalPathOnMethodException
      * @throws MissingAnnotationException
      * @throws IllegalArgumentException
-     *                 if the annotated method is null
+     *             if the annotated method is null
      * @throws IllegalMethodParamTypeException
-     *                 if one of the method parameters annotated with &#64;
-     *                 {@link Context} has a type that must not be annotated
-     *                 with &#64;{@link Context}.
+     *             if one of the method parameters annotated with &#64;
+     *             {@link Context} has a type that must not be annotated with
+     *             &#64;{@link Context}.
      * @throws IllegalPathParamTypeException
      */
     ResourceMethod(Method executeMethod, Method annotatedMethod,
@@ -169,9 +167,9 @@ public class ResourceMethod extends AbstractMethodWrapper implements
         }
         if (consumes != null) {
             return WrapperUtil.convertToMediaTypes(consumes.value());
-        } else {
-            return Collections.singletonList(MediaType.ALL);
         }
+
+        return Collections.singletonList(MediaType.ALL);
     }
 
     /**
@@ -189,9 +187,9 @@ public class ResourceMethod extends AbstractMethodWrapper implements
         }
         if (produces != null) {
             return WrapperUtil.convertToMediaTypes(produces.value());
-        } else {
-            return Collections.emptyList();
         }
+
+        return Collections.emptyList();
     }
 
     /**
@@ -302,8 +300,8 @@ public class ResourceMethod extends AbstractMethodWrapper implements
      * Check if this method supports the media type to produce for a request.
      * 
      * @param accMediaTypess
-     *                The Media Types the client would accept, ordered by
-     *                quality. See {@link SortedMetadata}
+     *            The Media Types the client would accept, ordered by quality.
+     *            See {@link SortedMetadata}
      * @return Returns true, if the give MediaType is supported by the method,
      *         or no MediaType is given for the method, otherweise false.
      */
@@ -328,9 +326,9 @@ public class ResourceMethod extends AbstractMethodWrapper implements
 
     /**
      * @param resourceMethod
-     *                the resource method to check
+     *            the resource method to check
      * @param givenMediaType
-     *                the MediaType of the request entity
+     *            the MediaType of the request entity
      * @return Returns true, if the given MediaType is supported by the method,
      *         or no MediaType is given for the method, otherweise false;
      */
@@ -364,10 +362,10 @@ public class ResourceMethod extends AbstractMethodWrapper implements
      * Checks, if this method suppors the given HTTP method.
      * 
      * @param requestedMethod
-     *                the requested Method
+     *            the requested Method
      * @param alsoGet
-     *                if true, than this method returns also true, if this
-     *                method is GET. This functionality is needed for HEAD.
+     *            if true, than this method returns also true, if this method is
+     *            GET. This functionality is needed for HEAD.
      * @return true, if this method supports the given HTTP method. Returns also
      *         true, if alsoGet is true and this method is true.
      * @throws IllegalArgumentException

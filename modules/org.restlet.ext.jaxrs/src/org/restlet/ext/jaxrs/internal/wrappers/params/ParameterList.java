@@ -258,10 +258,10 @@ public class ParameterList {
                         && (ite.getCause() instanceof IllegalArgumentException)) {
                     if (defaultValue == null) {
                         return null;
-                    } else {
-                        final String dfv = defaultValue.value();
-                        return convertParamValueInner(dfv, null);
                     }
+
+                    final String dfv = defaultValue.value();
+                    return convertParamValueInner(dfv, null);
                 }
                 throw ConvertParameterException.object(this.convertTo,
                         paramValue, ite);
@@ -284,9 +284,9 @@ public class ParameterList {
             }
             if (this.isArray) {
                 return Util.toArray(coll, this.convertTo);
-            } else {
-                return unmodifiable(coll);
             }
+
+            return unmodifiable(coll);
         }
 
         /**
@@ -728,9 +728,9 @@ public class ParameterList {
                 }
                 if (this.isArray) {
                     return Util.toArray(coll, this.convertTo);
-                } else {
-                    return unmodifiable(coll);
                 }
+
+                return unmodifiable(coll);
             }
             try {
                 final String pathParamValue;

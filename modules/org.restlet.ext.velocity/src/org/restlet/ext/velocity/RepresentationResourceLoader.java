@@ -95,9 +95,9 @@ public class RepresentationResourceLoader extends ResourceLoader {
                 if (resultRepresentation == null) {
                     throw new ResourceNotFoundException(
                             "Could not locate resource '" + name + "'");
-                } else {
-                    result = resultRepresentation.getStream();
                 }
+
+                result = resultRepresentation.getStream();
             } else {
                 result = resultRepresentation.getStream();
             }

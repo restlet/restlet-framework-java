@@ -462,9 +462,9 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
             rb.lastModified(lastModified);
             rb.tag(entityTag);
             return rb;
-        } else {
-            return Response.status(STATUS_PREC_FAILED);
         }
+
+        return Response.status(STATUS_PREC_FAILED);
     }
 
     /**
@@ -926,10 +926,9 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
     public MultivaluedMap<String, String> getPathParameters(boolean decode) {
         if (decode) {
             return getPathParameters();
-        } else {
-            return UnmodifiableMultivaluedMap
-                    .get(interalGetPathParamsEncoded());
         }
+
+        return UnmodifiableMultivaluedMap.get(interalGetPathParamsEncoded());
     }
 
     /**
@@ -971,12 +970,12 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
                 this.pathSegmentsDecoded = createPathSegments(true);
             }
             return this.pathSegmentsDecoded;
-        } else {
-            if (this.pathSegmentsEncoded == null) {
-                this.pathSegmentsEncoded = createPathSegments(false);
-            }
-            return this.pathSegmentsEncoded;
         }
+
+        if (this.pathSegmentsEncoded == null) {
+            this.pathSegmentsEncoded = createPathSegments(false);
+        }
+        return this.pathSegmentsEncoded;
     }
 
     /**
@@ -1153,11 +1152,11 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
     public boolean isUserInRole(String roleName) {
         if (roleChecker != null) {
             return roleChecker.isInRole(getUserPrincipal(), roleName);
-        } else {
-            Role role = Application.getCurrent().findRole(roleName);
-            return (role != null)
-                    && this.request.getClientInfo().getRoles().contains(role);
         }
+
+        Role role = Application.getCurrent().findRole(roleName);
+        return (role != null)
+                && this.request.getClientInfo().getRoles().contains(role);
     }
 
     /**

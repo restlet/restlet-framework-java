@@ -88,11 +88,12 @@ public class EncodeOrCheck {
      * Checks / encodes all chars of the given char sequence.
      * 
      * @param string
-     * @param encode true, if the value should be encoded, or false if not.
+     * @param encode
+     *            true, if the value should be encoded, or false if not.
      * @return the enoced string (if it should be encoded)
      * @throws IllegalArgumentException
-     *                 if encode is false and at least one character of the
-     *                 CharSequence is invalid.
+     *             if encode is false and at least one character of the
+     *             CharSequence is invalid.
      */
     public static String all(CharSequence string, boolean encode)
             throws IllegalArgumentException {
@@ -120,7 +121,7 @@ public class EncodeOrCheck {
      * @param indexForErrMessage
      * @param errMessName
      * @throws IllegalArgumentException
-     *                 if the CharSequence to test contains illegal characters.
+     *             if the CharSequence to test contains illegal characters.
      */
     public static void checkForInvalidUriChars(CharSequence uriPart,
             int indexForErrMessage, String errMessName)
@@ -174,9 +175,9 @@ public class EncodeOrCheck {
      * {@link StringBuilder}.
      * 
      * @param toEncode
-     *                the character to encode.
+     *            the character to encode.
      * @param stb
-     *                the {@link StringBuilder} to append.
+     *            the {@link StringBuilder} to append.
      * @return the number of added chars
      * @see <a href="http://tools.ietf.org/html/rfc3986#section-2.2"> RFC 3986,
      *      section 2.2</a>
@@ -191,23 +192,23 @@ public class EncodeOrCheck {
                 || (toEncode == '~')) {
             stb.append(toEncode);
             return 1;
-        } else {
-            toHex(toEncode, stb);
-            return 3;
         }
+
+        toHex(toEncode, stb);
+        return 3;
     }
 
     /**
      * This methods encodes the given String, but doesn't encode braces.
      * 
      * @param uriPart
-     *                the String to encode
+     *            the String to encode
      * @param allowSemicolon
-     *                if true, a ';' is encoded, otherwise an
-     *                {@link IllegalArgumentException} is thrown.
+     *            if true, a ';' is encoded, otherwise an
+     *            {@link IllegalArgumentException} is thrown.
      * @param encodeSlash
-     *                if encodeSlash is true, than slashes are also converted,
-     *                otherwise not.
+     *            if encodeSlash is true, than slashes are also converted,
+     *            otherwise not.
      * @return the encoded String
      * @throws IllegalArgumentException
      */
@@ -243,12 +244,12 @@ public class EncodeOrCheck {
 
     /**
      * @param fragment
-     *                the fragment, may contain URI template parameters. Must
-     *                not be null.
+     *            the fragment, may contain URI template parameters. Must not be
+     *            null.
      * @return the encoced character sequence (if it should be encoded)
      * @throws IllegalArgumentException
-     *                 if encode is false and the fragment contains at least one
-     *                 invalid character.
+     *             if encode is false and the fragment contains at least one
+     *             invalid character.
      */
     public static CharSequence fragment(CharSequence fragment)
             throws IllegalArgumentException {
@@ -288,11 +289,11 @@ public class EncodeOrCheck {
      * encodes respectively checks a full matrix parameter list.
      * 
      * @param matrix
-     *                matrix parameters to convert or check, may contain URI
-     *                template parameters. Must not be null.
+     *            matrix parameters to convert or check, may contain URI
+     *            template parameters. Must not be null.
      * @return the encoced character sequence (if it should be encoded)
      * @throws IllegalArgumentException
-     *                 if encode is false and at least one character is invalid.
+     *             if encode is false and at least one character is invalid.
      */
     public static CharSequence fullMatrix(CharSequence matrix)
             throws IllegalArgumentException {
@@ -303,8 +304,8 @@ public class EncodeOrCheck {
      * encodes respectively checks a full query.
      * 
      * @param query
-     *                query to convert or check, may contain URI template
-     *                parameters. Must not be null.
+     *            query to convert or check, may contain URI template
+     *            parameters. Must not be null.
      * @param encode
      * @return the encoced character sequence (if it should be encoded)
      */
@@ -316,7 +317,7 @@ public class EncodeOrCheck {
      * @param string
      * @param delimiter
      * @param spaceReplace
-     *                The String to replace a space with ("+" or "%20")
+     *            The String to replace a space with ("+" or "%20")
      * @param encode
      * @return
      * @throws IllegalArgumentException
@@ -357,11 +358,11 @@ public class EncodeOrCheck {
      * Checks, if the host String contains is valid.
      * 
      * @param host
-     *                Could include template variable names. Must not be null,
-     *                will throw a NullPointerException.
+     *            Could include template variable names. Must not be null, will
+     *            throw a NullPointerException.
      * @return the valid host.
      * @throws IllegalArgumentException
-     *                 if the host contains an invalid character.
+     *             if the host contains an invalid character.
      */
     public static String host(String host) throws IllegalArgumentException {
         if (host.length() == 0) {
@@ -384,17 +385,16 @@ public class EncodeOrCheck {
      * disabled, the methods checks the validaty of the containing characters.
      * 
      * @param nameOrValue
-     *                the string to encode or check. Must not be null; result
-     *                are not defined. May contain URI template parameters.
+     *            the string to encode or check. Must not be null; result are
+     *            not defined. May contain URI template parameters.
      * @param encode
-     *                if true, the String is encoded, if false it is checked, if
-     *                all chars are valid.
+     *            if true, the String is encoded, if false it is checked, if all
+     *            chars are valid.
      * @param nameForMessage
-     *                The name for the message
+     *            The name for the message
      * @return the encoced character sequence (if it should be encoded)
      * @throws IllegalArgumentException
-     *                 if the given String is null, or at least one char is
-     *                 invalid.
+     *             if the given String is null, or at least one char is invalid.
      */
     public static String nameOrValue(Object nameOrValue, boolean encode,
             String nameForMessage) throws IllegalArgumentException {
@@ -410,10 +410,10 @@ public class EncodeOrCheck {
         }
         if (encode) {
             return encodeNotBraces(nov, true, true);
-        } else {
-            EncodeOrCheck.checkForInvalidUriChars(nov, Integer.MIN_VALUE,
-                    nameForMessage);
         }
+
+        EncodeOrCheck.checkForInvalidUriChars(nov, Integer.MIN_VALUE,
+                nameForMessage);
         return nov.toString();
     }
 
@@ -430,12 +430,12 @@ public class EncodeOrCheck {
 
     /**
      * @param pathSegments
-     *                the path to check; must not be null.
+     *            the path to check; must not be null.
      * @param encode
      * @return the encoced character sequence (if it should be encoded)
      * @throws IllegalArgumentException
-     *                 id encode is false and the path contains an invalid
-     *                 character.
+     *             id encode is false and the path contains an invalid
+     *             character.
      */
     public static CharSequence pathSegmentWithMatrix(CharSequence pathSegments,
             boolean encode) throws IllegalArgumentException {
@@ -444,12 +444,12 @@ public class EncodeOrCheck {
 
     /**
      * @param pathSegments
-     *                the path to check; must not be null.
+     *            the path to check; must not be null.
      * @param encode
      * @return
      * @throws IllegalArgumentException
-     *                 id encode is false and the path contains an invalid
-     *                 character.
+     *             id encode is false and the path contains an invalid
+     *             character.
      */
     private static CharSequence pathSegmentWithMatrix(
             CharSequence pathSegments, boolean encode, boolean encodeSlash)
@@ -485,10 +485,10 @@ public class EncodeOrCheck {
      * This methods encodes the given path, but doesn't encode braces.
      * 
      * @param path
-     *                the path to encode
+     *            the path to encode
      * @return the encoded String
      * @throws IllegalArgumentException
-     *                 if the path is not valid
+     *             if the path is not valid
      */
     public static CharSequence pathWithoutMatrix(CharSequence path)
             throws IllegalArgumentException {
@@ -504,7 +504,7 @@ public class EncodeOrCheck {
      * </ul>
      * 
      * @param i
-     *                the index in the uriPart
+     *            the index in the uriPart
      * @param encode
      * @param uriPart
      * @param stb
@@ -521,15 +521,15 @@ public class EncodeOrCheck {
             throw new IllegalArgumentException(
                     "A percent encoding must have two charachters, so "
                             + hexDigits + " is not allowed");
-        } else {
-            char c1 = uriPart.charAt(i + 1);
-            char c2 = uriPart.charAt(i + 2);
-            if (!(((c1 >= '0') && (c1 <= '9')) || ((c1 >= 'A') && (c1 <= 'F')) || ((c1 >= 'a') && (c1 <= 'f')))
-                    || !(((c2 >= '0') && (c2 <= '9'))
-                            || ((c2 >= 'A') && (c2 <= 'F')) || ((c2 >= 'a') && (c2 <= 'f')))) {
-                throw new IllegalArgumentException("The percent encoded char %"
-                        + c1 + c2 + " is not valid");
-            }
+        }
+
+        char c1 = uriPart.charAt(i + 1);
+        char c2 = uriPart.charAt(i + 2);
+        if (!(((c1 >= '0') && (c1 <= '9')) || ((c1 >= 'A') && (c1 <= 'F')) || ((c1 >= 'a') && (c1 <= 'f')))
+                || !(((c2 >= '0') && (c2 <= '9'))
+                        || ((c2 >= 'A') && (c2 <= 'F')) || ((c2 >= 'a') && (c2 <= 'f')))) {
+            throw new IllegalArgumentException("The percent encoded char %"
+                    + c1 + c2 + " is not valid");
         }
         stb.append('%');
     }
@@ -539,18 +539,18 @@ public class EncodeOrCheck {
      * position i.
      * 
      * @param uriPart
-     *                the processed part of the uri
+     *            the processed part of the uri
      * @param braceIndex
-     *                the current for variable value (position of "{"). The
-     *                method do not check, if this is the position of the '{'.
+     *            the current for variable value (position of "{"). The method
+     *            do not check, if this is the position of the '{'.
      * @param stb
-     *                the StringBuilder to append the variable name with "{" and
-     *                "}" to. Will be changed, also if an error occurs. May be
-     *                null; then nothing is appended.
+     *            the StringBuilder to append the variable name with "{" and "}"
+     *            to. Will be changed, also if an error occurs. May be null;
+     *            then nothing is appended.
      * @return the position of the corresponding "}" to assign to the for
      *         variable.
      * @throws IllegalArgumentException
-     *                 if the rest of the uriPart contains a '{' or no '}'.
+     *             if the rest of the uriPart contains a '{' or no '}'.
      */
     private static int processTemplVarname(CharSequence uriPart,
             int braceIndex, StringBuilder stb) throws IllegalArgumentException {
@@ -584,10 +584,10 @@ public class EncodeOrCheck {
      * Checks, if the String is a valid URI scheme
      * 
      * @param scheme
-     *                the String to check. May contain template variables.
+     *            the String to check. May contain template variables.
      * @return the valid scheme
      * @throws IllegalArgumentException
-     *                 If the string is not a valid URI scheme.
+     *             If the string is not a valid URI scheme.
      */
     public static String scheme(String scheme) throws IllegalArgumentException {
         if (scheme == null) {
@@ -630,11 +630,11 @@ public class EncodeOrCheck {
     /**
      * 
      * @param index
-     *                index, starting with zero.
+     *            index, starting with zero.
      * @param errMessName
-     *                the name of the string with illegal characters
+     *            the name of the string with illegal characters
      * @param illegalString
-     *                the illegal String
+     *            the illegal String
      * @param messageEnd
      * @return
      */
@@ -677,7 +677,8 @@ public class EncodeOrCheck {
      * 
      * @param c
      * @param stb
-     * @param encode true, if the value should be encoded, or false if not.
+     * @param encode
+     *            true, if the value should be encoded, or false if not.
      * @throws IllegalArgumentException
      */
     private static void toHexOrReject(char c, StringBuilder stb, boolean encode)
@@ -694,12 +695,12 @@ public class EncodeOrCheck {
 
     /**
      * @param userInfo
-     *                the URI user-info, may contain URI template parameters
+     *            the URI user-info, may contain URI template parameters
      * @param encode
      * @return the encoced character sequence (if it should be encoded)
      * @throws IllegalArgumentException
-     *                 if automatic encoding is disabled and the userInfo
-     *                 contains illegal characters, or if the userInfo is null.
+     *             if automatic encoding is disabled and the userInfo contains
+     *             illegal characters, or if the userInfo is null.
      */
     public static CharSequence userInfo(CharSequence userInfo, boolean encode)
             throws IllegalArgumentException {

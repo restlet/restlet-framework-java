@@ -175,9 +175,9 @@ public class SaxRepresentation extends XmlRepresentation {
     public SAXSource getSaxSource() throws IOException {
         if (this.source == null) {
             return new SAXSource(new InputSource(getReader()));
-        } else {
-            return this.source;
         }
+
+        return this.source;
     }
 
     /**

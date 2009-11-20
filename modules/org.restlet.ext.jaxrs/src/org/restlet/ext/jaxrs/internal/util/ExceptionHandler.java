@@ -166,8 +166,8 @@ public class ExceptionHandler {
      * @param exception
      * @param callContext
      *            Contains the encoded template Parameters, that are read from
-     *            the called URI, the Restlet {@link org.restlet.Request}
-     *            and the Restlet {@link org.restlet.Response}.
+     *            the called URI, the Restlet {@link org.restlet.Request} and
+     *            the Restlet {@link org.restlet.Response}.
      * @param methodName
      * @param logMessage
      * @return staticly to throw, if needed by compiler.
@@ -193,8 +193,8 @@ public class ExceptionHandler {
      * @param exception
      * @param callContext
      *            Contains the encoded template Parameters, that are read from
-     *            the called URI, the Restlet {@link org.restlet.Request}
-     *            and the Restlet {@link org.restlet.Response}.
+     *            the called URI, the Restlet {@link org.restlet.Request} and
+     *            the Restlet {@link org.restlet.Response}.
      * @param methodName
      * @param logMessage
      * @return staticly to throw, if needed by compiler.
@@ -233,8 +233,8 @@ public class ExceptionHandler {
      * @param exception
      * @param callContext
      *            Contains the encoded template Parameters, that are read from
-     *            the called URI, the Restlet {@link org.restlet.Request}
-     *            and the Restlet {@link org.restlet.Response}.
+     *            the called URI, the Restlet {@link org.restlet.Request} and
+     *            the Restlet {@link org.restlet.Response}.
      * @param methodName
      * @param logMessage
      * @return staticly to throw, if needed by compiler.
@@ -327,9 +327,9 @@ public class ExceptionHandler {
             this.noResMethodHandler.handle(Request.getCurrent(),
                     org.restlet.Response.getCurrent());
             throw new RequestHandledException();
-        } else {
-            throw new WebApplicationException(Status.NOT_FOUND);
         }
+
+        throw new WebApplicationException(Status.NOT_FOUND);
     }
 
     /**
@@ -347,9 +347,9 @@ public class ExceptionHandler {
             this.noResourceClHandler.handle(Request.getCurrent(),
                     org.restlet.Response.getCurrent());
             throw new RequestHandledException();
-        } else {
-            throw new WebApplicationException(Status.NOT_FOUND);
         }
+
+        throw new WebApplicationException(Status.NOT_FOUND);
     }
 
     /**
@@ -367,9 +367,9 @@ public class ExceptionHandler {
             this.noRootResClHandler.handle(Request.getCurrent(),
                     org.restlet.Response.getCurrent());
             throw new RequestHandledException();
-        } else {
-            throw new WebApplicationException(Status.NOT_FOUND);
         }
+
+        throw new WebApplicationException(Status.NOT_FOUND);
     }
 
     /**
@@ -382,8 +382,8 @@ public class ExceptionHandler {
      *            the called method when the exception occurs. May be null.
      * @param callContext
      *            Contains the encoded template Parameters, that are read from
-     *            the called URI, the Restlet {@link org.restlet.Request}
-     *            and the Restlet {@link org.restlet.Response}.
+     *            the called URI, the Restlet {@link org.restlet.Request} and
+     *            the Restlet {@link org.restlet.Response}.
      * @param logMessage
      * @param methodName
      * @return staticly to throw, if needed by compiler.

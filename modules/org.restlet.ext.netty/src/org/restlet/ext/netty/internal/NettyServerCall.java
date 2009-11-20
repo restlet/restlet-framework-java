@@ -131,10 +131,9 @@ public class NettyServerCall extends HttpServerCall {
         InputStream stream = new ChannelBufferInputStream(content);
         if (isRequestChunked()) {
             return new ChunkedInputStream(stream);
-
-        } else {
-            return stream;
         }
+
+        return stream;
     }
 
     @Override
@@ -170,12 +169,10 @@ public class NettyServerCall extends HttpServerCall {
         OutputStream stream = new ChannelBufferOutputStream(response
                 .getContent());
         if (isResponseChunked()) {
-
             return new ChunkedOutputStream(stream);
-        } else {
-            return stream;
         }
 
+        return stream;
     }
 
     @Override
@@ -257,7 +254,7 @@ public class NettyServerCall extends HttpServerCall {
 
     @Override
     public ReadableByteChannel getRequestEntityChannel(long size) {
-       return null;
+        return null;
     }
 
     @Override

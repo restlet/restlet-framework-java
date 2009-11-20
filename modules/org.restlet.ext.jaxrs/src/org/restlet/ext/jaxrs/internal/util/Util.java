@@ -504,9 +504,9 @@ public class Util {
     public static String formatDate(Date date, boolean cookie) {
         if (cookie) {
             return DateUtils.format(date, DateUtils.FORMAT_RFC_1036.get(0));
-        } else {
-            return DateUtils.format(date, DateUtils.FORMAT_RFC_1123.get(0));
         }
+
+        return DateUtils.format(date, DateUtils.FORMAT_RFC_1123.get(0));
     }
 
     /**
@@ -881,9 +881,9 @@ public class Util {
             final Type rawType = ((ParameterizedType) atp).getRawType();
             if (rawType instanceof Class<?>) {
                 return (Class<?>) rawType;
-            } else {
-                return null;
             }
+
+            return null;
         }
         return null;
     }

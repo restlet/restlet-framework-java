@@ -131,10 +131,9 @@ public class PathSegmentImpl implements PathSegment {
             if (indexForErrMess >= 0) {
                 throw new IllegalArgumentException("The " + indexForErrMess
                         + ". segment must not be null");
-            } else {
-                throw new IllegalArgumentException(
-                        "The segment must not be null");
             }
+
+            throw new IllegalArgumentException("The segment must not be null");
         }
         this.decode = decode;
         final int indexOfSemic = segmentEnc.indexOf(';');

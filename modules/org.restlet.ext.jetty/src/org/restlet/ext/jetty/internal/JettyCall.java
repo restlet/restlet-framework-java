@@ -243,9 +243,9 @@ public class JettyCall extends HttpServerCall {
                         "javax.servlet.request.X509Certificate");
         if (certificateArray != null) {
             return Arrays.asList(certificateArray);
-        } else {
-            return null;
         }
+
+        return null;
     }
 
     @Override

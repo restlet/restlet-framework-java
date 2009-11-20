@@ -312,8 +312,8 @@ public class SingletonProvider extends AbstractProviderWrapper implements
                 throw (IOException) t;
             if (t instanceof WebApplicationException)
                 throw (WebApplicationException) t;
-            else
-                throw new InvocationTargetException(t);
+
+            throw new InvocationTargetException(t);
         }
     }
 

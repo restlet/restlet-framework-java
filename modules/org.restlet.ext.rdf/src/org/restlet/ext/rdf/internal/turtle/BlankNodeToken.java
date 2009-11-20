@@ -102,13 +102,13 @@ public class BlankNodeToken extends LexicalUnit {
         if (getValue() != null) {
             if (getValue().startsWith("_:")) {
                 return new Reference(getValue());
-            } else {
-                return Link.createBlankRef(getValue());
             }
-        } else {
-            org.restlet.Context.getCurrentLogger().warning(
-                    "A blank node has been detected with a null value.");
+
+            return Link.createBlankRef(getValue());
         }
+
+        org.restlet.Context.getCurrentLogger().warning(
+                "A blank node has been detected with a null value.");
 
         return null;
     }

@@ -77,10 +77,10 @@ public class TemplateRepresentation extends OutputRepresentation {
                 return new Template("template", templateRepresentation
                         .getReader(), config, templateRepresentation
                         .getCharacterSet().getName());
-            } else {
-                return new Template("template", templateRepresentation
-                        .getReader(), config, CharacterSet.UTF_8.getName());
             }
+
+            return new Template("template", templateRepresentation.getReader(),
+                    config, CharacterSet.UTF_8.getName());
         } catch (IOException e) {
             Context.getCurrentLogger().warning(
                     "Unable to get the template from the representation "

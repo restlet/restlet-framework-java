@@ -160,10 +160,10 @@ public class MessageRepresentation extends DomRepresentation {
                         content = new InputRepresentation(mimeBodyPart
                                 .getInputStream(), MediaType.TEXT_PLAIN);
                         break;
-                    } else {
-                        // Special non-attachment cases here of
-                        // image/gif, text/html, ...
                     }
+
+                    // TODO Special non-attachment cases here of
+                    // image/gif, text/html, ...
                 }
             }
         } else {

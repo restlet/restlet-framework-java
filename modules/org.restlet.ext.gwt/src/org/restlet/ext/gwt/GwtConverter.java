@@ -103,16 +103,12 @@ public class GwtConverter extends ConverterHelper {
 
         if (target != null) {
             if (Serializable.class.isAssignableFrom(target)) {
-                if (target != null) {
-                    if (MediaType.APPLICATION_JAVA_OBJECT_GWT.equals(source
-                            .getMediaType())) {
-                        result = 1.0F;
-                    } else if (MediaType.APPLICATION_JAVA_OBJECT_GWT
-                            .isCompatible(source.getMediaType())) {
-                        result = 0.6F;
-                    }
-                } else {
-                    result = 0.5F;
+                if (MediaType.APPLICATION_JAVA_OBJECT_GWT.equals(source
+                        .getMediaType())) {
+                    result = 1.0F;
+                } else if (MediaType.APPLICATION_JAVA_OBJECT_GWT
+                        .isCompatible(source.getMediaType())) {
+                    result = 0.6F;
                 }
             }
         }

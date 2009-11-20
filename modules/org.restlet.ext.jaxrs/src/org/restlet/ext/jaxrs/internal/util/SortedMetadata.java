@@ -139,9 +139,9 @@ public class SortedMetadata<T extends Metadata> implements Iterable<T> {
             return new SortedMetadata<MediaType>(Collections
                     .singletonList((Collection<MediaType>) Collections
                             .singletonList(MediaType.ALL)));
-        } else {
-            return new SortedMetadata<MediaType>(preferences);
         }
+
+        return new SortedMetadata<MediaType>(preferences);
     }
 
     /**

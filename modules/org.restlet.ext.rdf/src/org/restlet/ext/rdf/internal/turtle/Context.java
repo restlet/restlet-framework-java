@@ -128,12 +128,11 @@ public class Context {
                 org.restlet.Context.getCurrentLogger().warning(
                         "Error, this prefix " + prefix
                                 + " has not been declared!");
-                result = null;
             }
         } else {
             if (getKeywords().contains(qname)) {
                 String base = getPrefixes().get(":");
-                if (qname != null) {
+                if (base != null) {
                     result = new Reference(base + qname);
                 } else {
                     org.restlet.Context.getCurrentLogger().warning(

@@ -323,11 +323,8 @@ public class RdfClientResource extends ClientResource {
 
                 if (rep != null) {
                     RdfRepresentation rdfRep = new RdfRepresentation(rep);
-
-                    if (rdfRep != null) {
-                        this.links = rdfRep.getGraph();
-                        result = this.links;
-                    }
+                    this.links = rdfRep.getGraph();
+                    result = this.links;
                 } else {
                     getLogger()
                             .log(Level.WARNING,

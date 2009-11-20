@@ -148,11 +148,11 @@ public class Collection {
 
         if (response.getStatus().equals(Status.SUCCESS_OK)) {
             return new Feed(response.getEntity());
-        } else {
-            throw new Exception(
-                    "Couldn't get the feed representation. Status returned: "
-                            + response.getStatus().getDescription());
         }
+
+        throw new Exception(
+                "Couldn't get the feed representation. Status returned: "
+                        + response.getStatus().getDescription());
     }
 
     /**
@@ -198,11 +198,11 @@ public class Collection {
 
         if (response.getStatus().equals(Status.SUCCESS_CREATED)) {
             return response.getLocationRef();
-        } else {
-            throw new Exception(
-                    "Couldn't post the member representation. Status returned: "
-                            + response.getStatus().getDescription());
         }
+
+        throw new Exception(
+                "Couldn't post the member representation. Status returned: "
+                        + response.getStatus().getDescription());
     }
 
     /**

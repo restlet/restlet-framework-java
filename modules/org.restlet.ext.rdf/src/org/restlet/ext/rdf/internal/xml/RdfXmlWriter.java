@@ -101,10 +101,9 @@ public class RdfXmlWriter extends GraphHandler {
         String ref = reference.toString(true, true);
         if (prefix != null) {
             return ref.substring(0, ref.length() - prefix.length());
-        } else {
-            return ref;
         }
 
+        return ref;
     }
 
     /**

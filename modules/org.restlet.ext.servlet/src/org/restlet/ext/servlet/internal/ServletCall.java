@@ -249,9 +249,9 @@ public class ServletCall extends HttpServerCall {
 
         if ((queryString == null) || (queryString.equals(""))) {
             return getRequest().getRequestURI();
-        } else {
-            return getRequest().getRequestURI() + '?' + queryString;
         }
+
+        return getRequest().getRequestURI() + '?' + queryString;
     }
 
     /**
@@ -321,9 +321,9 @@ public class ServletCall extends HttpServerCall {
                 .getAttribute("javax.servlet.request.X509Certificate");
         if (certificateArray != null) {
             return Arrays.asList(certificateArray);
-        } else {
-            return null;
         }
+
+        return null;
     }
 
     @Override

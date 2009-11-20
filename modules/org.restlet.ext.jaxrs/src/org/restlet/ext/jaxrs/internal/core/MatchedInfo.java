@@ -95,8 +95,8 @@ class MatchedInfo {
                 this.urisDecoded = Collections.unmodifiableList(urisDecoded);
             }
             return this.urisDecoded;
-        } else {
-            return this.urisEncoded;
         }
+
+        return this.urisEncoded;
     }
 }

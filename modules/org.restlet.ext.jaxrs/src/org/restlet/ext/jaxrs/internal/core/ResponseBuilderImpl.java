@@ -102,7 +102,7 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      * Set the cache control data on the ResponseBuilder.
      * 
      * @param cacheControl
-     *                the cache control directives
+     *            the cache control directives
      * @return the updated ResponseBuilder
      * @see javax.ws.rs.core.Response.ResponseBuilder#cacheControl(javax.ws.rs.core.CacheControl)
      */
@@ -133,7 +133,7 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      * 
      * 
      * @param location
-     *                the content location
+     *            the content location
      * @return the updated ResponseBuilder
      * @see javax.ws.rs.core.Response.ResponseBuilder#contentLocation(java.net.URI)
      */
@@ -153,7 +153,7 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      * is supplied, later ones overwrite earlier ones.
      * 
      * @param cookies
-     *                new cookies that will accompany the response.
+     *            new cookies that will accompany the response.
      * @return the updated ResponseBuilder
      * @see javax.ws.rs.core.Response.ResponseBuilder#cookie(javax.ws.rs.core.NewCookie)
      */
@@ -174,7 +174,7 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      * {@link #variant(Variant)}.
      * 
      * @param encoding
-     *                the encoding of the response entity
+     *            the encoding of the response entity
      * @return the updated ResponseBuilder
      */
     public ResponseBuilder encoding(String encoding) {
@@ -191,7 +191,7 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      * 
      * 
      * @param entity
-     *                the response entity
+     *            the response entity
      * @return the updated ResponseBuilder
      * @see javax.ws.rs.core.Response.ResponseBuilder#entity(java.lang.Object)
      */
@@ -239,11 +239,11 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      * Add a header to the ResponseBuilder.
      * 
      * @param name
-     *                the name of the header
+     *            the name of the header
      * @param value
-     *                the value of the header, the header will be serialized
-     *                using its toString method. If null then all current
-     *                headers of the same name will be removed.
+     *            the value of the header, the header will be serialized using
+     *            its toString method. If null then all current headers of the
+     *            same name will be removed.
      * @return the updated ResponseBuilder
      * @see javax.ws.rs.core.Response.ResponseBuilder#header(String, Object)
      */
@@ -278,7 +278,7 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      * 
      * 
      * @param language
-     *                the language of the response entity
+     *            the language of the response entity
      * @return the updated ResponseBuilder
      * @see javax.ws.rs.core.Response.ResponseBuilder#language(java.lang.String)
      */
@@ -297,7 +297,7 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      * 
      * 
      * @param language
-     *                the language of the response entity
+     *            the language of the response entity
      * @return the updated ResponseBuilder
      * @see javax.ws.rs.core.Response.ResponseBuilder#language(java.lang.String)
      */
@@ -316,7 +316,7 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      * 
      * 
      * @param lastModified
-     *                the last modified date
+     *            the last modified date
      * @return the updated ResponseBuilder
      * @see javax.ws.rs.core.Response.ResponseBuilder#lastModified(java.util.Date)
      */
@@ -335,7 +335,7 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      * 
      * 
      * @param location
-     *                the location
+     *            the location
      * @return the updated ResponseBuilder
      * @see javax.ws.rs.core.Response.ResponseBuilder#location(java.net.URI)
      */
@@ -353,17 +353,18 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      * Set the status on the ResponseBuilder.
      * 
      * @param status
-     *                the response status
+     *            the response status
      * @return the updated ResponseBuilder
      * @throws IllegalArgumentException
-     *                 if status is less than 100 or greater than 599.
+     *             if status is less than 100 or greater than 599.
      * @see javax.ws.rs.core.Response.ResponseBuilder#status(int)
      */
     @Override
     public ResponseBuilder status(int status) {
         if (status < 100 || status >= 600)
             throw new IllegalArgumentException(
-                    "The status must be between 100 (inclusive) and 600 (exclusive), but is "+status);
+                    "The status must be between 100 (inclusive) and 600 (exclusive), but is "
+                            + status);
         if (this.response == null) {
             this.response = new ResponseImpl(status);
         } else {
@@ -376,7 +377,7 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      * Set the entity tag on the ResponseBuilder.
      * 
      * @param tag
-     *                the entity tag
+     *            the entity tag
      * @return the updated ResponseBuilder
      * @see javax.ws.rs.core.Response.ResponseBuilder#tag(javax.ws.rs.core.EntityTag)
      */
@@ -395,9 +396,8 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      * <code>tag(new EntityTag(<i>value</i>))</code>.
      * 
      * @param tag
-     *                the string content of a strong entity tag. The JAX-RS
-     *                runtime will quote the supplied value when creating the
-     *                header.
+     *            the string content of a strong entity tag. The JAX-RS runtime
+     *            will quote the supplied value when creating the header.
      * @return the updated ResponseBuilder
      * @see javax.ws.rs.core.Response.ResponseBuilder#tag(java.lang.String)
      */
@@ -430,26 +430,26 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      * Set the response media type on the ResponseBuilder.
      * 
      * @param type
-     *                the media type of the response entity
+     *            the media type of the response entity
      * @return the updated ResponseBuilder
      * @throws IllegalArgumentException
-     *                 if type cannot be parsed
+     *             if type cannot be parsed
      * @see javax.ws.rs.core.Response.ResponseBuilder#type(java.lang.String)
      */
     @Override
     public ResponseBuilder type(String type) {
         if (type == null) {
             return type((MediaType) null);
-        } else {
-            return type(MediaType.valueOf(type));
         }
+
+        return type(MediaType.valueOf(type));
     }
 
     /**
      * Set representation metadata on the ResponseBuilder.
      * 
      * @param variant
-     *                metadata of the response entity
+     *            metadata of the response entity
      * @return the updated ResponseBuilder
      * @see javax.ws.rs.core.Response.ResponseBuilder#variant(javax.ws.rs.core.Variant)
      */
@@ -471,14 +471,14 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      * Add a Vary header that lists the available variants.
      * 
      * @param variants
-     *                a list of available representation variants, a null value
-     *                will remove an existing value for vary.
+     *            a list of available representation variants, a null value will
+     *            remove an existing value for vary.
      * @return the updated ResponseBuilder
      * @see javax.ws.rs.core.Response.ResponseBuilder#variants(java.util.List)
      */
     @Override
     public ResponseBuilder variants(List<Variant> variants) {
-        if(variants == null) {
+        if (variants == null) {
             getMetadata().remove(HttpHeaders.VARY);
             return this;
         }
