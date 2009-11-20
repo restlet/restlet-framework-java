@@ -101,11 +101,9 @@ public class ZipEntryEntity extends Entity {
     public boolean exists() {
         if ("".equals(getName()))
             return true;
-        else {
-            // ZipEntry re = zipFile.getEntry(entry.getName());
-            // return re != null;
-            return entry.getSize() != -1;
-        }
+        // ZipEntry re = zipFile.getEntry(entry.getName());
+        // return re != null;
+        return entry.getSize() != -1;
     }
 
     @Override
@@ -137,12 +135,11 @@ public class ZipEntryEntity extends Entity {
     public Entity getParent() {
         if ("".equals(entry.getName()))
             return null;
-        else {
-            String n = entry.getName();
-            String pn = n.substring(0, n.lastIndexOf('/') + 1);
-            return new ZipEntryEntity(zipFile, zipFile.getEntry(pn),
-                    getMetadataService());
-        }
+
+        String n = entry.getName();
+        String pn = n.substring(0, n.lastIndexOf('/') + 1);
+        return new ZipEntryEntity(zipFile, zipFile.getEntry(pn),
+                getMetadataService());
     }
 
     @Override

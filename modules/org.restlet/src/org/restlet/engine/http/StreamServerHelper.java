@@ -240,10 +240,10 @@ public class StreamServerHelper extends HttpServerHelper {
     protected SocketAddress createSocketAddress() throws IOException {
         if (getHelped().getAddress() == null) {
             return new InetSocketAddress(getHelped().getPort());
-        } else {
-            return new InetSocketAddress(getHelped().getAddress(), getHelped()
-                    .getPort());
         }
+
+        return new InetSocketAddress(getHelped().getAddress(), getHelped()
+                .getPort());
     }
 
     @Override

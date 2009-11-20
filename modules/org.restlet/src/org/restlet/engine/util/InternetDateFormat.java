@@ -221,7 +221,7 @@ public class InternetDateFormat extends DateFormat {
 
         int ms = cal.get(Calendar.MILLISECOND);
         if (ms != 0) {
-            buf.append(".").append((int) ((float) ms / 10F));
+            buf.append(".").append((int) (ms / 10F));
         }
 
         int tzminute = (cal.get(Calendar.ZONE_OFFSET) + cal

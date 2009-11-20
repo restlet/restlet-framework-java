@@ -241,10 +241,9 @@ public class ChunkedInputStream extends InputStream {
 
                 if (lf == '\n') {
                     break;
-                } else {
-                    throw new IOException(
-                            "Invalid chunk size specified.  Expected crlf, only saw cr");
                 }
+                throw new IOException(
+                        "Invalid chunk size specified.  Expected crlf, only saw cr");
             }
 
             buffer.write(b);

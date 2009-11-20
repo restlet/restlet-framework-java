@@ -145,14 +145,14 @@ public class PreferenceUtils {
         if (!isQuality(quality)) {
             throw new IllegalArgumentException(
                     "Invalid quality value detected. Value must be between 0 and 1.");
-        } else {
-            // [ifndef gwt]
-            final java.text.NumberFormat formatter = java.text.NumberFormat
-                    .getNumberInstance(java.util.Locale.US);
-            formatter.setMaximumFractionDigits(2);
-            destination.append(formatter.format(quality));
-            // [enddef]
         }
+
+        // [ifndef gwt]
+        final java.text.NumberFormat formatter = java.text.NumberFormat
+                .getNumberInstance(java.util.Locale.US);
+        formatter.setMaximumFractionDigits(2);
+        destination.append(formatter.format(quality));
+        // [enddef]
     }
 
     /**
@@ -312,10 +312,10 @@ public class PreferenceUtils {
 
             if (isQuality(result)) {
                 return result;
-            } else {
-                throw new IllegalArgumentException(
-                        "Invalid quality value detected. Value must be between 0 and 1.");
             }
+
+            throw new IllegalArgumentException(
+                    "Invalid quality value detected. Value must be between 0 and 1.");
         } catch (NumberFormatException nfe) {
             throw new IllegalArgumentException(
                     "Invalid quality value detected. Value must be between 0 and 1.");

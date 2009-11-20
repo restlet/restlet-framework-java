@@ -408,9 +408,9 @@ public abstract class ServerResource extends UniformResource {
         } catch (InvocationTargetException e) {
             if (e.getTargetException() instanceof ResourceException) {
                 throw (ResourceException) e.getTargetException();
-            } else {
-                throw new ResourceException(e.getTargetException());
             }
+
+            throw new ResourceException(e.getTargetException());
         }
 
         if (resultObject != null) {
@@ -482,9 +482,9 @@ public abstract class ServerResource extends UniformResource {
         } catch (InvocationTargetException e) {
             if (e.getTargetException() instanceof ResourceException) {
                 throw (ResourceException) e.getTargetException();
-            } else {
-                throw new ResourceException(e.getTargetException());
             }
+
+            throw new ResourceException(e.getTargetException());
         }
 
         return result;
@@ -653,9 +653,9 @@ public abstract class ServerResource extends UniformResource {
     private AnnotationInfo getAnnotation(Method method) {
         if (isAnnotated()) {
             return AnnotationUtils.getAnnotation(getAnnotations(), method);
-        } else {
-            return null;
         }
+
+        return null;
     }
 
     /**

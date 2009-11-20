@@ -107,10 +107,10 @@ public abstract class Restlet implements Uniform {
                             "Unable to fully initialize the Restlet. No Restlet engine available.");
             throw new RuntimeException(
                     "Unable to fully initialize the Restlet. No Restlet engine available.");
-        } else {
-            org.restlet.engine.component.ChildContext.fireContextChanged(this,
-                    context);
         }
+
+        org.restlet.engine.component.ChildContext.fireContextChanged(this,
+                context);
         // [enddef]
     }
 

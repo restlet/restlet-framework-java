@@ -140,7 +140,9 @@ public class ZipClientHelper extends LocalClientHelper {
     protected void handleGet(Request request, Response response, File file,
             String entryName, final MetadataService metadataService) {
 
-        if (file.exists()) {
+        if (!file.exists()) {
+            response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+        } else {
             ZipFile zipFile;
 
             try {
@@ -153,6 +155,8 @@ public class ZipClientHelper extends LocalClientHelper {
             Entity entity = new ZipEntryEntity(zipFile, entryName,
                     metadataService);
             if (entity.exists()) {
+                response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+            } else {
                 final Representation output;
 
                 if (entity.isDirectory()) {
@@ -186,12 +190,8 @@ public class ZipClientHelper extends LocalClientHelper {
 
                 response.setStatus(Status.SUCCESS_OK);
                 response.setEntity(output);
-                return;
-            } else {
-                response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
             }
         }
-        response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
     }
 
     /**
@@ -364,10 +364,10 @@ public class ZipClientHelper extends LocalClientHelper {
             ByteUtils.write(new BufferedInputStream(entity.getStream()), out);
             out.closeEntry();
             return true;
-        } else {
-            out.putNextEntry(new ZipEntry(entryName));
-            out.closeEntry();
         }
+
+        out.putNextEntry(new ZipEntry(entryName));
+        out.closeEntry();
         return false;
     }
 }

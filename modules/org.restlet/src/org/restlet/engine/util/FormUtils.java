@@ -105,10 +105,9 @@ public class FormUtils {
         if (!post.isAvailable()) {
             throw new IllegalStateException(
                     "The Web form cannot be parsed as no fresh content is available. If this entity has been already read once, caching of the entity is required");
-        } else {
-            return new FormReader(post).readFirstParameter(name);
         }
 
+        return new FormReader(post).readFirstParameter(name);
     }
 
     /**
@@ -148,9 +147,9 @@ public class FormUtils {
         if (!form.isAvailable()) {
             throw new IllegalStateException(
                     "The Web form cannot be parsed as no fresh content is available. If this entity has been already read once, caching of the entity is required");
-        } else {
-            return new FormReader(form).readParameter(name);
         }
+
+        return new FormReader(form).readParameter(name);
     }
 
     /**
@@ -192,9 +191,9 @@ public class FormUtils {
         if (!post.isAvailable()) {
             throw new IllegalStateException(
                     "The Web form cannot be parsed as no fresh content is available. If this entity has been already read once, caching of the entity is required");
-        } else {
-            new FormReader(post).readParameters(parameters);
         }
+
+        new FormReader(post).readParameters(parameters);
     }
 
     /**

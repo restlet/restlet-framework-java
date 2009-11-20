@@ -677,11 +677,12 @@ public class MetadataService extends Service {
             Class<T> metadataType) {
         Metadata metadata = getMetadata(extension);
 
-        if (metadata != null && metadataType.isAssignableFrom(metadata.getClass())) {
+        if (metadata != null
+                && metadataType.isAssignableFrom(metadata.getClass())) {
             return metadataType.cast(metadata);
-        } else {
-            return null;
         }
+
+        return null;
     }
 
     /**

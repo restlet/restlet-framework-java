@@ -96,9 +96,9 @@ public class InputRepresentation extends StreamRepresentation {
             final InputStream result = this.stream;
             setStream(null);
             return result;
-        } else {
-            return this.stream;
         }
+
+        return this.stream;
     }
 
     @Override

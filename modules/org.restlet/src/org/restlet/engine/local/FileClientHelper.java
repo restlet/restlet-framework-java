@@ -292,409 +292,375 @@ public class FileClientHelper extends EntityClientHelper {
         }
 
         if (!isDirectory) {
-            // Several checks : first the consistency of the metadata and
-            // the filename
+            // Several checks : first the consistency of the metadata and the
+            // filename
             boolean partialPut = !request.getRanges().isEmpty();
             if (!checkMetadataConsistency(file.getName(), request.getEntity())) {
                 // ask the client to reiterate properly its request
                 response.setStatus(new Status(Status.REDIRECTION_SEE_OTHER,
                         "The metadata are not consistent with the URI"));
                 return;
-            } else {
-                // We look for the possible variants
-                // Set up base name as the longest part of the name
-                // without known extensions (beginning from the left)
-                final String baseName = Entity.getBaseName(file.getName(),
+            }
+
+            // We look for the possible variants
+            // Set up base name as the longest part of the name without known
+            // extensions (beginning from the left)
+            final String baseName = Entity.getBaseName(file.getName(),
+                    getMetadataService());
+
+            // Look for resources with the same base name
+            FileFilter filter = new FileFilter() {
+                public boolean accept(File file) {
+                    return file.isFile()
+                            && baseName.equals(Entity.getBaseName(file
+                                    .getName(), getMetadataService()));
+                }
+            };
+            File[] files = file.getParentFile().listFiles(filter);
+
+            File uniqueVariant = null;
+            List<File> variantsList = new ArrayList<File>();
+            if (files != null && files.length > 0) {
+                // Set the list of extensions, due to the file name and the
+                // default metadata.
+                // TODO It seems we may handle more clearly the equivalence
+                // between the file name space and the target resource (URI
+                // completed by default metadata)
+                Variant variant = new Variant();
+                Entity.updateMetadata(file.getName(), variant, true,
+                        getMetadataService());
+                Collection<String> extensions = Entity.getExtensions(variant,
                         getMetadataService());
 
-                // Look for resources with the same base name
-                FileFilter filter = new FileFilter() {
-                    public boolean accept(File file) {
-                        return file.isFile()
-                                && baseName.equals(Entity.getBaseName(file
-                                        .getName(), getMetadataService()));
-                    }
-                };
-                File[] files = file.getParentFile().listFiles(filter);
-
-                File uniqueVariant = null;
-                List<File> variantsList = new ArrayList<File>();
-                if (files != null && files.length > 0) {
-                    // Set the list of extensions, due to the file name and the
-                    // default metadata.
-                    // TODO It seems we may handle more clearly the equivalence
-                    // between the file name space and the target resource (URI
-                    // completed by default metadata)
-                    Variant variant = new Variant();
-                    Entity.updateMetadata(file.getName(), variant, true,
-                            getMetadataService());
-                    Collection<String> extensions = Entity.getExtensions(
-                            variant, getMetadataService());
-
-                    for (File entry : files) {
-                        Collection<String> entryExtensions = Entity
-                                .getExtensions(entry.getName(),
-                                        getMetadataService());
-                        if (entryExtensions.containsAll(extensions)) {
-                            variantsList.add(entry);
-                            if (extensions.containsAll(entryExtensions)) {
-                                // The right representation has been found.
-                                uniqueVariant = entry;
-                            }
+                for (File entry : files) {
+                    Collection<String> entryExtensions = Entity.getExtensions(
+                            entry.getName(), getMetadataService());
+                    if (entryExtensions.containsAll(extensions)) {
+                        variantsList.add(entry);
+                        if (extensions.containsAll(entryExtensions)) {
+                            // The right representation has been found.
+                            uniqueVariant = entry;
                         }
                     }
                 }
+            }
 
-                if (uniqueVariant != null) {
-                    file = uniqueVariant;
-                } else {
-                    if (!variantsList.isEmpty()) {
-                        // Negotiated resource (several variants, but not the
-                        // right one).
-                        // Check if the request could be completed or not.
-                        // The request could be more precise
-                        response
-                                .setStatus(new Status(
-                                        Status.CLIENT_ERROR_NOT_ACCEPTABLE,
-                                        "Unable to process properly the request. Several variants exist but none of them suits precisely."));
-                        return;
-                    } else {
-                        // This resource does not exist, yet.
-                        // Complete it with the default metadata
-                        Entity.updateMetadata(file.getName(), request
-                                .getEntity(), true, getMetadataService());
-
-                        // Update the URI
-                        StringBuilder fileName = new StringBuilder(baseName);
-                        updateFileExtension(fileName, request.getEntity()
-                                .getMediaType());
-                        for (Language language : request.getEntity()
-                                .getLanguages()) {
-                            updateFileExtension(fileName, language);
-                        }
-                        for (Encoding encoding : request.getEntity()
-                                .getEncodings()) {
-                            updateFileExtension(fileName, encoding);
-                        }
-
-                        file = new File(file.getParentFile(), fileName
-                                .toString());
-                    }
-                }
-
-                // Before putting the file representation, we check that all
-                // the extensions are known
-                if (!checkExtensionsConsistency(file)) {
+            if (uniqueVariant != null) {
+                file = uniqueVariant;
+            } else {
+                if (!variantsList.isEmpty()) {
+                    // Negotiated resource (several variants, but not the right
+                    // one). Check if the request could be completed or not.
+                    // The request could be more precise
                     response
                             .setStatus(new Status(
-                                    Status.SERVER_ERROR_INTERNAL,
-                                    "Unable to process properly the URI. At least one extension is not known by the server."));
+                                    Status.CLIENT_ERROR_NOT_ACCEPTABLE,
+                                    "Unable to process properly the request. Several variants exist but none of them suits precisely."));
                     return;
-                } else {
-                    File tmp = null;
-                    boolean error = false;
+                }
 
-                    if (file.exists()) {
-                        // The PUT call is handled in two phases:
-                        // 1- write a temporary file
-                        // 2- rename the target file
-                        if (partialPut) {
-                            RandomAccessFile raf = null;
-                            // Replace the content of the file
-                            // First, create a temporary file
-                            try {
-                                // The temporary file used for partial PUT.
-                                tmp = new File(file.getCanonicalPath() + "."
-                                        + getTemporaryExtension());
-                                // Support only one range.
-                                Range range = request.getRanges().get(0);
+                // This resource does not exist, yet. Complete it with the
+                // default metadata
+                Entity.updateMetadata(file.getName(), request.getEntity(),
+                        true, getMetadataService());
 
-                                if (tmp.exists() && !isResumeUpload()) {
-                                    tmp.delete();
-                                }
+                // Update the URI
+                StringBuilder fileName = new StringBuilder(baseName);
+                updateFileExtension(fileName, request.getEntity()
+                        .getMediaType());
+                for (Language language : request.getEntity().getLanguages()) {
+                    updateFileExtension(fileName, language);
+                }
+                for (Encoding encoding : request.getEntity().getEncodings()) {
+                    updateFileExtension(fileName, encoding);
+                }
 
-                                if (!tmp.exists()) {
-                                    // Copy the target file.
-                                    BufferedReader br = new BufferedReader(
-                                            new FileReader(file));
-                                    BufferedWriter wr = new BufferedWriter(
-                                            new FileWriter(tmp));
-                                    String s;
-                                    while ((s = br.readLine()) != null) {
-                                        wr.append(s);
-                                    }
+                file = new File(file.getParentFile(), fileName.toString());
+            }
 
-                                    br.close();
-                                    wr.flush();
-                                    wr.close();
-                                }
-                                raf = new RandomAccessFile(tmp, "rwd");
+            // Before putting the file representation, we check that all the
+            // extensions are known
+            if (!checkExtensionsConsistency(file)) {
+                response
+                        .setStatus(new Status(
+                                Status.SERVER_ERROR_INTERNAL,
+                                "Unable to process properly the URI. At least one extension is not known by the server."));
+                return;
+            }
 
-                                // Go to the desired offset.
-                                if (range.getIndex() == Range.INDEX_LAST) {
-                                    if (raf.length() <= range.getSize()) {
-                                        raf.seek(range.getSize());
-                                    } else {
-                                        raf
-                                                .seek(raf.length()
-                                                        - range.getSize());
-                                    }
-                                } else {
-                                    raf.seek(range.getIndex());
-                                }
+            File tmp = null;
+            boolean error = false;
 
-                                // Write the entity to the temporary file.
-                                if (request.isEntityAvailable()) {
-                                    ByteUtils.write(request.getEntity()
-                                            .getStream(), raf);
-                                }
-                            } catch (IOException ioe) {
-                                getLogger().log(Level.WARNING,
-                                        "Unable to create the temporary file",
-                                        ioe);
-                                response.setStatus(new Status(
-                                        Status.SERVER_ERROR_INTERNAL,
-                                        "Unable to create a temporary file"));
-                                error = true;
-                            } finally {
-                                try {
-                                    if (raf != null) {
-                                        raf.close();
+            if (file.exists()) {
+                // The PUT call is handled in two phases:
+                // 1- write a temporary file
+                // 2- rename the target file
+                if (partialPut) {
+                    RandomAccessFile raf = null;
+                    // Replace the content of the file. First, create a
+                    // temporary file
+                    try {
+                        // The temporary file used for partial PUT.
+                        tmp = new File(file.getCanonicalPath() + "."
+                                + getTemporaryExtension());
+                        // Support only one range.
+                        Range range = request.getRanges().get(0);
 
-                                        // Calling the garbage collector helps
-                                        // to workaround lock issues on Windows
-                                        System.gc();
-                                    }
-                                } catch (IOException ioe) {
-                                    getLogger()
-                                            .log(
-                                                    Level.WARNING,
-                                                    "Unable to close the temporary file",
-                                                    ioe);
-                                    response.setStatus(
-                                            Status.SERVER_ERROR_INTERNAL, ioe);
-                                    error = true;
-                                }
+                        if (tmp.exists() && !isResumeUpload()) {
+                            tmp.delete();
+                        }
+
+                        if (!tmp.exists()) {
+                            // Copy the target file.
+                            BufferedReader br = new BufferedReader(
+                                    new FileReader(file));
+                            BufferedWriter wr = new BufferedWriter(
+                                    new FileWriter(tmp));
+                            String s;
+                            while ((s = br.readLine()) != null) {
+                                wr.append(s);
+                            }
+
+                            br.close();
+                            wr.flush();
+                            wr.close();
+                        }
+                        raf = new RandomAccessFile(tmp, "rwd");
+
+                        // Go to the desired offset.
+                        if (range.getIndex() == Range.INDEX_LAST) {
+                            if (raf.length() <= range.getSize()) {
+                                raf.seek(range.getSize());
+                            } else {
+                                raf.seek(raf.length() - range.getSize());
                             }
                         } else {
-                            FileOutputStream fos = null;
+                            raf.seek(range.getIndex());
+                        }
+
+                        // Write the entity to the temporary file.
+                        if (request.isEntityAvailable()) {
+                            ByteUtils.write(request.getEntity().getStream(),
+                                    raf);
+                        }
+                    } catch (IOException ioe) {
+                        getLogger().log(Level.WARNING,
+                                "Unable to create the temporary file", ioe);
+                        response.setStatus(new Status(
+                                Status.SERVER_ERROR_INTERNAL,
+                                "Unable to create a temporary file"));
+                        error = true;
+                    } finally {
+                        try {
+                            if (raf != null) {
+                                raf.close();
+
+                                // Calling the garbage collector helps to
+                                // workaround lock issues on Windows
+                                System.gc();
+                            }
+                        } catch (IOException ioe) {
+                            getLogger().log(Level.WARNING,
+                                    "Unable to close the temporary file", ioe);
+                            response.setStatus(Status.SERVER_ERROR_INTERNAL,
+                                    ioe);
+                            error = true;
+                        }
+                    }
+                } else {
+                    FileOutputStream fos = null;
+                    try {
+                        tmp = File.createTempFile("restlet-upload", "bin");
+                        if (request.isEntityAvailable()) {
+                            fos = new FileOutputStream(tmp);
+                            ByteUtils.write(request.getEntity().getStream(),
+                                    fos);
+                        }
+                    } catch (IOException ioe) {
+                        getLogger().log(Level.WARNING,
+                                "Unable to create the temporary file", ioe);
+                        response.setStatus(new Status(
+                                Status.SERVER_ERROR_INTERNAL,
+                                "Unable to create a temporary file"));
+                        error = true;
+                    } finally {
+                        try {
+                            if (fos != null) {
+                                fos.close();
+                            }
+                        } catch (IOException ioe) {
+                            getLogger().log(Level.WARNING,
+                                    "Unable to close the temporary file", ioe);
+                            response.setStatus(Status.SERVER_ERROR_INTERNAL,
+                                    ioe);
+                            error = true;
+                        }
+                    }
+                }
+
+                if (error) {
+                    if (tmp.exists() && !isResumeUpload()) {
+                        tmp.delete();
+                    }
+                    return;
+                }
+
+                // Then delete the existing file
+                if (tmp.exists() && file.delete()) {
+                    // Finally move the temporary file to the existing file
+                    // location
+                    boolean renameSuccessfull = false;
+                    if (tmp.renameTo(file)) {
+                        if (request.getEntity() == null) {
+                            response.setStatus(Status.SUCCESS_NO_CONTENT);
+                        } else {
+                            response.setStatus(Status.SUCCESS_OK);
+                        }
+                        renameSuccessfull = true;
+                    } else {
+                        // Many aspects of the behavior of the method "renameTo"
+                        // are inherently platform-dependent: the rename
+                        // operation might not be able to move a file from one
+                        // file system to another.
+                        if (tmp.exists()) {
                             try {
-                                tmp = File.createTempFile("restlet-upload",
-                                        "bin");
-                                if (request.isEntityAvailable()) {
-                                    fos = new FileOutputStream(tmp);
-                                    ByteUtils.write(request.getEntity()
-                                            .getStream(), fos);
+                                BufferedReader br = new BufferedReader(
+                                        new FileReader(tmp));
+                                BufferedWriter wr = new BufferedWriter(
+                                        new FileWriter(file));
+                                String s;
+                                while ((s = br.readLine()) != null) {
+                                    wr.append(s);
                                 }
-                            } catch (IOException ioe) {
-                                getLogger().log(Level.WARNING,
-                                        "Unable to create the temporary file",
-                                        ioe);
-                                response.setStatus(new Status(
-                                        Status.SERVER_ERROR_INTERNAL,
-                                        "Unable to create a temporary file"));
-                                error = true;
-                            } finally {
-                                try {
-                                    if (fos != null) {
-                                        fos.close();
-                                    }
-                                } catch (IOException ioe) {
-                                    getLogger()
-                                            .log(
-                                                    Level.WARNING,
-                                                    "Unable to close the temporary file",
-                                                    ioe);
-                                    response.setStatus(
-                                            Status.SERVER_ERROR_INTERNAL, ioe);
-                                    error = true;
-                                }
-                            }
-                        }
 
-                        if (error) {
-                            if (tmp.exists() && !isResumeUpload()) {
-                                tmp.delete();
-                            }
-                            return;
-                        }
-
-                        // Then delete the existing file
-                        if (tmp.exists() && file.delete()) {
-                            // Finally move the temporary file to the
-                            // existing file location
-                            boolean renameSuccessfull = false;
-                            if (tmp.renameTo(file)) {
-                                if (request.getEntity() == null) {
-                                    response
-                                            .setStatus(Status.SUCCESS_NO_CONTENT);
-                                } else {
-                                    response.setStatus(Status.SUCCESS_OK);
-                                }
+                                br.close();
+                                wr.flush();
+                                wr.close();
                                 renameSuccessfull = true;
-                            } else {
-                                // Many aspects of the behavior of the method
-                                // "renameTo" are inherently platform-dependent:
-                                // the rename operation might not be able to
-                                // move a file from one file system to another.
-                                if (tmp.exists()) {
-                                    try {
-                                        BufferedReader br = new BufferedReader(
-                                                new FileReader(tmp));
-                                        BufferedWriter wr = new BufferedWriter(
-                                                new FileWriter(file));
-                                        String s;
-                                        while ((s = br.readLine()) != null) {
-                                            wr.append(s);
-                                        }
+                                tmp.delete();
+                            } catch (Exception e) {
+                                renameSuccessfull = false;
+                            }
+                        }
+                        if (!renameSuccessfull) {
+                            getLogger()
+                                    .log(Level.WARNING,
+                                            "Unable to move the temporary file to replace the existing file");
+                            response
+                                    .setStatus(new Status(
+                                            Status.SERVER_ERROR_INTERNAL,
+                                            "Unable to move the temporary file to replace the existing file"));
+                        }
+                    }
+                } else {
+                    getLogger().log(Level.WARNING,
+                            "Unable to delete the existing file");
+                    response.setStatus(new Status(Status.SERVER_ERROR_INTERNAL,
+                            "Unable to delete the existing file"));
+                    if (tmp.exists() && !isResumeUpload()) {
+                        tmp.delete();
+                    }
+                }
+            } else {
+                // The file does not exist yet.
+                File parent = file.getParentFile();
+                if ((parent != null) && !parent.exists()) {
+                    // Create the parent directories then the new file
+                    if (!parent.mkdirs()) {
+                        getLogger().log(Level.WARNING,
+                                "Unable to create the parent directory");
+                        response.setStatus(new Status(
+                                Status.SERVER_ERROR_INTERNAL,
+                                "Unable to create the parent directory"));
+                    }
+                }
 
-                                        br.close();
-                                        wr.flush();
-                                        wr.close();
-                                        renameSuccessfull = true;
-                                        tmp.delete();
-                                    } catch (Exception e) {
-                                        renameSuccessfull = false;
-                                    }
-                                }
-                                if (!renameSuccessfull) {
-                                    getLogger()
-                                            .log(Level.WARNING,
-                                                    "Unable to move the temporary file to replace the existing file");
-                                    response
-                                            .setStatus(new Status(
-                                                    Status.SERVER_ERROR_INTERNAL,
-                                                    "Unable to move the temporary file to replace the existing file"));
-                                }
+                // Create the new file
+                if (partialPut) {
+                    // This is a partial PUT
+                    RandomAccessFile raf = null;
+                    try {
+                        raf = new RandomAccessFile(file, "rwd");
+                        // Support only one range.
+                        Range range = request.getRanges().get(0);
+                        // Go to the desired offset.
+                        if (range.getIndex() == Range.INDEX_LAST) {
+                            if (raf.length() <= range.getSize()) {
+                                raf.seek(range.getSize());
+                            } else {
+                                raf.seek(raf.length() - range.getSize());
+                            }
+                        } else {
+                            raf.seek(range.getIndex());
+                        }
+                        // Write the entity to the file.
+                        if (request.isEntityAvailable()) {
+                            ByteUtils.write(request.getEntity().getStream(),
+                                    raf);
+                        }
+                    } catch (FileNotFoundException fnfe) {
+                        getLogger().log(Level.WARNING,
+                                "Unable to create the new file", fnfe);
+                        response.setStatus(Status.SERVER_ERROR_INTERNAL, fnfe);
+                    } catch (IOException ioe) {
+                        getLogger().log(Level.WARNING,
+                                "Unable to create the new file", ioe);
+                        response.setStatus(Status.SERVER_ERROR_INTERNAL, ioe);
+                    } finally {
+                        try {
+                            if (raf != null) {
+                                raf.close();
+
+                                // Calling the garbage collector helps
+                                // to workaround lock issues on Windows
+                                System.gc();
+                            }
+                        } catch (IOException ioe) {
+                            getLogger().log(Level.WARNING,
+                                    "Unable to close the new file", ioe);
+                            response.setStatus(Status.SERVER_ERROR_INTERNAL,
+                                    ioe);
+                        }
+                    }
+
+                } else {
+                    // This is simple PUT of the full entity
+                    FileOutputStream fos = null;
+                    try {
+                        if (file.createNewFile()) {
+                            if (request.getEntity() == null) {
+                                response.setStatus(Status.SUCCESS_NO_CONTENT);
+                            } else {
+                                fos = new FileOutputStream(file);
+                                ByteUtils.write(
+                                        request.getEntity().getStream(), fos);
+                                response.setStatus(Status.SUCCESS_CREATED);
                             }
                         } else {
                             getLogger().log(Level.WARNING,
-                                    "Unable to delete the existing file");
+                                    "Unable to create the new file");
                             response.setStatus(new Status(
                                     Status.SERVER_ERROR_INTERNAL,
-                                    "Unable to delete the existing file"));
-                            if (tmp.exists() && !isResumeUpload()) {
-                                tmp.delete();
-                            }
+                                    "Unable to create the new file"));
                         }
-                    } else {
-                        // The file does not exist yet.
-                        File parent = file.getParentFile();
-                        if ((parent != null) && !parent.exists()) {
-                            // Create the parent directories then the new file
-                            if (!parent.mkdirs()) {
-                                getLogger()
-                                        .log(Level.WARNING,
-                                                "Unable to create the parent directory");
-                                response
-                                        .setStatus(new Status(
-                                                Status.SERVER_ERROR_INTERNAL,
-                                                "Unable to create the parent directory"));
+                    } catch (FileNotFoundException fnfe) {
+                        getLogger().log(Level.WARNING,
+                                "Unable to create the new file", fnfe);
+                        response.setStatus(Status.SERVER_ERROR_INTERNAL, fnfe);
+                    } catch (IOException ioe) {
+                        getLogger().log(Level.WARNING,
+                                "Unable to create the new file", ioe);
+                        response.setStatus(Status.SERVER_ERROR_INTERNAL, ioe);
+                    } finally {
+                        try {
+                            if (fos != null) {
+                                fos.close();
                             }
-                        }
-
-                        // Create the new file
-                        if (partialPut) {
-                            // This is a partial PUT
-                            RandomAccessFile raf = null;
-                            try {
-                                raf = new RandomAccessFile(file, "rwd");
-                                // Support only one range.
-                                Range range = request.getRanges().get(0);
-                                // Go to the desired offset.
-                                if (range.getIndex() == Range.INDEX_LAST) {
-                                    if (raf.length() <= range.getSize()) {
-                                        raf.seek(range.getSize());
-                                    } else {
-                                        raf
-                                                .seek(raf.length()
-                                                        - range.getSize());
-                                    }
-                                } else {
-                                    raf.seek(range.getIndex());
-                                }
-                                // Write the entity to the file.
-                                if (request.isEntityAvailable()) {
-                                    ByteUtils.write(request.getEntity()
-                                            .getStream(), raf);
-                                }
-                            } catch (FileNotFoundException fnfe) {
-                                getLogger().log(Level.WARNING,
-                                        "Unable to create the new file", fnfe);
-                                response.setStatus(
-                                        Status.SERVER_ERROR_INTERNAL, fnfe);
-                            } catch (IOException ioe) {
-                                getLogger().log(Level.WARNING,
-                                        "Unable to create the new file", ioe);
-                                response.setStatus(
-                                        Status.SERVER_ERROR_INTERNAL, ioe);
-                            } finally {
-                                try {
-                                    if (raf != null) {
-                                        raf.close();
-
-                                        // Calling the garbage collector helps
-                                        // to workaround lock issues on Windows
-                                        System.gc();
-                                    }
-                                } catch (IOException ioe) {
-                                    getLogger()
-                                            .log(
-                                                    Level.WARNING,
-                                                    "Unable to close the new file",
-                                                    ioe);
-                                    response.setStatus(
-                                            Status.SERVER_ERROR_INTERNAL, ioe);
-                                }
-                            }
-
-                        } else {
-                            // This is simple PUT of the full entity
-                            FileOutputStream fos = null;
-                            try {
-                                if (file.createNewFile()) {
-                                    if (request.getEntity() == null) {
-                                        response
-                                                .setStatus(Status.SUCCESS_NO_CONTENT);
-                                    } else {
-                                        fos = new FileOutputStream(file);
-                                        ByteUtils.write(request.getEntity()
-                                                .getStream(), fos);
-                                        response
-                                                .setStatus(Status.SUCCESS_CREATED);
-                                    }
-                                } else {
-                                    getLogger().log(Level.WARNING,
-                                            "Unable to create the new file");
-                                    response.setStatus(new Status(
-                                            Status.SERVER_ERROR_INTERNAL,
-                                            "Unable to create the new file"));
-                                }
-                            } catch (FileNotFoundException fnfe) {
-                                getLogger().log(Level.WARNING,
-                                        "Unable to create the new file", fnfe);
-                                response.setStatus(
-                                        Status.SERVER_ERROR_INTERNAL, fnfe);
-                            } catch (IOException ioe) {
-                                getLogger().log(Level.WARNING,
-                                        "Unable to create the new file", ioe);
-                                response.setStatus(
-                                        Status.SERVER_ERROR_INTERNAL, ioe);
-                            } finally {
-                                try {
-                                    if (fos != null) {
-                                        fos.close();
-                                    }
-                                } catch (IOException ioe) {
-                                    getLogger()
-                                            .log(
-                                                    Level.WARNING,
-                                                    "Unable to close the new file",
-                                                    ioe);
-                                    response.setStatus(
-                                            Status.SERVER_ERROR_INTERNAL, ioe);
-                                }
-                            }
+                        } catch (IOException ioe) {
+                            getLogger().log(Level.WARNING,
+                                    "Unable to close the new file", ioe);
+                            response.setStatus(Status.SERVER_ERROR_INTERNAL,
+                                    ioe);
                         }
                     }
                 }

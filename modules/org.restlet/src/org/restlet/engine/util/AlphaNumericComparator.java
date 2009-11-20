@@ -105,15 +105,15 @@ public class AlphaNumericComparator extends AlphabeticalComparator {
 
                     if (!isNotDigit(a) && !isNotDigit(b))
                         return diff;
-                    else
-                        return -1;
+
+                    return -1;
                 }
 
                 if (rAtEnd) {
                     if (!isNotDigit(a) && !isNotDigit(b))
                         return diff;
-                    else
-                        return -1;
+
+                    return -1;
                 }
 
                 rHasNoMoreDigits = isNotDigit(uri1.charAt(ptr + 1));

@@ -367,53 +367,51 @@ public abstract class HttpServerCall extends HttpCall {
         if (next == -1) {
             throw new IOException(
                     "Unable to parse the request method. End of stream reached too early.");
-        } else {
-            setMethod(sb.toString());
+        }
+
+        setMethod(sb.toString());
+        sb.delete(0, sb.length());
+
+        // Parse the request URI
+        next = headStream.read();
+        while ((next != -1) && !HttpUtils.isSpace(next)) {
+            sb.append((char) next);
+            next = headStream.read();
+        }
+
+        if (next == -1) {
+            throw new IOException(
+                    "Unable to parse the request URI. End of stream reached too early.");
+        }
+        setRequestUri(sb.toString());
+        sb.delete(0, sb.length());
+
+        // Parse the HTTP version
+        next = headStream.read();
+        while ((next != -1) && !HttpUtils.isCarriageReturn(next)) {
+            sb.append((char) next);
+            next = headStream.read();
+        }
+
+        if (next == -1) {
+            throw new IOException(
+                    "Unable to parse the HTTP version. End of stream reached too early.");
+        }
+        next = headStream.read();
+
+        if (HttpUtils.isLineFeed(next)) {
+            setVersion(sb.toString());
             sb.delete(0, sb.length());
 
-            // Parse the request URI
-            next = headStream.read();
-            while ((next != -1) && !HttpUtils.isSpace(next)) {
-                sb.append((char) next);
-                next = headStream.read();
+            // Parse the headers
+            Parameter header = HttpUtils.readHeader(headStream, sb);
+            while (header != null) {
+                getRequestHeaders().add(header);
+                header = HttpUtils.readHeader(headStream, sb);
             }
-
-            if (next == -1) {
-                throw new IOException(
-                        "Unable to parse the request URI. End of stream reached too early.");
-            } else {
-                setRequestUri(sb.toString());
-                sb.delete(0, sb.length());
-
-                // Parse the HTTP version
-                next = headStream.read();
-                while ((next != -1) && !HttpUtils.isCarriageReturn(next)) {
-                    sb.append((char) next);
-                    next = headStream.read();
-                }
-
-                if (next == -1) {
-                    throw new IOException(
-                            "Unable to parse the HTTP version. End of stream reached too early.");
-                } else {
-                    next = headStream.read();
-
-                    if (HttpUtils.isLineFeed(next)) {
-                        setVersion(sb.toString());
-                        sb.delete(0, sb.length());
-
-                        // Parse the headers
-                        Parameter header = HttpUtils.readHeader(headStream, sb);
-                        while (header != null) {
-                            getRequestHeaders().add(header);
-                            header = HttpUtils.readHeader(headStream, sb);
-                        }
-                    } else {
-                        throw new IOException(
-                                "Unable to parse the HTTP version. The carriage return must be followed by a line feed.");
-                    }
-                }
-            }
+        } else {
+            throw new IOException(
+                    "Unable to parse the HTTP version. The carriage return must be followed by a line feed.");
         }
     }
 

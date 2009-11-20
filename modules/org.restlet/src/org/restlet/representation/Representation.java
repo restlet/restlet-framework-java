@@ -352,9 +352,8 @@ public abstract class Representation extends RepresentationInfo {
         } else if (getSize() != Representation.UNKNOWN_SIZE) {
             if (getRange().getIndex() != Range.INDEX_LAST) {
                 return getSize() - getRange().getIndex();
-            } else {
-                return getSize();
             }
+            return getSize();
         }
 
         return Representation.UNKNOWN_SIZE;

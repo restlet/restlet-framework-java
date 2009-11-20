@@ -64,9 +64,9 @@ public abstract class ConnectorHelper<T extends Connector> extends
     public Context getContext() {
         if (Edition.CURRENT == Edition.GWT) {
             return null;
-        } else {
-            return super.getContext();
         }
+
+        return super.getContext();
     }
 
     /**

@@ -229,10 +229,10 @@ public class DefaultConverter extends ConverterHelper {
     @Override
     public <T> T toObject(Representation source, Class<T> target,
             UniformResource resource) throws IOException {
-        Object result = null;
+        Object result;
 
         if (target.isAssignableFrom(source.getClass())) {
-            result = (T) source;
+            result = source;
         } else if (String.class.isAssignableFrom(target)) {
             result = source.getText();
         } else if (StringRepresentation.class.isAssignableFrom(target)) {
@@ -243,6 +243,8 @@ public class DefaultConverter extends ConverterHelper {
         } else if (File.class.isAssignableFrom(target)) {
             if (source instanceof FileRepresentation) {
                 result = ((FileRepresentation) source).getFile();
+            } else {
+                result = null;
             }
         } else if (Form.class.isAssignableFrom(target)) {
             result = new Form(source);
@@ -261,7 +263,10 @@ public class DefaultConverter extends ConverterHelper {
                 IOException ioe = new IOException(
                         "Unable to create the Object representation");
                 ioe.initCause(e);
+                result = null;
             }
+        } else {
+            result = null;
         }
 
         return (T) result;

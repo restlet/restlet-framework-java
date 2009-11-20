@@ -128,9 +128,9 @@ public abstract class Authorizer extends Filter {
     protected int beforeHandle(Request request, Response response) {
         if (authorize(request, response)) {
             return authorized(request, response);
-        } else {
-            return unauthorized(request, response);
         }
+        
+        return unauthorized(request, response);
     }
 
     /**

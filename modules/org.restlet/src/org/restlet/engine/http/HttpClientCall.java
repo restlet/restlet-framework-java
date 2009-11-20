@@ -193,15 +193,15 @@ public abstract class HttpClientCall extends HttpCall {
             if (index > 0) {
                 return value
                         .substring(index + key.length(), value.length() - 1);
-            } else {
-                key = "FILENAME=";
-                index = value.toUpperCase().indexOf(key);
-                if (index > 0) {
-                    return value
-                            .substring(index + key.length(), value.length());
-                }
+            }
+
+            key = "FILENAME=";
+            index = value.toUpperCase().indexOf(key);
+            if (index > 0) {
+                return value.substring(index + key.length(), value.length());
             }
         }
+        
         return null;
     }
 

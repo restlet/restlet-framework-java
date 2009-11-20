@@ -108,26 +108,26 @@ public class CookieUtils {
         if ((name == null) || (name.length() == 0)) {
             throw new IllegalArgumentException(
                     "Can't write cookie. Invalid name detected");
-        } else {
-            appendValue(name, 0, destination).append('=');
+        }
 
-            // Append the value
-            if ((value != null) && (value.length() > 0)) {
-                appendValue(value, version, destination);
+        appendValue(name, 0, destination).append('=');
+
+        // Append the value
+        if ((value != null) && (value.length() > 0)) {
+            appendValue(value, version, destination);
+        }
+        if (version > 0) {
+            // Append the path
+            final String path = cookie.getPath();
+            if ((path != null) && (path.length() > 0)) {
+                destination.append("; $Path=");
+                HttpUtils.appendQuote(path, destination);
             }
-            if (version > 0) {
-                // Append the path
-                final String path = cookie.getPath();
-                if ((path != null) && (path.length() > 0)) {
-                    destination.append("; $Path=");
-                    HttpUtils.appendQuote(path, destination);
-                }
-                // Append the domain
-                final String domain = cookie.getDomain();
-                if ((domain != null) && (domain.length() > 0)) {
-                    destination.append("; $Domain=");
-                    HttpUtils.appendQuote(domain, destination);
-                }
+            // Append the domain
+            final String domain = cookie.getDomain();
+            if ((domain != null) && (domain.length() > 0)) {
+                destination.append("; $Domain=");
+                HttpUtils.appendQuote(domain, destination);
             }
         }
     }
@@ -175,82 +175,81 @@ public class CookieUtils {
         if ((name == null) || (name.length() == 0)) {
             throw new IllegalArgumentException(
                     "Can't write cookie. Invalid name detected");
-        } else {
-            destination.append(name).append('=');
+        }
 
-            // Append the value
-            if ((value != null) && (value.length() > 0)) {
-                appendValue(value, version, destination);
-            }
+        destination.append(name).append('=');
 
-            // Append the version
-            if (version > 0) {
-                destination.append("; Version=");
-                appendValue(Integer.toString(version), version, destination);
-            }
+        // Append the value
+        if ((value != null) && (value.length() > 0)) {
+            appendValue(value, version, destination);
+        }
 
-            // Append the path
-            final String path = cookieSetting.getPath();
-            if ((path != null) && (path.length() > 0)) {
-                destination.append("; Path=");
+        // Append the version
+        if (version > 0) {
+            destination.append("; Version=");
+            appendValue(Integer.toString(version), version, destination);
+        }
 
-                if (version == 0) {
-                    destination.append(path);
-                } else {
-                    HttpUtils.appendQuote(path, destination);
-                }
-            }
+        // Append the path
+        final String path = cookieSetting.getPath();
+        if ((path != null) && (path.length() > 0)) {
+            destination.append("; Path=");
 
-            // Append the expiration date
-            final int maxAge = cookieSetting.getMaxAge();
-            if (maxAge >= 0) {
-                if (version == 0) {
-                    final long currentTime = System.currentTimeMillis();
-                    final long maxTime = (maxAge * 1000L);
-                    final long expiresTime = currentTime + maxTime;
-                    final Date expires = new Date(expiresTime);
-                    destination.append("; Expires=");
-                    appendValue(DateUtils.format(expires,
-                            DateUtils.FORMAT_RFC_1036.get(0)), version,
-                            destination);
-                } else {
-                    destination.append("; Max-Age=");
-                    appendValue(Integer.toString(cookieSetting.getMaxAge()),
-                            version, destination);
-                }
-            } else if ((maxAge == -1) && (version > 0)) {
-                // Discard the cookie at the end of the user's session (RFC
-                // 2965)
-                destination.append("; Discard");
+            if (version == 0) {
+                destination.append(path);
             } else {
-                // Netscape cookies automatically expire at the end of the
-                // user's session
+                HttpUtils.appendQuote(path, destination);
             }
+        }
 
-            // Append the domain
-            final String domain = cookieSetting.getDomain();
-            if ((domain != null) && (domain.length() > 0)) {
-                destination.append("; Domain=");
-                appendValue(domain.toLowerCase(), version, destination);
+        // Append the expiration date
+        final int maxAge = cookieSetting.getMaxAge();
+        if (maxAge >= 0) {
+            if (version == 0) {
+                final long currentTime = System.currentTimeMillis();
+                final long maxTime = (maxAge * 1000L);
+                final long expiresTime = currentTime + maxTime;
+                final Date expires = new Date(expiresTime);
+                destination.append("; Expires=");
+                appendValue(DateUtils.format(expires, DateUtils.FORMAT_RFC_1036
+                        .get(0)), version, destination);
+            } else {
+                destination.append("; Max-Age=");
+                appendValue(Integer.toString(cookieSetting.getMaxAge()),
+                        version, destination);
             }
+        } else if ((maxAge == -1) && (version > 0)) {
+            // Discard the cookie at the end of the user's session (RFC
+            // 2965)
+            destination.append("; Discard");
+        } else {
+            // Netscape cookies automatically expire at the end of the
+            // user's session
+        }
 
-            // Append the secure flag
-            if (cookieSetting.isSecure()) {
-                destination.append("; Secure");
-            }
+        // Append the domain
+        final String domain = cookieSetting.getDomain();
+        if ((domain != null) && (domain.length() > 0)) {
+            destination.append("; Domain=");
+            appendValue(domain.toLowerCase(), version, destination);
+        }
 
-            // Append the secure flag
-            if (cookieSetting.isAccessRestricted()) {
-                destination.append("; HttpOnly");
-            }
+        // Append the secure flag
+        if (cookieSetting.isSecure()) {
+            destination.append("; Secure");
+        }
 
-            // Append the comment
-            if (version > 0) {
-                final String comment = cookieSetting.getComment();
-                if ((comment != null) && (comment.length() > 0)) {
-                    destination.append("; Comment=");
-                    appendValue(comment, version, destination);
-                }
+        // Append the secure flag
+        if (cookieSetting.isAccessRestricted()) {
+            destination.append("; HttpOnly");
+        }
+
+        // Append the comment
+        if (version > 0) {
+            final String comment = cookieSetting.getComment();
+            if ((comment != null) && (comment.length() > 0)) {
+                destination.append("; Comment=");
+                appendValue(comment, version, destination);
             }
         }
     }

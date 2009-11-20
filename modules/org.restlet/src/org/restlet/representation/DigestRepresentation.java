@@ -122,9 +122,9 @@ public abstract class DigestRepresentation extends WrapperRepresentation {
     public boolean checkDigest(String algorithm) {
         if (this.algorithm != null && this.algorithm.equals(algorithm)) {
             return checkDigest();
-        } else {
-            return super.checkDigest(algorithm);
         }
+
+        return super.checkDigest(algorithm);
     }
 
     /**
@@ -138,9 +138,9 @@ public abstract class DigestRepresentation extends WrapperRepresentation {
     public Digest computeDigest(String algorithm) {
         if (this.algorithm != null && this.algorithm.equals(algorithm)) {
             return getComputedDigest();
-        } else {
-            return super.computeDigest(algorithm);
         }
+
+        return super.computeDigest(algorithm);
     }
 
     @Override

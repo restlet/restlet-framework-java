@@ -71,9 +71,9 @@ public class Adapter {
     public Logger getLogger() {
         if (getContext() != null) {
             return getContext().getLogger();
-        } else {
-            return Context.getCurrentLogger();
         }
+
+        return Context.getCurrentLogger();
     }
 
 }

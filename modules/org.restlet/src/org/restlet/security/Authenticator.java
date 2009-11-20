@@ -106,9 +106,9 @@ public abstract class Authenticator extends Filter {
     protected int beforeHandle(Request request, Response response) {
         if (authenticate(request, response)) {
             return authenticated(request, response);
-        } else {
-            return unauthenticated(request, response);
         }
+
+        return unauthenticated(request, response);
     }
 
     /**
@@ -161,20 +161,20 @@ public abstract class Authenticator extends Filter {
     protected int unauthenticated(Request request, Response response) {
         if (isOptional()) {
             return CONTINUE;
-        } else {
-            // Update the challenge response accordingly
-            if (request.getChallengeResponse() != null) {
-                request.getChallengeResponse().setAuthenticated(false);
-            }
-
-            // Update the client info accordingly
-            if (request.getClientInfo() != null) {
-                request.getClientInfo().setAuthenticated(false);
-            }
-
-            // Stop the filtering chain
-            return STOP;
         }
+
+        // Update the challenge response accordingly
+        if (request.getChallengeResponse() != null) {
+            request.getChallengeResponse().setAuthenticated(false);
+        }
+
+        // Update the client info accordingly
+        if (request.getClientInfo() != null) {
+            request.getClientInfo().setAuthenticated(false);
+        }
+
+        // Stop the filtering chain
+        return STOP;
     }
 
     /**

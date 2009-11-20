@@ -77,10 +77,10 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
         if (Edition.CURRENT != Edition.GWT) {
             return new Form(java.util.Collections.unmodifiableList(series
                     .getDelegate()));
-        } else {
-            // TODO is this correct?
-            return new Form((List<Parameter>) series.getDelegate());
         }
+
+        // TODO is this correct?
+        return new Form((List<Parameter>) series.getDelegate());
     }
 
     /**

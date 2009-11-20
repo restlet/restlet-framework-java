@@ -75,6 +75,7 @@ public class HttpUtils {
         destination.append('"');
         return destination;
     }
+
     /**
      * Appends a source string as an URI encoded string.
      * 
@@ -157,17 +158,17 @@ public class HttpUtils {
         if (!isToken(nameToken)) {
             throw new IllegalArgumentException(
                     "Invalid product name detected. Only token characters are allowed.");
-        } else {
-            destination.append(nameToken);
+        }
 
-            if (versionToken != null) {
-                if (!isToken(versionToken)) {
-                    throw new IllegalArgumentException(
-                            "Invalid product version detected. Only token characters are allowed.");
-                } else {
-                    destination.append('/').append(versionToken);
-                }
+        destination.append(nameToken);
+
+        if (versionToken != null) {
+            if (!isToken(versionToken)) {
+                throw new IllegalArgumentException(
+                        "Invalid product version detected. Only token characters are allowed.");
             }
+
+            destination.append('/').append(versionToken);
         }
     }
 
@@ -455,37 +456,35 @@ public class HttpUtils {
             if (next == -1) {
                 throw new IOException(
                         "Unable to parse the header name. End of stream reached too early.");
-            } else {
-                result.setName(sb.toString());
-                sb.delete(0, sb.length());
+            }
 
+            result.setName(sb.toString());
+            sb.delete(0, sb.length());
+
+            next = is.read();
+            while (HttpUtils.isSpace(next)) {
+                // Skip any separator space between colon and header value
                 next = is.read();
-                while (HttpUtils.isSpace(next)) {
-                    // Skip any separator space between colon and header value
-                    next = is.read();
-                }
+            }
 
-                // Parse the header value
-                while ((next != -1) && (!HttpUtils.isCarriageReturn(next))) {
-                    sb.append((char) next);
-                    next = is.read();
-                }
+            // Parse the header value
+            while ((next != -1) && (!HttpUtils.isCarriageReturn(next))) {
+                sb.append((char) next);
+                next = is.read();
+            }
 
-                if (next == -1) {
-                    throw new IOException(
-                            "Unable to parse the header value. End of stream reached too early.");
-                } else {
-                    next = is.read();
+            if (next == -1) {
+                throw new IOException(
+                        "Unable to parse the header value. End of stream reached too early.");
+            }
+            next = is.read();
 
-                    if (HttpUtils.isLineFeed(next)) {
-                        result.setValue(sb.toString());
-                        sb.delete(0, sb.length());
-                    } else {
-                        throw new IOException(
-                                "Unable to parse the HTTP header value. The carriage return must be followed by a line feed.");
-                    }
-                }
-
+            if (HttpUtils.isLineFeed(next)) {
+                result.setValue(sb.toString());
+                sb.delete(0, sb.length());
+            } else {
+                throw new IOException(
+                        "Unable to parse the HTTP header value. The carriage return must be followed by a line feed.");
             }
         }
 

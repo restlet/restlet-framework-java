@@ -63,9 +63,9 @@ public abstract class HttpCall extends Call {
     public static String formatDate(Date date, boolean cookie) {
         if (cookie) {
             return DateUtils.format(date, DateUtils.FORMAT_RFC_1036.get(0));
-        } else {
-            return DateUtils.format(date, DateUtils.FORMAT_RFC_1123.get(0));
         }
+
+        return DateUtils.format(date, DateUtils.FORMAT_RFC_1123.get(0));
     }
 
     /**
@@ -80,9 +80,9 @@ public abstract class HttpCall extends Call {
     public static Date parseDate(String date, boolean cookie) {
         if (cookie) {
             return DateUtils.parse(date, DateUtils.FORMAT_RFC_1036);
-        } else {
-            return DateUtils.parse(date, DateUtils.FORMAT_RFC_1123);
         }
+
+        return DateUtils.parse(date, DateUtils.FORMAT_RFC_1123);
     }
 
     /** The client IP address. */

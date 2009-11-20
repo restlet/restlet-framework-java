@@ -383,10 +383,8 @@ public final class Method implements Comparable<Method> {
     public int compareTo(Method o) {
         if (o != null) {
             return this.getName().compareTo(o.getName());
-        } else {
-            return 1;
         }
-
+        return 1;
     }
 
     /** {@inheritDoc} */

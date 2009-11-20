@@ -79,9 +79,9 @@ public class ContentTypeReader extends HeaderReader {
 
             return new ContentType(new MediaType(mediaType.toString(),
                     parameters), characterSet);
-        } else {
-            return new ContentType(new MediaType(mediaType.toString()), null);
         }
+        
+        return new ContentType(new MediaType(mediaType.toString()), null);
     }
 
     /**

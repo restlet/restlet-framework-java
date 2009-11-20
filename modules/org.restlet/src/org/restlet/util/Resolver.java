@@ -114,7 +114,7 @@ public abstract class Resolver<T> {
             Object result = null;
 
             // Check for a matching response attribute
-            if ((result == null) && (this.response != null)
+            if (this.response != null
                     && this.response.getAttributes().containsKey(variableName)) {
                 result = this.response.getAttributes().get(variableName);
             }

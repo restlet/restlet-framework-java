@@ -63,9 +63,8 @@ public class Parameter extends Couple<String, String> implements
     public static Parameter create(CharSequence name, CharSequence value) {
         if (value != null) {
             return new Parameter(name.toString(), value.toString());
-        } else {
-            return new Parameter(name.toString(), null);
         }
+        return new Parameter(name.toString(), null);
     }
 
     /**

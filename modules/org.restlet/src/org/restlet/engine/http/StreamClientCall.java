@@ -111,9 +111,9 @@ public class StreamClientCall extends HttpClientCall {
                 : resourceRef.getTargetRef();
         if (absoluteRef.hasQuery()) {
             return absoluteRef.getPath() + "?" + absoluteRef.getQuery();
-        } else {
-            return absoluteRef.getPath();
         }
+
+        return absoluteRef.getPath();
     }
 
     /** The socket factory. */
@@ -266,55 +266,53 @@ public class StreamClientCall extends HttpClientCall {
         if (next == -1) {
             throw new IOException(
                     "Unable to parse the response HTTP version. End of stream reached too early.");
-        } else {
-            setVersion(sb.toString());
+        }
+
+        setVersion(sb.toString());
+        sb.delete(0, sb.length());
+
+        // Parse the status code
+        next = getResponseStream().read();
+        while ((next != -1) && !HttpUtils.isSpace(next)) {
+            sb.append((char) next);
+            next = getResponseStream().read();
+        }
+
+        if (next == -1) {
+            throw new IOException(
+                    "Unable to parse the response status. End of stream reached too early.");
+        }
+
+        setStatusCode(Integer.parseInt(sb.toString()));
+        sb.delete(0, sb.length());
+
+        // Parse the reason phrase
+        next = getResponseStream().read();
+        while ((next != -1) && !HttpUtils.isCarriageReturn(next)) {
+            sb.append((char) next);
+            next = getResponseStream().read();
+        }
+
+        if (next == -1) {
+            throw new IOException(
+                    "Unable to parse the reason phrase. End of stream reached too early.");
+        }
+
+        next = getResponseStream().read();
+
+        if (HttpUtils.isLineFeed(next)) {
+            setReasonPhrase(sb.toString());
             sb.delete(0, sb.length());
 
-            // Parse the status code
-            next = getResponseStream().read();
-            while ((next != -1) && !HttpUtils.isSpace(next)) {
-                sb.append((char) next);
-                next = getResponseStream().read();
+            // Parse the headers
+            Parameter header = HttpUtils.readHeader(getResponseStream(), sb);
+            while (header != null) {
+                getResponseHeaders().add(header);
+                header = HttpUtils.readHeader(getResponseStream(), sb);
             }
-
-            if (next == -1) {
-                throw new IOException(
-                        "Unable to parse the response status. End of stream reached too early.");
-            } else {
-                setStatusCode(Integer.parseInt(sb.toString()));
-                sb.delete(0, sb.length());
-
-                // Parse the reason phrase
-                next = getResponseStream().read();
-                while ((next != -1) && !HttpUtils.isCarriageReturn(next)) {
-                    sb.append((char) next);
-                    next = getResponseStream().read();
-                }
-
-                if (next == -1) {
-                    throw new IOException(
-                            "Unable to parse the reason phrase. End of stream reached too early.");
-                } else {
-                    next = getResponseStream().read();
-
-                    if (HttpUtils.isLineFeed(next)) {
-                        setReasonPhrase(sb.toString());
-                        sb.delete(0, sb.length());
-
-                        // Parse the headers
-                        Parameter header = HttpUtils.readHeader(
-                                getResponseStream(), sb);
-                        while (header != null) {
-                            getResponseHeaders().add(header);
-                            header = HttpUtils.readHeader(getResponseStream(),
-                                    sb);
-                        }
-                    } else {
-                        throw new IOException(
-                                "Unable to parse the reason phrase. The carriage return must be followed by a line feed.");
-                    }
-                }
-            }
+        } else {
+            throw new IOException(
+                    "Unable to parse the reason phrase. The carriage return must be followed by a line feed.");
         }
     }
 

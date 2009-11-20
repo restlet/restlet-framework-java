@@ -92,9 +92,9 @@ public class LoggerFacade {
 
         if (loggerName != null) {
             return getLogger(loggerName);
-        } else {
-            return getAnonymousLogger();
         }
+
+        return getAnonymousLogger();
     }
 
     /**

@@ -525,12 +525,12 @@ public class DirectoryServerResource extends ServerResource {
             MediaType acceptedMediaType) {
         if (acceptedMediaType == null) {
             return getClientDispatcher().get(resourceUri);
-        } else {
-            Request request = new Request(Method.GET, resourceUri);
-            request.getClientInfo().getAcceptedMediaTypes().add(
-                    new Preference<MediaType>(acceptedMediaType));
-            return getClientDispatcher().handle(request);
         }
+
+        Request request = new Request(Method.GET, resourceUri);
+        request.getClientInfo().getAcceptedMediaTypes().add(
+                new Preference<MediaType>(acceptedMediaType));
+        return getClientDispatcher().handle(request);
     }
 
     /**
@@ -588,8 +588,7 @@ public class DirectoryServerResource extends ServerResource {
     public List<Variant> getVariants(Method method) {
         List<Variant> result = null;
 
-        if ((Method.GET.equals(method) || Method.HEAD.equals(method))
-                && ((result == null) || result.isEmpty())) {
+        if ((Method.GET.equals(method) || Method.HEAD.equals(method))) {
             if (variantsGet != null) {
                 result = variantsGet;
             } else {
@@ -644,11 +643,7 @@ public class DirectoryServerResource extends ServerResource {
                     }
 
                     if (!resultSet.isEmpty()) {
-                        if (result == null) {
-                            result = new ArrayList<Variant>();
-                        }
-
-                        result.addAll(resultSet);
+                        result = new ArrayList<Variant>(resultSet);
                     }
 
                     if (resultSet.isEmpty()) {
@@ -697,9 +692,7 @@ public class DirectoryServerResource extends ServerResource {
                         this.fileContent.setIdentifier(getReference());
                     }
 
-                    if (result == null) {
-                        result = new ArrayList<Variant>();
-                    }
+                    result = new ArrayList<Variant>();
                     result.add(this.fileContent);
                 }
 
