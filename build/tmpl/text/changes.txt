@@ -214,6 +214,8 @@ Changes log
           Content-Disposition header. This is based on the value of the
           "downloadable" attribute of the Representation class.
           Proposed by Paul Austin.
+        - Added support of automatic redirections by instances of 
+          ClientResource for unsafe methods.
     - Misc
         - Added Velocity template in the org.restlet.example project.
           Reported by Ben Vesco.
