@@ -1406,7 +1406,6 @@ public class ClientResource extends UniformResource {
         return result;
     }
 
-    // [ifndef gwt] method
     /**
      * Converts an object into a representation based on client preferences.
      * 

@@ -32,7 +32,6 @@ package org.restlet.data;
 
 import org.restlet.Request;
 import org.restlet.Response;
-import org.restlet.engine.security.AuthenticatorUtils;
 import org.restlet.engine.util.SystemUtils;
 import org.restlet.util.Series;
 
@@ -100,7 +99,8 @@ public final class ChallengeResponse extends ChallengeMessage {
         super(challengeRequest.getScheme());
         this.identifier = identifier;
         this.secret = secret;
-        AuthenticatorUtils.update(this, request, response);
+        org.restlet.engine.security.AuthenticatorUtils.update(this, request,
+                response);
     }
 
     // [ifndef gwt] method
@@ -124,7 +124,8 @@ public final class ChallengeResponse extends ChallengeMessage {
         super(challengeRequest.getScheme());
         this.identifier = identifier;
         this.secret = (secret != null) ? secret.toCharArray() : null;
-        AuthenticatorUtils.update(this, request, response);
+        org.restlet.engine.security.AuthenticatorUtils.update(this, request,
+                response);
     }
 
     // [ifndef gwt] method
@@ -150,8 +151,8 @@ public final class ChallengeResponse extends ChallengeMessage {
             ChallengeScheme passwordScheme) {
         super(challengeRequest.getScheme());
         this.identifier = identifier;
-        AuthenticatorUtils.update(this, request, response, identifier,
-                password, passwordScheme);
+        org.restlet.engine.security.AuthenticatorUtils.update(this, request,
+                response, identifier, password, passwordScheme);
     }
 
     /**
@@ -377,6 +378,7 @@ public final class ChallengeResponse extends ChallengeMessage {
         return serverNounceCount;
     }
 
+    // [ifndef gwt] method
     /**
      * Returns the server nonce count as an hexadecimal string of eight
      * characters.
@@ -384,7 +386,8 @@ public final class ChallengeResponse extends ChallengeMessage {
      * @return The server nonce count as an hexadecimal string.
      */
     public String getServerNounceCountAsHex() {
-        return AuthenticatorUtils.formatNonceCount(getServerNounceCount());
+        return org.restlet.engine.security.AuthenticatorUtils
+                .formatNonceCount(getServerNounceCount());
     }
 
     /** {@inheritDoc} */
