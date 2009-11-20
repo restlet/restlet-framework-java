@@ -3,6 +3,8 @@
 Changes log  
 ===========
 
+- @version-full@ (@release-date@)
+
 - 1.1.7 (2009-11-20)
     - Bugs fixed
         - Some Jetty parameters (maxThreads, etc.) had to be set at the
