@@ -155,8 +155,6 @@ public class DigestAuthenticator extends ChallengeAuthenticator {
      *            The user identifier to hash.
      * @param secret
      *            The user secret.
-     * @param realm
-     *            The authentication realm.
      * @return A hash of the user name, realm, and password.
      */
     public String getHashedSecret(String identifier, char[] secret) {
