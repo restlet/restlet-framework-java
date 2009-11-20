@@ -204,12 +204,16 @@ Changes log
           HTTP Client 4.0 extension. Contributed by Bruno Harbulot.
         - Added the Net client extension to the Android edition 
           (without the FTP connector though).
-        - Response with a 200 (success, ok) status and no content now log a fine trace
-          instead of a warning and automatically change the status to 
-          204 (success, no content).
+        - Response with a 200 (success, ok) status and no content now 
+          log a fine trace instead of a warning and automatically 
+          change the status to 204 (success, no content).
         - Added support of the warning header.
         - Added support of the ranges in the gwt edition.
         - Added support of the Authentication-Info header.
+        - Added support of "inline" disposition type in the 
+          Content-Disposition header. This is based on the value of the
+          "downloadable" attribute of the Representation class.
+          Proposed by Paul Austin.
     - Misc
         - Added Velocity template in the org.restlet.example project.
           Reported by Ben Vesco.

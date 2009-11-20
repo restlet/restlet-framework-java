@@ -60,14 +60,34 @@ import org.restlet.service.ConnectorService;
 public abstract class HttpServerCall extends HttpCall {
 
     /**
-     * Format {@code fileName} as a Content-Disposition header value
+     * Formats {@code fileName} as a Content-Disposition header value. By
+     * default, the file is considered as an attachment.
      * 
      * @param fileName
      *            Filename to format
      * @return {@code fileName} formatted
      */
     public static String formatContentDisposition(String fileName) {
-        final StringBuilder b = new StringBuilder("attachment; filename=\"");
+        return formatContentDisposition(fileName, true);
+    }
+
+    /**
+     * Formats {@code fileName} as a Content-Disposition header value.
+     * 
+     * @param fileName
+     *            Filename to format
+     * @param isAttached
+     *            Indicates if the file is separated from the request's body.
+     * @return {@code fileName} formatted
+     */
+    public static String formatContentDisposition(String fileName,
+            boolean isAttached) {
+        final StringBuilder b = new StringBuilder();
+        if (isAttached) {
+            b.append("attachment; filename=\"");
+        } else {
+            b.append("inline; filename=\"");
+        }
 
         if (fileName != null) {
             b.append(fileName);
