@@ -27,14 +27,19 @@
  * 
  * Restlet is a registered trademark of Noelios Technologies.
  */
-
 package org.restlet.ext.jaxrs.internal.spi;
+
+import java.io.IOException;
+import java.util.List;
 
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.ext.RuntimeDelegate;
 import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
 
-import org.restlet.ext.jaxrs.internal.todo.NotYetImplementedException;
+import org.restlet.data.CacheDirective;
+import org.restlet.engine.http.CacheControlReader;
+import org.restlet.engine.http.CacheControlUtils;
+import org.restlet.ext.jaxrs.internal.util.Converter;
 
 /**
  * {@link HeaderDelegate} for {@link CacheControl}.
@@ -63,9 +68,13 @@ public class CacheControlHeaderDelegate implements HeaderDelegate<CacheControl> 
      */
     public CacheControl fromString(String value)
             throws IllegalArgumentException {
-        // TODO CacheControlHeaderDelegate.fromString(String)
-        // illegalargexc
-        throw new NotYetImplementedException();
+        try {
+            CacheControlReader ccr = new CacheControlReader(value);
+            List<CacheDirective> cacheDirectives = ccr.readDirectives();
+            return Converter.toJaxRsCacheControl(cacheDirectives);
+        } catch (IOException e) {
+            throw new RuntimeException("not possible", e);
+        }
     }
 
     /**
@@ -79,8 +88,7 @@ public class CacheControlHeaderDelegate implements HeaderDelegate<CacheControl> 
      * @see javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate#toString(java.lang.Object)
      */
     public String toString(CacheControl cacheControl) {
-        // TODO CacheControlHeaderDelegate.toString(CacheControl)
-        // illegalargexc
-        throw new NotYetImplementedException();
+        List<CacheDirective> directives = Converter.toRestletCacheDirective(cacheControl);
+        return CacheControlUtils.format(directives);
     }
 }

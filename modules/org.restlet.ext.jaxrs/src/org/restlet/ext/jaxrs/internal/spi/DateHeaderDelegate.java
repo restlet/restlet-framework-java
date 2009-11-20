@@ -27,7 +27,6 @@
  * 
  * Restlet is a registered trademark of Noelios Technologies.
  */
-
 package org.restlet.ext.jaxrs.internal.spi;
 
 import java.util.Date;
@@ -35,6 +34,8 @@ import java.util.Date;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.RuntimeDelegate;
 import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
+
+import org.restlet.engine.util.DateUtils;
 
 /**
  * {@link HeaderDelegate} for {@link MediaType}.
@@ -65,8 +66,9 @@ public class DateHeaderDelegate implements HeaderDelegate<Date> {
      * @see javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate#fromString(java.lang.String)
      */
     public Date fromString(String date) throws IllegalArgumentException {
-        throw new org.restlet.ext.jaxrs.internal.todo.NotYetImplementedException(
-                "HeaderDelegate<Date> is not yet implemented");
+        // This method could be extended, if you have problems. Send an email to
+        // discuss@restlet.tigris.org
+        return DateUtils.parse(date);
     }
 
     /**
@@ -80,7 +82,8 @@ public class DateHeaderDelegate implements HeaderDelegate<Date> {
      * @see javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate#toString(java.lang.Object)
      */
     public String toString(Date date) {
-        throw new org.restlet.ext.jaxrs.internal.todo.NotYetImplementedException(
-                "HeaderDelegate<Date> is not yet implemented");
+        // This method could be extended, if you have problems. Send an email to
+        // discuss@restlet.tigris.org
+        return DateUtils.format(date);
     }
 }

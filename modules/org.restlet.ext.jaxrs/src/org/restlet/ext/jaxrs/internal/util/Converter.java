@@ -27,7 +27,6 @@
  * 
  * Restlet is a registered trademark of Noelios Technologies.
  */
-
 package org.restlet.ext.jaxrs.internal.util;
 
 import java.util.ArrayList;
@@ -38,12 +37,14 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
 
+import org.restlet.data.CacheDirective;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Encoding;
@@ -51,6 +52,7 @@ import org.restlet.data.Form;
 import org.restlet.data.Language;
 import org.restlet.data.Parameter;
 import org.restlet.data.Tag;
+import org.restlet.engine.http.HttpConstants;
 import org.restlet.engine.util.FormUtils;
 import org.restlet.util.Series;
 
@@ -467,6 +469,73 @@ public class Converter {
             restletVariants.add(restletVariant);
         }
         return restletVariants;
+    }
+
+    /**
+     * @param cacheDirectives
+     * @return the converted JAX-RS {@link CacheControl}
+     */
+    public static CacheControl toJaxRsCacheControl(
+            List<CacheDirective> cacheDirectives) {
+        CacheControl jaxRsCacheControl = new CacheControl();
+        for (CacheDirective cacheDirective : cacheDirectives) {
+            if (cacheDirective.getName() == HttpConstants.CACHE_MAX_AGE)
+                jaxRsCacheControl.setMaxAge(Integer.valueOf(cacheDirective
+                        .getValue()));
+            else if (cacheDirective.getName() == HttpConstants.CACHE_MUST_REVALIDATE)
+                jaxRsCacheControl.setMustRevalidate(true);
+            else if (cacheDirective.getName() == HttpConstants.CACHE_NO_CACHE)
+                jaxRsCacheControl.setNoCache(true);
+            else if (cacheDirective.getName() == HttpConstants.CACHE_NO_STORE)
+                jaxRsCacheControl.setNoStore(true);
+            else if (cacheDirective.getName() == HttpConstants.CACHE_NO_TRANSFORM)
+                jaxRsCacheControl.setNoTransform(true);
+            else if (cacheDirective.getName() == HttpConstants.CACHE_PROXY_MUST_REVALIDATE)
+                jaxRsCacheControl.setProxyRevalidate(true);
+            else if (cacheDirective.getName() == HttpConstants.CACHE_PUBLIC)
+                jaxRsCacheControl.setPrivate(false);
+            else
+                jaxRsCacheControl.getCacheExtension().put(
+                        cacheDirective.getName(), cacheDirective.getValue());
+        }
+        return jaxRsCacheControl;
+    }
+
+    /**
+     * @param cacheControl
+     * @return the converted {@link CacheDirective}
+     */
+    public static List<CacheDirective> toRestletCacheDirective(
+            CacheControl cacheControl) {
+        List<CacheDirective> directives = new ArrayList<CacheDirective>();
+        if (cacheControl.getMaxAge() >= 0)
+            directives.add(CacheDirective.maxAge(cacheControl.getMaxAge()));
+        if (cacheControl.getSMaxAge() >= 0)
+            directives.add(CacheDirective.sharedMaxAge(cacheControl
+                    .getSMaxAge()));
+        if (!cacheControl.getNoCacheFields().isEmpty())
+            directives.add(CacheDirective.noCache(cacheControl
+                    .getNoCacheFields()));
+        if (!cacheControl.getPrivateFields().isEmpty())
+            directives.add(CacheDirective.privateInfo(cacheControl
+                    .getPrivateFields()));
+        if (cacheControl.isMustRevalidate())
+            directives.add(CacheDirective.mustRevalidate());
+        if (cacheControl.isNoCache())
+            directives.add(CacheDirective.noCache());
+        if (cacheControl.isNoStore())
+            directives.add(CacheDirective.noStore());
+        if (cacheControl.isNoTransform())
+            directives.add(CacheDirective.noTransform());
+        if (cacheControl.isPrivate())
+            directives.add(CacheDirective.privateInfo());
+        if (cacheControl.isProxyRevalidate())
+            directives.add(CacheDirective.proxyMustRevalidate());
+        for (Map.Entry<String, String> c : cacheControl.getCacheExtension()
+                .entrySet()) {
+            directives.add(new CacheDirective(c.getKey(), c.getValue()));
+        }
+        return directives;
     }
 
     private Converter() {
