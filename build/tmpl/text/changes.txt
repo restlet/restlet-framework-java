@@ -3,6 +3,8 @@
 Changes log  
 ===========
 
+- @version-full@ (@release-date@)
+
 - 2.0 Milestone 6 (2009-11-20)
     - API changes
         - Renamed ChallengeScheme#HTTP_MS_SHAREDKEY into 
