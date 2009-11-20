@@ -162,6 +162,18 @@ public class HttpDigestHelper extends AuthenticationHelper {
                     }
                     expectedResponse.append(':').append(a2);
 
+                    System.out.println("nonce " + nonce);
+                    System.out.println("requestUri " + requestUri);
+                    System.out.println("realm " + guard.getRealm());
+                    System.out.println("method " + request.getMethod());
+                    System.out.println("qop " + qop);
+                    System.out.println("cnonce " + cnonce);
+                    System.out.println("nc " + nc);
+                    System.out.println("a1 " + a1);
+                    System.out.println("a2 " + a2);
+                    System.out.println("expectedResponse " + expectedResponse);
+                    System.out.println("response " + response);
+                    
                     if (response.equals(Engine.getInstance().toMd5(
                             expectedResponse.toString()))) {
                         return Guard.AUTHENTICATION_VALID;
