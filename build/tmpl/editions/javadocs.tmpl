@@ -34,7 +34,7 @@
 		</javadoc>
 
 		<javadoc sourcepathref="core-source-path"
-                 packagenames="org.restlet.engine.*"
+</#noparse>                 <#if edition.translatePackages>packagenames="org.restlet.${edition.id}.engine.*"<#else>packagenames="org.restlet.engine.*"</#if><#noparse>
                  excludepackagenames="${exclude-packages}"
                  destdir="${docs-engine}"
                  classpathref="path-all"
@@ -71,7 +71,7 @@
 <#if extension??>
 <#noparse>
 		<javadoc sourcepathref="extensions-source-path"
-                 packagenames="org.restlet.ext.*"
+</#noparse>                 <#if edition.translatePackages>packagenames="org.restlet.${edition.id}.ext.*"<#else>packagenames="org.restlet.ext.*"</#if><#noparse>
                  excludepackagenames="${exclude-packages}"
                  destdir="${docs-ext}"
                  classpathref="path-all"
