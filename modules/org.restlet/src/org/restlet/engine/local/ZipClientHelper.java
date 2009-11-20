@@ -154,7 +154,7 @@ public class ZipClientHelper extends LocalClientHelper {
 
             Entity entity = new ZipEntryEntity(zipFile, entryName,
                     metadataService);
-            if (entity.exists()) {
+            if (!entity.exists()) {
                 response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
             } else {
                 final Representation output;
