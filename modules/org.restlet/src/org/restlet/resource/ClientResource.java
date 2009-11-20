@@ -55,6 +55,7 @@ import org.restlet.data.Status;
 import org.restlet.engine.Engine;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
+import org.restlet.service.ConverterService;
 import org.restlet.util.Series;
 
 /**
@@ -634,29 +635,45 @@ public class ClientResource extends UniformResource {
 
         // Check for redirections
         if (isFollowingRedirects() && response.getStatus().isRedirection()
-                && (response.getLocationRef() != null)
-                && request.getMethod().isSafe()) {
-            Reference newTargetRef = response.getLocationRef();
-
-            if ((references != null) && references.contains(newTargetRef)) {
-                getLogger().warning(
-                        "Infinite redirection loop detected with URI: "
-                                + newTargetRef);
-            } else if (request.getEntity() != null
-                    && !request.isEntityAvailable()) {
-                getLogger()
-                        .warning(
-                                "Unable to follow the redirection because the request entity isn't available anymore.");
+                && (response.getLocationRef() != null)) {
+            boolean doRedirection = false;
+            if (request.getMethod().isSafe()) {
+                doRedirection = true;
             } else {
-                if (references == null) {
-                    references = new ArrayList<Reference>();
+                if (Status.REDIRECTION_SEE_OTHER.equals(response.getStatus())) {
+                    // The user agent is redirected using the GET method
+                    request.setMethod(Method.GET);
+                    request.setEntity(null);
+                    doRedirection = true;
+                } else if (Status.REDIRECTION_USE_PROXY.equals(response
+                        .getStatus())) {
+                    doRedirection = true;
                 }
+            }
 
-                // Add to the list of redirection reference
-                // to prevent infinite loops
-                references.add(request.getResourceRef());
-                request.setResourceRef(newTargetRef);
-                handle(request, response, references, 0);
+            if (doRedirection) {
+                Reference newTargetRef = response.getLocationRef();
+
+                if ((references != null) && references.contains(newTargetRef)) {
+                    getLogger().warning(
+                            "Infinite redirection loop detected with URI: "
+                                    + newTargetRef);
+                } else if (request.getEntity() != null
+                        && !request.isEntityAvailable()) {
+                    getLogger()
+                            .warning(
+                                    "Unable to follow the redirection because the request entity isn't available anymore.");
+                } else {
+                    if (references == null) {
+                        references = new ArrayList<Reference>();
+                    }
+
+                    // Add to the list of redirection reference
+                    // to prevent infinite loops
+                    references.add(request.getResourceRef());
+                    request.setResourceRef(newTargetRef);
+                    handle(request, response, references, 0);
+                }
             }
         } else if (isRetryOnError()
                 && response.getStatus().isRecoverableError()
