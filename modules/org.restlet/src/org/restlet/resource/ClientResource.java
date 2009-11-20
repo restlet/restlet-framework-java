@@ -55,7 +55,6 @@ import org.restlet.data.Status;
 import org.restlet.engine.Engine;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
-import org.restlet.service.ConverterService;
 import org.restlet.util.Series;
 
 /**
@@ -917,7 +916,7 @@ public class ClientResource extends UniformResource {
     // [ifndef gwt] method
     /**
      * Posts an object entity. Automatically serializes the object using the
-     * {@link ConverterService}.
+     * {@link org.restlet.service.ConverterService}.
      * 
      * @param entity
      *            The object entity to post.
@@ -949,7 +948,7 @@ public class ClientResource extends UniformResource {
 
     /**
      * Posts an object entity. Automatically serializes the object using the
-     * {@link ConverterService}.
+     * {@link org.restlet.service.ConverterService}.
      * 
      * @param entity
      *            The object entity to post.
@@ -1010,7 +1009,7 @@ public class ClientResource extends UniformResource {
 
     /**
      * Puts an object entity. Automatically serializes the object using the
-     * {@link ConverterService}.
+     * {@link org.restlet.service.ConverterService}.
      * 
      * @param entity
      *            The object entity to put.
@@ -1027,7 +1026,7 @@ public class ClientResource extends UniformResource {
     // [ifndef gwt] method
     /**
      * Puts an object entity. Automatically serializes the object using the
-     * {@link ConverterService}.
+     * {@link org.restlet.service.ConverterService}.
      * 
      * @param entity
      *            The object entity to put.
@@ -1059,7 +1058,7 @@ public class ClientResource extends UniformResource {
 
     /**
      * Puts an object entity. Automatically serializes the object using the
-     * {@link ConverterService}.
+     * {@link org.restlet.service.ConverterService}.
      * 
      * @param entity
      *            The object entity to post.
@@ -1380,7 +1379,7 @@ public class ClientResource extends UniformResource {
     // [ifndef gwt] method
     /**
      * Converts a representation into a Java object. Leverages the
-     * {@link ConverterService}.
+     * {@link org.restlet.service.ConverterService}.
      * 
      * @param <T>
      *            The expected class of the Java object.
@@ -1407,6 +1406,7 @@ public class ClientResource extends UniformResource {
         return result;
     }
 
+    // [ifndef gwt] method
     /**
      * Converts an object into a representation based on client preferences.
      * 
