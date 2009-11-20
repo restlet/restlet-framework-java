@@ -1,0 +1,874 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+<!-- Content Stylesheet for Site -->
+
+    
+    
+
+    
+<!-- start the processing -->
+    <!-- ====================================================================== -->
+    <!-- GENERATED FILE, DO NOT EDIT, EDIT THE XML FILE IN xdocs INSTEAD! -->
+    <!-- Main Page Section -->
+    <!-- ====================================================================== -->
+<html>
+  <head>
+    <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type" />
+
+                          <meta name="author" content="Oliver Burn">
+            <meta name="email" content="$au.getAttributeValue("email")">
+    
+    
+            
+        
+    <title>Checkstyle - Ant Task</title>
+
+    <style type="text/css" media="all">
+      @import url("./css/cs-layout.css");
+      @import url("./css/cs-style.css");
+    </style>
+  </head>
+
+  <body>
+    <div class="csTopBar">
+      <div class="csTopBarContents">
+        <div class="csLeft">
+          <h1>Ant Task</h1>
+        </div>
+        <div class="csRight">
+          <a href="http://checkstyle.sourceforge.net/">
+            <img src="images/logo.png" alt="Checkstyle Logo" height="70"/>
+          </a>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="csMiddleContainer">
+      <div class="csLeftBar">
+        <div class="csLeftBarContents">
+            <!-- ============================================================ -->
+  <!-- start makeNavigationBar -->
+  
+  <ul>
+          <li>
+        <strong>About</strong>
+      </li>
+                        <li>    <a href="./index.html">Checkstyle</a>
+</li>
+                    
+  
+          <li>
+        <strong>Documentation</strong>
+      </li>
+                        <li>    <a href="./releasenotes.html">Release Notes</a>
+</li>
+                    
+                  <li>    <a href="./config.html">Configuration</a>
+</li>
+                                    <li>    <a href="./property_types.html">&nbsp;&nbsp;&nbsp;Property Types</a>
+</li>
+                    
+  
+                  <li>    <a href="./running.html">Running</a>
+</li>
+                                    <li><b>    <a href="./anttask.html">&nbsp;&nbsp;&nbsp;Ant Task</a>
+</b></li>
+                                                      <li><a href="#Description">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Description</a></li>
+                                                        <li><a href="#Installation">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Installation</a></li>
+                                                        <li><a href="#Parameters">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Parameters</a></li>
+                                                        <li><a href="#Nested Elements">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Nested Elements</a></li>
+                                                        <li><a href="#Examples">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Examples</a></li>
+                                      
+                  <li>    <a href="./cmdline.html">&nbsp;&nbsp;&nbsp;Command Line</a>
+</li>
+                    
+  
+                  <li>    <a href="./availablechecks.html">Available Checks</a>
+</li>
+                    
+                  <li>    <a href="./checks.html">Standard Checks</a>
+</li>
+                                    <li>    <a href="./config_javadoc.html">&nbsp;&nbsp;&nbsp;Javadoc Comments</a>
+</li>
+                    
+                  <li>    <a href="./config_naming.html">&nbsp;&nbsp;&nbsp;Naming Conventions</a>
+</li>
+                    
+                  <li>    <a href="./config_header.html">&nbsp;&nbsp;&nbsp;Headers</a>
+</li>
+                    
+                  <li>    <a href="./config_imports.html">&nbsp;&nbsp;&nbsp;Imports</a>
+</li>
+                    
+                  <li>    <a href="./config_sizes.html">&nbsp;&nbsp;&nbsp;Size Violations</a>
+</li>
+                    
+                  <li>    <a href="./config_whitespace.html">&nbsp;&nbsp;&nbsp;Whitespace</a>
+</li>
+                    
+                  <li>    <a href="./config_modifier.html">&nbsp;&nbsp;&nbsp;Modifiers</a>
+</li>
+                    
+                  <li>    <a href="./config_blocks.html">&nbsp;&nbsp;&nbsp;Block Checks</a>
+</li>
+                    
+                  <li>    <a href="./config_coding.html">&nbsp;&nbsp;&nbsp;Coding</a>
+</li>
+                    
+                  <li>    <a href="./config_design.html">&nbsp;&nbsp;&nbsp;Class Design</a>
+</li>
+                    
+                  <li>    <a href="./config_duplicates.html">&nbsp;&nbsp;&nbsp;Duplicate Code</a>
+</li>
+                    
+                  <li>    <a href="./config_metrics.html">&nbsp;&nbsp;&nbsp;Metrics</a>
+</li>
+                    
+                  <li>    <a href="./config_misc.html">&nbsp;&nbsp;&nbsp;Miscellaneous</a>
+</li>
+                    
+  
+                  <li>    <a href="./optional.html">Optional Checks</a>
+</li>
+                                    <li>    <a href="./config_j2ee.html">&nbsp;&nbsp;&nbsp;J2EE Checks</a>
+</li>
+                    
+  
+                  <li>    <a href="./extending.html">Extending Checkstyle</a>
+</li>
+                                    <li>    <a href="./writingchecks.html">&nbsp;&nbsp;&nbsp;Writing checks</a>
+</li>
+                    
+                  <li>    <a href="./writingfilters.html">&nbsp;&nbsp;&nbsp;Writing filters</a>
+</li>
+                    
+                  <li>    <a href="./writinglisteners.html">&nbsp;&nbsp;&nbsp;Writing listeners</a>
+</li>
+                    
+  
+                  <li>    <a href="./api/index.html">Javadoc</a>
+</li>
+                    
+  
+          <li>
+        <strong>SourceForge</strong>
+      </li>
+                        <li>    <a href="http://sourceforge.net/mail/?group_id=29721">Mailing Lists</a>
+</li>
+                    
+                  <li>    <a href="http://sourceforge.net/tracker/?atid=397078&group_id=29721&func=browse">Bug Database</a>
+</li>
+                    
+                  <li>    <a href="http://sourceforge.net/tracker/?atid=397081&group_id=29721&func=browse">Feature Requests</a>
+</li>
+                    
+  
+          <li>
+        <strong>Developers</strong>
+      </li>
+                        <li>    <a href="http://sourceforge.net/projects/checkstyle">Project Page</a>
+</li>
+                    
+                  <li>    <a href="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/checkstyle/">CVS Repository</a>
+</li>
+                    
+                  <li>    <a href="./contributing.html">Contributing</a>
+</li>
+                    
+  
+      </ul>
+
+  <ul>
+    <li>
+      <strong>Hosted by:</strong>
+      <div align="center">
+        <p><a href="http://sourceforge.net">
+        <img src="http://sourceforge.net/sflogo.php?group_id=29721&amp;type=1" width="88" height="31" alt="SourceForge Logo"/></a>
+         </p>
+       </div>
+    </li>
+  </ul>
+
+  <!-- end makeNavigationBar -->
+  <!-- ============================================================ -->
+        </div>
+      </div>
+
+      <div class="csMain">
+                          <a id="Description"></a>
+  <h2>Description</h2>
+                                    <p>
+        This task runs Checkstyle over specified Java files. The task has been
+        tested using ANT 1.5.  The latest version of checkstyle can be found
+        at <a href="http://checkstyle.sourceforge.net/">http://checkstyle.sourceforge.net/</a>.
+        This task is included in the checkstyle distribution.
+      </p>
+                                                      <a id="Installation"></a>
+  <h2>Installation</h2>
+                                    <p>
+        The easiest way is to include <span class="default">checkstyle-all-4.2.jar</span> in the
+        classpath. This contains all the classes required to run
+        Checkstyle. Alternatively, you must include the following in the
+        classpath:
+      </p>
+                                                <ol>
+        <li>
+          <span class="default">checkstyle-4.2.jar</span>
+        </li>
+        <li>
+          ANTLR 2.7.2 classes. <span class="default">antlr.jar</span> is
+          included in the distribution.
+        </li>
+        <li>
+          Jakarta Commons Beanutils classes. <span class="default">commons-beanutils.jar</span> is included in the
+          distribution.
+        </li>
+        <li>
+          Jakarta Commons Collections classes. <span class="default">commons-collections.jar</span> is included in the
+          distribution.
+        </li>
+        <li>
+          Jakarta Commons Logging classes. <span class="default">commons-logging.jar</span> is included in the
+          distribution.
+        </li>
+        <li>
+          A JAXP compliant XML parser implementation. You already have it on
+          your system if you run ANT or JDK 1.4.
+        </li>
+      </ol>
+                                                <p>
+        To use the task in a build file, you will need the following
+        <code>taskdef</code> declaration:
+      </p>
+                                                    <div align="left">
+    <table cellspacing="4" cellpadding="0" border="0">
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#ffffff"><pre>&lt;taskdef resource=&quot;checkstyletask.properties&quot;
+         classpath=&quot;/path/to/checkstyle-all-4.2.jar&quot;/&gt;</pre></td>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    </table>
+    </div>
+                                                <p>
+        Or, assuming that Checkstyle is in the global classpath (not
+        recommended), then you will need the following <code>taskdef</code>
+        declaration:
+      </p>
+                                                    <div align="left">
+    <table cellspacing="4" cellpadding="0" border="0">
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#ffffff"><pre>&lt;taskdef resource=&quot;checkstyletask.properties&quot;/&gt;</pre></td>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    </table>
+    </div>
+                                                <p>
+        Or if you use Ant 1.6 and later and assuming that Checkstyle
+        is in the library search path, then you may use antlib feature
+        of Ant (see <a href="http://ant.apache.org/manual/CoreTypes/antlib.html">http://ant.apache.org/manual/CoreTypes/antlib.html</a>
+        for more details).  For example:
+      </p>
+                                                    <div align="left">
+    <table cellspacing="4" cellpadding="0" border="0">
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#ffffff"><pre>&lt;project name=&quot;foo&quot; ...
+         xmlns:cs=&quot;antlib:com.puppycrawl.tools.checkstyle&quot;&gt;
+...
+  &lt;cs:checkstyle&gt;
+  ...
+  &lt;/cs:checkstyle&gt;
+...
+&lt;/project&gt;</pre></td>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    </table>
+    </div>
+                                                      <a id="Parameters"></a>
+  <h2>Parameters</h2>
+                                    <table>
+                                            <tr class="even">
+                        <td class="even"
+>
+                <b>Attribute</b>
+        </td>
+                                <td class="even"
+>
+                <b>Description</b>
+        </td>
+                                <td class="even"
+>
+                <b>Required</b>
+        </td>
+            </tr>
+                                                <tr class="odd">
+                        <td class="odd"
+>
+                file
+        </td>
+                                <td class="odd"
+>
+                File to run checkstyle on.
+        </td>
+                                <td class="odd"
+>
+                
+            One of either <i>file</i> or at least one nested <i>fileset</i>
+            element
+          
+        </td>
+            </tr>
+                                                <tr class="even">
+                        <td class="even"
+>
+                config
+        </td>
+                                <td class="even"
+>
+                
+            Specifies a file that defines the configuration modules.  <a href="config.html">See here</a> for a description of how to define
+            a configuration.
+          
+        </td>
+                                <td class="even"
+>
+                Exactly one of config or configURL
+        </td>
+            </tr>
+                                                <tr class="odd">
+                        <td class="odd"
+>
+                configURL
+        </td>
+                                <td class="odd"
+>
+                
+            Specifies a URL that defines the configuration modules. <a href="config.html">See here</a> for a description of how to define
+            a configuration.
+          
+        </td>
+                                <td class="odd"
+>
+                Exactly one of config or configURL
+        </td>
+            </tr>
+                                                <tr class="even">
+                        <td class="even"
+>
+                properties
+        </td>
+                                <td class="even"
+>
+                
+            Specifies a file that contains properties for <a href="config.html#Properties"> expanded property values</a> of the
+            configuration.  Ant properties (like ${basedir}) and nested
+            property elements override the properties in this file.
+          
+        </td>
+                                <td class="even"
+>
+                No
+        </td>
+            </tr>
+                                                <tr class="odd">
+                        <td class="odd"
+>
+                packageNamesFile
+        </td>
+                                <td class="odd"
+>
+                
+            Specifies a file that contains <a href="config.html#Packages">
+            package names</a> for the configuration.
+          
+        </td>
+                                <td class="odd"
+>
+                No
+        </td>
+            </tr>
+                                                <tr class="even">
+                        <td class="even"
+>
+                failOnViolation
+        </td>
+                                <td class="even"
+>
+                
+            Specifies whether the build will continue even if there are
+            violations.  Defaults to <span class="default">"true"</span>.
+          
+        </td>
+                                <td class="even"
+>
+                No
+        </td>
+            </tr>
+                                                <tr class="odd">
+                        <td class="odd"
+>
+                failureProperty
+        </td>
+                                <td class="odd"
+>
+                The name of a property to set in the event of a violation.
+        </td>
+                                <td class="odd"
+>
+                No
+        </td>
+            </tr>
+                                                <tr class="even">
+                        <td class="even"
+>
+                maxErrors
+        </td>
+                                <td class="even"
+>
+                
+            The maximum number of errors that are tolerated before breaking
+            the build or setting the failure property. Defaults to <span class="default">"0"</span>.
+          
+        </td>
+                                <td class="even"
+>
+                No
+        </td>
+            </tr>
+                                                <tr class="odd">
+                        <td class="odd"
+>
+                maxWarnings
+        </td>
+                                <td class="odd"
+>
+                
+            The maximum number of warnings that are tolerated before breaking
+            the build or setting the failure property. Defaults to <span class="default">"2147483647"</span>, i.e.  <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/lang/Integer.html#MAX_VALUE">Integer.MAX_VALUE</a>.
+          
+        </td>
+                                <td class="odd"
+>
+                No
+        </td>
+            </tr>
+                                                <tr class="even">
+                        <td class="even"
+>
+                classpath
+        </td>
+                                <td class="even"
+>
+                
+            The classpath to use when looking up classes. Defaults to the
+            current classpath.
+          
+        </td>
+                                <td class="even"
+>
+                No
+        </td>
+            </tr>
+                                                <tr class="odd">
+                        <td class="odd"
+>
+                classpathref
+        </td>
+                                <td class="odd"
+>
+                
+            The classpath to use when looking up classes, given as a reference
+            to a path defined elsewhere.
+          
+        </td>
+                                <td class="odd"
+>
+                No
+        </td>
+            </tr>
+            </table>
+                                                      <a id="Nested Elements"></a>
+  <h2>Nested Elements</h2>
+                                    <p>
+        This task supports the nested elements <a href="http://ant.apache.org/manual/CoreTypes/fileset.html">&lt;fileset&gt;</a>,
+        <a href="http://ant.apache.org/manual/using.html#path">&lt;classpath&gt;</a>,
+        <span class="default">&lt;formatter&gt;</span>, and <span class="default">&lt;property&gt;</span>.
+      </p>
+                                                <p>
+        The parameters for the <span class="default">&lt;formatter&gt;</span>
+        element are:
+      </p>
+                                                <table>
+                                            <tr class="even">
+                        <td class="even"
+>
+                <b>Attribute</b>
+        </td>
+                                <td class="even"
+>
+                <b>Description</b>
+        </td>
+                                <td class="even"
+>
+                <b>Required</b>
+        </td>
+            </tr>
+                                                <tr class="odd">
+                        <td class="odd"
+>
+                type
+        </td>
+                                <td class="odd"
+>
+                
+            <p>The type of output to generate. The valid values are:</p>
+            <ul>
+              <li>
+                <span class="default">plain</span> - specifies the <a href="api/com/puppycrawl/tools/checkstyle/DefaultLogger.html">DefaultLogger</a>
+              </li>
+              <li>
+                <span class="default">xml</span> - specifies the <a href="api/com/puppycrawl/tools/checkstyle/XMLLogger.html">XMLLogger</a>
+              </li>
+            </ul>
+            <p>Defaults to <span class="default">"plain"</span>.</p>
+          
+        </td>
+                                <td class="odd"
+>
+                No
+        </td>
+            </tr>
+                                                <tr class="even">
+                        <td class="even"
+>
+                toFile
+        </td>
+                                <td class="even"
+>
+                
+            The file to write output to. Defaults to standard output. Note,
+            there is no way to explicitly specify standard output.
+          
+        </td>
+                                <td class="even"
+>
+                No
+        </td>
+            </tr>
+                                                <tr class="odd">
+                        <td class="odd"
+>
+                useFile
+        </td>
+                                <td class="odd"
+>
+                Boolean that determines whether output should be sent to
+          a file.  Default is <span class="default">true</span>.
+        </td>
+                                <td class="odd"
+>
+                No
+        </td>
+            </tr>
+            </table>
+                                                <p>
+        A <span class="default">&lt;property&gt;</span> element provides a
+        property for <a href="config.html#Properties">expanded property
+        values</a> of the configuration.  The parameters for the <span class="default">&lt;property&gt;</span> element are:
+      </p>
+                                                <table>
+                                            <tr class="even">
+                        <td class="even"
+>
+                <b>Attribute</b>
+        </td>
+                                <td class="even"
+>
+                <b>Description</b>
+        </td>
+                                <td class="even"
+>
+                <b>Required</b>
+        </td>
+            </tr>
+                                                <tr class="odd">
+                        <td class="odd"
+>
+                key
+        </td>
+                                <td class="odd"
+>
+                <p>The key for the property.</p>
+        </td>
+                                <td class="odd"
+>
+                Yes
+        </td>
+            </tr>
+                                                <tr class="even">
+                        <td class="even"
+>
+                value
+        </td>
+                                <td class="even"
+>
+                The value of the property specified as a string.
+        </td>
+                                <td class="even"
+>
+                Either <i>value</i> or <i>file</i>
+        </td>
+            </tr>
+                                                <tr class="odd">
+                        <td class="odd"
+>
+                file
+        </td>
+                                <td class="odd"
+>
+                
+            The value of the property specified as a file. This is great for
+            specifying file names relative to the ANT build file.
+          
+        </td>
+                                <td class="odd"
+>
+                Either <i>value</i> or <i>file</i>
+        </td>
+            </tr>
+            </table>
+                                                      <a id="Examples"></a>
+  <h2>Examples</h2>
+                                    <p>
+        <b>
+          Run checkstyle with configuration file
+          <code>docs/sun_checks.xml</code> on a single file
+        </b>
+      </p>
+                                                    <div align="left">
+    <table cellspacing="4" cellpadding="0" border="0">
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#ffffff"><pre>&lt;checkstyle config=&quot;docs/sun_checks.xml&quot; file=&quot;Check.java&quot;/&gt;</pre></td>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    </table>
+    </div>
+                                                <p>
+        <b>
+          Run checkstyle on a set of Java files using site-wide configuration
+          and an expanded property value
+        </b>
+      </p>
+                                                    <div align="left">
+    <table cellspacing="4" cellpadding="0" border="0">
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#ffffff"><pre>&lt;checkstyle config=&quot;/path/to/site/sun_checks.xml&quot;&gt;
+  &lt;fileset dir=&quot;src/checkstyle&quot; includes=&quot;**/*.java&quot;/&gt;
+
+  &lt;!-- Location of cache-file. Something that is project specific --&gt;
+  &lt;property key=&quot;checkstyle.cache.file&quot; file=&quot;target/cachefile&quot;/&gt;
+&lt;/checkstyle&gt;</pre></td>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    </table>
+    </div>
+                                                <p>
+        <b>
+          Run checkstyle on a set of files and output messages to standard
+          output in plain format, and a file in XML format
+        </b>
+      </p>
+                                                    <div align="left">
+    <table cellspacing="4" cellpadding="0" border="0">
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#ffffff"><pre>&lt;checkstyle config=&quot;docs/sun_checks.xml&quot;&gt;
+  &lt;fileset dir=&quot;src/checkstyle&quot; includes=&quot;**/*.java&quot;/&gt;
+  &lt;formatter type=&quot;plain&quot;/&gt;
+  &lt;formatter type=&quot;xml&quot; toFile=&quot;build/checkstyle_errors.xml&quot;/&gt;
+&lt;/checkstyle&gt;</pre></td>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    </table>
+    </div>
+                                                <p>
+        <b>
+          Run checkstyle with configuration file
+          <code>docs/sun_checks.xml</code> on a file and provide a package
+          names file
+        </b>
+      </p>
+                                                    <div align="left">
+    <table cellspacing="4" cellpadding="0" border="0">
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#ffffff"><pre>&lt;checkstyle config=&quot;docs/sun_checks.xml&quot;
+            packageNamesFile=&quot;myPackageNames.xml&quot;
+            file=&quot;Check.java&quot;/&gt;</pre></td>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    </table>
+    </div>
+                                                <p>
+        <b>
+          Run checkstyle in an automated build and send an email report if
+          style violations are detected
+        </b>
+      </p>
+                                                    <div align="left">
+    <table cellspacing="4" cellpadding="0" border="0">
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#ffffff"><pre>&lt;target name=&quot;checkstyle&quot;
+        description=&quot;Generates a report of code convention violations.&quot;&gt;
+
+  &lt;checkstyle config=&quot;docs/sun_checks.xml&quot;
+              failureProperty=&quot;checkstyle.failure&quot;
+              failOnViolation=&quot;false&quot;&gt;
+    &lt;formatter type=&quot;xml&quot; tofile=&quot;checkstyle_report.xml&quot;/&gt;
+    &lt;fileset dir=&quot;src&quot; includes=&quot;**/*.java&quot;/&gt;
+  &lt;/checkstyle&gt;
+
+  &lt;style in=&quot;checkstyle_report.xml&quot; out=&quot;checkstyle_report.html&quot; style=&quot;checkstyle.xsl&quot;/&gt;
+
+&lt;/target&gt;
+
+&lt;!-- run this target as part of automated build --&gt;
+&lt;target name=&quot;checkstyle-nightly&quot;
+        depends=&quot;checkstyle&quot;
+        if=&quot;checkstyle.failure&quot;
+        description=&quot;Sends email if checkstyle detected code conventions violations.&quot;&gt;
+
+  &lt;!-- use your own server and email addresses below. See Ant documentation for details --&gt;
+
+  &lt;mail from=&quot;qa@some.domain&quot;
+        tolist=&quot;someone@some.domain,someoneelse@some.domain&quot;
+        mailhost=&quot;mailbox.some.domain&quot;
+        subject=&quot;Checkstyle violation(s) in project ${ant.project.name}&quot;
+        files=&quot;checkstyle_report.html&quot;/&gt;
+
+&lt;/target&gt;</pre></td>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    </table>
+    </div>
+                                        </div>
+    </div>
+
+    <div class="csBottomBar">
+      <div class="csBottomBarContents">
+        Copyright &copy; 2001-2005, Oliver Burn
+      </div>
+    </div>
+  </body>
+</html>
+
+<!-- end the processing -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

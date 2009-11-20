@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:app="http://www.w3.org/2007/app">
+   <title type="text">BitWorking | Joe Gregorio</title>
+   <link href="http://bitworking.org/projects/apptestsite/app.cgi/service/draft/" rel="self" />
+   <link href="http://bitworking.org/" rel="alternate" />
+   <icon>http://bitworking.org/favicon.ico</icon>
+   <updated>2008-09-26T02:35:00.065423-04:00</updated>
+   <author>
+      <name>Joe Gregorio</name>
+   </author>
+   <id>http://bitworking.org/</id>
+   <entry>
+     <title>my_test entry</title>
+     <link href="http://bitworking.org/news/24/eee-eee" />
+     <link href="24/" rel="edit" />
+     <link href="24/;media" rel="edit-media" />
+     <id>http://bitworking.org/news/24/eee-eee</id>
+     <updated>2008-09-26T02:35:00.065423-04:00</updated>
+     <app:edited>2008-09-26T02:35:00.065423-04:00</app:edited>
+     <summary type="xhtml">
+          <div xmlns="http://www.w3.org/1999/xhtml" />
+     </summary>
+         <content type="xhtml">
+              <div xmlns="http://www.w3.org/1999/xhtml"><p>test</p></div>
+         </content>
+   </entry><entry>
+     <title />
+     <link href="http://bitworking.org/news/23/eeewww-ttt" />
+     <link href="23/" rel="edit" />
+     <link href="23/;media" rel="edit-media" />
+     <id>http://bitworking.org/news/23/eeewww-ttt</id>
+     <updated>2008-09-26T02:34:39.344129-04:00</updated>
+     <app:edited>2008-09-26T02:34:39.344129-04:00</app:edited>
+     <summary type="xhtml">
+          <div xmlns="http://www.w3.org/1999/xhtml" />
+     </summary>
+         <content type="xhtml">
+              <div xmlns="http://www.w3.org/1999/xhtml" />
+         </content>
+   </entry><entry>
+     <title>draft A</title>
+     <link href="http://bitworking.org/news/22/draft-A" />
+     <link href="22/" rel="edit" />
+     <link href="22/;media" rel="edit-media" />
+     <id>http://bitworking.org/news/22/draft-A</id>
+     <updated>2008-08-02T19:39:38.501682-04:00</updated>
+     <app:edited>2008-08-02T19:39:38.501682-04:00</app:edited>
+     <summary type="xhtml">
+          <div xmlns="http://www.w3.org/1999/xhtml" />
+     </summary>
+         <content type="xhtml">
+              <div xmlns="http://www.w3.org/1999/xhtml">draft A</div>
+         </content>
+   </entry><entry>
+     <title>Copy</title>
+     <link href="http://bitworking.org/news/20/Copy" />
+     <link href="20/" rel="edit" />
+     <link href="20/;media" rel="edit-media" />
+     <id>http://bitworking.org/news/20/Copy</id>
+     <updated>2008-05-21T16:12:51.505857-04:00</updated>
+     <app:edited>2008-05-21T16:12:51.505857-04:00</app:edited>
+     <summary type="xhtml">
+          <div xmlns="http://www.w3.org/1999/xhtml"><p><b><i>This is in the summary.</i></b></p></div>
+     </summary>
+         <content type="xhtml">
+              <div xmlns="http://www.w3.org/1999/xhtml"><p>This is all new content. And now we should get a cache hit.</p></div>
+         </content>
+   </entry><entry>
+     <title>A title</title>
+     <link href="http://bitworking.org/news/19/A-title" />
+     <link href="19/" rel="edit" />
+     <link href="19/;media" rel="edit-media" />
+     <id>http://bitworking.org/news/19/A-title</id>
+     <updated>2008-05-21T16:11:09.884781-04:00</updated>
+     <app:edited>2008-05-21T16:11:09.884781-04:00</app:edited>
+     <summary type="xhtml">
+          <div xmlns="http://www.w3.org/1999/xhtml"><p><b><i>This is in the summary.</i></b></p></div>
+     </summary>
+         <content type="xhtml">
+              <div xmlns="http://www.w3.org/1999/xhtml"><p>This is all new content. And now we should get a cache hit.</p></div>
+         </content>
+   </entry><entry>
+     <title>Testing creating an HTML file</title>
+     <link href="http://bitworking.org/news/18/This-is-new-stuff" />
+     <link href="18/" rel="edit" />
+     <link href="18/;media" rel="edit-media" />
+     <id>http://bitworking.org/news/18/This-is-new-stuff</id>
+     <updated>2008-05-21T15:58:07.224649-04:00</updated>
+     <app:edited>2008-05-21T15:58:07.224649-04:00</app:edited>
+     <summary type="xhtml">
+          <div xmlns="http://www.w3.org/1999/xhtml" />
+     </summary>
+         <content type="xhtml">
+              <div xmlns="http://www.w3.org/1999/xhtml"><ol><li>This is all new content.</li></ol></div>
+         </content>
+   </entry><entry>
+     <title>A title</title>
+     <link href="http://bitworking.org/news/17/A-title" />
+     <link href="17/" rel="edit" />
+     <link href="17/;media" rel="edit-media" />
+     <id>http://bitworking.org/news/17/A-title</id>
+     <updated>2008-05-21T15:43:46.115747-04:00</updated>
+     <app:edited>2008-05-21T15:43:46.115747-04:00</app:edited>
+     <summary type="xhtml">
+          <div xmlns="http://www.w3.org/1999/xhtml"><p><b><i>This is in the summary.</i></b></p></div>
+     </summary>
+         <content type="xhtml">
+              <div xmlns="http://www.w3.org/1999/xhtml"><p>This is all new content. And now we should get a cache hit.</p></div>
+         </content>
+   </entry><entry>
+     <title>A longer title than the rest</title>
+     <link href="http://bitworking.org/news/15/A-longer-title-than-the-rest" />
+     <link href="15/" rel="edit" />
+     <link href="15/;media" rel="edit-media" />
+     <id>http://bitworking.org/news/15/A-longer-title-than-the-rest</id>
+     <updated>2008-05-21T14:31:40.790675-04:00</updated>
+     <app:edited>2008-05-21T14:31:40.790675-04:00</app:edited>
+     <summary type="xhtml">
+          <div xmlns="http://www.w3.org/1999/xhtml"><p><b><i>This is in the summary.</i></b></p></div>
+     </summary>
+         <content type="xhtml">
+              <div xmlns="http://www.w3.org/1999/xhtml"><p>This is all new content. And now we should get a cache hit.</p></div>
+         </content>
+   </entry><entry>
+     <title>This is new stuff</title>
+     <link href="http://bitworking.org/news/13/This-is-retitled" />
+     <link href="13/" rel="edit" />
+     <link href="13/;media" rel="edit-media" />
+     <id>http://bitworking.org/news/13/This-is-retitled</id>
+     <updated>2008-05-14T23:33:53.683341-04:00</updated>
+     <app:edited>2008-05-14T23:33:53.683341-04:00</app:edited>
+     <summary type="xhtml">
+          <div xmlns="http://www.w3.org/1999/xhtml" />
+     </summary>
+         <content type="xhtml">
+              <div xmlns="http://www.w3.org/1999/xhtml"><p>This is all new content.</p></div>
+         </content>
+   </entry>
+
+</feed>

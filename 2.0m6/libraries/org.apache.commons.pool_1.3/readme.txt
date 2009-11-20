@@ -1,0 +1,12 @@
+-------------------
+Apache Commons Pool
+-------------------
+
+"Pool provides an Object-pooling API, with three major aspects:
+   1. A generic object pool interface that clients and implementors can use to 
+      provide easily interchangable pooling implementations.
+   2. A toolkit for creating modular object pools.
+   3. Several general purpose pool implementations."
+
+For more information:
+http://commons.apache.org/pool/

@@ -1,0 +1,29 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Restlet Extension - XML
+Bundle-SymbolicName: org.restlet.ext.xml
+Bundle-Version: 2.0
+Bundle-Vendor: Noelios Technologies
+Export-Package: org.restlet.ext.xml;
+  uses:="org.restlet.representation,
+   javax.xml.parsers,
+   javax.xml.transform.dom,
+   org.w3c.dom,
+   org.xml.sax,
+   javax.xml.namespace,
+   org.restlet.data,
+   javax.xml.transform,
+   javax.xml.transform.stream,
+   javax.xml.validation,
+   javax.xml.transform.sax,
+   org.xml.sax.helpers"
+Import-Package: com.google.gwt.xml.client,
+ org.restlet,
+ org.restlet.data,
+ org.restlet.engine,
+ org.restlet.engine.util,
+ org.restlet.representation,
+ org.restlet.service,
+ org.restlet.util,
+ org.w3c.dom
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

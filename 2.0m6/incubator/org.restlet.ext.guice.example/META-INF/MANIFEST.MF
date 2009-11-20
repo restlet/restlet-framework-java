@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Restlet Extension - Guice (Example)
+Bundle-SymbolicName: org.restlet.ext.guice.example
+Bundle-Version: 2.0
+Bundle-Vendor: Noelios Technologies
+Import-Package: com.google.inject,
+ com.google.inject.binder,
+ com.google.inject.name,
+ org.restlet,
+ org.restlet.data,
+ org.restlet.ext.guice,
+ org.restlet.representation,
+ org.restlet.resource,
+ org.restlet.routing
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Apache Commons Pool
+Bundle-SymbolicName: org.apache.commons.pool
+Bundle-Version: 1.3
+Bundle-ClassPath: org.apache.commons.pool.jar
+Bundle-Vendor: Apache Software Foundation
+Export-Package: org.apache.commons.pool,
+ org.apache.commons.pool.impl;uses:="org.apache.commons.pool"
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: SLF4J API
+Bundle-SymbolicName: org.slf4j
+Bundle-Version: 1.5.8
+Bundle-ClassPath: org.slf4j.jar
+Bundle-Vendor: QOS.ch
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Export-Package: 
+ org.slf4j;uses:="org.slf4j.spi,org.slf4j.helpers",
+ org.slf4j.helpers;uses:="org.slf4j.spi,org.slf4j",
+ org.slf4j.spi;uses:="org.slf4j"
