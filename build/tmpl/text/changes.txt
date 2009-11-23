@@ -9,6 +9,9 @@ Changes log
     - Bugs fixed
         - Fixed issue in DomRepresentation with createTransformer()
           method. Fix contributed by Remi Dewitte. 
+        - Validator#validate() method was protected instead of public.
+          Also added a new validate() methods that only check for 
+          presence or for format. Reported by Ben R. Vesco.
     - Misc
 
 - 2.0 Milestone 6 (2009-11-20)

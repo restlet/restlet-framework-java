@@ -187,9 +187,23 @@ public class Validator extends Filter {
     }
 
     /**
-     * Checks the request attributes for presence, format, etc. If the check
-     * fails, then a response status CLIENT_ERROR_BAD_REQUEST is returned with
-     * the proper status description.
+     * Checks the request attributes for presence only. If the check fails, then
+     * a response status CLIENT_ERROR_BAD_REQUEST is returned with the proper
+     * status description.
+     * 
+     * @param attribute
+     *            Name of the attribute to look for.
+     * @param required
+     *            Indicates if the attribute presence is required.
+     */
+    public void validate(String attribute, boolean required) {
+        getValidations().add(new ValidateInfo(attribute, required, null));
+    }
+
+    /**
+     * Checks the request attributes for presence or format. If the check fails,
+     * then a response status CLIENT_ERROR_BAD_REQUEST is returned with the
+     * proper status description.
      * 
      * @param attribute
      *            Name of the attribute to look for.
@@ -198,7 +212,21 @@ public class Validator extends Filter {
      * @param format
      *            Format of the attribute value, using Regex pattern syntax.
      */
-    protected void validate(String attribute, boolean required, String format) {
+    public void validate(String attribute, boolean required, String format) {
         getValidations().add(new ValidateInfo(attribute, required, format));
+    }
+
+    /**
+     * Checks the request attributes for format only. If the check fails, then a
+     * response status CLIENT_ERROR_BAD_REQUEST is returned with the proper
+     * status description.
+     * 
+     * @param attribute
+     *            Name of the attribute to look for.
+     * @param format
+     *            Format of the attribute value, using Regex pattern syntax.
+     */
+    public void validate(String attribute, String format) {
+        getValidations().add(new ValidateInfo(attribute, false, format));
     }
 }
