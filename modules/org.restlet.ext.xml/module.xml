@@ -40,6 +40,7 @@
          </custom>
          <exclude name="src/org/restlet/ext/xml/*.java" />
          <exclude name="src/org/restlet/ext/xml/internal/**" />
+         <exclude name="src/META-INF/**" />
 ]]>
 		</files-sets>
 	</source>
