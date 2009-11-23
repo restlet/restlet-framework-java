@@ -128,7 +128,7 @@ public class Validator extends Filter {
     @Override
     protected int beforeHandle(Request request, Response response) {
         if (this.validations != null) {
-            for (final ValidateInfo validate : getValidations()) {
+            for (ValidateInfo validate : getValidations()) {
                 if (validate.required
                         && !request.getAttributes().containsKey(
                                 validate.attribute)) {
@@ -139,26 +139,20 @@ public class Validator extends Filter {
                                             + validate.attribute
                                             + "\" attribute in the request. Please check your request.");
                 } else if (validate.format != null) {
-                    final Object value = request.getAttributes().get(
+                    Object value = request.getAttributes().get(
                             validate.attribute);
-                    if (value == null) {
+
+                    if ((value != null)
+                            && !Pattern.matches(validate.format, value
+                                    .toString())) {
                         response
                                 .setStatus(
                                         Status.CLIENT_ERROR_BAD_REQUEST,
-                                        "Unable to validate the \""
+                                        "Unable to validate the value of the \""
                                                 + validate.attribute
-                                                + "\" attribute with a null value. Please check your request.");
-                    } else {
-                        if (!Pattern.matches(validate.format, value.toString())) {
-                            response
-                                    .setStatus(
-                                            Status.CLIENT_ERROR_BAD_REQUEST,
-                                            "Unable to validate the value of the \""
-                                                    + validate.attribute
-                                                    + "\" attribute. The expected format is: "
-                                                    + validate.format
-                                                    + " (Java Regex). Please check your request.");
-                        }
+                                                + "\" attribute. The expected format is: "
+                                                + validate.format
+                                                + " (Java Regex). Please check your request.");
                     }
                 }
             }
@@ -187,20 +181,6 @@ public class Validator extends Filter {
     }
 
     /**
-     * Checks the request attributes for presence only. If the check fails, then
-     * a response status CLIENT_ERROR_BAD_REQUEST is returned with the proper
-     * status description.
-     * 
-     * @param attribute
-     *            Name of the attribute to look for.
-     * @param required
-     *            Indicates if the attribute presence is required.
-     */
-    public void validate(String attribute, boolean required) {
-        getValidations().add(new ValidateInfo(attribute, required, null));
-    }
-
-    /**
      * Checks the request attributes for presence or format. If the check fails,
      * then a response status CLIENT_ERROR_BAD_REQUEST is returned with the
      * proper status description.
@@ -226,7 +206,21 @@ public class Validator extends Filter {
      * @param format
      *            Format of the attribute value, using Regex pattern syntax.
      */
-    public void validate(String attribute, String format) {
+    public void validateFormat(String attribute, String format) {
         getValidations().add(new ValidateInfo(attribute, false, format));
+    }
+
+    /**
+     * Checks the request attributes for presence only. If the check fails, then
+     * a response status CLIENT_ERROR_BAD_REQUEST is returned with the proper
+     * status description.
+     * 
+     * @param attribute
+     *            Name of the attribute to look for.
+     * @param required
+     *            Indicates if the attribute presence is required.
+     */
+    public void validatePresence(String attribute) {
+        getValidations().add(new ValidateInfo(attribute, true, null));
     }
 }
