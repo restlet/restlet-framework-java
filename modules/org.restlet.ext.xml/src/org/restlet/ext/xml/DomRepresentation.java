@@ -116,8 +116,8 @@ public class DomRepresentation extends XmlRepresentation {
             transformer.setOutputProperty(
                     javax.xml.transform.OutputKeys.METHOD, "xml");
             transformer.setOutputProperty(
-                    javax.xml.transform.OutputKeys.INDENT, Boolean
-                            .toString(isIndent()));
+                    javax.xml.transform.OutputKeys.INDENT,
+                    isIndenting() ? "yes" : "no");
 
             DocumentType docType = getDocument().getDoctype();
             if (docType != null) {

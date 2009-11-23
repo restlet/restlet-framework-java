@@ -146,7 +146,6 @@ public abstract class AuthenticatorHelper extends Helper {
      * @param httpHeaders
      *            The current request HTTP headers.
      */
-    @SuppressWarnings("unused")
     public void formatRawRequest(HeaderBuilder hb, ChallengeRequest challenge,
             Response response, Series<Parameter> httpHeaders)
             throws IOException {
@@ -164,7 +163,6 @@ public abstract class AuthenticatorHelper extends Helper {
      * @param httpHeaders
      *            The current request HTTP headers.
      */
-    @SuppressWarnings("unused")
     public void formatRawResponse(HeaderBuilder hb,
             ChallengeResponse challenge, Request request,
             Series<Parameter> httpHeaders) throws IOException {

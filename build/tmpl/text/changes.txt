@@ -4,6 +4,12 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - API changes
+    - Enhancements
+    - Bugs fixed
+        - Fixed issue in DomRepresentation with createTransformer()
+          method. Fix contributed by Remi Dewitte. 
+    - Misc
 
 - 2.0 Milestone 6 (2009-11-20)
     - API changes
