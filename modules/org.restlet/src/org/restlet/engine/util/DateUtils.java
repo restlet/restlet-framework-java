@@ -208,9 +208,9 @@ public final class DateUtils {
         int formatsSize = formats.size();
 
         for (int i = 0; (result == null) && (i < formatsSize); i++) {
+            format = formats.get(i);
             // [ifndef gwt]
             java.text.DateFormat parser = null;
-            format = formats.get(i);
 
             if (FORMAT_RFC_3339.get(0).equals(format)) {
                 parser = new InternetDateFormat(TIMEZONE_GMT);
