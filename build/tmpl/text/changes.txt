@@ -15,7 +15,8 @@ Changes log
           Reported by Ben R. Vesco.
         - Fixed issue in Validator causing an error when a non 
           required attribute is not found. 
-          Reported by Laurent Rustuel
+          Reported by Laurent Rustuel.
+        - Fixed NPE when parsing DATe header in the gwt edition.
     - Misc
 
 - 2.0 Milestone 6 (2009-11-20)
