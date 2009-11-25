@@ -133,7 +133,7 @@ public class HeaderTestCase extends RestletTestCase {
     /** test with no test header */
     public void test0() throws Exception {
         final Response response = getWithParams();
-        assertEquals(Status.SUCCESS_NO_CONTENT, response.getStatus());
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals(null, response.getEntity().getText());
     }
 

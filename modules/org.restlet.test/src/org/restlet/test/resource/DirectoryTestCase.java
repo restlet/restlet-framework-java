@@ -268,7 +268,7 @@ public class DirectoryTestCase extends RestletTestCase {
         response = handle(application, this.webSiteURL, this.webSiteURL.concat(
                 "dir/subDir/").concat(testFile.getName()), Method.GET, null,
                 "deep access 2");
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals(Status.SUCCESS_NO_CONTENT, response.getStatus());
 
         directory.setDeeplyAccessible(false);
         response = handle(application, this.webSiteURL, this.webSiteURL
