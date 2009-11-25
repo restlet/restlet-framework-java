@@ -119,3 +119,5 @@ lifespan
 nonces
 revalidate
 validator
+jackson
+mapper

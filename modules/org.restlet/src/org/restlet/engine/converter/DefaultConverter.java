@@ -139,7 +139,7 @@ public class DefaultConverter extends ConverterHelper {
                             .getMediaType())) {
                 result = 1.0F;
             } else {
-                result = 0.5F;
+                result = 0.6F;
             }
         } else if (source instanceof InputStream) {
             result = 1.0F;

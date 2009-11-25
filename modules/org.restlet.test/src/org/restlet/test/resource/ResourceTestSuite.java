@@ -11,8 +11,7 @@ public class ResourceTestSuite {
         suite.addTestSuite(DirectoryTestCase.class);
         suite.addTestSuite(ResourceTestCase.class);
 
-        // TODO fix the import order before uncommenting this test case
-        // suite.addTestSuite(AnnotatedResource1TestCase.class);
+        suite.addTestSuite(AnnotatedResource1TestCase.class);
         suite.addTestSuite(AnnotatedResource2TestCase.class);
         suite.addTestSuite(AnnotatedResource3TestCase.class);
         suite.addTestSuite(AnnotatedResource4TestCase.class);

@@ -74,7 +74,6 @@ public class JsonTest extends JaxRsTestCase {
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         JSONObject jsonObject = new JSONObject(response.getEntity()
                 .getText());
-        jsonObject = jsonObject.getJSONObject("org.restlet.test.jaxrs.services.others.Person");
         assertEquals("Angela", jsonObject.get("firstname"));
         assertEquals("Merkel", jsonObject.get("lastname"));
     }

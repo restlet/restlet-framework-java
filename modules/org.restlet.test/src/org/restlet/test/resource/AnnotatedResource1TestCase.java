@@ -87,8 +87,7 @@ public class AnnotatedResource1TestCase extends TestCase {
                 result);
 
         result = clientResource.get(MediaType.APPLICATION_JSON).getText();
-        assertEquals(
-                "{\"org.restlet.test.resource.MyBean\":{\"name\":\"myName\",\"description\":\"myDescription\"}}",
+        assertEquals("{\"name\":\"myName\",\"description\":\"myDescription\"}",
                 result);
 
         result = clientResource.get(MediaType.APPLICATION_JAVA_OBJECT_XML)
@@ -117,10 +116,13 @@ public class AnnotatedResource1TestCase extends TestCase {
         assertEquals("Done", result);
 
         // Attempt to send an unknown entity
-        clientResource.put(new StringRepresentation("wxyz",
-                MediaType.APPLICATION_GNU_ZIP));
-        assertEquals(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE, clientResource
-                .getStatus());
+        try {
+            clientResource.put(new StringRepresentation("wxyz",
+                    MediaType.APPLICATION_GNU_ZIP));
+        } catch (ResourceException re) {
+            assertEquals(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE, re
+                    .getStatus());
+        }
     }
 
 }

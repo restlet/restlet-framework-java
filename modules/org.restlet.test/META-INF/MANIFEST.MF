@@ -8,6 +8,7 @@ onEnvironment: J2SE-1.5
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Require-Bundle: org.restlet,
  org.restlet.example,
+ org.restlet.ext.jackson,
  org.restlet.ext.crypto,
  org.restlet.ext.xstream,
  org.restlet.ext.xml,

@@ -10,8 +10,9 @@
 
 	<dependencies>
 		<dependency type="library" id="junit" />
-		<dependency type="module" id="crypto" />
 		<dependency type="module" id="core" />
+		<dependency type="module" id="jackson" />
+		<dependency type="module" id="crypto" />
 		<dependency type="module" id="xstream" />
 		<dependency type="module" id="xml" />
 		<dependency type="module" id="json" />
@@ -23,9 +24,9 @@
 		<dependency type="module" id="grizzly" />
 		<dependency type="module" id="httpclient" />
 		<dependency type="module" id="net" />
+		<dependency type="module" id="netty" />
 		<dependency type="module" id="simple" />
 		<dependency type="module" id="jetty" />
-		<dependency type="module" id="netty" />
 		<dependency type="module" id="freemarker" />
 		<dependency type="module" id="lucene" />
 		<dependency type="module" id="velocity" />

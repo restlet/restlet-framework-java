@@ -375,6 +375,7 @@ public abstract class ServerResource extends UniformResource {
         Class<?>[] parameterTypes = annotationInfo.getJavaInputTypes();
         List<Object> parameters = null;
         Object resultObject = null;
+        Object parameter = null;
 
         try {
             if (parameterTypes.length > 0) {
@@ -383,8 +384,15 @@ public abstract class ServerResource extends UniformResource {
                 for (Class<?> parameterType : parameterTypes) {
                     if (getRequestEntity() != null) {
                         try {
-                            parameters.add(cs.toObject(getRequestEntity(),
-                                    parameterType, this));
+                            parameter = cs.toObject(getRequestEntity(),
+                                    parameterType, this);
+
+                            if (parameter != null) {
+                                parameters.add(parameter);
+                            } else {
+                                throw new ResourceException(
+                                        Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE);
+                            }
                         } catch (IOException e) {
                             e.printStackTrace();
                             parameters.add(null);

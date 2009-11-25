@@ -8,6 +8,14 @@ Changes log
         - Added more specific Validator#validatePresence and 
           validateFormat methods.
     - Enhancements
+        - Added a new Jackson extension, with transparent conversion
+          between JSON representations and objects.
+          Suggested by Tal Liron.    
+        - Adjusted scoring in DefaultConverter for Form objects and
+          in XstreamConverter for objects with unspecified target
+          media type.      
+        - ServerResource now rejects unconvertable parameters with
+          a 415 status.
     - Bugs fixed
         - Fixed issue in DomRepresentation with createTransformer()
           method. Fix contributed by Remi Dewitte. 

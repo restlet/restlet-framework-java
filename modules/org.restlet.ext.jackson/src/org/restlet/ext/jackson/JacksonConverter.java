@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.xstream;
+package org.restlet.ext.jackson;
 
 import java.io.IOException;
 import java.util.List;
@@ -41,60 +41,51 @@ import org.restlet.representation.Variant;
 import org.restlet.resource.UniformResource;
 
 /**
- * Converter between the XML/JSON and Representation classes based on XStream.
+ * Converter between the JSON and Representation classes based on Jackson.
  * 
  * @author Jerome Louvel
  */
-public class XstreamConverter extends ConverterHelper {
-
-    private static final VariantInfo VARIANT_APPLICATION_ALL_XML = new VariantInfo(
-            MediaType.APPLICATION_ALL_XML);
-
-    private static final VariantInfo VARIANT_APPLICATION_XML = new VariantInfo(
-            MediaType.APPLICATION_XML);
+public class JacksonConverter extends ConverterHelper {
 
     private static final VariantInfo VARIANT_JSON = new VariantInfo(
             MediaType.APPLICATION_JSON);
 
-    private static final VariantInfo VARIANT_TEXT_XML = new VariantInfo(
-            MediaType.TEXT_XML);
-
     /**
-     * Creates the marshaling {@link XstreamRepresentation}.
+     * Creates the marshaling {@link JacksonRepresentation}.
      * 
      * @param <T>
      * @param mediaType
      *            The target media type.
      * @param source
      *            The source object to marshal.
-     * @return The marshaling {@link XstreamRepresentation}.
+     * @return The marshaling {@link JacksonRepresentation}.
      */
-    protected <T> XstreamRepresentation<T> create(MediaType mediaType, T source) {
-        return new XstreamRepresentation<T>(mediaType, source);
+    protected <T> JacksonRepresentation<T> create(MediaType mediaType, T source) {
+        return new JacksonRepresentation<T>(mediaType, source);
     }
 
     /**
-     * Creates the unmarshaling {@link XstreamRepresentation}.
+     * Creates the unmarshaling {@link JacksonRepresentation}.
      * 
      * @param <T>
      * @param source
      *            The source representation to unmarshal.
-     * @return The unmarshaling {@link XstreamRepresentation}.
+     * @param objectClass
+     *            The object class to instantiate.
+     * @return The unmarshaling {@link JacksonRepresentation}.
      */
-    protected <T> XstreamRepresentation<T> create(Representation source) {
-        return new XstreamRepresentation<T>(source);
+    protected <T> JacksonRepresentation<T> create(Representation source,
+            Class<T> objectClass) {
+        return new JacksonRepresentation<T>(source, objectClass);
     }
 
     @Override
     public List<Class<?>> getObjectClasses(Variant source) {
         List<Class<?>> result = null;
 
-        if (VARIANT_JSON.isCompatible(source)
-                || VARIANT_APPLICATION_ALL_XML.isCompatible(source)
-                || VARIANT_APPLICATION_XML.isCompatible(source)
-                || VARIANT_TEXT_XML.isCompatible(source)) {
+        if (VARIANT_JSON.isCompatible(source)) {
             result = addObjectClass(result, Object.class);
-            result = addObjectClass(result, XstreamRepresentation.class);
+            result = addObjectClass(result, JacksonRepresentation.class);
         }
 
         return result;
@@ -106,9 +97,6 @@ public class XstreamConverter extends ConverterHelper {
 
         if (source != null) {
             result = addVariant(result, VARIANT_JSON);
-            result = addVariant(result, VARIANT_APPLICATION_ALL_XML);
-            result = addVariant(result, VARIANT_APPLICATION_XML);
-            result = addVariant(result, VARIANT_TEXT_XML);
         }
 
         return result;
@@ -118,14 +106,10 @@ public class XstreamConverter extends ConverterHelper {
     public float score(Object source, Variant target, UniformResource resource) {
         float result = -1.0F;
 
-        if (source instanceof XstreamRepresentation<?>) {
+        if (source instanceof JacksonRepresentation<?>) {
             result = 1.0F;
         } else {
             if (VARIANT_JSON.isCompatible(target)) {
-                result = 0.8F;
-            } else if (VARIANT_APPLICATION_ALL_XML.isCompatible(target)
-                    || VARIANT_APPLICATION_XML.isCompatible(target)
-                    || VARIANT_TEXT_XML.isCompatible(target)) {
                 result = 0.8F;
             } else {
                 result = 0.5F;
@@ -143,10 +127,6 @@ public class XstreamConverter extends ConverterHelper {
         if (target != null) {
             if (VARIANT_JSON.isCompatible(source)) {
                 result = 0.8F;
-            } else if (VARIANT_APPLICATION_ALL_XML.isCompatible(source)
-                    || VARIANT_APPLICATION_XML.isCompatible(source)
-                    || VARIANT_TEXT_XML.isCompatible(source)) {
-                result = 0.8F;
             }
         } else {
             result = 0.5F;
@@ -161,14 +141,10 @@ public class XstreamConverter extends ConverterHelper {
             UniformResource resource) throws IOException {
         Object result = null;
 
-        if (source instanceof XstreamRepresentation) {
-            result = ((XstreamRepresentation) source).getObject();
+        if (source instanceof JacksonRepresentation) {
+            result = ((JacksonRepresentation) source).getObject();
         } else if (VARIANT_JSON.isCompatible(source)) {
-            result = create(source).getObject();
-        } else if (VARIANT_APPLICATION_ALL_XML.isCompatible(source)
-                || VARIANT_APPLICATION_XML.isCompatible(source)
-                || VARIANT_TEXT_XML.isCompatible(source)) {
-            result = create(source).getObject();
+            result = create(source, target).getObject();
         }
 
         return (T) result;
@@ -180,21 +156,17 @@ public class XstreamConverter extends ConverterHelper {
             UniformResource resource) {
         Representation result = null;
 
-        if (source instanceof XstreamRepresentation) {
-            result = (XstreamRepresentation) source;
+        if (source instanceof JacksonRepresentation) {
+            result = (JacksonRepresentation) source;
         } else {
             if (target.getMediaType() == null) {
-                target.setMediaType(MediaType.TEXT_XML);
+                target.setMediaType(MediaType.APPLICATION_JSON);
             }
 
             if (VARIANT_JSON.isCompatible(target)) {
-                XstreamRepresentation<Object> xstreamRepresentation = create(
+                JacksonRepresentation<Object> jacksonRepresentation = create(
                         target.getMediaType(), source);
-                result = xstreamRepresentation;
-            } else if (VARIANT_APPLICATION_ALL_XML.isCompatible(target)
-                    || VARIANT_APPLICATION_XML.isCompatible(target)
-                    || VARIANT_TEXT_XML.isCompatible(target)) {
-                result = create(target.getMediaType(), source);
+                result = jacksonRepresentation;
             }
         }
 
