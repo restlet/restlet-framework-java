@@ -16,6 +16,8 @@ Changes log
           media type.      
         - ServerResource now rejects unconvertable parameters with
           a 415 status.
+        - ServerResource now supports empty POST and PUT requests.
+
     - Bugs fixed
         - Fixed issue in DomRepresentation with createTransformer()
           method. Fix contributed by Remi Dewitte. 

@@ -130,7 +130,7 @@ public abstract class ServerResource extends UniformResource {
         AnnotationInfo annotationInfo = getAnnotation(Method.DELETE);
 
         if (annotationInfo != null) {
-            result = doHandle(annotationInfo);
+            result = doHandle(annotationInfo, null);
         } else {
             setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
         }
@@ -276,7 +276,7 @@ public abstract class ServerResource extends UniformResource {
         AnnotationInfo annotationInfo = getAnnotation(Method.GET);
 
         if (annotationInfo != null) {
-            result = doHandle(annotationInfo);
+            result = doHandle(annotationInfo, null);
         } else {
             result = getInfo();
         }
@@ -347,7 +347,7 @@ public abstract class ServerResource extends UniformResource {
                     AnnotationInfo annotationInfo = getAnnotation(method);
 
                     if (annotationInfo != null) {
-                        result = doHandle(annotationInfo);
+                        result = doHandle(annotationInfo, null);
                     } else {
                         setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
                     }
@@ -361,105 +361,38 @@ public abstract class ServerResource extends UniformResource {
     }
 
     /**
-     * Effectively handle a call using an annotated method.
-     * 
-     * @param annotationInfo
-     *            The annotation descriptor.
-     * @return The response entity.
-     * @throws ResourceException
-     */
-    private Representation doHandle(AnnotationInfo annotationInfo)
-            throws ResourceException {
-        Representation result = null;
-        ConverterService cs = getConverterService();
-        Class<?>[] parameterTypes = annotationInfo.getJavaInputTypes();
-        List<Object> parameters = null;
-        Object resultObject = null;
-        Object parameter = null;
-
-        try {
-            if (parameterTypes.length > 0) {
-                parameters = new ArrayList<Object>();
-
-                for (Class<?> parameterType : parameterTypes) {
-                    if (getRequestEntity() != null) {
-                        try {
-                            parameter = cs.toObject(getRequestEntity(),
-                                    parameterType, this);
-
-                            if (parameter != null) {
-                                parameters.add(parameter);
-                            } else {
-                                throw new ResourceException(
-                                        Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE);
-                            }
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                            parameters.add(null);
-                        }
-                    } else {
-                        parameters.add(null);
-                    }
-                }
-
-                // Actually invoke the method
-                resultObject = annotationInfo.getJavaMethod().invoke(this,
-                        parameters.toArray());
-            } else {
-                // Actually invoke the method
-                resultObject = annotationInfo.getJavaMethod().invoke(this);
-            }
-        } catch (IllegalArgumentException e) {
-            throw new ResourceException(e);
-        } catch (IllegalAccessException e) {
-            throw new ResourceException(e);
-        } catch (InvocationTargetException e) {
-            if (e.getTargetException() instanceof ResourceException) {
-                throw (ResourceException) e.getTargetException();
-            }
-
-            throw new ResourceException(e.getTargetException());
-        }
-
-        if (resultObject != null) {
-            result = cs.toRepresentation(resultObject);
-        }
-
-        return result;
-    }
-
-    /**
      * Effectively handles a call with content negotiation of the response
      * entity using an annotated method.
      * 
      * @param annotationInfo
      *            The annotation descriptor.
      * @param variant
-     *            The response variant expected.
+     *            The response variant expected (can be null).
      * @return The response entity.
      * @throws ResourceException
      */
     private Representation doHandle(AnnotationInfo annotationInfo,
             Variant variant) throws ResourceException {
         Representation result = null;
+        Class<?>[] parameterTypes = annotationInfo.getJavaInputTypes();
         ConverterService cs = getConverterService();
-        Object resultObject = null;
 
+        // Invoke the annoted method and get the resulting object.
+        Object resultObject = null;
         try {
-            if ((annotationInfo.getJavaInputTypes() != null)
-                    && (annotationInfo.getJavaInputTypes().length > 0)) {
+            if (parameterTypes.length > 0) {
                 List<Object> parameters = new ArrayList<Object>();
                 Object parameter = null;
 
-                for (Class<?> param : annotationInfo.getJavaInputTypes()) {
-                    if (Variant.class.equals(param)) {
+                for (Class<?> parameterType : parameterTypes) {
+                    if (Variant.class.equals(parameterType)) {
                         parameters.add(variant);
                     } else {
-                        if (getRequestEntity().isAvailable()) {
+                        if (getRequestEntity() != null
+                                && getRequestEntity().isAvailable()) {
                             try {
                                 parameter = cs.toObject(getRequestEntity(),
-                                        param, this);
-
+                                        parameterType, this);
                             } catch (IOException e) {
                                 parameter = null;
                             }
@@ -481,8 +414,6 @@ public abstract class ServerResource extends UniformResource {
             } else {
                 resultObject = annotationInfo.getJavaMethod().invoke(this);
             }
-
-            result = cs.toRepresentation(resultObject, variant, this);
         } catch (IllegalArgumentException e) {
             throw new ResourceException(e);
         } catch (IllegalAccessException e) {
@@ -493,6 +424,14 @@ public abstract class ServerResource extends UniformResource {
             }
 
             throw new ResourceException(e.getTargetException());
+        }
+
+        if (resultObject != null) {
+            if (variant != null) {
+                result = cs.toRepresentation(resultObject, variant, this);
+            } else {
+                result = cs.toRepresentation(resultObject);
+            }
         }
 
         return result;
@@ -613,7 +552,7 @@ public abstract class ServerResource extends UniformResource {
         AnnotationInfo annotationInfo = getAnnotation(Method.GET);
 
         if (annotationInfo != null) {
-            result = doHandle(annotationInfo);
+            result = doHandle(annotationInfo, null);
         } else {
             setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
         }
@@ -967,7 +906,7 @@ public abstract class ServerResource extends UniformResource {
         AnnotationInfo annotationInfo = getAnnotation(Method.OPTIONS);
 
         if (annotationInfo != null) {
-            result = doHandle(annotationInfo);
+            result = doHandle(annotationInfo, null);
         } else {
             setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
         }
@@ -1029,7 +968,7 @@ public abstract class ServerResource extends UniformResource {
         AnnotationInfo annotationInfo = getAnnotation(Method.POST);
 
         if (annotationInfo != null) {
-            result = doHandle(annotationInfo);
+            result = doHandle(annotationInfo, null);
         } else {
             setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
         }
@@ -1096,7 +1035,7 @@ public abstract class ServerResource extends UniformResource {
         AnnotationInfo annotationInfo = getAnnotation(Method.PUT);
 
         if (annotationInfo != null) {
-            result = doHandle(annotationInfo);
+            result = doHandle(annotationInfo, null);
         } else {
             setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
         }
