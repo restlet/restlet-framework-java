@@ -24,7 +24,11 @@ Changes log
         - Fixed issue in Validator causing an error when a non 
           required attribute is not found. 
           Reported by Laurent Rustuel.
-        - Fixed NPE when parsing DATe header in the gwt edition.
+        - Fixed NPE when parsing "Date" header in the GWT edition.
+        - Fixed issue with automatic setting of 204 when no entity
+          was available and the status was 200. The logic has been
+          moved from the HTTP server connectors to the ServerResource.
+          Reported by Bruno Harbulot.
     - Misc
 
 - 2.0 Milestone 6 (2009-11-20)

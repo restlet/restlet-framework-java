@@ -380,15 +380,16 @@ public class HttpServerAdapter extends HttpAdapter {
                     && response.getRequest().getMethod().equals(Method.HEAD)) {
                 addEntityHeaders(response);
                 response.setEntity(null);
-            } else if ((response.getRequest().getMethod() != null)
-                    && response.getRequest().getMethod().equals(Method.GET)
-                    && response.getStatus().equals(Status.SUCCESS_OK)
+            } else if (Method.GET.equals(response.getRequest().getMethod())
+                    && Status.SUCCESS_OK.equals(response.getStatus())
                     && (!response.isEntityAvailable())) {
                 addEntityHeaders(response);
                 getLogger()
-                        .fine(
-                                "A response with a 200 (Ok) status should have an entity. Changing the status to 204 (No content).");
-                response.setStatus(Status.SUCCESS_NO_CONTENT);
+                        .warning(
+                                "A response with a 200 (Ok) status should have an entity. Make sure that resource \""
+                                        + response.getRequest()
+                                                .getResourceRef()
+                                        + "\" returns one or sets the status to 204 (No content).");
             } else if (response.getStatus().equals(Status.SUCCESS_NO_CONTENT)) {
                 addEntityHeaders(response);
 

@@ -26,10 +26,10 @@ public class AnnotationUtils {
     }
 
     /**
-     * Computes the annotation descriptors for the given class.
+     * Computes the annotation descriptors for the given class or interface.
      * 
      * @param clazz
-     *            The class to introspect.
+     *            The class or interface to introspect.
      * @return The annotation descriptors.
      */
     private static List<AnnotationInfo> addAnnotationDescriptors(
