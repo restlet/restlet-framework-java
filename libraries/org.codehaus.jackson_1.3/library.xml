@@ -1,4 +1,4 @@
-<library id="jackson">
+<library id="jackson" dir="org.codehaus.jackson">
 	<package id="jackson-core" name="jackson-core-asl">
     	<maven>
 			<groupId>org.codehaus.jackson</groupId>
