@@ -79,7 +79,6 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
                     .getDelegate()));
         }
 
-        // TODO is this correct?
         return new Form((List<Parameter>) series.getDelegate());
     }
 
