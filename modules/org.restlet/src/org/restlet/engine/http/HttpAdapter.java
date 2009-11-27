@@ -87,6 +87,8 @@ public class HttpAdapter extends Adapter {
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_CONNECTION)
                         || param.getName().equalsIgnoreCase(
+                                HttpConstants.HEADER_CONTENT_DISPOSITION)
+                        || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_CONTENT_ENCODING)
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_CONTENT_LANGUAGE)

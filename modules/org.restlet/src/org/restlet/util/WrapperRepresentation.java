@@ -37,6 +37,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.restlet.data.CharacterSet;
+import org.restlet.data.Disposition;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
@@ -116,6 +117,12 @@ public class WrapperRepresentation extends Representation {
     }
 
     @Override
+    public Disposition getDisposition() {
+        return getWrappedRepresentation().getDisposition();
+    }
+
+    @Override
+    @Deprecated
     public String getDownloadName() {
         return getWrappedRepresentation().getDownloadName();
     }
@@ -196,6 +203,7 @@ public class WrapperRepresentation extends Representation {
     }
 
     @Override
+    @Deprecated
     public boolean isDownloadable() {
         return getWrappedRepresentation().isDownloadable();
     }
@@ -227,11 +235,18 @@ public class WrapperRepresentation extends Representation {
     }
 
     @Override
+    public void setDisposition(Disposition disposition) {
+        getWrappedRepresentation().setDisposition(disposition);
+    }
+
+    @Override
+    @Deprecated
     public void setDownloadable(boolean downloadable) {
         getWrappedRepresentation().setDownloadable(downloadable);
     }
 
     @Override
+    @Deprecated
     public void setDownloadName(String fileName) {
         getWrappedRepresentation().setDownloadName(fileName);
     }
@@ -300,14 +315,14 @@ public class WrapperRepresentation extends Representation {
 
     // [ifndef gwt] method
     @Override
-    public void write(java.nio.channels.WritableByteChannel writableChannel)
-            throws IOException {
-        getWrappedRepresentation().write(writableChannel);
+    public void write(java.io.Writer writer) throws IOException {
+        getWrappedRepresentation().write(writer);
     }
 
     // [ifndef gwt] method
     @Override
-    public void write(java.io.Writer writer) throws IOException {
-        getWrappedRepresentation().write(writer);
+    public void write(java.nio.channels.WritableByteChannel writableChannel)
+            throws IOException {
+        getWrappedRepresentation().write(writableChannel);
     }
 }

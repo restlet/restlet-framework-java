@@ -36,7 +36,7 @@ import org.restlet.data.Warning;
 import org.restlet.engine.util.DateUtils;
 
 /**
- * Waning manipulation utilities.
+ * Warning manipulation utilities.
  * 
  * @author Thierry Boileau
  */

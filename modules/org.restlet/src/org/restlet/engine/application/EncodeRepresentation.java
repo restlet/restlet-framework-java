@@ -44,6 +44,7 @@ import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.restlet.data.Disposition;
 import org.restlet.data.Encoding;
 import org.restlet.engine.io.ByteUtils;
 import org.restlet.representation.Representation;
@@ -283,12 +284,14 @@ public class EncodeRepresentation extends WrapperRepresentation {
                 encoderOutputStream = new DeflaterOutputStream(outputStream);
             } else if (this.encoding.equals(Encoding.ZIP)) {
                 final ZipOutputStream stream = new ZipOutputStream(outputStream);
-                if (getWrappedRepresentation().getDownloadName() != null) {
-                    stream.putNextEntry(new ZipEntry(getWrappedRepresentation()
-                            .getDownloadName()));
-                } else {
-                    stream.putNextEntry(new ZipEntry("entry"));
+                String name = "entry";
+                if (getWrappedRepresentation().getDisposition() != null) {
+                    name = getWrappedRepresentation().getDisposition()
+                            .getParameters().getFirstValue(
+                                    Disposition.DISPOSITION_PARAMETER_FILENAME,
+                                    true, name);
                 }
+                stream.putNextEntry(new ZipEntry(name));
 
                 encoderOutputStream = stream;
             } else if (this.encoding.equals(Encoding.IDENTITY)) {

@@ -131,9 +131,17 @@ public abstract class HttpClientCall extends HttpCall {
                 entityHeaderFound = true;
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_CONTENT_DISPOSITION)) {
-                result.setDownloadName(parseContentDisposition(header
-                        .getValue()));
-                entityHeaderFound = true;
+                try {
+                    final DispositionReader r = new DispositionReader(header
+                            .getValue());
+                    result.setDisposition(r.readDisposition());
+                    entityHeaderFound = true;
+                } catch (IOException ioe) {
+                    Context.getCurrentLogger().log(
+                            Level.WARNING,
+                            "Error during Content-Disposition header parsing. Header: "
+                                    + header.getValue(), ioe);
+                }
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_CONTENT_RANGE)) {
                 // [ifndef gwt]
@@ -186,7 +194,9 @@ public abstract class HttpClientCall extends HttpCall {
      * @param value
      *            Content-disposition header
      * @return Filename
+     * @Deprecated Use {@link DispositionReader} instead.
      */
+    @Deprecated
     public static String parseContentDisposition(String value) {
         if (value != null) {
             String key = "FILENAME=\"";

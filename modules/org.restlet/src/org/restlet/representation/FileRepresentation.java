@@ -42,14 +42,16 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.Date;
 
+import org.restlet.data.Disposition;
 import org.restlet.data.LocalReference;
 import org.restlet.data.MediaType;
 import org.restlet.engine.io.ByteUtils;
 
 /**
  * Representation based on a static file. Note that in order for Web clients to
- * display a download box upon reception of a file representation, in need in
- * addition to call {@link #setDownloadable(boolean)} with a 'true' value.
+ * display a download box upon reception of a file representation, it needs an
+ * additional call to {@link Disposition#setType(String)} with a
+ * {@link Disposition#DISPOSITION_TYPE_ATTACHMENT} value.
  * 
  * @author Jerome Louvel
  */
@@ -120,7 +122,9 @@ public class FileRepresentation extends Representation {
         }
 
         setMediaType(mediaType);
-        setDownloadName(file.getName());
+        Disposition disposition = new Disposition();
+        disposition.putFilename(file);
+        this.setDisposition(disposition);
     }
 
     /**

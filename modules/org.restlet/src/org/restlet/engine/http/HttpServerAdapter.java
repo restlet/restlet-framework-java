@@ -145,11 +145,11 @@ public class HttpServerAdapter extends HttpAdapter {
                         entity.getIdentifier().toString());
             }
 
-            if (entity.getDownloadName() != null) {
+            if (entity.getDisposition() != null) {
                 responseHeaders.add(HttpConstants.HEADER_CONTENT_DISPOSITION,
-                        HttpServerCall.formatContentDisposition(entity
-                                .getDownloadName(), entity.isDownloadable()));
+                        DispositionUtils.format(entity.getDisposition()));
             }
+
             if (entity.getRange() != null) {
                 try {
                     responseHeaders.add(HttpConstants.HEADER_CONTENT_RANGE,

@@ -38,6 +38,7 @@ import java.util.Date;
 import java.util.logging.Level;
 
 import org.restlet.Context;
+import org.restlet.data.Disposition;
 import org.restlet.data.MediaType;
 import org.restlet.data.Range;
 import org.restlet.data.Tag;
@@ -94,14 +95,8 @@ public abstract class Representation extends RepresentationInfo {
      */
     private volatile org.restlet.data.Digest digest;
 
-    /** Indicates if the representation is downloadable. */
-    private volatile boolean downloadable;
-
-    /**
-     * Indicates the suggested download file name for the representation's
-     * content.
-     */
-    private volatile String downloadName;
+    /** The disposition characteristics of the representation. */
+    private volatile Disposition disposition;
 
     /** The expiration date. */
     private volatile Date expirationDate;
@@ -139,8 +134,7 @@ public abstract class Representation extends RepresentationInfo {
     public Representation(MediaType mediaType) {
         super(mediaType);
         this.available = true;
-        this.downloadable = false;
-        this.downloadName = null;
+        this.disposition = null;
         this.isTransient = false;
         this.size = UNKNOWN_SIZE;
         this.expirationDate = null;
@@ -434,20 +428,33 @@ public abstract class Representation extends RepresentationInfo {
     }
 
     /**
+     * Returns the disposition characteristics of the representation.
+     * 
+     * @return The disposition characteristics of the representation.
+     */
+    public Disposition getDisposition() {
+        return disposition;
+    }
+
+    /**
      * Returns the suggested download file name for this representation. This is
      * mainly used to suggest to the client a local name for a downloaded
-     * representation. Note that in order for this property to be sent from
-     * servers to clients, you also need to call
-     * {@link #setDownloadable(boolean)} with a 'true' value.<br>
+     * representation.<br>
      * <br>
      * Note that when used with HTTP connectors, this property maps to the
      * "Content-Disposition" header with this value:
-     * "attachment; filename=<downloadName>".
+     * "inline; filename=<downloadName>".
      * 
      * @return The suggested file name for this representation.
+     * @deprecated Use the "disposition" attribute instead.
      */
+    @Deprecated
     public String getDownloadName() {
-        return this.downloadName;
+        if (getDisposition() != null) {
+            return getDisposition().getFilename();
+        }
+
+        return null;
     }
 
     /**
@@ -535,16 +542,6 @@ public abstract class Representation extends RepresentationInfo {
         return result;
     }
 
-    // [ifdef gwt] method uncomment
-    // /**
-    // * Converts the representation to a string value. Be careful when using
-    // * this method as the conversion of large content to a string fully
-    // * stored in memory can result in OutOfMemoryErrors being thrown.
-    // *
-    // * @return The representation as a string value.
-    // */
-    // public abstract String getText() throws IOException;
-
     /**
      * Indicates if some fresh content is available, without having to actually
      * call one of the content manipulation method like getStream() that would
@@ -558,14 +555,31 @@ public abstract class Representation extends RepresentationInfo {
         return (getSize() != 0) && this.available;
     }
 
+    // [ifdef gwt] method uncomment
+    // /**
+    // * Converts the representation to a string value. Be careful when using
+    // * this method as the conversion of large content to a string fully
+    // * stored in memory can result in OutOfMemoryErrors being thrown.
+    // *
+    // * @return The representation as a string value.
+    // */
+    // public abstract String getText() throws IOException;
+
     /**
      * Indicates if the representation is downloadable which means that it can
      * be obtained via a download dialog box.
      * 
      * @return True if the representation's content is downloadable.
+     * @deprecated Use the "disposition" attribute instead.
      */
+    @Deprecated
     public boolean isDownloadable() {
-        return this.downloadable;
+        if (getDisposition() != null) {
+            return !(Disposition.DISPOSITION_TYPE_INLINE
+                    .equalsIgnoreCase(getDisposition().getType()));
+        }
+
+        return false;
     }
 
     /**
@@ -617,30 +631,54 @@ public abstract class Representation extends RepresentationInfo {
     }
 
     /**
+     * Sets the disposition characteristics of the representation.
+     * 
+     * @param disposition
+     *            The disposition characteristics of the representation.
+     */
+    public void setDisposition(Disposition disposition) {
+        this.disposition = disposition;
+    }
+
+    /**
      * Indicates if the representation is downloadable which means that it can
      * be obtained via a download dialog box.
      * 
      * @param downloadable
      *            True if the representation's content is downloadable.
+     * @deprecated Use the "disposition" attribute instead.
      */
+    @Deprecated
     public void setDownloadable(boolean downloadable) {
-        this.downloadable = downloadable;
+        if (getDisposition() == null) {
+            this.disposition = new Disposition(
+                    (downloadable ? Disposition.DISPOSITION_TYPE_ATTACHMENT
+                            : Disposition.DISPOSITION_TYPE_INLINE));
+        } else {
+            this.disposition
+                    .setType((downloadable ? Disposition.DISPOSITION_TYPE_ATTACHMENT
+                            : Disposition.DISPOSITION_TYPE_INLINE));
+        }
     }
 
     /**
-     * Set the suggested download file name for this representation. Note that
-     * in order for this property to be sent from servers to clients, you also
-     * need to call {@link #setDownloadable(boolean)} with a 'true' value.<br>
+     * Set the suggested download file name for this representation.<br>
      * <br>
      * Note that when used with HTTP connectors, this property maps to the
      * "Content-Disposition" header with this value:
-     * "attachment; filename=<downloadName>".
+     * "inline; filename=<downloadName>".
      * 
      * @param fileName
      *            The suggested file name.
+     * @deprecated Use the "disposition" attribute instead.
      */
+    @Deprecated
     public void setDownloadName(String fileName) {
-        this.downloadName = fileName;
+        if (getDisposition() == null) {
+            this.disposition = new Disposition();
+        }
+
+        getDisposition().putFilename(fileName);
     }
 
     /**
@@ -696,19 +734,19 @@ public abstract class Representation extends RepresentationInfo {
 
     // [ifndef gwt] member
     /**
-     * Writes the representation to a byte stream. This method is ensured to
-     * write the full content for each invocation unless it is a transient
+     * Writes the representation to a characters writer. This method is ensured
+     * to write the full content for each invocation unless it is a transient
      * representation, in which case an exception is thrown.<br>
      * <br>
      * Note that the class implementing this method shouldn't flush or close the
-     * given {@link OutputStream} after writing to it as this will be handled by
-     * the Restlet connectors automatically.
+     * given {@link java.io.Writer} after writing to it as this will be handled
+     * by the Restlet connectors automatically.
      * 
-     * @param outputStream
-     *            The output stream.
+     * @param writer
+     *            The characters writer.
      * @throws IOException
      */
-    public abstract void write(OutputStream outputStream) throws IOException;
+    public abstract void write(java.io.Writer writer) throws IOException;
 
     // [ifndef gwt] member
     /**
@@ -726,18 +764,18 @@ public abstract class Representation extends RepresentationInfo {
 
     // [ifndef gwt] member
     /**
-     * Writes the representation to a characters writer. This method is ensured
-     * to write the full content for each invocation unless it is a transient
+     * Writes the representation to a byte stream. This method is ensured to
+     * write the full content for each invocation unless it is a transient
      * representation, in which case an exception is thrown.<br>
      * <br>
      * Note that the class implementing this method shouldn't flush or close the
-     * given {@link java.io.Writer} after writing to it as this will be handled
-     * by the Restlet connectors automatically.
+     * given {@link OutputStream} after writing to it as this will be handled by
+     * the Restlet connectors automatically.
      * 
-     * @param writer
-     *            The characters writer.
+     * @param outputStream
+     *            The output stream.
      * @throws IOException
      */
-    public abstract void write(java.io.Writer writer) throws IOException;
+    public abstract void write(OutputStream outputStream) throws IOException;
 
 }

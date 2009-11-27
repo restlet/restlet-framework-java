@@ -37,6 +37,7 @@ import java.util.Date;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.restlet.data.Disposition;
 import org.restlet.data.MediaType;
 import org.restlet.engine.io.ByteUtils;
 import org.restlet.representation.StreamRepresentation;
@@ -72,7 +73,9 @@ public class ZipEntryRepresentation extends StreamRepresentation {
         super(mediaType);
         this.zipFile = zipFile;
         this.entry = entry;
-        setDownloadName(entry.getName());
+        Disposition disposition = new Disposition();
+        disposition.putFilename(entry.getName());
+        this.setDisposition(disposition);
         setSize(entry.getSize());
         setModificationDate(new Date(entry.getTime()));
     }

@@ -211,8 +211,9 @@ public class ZipClientHelper extends LocalClientHelper {
         boolean zipExists = file.exists();
         ZipOutputStream zipOut = null;
 
-        if ("".equals(entryName) && request.getEntity() != null) {
-            entryName = request.getEntity().getDownloadName();
+        if ("".equals(entryName) && request.getEntity() != null
+                && request.getEntity().getDisposition() != null) {
+            entryName = request.getEntity().getDisposition().getFilename();
         }
         if (entryName == null) {
             response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST,
