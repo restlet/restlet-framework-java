@@ -17,6 +17,8 @@ Changes log
         - ServerResource now rejects unconvertable parameters with
           a 415 status.
         - ServerResource now supports empty POST and PUT requests.
+    - Misc
+        - Updated Simple framework library to version 4.1.16.
 
     - Bugs fixed
         - Fixed issue in DomRepresentation with createTransformer()
