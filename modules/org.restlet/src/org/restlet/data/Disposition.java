@@ -30,7 +30,6 @@
 
 package org.restlet.data;
 
-import java.io.File;
 import java.util.Date;
 
 import org.restlet.engine.util.DateUtils;
@@ -168,16 +167,6 @@ public class Disposition {
     public void putDate(String name, Date value) {
         getParameters().add(name,
                 DateUtils.format(value, DateUtils.FORMAT_RFC_822.get(0)));
-    }
-
-    /**
-     * Sets the value of the "filename" parameter.
-     * 
-     * @param file
-     *            The file.
-     */
-    public void putFilename(File file) {
-        putFilename(file.getName());
     }
 
     /**
