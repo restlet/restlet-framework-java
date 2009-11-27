@@ -123,7 +123,7 @@ public class FileRepresentation extends Representation {
 
         setMediaType(mediaType);
         Disposition disposition = new Disposition();
-        disposition.putFilename(file.getName());
+        disposition.setFilename(file.getName());
         this.setDisposition(disposition);
     }
 

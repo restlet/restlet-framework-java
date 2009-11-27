@@ -115,6 +115,19 @@ public class Disposition {
     }
 
     /**
+     * Adds a Date parameter.
+     * 
+     * @param name
+     *            The name of the parameter.
+     * @param value
+     *            Its value as a date.
+     */
+    public void addDate(String name, Date value) {
+        getParameters().add(name,
+                DateUtils.format(value, DateUtils.FORMAT_RFC_822.get(0)));
+    }
+
+    /**
      * Returns the value of the "filename" parameter.
      * 
      * @return The value of the "filename" parameter.
@@ -147,26 +160,30 @@ public class Disposition {
     }
 
     /**
-     * Adds the creation date parameter.
+     * Sets the creation date parameter.
      * 
      * @param value
      *            The creation date.
      */
-    public void putCreationDate(Date value) {
-        putDate(DISPOSITION_PARAMETER_CREATION_DATE, value);
+    public void setCreationDate(Date value) {
+        setDate(DISPOSITION_PARAMETER_CREATION_DATE, value);
     }
 
     /**
-     * Add a Date parameter.
+     * Sets a Date parameter.
      * 
      * @param name
      *            The name of the parameter.
      * @param value
      *            Its value as a date.
      */
-    public void putDate(String name, Date value) {
-        getParameters().add(name,
-                DateUtils.format(value, DateUtils.FORMAT_RFC_822.get(0)));
+    public void setDate(String name, Date value) {
+        getParameters()
+                .set(
+                        name,
+                        DateUtils
+                                .format(value, DateUtils.FORMAT_RFC_822.get(0)),
+                        true);
     }
 
     /**
@@ -175,40 +192,19 @@ public class Disposition {
      * @param fileName
      *            The file name value.
      */
-    public void putFilename(String fileName) {
+    public void setFilename(String fileName) {
         getParameters().set(Disposition.DISPOSITION_PARAMETER_FILENAME,
                 fileName, true);
     }
 
     /**
-     * Adds the modification date parameter.
+     * Sets the modification date parameter.
      * 
      * @param value
      *            The modification date.
      */
-    public void putModificationDate(Date value) {
-        putDate(DISPOSITION_PARAMETER_MODIFICATION_DATE, value);
-    }
-
-    /**
-     * Adds the read date parameter.
-     * 
-     * @param value
-     *            The read date.
-     */
-    public void putReadDate(Date value) {
-        putDate(DISPOSITION_PARAMETER_READ_DATE, value);
-    }
-
-    /**
-     * Sets the value of the "size" parameter.
-     * 
-     * @param size
-     *            The size.
-     */
-    public void putSize(long size) {
-        getParameters().set(Disposition.DISPOSITION_PARAMETER_SIZE,
-                Long.toString(size), true);
+    public void setModificationDate(Date value) {
+        setDate(DISPOSITION_PARAMETER_MODIFICATION_DATE, value);
     }
 
     /**
@@ -219,6 +215,27 @@ public class Disposition {
      */
     public void setParameters(Series<Parameter> parameters) {
         this.parameters = parameters;
+    }
+
+    /**
+     * Sets the read date parameter.
+     * 
+     * @param value
+     *            The read date.
+     */
+    public void setReadDate(Date value) {
+        setDate(DISPOSITION_PARAMETER_READ_DATE, value);
+    }
+
+    /**
+     * Sets the value of the "size" parameter.
+     * 
+     * @param size
+     *            The size.
+     */
+    public void setSize(long size) {
+        getParameters().set(Disposition.DISPOSITION_PARAMETER_SIZE,
+                Long.toString(size), true);
     }
 
     /**

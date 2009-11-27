@@ -74,7 +74,7 @@ public class ZipEntryRepresentation extends StreamRepresentation {
         this.zipFile = zipFile;
         this.entry = entry;
         Disposition disposition = new Disposition();
-        disposition.putFilename(entry.getName());
+        disposition.setFilename(entry.getName());
         this.setDisposition(disposition);
         setSize(entry.getSize());
         setModificationDate(new Date(entry.getTime()));

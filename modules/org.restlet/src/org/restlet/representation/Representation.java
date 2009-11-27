@@ -678,7 +678,7 @@ public abstract class Representation extends RepresentationInfo {
             this.disposition = new Disposition();
         }
 
-        getDisposition().putFilename(fileName);
+        getDisposition().setFilename(fileName);
     }
 
     /**
