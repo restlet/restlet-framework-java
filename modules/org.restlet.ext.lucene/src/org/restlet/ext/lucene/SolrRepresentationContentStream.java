@@ -76,7 +76,11 @@ public class SolrRepresentationContentStream implements ContentStream {
      * @see ContentStream#getName()
      */
     public String getName() {
-        return representation.getDownloadName();
+        if (representation.getDisposition() != null) {
+            representation.getDisposition().getFilename();
+        }
+
+        return null;
     }
 
     /**
