@@ -121,7 +121,7 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
             result = this.object;
         } else if (this.representation != null) {
             try {
-                result = (T) getObjectMapper().readValue(
+                result = getObjectMapper().readValue(
                         this.representation.getStream(), this.objectClass);
             } catch (IOException e) {
                 Context.getCurrentLogger().log(Level.WARNING,
