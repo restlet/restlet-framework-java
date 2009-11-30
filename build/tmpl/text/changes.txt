@@ -17,6 +17,8 @@ Changes log
         - ServerResource now rejects unconvertable parameters with
           a 415 status.
         - ServerResource now supports empty POST and PUT requests.
+        - Added converter of Freemarker Template objects in the 
+          Freemarker extension.
     - Misc
         - Updated Simple framework library to version 4.1.16.
 
