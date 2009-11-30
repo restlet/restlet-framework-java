@@ -44,7 +44,8 @@ import org.restlet.util.Resolver;
 import freemarker.template.Template;
 
 /**
- * Converter between the Freemarker Template objects and Representations.
+ * Converter between the Freemarker Template objects and Representations. The
+ * adjoined data model is based on the request and response objects.
  * 
  * @author Thierry Boileau.
  */
