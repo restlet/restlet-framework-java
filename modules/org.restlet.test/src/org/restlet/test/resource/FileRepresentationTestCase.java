@@ -60,6 +60,7 @@ public class FileRepresentationTestCase extends RestletTestCase {
     private Component component;
 
     private File testDir;
+
     private File file;
 
     @Override
@@ -76,7 +77,7 @@ public class FileRepresentationTestCase extends RestletTestCase {
         this.testDir = new File(System.getProperty("java.io.tmpdir"),
                 "FileRepresentationTestCase");
         this.testDir.mkdirs();
-        
+
         this.file = new File(this.testDir, getClass().getName());
         FileOutputStream os = new FileOutputStream(file);
         os.write("abc".getBytes());
@@ -97,7 +98,7 @@ public class FileRepresentationTestCase extends RestletTestCase {
         final FileRepresentation r = new FileRepresentation(file,
                 MediaType.TEXT_PLAIN);
 
-        assertEquals("test.txt", r.getDownloadName());
+        assertEquals("test.txt", r.getDisposition().getFilename());
         assertEquals(MediaType.TEXT_PLAIN, r.getMediaType());
         assertNull(r.getExpirationDate());
     }
@@ -111,7 +112,6 @@ public class FileRepresentationTestCase extends RestletTestCase {
                     public void handle(Request request, Response response) {
                         response.setEntity(new FileRepresentation(file,
                                 MediaType.TEXT_PLAIN));
-                        response.getEntity().setDownloadable(true);
                     }
                 };
             }
@@ -126,7 +126,8 @@ public class FileRepresentationTestCase extends RestletTestCase {
 
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("abc", entity.getText());
-        assertEquals(getClass().getName(), entity.getDownloadName());
+        assertEquals(getClass().getName(), entity.getDisposition()
+                .getFilename());
     }
 
 }

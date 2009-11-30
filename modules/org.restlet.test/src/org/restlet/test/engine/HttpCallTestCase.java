@@ -30,10 +30,16 @@
 
 package org.restlet.test.engine;
 
-import org.restlet.engine.http.HttpClientCall;
-import org.restlet.engine.http.HttpServerCall;
-import org.restlet.test.RestletTestCase;
+import java.io.IOException;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.Locale;
+import java.util.TimeZone;
 
+import org.restlet.data.Disposition;
+import org.restlet.engine.http.DispositionReader;
+import org.restlet.engine.http.DispositionUtils;
+import org.restlet.test.RestletTestCase;
 
 /**
  * Unit tests for the HTTP calls.
@@ -43,39 +49,73 @@ import org.restlet.test.RestletTestCase;
 public class HttpCallTestCase extends RestletTestCase {
 
     public void testFormatContentDisposition() {
-        assertEquals("attachment; filename=\"\"", HttpServerCall
-                .formatContentDisposition(null));
-        assertEquals("attachment; filename=\"\"", HttpServerCall
-                .formatContentDisposition(""));
-        assertEquals("attachment; filename=\"test.txt\"", HttpServerCall
-                .formatContentDisposition("test.txt"));
+        Disposition disposition = new Disposition();
+        assertEquals("attachment", DispositionUtils.format(disposition));
+        disposition.setFilename("");
+        assertEquals("attachment; filename=", DispositionUtils
+                .format(disposition));
+        disposition.setFilename("test.txt");
+        assertEquals("attachment; filename=test.txt", DispositionUtils
+                .format(disposition));
+        disposition.setFilename("file with space.txt");
         assertEquals("attachment; filename=\"file with space.txt\"",
-                HttpServerCall.formatContentDisposition("file with space.txt"));
-        
-        assertEquals("attachment; filename=\"file with space.txt\"",
-                HttpServerCall.formatContentDisposition("file with space.txt", true));
+                DispositionUtils.format(disposition));
+
+        disposition.setType(Disposition.DISPOSITION_TYPE_INLINE);
         assertEquals("inline; filename=\"file with space.txt\"",
-                HttpServerCall.formatContentDisposition("file with space.txt", false));
+                DispositionUtils.format(disposition));
+
+        disposition.getParameters().clear();
+        Calendar c = new GregorianCalendar(Locale.ENGLISH);
+        c.set(Calendar.YEAR, 2009);
+        c.set(Calendar.MONTH, 10);
+        c.set(Calendar.DAY_OF_MONTH, 11);
+        c.set(Calendar.HOUR, 10);
+        c.set(Calendar.MINUTE, 11);
+        c.set(Calendar.SECOND, 12);
+        c.set(Calendar.MILLISECOND, 13);
+        c.setTimeZone(TimeZone.getTimeZone("GMT"));
+        disposition.setCreationDate(c.getTime());
+        assertEquals("inline; creation-date=\"Wed, 11 Nov 09 22:11:12 GMT\"",
+                DispositionUtils.format(disposition));
+
     }
 
-    public void testParseContentDisposition() {
-        assertEquals("file.txt", HttpClientCall
-                .parseContentDisposition("attachment; fileName=\"file.txt\""));
-        assertEquals("file.txt", HttpClientCall
-                .parseContentDisposition("attachment; fileName=file.txt"));
-        assertEquals(
-                "file with space.txt",
-                HttpClientCall
-                        .parseContentDisposition("attachment; filename=\"file with space.txt\""));
-        assertEquals(
-                "file with space.txt",
-                HttpClientCall
-                        .parseContentDisposition("attachment; filename=file with space.txt"));
-        assertEquals("", HttpClientCall
-                .parseContentDisposition("attachment; fileName=\"\""));
-        assertEquals("", HttpClientCall
-                .parseContentDisposition("attachment; fileName="));
-        assertNull(HttpClientCall
-                .parseContentDisposition("attachment; fileNam"));
+    public void testParseContentDisposition() throws IOException {
+        Disposition disposition = new DispositionReader(
+                "attachment; fileName=\"file.txt\"").readDisposition();
+        assertEquals("file.txt", disposition.getParameters().getFirstValue(
+                "fileName"));
+
+        disposition = new DispositionReader("attachment; fileName=file.txt")
+                .readDisposition();
+        assertEquals("file.txt", disposition.getParameters().getFirstValue(
+                "fileName"));
+
+        disposition = new DispositionReader(
+                "attachment; filename=\"file with space.txt\"")
+                .readDisposition();
+        assertEquals("file with space.txt", disposition.getParameters()
+                .getFirstValue("filename"));
+
+        disposition = new DispositionReader("attachment; filename=\"\"")
+                .readDisposition();
+        assertEquals("", disposition.getParameters().getFirstValue("filename"));
+
+        disposition = new DispositionReader("attachment; filename=")
+                .readDisposition();
+        assertEquals("", disposition.getParameters().getFirstValue("filename"));
+
+        disposition = new DispositionReader("attachment; filenam")
+                .readDisposition();
+        assertNull(disposition.getParameters().getFirstValue("filename"));
+
+        disposition = new DispositionReader(
+                "attachment; modification-date=\"Wed, 11 Nov 09 22:11:12 GMT\"")
+                .readDisposition();
+        String str = disposition.getParameters().getFirstValue(
+                "modification-date");
+        assertEquals("Wed, 11 Nov 09 22:11:12 GMT", str);
+
     }
 }
