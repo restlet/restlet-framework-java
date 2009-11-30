@@ -288,7 +288,7 @@ public class EncodeRepresentation extends WrapperRepresentation {
                 if (getWrappedRepresentation().getDisposition() != null) {
                     name = getWrappedRepresentation().getDisposition()
                             .getParameters().getFirstValue(
-                                    Disposition.DISPOSITION_PARAMETER_FILENAME,
+                                    Disposition.NAME_FILENAME,
                                     true, name);
                 }
                 stream.putNextEntry(new ZipEntry(name));

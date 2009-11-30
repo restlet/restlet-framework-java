@@ -61,7 +61,7 @@ public class HttpCallTestCase extends RestletTestCase {
         assertEquals("attachment; filename=\"file with space.txt\"",
                 DispositionUtils.format(disposition));
 
-        disposition.setType(Disposition.DISPOSITION_TYPE_INLINE);
+        disposition.setType(Disposition.TYPE_INLINE);
         assertEquals("inline; filename=\"file with space.txt\"",
                 DispositionUtils.format(disposition));
 

@@ -50,32 +50,32 @@ import org.restlet.util.Series;
  */
 public class Disposition {
 
-    /** The creation date parameter as presented by the rfc 2183. */
-    public static final String DISPOSITION_PARAMETER_CREATION_DATE = "creation-date";
+    /** The creation date parameter name as presented by the RFC 2183. */
+    public static final String NAME_CREATION_DATE = "creation-date";
 
-    /** The filename parameter as presented by the rfc 2183. */
-    public static final String DISPOSITION_PARAMETER_FILENAME = "filename";
+    /** The filename parameter name as presented by the RFC 2183. */
+    public static final String NAME_FILENAME = "filename";
 
-    /** The modification date parameter as presented by the rfc 2183. */
-    public static final String DISPOSITION_PARAMETER_MODIFICATION_DATE = "modification-date";
+    /** The modification date parameter name as presented by the RFCc 2183. */
+    public static final String NAME_MODIFICATION_DATE = "modification-date";
 
-    /** The read date parameter as presented by the rfc 2183. */
-    public static final String DISPOSITION_PARAMETER_READ_DATE = "read-date";
+    /** The read date parameter name as presented by the RFC 2183. */
+    public static final String NAME_READ_DATE = "read-date";
 
-    /** The size parameter as presented by the rfc 2183. */
-    public static final String DISPOSITION_PARAMETER_SIZE = "size";
+    /** The size parameter name as presented by the RFC 2183. */
+    public static final String NAME_SIZE = "size";
 
     /**
      * Indicates that the part is intended to be separated from the full
      * message.
      */
-    public static final String DISPOSITION_TYPE_ATTACHMENT = "attachment";
+    public static final String TYPE_ATTACHMENT = "attachment";
 
     /**
      * Indicates that the part is intended to be displayed automatically upon
      * display of the full message.
      */
-    public static final String DISPOSITION_TYPE_INLINE = "inline";
+    public static final String TYPE_INLINE = "inline";
 
     /** The list of disposition parameters. */
     private Series<Parameter> parameters;
@@ -87,7 +87,7 @@ public class Disposition {
      * Constructor. Instantiates by default an inline element.
      */
     public Disposition() {
-        this(Disposition.DISPOSITION_TYPE_INLINE);
+        this(Disposition.TYPE_INLINE);
     }
 
     /**
@@ -133,8 +133,7 @@ public class Disposition {
      * @return The value of the "filename" parameter.
      */
     public String getFilename() {
-        return getParameters().getFirstValue(DISPOSITION_PARAMETER_FILENAME,
-                true);
+        return getParameters().getFirstValue(NAME_FILENAME, true);
     }
 
     /**
@@ -166,7 +165,7 @@ public class Disposition {
      *            The creation date.
      */
     public void setCreationDate(Date value) {
-        setDate(DISPOSITION_PARAMETER_CREATION_DATE, value);
+        setDate(NAME_CREATION_DATE, value);
     }
 
     /**
@@ -178,12 +177,8 @@ public class Disposition {
      *            Its value as a date.
      */
     public void setDate(String name, Date value) {
-        getParameters()
-                .set(
-                        name,
-                        DateUtils
-                                .format(value, DateUtils.FORMAT_RFC_822.get(0)),
-                        true);
+        getParameters().set(name,
+                DateUtils.format(value, DateUtils.FORMAT_RFC_822.get(0)), true);
     }
 
     /**
@@ -193,8 +188,7 @@ public class Disposition {
      *            The file name value.
      */
     public void setFilename(String fileName) {
-        getParameters().set(Disposition.DISPOSITION_PARAMETER_FILENAME,
-                fileName, true);
+        getParameters().set(Disposition.NAME_FILENAME, fileName, true);
     }
 
     /**
@@ -204,7 +198,7 @@ public class Disposition {
      *            The modification date.
      */
     public void setModificationDate(Date value) {
-        setDate(DISPOSITION_PARAMETER_MODIFICATION_DATE, value);
+        setDate(NAME_MODIFICATION_DATE, value);
     }
 
     /**
@@ -224,7 +218,7 @@ public class Disposition {
      *            The read date.
      */
     public void setReadDate(Date value) {
-        setDate(DISPOSITION_PARAMETER_READ_DATE, value);
+        setDate(NAME_READ_DATE, value);
     }
 
     /**
@@ -234,8 +228,7 @@ public class Disposition {
      *            The size.
      */
     public void setSize(long size) {
-        getParameters().set(Disposition.DISPOSITION_PARAMETER_SIZE,
-                Long.toString(size), true);
+        getParameters().set(Disposition.NAME_SIZE, Long.toString(size), true);
     }
 
     /**

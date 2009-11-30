@@ -79,12 +79,12 @@ public class RepresentationHelper {
         OutputStream outputStream = null;
 
         try {
-            outputStream = new FileOutputStream(representation
-                    .getDownloadName());
+            outputStream = new FileOutputStream(representation.getDisposition()
+                    .getFilename());
             representation.write(outputStream);
         } catch (IOException ex) {
             throw new RuntimeException("cannot write to "
-                    + representation.getDownloadName(), ex);
+                    + representation.getDisposition().getFilename(), ex);
         } finally {
             try {
                 if (outputStream != null) {

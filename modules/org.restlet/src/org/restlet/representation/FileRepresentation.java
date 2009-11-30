@@ -51,7 +51,7 @@ import org.restlet.engine.io.ByteUtils;
  * Representation based on a static file. Note that in order for Web clients to
  * display a download box upon reception of a file representation, it needs an
  * additional call to {@link Disposition#setType(String)} with a
- * {@link Disposition#DISPOSITION_TYPE_ATTACHMENT} value.
+ * {@link Disposition#TYPE_ATTACHMENT} value.
  * 
  * @author Jerome Louvel
  */
