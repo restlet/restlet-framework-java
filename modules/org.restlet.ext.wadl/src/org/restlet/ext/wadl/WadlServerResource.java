@@ -341,7 +341,7 @@ public class WadlServerResource extends ServerResource {
 	 */
 	private List<AnnotationInfo> getAnnotations() {
 		return isAnnotated() ? AnnotationUtils
-				.getAnnotationDescriptors(getClass()) : null;
+				.getAnnotations(getClass()) : null;
 	}
 
 	/**

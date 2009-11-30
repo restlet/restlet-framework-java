@@ -1,3 +1,33 @@
+/**
+ * Copyright 2005-2009 Noelios Technologies.
+ * 
+ * The contents of this file are subject to the terms of one of the following
+ * open source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or CDL 1.0 (the
+ * "Licenses"). You can select the license that you prefer but you may not use
+ * this file except in compliance with one of these Licenses.
+ * 
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.opensource.org/licenses/lgpl-3.0.html
+ * 
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.opensource.org/licenses/lgpl-2.1.php
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.opensource.org/licenses/cddl1.php
+ * 
+ * You can obtain a copy of the EPL 1.0 license at
+ * http://www.opensource.org/licenses/eclipse-1.0.php
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royalty free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
+ */
+
 package org.restlet.engine.resource;
 
 import java.lang.annotation.Annotation;
@@ -19,20 +49,16 @@ public class AnnotationUtils {
     private static final ConcurrentMap<Class<?>, List<AnnotationInfo>> cache = new ConcurrentHashMap<Class<?>, List<AnnotationInfo>>();
 
     /**
-     * Clears the annotation descriptors cache.
-     */
-    public static void clearCache() {
-        cache.clear();
-    }
-
-    /**
      * Computes the annotation descriptors for the given class or interface.
      * 
+     * @param descriptors
+     *            The annotation descriptors to update or null to create a new
+     *            one.
      * @param clazz
      *            The class or interface to introspect.
      * @return The annotation descriptors.
      */
-    private static List<AnnotationInfo> addAnnotationDescriptors(
+    private static List<AnnotationInfo> addAnnotations(
             List<AnnotationInfo> descriptors, Class<?> clazz) {
         List<AnnotationInfo> result = descriptors;
 
@@ -42,32 +68,65 @@ public class AnnotationUtils {
         }
 
         for (java.lang.reflect.Method javaMethod : clazz.getMethods()) {
-            for (Annotation annotation : javaMethod.getAnnotations()) {
+            addAnnotationDescriptors(descriptors, javaMethod);
+        }
 
-                Annotation methodAnnotation = annotation.annotationType()
-                        .getAnnotation(org.restlet.engine.Method.class);
+        return result;
+    }
 
-                if (methodAnnotation != null) {
-                    Method restletMethod = Method
-                            .valueOf(((org.restlet.engine.Method) methodAnnotation)
-                                    .value());
+    /**
+     * Computes the annotation descriptors for the given Java method.
+     * 
+     * @param descriptors
+     *            The annotation descriptors to update or null to create a new
+     *            one.
+     * @param javaMethod
+     *            The Java method to inspect.
+     * @return The annotation descriptors.
+     */
+    private static List<AnnotationInfo> addAnnotationDescriptors(
+            List<AnnotationInfo> descriptors,
+            java.lang.reflect.Method javaMethod) {
+        List<AnnotationInfo> result = descriptors;
 
-                    String toString = annotation.toString();
-                    int startIndex = annotation.annotationType()
-                            .getCanonicalName().length() + 8;
-                    int endIndex = toString.length() - 1;
-                    String value = toString.substring(startIndex, endIndex);
-                    if ("".equals(value)) {
-                        value = null;
-                    }
+        // Add the annotation descriptor
+        if (result == null) {
+            result = new CopyOnWriteArrayList<AnnotationInfo>();
+        }
 
-                    result.add(new AnnotationInfo(restletMethod, javaMethod,
-                            value));
+        for (Annotation annotation : javaMethod.getAnnotations()) {
+
+            Annotation methodAnnotation = annotation.annotationType()
+                    .getAnnotation(org.restlet.engine.Method.class);
+
+            if (methodAnnotation != null) {
+                Method restletMethod = Method
+                        .valueOf(((org.restlet.engine.Method) methodAnnotation)
+                                .value());
+
+                String toString = annotation.toString();
+                int startIndex = annotation.annotationType().getCanonicalName()
+                        .length() + 8;
+                int endIndex = toString.length() - 1;
+                String value = toString.substring(startIndex, endIndex);
+                if ("".equals(value)) {
+                    value = null;
                 }
+
+                result
+                        .add(new AnnotationInfo(restletMethod, javaMethod,
+                                value));
             }
         }
 
         return result;
+    }
+
+    /**
+     * Clears the annotation descriptors cache.
+     */
+    public static void clearCache() {
+        cache.clear();
     }
 
     /**
@@ -123,11 +182,11 @@ public class AnnotationUtils {
      *            The resource class to introspect.
      * @return The list of annotation descriptors.
      */
-    public static List<AnnotationInfo> getAnnotationDescriptors(Class<?> clazz) {
+    public static List<AnnotationInfo> getAnnotations(Class<?> clazz) {
         List<AnnotationInfo> result = cache.get(clazz);
 
         if (result == null) {
-            result = addAnnotationDescriptors(result, clazz);
+            result = addAnnotations(result, clazz);
             List<AnnotationInfo> prev = cache.putIfAbsent(clazz, result);
 
             if (prev != null) {
@@ -139,12 +198,24 @@ public class AnnotationUtils {
 
             if (interfaces != null) {
                 for (Class<?> interfaceClass : interfaces) {
-                    result = addAnnotationDescriptors(result, interfaceClass);
+                    result = addAnnotations(result, interfaceClass);
                 }
             }
         }
 
         return result;
+    }
+
+    /**
+     * Returns the annotation descriptors for the given resource class.
+     * 
+     * @param javaMethod
+     *            The Java method.
+     * @return The list of annotation descriptors.
+     */
+    public static List<AnnotationInfo> getAnnotations(
+            java.lang.reflect.Method javaMethod) {
+        return addAnnotationDescriptors(null, javaMethod);
     }
 
     /**

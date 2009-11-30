@@ -612,7 +612,7 @@ public abstract class ServerResource extends UniformResource {
      */
     private List<AnnotationInfo> getAnnotations() {
         return isAnnotated() ? AnnotationUtils
-                .getAnnotationDescriptors(getClass()) : null;
+                .getAnnotations(getClass()) : null;
     }
 
     /**
