@@ -68,6 +68,7 @@ import org.restlet.util.Series;
  */
 public class ClientResource extends UniformResource {
 
+    // [ifndef gwt] method
     /**
      * Creates a client resource that proxy calls to the given Java interface
      * into Restlet method calls.
@@ -87,6 +88,7 @@ public class ClientResource extends UniformResource {
         return clientResource.wrap(resourceInterface);
     }
 
+    // [ifndef gwt] method
     /**
      * Creates a client resource that proxy calls to the given Java interface
      * into Restlet method calls.
@@ -101,6 +103,7 @@ public class ClientResource extends UniformResource {
         return create(null, reference, resourceInterface);
     }
 
+    // [ifndef gwt] method
     /**
      * Creates a client resource that proxy calls to the given Java interface
      * into Restlet method calls.
@@ -1458,6 +1461,7 @@ public class ClientResource extends UniformResource {
         setClientInfo(newClientInfo);
     }
 
+    // [ifndef gwt] method
     /**
      * Wraps the client resource to proxy calls to the given Java interface into
      * Restlet method calls.
@@ -1471,10 +1475,9 @@ public class ClientResource extends UniformResource {
     public <T> T wrap(Class<? extends T> resourceInterface) {
         T result = null;
 
-        // [ifndef gwt]
         // Introspect the interface for Restlet annotations
         final List<org.restlet.engine.resource.AnnotationInfo> annotations = org.restlet.engine.resource.AnnotationUtils
-                .getAnnotationDescriptors(resourceInterface);
+                .getAnnotations(resourceInterface);
 
         // Create the client resource proxy
         java.lang.reflect.InvocationHandler h = new java.lang.reflect.InvocationHandler() {
@@ -1533,8 +1536,8 @@ public class ClientResource extends UniformResource {
         // Instantiate our dynamic proxy
         result = (T) java.lang.reflect.Proxy.newProxyInstance(Engine
                 .getClassLoader(), new Class<?>[] { resourceInterface }, h);
-        // [enddef]
 
         return result;
     }
+    
 }

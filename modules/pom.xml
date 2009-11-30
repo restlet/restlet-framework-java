@@ -120,7 +120,7 @@
 		<lib-com.sun.script-version>1.0</lib-com.sun.script-version>
 		<lib-javax.script-version>1.0</lib-javax.script-version>
 		<lib-servlet-version>2.5</lib-servlet-version>
-		<lib-simple-version>4.1.15</lib-simple-version>
+		<lib-simple-version>4.1.16</lib-simple-version>
 		<lib-slf4j-version>1.5.8</lib-slf4j-version>
 		<lib-solr-version>1.3.0</lib-solr-version>
 		<lib-solr-common-version>1.3.0</lib-solr-common-version>
