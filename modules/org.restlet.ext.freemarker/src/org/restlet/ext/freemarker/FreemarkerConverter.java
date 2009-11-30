@@ -44,7 +44,7 @@ import org.restlet.util.Resolver;
 import freemarker.template.Template;
 
 /**
- * Converter between the Freemarker templates and Representation.
+ * Converter between the Freemarker Template objects and Representations.
  * 
  * @author Thierry Boileau.
  */
