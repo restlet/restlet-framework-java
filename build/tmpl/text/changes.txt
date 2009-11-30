@@ -19,6 +19,8 @@ Changes log
         - ServerResource now supports empty POST and PUT requests.
         - Added converter of Freemarker Template objects in the 
           Freemarker extension.
+        - Added converter of Velocity Template objects in the 
+          Velocity extension.
     - Misc
         - Updated Simple framework library to version 4.1.16.
 
