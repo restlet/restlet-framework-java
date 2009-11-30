@@ -5,15 +5,18 @@ Bundle-SymbolicName: org.restlet.ext.velocity
 Bundle-Version: 2.0
 Bundle-Vendor: Noelios Technologies
 Export-Package: org.restlet.ext.velocity;
-  uses:="org.apache.velocity.runtime.resource.loader,
+  uses:="org.apache.commons.collections,
+   org.restlet.resource,
+   org.restlet.representation,
    org.restlet,
    org.restlet.util,
-   org.restlet.resource,
-   org.apache.velocity.app,
-   org.apache.velocity,
+   org.restlet.routing,
    org.restlet.data,
+   org.apache.velocity,
+   org.apache.velocity.app,
+   org.restlet.engine.converter,
    org.apache.velocity.runtime.resource,
-   org.apache.commons.collections"
+   org.apache.velocity.runtime.resource.loader"
 Import-Package: org.apache.commons.collections,
  org.apache.commons.collections.bag,
  org.apache.commons.collections.bidimap,
