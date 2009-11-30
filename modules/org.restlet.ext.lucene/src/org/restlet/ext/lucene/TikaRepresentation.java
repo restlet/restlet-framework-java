@@ -150,11 +150,15 @@ public class TikaRepresentation extends SaxRepresentation {
         if (this.representation != null) {
             try {
                 // Add common HTTP metadata
-                if (this.representation.getDownloadName() != null) {
-                    getMetadata().set(TikaMetadataKeys.RESOURCE_NAME_KEY,
-                            this.representation.getDownloadName());
-                    getMetadata().set(HttpHeaders.CONTENT_DISPOSITION,
-                            this.representation.getDownloadName());
+                if (this.representation.getDisposition() != null) {
+                    String name = this.representation.getDisposition()
+                            .getFilename();
+                    if (name != null) {
+                        getMetadata().set(TikaMetadataKeys.RESOURCE_NAME_KEY,
+                                name);
+                        getMetadata()
+                                .set(HttpHeaders.CONTENT_DISPOSITION, name);
+                    }
                 }
 
                 getMetadata().set(HttpHeaders.CONTENT_TYPE,
