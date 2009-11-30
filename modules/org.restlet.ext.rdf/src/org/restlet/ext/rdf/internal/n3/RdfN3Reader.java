@@ -77,6 +77,9 @@ public class RdfN3Reader extends RdfTurtleReader {
         Object currentObject = null;
         int nbTokens = 0;
         boolean swapSubjectObject = false;
+        // Stores the list of parsed subjects.
+        List<Object> subjects = new ArrayList<Object>();
+
         for (int i = 0; i < lexicalUnits.size(); i++) {
             LexicalUnit lexicalUnit = lexicalUnits.get(i);
 
@@ -85,8 +88,31 @@ public class RdfN3Reader extends RdfTurtleReader {
             case 1:
                 if (",".equals(lexicalUnit.getValue())) {
                     nbTokens++;
-                } else if (!";".equals(lexicalUnit.getValue())) {
-                    currentSubject = lexicalUnit.resolve();
+                } else if (";".equals(lexicalUnit.getValue())) {
+                    if (!subjects.isEmpty()) {
+                        currentSubject = subjects.get(subjects.size() - 1);
+                    }
+                } else {
+                    if ("!".equalsIgnoreCase(lexicalUnit.getValue())) {
+                        currentObject = new BlankNodeToken(newBlankNodeId())
+                                .resolve();
+                        currentPredicate = getPredicate(lexicalUnits.get(++i));
+                        this.link(currentSubject, currentPredicate,
+                                currentObject);
+                        currentSubject = currentObject;
+                        nbTokens = 1;
+                    } else if ("^".equalsIgnoreCase(lexicalUnit.getValue())) {
+                        currentObject = currentSubject;
+                        currentPredicate = getPredicate(lexicalUnits.get(++i));
+                        currentSubject = new BlankNodeToken(newBlankNodeId())
+                                .resolve();
+                        this.link(currentSubject, currentPredicate,
+                                currentObject);
+                        nbTokens = 1;
+                    } else {
+                        currentSubject = lexicalUnit.resolve();
+                        subjects.add(currentSubject);
+                    }
                 }
                 break;
             case 2:
@@ -126,15 +152,61 @@ public class RdfN3Reader extends RdfTurtleReader {
                 if ("of".equalsIgnoreCase(lexicalUnit.getValue())) {
                     nbTokens--;
                 } else {
-                    if (swapSubjectObject) {
-                        currentObject = currentSubject;
-                        currentSubject = lexicalUnit.resolve();
+                    // take care of the "path" shorthands.
+                    int j = i + 1;
+                    if (j < lexicalUnits.size() && isPath(lexicalUnits.get(j))) {
+                        if ("!"
+                                .equalsIgnoreCase(lexicalUnits.get(j)
+                                        .getValue())) {
+                            // Create a new BlankNode which is the object of the
+                            // current link.
+                            currentObject = new BlankNodeToken(newBlankNodeId())
+                                    .resolve();
+                            this.link(currentSubject, currentPredicate,
+                                    currentObject);
+
+                            // Interpret the "!" path
+                            currentPredicate = getPredicate(lexicalUnits
+                                    .get(j + 1));
+                            this.link(lexicalUnit.resolve(), currentPredicate,
+                                    currentObject);
+                            currentSubject = currentObject;
+                            nbTokens = 0;
+                            i += 2;
+                        } else if ("^".equalsIgnoreCase(lexicalUnits.get(j)
+                                .getValue())) {
+                            // Create a new BlankNode which is the object of the
+                            // current link.
+                            currentObject = new BlankNodeToken(newBlankNodeId())
+                                    .resolve();
+                            this.link(currentSubject, currentPredicate,
+                                    currentObject);
+
+                            // Interpret the "^" path
+                            currentSubject = currentObject;
+                            currentPredicate = getPredicate(lexicalUnits
+                                    .get(j + 1));
+                            currentObject = lexicalUnit.resolve();
+                            this.link(currentSubject, currentPredicate,
+                                    currentObject);
+                            nbTokens = 0;
+                            i += 2;
+                        }
                     } else {
-                        currentObject = lexicalUnit.resolve();
+                        if (swapSubjectObject) {
+                            currentObject = currentSubject;
+                            currentSubject = lexicalUnit.resolve();
+                            this.link(currentSubject, currentPredicate,
+                                    currentObject);
+                            currentSubject = currentObject;
+                        } else {
+                            currentObject = lexicalUnit.resolve();
+                            this.link(currentSubject, currentPredicate,
+                                    currentObject);
+                        }
+                        nbTokens = 0;
+                        swapSubjectObject = false;
                     }
-                    this.link(currentSubject, currentPredicate, currentObject);
-                    nbTokens = 0;
-                    swapSubjectObject = false;
                 }
                 break;
             default:
@@ -171,6 +243,18 @@ public class RdfN3Reader extends RdfTurtleReader {
     }
 
     /**
+     * Returns true if the given lexical unit is a "path" shorthand.
+     * 
+     * @param lexicalUnit
+     *            The lexical unit to analyse.
+     * @return True if the given lexical unit is a "path" shorthand.
+     */
+    protected boolean isPath(LexicalUnit lexicalUnit) {
+        return "!".equals(lexicalUnit.getValue())
+                || "^".equals(lexicalUnit.getValue());
+    }
+
+    /**
      * Callback method used when a link is parsed or written.
      * 
      * @param source
@@ -193,7 +277,10 @@ public class RdfN3Reader extends RdfTurtleReader {
                 org.restlet.Context
                         .getCurrentLogger()
                         .warning(
-                                "The N3 document contains an object which is neither a Reference nor a literal.");
+                                "The N3 document contains an object which is neither a Reference nor a literal: "
+                                        + target);
+                org.restlet.Context.getCurrentLogger().warning(
+                        getParsingMessage());
             }
         } else if (source instanceof Graph) {
             if (target instanceof Reference) {
@@ -206,7 +293,10 @@ public class RdfN3Reader extends RdfTurtleReader {
                 org.restlet.Context
                         .getCurrentLogger()
                         .warning(
-                                "The N3 document contains an object which is neither a Reference nor a literal.");
+                                "The N3 document contains an object which is neither a Reference nor a literal: "
+                                        + target);
+                org.restlet.Context.getCurrentLogger().warning(
+                        getParsingMessage());
             }
         }
     }
@@ -243,6 +333,46 @@ public class RdfN3Reader extends RdfTurtleReader {
             case '[':
                 blankNode.getLexicalUnits().add(
                         new BlankNodeToken(this, getContext()));
+                break;
+            case '!':
+                blankNode.getLexicalUnits().add(new Token("!"));
+                step();
+                discard();
+                break;
+            case '^':
+                blankNode.getLexicalUnits().add(new Token("^"));
+                step();
+                discard();
+                break;
+            case '=':
+                if (step() == '>') {
+                    blankNode.getLexicalUnits().add(new Token("=>"));
+                    step();
+                    discard();
+                } else {
+                    blankNode.getLexicalUnits().add(new Token("="));
+                    discard();
+                }
+                break;
+            case '@':
+                // Remove the leading '@' character.
+                step();
+                discard();
+                blankNode.getLexicalUnits().add(new Token(this, getContext()));
+                discard();
+                break;
+            case ';':
+                step();
+                discard();
+                blankNode.getLexicalUnits().add(new Token(";"));
+                break;
+            case ',':
+                step();
+                discard();
+                blankNode.getLexicalUnits().add(new Token(","));
+                break;
+            case '#':
+                parseComment();
                 break;
             case '{':
                 blankNode.getLexicalUnits().add(
@@ -403,6 +533,9 @@ public class RdfN3Reader extends RdfTurtleReader {
                 break;
             case '{':
                 lexicalUnits.add(new FormulaToken(this, context));
+                break;
+            case '#':
+                parseComment();
                 break;
             case '.':
                 break;

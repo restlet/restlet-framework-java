@@ -112,4 +112,10 @@ public class StringToken extends LexicalUnit {
     public void setMultiLines(boolean multiLines) {
         this.multiLines = multiLines;
     }
+    
+    @Override
+    public String toString() {
+        return getValue();
+    }
+
 }

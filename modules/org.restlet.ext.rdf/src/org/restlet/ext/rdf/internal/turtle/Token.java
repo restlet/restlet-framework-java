@@ -92,8 +92,18 @@ public class Token extends LexicalUnit {
             } else {
                 org.restlet.Context.getCurrentLogger().warning(
                         "Cannot identify this token value: " + getValue());
+                if (getContentReader() != null) {
+                    org.restlet.Context.getCurrentLogger().warning(
+                            getContentReader().getParsingMessage());
+                }
             }
         }
         return result;
     }
+
+    @Override
+    public String toString() {
+        return getValue();
+    }
+
 }

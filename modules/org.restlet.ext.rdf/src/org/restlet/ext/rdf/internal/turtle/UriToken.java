@@ -63,4 +63,9 @@ public class UriToken extends LexicalUnit {
     public Reference resolve() {
         return new Reference(getValue());
     }
+
+    @Override
+    public String toString() {
+        return getValue();
+    }
 }

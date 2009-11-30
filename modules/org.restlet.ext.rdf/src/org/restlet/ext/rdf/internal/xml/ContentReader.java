@@ -288,7 +288,7 @@ class ContentReader extends DefaultHandler {
      */
     private void link() {
         Reference currentSubject = getCurrentSubject();
-        if (currentSubject instanceof Reference) {
+        if (currentSubject != null) {
             if (this.currentObject instanceof Reference) {
                 link(currentSubject, this.currentPredicate,
                         (Reference) this.currentObject);

@@ -326,16 +326,16 @@ public class RdfClientResource extends ClientResource {
                     this.links = rdfRep.getGraph();
                     result = this.links;
                 } else {
-                    getLogger()
-                            .log(Level.WARNING,
-                                    "Unable to retrieve an RDF representation of this resource.");
+                    getLogger().log(
+                            Level.WARNING,
+                            "Unable to retrieve an RDF representation of this resource: "
+                                    + getReference());
                 }
-            } catch (Exception e) {
-                getLogger()
-                        .log(
-                                Level.WARNING,
-                                "Unable to retrieve an RDF representation of this resource.",
-                                e);
+            } catch (Throwable e) {
+                getLogger().log(
+                        Level.WARNING,
+                        "Unable to retrieve an RDF representation of this resource: "
+                                + getReference(), e);
             }
 
             // Restore previous preferences

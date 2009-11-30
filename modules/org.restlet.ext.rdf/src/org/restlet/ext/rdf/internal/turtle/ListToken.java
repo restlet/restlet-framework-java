@@ -74,7 +74,7 @@ public class ListToken extends LexicalUnit {
 
             if (element instanceof Reference) {
                 getContentReader().link(currentBlankNode,
-                        RdfConstants.LIST_FIRST, (Reference) element);
+                        RdfConstants.LIST_FIRST, element);
             } else if (element instanceof String) {
                 getContentReader().link(currentBlankNode,
                         RdfConstants.LIST_FIRST,

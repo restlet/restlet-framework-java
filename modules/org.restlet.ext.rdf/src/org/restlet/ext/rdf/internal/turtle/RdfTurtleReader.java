@@ -133,12 +133,13 @@ public class RdfTurtleReader extends RdfNTriplesReader {
                     nbTokens--;
                 } else {
                     if (swapSubjectObject) {
-                        currentObject = currentSubject;
-                        currentSubject = lexicalUnit.resolve();
+                        this.link(lexicalUnit.resolve(), currentPredicate,
+                                currentSubject);
                     } else {
                         currentObject = lexicalUnit.resolve();
+                        this.link(currentSubject, currentPredicate,
+                                currentObject);
                     }
-                    this.link(currentSubject, currentPredicate, currentObject);
                     nbTokens = 0;
                     swapSubjectObject = false;
                 }
@@ -213,7 +214,10 @@ public class RdfTurtleReader extends RdfNTriplesReader {
                 org.restlet.Context
                         .getCurrentLogger()
                         .warning(
-                                "The RDF Turtle document contains an object which is neither a Reference nor a literal.");
+                                "The RDF Turtle document contains an object which is neither a Reference nor a literal: "
+                                        + target);
+                org.restlet.Context.getCurrentLogger().warning(
+                        getParsingMessage());
             }
         } else if (source instanceof Graph) {
             if (target instanceof Reference) {
@@ -226,7 +230,10 @@ public class RdfTurtleReader extends RdfNTriplesReader {
                 org.restlet.Context
                         .getCurrentLogger()
                         .warning(
-                                "The RDF Turtle document contains an object which is neither a Reference nor a literal.");
+                                "The RDF Turtle document contains an object which is neither a Reference nor a literal: "
+                                        + target);
+                org.restlet.Context.getCurrentLogger().warning(
+                        getParsingMessage());
             }
         }
     }
@@ -471,6 +478,9 @@ public class RdfTurtleReader extends RdfNTriplesReader {
                 step();
                 discard();
                 lexicalUnits.add(new Token(","));
+                break;
+            case '#':
+                parseComment();
                 break;
             case '.':
                 break;
