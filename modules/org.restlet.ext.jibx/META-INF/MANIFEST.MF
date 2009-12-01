@@ -4,10 +4,18 @@ Bundle-Name: Restlet Extension - JiBX
 Bundle-SymbolicName: org.restlet.ext.jibx
 Bundle-Version: 2.0
 Bundle-Vendor: Noelios Technologies
-Export-Package: org.restlet.ext.jibx;uses:="org.restlet.resource,javax.xml.namespace,org.restlet.data"
+Export-Package: org.restlet.ext.jibx;
+  uses:="org.restlet.data,
+   org.restlet.resource,
+   org.restlet.ext.xml,
+   org.restlet.engine.converter,
+   org.restlet.representation,
+   javax.xml.namespace"
 Import-Package: org.jibx.runtime,
  org.restlet,
  org.restlet.data,
+ org.restlet.engine.converter,
+ org.restlet.engine.resource,
  org.restlet.ext.xml,
  org.restlet.representation,
  org.restlet.resource,
