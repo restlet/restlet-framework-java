@@ -63,424 +63,424 @@ import org.restlet.service.MetadataService;
  */
 public class WadlServerResource extends ServerResource {
 
-	/**
-	 * Indicates if the resource should be automatically described via WADL when
-	 * an OPTIONS request is handled.
-	 */
-	private volatile boolean autoDescribed;
+    /**
+     * Indicates if the resource should be automatically described via WADL when
+     * an OPTIONS request is handled.
+     */
+    private volatile boolean autoDescribed;
 
-	/**
-	 * The title of this documented resource. Is seen as the title of the first
-	 * "doc" tag of the "application" tag in a WADL document or as the title of
-	 * the HTML representation.
-	 */
-	private volatile String title;
+    /**
+     * The title of this documented resource. Is seen as the title of the first
+     * "doc" tag of the "application" tag in a WADL document or as the title of
+     * the HTML representation.
+     */
+    private volatile String title;
 
-	/**
-	 * Constructor.
-	 */
-	public WadlServerResource() {
-		this.autoDescribed = true;
-	}
+    /**
+     * Constructor.
+     */
+    public WadlServerResource() {
+        this.autoDescribed = true;
+    }
 
-	/**
-	 * Describes the resource as a WADL document.
-	 * 
-	 * @return The WADL description.
-	 */
-	protected Representation describe() {
-		return describe(getPreferredWadlVariant());
-	}
+    /**
+     * Describes the resource as a WADL document.
+     * 
+     * @return The WADL description.
+     */
+    protected Representation describe() {
+        return describe(getPreferredWadlVariant());
+    }
 
-	/**
-	 * Returns a WADL description of the current resource, leveraging the
-	 * {@link #getResourcePath()} method.
-	 * 
-	 * @param info
-	 *            WADL description of the current resource to update.
-	 */
-	private void describe(ResourceInfo info) {
-		describe(getResourcePath(), info);
-	}
+    /**
+     * Returns a WADL description of the current resource, leveraging the
+     * {@link #getResourcePath()} method.
+     * 
+     * @param info
+     *            WADL description of the current resource to update.
+     */
+    private void describe(ResourceInfo info) {
+        describe(getResourcePath(), info);
+    }
 
-	/**
-	 * Returns a WADL description of the current resource.
-	 * 
-	 * @param path
-	 *            Path of the current resource.
-	 * @param info
-	 *            WADL description of the current resource to update.
-	 */
-	public void describe(String path, ResourceInfo info) {
-		info.setPath(path);
+    /**
+     * Returns a WADL description of the current resource.
+     * 
+     * @param path
+     *            Path of the current resource.
+     * @param info
+     *            WADL description of the current resource to update.
+     */
+    public void describe(String path, ResourceInfo info) {
+        info.setPath(path);
 
-		// Introspect the current resource to detect the allowed methods
-		final List<Method> methodsList = new ArrayList<Method>();
-		methodsList.addAll(getAllowedMethods());
+        // Introspect the current resource to detect the allowed methods
+        final List<Method> methodsList = new ArrayList<Method>();
+        methodsList.addAll(getAllowedMethods());
 
-		// Sort the allowed methods alphabetically
-		Collections.sort(methodsList, new Comparator<Method>() {
-			public int compare(Method m1, Method m2) {
-				return m1.getName().compareTo(m2.getName());
-			}
-		});
+        // Sort the allowed methods alphabetically
+        Collections.sort(methodsList, new Comparator<Method>() {
+            public int compare(Method m1, Method m2) {
+                return m1.getName().compareTo(m2.getName());
+            }
+        });
 
-		// Update the resource info with the description
-		// of the allowed methods
-		final List<MethodInfo> methods = info.getMethods();
-		MethodInfo methodInfo;
-		for (final Method method : methodsList) {
-			if (isDescribable(method)) {
-				methodInfo = new MethodInfo();
-				describeMethod(method, methodInfo);
-				methods.add(methodInfo);
-			}
-		}
+        // Update the resource info with the description
+        // of the allowed methods
+        final List<MethodInfo> methods = info.getMethods();
+        MethodInfo methodInfo;
+        for (final Method method : methodsList) {
+            if (isDescribable(method)) {
+                methodInfo = new MethodInfo();
+                describeMethod(method, methodInfo);
+                methods.add(methodInfo);
+            }
+        }
 
-		info.setParameters(getParametersInfo());
-	}
+        info.setParameters(getParametersInfo());
+    }
 
-	/**
-	 * Describes the resource as a WADL document for the given variant.
-	 * 
-	 * @param variant
-	 *            The WADL variant.
-	 * @return The WADL description.
-	 */
-	protected Representation describe(Variant variant) {
-		Representation result = null;
+    /**
+     * Describes the resource as a WADL document for the given variant.
+     * 
+     * @param variant
+     *            The WADL variant.
+     * @return The WADL description.
+     */
+    protected Representation describe(Variant variant) {
+        Representation result = null;
 
-		if (variant != null) {
-			ResourceInfo resourceInfo = new ResourceInfo();
-			describe(resourceInfo);
+        if (variant != null) {
+            ResourceInfo resourceInfo = new ResourceInfo();
+            describe(resourceInfo);
 
-			if (getTitle() != null && !"".equals(getTitle())) {
-				DocumentationInfo doc = null;
-				if (resourceInfo.getDocumentations().isEmpty()) {
-					doc = new DocumentationInfo();
-					resourceInfo.getDocumentations().add(doc);
-				} else {
-					doc = resourceInfo.getDocumentations().get(0);
-				}
+            if (getTitle() != null && !"".equals(getTitle())) {
+                DocumentationInfo doc = null;
+                if (resourceInfo.getDocumentations().isEmpty()) {
+                    doc = new DocumentationInfo();
+                    resourceInfo.getDocumentations().add(doc);
+                } else {
+                    doc = resourceInfo.getDocumentations().get(0);
+                }
 
-				doc.setTitle(getTitle());
-			}
+                doc.setTitle(getTitle());
+            }
 
-			if (MediaType.APPLICATION_WADL.equals(variant.getMediaType())) {
-				result = new WadlRepresentation(resourceInfo);
-			} else if (MediaType.TEXT_HTML.equals(variant.getMediaType())) {
-				result = new WadlRepresentation(resourceInfo)
-						.getHtmlRepresentation();
-			}
-		}
+            if (MediaType.APPLICATION_WADL.equals(variant.getMediaType())) {
+                result = new WadlRepresentation(resourceInfo);
+            } else if (MediaType.TEXT_HTML.equals(variant.getMediaType())) {
+                result = new WadlRepresentation(resourceInfo)
+                        .getHtmlRepresentation();
+            }
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	/**
-	 * Describes the DELETE method.
-	 * 
-	 * @param info
-	 *            The method description to update.
-	 */
-	protected void describeDelete(MethodInfo info) {
-		discoverAnnotations(info);
-	}
+    /**
+     * Describes the DELETE method.
+     * 
+     * @param info
+     *            The method description to update.
+     */
+    protected void describeDelete(MethodInfo info) {
+        discoverAnnotations(info);
+    }
 
-	/**
-	 * Describes the GET method.<br>
-	 * By default, it describes the response with the available variants based
-	 * on the {@link #getVariants()} method. Thus in the majority of cases, the
-	 * method of the super class must be called when overriden.
-	 * 
-	 * @param info
-	 *            The method description to update.
-	 */
-	protected void describeGet(MethodInfo info) {
-		if (getVariants() != null) {
-			// Describe each variant
-			for (final Variant variant : getVariants()) {
-				info.addResponseRepresentation(variant);
-			}
-		}
-	}
+    /**
+     * Describes the GET method.<br>
+     * By default, it describes the response with the available variants based
+     * on the {@link #getVariants()} method. Thus in the majority of cases, the
+     * method of the super class must be called when overriden.
+     * 
+     * @param info
+     *            The method description to update.
+     */
+    protected void describeGet(MethodInfo info) {
+        if (getVariants() != null) {
+            // Describe each variant
+            for (final Variant variant : getVariants()) {
+                info.addResponseRepresentation(variant);
+            }
+        }
+    }
 
-	/**
-	 * Returns a WADL description of the given method.
-	 * 
-	 * @param method
-	 *            The method to describe.
-	 * @param info
-	 *            The method description to update.
-	 */
-	protected void describeMethod(Method method, MethodInfo info) {
-		info.setName(method);
-		info.setRequest(new RequestInfo());
-		info.setResponse(new ResponseInfo());
+    /**
+     * Returns a WADL description of the given method.
+     * 
+     * @param method
+     *            The method to describe.
+     * @param info
+     *            The method description to update.
+     */
+    protected void describeMethod(Method method, MethodInfo info) {
+        info.setName(method);
+        info.setRequest(new RequestInfo());
+        info.setResponse(new ResponseInfo());
 
-		if (Method.GET.equals(method)) {
-			describeGet(info);
-		} else if (Method.POST.equals(method)) {
-			describePost(info);
-		} else if (Method.PUT.equals(method)) {
-			describePut(info);
-		} else if (Method.DELETE.equals(method)) {
-			describeDelete(info);
-		} else if (Method.OPTIONS.equals(method)) {
-			describeOptions(info);
-		}
-	}
+        if (Method.GET.equals(method)) {
+            describeGet(info);
+        } else if (Method.POST.equals(method)) {
+            describePost(info);
+        } else if (Method.PUT.equals(method)) {
+            describePut(info);
+        } else if (Method.DELETE.equals(method)) {
+            describeDelete(info);
+        } else if (Method.OPTIONS.equals(method)) {
+            describeOptions(info);
+        }
+    }
 
-	/**
-	 * Describes the OPTIONS method.<br>
-	 * By default it describes the response with the available variants based on
-	 * the {@link #getWadlVariants()} method.
-	 * 
-	 * @param info
-	 *            The method description to update.
-	 */
-	protected void describeOptions(MethodInfo info) {
-		// Describe each variant
-		for (final Variant variant : getWadlVariants()) {
-			info.addResponseRepresentation(variant);
-		}
-	}
+    /**
+     * Describes the OPTIONS method.<br>
+     * By default it describes the response with the available variants based on
+     * the {@link #getWadlVariants()} method.
+     * 
+     * @param info
+     *            The method description to update.
+     */
+    protected void describeOptions(MethodInfo info) {
+        // Describe each variant
+        for (final Variant variant : getWadlVariants()) {
+            info.addResponseRepresentation(variant);
+        }
+    }
 
-	/**
-	 * Describes the POST method.
-	 * 
-	 * @param info
-	 *            The method description to update.
-	 */
-	protected void describePost(MethodInfo info) {
-		discoverAnnotations(info);
-	}
+    /**
+     * Describes the POST method.
+     * 
+     * @param info
+     *            The method description to update.
+     */
+    protected void describePost(MethodInfo info) {
+        discoverAnnotations(info);
+    }
 
-	/**
-	 * Describes the PUT method.
-	 * 
-	 * @param info
-	 *            The method description to update.
-	 */
-	protected void describePut(MethodInfo info) {
-		discoverAnnotations(info);
-	}
+    /**
+     * Describes the PUT method.
+     * 
+     * @param info
+     *            The method description to update.
+     */
+    protected void describePut(MethodInfo info) {
+        discoverAnnotations(info);
+    }
 
-	/**
-	 * Automatically describe a method by discovering the resource's
-	 * annotations.
-	 * 
-	 * @param info
-	 *            The method description to update.
-	 * @param method
-	 *            The Method to document
-	 */
-	@SuppressWarnings("unchecked")
-	private void discoverAnnotations(MethodInfo info) {
-		// Loop over the annotated Java methods
-		MetadataService metadataService = getMetadataService();
-		List<AnnotationInfo> annotations = getAnnotations();
-		if (annotations != null && metadataService != null) {
-			for (AnnotationInfo annotationInfo : annotations) {
-				if (info.getName().equals(annotationInfo.getRestletMethod())) {
-					Class<?>[] classes = annotationInfo.getJavaInputTypes();
-					if (classes != null && classes.length == 1) {
-						List<Variant> variants = (List<Variant>) getApplication()
-								.getConverterService().getVariants(classes[0],
-										null);
-						if (variants != null) {
-							for (Variant variant : variants) {
-								if (!info.getRequest().getRepresentations()
-										.contains(variant)) {
-									info.addRequestRepresentation(variant);
-								}
-							}
-						}
-					}
-					if (annotationInfo.getJavaOutputType() != null) {
-						List<Variant> variants = (List<Variant>) getApplication()
-								.getConverterService().getVariants(
-										annotationInfo.getJavaOutputType(),
-										null);
-						if (variants != null) {
-							for (Variant variant : variants) {
-								if (!info.getResponse().getRepresentations()
-										.contains(variant)) {
-									info.addResponseRepresentation(variant);
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	}
+    /**
+     * Automatically describe a method by discovering the resource's
+     * annotations.
+     * 
+     * @param info
+     *            The method description to update.
+     * @param method
+     *            The Method to document
+     */
+    @SuppressWarnings("unchecked")
+    private void discoverAnnotations(MethodInfo info) {
+        // Loop over the annotated Java methods
+        MetadataService metadataService = getMetadataService();
+        List<AnnotationInfo> annotations = getAnnotations();
+        if (annotations != null && metadataService != null) {
+            for (AnnotationInfo annotationInfo : annotations) {
+                if (info.getName().equals(annotationInfo.getRestletMethod())) {
+                    Class<?>[] classes = annotationInfo.getJavaInputTypes();
+                    if (classes != null && classes.length == 1) {
+                        List<Variant> variants = (List<Variant>) getApplication()
+                                .getConverterService().getVariants(classes[0],
+                                        null);
+                        if (variants != null) {
+                            for (Variant variant : variants) {
+                                if (!info.getRequest().getRepresentations()
+                                        .contains(variant)) {
+                                    info.addRequestRepresentation(variant);
+                                }
+                            }
+                        }
+                    }
+                    if (annotationInfo.getJavaOutputType() != null) {
+                        List<Variant> variants = (List<Variant>) getApplication()
+                                .getConverterService().getVariants(
+                                        annotationInfo.getJavaOutputType(),
+                                        null);
+                        if (variants != null) {
+                            for (Variant variant : variants) {
+                                if (!info.getResponse().getRepresentations()
+                                        .contains(variant)) {
+                                    info.addResponseRepresentation(variant);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 
-	@Override
-	protected void doInit() throws ResourceException {
-		super.doInit();
-		this.autoDescribed = true;
-	}
+    @Override
+    protected void doInit() throws ResourceException {
+        super.doInit();
+        this.autoDescribed = true;
+    }
 
-	/**
-	 * Returns the set of allowed methods.
-	 * 
-	 * @return The set of allowed methods.
-	 */
-	@Override
-	public Set<Method> getAllowedMethods() {
-		final Set<Method> result = new HashSet<Method>();
-		updateAllowedMethods(result);
-		return result;
-	}
+    /**
+     * Returns the set of allowed methods.
+     * 
+     * @return The set of allowed methods.
+     */
+    @Override
+    public Set<Method> getAllowedMethods() {
+        final Set<Method> result = new HashSet<Method>();
+        updateAllowedMethods(result);
+        return result;
+    }
 
-	/**
-	 * Returns the annotation descriptors.
-	 * 
-	 * @return The annotation descriptors.
-	 */
-	private List<AnnotationInfo> getAnnotations() {
-		return isAnnotated() ? AnnotationUtils
-				.getAnnotations(getClass()) : null;
-	}
+    /**
+     * Returns the annotation descriptors.
+     * 
+     * @return The annotation descriptors.
+     */
+    private List<AnnotationInfo> getAnnotations() {
+        return isAnnotated() ? AnnotationUtils.getAnnotations(getClass())
+                : null;
+    }
 
-	/**
-	 * Returns the description of the parameters of this resource. Returns null
-	 * by default.
-	 * 
-	 * @return The description of the parameters.
-	 */
-	protected List<ParameterInfo> getParametersInfo() {
-		final List<ParameterInfo> result = null;
-		return result;
-	}
+    /**
+     * Returns the description of the parameters of this resource. Returns null
+     * by default.
+     * 
+     * @return The description of the parameters.
+     */
+    protected List<ParameterInfo> getParametersInfo() {
+        final List<ParameterInfo> result = null;
+        return result;
+    }
 
-	/**
-	 * Returns the preferred WADL variant according to the client preferences
-	 * specified in the request.
-	 * 
-	 * @return The preferred WADL variant.
-	 */
-	protected Variant getPreferredWadlVariant() {
-		Variant result = null;
+    /**
+     * Returns the preferred WADL variant according to the client preferences
+     * specified in the request.
+     * 
+     * @return The preferred WADL variant.
+     */
+    protected Variant getPreferredWadlVariant() {
+        Variant result = null;
 
-		// Compute the preferred variant
-		result = getRequest().getClientInfo().getPreferredVariant(
-				getWadlVariants(),
-				(getApplication() == null) ? null : getApplication()
-						.getMetadataService());
+        // Compute the preferred variant
+        result = getRequest().getClientInfo().getPreferredVariant(
+                getWadlVariants(),
+                (getApplication() == null) ? null : getApplication()
+                        .getMetadataService());
 
-		return result;
-	}
+        return result;
+    }
 
-	/**
-	 * Returns the resource's relative path.
-	 * 
-	 * @return The resource's relative path.
-	 */
-	protected String getResourcePath() {
-		final Reference ref = new Reference(getRequest().getRootRef(),
-				getRequest().getResourceRef());
-		return ref.getRemainingPart();
-	}
+    /**
+     * Returns the resource's relative path.
+     * 
+     * @return The resource's relative path.
+     */
+    protected String getResourcePath() {
+        final Reference ref = new Reference(getRequest().getRootRef(),
+                getRequest().getResourceRef());
+        return ref.getRemainingPart();
+    }
 
-	/**
-	 * Returns the application resources base URI.
-	 * 
-	 * @return The application resources base URI.
-	 */
-	protected Reference getResourcesBase() {
-		return getRequest().getRootRef();
-	}
+    /**
+     * Returns the application resources base URI.
+     * 
+     * @return The application resources base URI.
+     */
+    protected Reference getResourcesBase() {
+        return getRequest().getRootRef();
+    }
 
-	/**
-	 * Returns the title of this documented resource.
-	 * 
-	 * @return The title of this documented resource.
-	 */
-	public String getTitle() {
-		return title;
-	}
+    /**
+     * Returns the title of this documented resource.
+     * 
+     * @return The title of this documented resource.
+     */
+    public String getTitle() {
+        return title;
+    }
 
-	/**
-	 * Returns the available WADL variants.
-	 * 
-	 * @return The available WADL variants.
-	 */
-	protected List<Variant> getWadlVariants() {
-		final List<Variant> result = new ArrayList<Variant>();
-		result.add(new Variant(MediaType.APPLICATION_WADL));
-		result.add(new Variant(MediaType.TEXT_HTML));
-		return result;
-	}
+    /**
+     * Returns the available WADL variants.
+     * 
+     * @return The available WADL variants.
+     */
+    protected List<Variant> getWadlVariants() {
+        final List<Variant> result = new ArrayList<Variant>();
+        result.add(new Variant(MediaType.APPLICATION_WADL));
+        result.add(new Variant(MediaType.TEXT_HTML));
+        return result;
+    }
 
-	/**
-	 * Indicates if the resource should be automatically described via WADL when
-	 * an OPTIONS request is handled.
-	 * 
-	 * @return True if the resource should be automatically described via WADL.
-	 */
-	public boolean isAutoDescribed() {
-		return this.autoDescribed;
-	}
+    /**
+     * Indicates if the resource should be automatically described via WADL when
+     * an OPTIONS request is handled.
+     * 
+     * @return True if the resource should be automatically described via WADL.
+     */
+    public boolean isAutoDescribed() {
+        return this.autoDescribed;
+    }
 
-	/**
-	 * Indicates if the given method exposes its WADL description. By default,
-	 * HEAD and OPTIONS are not exposed. This method is called by
-	 * {@link #describe(String, ResourceInfo)}.
-	 * 
-	 * @param method
-	 *            The method
-	 * @return True if the method exposes its description, false otherwise.
-	 */
-	public boolean isDescribable(Method method) {
-		return !(Method.HEAD.equals(method) || Method.OPTIONS.equals(method));
-	}
+    /**
+     * Indicates if the given method exposes its WADL description. By default,
+     * HEAD and OPTIONS are not exposed. This method is called by
+     * {@link #describe(String, ResourceInfo)}.
+     * 
+     * @param method
+     *            The method
+     * @return True if the method exposes its description, false otherwise.
+     */
+    public boolean isDescribable(Method method) {
+        return !(Method.HEAD.equals(method) || Method.OPTIONS.equals(method));
+    }
 
-	@Override
-	public Representation options() {
-		if (isAutoDescribed()) {
-			return describe();
-		}
-		return null;
-	}
+    @Override
+    public Representation options() {
+        if (isAutoDescribed()) {
+            return describe();
+        }
+        return null;
+    }
 
-	/**
-	 * Indicates if the resource should be automatically described via WADL when
-	 * an OPTIONS request is handled.
-	 * 
-	 * @param autoDescribed
-	 *            True if the resource should be automatically described via
-	 *            WADL.
-	 */
-	public void setAutoDescribed(boolean autoDescribed) {
-		this.autoDescribed = autoDescribed;
-	}
+    /**
+     * Indicates if the resource should be automatically described via WADL when
+     * an OPTIONS request is handled.
+     * 
+     * @param autoDescribed
+     *            True if the resource should be automatically described via
+     *            WADL.
+     */
+    public void setAutoDescribed(boolean autoDescribed) {
+        this.autoDescribed = autoDescribed;
+    }
 
-	/**
-	 * Sets the title of this documented resource.
-	 * 
-	 * @param title
-	 *            The title of this documented resource.
-	 */
-	public void setTitle(String title) {
-		this.title = title;
-	}
+    /**
+     * Sets the title of this documented resource.
+     * 
+     * @param title
+     *            The title of this documented resource.
+     */
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-	/**
-	 * Updates the set of methods with the ones allowed by this resource
-	 * instance.
-	 * 
-	 * @param allowedMethods
-	 *            The set to update.
-	 */
-	private void updateAllowedMethods(Set<Method> allowedMethods) {
-		List<AnnotationInfo> annotations = getAnnotations();
-		if (annotations != null) {
-			for (AnnotationInfo annotationInfo : annotations) {
-				allowedMethods.add(annotationInfo.getRestletMethod());
-			}
-		}
-	}
+    /**
+     * Updates the set of methods with the ones allowed by this resource
+     * instance.
+     * 
+     * @param allowedMethods
+     *            The set to update.
+     */
+    private void updateAllowedMethods(Set<Method> allowedMethods) {
+        List<AnnotationInfo> annotations = getAnnotations();
+        if (annotations != null) {
+            for (AnnotationInfo annotationInfo : annotations) {
+                allowedMethods.add(annotationInfo.getRestletMethod());
+            }
+        }
+    }
 
 }
