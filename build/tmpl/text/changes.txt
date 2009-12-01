@@ -21,6 +21,7 @@ Changes log
           Freemarker extension.
         - Added converter of Velocity Template objects in the 
           Velocity extension.
+        - Added converter of Graph objects in the RDF extension.
     - Misc
         - Updated Simple framework library to version 4.1.16.
 
