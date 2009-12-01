@@ -113,17 +113,16 @@ public class GraphConverter extends ConverterHelper {
         return 0;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public <T> T toObject(Representation source, Class<T> target,
             UniformResource resource) throws IOException {
-        T result = null;
+        Object result = null;
 
         try {
             if (source instanceof RdfRepresentation) {
-                result = (T) ((RdfRepresentation) source).getGraph();
+                result = ((RdfRepresentation) source).getGraph();
             } else {
-                result = (T) (new RdfRepresentation(source)).getGraph();
+                result = (new RdfRepresentation(source)).getGraph();
             }
         } catch (Exception e) {
             Context
@@ -132,7 +131,7 @@ public class GraphConverter extends ConverterHelper {
                             "Cannot convert a source representation into a Graph object.");
         }
 
-        return result;
+        return target.cast(result);
     }
 
     @Override
