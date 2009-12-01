@@ -22,6 +22,7 @@ Changes log
         - Added converter of Velocity Template objects in the 
           Velocity extension.
         - Added converter of Graph objects in the RDF extension.
+        - Added converter of Syndfeed objects in the Rome extension.
     - Misc
         - Updated Simple framework library to version 4.1.16.
 
