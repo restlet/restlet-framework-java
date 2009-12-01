@@ -5,10 +5,12 @@ Bundle-SymbolicName: org.restlet.ext.rdf
 Bundle-Version: 2.0
 Bundle-Vendor: Noelios Technologies
 Export-Package: org.restlet.ext.rdf;
-  uses:="org.restlet.resource,
-   org.restlet,
+  uses:="org.restlet.data,
+   org.restlet.resource,
+   org.restlet.engine.converter,
+   org.restlet.representation,
    org.restlet.util,
-   org.restlet.data"
+   org.restlet"
 Import-Package: org.restlet,
  org.restlet.data,
  org.restlet.engine.converter,
