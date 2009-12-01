@@ -90,8 +90,8 @@ public class RdfTurtleWriter extends GraphHandler {
         prefixes.put("http://www.w3.org/2001/XMLSchema#", "type");
 
         for (String key : prefixes.keySet()) {
-            this.bw.append("@prefix ").append(prefixes.get(key)).append(": ")
-                    .append(key).append(".\n");
+            this.bw.append("@prefix ").append(prefixes.get(key)).append(": <")
+                    .append(key).append(">.\n");
         }
 
         this.bw.append("@keywords a, is, of, has.\n");
@@ -99,9 +99,7 @@ public class RdfTurtleWriter extends GraphHandler {
 
     @Override
     public void endGraph() throws IOException {
-        if (writingExtraDot) {
-            this.bw.write(".\n");
-        }
+        this.bw.write(".\n");
         this.bw.flush();
     }
 
@@ -118,6 +116,7 @@ public class RdfTurtleWriter extends GraphHandler {
 
             this.precSource = null;
             this.precPredicate = typeRef;
+            this.writingExtraDot = true;
         } catch (IOException e) {
             org.restlet.Context.getCurrentLogger().warning(
                     "Cannot write the representation of a statement due to "
@@ -138,6 +137,7 @@ public class RdfTurtleWriter extends GraphHandler {
 
             this.precSource = null;
             this.precPredicate = typeRef;
+            this.writingExtraDot = true;
         } catch (IOException e) {
             org.restlet.Context.getCurrentLogger().warning(
                     "Cannot write the representation of a statement due to "
@@ -157,8 +157,9 @@ public class RdfTurtleWriter extends GraphHandler {
                     this.bw.write(" ");
                 }
             } else {
-                this.writingExtraDot = true;
-                this.bw.write(".\n");
+                if (this.writingExtraDot) {
+                    this.bw.write(".\n");
+                }
                 write(source, this.context.getPrefixes());
                 this.bw.write(" ");
                 write(typeRef, this.context.getPrefixes());
@@ -168,6 +169,7 @@ public class RdfTurtleWriter extends GraphHandler {
 
             this.precSource = source;
             this.precPredicate = typeRef;
+            this.writingExtraDot = true;
         } catch (IOException e) {
             org.restlet.Context.getCurrentLogger().warning(
                     "Cannot write the representation of a statement due to "
@@ -188,8 +190,9 @@ public class RdfTurtleWriter extends GraphHandler {
                     this.bw.write(" ");
                 }
             } else {
-                this.writingExtraDot = true;
-                this.bw.write(".\n");
+                if (this.writingExtraDot) {
+                    this.bw.write(".\n");
+                }
                 write(source, this.context.getPrefixes());
                 this.bw.write(" ");
                 write(typeRef, this.context.getPrefixes());
@@ -199,6 +202,7 @@ public class RdfTurtleWriter extends GraphHandler {
 
             this.precSource = source;
             this.precPredicate = typeRef;
+            this.writingExtraDot = true;
         } catch (IOException e) {
             org.restlet.Context.getCurrentLogger().warning(
                     "Cannot write the representation of a statement due to "
@@ -220,10 +224,6 @@ public class RdfTurtleWriter extends GraphHandler {
     private void write(Graph linkset) throws IOException {
         for (Link link : linkset) {
             if (link.hasReferenceSource()) {
-                if (!link.getSourceAsReference().equals(this.precSource)) {
-                    this.bw.write(".\n");
-                    this.writingExtraDot = true;
-                }
                 if (link.hasReferenceTarget()) {
                     link(link.getSourceAsReference(), link.getTypeRef(), link
                             .getTargetAsReference());

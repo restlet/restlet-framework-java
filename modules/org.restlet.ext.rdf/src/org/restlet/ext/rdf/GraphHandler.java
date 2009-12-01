@@ -43,6 +43,8 @@ public abstract class GraphHandler {
     /**
      * Callback method used after the graph is parsed or written. Does nothing
      * by default.
+     * 
+     * @throws IOException
      */
     public void endGraph() throws IOException {
 
@@ -112,6 +114,8 @@ public abstract class GraphHandler {
     /**
      * Callback method used before the graph is parsed or written. Does nothing
      * by default.
+     * 
+     * @throws IOException
      */
     public void startGraph() throws IOException {
 
