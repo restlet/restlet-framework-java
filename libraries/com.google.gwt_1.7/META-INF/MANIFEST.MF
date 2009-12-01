@@ -3,7 +3,8 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Google Web Toolkit
 Bundle-SymbolicName: com.google.gwt
 Bundle-Version: 1.7
-Bundle-ClassPath: com.google.gwt.jar
+Bundle-ClassPath: com.google.gwt.jar,
+ com.google.gwt.dev.jar
 Bundle-Vendor: Google Inc.
 Export-Package: com.google.gwt.animation.client;uses:="com.google.gwt.user.client",
  com.google.gwt.benchmarks;
@@ -16,6 +17,16 @@ Export-Package: com.google.gwt.animation.client;uses:="com.google.gwt.user.clien
  com.google.gwt.benchmarks.rebind;uses:="com.google.gwt.core.ext.typeinfo,com.google.gwt.core.ext,com.google.gwt.junit.rebind",
  com.google.gwt.core.client,
  com.google.gwt.core.client.impl,
+ com.google.gwt.core.ext;uses:="com.google.gwt.core.ext.linker,com.google.gwt.core.ext.typeinfo",
+ com.google.gwt.core.ext.linker;uses:="com.google.gwt.core.ext",
+ com.google.gwt.core.ext.linker.impl;
+  uses:="com.google.gwt.core.ext.linker,
+   com.google.gwt.dev.cfg,
+   com.google.gwt.dev.jjs,
+   com.google.gwt.dev.resource,
+   com.google.gwt.core.ext",
+ com.google.gwt.core.ext.typeinfo;uses:="com.google.gwt.core.ext",
+ com.google.gwt.core.linker;uses:="com.google.gwt.core.ext.linker,com.google.gwt.core.ext.linker.impl,com.google.gwt.core.ext",
  com.google.gwt.debug.client,
  com.google.gwt.dom.client;uses:="com.google.gwt.core.client",
  com.google.gwt.event.dom.client;uses:="com.google.gwt.event.shared,com.google.gwt.dom.client",
@@ -56,6 +67,7 @@ Export-Package: com.google.gwt.animation.client;uses:="com.google.gwt.user.clien
  com.google.gwt.junit.remote;uses:="com.google.gwt.util.tools",
  com.google.gwt.junit.server;uses:="com.google.gwt.user.server.rpc,com.google.gwt.junit.client.impl,javax.servlet.http",
  com.google.gwt.junit.tools;uses:="junit.framework,com.google.gwt.user.tools.util,com.google.gwt.util.tools",
+ com.google.gwt.lang,
  com.google.gwt.user.client;
   uses:="com.google.gwt.event.shared,
    com.google.gwt.event.logical.shared,
@@ -114,6 +126,8 @@ Export-Package: com.google.gwt.animation.client;uses:="com.google.gwt.user.clien
  com.google.gwt.user.server.rpc.impl;uses:="com.google.gwt.user.client.rpc.impl,com.google.gwt.user.server.rpc",
  com.google.gwt.user.tools;uses:="com.google.gwt.dev",
  com.google.gwt.user.tools.util;uses:="com.google.gwt.util.tools",
+ com.google.gwt.util,
+ com.google.gwt.util.tools,
  com.google.gwt.xml.client,
  com.google.gwt.xml.client.impl;uses:="com.google.gwt.core.client,com.google.gwt.xml.client"
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
