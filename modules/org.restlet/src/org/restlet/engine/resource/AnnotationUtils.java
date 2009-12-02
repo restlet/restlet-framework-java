@@ -68,7 +68,7 @@ public class AnnotationUtils {
         }
 
         for (java.lang.reflect.Method javaMethod : clazz.getMethods()) {
-            addAnnotationDescriptors(descriptors, javaMethod);
+            addAnnotationDescriptors(result, javaMethod);
         }
 
         return result;
