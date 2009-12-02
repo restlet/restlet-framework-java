@@ -128,8 +128,6 @@ public class JacksonConverter extends ConverterHelper {
             if (VARIANT_JSON.isCompatible(source)) {
                 result = 0.8F;
             }
-        } else {
-            result = 0.5F;
         }
 
         return result;
