@@ -125,13 +125,15 @@
          <exclude name="src/org/restlet/engine/TemplateDispatcher.java" />
          <exclude name="src/org/restlet/engine/util/AlphabeticalComparator.java" />
          <exclude name="src/org/restlet/engine/util/AlphaNumericComparator.java" />
+         <exclude name="src/org/restlet/engine/util/Base64.java" />
+         <exclude name="src/org/restlet/engine/util/CallResolver.java" />
          <exclude name="src/org/restlet/engine/util/Conneg.java" />
          <exclude name="src/org/restlet/engine/util/ConnegUtils.java" />
          <exclude name="src/org/restlet/engine/util/DefaultSaxHandler.java" />
          <exclude name="src/org/restlet/engine/util/DigestUtils.java" />
          <exclude name="src/org/restlet/engine/util/EngineClassLoader.java" />
          <exclude name="src/org/restlet/engine/util/InternetDateFormat.java" />
-         <exclude name="src/org/restlet/engine/util/Base64.java" />
+         <exclude name="src/org/restlet/engine/util/MapResolver.java" />
          <exclude name="src/org/restlet/representation/AppendableRepresentation.java" />
          <exclude name="src/org/restlet/representation/ChannelRepresentation.java" />
          <exclude name="src/org/restlet/representation/CharacterRepresentation.java" />
