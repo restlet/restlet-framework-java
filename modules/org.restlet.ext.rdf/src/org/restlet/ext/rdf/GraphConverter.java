@@ -77,7 +77,7 @@ public class GraphConverter extends ConverterHelper {
     public List<VariantInfo> getVariants(Class<?> source) {
         List<VariantInfo> result = null;
 
-        if (source != null) {
+        if (source != null && Graph.class.isAssignableFrom(source)) {
             result = addVariant(result, VARIANT_RDF_N3);
             result = addVariant(result, VARIANT_RDF_NTRIPLES);
             result = addVariant(result, VARIANT_RDF_NTRIPLES);
@@ -90,7 +90,7 @@ public class GraphConverter extends ConverterHelper {
     @Override
     public <T> float score(Representation source, Class<T> target,
             UniformResource resource) {
-        float result = 0;
+        float result = -1.0f;
 
         if (Graph.class.isAssignableFrom(target)) {
             result = 1.0f;
@@ -110,7 +110,7 @@ public class GraphConverter extends ConverterHelper {
             }
         }
 
-        return 0;
+        return -1.0f;
     }
 
     @Override
