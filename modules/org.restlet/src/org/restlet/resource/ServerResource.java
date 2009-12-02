@@ -1416,7 +1416,7 @@ public abstract class ServerResource extends UniformResource {
         List<AnnotationInfo> annotations = getAnnotations();
         if (annotations != null) {
             for (AnnotationInfo annotationInfo : annotations) {
-                if (getAllowedMethods().contains(
+                if (!getAllowedMethods().contains(
                         annotationInfo.getRestletMethod())) {
                     getAllowedMethods().add(annotationInfo.getRestletMethod());
                 }
