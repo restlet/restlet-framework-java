@@ -398,10 +398,8 @@ public final class ClientInfo {
     }
 
     /**
-     * Returns the agent name (ex: "Restlet-Framework/2.0").<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
-     * "User-Agent" header.
+     * Returns the agent name (ex: "Restlet-Framework/2.0"). Note that when used
+     * with HTTP connectors, this property maps to the "User-Agent" header.
      * 
      * @return The agent name.
      */
@@ -514,11 +512,9 @@ public final class ClientInfo {
     }
 
     /**
-     * Returns the list of forwarded IP addresses.<br>
-     * <br>
-     * This is useful when the user agent is separated from the origin server by
-     * a chain of intermediary components. Creates a new instance if no one has
-     * been set. <br>
+     * Returns the list of forwarded IP addresses. This is useful when the user
+     * agent is separated from the origin server by a chain of intermediary
+     * components. Creates a new instance if no one has been set. <br>
      * <br>
      * The first address is the one of the immediate client component and the
      * last address should correspond to the origin client (frequently a user
@@ -528,12 +524,12 @@ public final class ClientInfo {
      * local network. Other addresses could easily be changed by setting a fake
      * header and should not be trusted for serious security checks.<br>
      * <br>
-     * Note that your HTTP server connectors have a special
-     * "useForwardedForHeader" parameter that you need to explicitly set to
-     * "true" in order to activate this feature due to potential security
-     * issues.
+     * Note that your HTTP server connectors need to have a special
+     * "useForwardedForHeader" parameter explicitly set to "true" in order to
+     * activate this feature, due to potential security issues.
      * 
      * @return The list of forwarded IP addresses.
+     * @see #getUpstreamAddress()
      * @see <a href="http://en.wikipedia.org/wiki/X-Forwarded-For">Wikipedia
      *      page for the "X-Forwarded-For" HTTP header</a>
      */
@@ -649,9 +645,8 @@ public final class ClientInfo {
     /**
      * Returns the best variant for a given resource according the the client
      * preferences: accepted languages, accepted character sets, accepted media
-     * types and accepted encodings.<br>
-     * A default language is provided in case the variants don't match the
-     * client preferences.
+     * types and accepted encodings. A default language is provided in case the
+     * variants don't match the client preferences.
      * 
      * @param variants
      *            The list of variants to compare.
@@ -744,12 +739,13 @@ public final class ClientInfo {
      * empty list, the IP address will be the first element. Otherwise, the
      * value of {@link #getAddress()} will be returned.<br>
      * <br>
-     * Note that your HTTP server connectors have a special
-     * "useForwardedForHeader" parameter that you need to explicitly set to
-     * "true" in order to activate this feature due to potential security
-     * issues.
+     * Note that your HTTP server connectors need to have a special
+     * "useForwardedForHeader" parameter explicitly set to "true" in order to
+     * activate this feature, due to potential security issues.
      * 
      * @return The most upstream IP address.
+     * @see #getAddress()
+     * @see #getForwardedAddresses()
      */
     public String getUpstreamAddress() {
         if (this.forwardedAddresses == null
@@ -783,10 +779,8 @@ public final class ClientInfo {
     }
 
     /**
-     * Sets the character set preferences.<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
-     * "Accept-Charset" header.
+     * Sets the character set preferences. Note that when used with HTTP
+     * connectors, this property maps to the "Accept-Charset" header.
      * 
      * @param acceptedCharacterSets
      *            The character set preferences.
@@ -797,10 +791,8 @@ public final class ClientInfo {
     }
 
     /**
-     * Sets the encoding preferences.<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
-     * "Accept-Encoding" header.
+     * Sets the encoding preferences. Note that when used with HTTP connectors,
+     * this property maps to the "Accept-Encoding" header.
      * 
      * @param acceptedEncodings
      *            The encoding preferences.
@@ -811,10 +803,8 @@ public final class ClientInfo {
     }
 
     /**
-     * Sets the language preferences.<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
-     * "Accept-Language" header.
+     * Sets the language preferences. Note that when used with HTTP connectors,
+     * this property maps to the "Accept-Language" header.
      * 
      * @param acceptedLanguages
      *            The language preferences.
@@ -825,10 +815,8 @@ public final class ClientInfo {
     }
 
     /**
-     * Sets the media type preferences.<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
-     * "Accept" header.
+     * Sets the media type preferences. Note that when used with HTTP
+     * connectors, this property maps to the "Accept" header.
      * 
      * @param acceptedMediaTypes
      *            The media type preferences.
@@ -861,10 +849,8 @@ public final class ClientInfo {
     }
 
     /**
-     * Sets the agent name (ex: "Restlet-Framework/2.0").<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
-     * "User-Agent" header.
+     * Sets the agent name (ex: "Restlet-Framework/2.0"). Note that when used
+     * with HTTP connectors, this property maps to the "User-Agent" header.
      * 
      * @param agent
      *            The agent name.
