@@ -166,7 +166,6 @@ public class DirectoryServerResource extends ServerResource {
         } else {
             setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED,
                     "The directory is not modifiable.");
-            updateAllowedMethods();
         }
 
         return null;
@@ -840,7 +839,6 @@ public class DirectoryServerResource extends ServerResource {
         } else {
             setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED,
                     "The directory is not modifiable.");
-            updateAllowedMethods();
         }
 
         return null;
