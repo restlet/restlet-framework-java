@@ -64,7 +64,7 @@ public class FreemarkerConverter extends ConverterHelper {
     @Override
     public <T> float score(Representation source, Class<T> target,
             UniformResource resource) {
-        return 0;
+        return -1.0f;
     }
 
     @Override
@@ -72,7 +72,7 @@ public class FreemarkerConverter extends ConverterHelper {
         if (source instanceof Template) {
             return 1.0f;
         }
-        return 0;
+        return -1.0f;
     }
 
     @Override
