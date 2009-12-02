@@ -33,9 +33,7 @@ package org.restlet.ext.wadl;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -323,18 +321,6 @@ public class WadlServerResource extends ServerResource {
     }
 
     /**
-     * Returns the set of allowed methods.
-     * 
-     * @return The set of allowed methods.
-     */
-    @Override
-    public Set<Method> getAllowedMethods() {
-        final Set<Method> result = new HashSet<Method>();
-        updateAllowedMethods(result);
-        return result;
-    }
-
-    /**
      * Returns the annotation descriptors.
      * 
      * @return The annotation descriptors.
@@ -465,22 +451,6 @@ public class WadlServerResource extends ServerResource {
      */
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    /**
-     * Updates the set of methods with the ones allowed by this resource
-     * instance.
-     * 
-     * @param allowedMethods
-     *            The set to update.
-     */
-    private void updateAllowedMethods(Set<Method> allowedMethods) {
-        List<AnnotationInfo> annotations = getAnnotations();
-        if (annotations != null) {
-            for (AnnotationInfo annotationInfo : annotations) {
-                allowedMethods.add(annotationInfo.getRestletMethod());
-            }
-        }
     }
 
 }
