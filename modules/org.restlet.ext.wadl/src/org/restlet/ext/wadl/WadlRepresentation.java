@@ -855,7 +855,7 @@ public class WadlRepresentation extends SaxRepresentation {
     }
 
     /** Web Application Description Language namespace. */
-    public static final String APP_NAMESPACE = "http://wadl.dev.java.net/2009/02";
+    public static final String APP_NAMESPACE = "http://research.sun.com/wadl/2006/10";
 
     /** The root element of the WADL document. */
     private ApplicationInfo application;
