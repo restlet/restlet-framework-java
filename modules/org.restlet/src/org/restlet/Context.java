@@ -42,10 +42,10 @@ import org.restlet.engine.Engine;
 import org.restlet.util.Series;
 
 /**
- * Contextual data and services provided to a Restlet. The context is the means
- * by which a Restlet may access the software environment within the framework.
- * It is typically provided by the immediate parent Restlet (Application is the
- * most common case).<br>
+ * Contextual data and services provided to a set of Restlets. The context is
+ * the means by which a Restlet may access the software environment within the
+ * framework. It is typically provided by the immediate parent Restlet
+ * (Application is the most common case).<br>
  * <br>
  * Concurrency note: attributes and parameters of a context are stored in
  * concurrent collections that guarantee thread safe access and modification. If

@@ -6,7 +6,7 @@ import org.restlet.resource.ServerResource;
 /**
  * Simple "hello, world" server resource.
  */
-public class HelloResource extends ServerResource {
+public class HelloServerResource extends ServerResource {
 
     @Get
     public String toString() {

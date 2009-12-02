@@ -11,7 +11,7 @@ public class HelloServer {
 
     public static void main(String[] args) throws Exception {
         Server helloServer = new Server(Protocol.HTTP, 8182,
-                HelloResource.class);
+                HelloServerResource.class);
         helloServer.start();
     }
 

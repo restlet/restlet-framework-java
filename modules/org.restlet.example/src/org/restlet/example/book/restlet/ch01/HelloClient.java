@@ -9,7 +9,8 @@ import org.restlet.resource.ClientResource;
 public class HelloClient {
 
     public static void main(String[] args) throws Exception {
-        ClientResource resource = new ClientResource("http://localhost:8182/");
-        resource.get().write(System.out);
+        ClientResource helloClientresource = new ClientResource(
+                "http://localhost:8182/");
+        helloClientresource.get().write(System.out);
     }
 }
