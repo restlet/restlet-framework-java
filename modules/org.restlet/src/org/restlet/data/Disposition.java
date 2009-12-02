@@ -87,7 +87,7 @@ public class Disposition {
      * Constructor. Instantiates by default an inline element.
      */
     public Disposition() {
-        this(Disposition.TYPE_INLINE);
+        this(Disposition.TYPE_ATTACHMENT);
     }
 
     /**
