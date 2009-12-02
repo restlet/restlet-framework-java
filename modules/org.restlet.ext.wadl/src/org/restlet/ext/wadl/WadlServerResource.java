@@ -35,9 +35,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
+import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
+import org.restlet.engine.http.HttpConstants;
 import org.restlet.engine.resource.AnnotationInfo;
 import org.restlet.engine.resource.AnnotationUtils;
 import org.restlet.representation.Representation;
@@ -45,6 +48,7 @@ import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 import org.restlet.service.MetadataService;
+import org.restlet.util.Series;
 
 /**
  * Resource that is able to automatically describe itself with WADL. This
@@ -204,6 +208,18 @@ public class WadlServerResource extends ServerResource {
     }
 
     /**
+     * Returns a WADL description of the current method.
+     * 
+     * @return A WADL description of the current method.
+     */
+    protected MethodInfo describeMethod() {
+        MethodInfo result = new MethodInfo();
+        describeMethod(getMethod(), result);
+
+        return result;
+    }
+
+    /**
      * Returns a WADL description of the given method.
      * 
      * @param method
@@ -331,14 +347,107 @@ public class WadlServerResource extends ServerResource {
     }
 
     /**
+     * Returns the set of headers as a collection of {@link Parameter} objects.
+     * 
+     * @return The set of headers as a collection of {@link Parameter} objects.
+     */
+    private Form getHeader() {
+        return (Form) getRequestAttributes().get(
+                HttpConstants.ATTRIBUTE_HEADERS);
+    }
+
+    /**
+     * Returns the first parameter found in the current context (entity, query,
+     * headers, etc) with the given name.
+     * 
+     * @param name
+     *            The parameter name.
+     * @return The first parameter found with the given name.
+     */
+    protected Parameter getParameter(String name) {
+        Parameter result = null;
+
+        Series<Parameter> set = getParameters(name);
+        if (set != null) {
+            result = set.getFirst(name);
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns a collection of parameters objects contained in the current
+     * context (entity, query, headers, etc) given a ParameterInfo instance.
+     * 
+     * @param parameterInfo
+     *            The ParameterInfo instance.
+     * @return A collection of parameters objects
+     */
+    private Series<Parameter> getParameters(ParameterInfo parameterInfo) {
+        Series<Parameter> result = null;
+
+        if (parameterInfo.getFixed() != null) {
+            result = new Form();
+            result.add(parameterInfo.getName(), parameterInfo.getFixed());
+        } else if (ParameterStyle.HEADER.equals(parameterInfo.getStyle())) {
+            result = getHeader().subList(parameterInfo.getName());
+        } else if (ParameterStyle.TEMPLATE.equals(parameterInfo.getStyle())) {
+            Object parameter = getRequest().getAttributes().get(
+                    parameterInfo.getName());
+            if (parameter != null) {
+                result = new Form();
+                result.add(parameterInfo.getName(), Reference
+                        .decode((String) parameter));
+            }
+        } else if (ParameterStyle.MATRIX.equals(parameterInfo.getStyle())) {
+            result = getMatrix().subList(parameterInfo.getName());
+        } else if (ParameterStyle.QUERY.equals(parameterInfo.getStyle())) {
+            result = getQuery().subList(parameterInfo.getName());
+        } else if (ParameterStyle.PLAIN.equals(parameterInfo.getStyle())) {
+            // TODO not yet implemented.
+        }
+
+        if (result == null && parameterInfo.getDefaultValue() != null) {
+            result = new Form();
+            result
+                    .add(parameterInfo.getName(), parameterInfo
+                            .getDefaultValue());
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns a collection of parameters found in the current context (entity,
+     * query, headers, etc) given a parameter name. It returns null if the
+     * parameter name is unknown.
+     * 
+     * @param name
+     *            The name of the parameter.
+     * @return A collection of parameters.
+     */
+    protected Series<Parameter> getParameters(String name) {
+        Series<Parameter> result = null;
+
+        if (getParametersInfo() != null) {
+            for (ParameterInfo parameter : getParametersInfo()) {
+                if (name.equals(parameter.getName())) {
+                    result = getParameters(parameter);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
      * Returns the description of the parameters of this resource. Returns null
      * by default.
      * 
      * @return The description of the parameters.
      */
     protected List<ParameterInfo> getParametersInfo() {
-        final List<ParameterInfo> result = null;
-        return result;
+        return null;
     }
 
     /**
