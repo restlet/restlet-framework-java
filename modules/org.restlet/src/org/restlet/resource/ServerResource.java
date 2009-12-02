@@ -611,8 +611,8 @@ public abstract class ServerResource extends UniformResource {
      * @return The annotation descriptors.
      */
     private List<AnnotationInfo> getAnnotations() {
-        return isAnnotated() ? AnnotationUtils
-                .getAnnotations(getClass()) : null;
+        return isAnnotated() ? AnnotationUtils.getAnnotations(getClass())
+                : null;
     }
 
     /**
@@ -775,7 +775,8 @@ public abstract class ServerResource extends UniformResource {
                     updateAllowedMethods();
                 } else if (Method.GET.equals(getMethod())
                         && Status.SUCCESS_OK.equals(getStatus())
-                        && (!getResponseEntity().isAvailable())) {
+                        && (getResponseEntity() == null || !getResponseEntity()
+                                .isAvailable())) {
                     getLogger()
                             .fine(
                                     "A response with a 200 (Ok) status should have an entity. Changing the status to 204 (No content).");
@@ -905,6 +906,8 @@ public abstract class ServerResource extends UniformResource {
         Representation result = null;
         AnnotationInfo annotationInfo = getAnnotation(Method.OPTIONS);
 
+        // Updates the list of allowed methods
+        updateAllowedMethods();
         if (annotationInfo != null) {
             result = doHandle(annotationInfo, null);
         } else {
@@ -933,6 +936,9 @@ public abstract class ServerResource extends UniformResource {
      */
     protected Representation options(Variant variant) throws ResourceException {
         Representation result = null;
+
+        // Updates the list of allowed methods
+        updateAllowedMethods();
 
         if (variant instanceof VariantInfo) {
             result = doHandle(((VariantInfo) variant).getAnnotationInfo(),
@@ -1403,9 +1409,19 @@ public abstract class ServerResource extends UniformResource {
     /**
      * Invoked when the list of allowed methods needs to be updated. The
      * {@link #getAllowedMethods()} or the {@link #setAllowedMethods(Set)}
-     * methods should be used. The default implementation does nothing.
+     * methods should be used. The default implementation lists the annotated
+     * methods.
      */
     protected void updateAllowedMethods() {
+        List<AnnotationInfo> annotations = getAnnotations();
+        if (annotations != null) {
+            for (AnnotationInfo annotationInfo : annotations) {
+                if (getAllowedMethods().contains(
+                        annotationInfo.getRestletMethod())) {
+                    getAllowedMethods().add(annotationInfo.getRestletMethod());
+                }
+            }
+        }
     }
 
     /**
