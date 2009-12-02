@@ -35,7 +35,6 @@ import java.util.List;
 
 import org.jibx.runtime.BindingDirectory;
 import org.jibx.runtime.JiBXException;
-import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.engine.converter.ConverterHelper;
 import org.restlet.engine.resource.VariantInfo;
@@ -92,9 +91,6 @@ public class JibxConverter extends ConverterHelper {
         } catch (JiBXException e) {
             // This may be caused by the fact that the source class is bound
             // several times which requires the knowledge of the binding name.
-            Context.getCurrentLogger().info(
-                    "Cannot find binding class " + source + " due to: "
-                            + e.getMessage());
         }
 
         return result;
@@ -149,7 +145,7 @@ public class JibxConverter extends ConverterHelper {
             } else if (MediaType.TEXT_XML.isCompatible(target.getMediaType())) {
                 result = 1.0F;
             } else {
-                // Allow for JAXB object to be used for JSON and other
+                // Allow for JiBX object to be used for JSON and other
                 // representations
                 result = 0.5F;
             }
