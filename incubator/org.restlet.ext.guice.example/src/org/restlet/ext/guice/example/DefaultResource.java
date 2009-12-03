@@ -6,6 +6,6 @@ import org.restlet.resource.ServerResource;
 public class DefaultResource extends ServerResource {
     @Get
     public String represent() {
-        return "Default resource, try /hello/resource or /hello/handler";
+        return "Default resource, try /hello/resource";
     }
 }

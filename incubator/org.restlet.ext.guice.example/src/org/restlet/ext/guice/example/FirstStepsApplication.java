@@ -4,12 +4,11 @@ import static com.google.inject.name.Names.named;
 
 import org.restlet.Application;
 import org.restlet.Restlet;
-import org.restlet.ext.guice.FinderFactory;
-import org.restlet.ext.guice.RestletGuice;
-import org.restlet.ext.guice.RestletGuiceModule;
-import org.restlet.resource.Handler;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
+
+import org.restlet.ext.guice.DependencyInjection;
+import org.restlet.ext.guice.RestletGuice;
 
 import com.google.inject.Binder;
 import com.google.inject.Key;
@@ -24,21 +23,19 @@ public class FirstStepsApplication extends Application implements Module {
     private final Mode mode = Mode.EXPLICIT_INJECTOR;
 
     @Override
-    public synchronized Restlet createRoot() {
+    public Restlet createInboundRoot() {
 
-        FinderFactory factory;
+        DependencyInjection dependencyInjection;
         switch (mode) {
 
         case EXPLICIT_INJECTOR: // (1) Use explicit Injector creation.
 
-            factory = RestletGuice.createInjector(this).getInstance(
-                    FinderFactory.class);
+            dependencyInjection = RestletGuice.createInjector(this).getInstance(DependencyInjection.class);
             break;
 
-        case AUTO_INJECTOR: // (2) Use a special module that is also a
-            // FinderFactory and
-            // that automatically creates the Injector when needed.
-            factory = new RestletGuiceModule(this);
+        case AUTO_INJECTOR: // (2) Use a special module that is also a DependencyInjection
+                            //     and that automatically creates the Injector when needed.
+            dependencyInjection = new RestletGuice.Module(this);
             break;
 
         default:
@@ -50,16 +47,10 @@ public class FirstStepsApplication extends Application implements Module {
 
         // Route /hello/resource to whatever is bound to ServerResource
         // annotated with @HelloWorld.
-        router.attach("/hello/resource", factory.finderOf(Key.get(
-                ServerResource.class, HelloWorld.class)));
-
-        // Route /hello/handler to whatever is bound to Handler annotated with
-        // @HelloWorld.
-        router.attach("/hello/handler", factory.finderFor(Key.get(
-                Handler.class, HelloWorld.class)));
+        dependencyInjection.attach(router, "/hello/resource", ServerResource.class, HelloWorld.class);
 
         // Everything else goes here.
-        router.attachDefault(DefaultResource.class);
+        dependencyInjection.attachDefault(router, DefaultResource.class);
 
         return router;
     }
@@ -67,23 +58,16 @@ public class FirstStepsApplication extends Application implements Module {
     public void configure(Binder binder) {
 
         // These bindings are right next to the point where they are used, in
-        // factory.finderOf(...),
-        // but in practice the module configuration need not be in the same file
-        // or even package
-        // as the calls to finderOf.
+        // dependencyInjection.of(...), but in practice the module configuration
+        // need not be in the same file or even package as the calls to DependencyInjection
+        // methods.
 
-        binder.bind(Handler.class).annotatedWith(HelloWorld.class).to(
-                HelloWorldResource.class);
-
-        binder.bind(ServerResource.class).annotatedWith(HelloWorld.class).to(
-                HelloServerResource.class);
+        binder.bind(ServerResource.class)
+            .annotatedWith(HelloWorld.class)
+            .to(HelloServerResource.class);
 
         binder.bindConstant()
-                .annotatedWith(named(HelloWorldResource.HELLO_MSG)).to(
-                        "Hello, Restlet 1.1 - Guice 1!");
-
-        binder.bindConstant().annotatedWith(
-                named(HelloServerResource.HELLO_MSG)).to(
-                "Hello, Restlet 2.0 - Guice 1!");
+            .annotatedWith(named(HelloServerResource.HELLO_MSG))
+            .to("Hello, Restlet 2.0 - Guice 1!");
     }
 }
