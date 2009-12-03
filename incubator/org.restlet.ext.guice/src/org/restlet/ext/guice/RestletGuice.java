@@ -111,20 +111,20 @@ public class RestletGuice {
             return new ServerResourceKeyFinder(Key.get(cls, qualifier));
         }
 
-        public TemplateRoute attach(Router router, String pathTemplate, Class<? extends ServerResource> targetClass) {
-            return router.attach(pathTemplate, finderFor(targetClass));
+        public TemplateRoute attach(Object restlet, String pathTemplate, Class<? extends ServerResource> targetClass) {
+            return invokeAttach(restlet, pathTemplate, finderFor(targetClass));
         }
 
-        public TemplateRoute attach(Router router, String pathTemplate, Class<? extends ServerResource> targetClass, Class<? extends Annotation> qualifier) {
-            return router.attach(pathTemplate, finderFor(targetClass, qualifier));
+        public TemplateRoute attach(Object restlet, String pathTemplate, Class<? extends ServerResource> targetClass, Class<? extends Annotation> qualifier) {
+            return invokeAttach(restlet, pathTemplate, finderFor(targetClass, qualifier));
         }
 
-        public TemplateRoute attachDefault(Router router, Class<? extends ServerResource> targetClass) {
-            return router.attachDefault(finderFor(targetClass));
+        public TemplateRoute attachDefault(Object restlet, Class<? extends ServerResource> targetClass) {
+            return invokeAttachDefault(restlet, finderFor(targetClass));
         }
 
-        public TemplateRoute attachDefault(Router router, Class<? extends ServerResource> targetClass, Class<? extends Annotation> qualifier) {
-            return router.attachDefault(finderFor(targetClass, qualifier));
+        public TemplateRoute attachDefault(Object restlet, Class<? extends ServerResource> targetClass, Class<? extends Annotation> qualifier) {
+            return invokeAttachDefault(restlet, finderFor(targetClass, qualifier));
         }
 
         public void setNext(Object target, Class<? extends ServerResource> nextClass) {
@@ -259,10 +259,27 @@ public class RestletGuice {
         }
 
 
+        private TemplateRoute invokeAttach(Object target, String pathTemplate, Restlet restlet) {
+            Class<?>[] paramTypes = new Class<?>[] { String.class, Restlet.class };
+            return invoke(target, "attach", TemplateRoute.class, paramTypes, pathTemplate, restlet);
+        }
+
+        private TemplateRoute invokeAttachDefault(Object target, Restlet restlet) {
+            Class<?>[] paramTypes = new Class<?>[] { Restlet.class };
+            return invoke(target, "attachDefault", TemplateRoute.class, paramTypes, restlet);
+        }
+
         private void invokeSetNext(Object target, Restlet restlet) {
+            Class<?>[] paramTypes = new Class<?>[] { Restlet.class };
+            invoke(target, "setNext", Void.class, paramTypes, restlet);
+        }
+
+
+        private <T> T invoke(Object target, String methodName, Class<T> resultType, Class<?>[] paramTypes, Object... paramValues) {
             try {
-                Method method = target.getClass().getMethod("setNext", Restlet.class);
-                method.invoke(target, restlet);
+                Method method = target.getClass().getMethod(methodName, paramTypes);
+                Object result = method.invoke(target, paramValues);
+                return resultType.cast(result);
             } catch (NoSuchMethodException e) {
                 throw new UnsupportedOperationException("setNext not supported on target");
             } catch (IllegalAccessException e) {

@@ -5,6 +5,7 @@ import java.lang.annotation.Annotation;
 import org.restlet.resource.Finder;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
+import org.restlet.routing.VirtualHost;
 import org.restlet.routing.TemplateRoute;
 
 /**
@@ -26,28 +27,32 @@ public interface DependencyInjection {
     Finder finderFor(Class<? extends ServerResource> cls, Class<? extends Annotation> qualifier);
 
     /**
-     * Calls {@link Router#attach router.attach} with the result of calling
+     * Calls {@link Router#attach restlet.attach} with the result of calling
      * {@link DependencyInjection#finderFor finderFor(targetClass)}.
+     * The restlet object must be a {@link Router} or a {@link VirtualHost}.
      */
-    TemplateRoute attach(Router router, String pathTemplate, Class<? extends ServerResource> targetClass);
+    TemplateRoute attach(Object restlet, String pathTemplate, Class<? extends ServerResource> targetClass);
 
     /**
-     * Calls {@link Router#attach router.attach} with the result of calling
+     * Calls {@link Router#attach restlet.attach} with the result of calling
      * {@link DependencyInjection#finderFor finderFor(targetClass, qualifier)}.
+     * The restlet object must be a {@link Router} or a {@link VirtualHost}.
      */
-    TemplateRoute attach(Router router, String pathTemplate, Class<? extends ServerResource> targetClass, Class<? extends Annotation> qualifier);
+    TemplateRoute attach(Object restlet, String pathTemplate, Class<? extends ServerResource> targetClass, Class<? extends Annotation> qualifier);
 
     /**
-     * Calls {@link Router#attach router.attachDefault} with the result of calling
+     * Calls {@link Router#attach restlet.attachDefault} with the result of calling
      * {@link DependencyInjection#finderFor finderFor(targetClass)}.
+     * The restlet object must be a {@link Router} or a {@link VirtualHost}.
      */
-    TemplateRoute attachDefault(Router router, Class<? extends ServerResource> targetClass);
+    TemplateRoute attachDefault(Object restlet, Class<? extends ServerResource> targetClass);
 
     /**
-     * Calls {@link Router#attach router.attachDefault} with the result of calling
+     * Calls {@link Router#attach restlet.attachDefault} with the result of calling
      * {@link DependencyInjection#finderFor finderFor(targetClass, qualifier)}.
+     * The restlet object must be a {@link Router} or a {@link VirtualHost}.
      */
-    TemplateRoute attachDefault(Router router, Class<? extends ServerResource> targetClass, Class<? extends Annotation> qualifier);
+    TemplateRoute attachDefault(Object restlet, Class<? extends ServerResource> targetClass, Class<? extends Annotation> qualifier);
 
     /**
      * Calls {@link Filter#setNext target.setNext} with the result of calling
