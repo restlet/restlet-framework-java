@@ -908,6 +908,7 @@ public abstract class ServerResource extends UniformResource {
 
         // Updates the list of allowed methods
         updateAllowedMethods();
+        
         if (annotationInfo != null) {
             result = doHandle(annotationInfo, null);
         } else {
