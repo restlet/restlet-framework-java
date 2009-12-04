@@ -35,6 +35,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.Context;
+import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
 import org.restlet.ext.atom.Entry;
 import org.restlet.ext.atom.Feed;
@@ -223,8 +224,8 @@ public class Query<T> implements Iterable<T> {
             ClientResource resource = new ClientResource(targetUri);
             resource.setChallengeResponse(session.getCredentials());
 
-            Representation result = new StringRepresentation(resource.get()
-                    .getText());
+            Representation result = new StringRepresentation(resource.get(
+                    MediaType.APPLICATION_ATOM).getText());
             getLogger().fine(result.getText());
             session.setLatestRequest(resource.getRequest());
             session.setLatestResponse(resource.getResponse());

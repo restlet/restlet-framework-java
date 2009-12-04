@@ -37,9 +37,6 @@ import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -55,13 +52,13 @@ import org.restlet.ext.dataservices.internal.edm.Property;
 import org.restlet.ext.dataservices.internal.edm.Type;
 import org.restlet.ext.dataservices.internal.reflect.ReflectUtils;
 import org.restlet.ext.xml.DomRepresentation;
+import org.restlet.ext.xml.SaxRepresentation;
+import org.restlet.ext.xml.XmlWriter;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.Text;
+import org.xml.sax.SAXException;
 
 /**
  * Represents the runtime context of an ADO.NET data service. ADO.NET Data
@@ -297,7 +294,7 @@ public class Session {
                         Level.INFO,
                         "Get the metadata for " + serviceRef + " at "
                                 + resource.getReference());
-                Representation rep = resource.get();
+                Representation rep = resource.get(MediaType.APPLICATION_XML);
 
                 if (resource.getStatus().isSuccess()) {
                     this.metadata = new Metadata(rep, resource.getReference());
@@ -374,13 +371,30 @@ public class Session {
 
                 if (resource.getStatus().isSuccess()) {
                     DomRepresentation xmlRep = new DomRepresentation(rep);
+                    // [ifndef android] instruction
                     Node node = xmlRep.getNode("//" + propertyName);
+                    
+
+                    // [ifdef android] uncomment
+                    // Node node = null;
+                    // try {
+                    // org.w3c.dom.NodeList nl = xmlRep.getDocument()
+                    // .getElementsByTagName(propertyName);
+                    // node = (nl.getLength() > 0) ? nl.item(0) : null;
+                    // } catch (IOException e1) {
+                    // }
+                    // [enddef]
+
                     if (node != null) {
                         Property property = getMetadata().getProperty(entity,
                                 propertyName);
                         try {
+                            // [ifndef android] instruction
                             ReflectUtils.setProperty(entity, property, node
                                     .getTextContent());
+                            // [ifdef android] instruction uncomment
+                            // ReflectUtils.setProperty(entity, property,
+                            // org.restlet.ext.xml.XmlRepresentation.getTextContent(node));
                         } catch (Exception e) {
                             getLogger().log(
                                     Level.WARNING,
@@ -489,53 +503,77 @@ public class Session {
      *            The entity to wrap.
      * @return The Atom content object that corresponds to the given entity.
      */
-    private Content toContent(Object entity) throws Exception {
-        DomRepresentation dr = new DomRepresentation(MediaType.APPLICATION_XML) {
+    private Content toContent(final Object entity) throws Exception {
+        Representation r = new SaxRepresentation(MediaType.APPLICATION_XML) {
             @Override
-            protected Transformer createTransformer() throws IOException {
-                Transformer transformer = super.createTransformer();
-                transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION,
-                        "yes");
-                return transformer;
-            }
-        };
-        Document document = dr.getDocument();
-        Element properties = document
-                .createElementNS(
-                        "http://schemas.microsoft.com/ado/2007/08/dataservices/metadata",
-                        "properties");
+            public void write(XmlWriter writer) throws IOException {
+                try {
+                    writer
+                            .forceNSDecl(
+                                    "http://schemas.microsoft.com/ado/2007/08/dataservices/metadata",
+                                    "m");
+                    writer
+                            .forceNSDecl(
+                                    "http://schemas.microsoft.com/ado/2007/08/dataservices",
+                                    "ds");
+                    writer
+                            .startElement(
+                                    "http://schemas.microsoft.com/ado/2007/08/dataservices/metadata",
+                                    "properties");
 
-        for (Field field : entity.getClass().getDeclaredFields()) {
-            String getter = "get"
-                    + field.getName().substring(0, 1).toUpperCase()
-                    + field.getName().substring(1);
-            Property prop = getMetadata().getProperty(entity, field.getName());
-            if (prop != null) {
-                for (Method method : entity.getClass().getDeclaredMethods()) {
-                    if (method.getReturnType() != null
-                            && getter.equals(method.getName())
-                            && method.getParameterTypes().length == 0) {
-                        Element property = document
-                                .createElementNS(
-                                        "http://schemas.microsoft.com/ado/2007/08/dataservices",
-                                        prop.getName());
-                        Object value = method.invoke(entity, (Object[]) null);
-                        Text text = document
-                                .createTextNode((value != null) ? Type.toEdm(
-                                        value, prop.getType()) : "");
-                        property.appendChild(text);
-                        properties.appendChild(property);
-                        break;
+                    for (Field field : entity.getClass().getDeclaredFields()) {
+                        String getter = "get"
+                                + field.getName().substring(0, 1).toUpperCase()
+                                + field.getName().substring(1);
+                        Property prop = getMetadata().getProperty(entity,
+                                field.getName());
+                        if (prop != null) {
+                            for (Method method : entity.getClass()
+                                    .getDeclaredMethods()) {
+                                if (method.getReturnType() != null
+                                        && getter.equals(method.getName())
+                                        && method.getParameterTypes().length == 0) {
+                                    Object value = null;
+                                    try {
+                                        value = method.invoke(entity,
+                                                (Object[]) null);
+                                    } catch (Exception e) {
+
+                                    }
+                                    if (value != null) {
+                                        writer
+                                                .startElement(
+                                                        "http://schemas.microsoft.com/ado/2007/08/dataservices",
+                                                        prop.getName());
+                                        writer.characters(Type.toEdm(value,
+                                                prop.getType()));
+                                        writer
+                                                .endElement(
+                                                        "http://schemas.microsoft.com/ado/2007/08/dataservices",
+                                                        prop.getName());
+
+                                    } else {
+                                        writer
+                                                .emptyElement(
+                                                        "http://schemas.microsoft.com/ado/2007/08/dataservices",
+                                                        prop.getName());
+                                    }
+                                    break;
+                                }
+                            }
+                        }
                     }
+                    writer
+                            .endElement(
+                                    "http://schemas.microsoft.com/ado/2007/08/dataservices/metadata",
+                                    "properties");
+                } catch (SAXException e) {
+                    throw new IOException(e.getMessage());
                 }
             }
-        }
-
-        document.appendChild(properties);
-        document.normalizeDocument();
-
+        };
         Content content = new Content();
-        content.setInlineContent(dr);
+        content.setInlineContent(r);
         content.setToEncode(false);
         return content;
     }

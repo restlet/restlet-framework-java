@@ -149,7 +149,38 @@ public class FeedParser<T> {
 
                 // Recreate the bean
                 DomRepresentation dr = new DomRepresentation(content);
+
+                // [ifndef android] instruction
                 NodeSet propertyNodes = dr.getNodes("/properties/*");
+
+                // [ifdef android] uncomment
+                // List<Node> propertyNodes = new ArrayList<Node>();
+                // try {
+                // org.w3c.dom.NodeList nl = dr.getDocument().getChildNodes();
+                // if (nl != null && nl.getLength() > 0) {
+                // Node properties = nl.item(0);
+                // boolean found = false;
+                // int index = properties.getNodeName().indexOf(":");
+                // if (index != -1) {
+                // found = properties.getNodeName().endsWith(
+                // ":properties");
+                // } else {
+                // found = properties.getNodeName().equals(
+                // "properties");
+                // }
+                // if (found) {
+                // for (int i = 0; i < properties.getChildNodes()
+                // .getLength(); i++) {
+                // Node n = properties.getChildNodes().item(i);
+                // if (n.getNodeType() == Node.ELEMENT_NODE) {
+                // propertyNodes.add(n);
+                // }
+                // }
+                // }
+                // }
+                // } catch (java.io.IOException e1) {
+                // }
+                // [enddef]
 
                 for (Node node : propertyNodes) {
                     String nodeName = node.getNodeName();
@@ -160,8 +191,13 @@ public class FeedParser<T> {
 
                     Property property = metadata.getProperty(entity, nodeName);
                     try {
+                        // [ifndef android] instruction
                         ReflectUtils.setProperty(entity, property, node
                                 .getTextContent());
+                        // [ifdef android] instruction uncomment
+//                        ReflectUtils.setProperty(entity, property,
+//                                org.restlet.ext.xml.XmlRepresentation
+//                                        .getTextContent(node));
                     } catch (Exception e) {
                         getLogger().log(
                                 Level.WARNING,
