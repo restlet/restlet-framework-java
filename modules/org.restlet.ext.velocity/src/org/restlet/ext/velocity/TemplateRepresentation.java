@@ -177,8 +177,10 @@ public class TemplateRepresentation extends OutputRepresentation {
                 .setEncoding((templateRepresentation.getCharacterSet() == null) ? Charset
                         .defaultCharset().name()
                         : templateRepresentation.getCharacterSet().getName());
-        this.template.setLastModified(templateRepresentation
-                .getModificationDate().getTime());
+        if (templateRepresentation.getModificationDate() != null) {
+            this.template.setLastModified(templateRepresentation
+                    .getModificationDate().getTime());
+        }
         this.template.setName("org.restlet.resource.representation");
         this.template.setRuntimeServices(RuntimeSingleton.getRuntimeServices());
         this.template.setResourceLoader(new RepresentationResourceLoader(
