@@ -157,7 +157,7 @@ public class Generator {
         fmc.setDefaultEncoding(CharacterSet.UTF_8.getName());
 
         // Generate classes
-        String rootTemplates = "clap://class/org/restlet/ext/dataservices/internal/templates";
+        String rootTemplates = "clap://class/org/restlet/ext/odata/internal/templates";
         Representation entityTmpl = new StringRepresentation(
                 new ClientResource(rootTemplates + "/entityType.ftl").get()
                         .getText());
