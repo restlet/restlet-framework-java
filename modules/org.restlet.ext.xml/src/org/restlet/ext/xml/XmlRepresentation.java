@@ -68,6 +68,62 @@ public abstract class XmlRepresentation extends OutputRepresentation
 // [enddef]
 {
 
+    
+    // [ifdef android] method
+    /**
+     * Appends the text content of a given node and its descendants to the given
+     * buffer.
+     * 
+     * @param node
+     *            The node.
+     * @param sb
+     *            The buffer.
+     */
+    private static void appendTextContent(Node node, StringBuilder sb) {
+        switch (node.getNodeType()) {
+        case Node.TEXT_NODE:
+            sb.append(node.getNodeValue());
+            break;
+        case Node.CDATA_SECTION_NODE:
+            sb.append(node.getNodeValue());
+            break;
+        case Node.COMMENT_NODE:
+            sb.append(node.getNodeValue());
+            break;
+        case Node.PROCESSING_INSTRUCTION_NODE:
+            sb.append(node.getNodeValue());
+            break;
+        case Node.ENTITY_REFERENCE_NODE:
+            if (node.getNodeName().startsWith("#")) {
+                int ch = Integer.parseInt(node.getNodeName().substring(1));
+                sb.append((char) ch);
+            }
+            break;
+        case Node.ELEMENT_NODE:
+            for (int i = 0; i < node.getChildNodes().getLength(); i++) {
+                appendTextContent(node.getChildNodes().item(i), sb);
+            }
+            break;
+        case Node.ATTRIBUTE_NODE:
+            for (int i = 0; i < node.getChildNodes().getLength(); i++) {
+                appendTextContent(node.getChildNodes().item(i), sb);
+            }
+            break;
+        case Node.ENTITY_NODE:
+            for (int i = 0; i < node.getChildNodes().getLength(); i++) {
+                appendTextContent(node.getChildNodes().item(i), sb);
+            }
+            break;
+        case Node.DOCUMENT_FRAGMENT_NODE:
+            for (int i = 0; i < node.getChildNodes().getLength(); i++) {
+                appendTextContent(node.getChildNodes().item(i), sb);
+            }
+            break;
+        default:
+            break;
+        }
+    }
+
     // [ifndef android] method
     /**
      * Returns a SAX source.
@@ -139,6 +195,20 @@ public abstract class XmlRepresentation extends OutputRepresentation
         }
 
         return result;
+    }
+
+    // [ifdef android] method
+    /**
+     * Returns the text content of a given node and its descendants.
+     * 
+     * @param node
+     *            The node.
+     * @return The text content of a given node.
+     */
+    public static String getTextContent(Node node) {
+        StringBuilder sb = new StringBuilder();
+        appendTextContent(node, sb);
+        return sb.toString();
     }
 
     /**
@@ -580,6 +650,19 @@ public abstract class XmlRepresentation extends OutputRepresentation
 
     // [ifndef android] method
     /**
+     * Set a (compiled) {@link javax.xml.validation.Schema} to use when parsing
+     * and validating this type of XML representations.
+     * 
+     * @param schema
+     *            The (compiled) {@link javax.xml.validation.Schema} object to
+     *            set.
+     */
+    public void setSchema(javax.xml.validation.Schema schema) {
+        this.schema = schema;
+    }
+
+    // [ifndef android] method
+    /**
      * Set a schema representation to be compiled and used when parsing and
      * validating this type of XML representations.
      * 
@@ -593,19 +676,6 @@ public abstract class XmlRepresentation extends OutputRepresentation
             Context.getCurrentLogger().log(Level.WARNING,
                     "Unable to compile the schema representation", e);
         }
-    }
-
-    // [ifndef android] method
-    /**
-     * Set a (compiled) {@link javax.xml.validation.Schema} to use when parsing
-     * and validating this type of XML representations.
-     * 
-     * @param schema
-     *            The (compiled) {@link javax.xml.validation.Schema} object to
-     *            set.
-     */
-    public void setSchema(javax.xml.validation.Schema schema) {
-        this.schema = schema;
     }
 
     /**
@@ -634,31 +704,6 @@ public abstract class XmlRepresentation extends OutputRepresentation
     /**
      * Validates the XML representation against a given schema.
      * 
-     * @param schemaRepresentation
-     *            The XML schema representation to use.
-     */
-    public void validate(Representation schemaRepresentation) throws Exception {
-        validate(schemaRepresentation, null);
-    }
-
-    // [ifndef android] method
-    /**
-     * Validates the XML representation against a given schema.
-     * 
-     * @param schemaRepresentation
-     *            The XML schema representation to use.
-     * @param result
-     *            The Result object that receives (possibly augmented) XML.
-     */
-    public void validate(Representation schemaRepresentation,
-            javax.xml.transform.Result result) throws Exception {
-        validate(getSchema(schemaRepresentation), result);
-    }
-
-    // [ifndef android] method
-    /**
-     * Validates the XML representation against a given schema.
-     * 
      * @param schema
      *            The XML schema to use.
      */
@@ -678,6 +723,31 @@ public abstract class XmlRepresentation extends OutputRepresentation
     public void validate(javax.xml.validation.Schema schema,
             javax.xml.transform.Result result) throws Exception {
         schema.newValidator().validate(getSaxSource(), result);
+    }
+
+    // [ifndef android] method
+    /**
+     * Validates the XML representation against a given schema.
+     * 
+     * @param schemaRepresentation
+     *            The XML schema representation to use.
+     */
+    public void validate(Representation schemaRepresentation) throws Exception {
+        validate(schemaRepresentation, null);
+    }
+
+    // [ifndef android] method
+    /**
+     * Validates the XML representation against a given schema.
+     * 
+     * @param schemaRepresentation
+     *            The XML schema representation to use.
+     * @param result
+     *            The Result object that receives (possibly augmented) XML.
+     */
+    public void validate(Representation schemaRepresentation,
+            javax.xml.transform.Result result) throws Exception {
+        validate(getSchema(schemaRepresentation), result);
     }
 
 }

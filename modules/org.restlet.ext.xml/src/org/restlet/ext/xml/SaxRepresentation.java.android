@@ -38,7 +38,6 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.restlet.data.MediaType;
 import org.restlet.representation.Representation;
-import org.w3c.dom.Document;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -99,6 +98,10 @@ public class SaxRepresentation extends XmlRepresentation {
                 this.source = new InputSource(xmlRepresentation.getStream());
             } else {
                 this.source = new InputSource(xmlRepresentation.getStream());
+            }
+
+            if (xmlRepresentation.getCharacterSet()!= null) {
+                this.source.setEncoding(xmlRepresentation.getCharacterSet().getName());
             }
 
             if (xmlRepresentation.getIdentifier() != null) {
