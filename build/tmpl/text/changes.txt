@@ -28,6 +28,7 @@ Changes log
           JavaMail extension.
         - Added converter for WebRowSet, JdbcResult, ResultSet objects
           to representations in the Jdbc extension.
+        - Added support of the dataservices extension in Android.
     - Misc
         - Updated Simple framework library to version 4.1.16.
 
