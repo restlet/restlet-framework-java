@@ -31,7 +31,7 @@ Changes log
         - Added support of the dataservices extension in Android.
     - Misc
         - Updated Simple framework library to version 4.1.16.
-
+        - Deprecated Message#getEntityAs* methods.
     - Bugs fixed
         - Fixed issue in DomRepresentation with createTransformer()
           method. Fix contributed by Remi Dewitte. 
