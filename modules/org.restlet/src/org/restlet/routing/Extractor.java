@@ -39,6 +39,7 @@ import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.data.Cookie;
 import org.restlet.data.Form;
+import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 
 /**
@@ -152,9 +153,10 @@ public class Extractor extends Filter {
 
         // Extract the request entity parameters
         if (!getEntityExtracts().isEmpty()) {
-            final Form form = request.getEntityAsForm();
+            Representation entity = request.getEntity();
+            if (entity != null) {
+                final Form form = new Form(entity);
 
-            if (form != null) {
                 for (final ExtractInfo ei : getEntityExtracts()) {
                     if (ei.first) {
                         request.getAttributes().put(ei.attribute,

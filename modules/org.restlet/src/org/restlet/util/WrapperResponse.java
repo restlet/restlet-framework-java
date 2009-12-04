@@ -172,7 +172,9 @@ public class WrapperResponse extends Response {
      * once.
      * 
      * @return The entity as a DOM representation.
+     * @deprecated Will be removed in future release 2.1.
      */
+    @Deprecated
     @Override
     public Form getEntityAsForm() {
         return getWrappedResponse().getEntityAsForm();

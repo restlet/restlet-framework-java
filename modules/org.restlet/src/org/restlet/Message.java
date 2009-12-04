@@ -199,7 +199,9 @@ public abstract class Message {
      * large this method can result in important memory consumption.
      * 
      * @return The entity as a form.
+     * @Deprecated Will be removed in future release 2.1.
      */
+    @Deprecated
     public Form getEntityAsForm() {
         if (this.entityForm == null) {
             this.entityForm = new Form(getEntity());

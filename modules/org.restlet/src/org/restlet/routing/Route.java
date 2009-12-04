@@ -42,6 +42,7 @@ import org.restlet.data.Cookie;
 import org.restlet.data.Form;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
+import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 
 /**
@@ -276,9 +277,9 @@ public class Route extends TemplateRoute {
 
         // Extract the request entity parameters
         if (!getEntityExtracts().isEmpty()) {
-            final Form form = request.getEntityAsForm();
-
-            if (form != null) {
+            Representation entity = request.getEntity();
+            if (entity != null) {
+                final Form form = new Form(entity);
                 for (final ExtractInfo ei : getEntityExtracts()) {
                     if (ei.first) {
                         request.getAttributes().put(ei.attribute,
