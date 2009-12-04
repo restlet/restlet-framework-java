@@ -41,7 +41,7 @@ import org.restlet.Context;
 import org.restlet.engine.util.DateUtils;
 
 /**
- * Type resolver. Able to handle ADO.NET <=> Java types conversions.
+ * Type resolver. Able to handle WCF <=> Java types conversions.
  * 
  * @author Thierry Boileau
  * @see <a href="http://msdn.microsoft.com/en-us/library/bb399213.aspx">Simple
@@ -71,55 +71,55 @@ public class Type {
             .getIntegerInstance(Locale.US);
 
     /**
-     * Converts the String representation of the target ADO.NET type to its
+     * Converts the String representation of the target WCF type to its
      * corresponding value.
      * 
      * @param value
      *            The value to convert.
-     * @param adoNetType
-     *            The target ADO.NET type.
+     * @param wcfType
+     *            The target WCF type.
      * @return The converted value.
      */
-    public static Object fromEdm(String value, String adoNetType) {
+    public static Object fromEdm(String value, String wcfType) {
         if (value == null) {
             return null;
         }
 
         Object result = null;
         try {
-            if (adoNetType.endsWith("Binary")) {
+            if (wcfType.endsWith("Binary")) {
                 result = value.getBytes();
-            } else if (adoNetType.endsWith("Boolean")) {
+            } else if (wcfType.endsWith("Boolean")) {
                 result = Boolean.valueOf(value);
-            } else if (adoNetType.endsWith("DateTime")) {
+            } else if (wcfType.endsWith("DateTime")) {
                 result = DateUtils.parse(value, dateTimeFormats);
-            } else if (adoNetType.endsWith("DateTimeOffset")) {
+            } else if (wcfType.endsWith("DateTimeOffset")) {
                 result = DateUtils.parse(value, dateTimeFormats);
-            } else if (adoNetType.endsWith("Time")) {
+            } else if (wcfType.endsWith("Time")) {
                 result = timeFormat.parseObject(value);
-            } else if (adoNetType.endsWith("Decimal")) {
+            } else if (wcfType.endsWith("Decimal")) {
                 result = decimalFormat.parseObject(value);
-            } else if (adoNetType.endsWith("Single")) {
+            } else if (wcfType.endsWith("Single")) {
                 result = singleFormat.parseObject(value);
-            } else if (adoNetType.endsWith("Double")) {
+            } else if (wcfType.endsWith("Double")) {
                 result = doubleFormat.parseObject(value);
-            } else if (adoNetType.endsWith("Guid")) {
+            } else if (wcfType.endsWith("Guid")) {
                 result = value;
-            } else if (adoNetType.endsWith("Int16")) {
+            } else if (wcfType.endsWith("Int16")) {
                 result = Short.valueOf(value);
-            } else if (adoNetType.endsWith("Int32")) {
+            } else if (wcfType.endsWith("Int32")) {
                 result = Integer.valueOf(value);
-            } else if (adoNetType.endsWith("Int64")) {
+            } else if (wcfType.endsWith("Int64")) {
                 result = Long.valueOf(value);
-            } else if (adoNetType.endsWith("Byte")) {
+            } else if (wcfType.endsWith("Byte")) {
                 result = Byte.valueOf(value);
-            } else if (adoNetType.endsWith("String")) {
+            } else if (wcfType.endsWith("String")) {
                 result = value;
             }
         } catch (Exception e) {
             Context.getCurrentLogger().warning(
                     "Cannot convert " + value + " from this EDM type "
-                            + adoNetType);
+                            + wcfType);
         }
 
         return result;
@@ -214,72 +214,72 @@ public class Type {
     }
 
     /**
-     * Converts a value to the String representation of the target ADO.NET type.
+     * Converts a value to the String representation of the target WCF type.
      * 
      * @param value
      *            The value to convert.
-     * @param adoNetType
-     *            The target ADO.NET type.
+     * @param type
+     *            The target WCF type.
      * @return The converted value.
      */
     public static String toEdm(Object value, Type type) {
-        String adoNetType = type.getAdoNetType();
-        if (value == null && adoNetType == null) {
+        String wcfType = type.getWcfType();
+        if (value == null && wcfType == null) {
             return null;
         }
 
         String result = null;
-        if (adoNetType.endsWith("Binary")) {
+        if (wcfType.endsWith("Binary")) {
             if ((byte[].class).isAssignableFrom(value.getClass())) {
                 result = toEdmBinary((byte[]) value);
             }
-        } else if (adoNetType.endsWith("Boolean")) {
+        } else if (wcfType.endsWith("Boolean")) {
             if ((Boolean.class).isAssignableFrom(value.getClass())) {
                 result = toEdmBoolean((Boolean) value);
             }
-        } else if (adoNetType.endsWith("DateTime")) {
+        } else if (wcfType.endsWith("DateTime")) {
             if ((Date.class).isAssignableFrom(value.getClass())) {
                 result = toEdmDateTime((Date) value);
             }
-        } else if (adoNetType.endsWith("DateTimeOffset")) {
+        } else if (wcfType.endsWith("DateTimeOffset")) {
             if ((Date.class).isAssignableFrom(value.getClass())) {
                 result = toEdmDateTime((Date) value);
             }
-        } else if (adoNetType.endsWith("Time")) {
+        } else if (wcfType.endsWith("Time")) {
             if ((Long.class).isAssignableFrom(value.getClass())) {
                 result = toEdmTime((Long) value);
             }
-        } else if (adoNetType.endsWith("Decimal")) {
+        } else if (wcfType.endsWith("Decimal")) {
             if ((Double.class).isAssignableFrom(value.getClass())) {
                 result = toEdmDecimal((Double) value);
             }
-        } else if (adoNetType.endsWith("Single")) {
+        } else if (wcfType.endsWith("Single")) {
             if ((Float.class).isAssignableFrom(value.getClass())) {
                 result = toEdmSingle((Float) value);
             }
-        } else if (adoNetType.endsWith("Double")) {
+        } else if (wcfType.endsWith("Double")) {
             if ((Double.class).isAssignableFrom(value.getClass())) {
                 result = toEdmDouble((Double) value);
             }
-        } else if (adoNetType.endsWith("Guid")) {
+        } else if (wcfType.endsWith("Guid")) {
             result = value.toString();
-        } else if (adoNetType.endsWith("Int16")) {
+        } else if (wcfType.endsWith("Int16")) {
             if ((Short.class).isAssignableFrom(value.getClass())) {
                 result = toEdmInt16((Short) value);
             }
-        } else if (adoNetType.endsWith("Int32")) {
+        } else if (wcfType.endsWith("Int32")) {
             if ((Integer.class).isAssignableFrom(value.getClass())) {
                 result = toEdmInt32((Integer) value);
             }
-        } else if (adoNetType.endsWith("Int64")) {
+        } else if (wcfType.endsWith("Int64")) {
             if ((Long.class).isAssignableFrom(value.getClass())) {
                 result = toEdmInt64((Long) value);
             }
-        } else if (adoNetType.endsWith("Byte")) {
+        } else if (wcfType.endsWith("Byte")) {
             if ((Byte.class).isAssignableFrom(value.getClass())) {
                 result = toEdmByte((Byte) value);
             }
-        } else if (adoNetType.endsWith("String")) {
+        } else if (wcfType.endsWith("String")) {
             result = value.toString();
         }
 
@@ -398,73 +398,73 @@ public class Type {
     }
 
     /**
-     * Converts a value to the String representation of the target ADO.NET type
-     * when used a key in the URIs.
+     * Converts a value to the String representation of the target WCF type when
+     * used a key in the URIs.
      * 
      * @param value
      *            The value to convert.
-     * @param adoNetType
-     *            The target ADO.NET type.
+     * @param type
+     *            The target WCF type.
      * @return The converted value.
      */
     public static String toEdmKey(Object value, Type type) {
-        String adoNetType = type.getAdoNetType();
-        if (value == null && adoNetType == null) {
+        String wcfType = type.getWcfType();
+        if (value == null && wcfType == null) {
             return null;
         }
 
         String result = null;
-        if (adoNetType.endsWith("Binary")) {
+        if (wcfType.endsWith("Binary")) {
             if ((byte[].class).isAssignableFrom(value.getClass())) {
                 result = toEdmBinary((byte[]) value);
             }
-        } else if (adoNetType.endsWith("Boolean")) {
+        } else if (wcfType.endsWith("Boolean")) {
             if ((Boolean.class).isAssignableFrom(value.getClass())) {
                 result = toEdmBoolean((Boolean) value);
             }
-        } else if (adoNetType.endsWith("DateTime")) {
+        } else if (wcfType.endsWith("DateTime")) {
             if ((Date.class).isAssignableFrom(value.getClass())) {
                 result = toEdmDateTime((Date) value);
             }
-        } else if (adoNetType.endsWith("DateTimeOffset")) {
+        } else if (wcfType.endsWith("DateTimeOffset")) {
             if ((Date.class).isAssignableFrom(value.getClass())) {
                 result = toEdmDateTime((Date) value);
             }
-        } else if (adoNetType.endsWith("Time")) {
+        } else if (wcfType.endsWith("Time")) {
             if ((Long.class).isAssignableFrom(value.getClass())) {
                 result = toEdmTime((Long) value);
             }
-        } else if (adoNetType.endsWith("Decimal")) {
+        } else if (wcfType.endsWith("Decimal")) {
             if ((Double.class).isAssignableFrom(value.getClass())) {
                 result = toEdmDecimal((Double) value);
             }
-        } else if (adoNetType.endsWith("Single")) {
+        } else if (wcfType.endsWith("Single")) {
             if ((Float.class).isAssignableFrom(value.getClass())) {
                 result = toEdmSingle((Float) value);
             }
-        } else if (adoNetType.endsWith("Double")) {
+        } else if (wcfType.endsWith("Double")) {
             if ((Double.class).isAssignableFrom(value.getClass())) {
                 result = toEdmDouble((Double) value);
             }
-        } else if (adoNetType.endsWith("Guid")) {
+        } else if (wcfType.endsWith("Guid")) {
             result = value.toString();
-        } else if (adoNetType.endsWith("Int16")) {
+        } else if (wcfType.endsWith("Int16")) {
             if ((Short.class).isAssignableFrom(value.getClass())) {
                 result = toEdmInt16((Short) value);
             }
-        } else if (adoNetType.endsWith("Int32")) {
+        } else if (wcfType.endsWith("Int32")) {
             if ((Integer.class).isAssignableFrom(value.getClass())) {
                 result = toEdmInt32((Integer) value);
             }
-        } else if (adoNetType.endsWith("Int64")) {
+        } else if (wcfType.endsWith("Int64")) {
             if ((Long.class).isAssignableFrom(value.getClass())) {
                 result = toEdmInt64((Long) value);
             }
-        } else if (adoNetType.endsWith("Byte")) {
+        } else if (wcfType.endsWith("Byte")) {
             if ((Byte.class).isAssignableFrom(value.getClass())) {
                 result = toEdmByte((Byte) value);
             }
-        } else if (adoNetType.endsWith("String")) {
+        } else if (wcfType.endsWith("String")) {
             result = "'" + value.toString() + "'";
         }
 
@@ -498,46 +498,42 @@ public class Type {
         return timeFormat.format(value);
     }
 
-    private String adoNetType;
+    private String wcfType;
 
-    public Type(String adoNetType) {
+    public Type(String wcfType) {
         super();
-        this.adoNetType = adoNetType;
-    }
-
-    public String getAdoNetType() {
-        return adoNetType;
+        this.wcfType = wcfType;
     }
 
     public Class<?> getJavaClass() {
         Class<?> result = Object.class;
-        if (adoNetType.endsWith("Binary")) {
+        if (wcfType.endsWith("Binary")) {
             result = byte[].class;
-        } else if (adoNetType.endsWith("Boolean")) {
+        } else if (wcfType.endsWith("Boolean")) {
             result = Boolean.class;
-        } else if (adoNetType.endsWith("DateTime")) {
+        } else if (wcfType.endsWith("DateTime")) {
             result = Date.class;
-        } else if (adoNetType.endsWith("DateTimeOffset")) {
+        } else if (wcfType.endsWith("DateTimeOffset")) {
             result = Date.class;
-        } else if (adoNetType.endsWith("Time")) {
+        } else if (wcfType.endsWith("Time")) {
             result = Long.class;
-        } else if (adoNetType.endsWith("Decimal")) {
+        } else if (wcfType.endsWith("Decimal")) {
             result = Double.class;
-        } else if (adoNetType.endsWith("Single")) {
+        } else if (wcfType.endsWith("Single")) {
             result = Float.class;
-        } else if (adoNetType.endsWith("Double")) {
+        } else if (wcfType.endsWith("Double")) {
             result = Double.class;
-        } else if (adoNetType.endsWith("Guid")) {
+        } else if (wcfType.endsWith("Guid")) {
             result = String.class;
-        } else if (adoNetType.endsWith("Int16")) {
+        } else if (wcfType.endsWith("Int16")) {
             result = Short.class;
-        } else if (adoNetType.endsWith("Int32")) {
+        } else if (wcfType.endsWith("Int32")) {
             result = Integer.class;
-        } else if (adoNetType.endsWith("Int64")) {
+        } else if (wcfType.endsWith("Int64")) {
             result = Long.class;
-        } else if (adoNetType.endsWith("Byte")) {
+        } else if (wcfType.endsWith("Byte")) {
             result = Byte.class;
-        } else if (adoNetType.endsWith("String")) {
+        } else if (wcfType.endsWith("String")) {
             result = String.class;
         }
 
@@ -546,41 +542,45 @@ public class Type {
 
     public String getJavaType() {
         String result = "Object";
-        if (adoNetType.endsWith("Binary")) {
+        if (wcfType.endsWith("Binary")) {
             result = "byte[]";
-        } else if (adoNetType.endsWith("Boolean")) {
+        } else if (wcfType.endsWith("Boolean")) {
             result = "boolean";
-        } else if (adoNetType.endsWith("DateTime")) {
+        } else if (wcfType.endsWith("DateTime")) {
             result = "Date";
-        } else if (adoNetType.endsWith("DateTimeOffset")) {
+        } else if (wcfType.endsWith("DateTimeOffset")) {
             result = "Date";
-        } else if (adoNetType.endsWith("Time")) {
+        } else if (wcfType.endsWith("Time")) {
             result = "long";
-        } else if (adoNetType.endsWith("Decimal")) {
+        } else if (wcfType.endsWith("Decimal")) {
             result = "double";
-        } else if (adoNetType.endsWith("Single")) {
+        } else if (wcfType.endsWith("Single")) {
             result = "float";
-        } else if (adoNetType.endsWith("Double")) {
+        } else if (wcfType.endsWith("Double")) {
             result = "double";
-        } else if (adoNetType.endsWith("Guid")) {
+        } else if (wcfType.endsWith("Guid")) {
             result = "String";
-        } else if (adoNetType.endsWith("Int16")) {
+        } else if (wcfType.endsWith("Int16")) {
             result = "short";
-        } else if (adoNetType.endsWith("Int32")) {
+        } else if (wcfType.endsWith("Int32")) {
             result = "int";
-        } else if (adoNetType.endsWith("Int64")) {
+        } else if (wcfType.endsWith("Int64")) {
             result = "long";
-        } else if (adoNetType.endsWith("Byte")) {
+        } else if (wcfType.endsWith("Byte")) {
             result = "byte";
-        } else if (adoNetType.endsWith("String")) {
+        } else if (wcfType.endsWith("String")) {
             result = "String";
         }
 
         return result;
     }
 
-    public void setAdoNetType(String adoNetType) {
-        this.adoNetType = adoNetType;
+    public String getWcfType() {
+        return wcfType;
+    }
+
+    public void setWcfType(String wcfType) {
+        this.wcfType = wcfType;
     }
 
 }

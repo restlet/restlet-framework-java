@@ -44,7 +44,7 @@ public class EntityContainer extends NamedObject {
     /** The list of associations. */
     private List<AssociationSet> associations;
 
-    /** Is this container the default one for a ADO.NET data service? */
+    /** Is this container the default one for a WCF data service? */
     private boolean defaultEntityContainer;
 
     /** The list of entities. */
@@ -97,11 +97,9 @@ public class EntityContainer extends NamedObject {
     }
 
     /**
-     * Return true if this container is the default one for a ADO.NET data
-     * service.
+     * Return true if this container is the default one for a WCF data service.
      * 
-     * @return True if this container is the default one for a ADO.NET data
-     *         service.
+     * @return True if this container is the default one for a WCF data service.
      */
     public boolean isDefaultEntityContainer() {
         return defaultEntityContainer;
@@ -118,11 +116,11 @@ public class EntityContainer extends NamedObject {
     }
 
     /**
-     * Indicates if this container is the default one for a ADO.NET data
+     * Indicates if this container is the default one for a WCF data
      * service.
      * 
      * @param defaultEntityContainer
-     *            True if this container is the default one for a ADO.NET data
+     *            True if this container is the default one for a WCF data
      *            service.
      */
     public void setDefaultEntityContainer(boolean defaultEntityContainer) {

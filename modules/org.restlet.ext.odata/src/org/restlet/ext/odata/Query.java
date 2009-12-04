@@ -49,7 +49,7 @@ import org.restlet.util.Series;
 
 /**
  * Specific query to a Data Service, represents a particular HTTP request to a
- * data service. This Java class is more or less equivalent to the ADO.NET
+ * data service. This Java class is more or less equivalent to the WCF
  * DataServiceQuery class.
  * 
  * @author Jerome Louvel
@@ -101,7 +101,7 @@ public class Query<T> implements Iterable<T> {
     private String query;
 
     /** The parent client session. */
-    private Session session;
+    private Service session;
 
     /** The path of the targeted entity relatively to the data service URI. */
     private String subpath;
@@ -117,7 +117,7 @@ public class Query<T> implements Iterable<T> {
      * @param entityClass
      *            The class of the target entity.
      */
-    public Query(Session session, String subpath, Class<T> entityClass) {
+    public Query(Service session, String subpath, Class<T> entityClass) {
         this.session = session;
         this.subpath = subpath;
         this.executed = false;
@@ -372,7 +372,7 @@ public class Query<T> implements Iterable<T> {
      * 
      * @return The parent client session.
      */
-    public Session getSession() {
+    public Service getSession() {
         return session;
     }
 

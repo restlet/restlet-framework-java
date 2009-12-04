@@ -157,9 +157,9 @@ public class EntityType extends NamedObject implements Comparable<EntityType> {
 		Set<String> result = new TreeSet<String>();
 
 		for (Property property : getProperties()) {
-			if (property.getType().getAdoNetType().endsWith("DateTime")) {
+			if (property.getType().getWcfType().endsWith("DateTime")) {
 				result.add(property.getType().getJavaClass().getName());
-			} else if (property.getType().getAdoNetType().endsWith(
+			} else if (property.getType().getWcfType().endsWith(
 					"DateTimeOffset")) {
 				result.add(property.getType().getJavaClass().getName());
 			}

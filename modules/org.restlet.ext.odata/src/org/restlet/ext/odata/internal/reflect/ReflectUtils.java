@@ -291,7 +291,7 @@ public class ReflectUtils {
     public static void setProperty(Object entity, Property property,
             String propertyValue) throws Exception {
         invokeSetter(entity, property.getNormalizedName(), Type.fromEdm(
-                propertyValue, property.getType().getAdoNetType()));
+                propertyValue, property.getType().getWcfType()));
     }
 
     /**

@@ -40,8 +40,8 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
- * Used to parse a metadata descriptor of a given ADO. NET Data Service and
- * generate the associated object's tree.
+ * Used to parse a metadata descriptor of a given WCF Data Service and generate
+ * the associated object's tree.
  * 
  * @author Thierry Boileau
  */
@@ -114,7 +114,7 @@ public class MetadataReader extends DefaultHandler {
             }
             for (EntityType entityType : schema.getTypes()) {
                 // entityType.key
-                if(entityType.getKeys() != null){
+                if (entityType.getKeys() != null) {
                     List<Property> props = entityType.getKeys();
                     entityType.setKeys(new ArrayList<Property>());
                     for (Property prop : props) {
@@ -349,7 +349,7 @@ public class MetadataReader extends DefaultHandler {
             pushState(State.ENTITY_TYPE_KEY);
         } else if ("propertyRef".equalsIgnoreCase(localName)) {
             if (getState() == State.ENTITY_TYPE_KEY) {
-            	if(currentEntityType.getKeys() == null){
+                if (currentEntityType.getKeys() == null) {
                     currentEntityType.setKeys(new ArrayList<Property>());
                 }
                 currentEntityType.getKeys().add(new Property(attr.get("Name")));

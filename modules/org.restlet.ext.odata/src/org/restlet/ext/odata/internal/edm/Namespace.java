@@ -31,7 +31,7 @@
 package org.restlet.ext.odata.internal.edm;
 
 /**
- * Represents a schema's namespace in the metadata descriptor of a ADO.NET data
+ * Represents a schema's namespace in the metadata descriptor of a WCF data
  * service.
  * 
  * @author Thierry Boileau

@@ -41,7 +41,7 @@ import org.restlet.ext.xml.SaxRepresentation;
 import org.restlet.representation.Representation;
 
 /**
- * Represents the metadata of an ADO.NET data service.
+ * Represents the metadata of an WCF data service.
  * 
  * @author Thierry Boileau
  */
@@ -305,11 +305,11 @@ public class Metadata extends SaxRepresentation {
 
     /**
      * According to the metadata of the service, returns the path of the given
-     * entity relatively to the current ADO.NET service.
+     * entity relatively to the current WCF service.
      * 
      * @param entity
      *            The entity.
-     * @return The path of the given entity relatively to the current ADO.NET
+     * @return The path of the given entity relatively to the current WCF
      *         service.
      */
     public String getSubpath(Object entity) {
@@ -344,14 +344,14 @@ public class Metadata extends SaxRepresentation {
 
     /**
      * According to the metadata of the service, returns the path of the given
-     * entity's property relatively to the current ADO.NET service.
+     * entity's property relatively to the current WCF service.
      * 
      * @param entity
      *            The entity.
      * @param propertyName
      *            The name of the property.
      * @return The path of the given entity's property relatively to the current
-     *         ADO.NET service.
+     *         WCF service.
      */
     public String getSubpath(Object entity, String propertyName) {
         return getSubpath(entity) + "/" + propertyName;
