@@ -96,8 +96,8 @@ public class Generator {
             }
 
             step = "step 4 - get the metadata descriptor";
-            Service session = new Service(dataServiceUri);
-            if ((metadata = session.getMetadata()) == null) {
+            Service service = new Service(dataServiceUri);
+            if ((metadata = service.getMetadata()) == null) {
                 error = true;
             } else {
                 step = "step 5 - generate source code";
@@ -161,8 +161,8 @@ public class Generator {
         Representation entityTmpl = new StringRepresentation(
                 new ClientResource(rootTemplates + "/entityType.ftl").get()
                         .getText());
-        Representation sessionTmpl = new StringRepresentation(
-                new ClientResource(rootTemplates + "/session.ftl").get()
+        Representation serviceTmpl = new StringRepresentation(
+                new ClientResource(rootTemplates + "/service.ftl").get()
                         .getText());
 
         for (Schema schema : metadata.getSchemas()) {
@@ -189,13 +189,13 @@ public class Generator {
                         packageDir, type.getClassName() + ".java")));
             }
 
-            // Generate Session subclass.
+            // Generate Service subclass.
             StringBuffer className = new StringBuffer();
             className.append(schema.getNamespace().getNormalizedName()
                     .substring(0, 1).toUpperCase());
             className.append(schema.getNamespace().getNormalizedName()
                     .substring(1));
-            className.append("Session");
+            className.append("Service");
 
             Map<String, Object> dataModel = new HashMap<String, Object>();
             dataModel.put("schema", schema);
@@ -205,7 +205,7 @@ public class Generator {
             dataModel.put("entityContainers", metadata.getContainers());
 
             TemplateRepresentation templateRepresentation = new TemplateRepresentation(
-                    sessionTmpl, fmc, dataModel, MediaType.TEXT_PLAIN);
+                    serviceTmpl, fmc, dataModel, MediaType.TEXT_PLAIN);
             templateRepresentation.setCharacterSet(CharacterSet.UTF_8);
 
             // Write the template representation as a Java class

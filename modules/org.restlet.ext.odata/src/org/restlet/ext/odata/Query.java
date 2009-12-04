@@ -100,8 +100,8 @@ public class Query<T> implements Iterable<T> {
     /** The query string. */
     private String query;
 
-    /** The parent client session. */
-    private Service session;
+    /** The parent client service. */
+    private Service service;
 
     /** The path of the targeted entity relatively to the data service URI. */
     private String subpath;
@@ -109,7 +109,7 @@ public class Query<T> implements Iterable<T> {
     /**
      * Constructor.
      * 
-     * @param session
+     * @param service
      *            The data service requested by the query.
      * @param subpath
      *            The path of the targeted entity relatively to the data service
@@ -117,8 +117,8 @@ public class Query<T> implements Iterable<T> {
      * @param entityClass
      *            The class of the target entity.
      */
-    public Query(Service session, String subpath, Class<T> entityClass) {
-        this.session = session;
+    public Query(Service service, String subpath, Class<T> entityClass) {
+        this.service = service;
         this.subpath = subpath;
         this.executed = false;
         this.entityClass = entityClass;
@@ -138,7 +138,7 @@ public class Query<T> implements Iterable<T> {
      */
     @SuppressWarnings("unchecked")
     public Query<T> addParameter(String name, String value) {
-        Query<T> result = new Query<T>(this.getSession(), this.getSubpath(),
+        Query<T> result = new Query<T>(this.getService(), this.getSubpath(),
                 (Class<T>) this.entityClass);
         if (getQuery() == null || "".equals(getQuery())) {
             result.setQuery(name + "=" + value);
@@ -160,7 +160,7 @@ public class Query<T> implements Iterable<T> {
      */
     @SuppressWarnings("unchecked")
     public Query<T> addParameters(Series<Parameter> params) {
-        Query<T> result = new Query<T>(this.getSession(), this.getSubpath(),
+        Query<T> result = new Query<T>(this.getService(), this.getSubpath(),
                 (Class<T>) this.entityClass);
         StringBuilder builder = new StringBuilder();
         if (params != null) {
@@ -189,7 +189,7 @@ public class Query<T> implements Iterable<T> {
      * @return The complete target URI reference.
      */
     protected String createTargetUri() {
-        String service = getSession().getServiceRef().toString();
+        String service = getService().getServiceRef().toString();
         StringBuilder result = new StringBuilder(service);
         String subpath = (getSubpath() == null) ? "" : getSubpath();
         if (service.endsWith("/")) {
@@ -222,13 +222,13 @@ public class Query<T> implements Iterable<T> {
             String targetUri = createTargetUri();
 
             ClientResource resource = new ClientResource(targetUri);
-            resource.setChallengeResponse(session.getCredentials());
+            resource.setChallengeResponse(service.getCredentials());
 
             Representation result = new StringRepresentation(resource.get(
                     MediaType.APPLICATION_ATOM).getText());
             getLogger().fine(result.getText());
-            session.setLatestRequest(resource.getRequest());
-            session.setLatestResponse(resource.getResponse());
+            service.setLatestRequest(resource.getRequest());
+            service.setLatestResponse(resource.getResponse());
 
             if (resource.getStatus().isSuccess()) {
                 // Guess the type of query based on the URI structure
@@ -368,12 +368,12 @@ public class Query<T> implements Iterable<T> {
     }
 
     /**
-     * Returns the parent client session.
+     * Returns the parent client service.
      * 
-     * @return The parent client session.
+     * @return The parent client service.
      */
-    public Service getSession() {
-        return session;
+    public Service getService() {
+        return service;
     }
 
     /**
@@ -450,7 +450,7 @@ public class Query<T> implements Iterable<T> {
         try {
             execute();
             result = new FeedParser<T>(getFeed(), this.entityClass,
-                    getSession().getMetadata()).parse();
+                    getService().getMetadata()).parse();
         } catch (Exception e) {
             getLogger().log(Level.WARNING,
                     "Can't parse the content of " + createTargetUri(), e);

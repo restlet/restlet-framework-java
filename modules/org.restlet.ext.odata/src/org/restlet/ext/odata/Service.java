@@ -61,10 +61,9 @@ import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 /**
- * Represents the runtime context of an WCF data service. WCF Data
- * Services are stateless, but the Session is not. State on the client is
- * maintained between interactions in order to support features such as update
- * management.<br>
+ * Acts as a manager for a specific remote WCF data service. WCF Data Services
+ * are stateless, but the Service is not. State on the client is maintained
+ * between interactions in order to support features such as update management.<br>
  * <br>
  * This Java class is more or less equivalent to the WCF DataServiceContext
  * class.
@@ -373,7 +372,6 @@ public class Service {
                     DomRepresentation xmlRep = new DomRepresentation(rep);
                     // [ifndef android] instruction
                     Node node = xmlRep.getNode("//" + propertyName);
-                    
 
                     // [ifdef android] uncomment
                     // Node node = null;
