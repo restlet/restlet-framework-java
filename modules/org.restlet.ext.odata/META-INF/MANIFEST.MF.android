@@ -27,4 +27,4 @@ Import-Package: org.restlet,
  org.restlet.security,
  org.restlet.service,
  org.restlet.util
-Export-Package: org.restlet.ext.dataservices
+Export-Package: org.restlet.ext.odata
