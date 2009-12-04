@@ -24,8 +24,8 @@
 		<files-sets>
 <![CDATA[
          <exclude name="META-INF/MANIFEST.MF" />
-         <exclude name="src/org/restlet/ext/dataservices/Generator.java" />
-         <exclude name="src/org/restlet/ext/dataservices/internal/templates/**" />
+         <exclude name="src/org/restlet/ext/odata/Generator.java" />
+         <exclude name="src/org/restlet/ext/odata/internal/templates/**" />
 ]]>
 		</files-sets>
 	</source>

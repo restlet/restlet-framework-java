@@ -8,9 +8,9 @@
 		<version>2.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>org.restlet.ext.dataservices</artifactId>
-	<name>Restlet Extension - ADO.NET Data Services</name>
-	<description>Integration with ADO.NET Data Services 1.0.</description>
+	<artifactId>org.restlet.ext.odata</artifactId>
+	<name>Restlet Extension - WCF Data Services</name>
+	<description>Integration with WCF Data Services 1.0.</description>
 
 	<dependencies>
 		<dependency>
