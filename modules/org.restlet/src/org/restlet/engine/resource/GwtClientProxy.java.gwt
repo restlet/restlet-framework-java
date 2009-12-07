@@ -28,7 +28,10 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.resource;
+package org.restlet.engine.resource;
+
+import org.restlet.resource.ClientProxy;
+import org.restlet.resource.ClientResource;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.SerializationException;
@@ -44,8 +47,7 @@ import com.google.gwt.user.client.rpc.impl.Serializer;
  * 
  * @author Jerome Louvel
  */
-public class ResourceAsyncProxy implements ResourceAsync,
-        SerializationStreamFactory {
+public class GwtClientProxy implements ClientProxy, SerializationStreamFactory {
 
     /** The wrapped client resource. */
     private ClientResource clientResource;
@@ -59,7 +61,7 @@ public class ResourceAsyncProxy implements ResourceAsync,
     /**
      * Default constructor.
      */
-    public ResourceAsyncProxy() {
+    public GwtClientProxy() {
         this(GWT.getModuleBaseURL());
     }
 
@@ -69,7 +71,7 @@ public class ResourceAsyncProxy implements ResourceAsync,
      * @param uri
      *            The target resource URI.
      */
-    public ResourceAsyncProxy(String uri) {
+    public GwtClientProxy(String uri) {
         this(uri, null, null);
     }
 
@@ -83,7 +85,7 @@ public class ResourceAsyncProxy implements ResourceAsync,
      * @param serializer
      *            The object serializer.
      */
-    public ResourceAsyncProxy(String uri, String serializationPolicy,
+    public GwtClientProxy(String uri, String serializationPolicy,
             Serializer serializer) {
         this.clientResource = new ClientResource(uri);
         this.serializationPolicy = serializationPolicy;

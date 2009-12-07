@@ -119,7 +119,6 @@
          <exclude name="src/org/restlet/engine/log/IdentClient.java" />
          <exclude name="src/org/restlet/engine/log/LogFilter.java" />
          <exclude name="src/org/restlet/engine/log/TraceHandler.java" />
-         <exclude name="src/org/restlet/engine/resource/**" />
          <exclude name="src/org/restlet/engine/ServerHelper.java" />
          <exclude name="src/org/restlet/engine/security/**" />
          <exclude name="src/org/restlet/engine/TemplateDispatcher.java" />

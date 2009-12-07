@@ -30,6 +30,8 @@
 
 package org.restlet.resource;
 
+import org.restlet.engine.resource.GwtClientProxy;
+
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
@@ -40,11 +42,11 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  *            The class of the result object returned in case of success.
  * @author Jerome Louvel
  */
-public interface ResourceAsyncCallback<T> {
+public interface ClientCallback<T> {
 
     /**
-     * Method called back by the associated {@link ResourceAsyncProxy} object
-     * when a failure is detected.
+     * Method called back by the associated {@link GwtClientProxy} object when a
+     * failure is detected.
      * 
      * @param caught
      *            The exception or error caugt.
@@ -52,7 +54,7 @@ public interface ResourceAsyncCallback<T> {
     void onFailure(Throwable caught);
 
     /**
-     * Method called back by the associated {@link ResourceAsyncProxy} object in
+     * Method called back by the associated {@link GwtClientProxy} object in
      * case of success.
      * 
      * @param result

@@ -45,8 +45,8 @@ import org.restlet.representation.Representation;
 import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
-import org.restlet.resource.ResourceAsync;
-import org.restlet.resource.ResourceAsyncProxy;
+import org.restlet.resource.ClientProxy;
+import org.restlet.engine.resource.GwtClientProxy;
 import org.restlet.resource.ResourceException;
 
 import com.google.gwt.core.client.GWT;
@@ -72,13 +72,13 @@ import com.google.gwt.user.rebind.rpc.TypeSerializerCreator;
 
 /**
  * Deferred binding generator capable of creating a subclass of
- * {@link ResourceAsyncProxy} implementing a custom Java interface, extending
- * the marker {@link ResourceAsync} interface, and annotated with Restlet
+ * {@link GwtClientProxy} implementing a custom Java interface, extending
+ * the marker {@link ClientProxy} interface, and annotated with Restlet
  * annotations such as {@link Get} , {@link Post} or {@link Delete}.
  * 
  * @author Jerome Louvel
  */
-public class ResourceAsyncGenerator extends com.google.gwt.core.ext.Generator {
+public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
 
 	private TreeLogger logger;
 
@@ -103,7 +103,7 @@ public class ResourceAsyncGenerator extends com.google.gwt.core.ext.Generator {
 	/**
 	 * Default constructor.
 	 */
-	public ResourceAsyncGenerator() {
+	public ClientProxyGenerator() {
 		this.logger = null;
 		this.classType = null;
 		this.context = null;
@@ -302,7 +302,7 @@ public class ResourceAsyncGenerator extends com.google.gwt.core.ext.Generator {
 
 			ClassSourceFileComposerFactory composer = new ClassSourceFileComposerFactory(
 					getPackageName(), getClassName());
-			composer.setSuperclass(ResourceAsyncProxy.class.getCanonicalName());
+			composer.setSuperclass(GwtClientProxy.class.getCanonicalName());
 			composer.addImplementedInterface(getTypeQName());
 			composer.addImport(GWT.class.getCanonicalName());
 			composer.addImport(IOException.class.getCanonicalName());

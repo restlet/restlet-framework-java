@@ -38,6 +38,7 @@ import org.restlet.representation.Variant;
  * 
  * @author Jerome Louvel
  */
+//[excludes=gwt]
 public class VariantInfo extends Variant {
 
     /** The optional annotation descriptor. */

@@ -35,7 +35,7 @@ package org.restlet.resource;
  * 
  * @author Jerome Louvel
  */
-public interface ResourceAsync {
+public interface ClientProxy {
 
     /**
      * Returns the wrapped client resource.

@@ -43,6 +43,7 @@ import org.restlet.data.Method;
  * 
  * @author Jerome Louvel
  */
+//[excludes=gwt]
 public class AnnotationUtils {
 
     /** Annotation info cache. */

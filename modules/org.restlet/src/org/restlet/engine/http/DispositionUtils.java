@@ -50,6 +50,10 @@ public class DispositionUtils {
      * @return The formatted disposition.
      */
     public static String format(Disposition disposition) {
+        if (Disposition.TYPE_NONE.equals(disposition.getType())
+                || disposition.getType() == null) {
+            return null;
+        }
         final StringBuilder sb = new StringBuilder();
 
         sb.append(disposition.getType());

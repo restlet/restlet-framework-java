@@ -33,8 +33,7 @@ package org.restlet.representation;
 import java.io.Serializable;
 
 import org.restlet.data.MediaType;
-import org.restlet.resource.ResourceAsync;
-import org.restlet.resource.ResourceAsyncProxy;
+import org.restlet.resource.ClientProxy;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.SerializationStreamFactory;
@@ -81,7 +80,7 @@ public class ObjectRepresentation<T extends Serializable> extends
      *            The remote resource from which to obtain the serialization
      *            stream factory.
      */
-    public ObjectRepresentation(String serializedObject, ResourceAsync resource) {
+    public ObjectRepresentation(String serializedObject, ClientProxy resource) {
         this(serializedObject, (resource == null) ? null
                 : (SerializationStreamFactory) resource);
     }
@@ -123,7 +122,7 @@ public class ObjectRepresentation<T extends Serializable> extends
      *            The remote resource from which to obtain the serialization
      *            stream factory.
      */
-    public ObjectRepresentation(T object, ResourceAsync resource) {
+    public ObjectRepresentation(T object, ClientProxy resource) {
         this(object, (resource == null) ? null
                 : (SerializationStreamFactory) resource);
     }

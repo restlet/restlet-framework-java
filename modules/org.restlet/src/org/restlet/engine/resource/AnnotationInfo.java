@@ -44,6 +44,7 @@ import org.restlet.service.MetadataService;
  * 
  * @author Jerome Louvel
  */
+//[excludes=gwt]
 public class AnnotationInfo {
     /** The annotated Java method. */
     private final java.lang.reflect.Method javaMethod;

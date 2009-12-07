@@ -43,6 +43,7 @@ import org.restlet.data.ChallengeRequest;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Digest;
 import org.restlet.data.Dimension;
+import org.restlet.data.Disposition;
 import org.restlet.data.Encoding;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
@@ -145,7 +146,9 @@ public class HttpServerAdapter extends HttpAdapter {
                         entity.getIdentifier().toString());
             }
 
-            if (entity.getDisposition() != null) {
+            if (entity.getDisposition() != null
+                    && !Disposition.TYPE_NONE.equals(entity.getDisposition()
+                            .getType())) {
                 responseHeaders.add(HttpConstants.HEADER_CONTENT_DISPOSITION,
                         DispositionUtils.format(entity.getDisposition()));
             }
