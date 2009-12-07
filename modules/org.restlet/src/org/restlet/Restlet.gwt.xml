@@ -1,0 +1,7 @@
+<module>
+	<inherits name='com.google.gwt.user.User' />
+	<inherits name='com.google.gwt.http.HTTP' />
+	<generate-with class="org.restlet.rebind.ResourceAsyncGenerator">
+		<when-type-assignable class="org.restlet.resource.ResourceAsync" />
+	</generate-with>
+</module>

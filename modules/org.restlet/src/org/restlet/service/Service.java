@@ -30,8 +30,6 @@
 
 package org.restlet.service;
 
-import org.restlet.Context;
-
 /**
  * Generic service associated to a component or an application. The life cycle
  * of a service is tightly related to the one of the associated component or
@@ -74,7 +72,8 @@ public abstract class Service {
      *            The current context.
      * @return The new filter or null.
      */
-    public org.restlet.routing.Filter createInboundFilter(Context context) {
+    public org.restlet.routing.Filter createInboundFilter(
+            org.restlet.Context context) {
         return null;
     }
 
@@ -87,7 +86,8 @@ public abstract class Service {
      * @return The new filter or null.
      * @see Context#getClientDispatcher()
      */
-    public org.restlet.routing.Filter createOutboundFilter(Context context) {
+    public org.restlet.routing.Filter createOutboundFilter(
+            org.restlet.Context context) {
         return null;
     }
 

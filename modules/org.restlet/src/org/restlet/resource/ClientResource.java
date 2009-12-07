@@ -52,9 +52,7 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Range;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
-import org.restlet.engine.Engine;
 import org.restlet.representation.Representation;
-import org.restlet.representation.Variant;
 import org.restlet.util.Series;
 
 /**
@@ -1431,7 +1429,7 @@ public class ClientResource extends UniformResource {
 
     // [ifndef gwt] method
     /**
-     * Update the client preferences to match the given response class.
+     * Updates the client preferences to match the given response class.
      * 
      * @param resultClass
      *            The result class to match.
@@ -1441,18 +1439,20 @@ public class ClientResource extends UniformResource {
         updateClientInfo(cs.getVariants(resultClass, null));
     }
 
+    // [ifndef gwt] method
     /**
-     * Update the client preferences to match the given response class.
+     * Updates the client preferences to match the given response class.
      * 
      * @param resultClass
      *            The result class to match.
      */
-    private <T> void updateClientInfo(List<? extends Variant> variants) {
+    private <T> void updateClientInfo(
+            List<? extends org.restlet.representation.Variant> variants) {
         // Create a fresh one for this request
         ClientInfo newClientInfo = new ClientInfo();
 
         if (variants != null) {
-            for (Variant variant : variants) {
+            for (org.restlet.representation.Variant variant : variants) {
                 newClientInfo.getAcceptedMediaTypes().add(
                         new Preference<MediaType>(variant.getMediaType()));
             }
@@ -1500,7 +1500,7 @@ public class ClientResource extends UniformResource {
                             getRequest().setEntity(requestEntity);
                         }
 
-                        List<Variant> responseVariants = annotation
+                        List<org.restlet.representation.Variant> responseVariants = annotation
                                 .getResponseVariants(requestEntity,
                                         getMetadataService(),
                                         getConverterService());
@@ -1534,10 +1534,11 @@ public class ClientResource extends UniformResource {
         };
 
         // Instantiate our dynamic proxy
-        result = (T) java.lang.reflect.Proxy.newProxyInstance(Engine
-                .getClassLoader(), new Class<?>[] { resourceInterface }, h);
+        result = (T) java.lang.reflect.Proxy.newProxyInstance(
+                org.restlet.engine.Engine.getClassLoader(),
+                new Class<?>[] { resourceInterface }, h);
 
         return result;
     }
-    
+
 }
