@@ -7,8 +7,8 @@
 		</delete>
 
 		<javadoc sourcepathref="core-source-path"
-                 packagenames="org.restlet.*"
-                 excludepackagenames="${exclude-packages}, org.restlet.engine.*"
+                 packagenames="</#noparse>${edition.packageCore}.*<#noparse>"
+                 excludepackagenames="${exclude-packages}, </#noparse>${edition.packageEngine}.*<#noparse>"
                  destdir="${docs-api}"
                  classpathref="path-all"
                  author="true"
@@ -24,7 +24,7 @@
 			</bottom>
 
 			<group title="Restlet API">
-				<package name="org.restlet*" />
+				<package name="</#noparse>${edition.packageCore}.*<#noparse>" />
 			</group>
 </#noparse>
 <#list edition.javadocsLinks as link>
@@ -34,7 +34,7 @@
 		</javadoc>
 
 		<javadoc sourcepathref="core-source-path"
-</#noparse>                 <#if edition.translatePackages>packagenames="org.restlet.${edition.id}.engine.*"<#else>packagenames="org.restlet.engine.*"</#if><#noparse>
+		         packagenames="</#noparse>${edition.packageEngine}.*<#noparse>"
                  excludepackagenames="${exclude-packages}"
                  destdir="${docs-engine}"
                  classpathref="path-all"
@@ -51,7 +51,7 @@
 			</bottom>
 
 			<group title="Restlet Engine">
-				<package name="org.restlet.engine*" />
+				<package name="</#noparse>${edition.packageEngine}.*<#noparse>" />
 			</group>
 </#noparse>
 <#list edition.javadocsLinks as link>
@@ -71,7 +71,7 @@
 <#if extension??>
 <#noparse>
 		<javadoc sourcepathref="extensions-source-path"
-</#noparse>                 <#if edition.translatePackages>packagenames="org.restlet.${edition.id}.ext.*"<#else>packagenames="org.restlet.ext.*"</#if><#noparse>
+                 packagenames="</#noparse>${edition.packageExtension}.*<#noparse>"
                  excludepackagenames="${exclude-packages}"
                  destdir="${docs-ext}"
                  classpathref="path-all"
@@ -86,11 +86,10 @@
 			<bottom>
 				<![CDATA[<i>Copyright &#169; 2005-${current-year} <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
 			</bottom>
-
-			<group title="Standards support" packages="${standards-packages}" />
-			<group title="Pluggable connectors" packages="${connectors-packages}" />
-			<group title="Third-party integrations" packages="${integrations-packages}" />
 </#noparse>
+			<group title="Standards support" packages="<#list edition.modules?sort_by("id") as module><#if ((module.type!"") = "standard")>${module.package?replace("org.restlet.ext",edition.packageExtension)}*:</#if></#list>" />
+			<group title="Pluggable connectors" packages="<#list edition.modules?sort_by("id") as module><#if ((module.type!"") = "connector")>${module.package?replace("org.restlet.ext",edition.packageExtension)}*:</#if></#list>" />
+			<group title="Third-party integrations" packages="<#list edition.modules?sort_by("id") as module><#if ((module.type!"") = "integration")>${module.package?replace("org.restlet.ext",edition.packageExtension)}*:</#if></#list>" />
 <#list edition.javadocsLinks as link>
 			${link}
 </#list>
