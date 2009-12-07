@@ -162,7 +162,7 @@ public class WrapperRequest extends Request {
      * once.
      * 
      * @return The entity as a DOM representation.
-     * @Deprecated Will be removed in future release 2.1.
+     * @deprecated Will be removed in future release 2.1.
      */
     @Deprecated
     @Override

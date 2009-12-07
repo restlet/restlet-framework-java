@@ -66,7 +66,7 @@ public abstract class HttpServerCall extends HttpCall {
      * @param fileName
      *            Filename to format
      * @return {@code fileName} formatted
-     * @Deprecated Use the {@link DispositionUtils} class instead.
+     * @deprecated Use the {@link DispositionUtils} class instead.
      */
     @Deprecated
     public static String formatContentDisposition(String fileName) {
@@ -81,7 +81,7 @@ public abstract class HttpServerCall extends HttpCall {
      * @param isAttached
      *            Indicates if the file is separated from the request's body.
      * @return {@code fileName} formatted
-     * @Deprecated Use the {@link DispositionUtils} class instead.
+     * @deprecated Use the {@link DispositionUtils} class instead.
      */
     @Deprecated
     public static String formatContentDisposition(String fileName,

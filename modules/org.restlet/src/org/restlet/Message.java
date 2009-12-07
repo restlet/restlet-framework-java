@@ -61,6 +61,7 @@ public abstract class Message {
     /** The optional cached Form. */
     private volatile Form entityForm;
 
+    // [ifndef gwt] member
     /** The optional cached text. */
     private volatile String entityText;
 
@@ -95,6 +96,7 @@ public abstract class Message {
         this.date = null;
         this.entity = entity;
         this.entityForm = null;
+        // [ifndef gwt] instruction
         this.entityText = null;
         this.onContinue = null;
         this.onSent = null;
@@ -199,7 +201,7 @@ public abstract class Message {
      * large this method can result in important memory consumption.
      * 
      * @return The entity as a form.
-     * @Deprecated Will be removed in future release 2.1.
+     * @deprecated Will be removed in future release 2.1.
      */
     @Deprecated
     public Form getEntityAsForm() {

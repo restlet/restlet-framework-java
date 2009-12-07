@@ -575,8 +575,8 @@ public abstract class Representation extends RepresentationInfo {
     @Deprecated
     public boolean isDownloadable() {
         if (getDisposition() != null) {
-            return !(Disposition.TYPE_INLINE
-                    .equalsIgnoreCase(getDisposition().getType()));
+            return !(Disposition.TYPE_INLINE.equalsIgnoreCase(getDisposition()
+                    .getType()));
         }
 
         return false;
@@ -651,14 +651,11 @@ public abstract class Representation extends RepresentationInfo {
     @Deprecated
     public void setDownloadable(boolean downloadable) {
         if (getDisposition() == null) {
-            this.disposition = new Disposition(
-                    (downloadable ? Disposition.TYPE_ATTACHMENT
-                            : Disposition.TYPE_INLINE));
-        } else {
-            this.disposition
-                    .setType((downloadable ? Disposition.TYPE_ATTACHMENT
-                            : Disposition.TYPE_INLINE));
+            this.disposition = new Disposition();
         }
+
+        this.disposition.setType((downloadable ? Disposition.TYPE_ATTACHMENT
+                : Disposition.TYPE_NONE));
     }
 
     /**

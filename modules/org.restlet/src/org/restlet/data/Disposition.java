@@ -77,6 +77,9 @@ public class Disposition {
      */
     public static final String TYPE_INLINE = "inline";
 
+    /** Indicates that the part is not intended to be displayed. */
+    public static final String TYPE_NONE = "none";
+
     /** The list of disposition parameters. */
     private Series<Parameter> parameters;
 
@@ -84,10 +87,10 @@ public class Disposition {
     private String type;
 
     /**
-     * Constructor. Instantiates by default an inline element.
+     * Constructor. Instantiated with the TYPE_NONE type.
      */
     public Disposition() {
-        this(Disposition.TYPE_ATTACHMENT);
+        this(Disposition.TYPE_NONE);
     }
 
     /**

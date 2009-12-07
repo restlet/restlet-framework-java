@@ -33,6 +33,8 @@ package org.restlet.representation;
 import java.io.Serializable;
 
 import org.restlet.data.MediaType;
+import org.restlet.resource.ResourceAsync;
+import org.restlet.resource.ResourceAsyncProxy;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.SerializationStreamFactory;
@@ -67,24 +69,21 @@ public class ObjectRepresentation<T extends Serializable> extends
      */
     public ObjectRepresentation(String serializedObject,
             RemoteService remoteService) {
-        super(serializedObject, MediaType.APPLICATION_JAVA_OBJECT_GWT);
-        this.serializationStreamFactory = (SerializationStreamFactory) remoteService;
-        this.object = null;
+        this(serializedObject, (SerializationStreamFactory) remoteService);
     }
 
     /**
-     * Constructor for serialization.
+     * Constructor for deserialization.
      * 
-     * @param object
-     *            The object to serialize.
-     * @param remoteService
-     *            The remote service from which to obtain the serialization
+     * @param serializedObject
+     *            The object serialization text.
+     * @param resource
+     *            The remote resource from which to obtain the serialization
      *            stream factory.
      */
-    public ObjectRepresentation(T object, RemoteService remoteService) {
-        super(null, MediaType.APPLICATION_JAVA_OBJECT_GWT);
-        this.object = object;
-        this.serializationStreamFactory = (SerializationStreamFactory) remoteService;
+    public ObjectRepresentation(String serializedObject, ResourceAsync resource) {
+        this(serializedObject, (resource == null) ? null
+                : (SerializationStreamFactory) resource);
     }
 
     /**
@@ -100,6 +99,33 @@ public class ObjectRepresentation<T extends Serializable> extends
         super(serializedObject, MediaType.APPLICATION_JAVA_OBJECT_GWT);
         this.serializationStreamFactory = serializationStreamFactory;
         this.object = null;
+    }
+
+    /**
+     * Constructor for serialization.
+     * 
+     * @param object
+     *            The object to serialize.
+     * @param remoteService
+     *            The remote service from which to obtain the serialization
+     *            stream factory.
+     */
+    public ObjectRepresentation(T object, RemoteService remoteService) {
+        this(object, (SerializationStreamFactory) remoteService);
+    }
+
+    /**
+     * Constructor for serialization.
+     * 
+     * @param object
+     *            The object to serialize.
+     * @param resource
+     *            The remote resource from which to obtain the serialization
+     *            stream factory.
+     */
+    public ObjectRepresentation(T object, ResourceAsync resource) {
+        this(object, (resource == null) ? null
+                : (SerializationStreamFactory) resource);
     }
 
     /**

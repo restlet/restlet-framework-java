@@ -66,8 +66,7 @@ public abstract class HttpClientCall extends HttpCall {
      *         if no representation has been provided and the response has not
      *         sent any entity header.
      * @throws NumberFormatException
-     * @see HttpClientAdapter#copyResponseTransportHeaders(Series<Parameter>,
-     *      Response)
+     * @see {@link HttpClientAdapter#copyResponseTransportHeaders(Series, Response)}
      */
     public static Representation copyResponseEntityHeaders(
             Iterable<Parameter> responseHeaders, Representation representation)
@@ -194,7 +193,7 @@ public abstract class HttpClientCall extends HttpCall {
      * @param value
      *            Content-disposition header
      * @return Filename
-     * @Deprecated Use {@link DispositionReader} instead.
+     * @deprecated Use {@link DispositionReader} instead.
      */
     @Deprecated
     public static String parseContentDisposition(String value) {
