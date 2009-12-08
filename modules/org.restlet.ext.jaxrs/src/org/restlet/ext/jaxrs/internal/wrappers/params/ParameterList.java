@@ -545,8 +545,10 @@ public class ParameterList {
 
         @Override
         public Object getParamValue() {
-            final Form form;
-            form = this.tlContext.get().getRequest().getEntityAsForm();
+            Representation entity = this.tlContext.get().getRequest()
+                    .getEntity();
+            final Form form = (entity == null) ? null : new Form(entity);
+
             final String paramName = this.formParam.value();
             try {
                 return super.getParamValue(form, paramName);
