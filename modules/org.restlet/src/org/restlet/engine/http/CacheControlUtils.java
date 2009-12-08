@@ -84,7 +84,12 @@ public class CacheControlUtils {
         destination.append(directive.getName());
         if ((directive.getValue() != null)
                 && (directive.getValue().length() > 0)) {
-            destination.append("=\"").append(directive.getValue()).append('\"');
+            if (directive.isDigit()) {
+                destination.append("=").append(directive.getValue());
+            } else {
+                destination.append("=\"").append(directive.getValue()).append(
+                        '\"');
+            }
         }
     }
 }

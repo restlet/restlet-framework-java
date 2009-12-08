@@ -65,7 +65,7 @@ public final class CacheDirective extends Parameter {
      */
     public static CacheDirective maxAge(int maxAge) {
         return new CacheDirective(HttpConstants.CACHE_MAX_AGE, Integer
-                .toString(maxAge));
+                .toString(maxAge), true);
     }
 
     /**
@@ -100,7 +100,7 @@ public final class CacheDirective extends Parameter {
      */
     public static CacheDirective maxStale(int maxStale) {
         return new CacheDirective(HttpConstants.CACHE_MAX_STALE, Integer
-                .toString(maxStale));
+                .toString(maxStale), true);
     }
 
     /**
@@ -121,7 +121,7 @@ public final class CacheDirective extends Parameter {
      */
     public static CacheDirective minFresh(int minFresh) {
         return new CacheDirective(HttpConstants.CACHE_MIN_FRESH, Integer
-                .toString(minFresh));
+                .toString(minFresh), true);
     }
 
     /**
@@ -366,8 +366,11 @@ public final class CacheDirective extends Parameter {
      */
     public static CacheDirective sharedMaxAge(int sharedMaxAge) {
         return new CacheDirective(HttpConstants.CACHE_SHARED_MAX_AGE, Integer
-                .toString(sharedMaxAge));
+                .toString(sharedMaxAge), true);
     }
+
+    /** Indicates if the directive is a digit value. */
+    private boolean digit;
 
     /**
      * Constructor for directives with no value.
@@ -388,7 +391,40 @@ public final class CacheDirective extends Parameter {
      *            The directive value.
      */
     public CacheDirective(String name, String value) {
-        super(name, value);
+        this(name, value, false);
     }
 
+    /**
+     * Constructor for directives with a value.
+     * 
+     * @param name
+     *            The directive name.
+     * @param value
+     *            The directive value.
+     * @param digit
+     *            The kind of value (true for a digit value, false otherwise).
+     */
+    public CacheDirective(String name, String value, boolean digit) {
+        super(name, value);
+        this.digit = digit;
+    }
+
+    /**
+     * Returns true if the directive contains a digit value.
+     * 
+     * @return True if the directive contains a digit value.
+     */
+    public boolean isDigit() {
+        return digit;
+    }
+
+    /**
+     * Indicates if the directive is a digit value.
+     * 
+     * @param digit
+     *            True if the directive contains a digit value.
+     */
+    public void setDigit(boolean digit) {
+        this.digit = digit;
+    }
 }
