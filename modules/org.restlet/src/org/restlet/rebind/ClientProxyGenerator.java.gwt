@@ -36,12 +36,15 @@ import java.io.PrintWriter;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 
+import org.restlet.Client;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Uniform;
 import org.restlet.data.Method;
+import org.restlet.data.Protocol;
 import org.restlet.representation.ObjectRepresentation;
 import org.restlet.representation.Representation;
+import org.restlet.resource.ClientCallback;
 import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
@@ -280,7 +283,6 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
 
             println("getClientResource().setMethod(Method."
                     + info.getRestletMethod().toString() + ");");
-            println("getClientResource().setNext(new Client(Protocol.HTTP));");
             println("getClientResource().setOnReceived(new Uniform() {");
             indent();
             println("public void handle(Request request, Response response) {");

@@ -597,6 +597,13 @@ public class ClientResource extends UniformResource {
         Representation result = null;
 
         if (!hasNext()) {
+            // [ifdef gwt] uncomment
+            // if (getReference().isRelative()) {
+            // getReference().setBaseRef(
+            // com.google.gwt.core.client.GWT.getHostPageBaseURL());
+            // }
+            // [enddef]
+
             Protocol protocol = (getReference() == null) ? null
                     : getReference().getSchemeProtocol();
 
