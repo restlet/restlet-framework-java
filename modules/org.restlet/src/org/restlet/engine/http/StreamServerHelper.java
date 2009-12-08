@@ -30,15 +30,10 @@
 
 package org.restlet.engine.http;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.net.SocketAddress;
-import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -56,130 +51,18 @@ import org.restlet.data.Protocol;
  * @author Jerome Louvel
  */
 public class StreamServerHelper extends HttpServerHelper {
-
-    /**
-     * Class that handles an incoming socket.
-     */
-    private static class ConnectionHandler implements Runnable {
-
-        /** The target server helper. */
-        private final StreamServerHelper helper;
-
-        /** The socket connection to handle. */
-        private final Socket socket;
-
-        /**
-         * Constructor.
-         * 
-         * @param helper
-         *            The target server helper.
-         * @param socket
-         *            The socket connection to handle.
-         */
-        private ConnectionHandler(StreamServerHelper helper, Socket socket) {
-            this.helper = helper;
-            this.socket = socket;
-        }
-
-        /**
-         * Handles the given socket connection.
-         */
-        public void run() {
-            try {
-                this.helper
-                        .handle(new StreamServerCall(this.helper.getHelped(),
-                                new BufferedInputStream(this.socket
-                                        .getInputStream()),
-                                new BufferedOutputStream(this.socket
-                                        .getOutputStream()), this.socket));
-            } catch (IOException ex) {
-                this.helper.getLogger().log(Level.WARNING,
-                        "Unexpected error while handling a call", ex);
-            }
-        }
-    }
-
-    /**
-     * Listens on the given socket channel for incoming connections and
-     * dispatches them to the given handler pool
-     */
-    private static class Listener implements Runnable {
-
-        /** The target server helper. */
-        private final StreamServerHelper helper;
-
-        /** The server socket channel to listen on. */
-        private final ServerSocketChannel serverSocket;
-
-        /**
-         * The latch to countdown when the socket is ready to accept
-         * connections.
-         */
-        private final CountDownLatch latch;
-
-        /** The handler service. */
-        private final ExecutorService handlerService;
-
-        /**
-         * Constructor.
-         * 
-         * @param helper
-         *            The target server helper.
-         * @param serverSocket
-         *            The server socket channel to listen on.
-         * @param latch
-         *            The latch to countdown when the socket is ready to accept
-         *            connections.
-         * @param handlerService
-         *            The handler service.
-         */
-        private Listener(StreamServerHelper helper,
-                ServerSocketChannel serverSocket, CountDownLatch latch,
-                ExecutorService handlerService) {
-            this.helper = helper;
-            this.serverSocket = serverSocket;
-            this.latch = latch;
-            this.handlerService = handlerService;
-        }
-
-        /**
-         * Listens on the given server socket for incoming connections.
-         */
-        public void run() {
-            this.latch.countDown();
-            for (;;) {
-                try {
-                    final SocketChannel client = this.serverSocket.accept();
-                    if (!this.handlerService.isShutdown()) {
-                        this.handlerService.submit(new ConnectionHandler(
-                                this.helper, client.socket()));
-                    }
-                } catch (ClosedByInterruptException ex) {
-                    this.helper.getLogger().log(Level.FINE,
-                            "ServerSocket channel was closed by interrupt", ex);
-                    break;
-                } catch (IOException ex) {
-                    this.helper.getLogger().log(Level.WARNING,
-                            "Unexpected error while accepting new connection",
-                            ex);
-                }
-            }
-        }
-    }
-
     /**
      * Thread factory that logs uncaught exceptions thrown by the created
      * threads.
      */
-    private static class LoggingThreadFactory implements ThreadFactory {
+    class LoggingThreadFactory implements ThreadFactory {
 
         private class LoggingExceptionHandler implements
                 Thread.UncaughtExceptionHandler {
 
             public void uncaughtException(Thread t, Throwable ex) {
-                LoggingThreadFactory.this.logger.log(Level.SEVERE, "Thread: "
-                        + t.getName() + " terminated with exception: "
-                        + ex.getMessage(), ex);
+                logger.log(Level.SEVERE, "Thread: " + t.getName()
+                        + " terminated with exception: " + ex.getMessage(), ex);
             }
         }
 
@@ -265,7 +148,7 @@ public class StreamServerHelper extends HttpServerHelper {
 
         // Start the socket listener service
         this.latch = new CountDownLatch(1);
-        this.listenerService.submit(new Listener(this,
+        this.listenerService.submit(new ConnectionListener(this,
                 this.serverSocketChannel, this.latch, this.handlerService));
 
         // Wait for the listener to start up and count down the latch
