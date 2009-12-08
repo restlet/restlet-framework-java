@@ -28,52 +28,53 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.http;
+package org.restlet.engine.log;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.IOException;
-import java.net.Socket;
+import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
- * Class that handles an incoming socket.
+ * Thread factory that logs uncaught exceptions thrown by the created threads.
  * 
  * @author Jerome Louvel
  */
-public class ConnectionHandler implements Runnable {
+public class LoggingThreadFactory implements ThreadFactory {
 
-    /** The target server helper. */
-    private final StreamServerHelper helper;
+    /**
+     * Handle uncaught thread exceptions.
+     */
+    private class LoggingExceptionHandler implements
+            Thread.UncaughtExceptionHandler {
 
-    /** The socket connection to handle. */
-    private final Socket socket;
+        public void uncaughtException(Thread t, Throwable ex) {
+            logger.log(Level.SEVERE, "Thread: " + t.getName()
+                    + " terminated with exception: " + ex.getMessage(), ex);
+        }
+    }
+
+    /** The associated logger. */
+    private final Logger logger;
 
     /**
      * Constructor.
      * 
-     * @param helper
-     *            The target server helper.
-     * @param socket
-     *            The socket connection to handle.
+     * @param logger
+     *            The associated logger.
      */
-    public ConnectionHandler(StreamServerHelper helper, Socket socket) {
-        this.helper = helper;
-        this.socket = socket;
+    public LoggingThreadFactory(Logger logger) {
+        this.logger = logger;
     }
 
     /**
-     * Handles the given socket connection.
+     * Creates a new thread.
+     * 
+     * @param r
+     *            The runnable task.
      */
-    public void run() {
-        try {
-            this.helper.handle(new StreamServerCall(this.helper.getHelped(),
-                    new BufferedInputStream(this.socket.getInputStream()),
-                    new BufferedOutputStream(this.socket.getOutputStream()),
-                    this.socket));
-        } catch (IOException ex) {
-            this.helper.getLogger().log(Level.WARNING,
-                    "Unexpected error while handling a call", ex);
-        }
+    public Thread newThread(Runnable r) {
+        Thread result = new Thread(r);
+        result.setUncaughtExceptionHandler(new LoggingExceptionHandler());
+        return result;
     }
 }

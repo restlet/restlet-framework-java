@@ -70,6 +70,7 @@ import org.restlet.engine.ServerHelper;
  * @author Jerome Louvel
  */
 public class HttpServerHelper extends ServerHelper {
+
     /** The converter from HTTP calls to uniform calls. */
     private volatile HttpServerAdapter converter;
 
@@ -144,8 +145,8 @@ public class HttpServerHelper extends ServerHelper {
      */
     public void handle(HttpServerCall httpCall) {
         try {
-            final HttpRequest request = getConverter().toRequest(httpCall);
-            final HttpResponse response = new HttpResponse(httpCall, request);
+            HttpRequest request = getConverter().toRequest(httpCall);
+            HttpResponse response = new HttpResponse(httpCall, request);
             handle(request, response);
             getConverter().commit(response);
         } catch (Exception e) {

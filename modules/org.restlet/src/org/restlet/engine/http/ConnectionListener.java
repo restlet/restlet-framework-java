@@ -73,7 +73,7 @@ public class ConnectionListener implements Runnable {
      * @param handlerService
      *            The handler service.
      */
-    ConnectionListener(StreamServerHelper helper,
+    public ConnectionListener(StreamServerHelper helper,
             ServerSocketChannel serverSocket, CountDownLatch latch,
             ExecutorService handlerService) {
         this.helper = helper;
@@ -104,4 +104,5 @@ public class ConnectionListener implements Runnable {
             }
         }
     }
+
 }

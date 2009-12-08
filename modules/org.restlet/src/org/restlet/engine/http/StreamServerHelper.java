@@ -40,10 +40,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.restlet.Server;
 import org.restlet.data.Protocol;
+import org.restlet.engine.log.LoggingThreadFactory;
 
 /**
  * HTTP server helper based on NIO blocking sockets.
@@ -51,33 +51,6 @@ import org.restlet.data.Protocol;
  * @author Jerome Louvel
  */
 public class StreamServerHelper extends HttpServerHelper {
-    /**
-     * Thread factory that logs uncaught exceptions thrown by the created
-     * threads.
-     */
-    class LoggingThreadFactory implements ThreadFactory {
-
-        private class LoggingExceptionHandler implements
-                Thread.UncaughtExceptionHandler {
-
-            public void uncaughtException(Thread t, Throwable ex) {
-                logger.log(Level.SEVERE, "Thread: " + t.getName()
-                        + " terminated with exception: " + ex.getMessage(), ex);
-            }
-        }
-
-        private final Logger logger;
-
-        public LoggingThreadFactory(Logger logger) {
-            this.logger = logger;
-        }
-
-        public Thread newThread(Runnable r) {
-            final Thread result = new Thread(r);
-            result.setUncaughtExceptionHandler(new LoggingExceptionHandler());
-            return result;
-        }
-    }
 
     /** The connection handler service. */
     private volatile ExecutorService handlerService;
