@@ -93,7 +93,7 @@ public abstract class HttpClientHelper extends ClientHelper {
     public ClientAdapter getAdapter() throws Exception {
         if (this.adapter == null) {
             // [ifndef gwt]
-            final String adapterClass = getHelpedParameters().getFirstValue(
+            String adapterClass = getHelpedParameters().getFirstValue(
                     "adapter", "org.restlet.engine.http.ClientAdapter");
             this.adapter = (ClientAdapter) Class.forName(adapterClass)
                     .getConstructor(Context.class).newInstance(getContext());
@@ -109,8 +109,7 @@ public abstract class HttpClientHelper extends ClientHelper {
     @Override
     public void handle(Request request, Response response) {
         try {
-            final ClientCall clientCall = getAdapter()
-                    .toSpecific(this, request);
+            ClientCall clientCall = getAdapter().toSpecific(this, request);
             getAdapter().commit(clientCall, request, response);
         } catch (Exception e) {
             getLogger().log(Level.INFO,
