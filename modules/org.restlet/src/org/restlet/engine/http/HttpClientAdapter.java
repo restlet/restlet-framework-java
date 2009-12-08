@@ -421,7 +421,7 @@ public class HttpClientAdapter extends HttpAdapter {
             // Add Range header
             if (!request.getRanges().isEmpty()) {
                 requestHeaders.add(HeaderConstants.HEADER_RANGE,
-                        org.restlet.engine.util.RangeUtils.formatRanges(request
+                        org.restlet.engine.http.header.RangeUtils.formatRanges(request
                                 .getRanges()));
             }
 
@@ -480,7 +480,7 @@ public class HttpClientAdapter extends HttpAdapter {
                 if (request.getEntity().getRange() != null) {
                     try {
                         requestHeaders.add(HeaderConstants.HEADER_CONTENT_RANGE,
-                                org.restlet.engine.util.RangeUtils
+                                org.restlet.engine.http.header.RangeUtils
                                         .formatContentRange(request.getEntity()
                                                 .getRange(), request
                                                 .getEntity().getSize()));

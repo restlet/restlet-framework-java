@@ -628,7 +628,7 @@ public class Engine {
      */
     public void registerDefaultAuthentications() {
         getRegisteredAuthenticators().add(
-                new org.restlet.engine.security.HttpBasicHelper());
+                new org.restlet.engine.http.security.HttpBasicHelper());
         getRegisteredAuthenticators().add(
                 new org.restlet.engine.security.SmtpPlainHelper());
     }
@@ -649,9 +649,9 @@ public class Engine {
         getRegisteredClients().add(
                 new org.restlet.engine.local.ZipClientHelper(null));
         getRegisteredClients().add(
-                new org.restlet.engine.component.RiapClientHelper(null));
+                new org.restlet.engine.riap.RiapClientHelper(null));
         getRegisteredServers().add(
-                new org.restlet.engine.component.RiapServerHelper(null));
+                new org.restlet.engine.riap.RiapServerHelper(null));
         // [enddef]
         // [ifndef gae, gwt]
         getRegisteredServers().add(

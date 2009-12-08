@@ -54,11 +54,11 @@ import org.restlet.engine.http.header.CookieUtils;
 import org.restlet.engine.http.header.DispositionUtils;
 import org.restlet.engine.http.header.HeaderUtils;
 import org.restlet.engine.http.header.HeaderConstants;
+import org.restlet.engine.http.header.RangeUtils;
 import org.restlet.engine.http.header.WarningUtils;
 import org.restlet.engine.security.AuthenticatorUtils;
 import org.restlet.engine.util.Base64;
 import org.restlet.engine.util.DateUtils;
-import org.restlet.engine.util.RangeUtils;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 

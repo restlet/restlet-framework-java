@@ -53,10 +53,10 @@ import org.restlet.engine.http.header.CookieReader;
 import org.restlet.engine.http.header.HeaderReader;
 import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.http.header.PreferenceUtils;
+import org.restlet.engine.http.header.RangeUtils;
 import org.restlet.engine.http.header.WarningReader;
 import org.restlet.engine.security.AuthenticatorUtils;
 import org.restlet.engine.util.DateUtils;
-import org.restlet.engine.util.RangeUtils;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 

@@ -1,4 +1,4 @@
-package org.restlet.engine.component;
+package org.restlet.engine.riap;
 
 import org.restlet.Client;
 import org.restlet.Request;

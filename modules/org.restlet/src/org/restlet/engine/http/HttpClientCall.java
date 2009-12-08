@@ -148,7 +148,7 @@ public abstract class HttpClientCall extends HttpCall {
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_CONTENT_RANGE)) {
                 // [ifndef gwt]
-                org.restlet.engine.util.RangeUtils.parseContentRange(header
+                org.restlet.engine.http.header.RangeUtils.parseContentRange(header
                         .getValue(), result);
                 entityHeaderFound = true;
                 // [enddef]
