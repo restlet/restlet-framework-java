@@ -21,6 +21,8 @@
 		<export>org.restlet.engine.component</export>
 		<export>org.restlet.engine.converter</export>
 		<export>org.restlet.engine.http</export>
+		<export>org.restlet.engine.http.header</export>
+		<export>org.restlet.engine.http.io</export>
 		<export>org.restlet.engine.io</export>
 		<export>org.restlet.engine.local</export>
 		<export>org.restlet.engine.security</export>
@@ -102,14 +104,13 @@
          <exclude name="src/org/restlet/engine/ChainHelper.java" />
          <exclude name="src/org/restlet/engine/component/**" />
          <exclude name="src/org/restlet/engine/converter/**" />
-         <exclude name="src/org/restlet/engine/http/ChunkedInputStream.java" />
-         <exclude name="src/org/restlet/engine/http/ChunkedOutputStream.java" />
          <exclude name="src/org/restlet/engine/http/HttpRequest.java" />
          <exclude name="src/org/restlet/engine/http/HttpResponse*.java" />
          <exclude name="src/org/restlet/engine/http/HttpServer*.java" />
-         <exclude name="src/org/restlet/engine/http/HttpsUtils.java" />
          <exclude name="src/org/restlet/engine/http/StreamServer*" />
          <exclude name="src/org/restlet/engine/http/StreamClient*" />
+         <exclude name="src/org/restlet/engine/http/io/ChunkedInputStream.java" />
+         <exclude name="src/org/restlet/engine/http/io/ChunkedOutputStream.java" />
          <exclude name="src/org/restlet/engine/internal/**" />
          <exclude name="src/org/restlet/engine/io/ByteUtils.java" />
          <exclude name="src/org/restlet/engine/local/**" />
