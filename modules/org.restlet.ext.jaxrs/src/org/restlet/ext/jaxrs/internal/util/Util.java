@@ -76,11 +76,11 @@ import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
 import org.restlet.data.Parameter;
-import org.restlet.engine.http.ContentType;
 import org.restlet.engine.http.HttpClientAdapter;
 import org.restlet.engine.http.HttpClientCall;
 import org.restlet.engine.http.HttpServerAdapter;
-import org.restlet.engine.http.HttpUtils;
+import org.restlet.engine.http.header.ContentType;
+import org.restlet.engine.http.header.HeaderUtils;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.ext.jaxrs.internal.core.UnmodifiableMultivaluedMap;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathException;
@@ -518,7 +518,7 @@ public class Util {
      * @return the Vary header or null, if dimensions is null or empty.
      */
     public static String formatDimensions(Set<Dimension> dimensions) {
-        return HttpUtils.createVaryHeader(dimensions);
+        return HeaderUtils.createVaryHeader(dimensions);
     }
 
     /**

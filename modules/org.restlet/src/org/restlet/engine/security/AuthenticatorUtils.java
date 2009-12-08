@@ -45,9 +45,9 @@ import org.restlet.data.Digest;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.engine.Engine;
-import org.restlet.engine.http.HeaderBuilder;
-import org.restlet.engine.http.HeaderReader;
-import org.restlet.engine.http.HttpConstants;
+import org.restlet.engine.http.header.HeaderBuilder;
+import org.restlet.engine.http.header.HeaderReader;
+import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.security.Guard;
 import org.restlet.util.Series;
 
@@ -160,11 +160,11 @@ public class AuthenticatorUtils {
 
     /**
      * Formats an authentication information as a HTTP header value. The header
-     * is {@link HttpConstants#HEADER_AUTHENTICATION_INFO}.
+     * is {@link HeaderConstants#HEADER_AUTHENTICATION_INFO}.
      * 
      * @param info
      *            The authentication information to format.
-     * @return The {@link HttpConstants#HEADER_AUTHENTICATION_INFO} header
+     * @return The {@link HeaderConstants#HEADER_AUTHENTICATION_INFO} header
      *         value.
      * @throws IOException
      */
@@ -210,7 +210,7 @@ public class AuthenticatorUtils {
 
     /**
      * Formats a given nonce count as a HTTP header value. The header is
-     * {@link HttpConstants#HEADER_AUTHENTICATION_INFO}.
+     * {@link HeaderConstants#HEADER_AUTHENTICATION_INFO}.
      * 
      * @param nonceCount
      *            The given nonce count.
@@ -228,7 +228,7 @@ public class AuthenticatorUtils {
 
     /**
      * Formats a challenge request as a HTTP header value. The header is
-     * {@link HttpConstants#HEADER_WWW_AUTHENTICATE}.
+     * {@link HeaderConstants#HEADER_WWW_AUTHENTICATE}.
      * 
      * @param challenge
      *            The challenge request to format.
@@ -236,7 +236,7 @@ public class AuthenticatorUtils {
      *            The parent response.
      * @param httpHeaders
      *            The current response HTTP headers.
-     * @return The {@link HttpConstants#HEADER_WWW_AUTHENTICATE} header value.
+     * @return The {@link HeaderConstants#HEADER_WWW_AUTHENTICATE} header value.
      */
     public static String formatRequest(ChallengeRequest challenge,
             Response response, Series<Parameter> httpHeaders) {
@@ -269,7 +269,7 @@ public class AuthenticatorUtils {
 
     /**
      * Formats a challenge response as a HTTP header value. The header is
-     * {@link HttpConstants#HEADER_AUTHORIZATION}.
+     * {@link HeaderConstants#HEADER_AUTHORIZATION}.
      * 
      * @param challenge
      *            The challenge response to format.
@@ -277,7 +277,7 @@ public class AuthenticatorUtils {
      *            The parent request.
      * @param httpHeaders
      *            The current request HTTP headers.
-     * @return The {@link HttpConstants#HEADER_AUTHORIZATION} header value.
+     * @return The {@link HeaderConstants#HEADER_AUTHORIZATION} header value.
      * @throws IOException
      */
     public static String formatResponse(ChallengeResponse challenge,
@@ -356,7 +356,7 @@ public class AuthenticatorUtils {
 
     /**
      * Parses an authorization header into a challenge response. The header is
-     * {@link HttpConstants#HEADER_AUTHORIZATION}.
+     * {@link HeaderConstants#HEADER_AUTHORIZATION}.
      * 
      * @param challenge
      *            The challenge response to update.
@@ -415,7 +415,7 @@ public class AuthenticatorUtils {
 
     /**
      * Parses an authenticate header into a challenge request. The header is
-     * {@link HttpConstants#HEADER_WWW_AUTHENTICATE}.
+     * {@link HeaderConstants#HEADER_WWW_AUTHENTICATE}.
      * 
      * @param header
      *            The HTTP header value to parse.
@@ -431,7 +431,7 @@ public class AuthenticatorUtils {
 
     /**
      * Parses an authorization header into a challenge response. The header is
-     * {@link HttpConstants#HEADER_AUTHORIZATION}.
+     * {@link HeaderConstants#HEADER_AUTHORIZATION}.
      * 
      * @param request
      *            The parent request.

@@ -17,6 +17,7 @@ Import-Package: org.jboss.netty.bootstrap,
  org.restlet.data,
  org.restlet.engine,
  org.restlet.engine.http,
+ org.restlet.engine.http.io,
  org.restlet.engine.io,
  org.restlet.engine.security,
  org.restlet.util

@@ -43,8 +43,8 @@ import org.restlet.data.Digest;
 import org.restlet.data.Parameter;
 import org.restlet.data.Status;
 import org.restlet.engine.Helper;
-import org.restlet.engine.http.HeaderBuilder;
-import org.restlet.engine.http.HttpConstants;
+import org.restlet.engine.http.header.HeaderBuilder;
+import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.security.Guard;
 import org.restlet.util.Series;
 
@@ -170,7 +170,7 @@ public abstract class AuthenticatorHelper extends Helper {
 
     /**
      * Formats a challenge request as a HTTP header value. The header is
-     * {@link HttpConstants#HEADER_WWW_AUTHENTICATE}. The default implementation
+     * {@link HeaderConstants#HEADER_WWW_AUTHENTICATE}. The default implementation
      * relies on
      * {@link #formatRawRequest(HeaderBuilder, ChallengeRequest, Response, Series)}
      * to append all parameters from {@link ChallengeRequest#getParameters()}.
@@ -181,7 +181,7 @@ public abstract class AuthenticatorHelper extends Helper {
      *            The parent response.
      * @param httpHeaders
      *            The current response HTTP headers.
-     * @return The {@link HttpConstants#HEADER_WWW_AUTHENTICATE} header value.
+     * @return The {@link HeaderConstants#HEADER_WWW_AUTHENTICATE} header value.
      * @throws IOException
      */
     public String formatRequest(ChallengeRequest challenge, Response response,
@@ -200,7 +200,7 @@ public abstract class AuthenticatorHelper extends Helper {
 
     /**
      * Formats a challenge response as a HTTP header value. The header is
-     * {@link HttpConstants#HEADER_AUTHORIZATION}. The default implementation
+     * {@link HeaderConstants#HEADER_AUTHORIZATION}. The default implementation
      * relies on
      * {@link #formatRawResponse(HeaderBuilder, ChallengeResponse, Request, Series)}
      * unless some custom credentials are provided via
@@ -212,7 +212,7 @@ public abstract class AuthenticatorHelper extends Helper {
      *            The parent request.
      * @param httpHeaders
      *            The current request HTTP headers.
-     * @return The {@link HttpConstants#HEADER_AUTHORIZATION} header value.
+     * @return The {@link HeaderConstants#HEADER_AUTHORIZATION} header value.
      * @throws IOException
      */
     public String formatResponse(ChallengeResponse challenge, Request request,
@@ -295,7 +295,7 @@ public abstract class AuthenticatorHelper extends Helper {
 
     /**
      * Parses an authenticate header into a challenge request. The header is
-     * {@link HttpConstants#HEADER_WWW_AUTHENTICATE}.
+     * {@link HeaderConstants#HEADER_WWW_AUTHENTICATE}.
      * 
      * @param challenge
      *            The challenge request to update.
@@ -310,7 +310,7 @@ public abstract class AuthenticatorHelper extends Helper {
 
     /**
      * Parses an authorization header into a challenge response. The header is
-     * {@link HttpConstants#HEADER_AUTHORIZATION}.
+     * {@link HeaderConstants#HEADER_AUTHORIZATION}.
      * 
      * @param challenge
      *            The challenge response to update.

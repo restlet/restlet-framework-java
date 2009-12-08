@@ -36,8 +36,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.restlet.engine.http.ChunkedInputStream;
-import org.restlet.engine.http.ChunkedOutputStream;
+import org.restlet.engine.http.io.ChunkedInputStream;
+import org.restlet.engine.http.io.ChunkedOutputStream;
 import org.restlet.test.RestletTestCase;
 
 

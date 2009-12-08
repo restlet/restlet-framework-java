@@ -36,6 +36,7 @@ import org.restlet.data.Parameter;
 import org.restlet.data.ServerInfo;
 import org.restlet.data.Status;
 import org.restlet.engine.Engine;
+import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.util.Series;
 
 /**
@@ -92,7 +93,7 @@ public class HttpResponse extends Response {
     @SuppressWarnings("unchecked")
     public Series<Parameter> getHeaders() {
         return (Series<Parameter>) getAttributes().get(
-                HttpConstants.ATTRIBUTE_HEADERS);
+                HeaderConstants.ATTRIBUTE_HEADERS);
     }
 
     /**

@@ -40,6 +40,7 @@ import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.engine.Call;
+import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
@@ -212,7 +213,7 @@ public abstract class HttpCall extends Call {
         // Extract the content length header
         for (final Parameter header : headers) {
             if (header.getName().equalsIgnoreCase(
-                    HttpConstants.HEADER_CONTENT_LENGTH)) {
+                    HeaderConstants.HEADER_CONTENT_LENGTH)) {
                 try {
                     contentLength = Long.parseLong(header.getValue());
                 } catch (NumberFormatException e) {
@@ -413,7 +414,7 @@ public abstract class HttpCall extends Call {
      */
     protected boolean isRequestChunked() {
         final String header = getRequestHeaders().getFirstValue(
-                HttpConstants.HEADER_TRANSFER_ENCODING, true);
+                HeaderConstants.HEADER_TRANSFER_ENCODING, true);
         return (header != null) && header.equalsIgnoreCase("chunked");
     }
 
@@ -424,7 +425,7 @@ public abstract class HttpCall extends Call {
      */
     protected boolean isResponseChunked() {
         final String header = getResponseHeaders().getFirstValue(
-                HttpConstants.HEADER_TRANSFER_ENCODING, true);
+                HeaderConstants.HEADER_TRANSFER_ENCODING, true);
         return (header != null) && header.equalsIgnoreCase("chunked");
     }
 

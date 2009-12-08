@@ -38,8 +38,8 @@ import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Form;
 import org.restlet.data.Method;
-import org.restlet.engine.http.HeaderBuilder;
-import org.restlet.engine.http.HttpConstants;
+import org.restlet.engine.http.header.HeaderBuilder;
+import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.security.AuthenticatorUtils;
 import org.restlet.ext.crypto.internal.HttpAwsS3Helper;
 import org.restlet.test.RestletTestCase;
@@ -71,7 +71,7 @@ public class AuthenticationTestCase extends RestletTestCase {
         Request request = new Request(Method.GET,
                 "http://johnsmith.s3.amazonaws.com/photos/puppy.jpg");
         Form httpHeaders = new Form();
-        httpHeaders.add(HttpConstants.HEADER_DATE,
+        httpHeaders.add(HeaderConstants.HEADER_DATE,
                 "Tue, 27 Mar 2007 19:36:42 +0000");
 
         helper.formatRawResponse(hb, challenge, request, httpHeaders);
@@ -81,10 +81,10 @@ public class AuthenticationTestCase extends RestletTestCase {
         // Example Object PUT
         hb = new HeaderBuilder();
         request.setMethod(Method.PUT);
-        httpHeaders.set(HttpConstants.HEADER_DATE,
+        httpHeaders.set(HeaderConstants.HEADER_DATE,
                 "Tue, 27 Mar 2007 21:15:45 +0000", true);
-        httpHeaders.add(HttpConstants.HEADER_CONTENT_LENGTH, "94328");
-        httpHeaders.add(HttpConstants.HEADER_CONTENT_TYPE, "image/jpeg");
+        httpHeaders.add(HeaderConstants.HEADER_CONTENT_LENGTH, "94328");
+        httpHeaders.add(HeaderConstants.HEADER_CONTENT_TYPE, "image/jpeg");
         helper.formatRawResponse(hb, challenge, request, httpHeaders);
         assertEquals("0PN5J17HBGZHT7JJ3X82:hcicpDDvL9SsO6AkvxqmIWkmOuQ=", hb
                 .toString());

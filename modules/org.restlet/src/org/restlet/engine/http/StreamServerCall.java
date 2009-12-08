@@ -42,6 +42,8 @@ import javax.net.ssl.SSLSocket;
 
 import org.restlet.Response;
 import org.restlet.Server;
+import org.restlet.engine.http.io.ChunkedInputStream;
+import org.restlet.engine.http.io.ChunkedOutputStream;
 import org.restlet.engine.io.ByteUtils;
 import org.restlet.engine.io.InputEntityStream;
 import org.restlet.engine.io.KeepAliveOutputStream;

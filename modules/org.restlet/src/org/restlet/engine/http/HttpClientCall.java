@@ -44,6 +44,10 @@ import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
+import org.restlet.engine.http.header.ContentType;
+import org.restlet.engine.http.header.DispositionReader;
+import org.restlet.engine.http.header.HeaderReader;
+import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
@@ -77,7 +81,7 @@ public abstract class HttpClientCall extends HttpCall {
 
         for (final Parameter header : responseHeaders) {
             if (header.getName().equalsIgnoreCase(
-                    HttpConstants.HEADER_CONTENT_TYPE)) {
+                    HeaderConstants.HEADER_CONTENT_TYPE)) {
                 final ContentType contentType = new ContentType(header
                         .getValue());
                 result.setMediaType(contentType.getMediaType());
@@ -89,14 +93,14 @@ public abstract class HttpClientCall extends HttpCall {
 
                 entityHeaderFound = true;
             } else if (header.getName().equalsIgnoreCase(
-                    HttpConstants.HEADER_CONTENT_LENGTH)) {
+                    HeaderConstants.HEADER_CONTENT_LENGTH)) {
                 entityHeaderFound = true;
             } else if (header.getName().equalsIgnoreCase(
-                    HttpConstants.HEADER_EXPIRES)) {
+                    HeaderConstants.HEADER_EXPIRES)) {
                 result.setExpirationDate(parseDate(header.getValue(), false));
                 entityHeaderFound = true;
             } else if (header.getName().equalsIgnoreCase(
-                    HttpConstants.HEADER_CONTENT_ENCODING)) {
+                    HeaderConstants.HEADER_CONTENT_ENCODING)) {
                 final HeaderReader hr = new HeaderReader(header.getValue());
                 String value = hr.readValue();
                 while (value != null) {
@@ -108,7 +112,7 @@ public abstract class HttpClientCall extends HttpCall {
                 }
                 entityHeaderFound = true;
             } else if (header.getName().equalsIgnoreCase(
-                    HttpConstants.HEADER_CONTENT_LANGUAGE)) {
+                    HeaderConstants.HEADER_CONTENT_LANGUAGE)) {
                 final HeaderReader hr = new HeaderReader(header.getValue());
                 String value = hr.readValue();
                 while (value != null) {
@@ -117,19 +121,19 @@ public abstract class HttpClientCall extends HttpCall {
                 }
                 entityHeaderFound = true;
             } else if (header.getName().equalsIgnoreCase(
-                    HttpConstants.HEADER_LAST_MODIFIED)) {
+                    HeaderConstants.HEADER_LAST_MODIFIED)) {
                 result.setModificationDate(parseDate(header.getValue(), false));
                 entityHeaderFound = true;
             } else if (header.getName().equalsIgnoreCase(
-                    HttpConstants.HEADER_ETAG)) {
+                    HeaderConstants.HEADER_ETAG)) {
                 result.setTag(Tag.parse(header.getValue()));
                 entityHeaderFound = true;
             } else if (header.getName().equalsIgnoreCase(
-                    HttpConstants.HEADER_CONTENT_LOCATION)) {
+                    HeaderConstants.HEADER_CONTENT_LOCATION)) {
                 result.setIdentifier(header.getValue());
                 entityHeaderFound = true;
             } else if (header.getName().equalsIgnoreCase(
-                    HttpConstants.HEADER_CONTENT_DISPOSITION)) {
+                    HeaderConstants.HEADER_CONTENT_DISPOSITION)) {
                 try {
                     final DispositionReader r = new DispositionReader(header
                             .getValue());
@@ -142,14 +146,14 @@ public abstract class HttpClientCall extends HttpCall {
                                     + header.getValue(), ioe);
                 }
             } else if (header.getName().equalsIgnoreCase(
-                    HttpConstants.HEADER_CONTENT_RANGE)) {
+                    HeaderConstants.HEADER_CONTENT_RANGE)) {
                 // [ifndef gwt]
                 org.restlet.engine.util.RangeUtils.parseContentRange(header
                         .getValue(), result);
                 entityHeaderFound = true;
                 // [enddef]
             } else if (header.getName().equalsIgnoreCase(
-                    HttpConstants.HEADER_CONTENT_MD5)) {
+                    HeaderConstants.HEADER_CONTENT_MD5)) {
                 // [ifndef gwt]
                 result.setDigest(new org.restlet.data.Digest(
                         org.restlet.data.Digest.ALGORITHM_MD5,
@@ -303,7 +307,7 @@ public abstract class HttpClientCall extends HttpCall {
         // Compute the content length
         final Series<Parameter> responseHeaders = getResponseHeaders();
         final String transferEncoding = responseHeaders.getFirstValue(
-                HttpConstants.HEADER_TRANSFER_ENCODING, true);
+                HeaderConstants.HEADER_TRANSFER_ENCODING, true);
         if ((transferEncoding != null)
                 && !"identity".equalsIgnoreCase(transferEncoding)) {
             size = Representation.UNKNOWN_SIZE;
@@ -415,7 +419,7 @@ public abstract class HttpClientCall extends HttpCall {
     @Override
     protected boolean isServerKeepAlive() {
         final String header = getResponseHeaders().getFirstValue(
-                HttpConstants.HEADER_CONNECTION, true);
+                HeaderConstants.HEADER_CONNECTION, true);
         return (header == null) || !header.equalsIgnoreCase("close");
     }
 

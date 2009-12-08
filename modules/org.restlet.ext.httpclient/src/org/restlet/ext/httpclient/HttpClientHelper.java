@@ -59,7 +59,7 @@ import org.restlet.Request;
 import org.restlet.data.Protocol;
 import org.restlet.engine.Engine;
 import org.restlet.engine.http.HttpClientCall;
-import org.restlet.engine.http.HttpsUtils;
+import org.restlet.engine.security.SslUtils;
 import org.restlet.engine.security.SslContextFactory;
 import org.restlet.ext.httpclient.internal.HttpMethodCall;
 
@@ -227,7 +227,7 @@ public class HttpClientHelper extends org.restlet.engine.http.HttpClientHelper {
                 .getSocketFactory(), 80));
 
         SSLSocketFactory sslSocketFactory = null;
-        SslContextFactory sslContextFactory = HttpsUtils
+        SslContextFactory sslContextFactory = SslUtils
                 .getSslContextFactory(this);
 
         if (sslContextFactory != null) {

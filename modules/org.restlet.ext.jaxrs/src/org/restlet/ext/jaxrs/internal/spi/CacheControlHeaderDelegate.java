@@ -37,8 +37,8 @@ import javax.ws.rs.ext.RuntimeDelegate;
 import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
 
 import org.restlet.data.CacheDirective;
-import org.restlet.engine.http.CacheControlReader;
-import org.restlet.engine.http.CacheControlUtils;
+import org.restlet.engine.http.header.CacheControlReader;
+import org.restlet.engine.http.header.CacheControlUtils;
 import org.restlet.ext.jaxrs.internal.util.Converter;
 
 /**

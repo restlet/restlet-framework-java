@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.http;
+package org.restlet.engine.http.header;
 
 import java.io.IOException;
 
@@ -36,49 +36,46 @@ import org.restlet.data.Disposition;
 import org.restlet.data.Parameter;
 
 /**
- * Disposition manipulation utilities.
+ * Disposition header reader.
  * 
  * @author Thierry Boileau
  */
-public class DispositionUtils {
+public class DispositionReader extends HeaderReader {
 
     /**
-     * Formats a disposition.
+     * Constructor.
      * 
-     * @param disposition
-     *            The disposition to format.
-     * @return The formatted disposition.
+     * @param header
+     *            The header to read.
      */
-    public static String format(Disposition disposition) {
-        if (Disposition.TYPE_NONE.equals(disposition.getType())
-                || disposition.getType() == null) {
-            return null;
-        }
-        final StringBuilder sb = new StringBuilder();
+    public DispositionReader(String header) {
+        super(header);
+    }
 
-        sb.append(disposition.getType());
-        for (Parameter parameter : disposition.getParameters()) {
-            sb.append("; ");
-            sb.append(parameter.getName());
-            sb.append("=");
-            if (HttpUtils.isToken(parameter.getValue())) {
-                sb.append(parameter.getValue());
-            } else {
-                try {
-                    HttpUtils.appendQuote(parameter.getValue(), sb);
-                } catch (IOException e) {
-                    // IOExceptions are not possible on StringBuilders
-                }
-            }
-        }
-        return sb.toString();
+    @Override
+    public boolean isValueSeparator(int character) {
+        return ';' == character;
     }
 
     /**
-     * Private constructor to ensure that the class acts as a true utility class
-     * i.e. it isn't instantiable and extensible.
+     * Read the disposition header.
+     * 
+     * @return The disposition.
+     * @throws IOException
      */
-    private DispositionUtils() {
+    public Disposition readDisposition() throws IOException {
+        Disposition result = new Disposition();
+
+        String type = readToken();
+        result.setType(type);
+
+        Parameter param = readParameter();
+        while (param != null) {
+            result.getParameters().add(param);
+            param = readParameter();
+        }
+
+        return result;
     }
 
 }

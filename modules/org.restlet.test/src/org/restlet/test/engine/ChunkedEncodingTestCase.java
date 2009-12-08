@@ -48,7 +48,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
-import org.restlet.engine.http.HttpConstants;
+import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.ext.xml.DomRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
@@ -127,7 +127,7 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
         final Form parameters = (Form) message.getAttributes().get(
                 "org.restlet.http.headers");
         final Parameter p = parameters
-                .getFirst(HttpConstants.HEADER_TRANSFER_ENCODING);
+                .getFirst(HeaderConstants.HEADER_TRANSFER_ENCODING);
         assertFalse(p == null);
         assertEquals("chunked", p.getValue());
     }

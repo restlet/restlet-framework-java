@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.http;
+package org.restlet.engine.http.header;
 
 import java.io.IOException;
 import java.util.Date;
@@ -269,7 +269,7 @@ public class CookieReader extends HeaderReader {
                 nextChar = read();
 
                 if (readingName) {
-                    if ((HttpUtils.isSpace(nextChar))
+                    if ((HeaderUtils.isSpace(nextChar))
                             && (nameBuffer.length() == 0)) {
                         // Skip spaces
                     } else if ((nextChar == -1) || (nextChar == ';')
@@ -286,7 +286,7 @@ public class CookieReader extends HeaderReader {
                     } else if (nextChar == '=') {
                         readingName = false;
                         readingValue = true;
-                    } else if (HttpUtils.isTokenChar(nextChar)
+                    } else if (HeaderUtils.isTokenChar(nextChar)
                             || (this.globalVersion < 1)) {
                         nameBuffer.append((char) nextChar);
                     } else {
@@ -294,7 +294,7 @@ public class CookieReader extends HeaderReader {
                                 "Separator and control characters are not allowed within a token. Please check your cookie header");
                     }
                 } else if (readingValue) {
-                    if ((HttpUtils.isSpace(nextChar))
+                    if ((HeaderUtils.isSpace(nextChar))
                             && (valueBuffer.length() == 0)) {
                         // Skip spaces
                     } else if ((nextChar == -1) || (nextChar == ';')) {
@@ -302,7 +302,7 @@ public class CookieReader extends HeaderReader {
                         result = Parameter.create(nameBuffer, valueBuffer);
                     } else if ((nextChar == '"') && (valueBuffer.length() == 0)) {
                         valueBuffer.append(readQuotedString());
-                    } else if (HttpUtils.isTokenChar(nextChar)
+                    } else if (HeaderUtils.isTokenChar(nextChar)
                             || (this.globalVersion < 1)) {
                         valueBuffer.append((char) nextChar);
                     } else {

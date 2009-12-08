@@ -37,8 +37,8 @@ import java.util.List;
 
 import org.restlet.data.Cookie;
 import org.restlet.data.CookieSetting;
-import org.restlet.engine.http.CookieReader;
-import org.restlet.engine.http.CookieUtils;
+import org.restlet.engine.http.header.CookieReader;
+import org.restlet.engine.http.header.CookieUtils;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.test.RestletTestCase;
 

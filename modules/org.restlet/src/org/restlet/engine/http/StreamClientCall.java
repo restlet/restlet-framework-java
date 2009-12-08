@@ -51,6 +51,10 @@ import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
+import org.restlet.engine.http.header.HeaderUtils;
+import org.restlet.engine.http.header.HeaderConstants;
+import org.restlet.engine.http.io.ChunkedInputStream;
+import org.restlet.engine.http.io.ChunkedOutputStream;
 import org.restlet.engine.io.InputEntityStream;
 import org.restlet.engine.io.KeepAliveOutputStream;
 import org.restlet.representation.Representation;
@@ -258,7 +262,7 @@ public class StreamClientCall extends HttpClientCall {
 
         // Parse the HTTP version
         int next = getResponseStream().read();
-        while ((next != -1) && !HttpUtils.isSpace(next)) {
+        while ((next != -1) && !HeaderUtils.isSpace(next)) {
             sb.append((char) next);
             next = getResponseStream().read();
         }
@@ -273,7 +277,7 @@ public class StreamClientCall extends HttpClientCall {
 
         // Parse the status code
         next = getResponseStream().read();
-        while ((next != -1) && !HttpUtils.isSpace(next)) {
+        while ((next != -1) && !HeaderUtils.isSpace(next)) {
             sb.append((char) next);
             next = getResponseStream().read();
         }
@@ -288,7 +292,7 @@ public class StreamClientCall extends HttpClientCall {
 
         // Parse the reason phrase
         next = getResponseStream().read();
-        while ((next != -1) && !HttpUtils.isCarriageReturn(next)) {
+        while ((next != -1) && !HeaderUtils.isCarriageReturn(next)) {
             sb.append((char) next);
             next = getResponseStream().read();
         }
@@ -300,15 +304,15 @@ public class StreamClientCall extends HttpClientCall {
 
         next = getResponseStream().read();
 
-        if (HttpUtils.isLineFeed(next)) {
+        if (HeaderUtils.isLineFeed(next)) {
             setReasonPhrase(sb.toString());
             sb.delete(0, sb.length());
 
             // Parse the headers
-            Parameter header = HttpUtils.readHeader(getResponseStream(), sb);
+            Parameter header = HeaderUtils.readHeader(getResponseStream(), sb);
             while (header != null) {
                 getResponseHeaders().add(header);
-                header = HttpUtils.readHeader(getResponseStream(), sb);
+                header = HeaderUtils.readHeader(getResponseStream(), sb);
             }
         } else {
             throw new IOException(
@@ -360,16 +364,16 @@ public class StreamClientCall extends HttpClientCall {
                 getRequestHeadStream().write(getRequestUri().getBytes());
                 getRequestHeadStream().write(' ');
                 getRequestHeadStream().write(getVersion().getBytes());
-                HttpUtils.writeCRLF(getRequestHeadStream());
+                HeaderUtils.writeCRLF(getRequestHeadStream());
 
                 if (shouldRequestBeChunked(request)) {
                     getRequestHeaders().set(
-                            HttpConstants.HEADER_TRANSFER_ENCODING, "chunked",
+                            HeaderConstants.HEADER_TRANSFER_ENCODING, "chunked",
                             true);
                 }
 
                 // We don't support persistent connections yet
-                getRequestHeaders().set(HttpConstants.HEADER_CONNECTION,
+                getRequestHeaders().set(HeaderConstants.HEADER_CONNECTION,
                         "close", isClientKeepAlive());
 
                 // Prepare the host header
@@ -377,11 +381,11 @@ public class StreamClientCall extends HttpClientCall {
                 if (resourceRef.getHostPort() != -1) {
                     host += ":" + resourceRef.getHostPort();
                 }
-                getRequestHeaders().set(HttpConstants.HEADER_HOST, host, true);
+                getRequestHeaders().set(HeaderConstants.HEADER_HOST, host, true);
 
                 // Write the request headers
                 for (final Parameter header : getRequestHeaders()) {
-                    HttpUtils.writeHeader(header, getRequestHeadStream());
+                    HeaderUtils.writeHeader(header, getRequestHeadStream());
                 }
 
                 // TODO may be replaced by an attribute on the Method class
@@ -393,13 +397,13 @@ public class StreamClientCall extends HttpClientCall {
                         .getSize() == 0)
                         && (Method.POST.equals(request.getMethod()) || Method.PUT
                                 .equals(request.getMethod()))) {
-                    HttpUtils.writeHeader(new Parameter(
-                            HttpConstants.HEADER_CONTENT_LENGTH, "0"),
+                    HeaderUtils.writeHeader(new Parameter(
+                            HeaderConstants.HEADER_CONTENT_LENGTH, "0"),
                             getRequestHeadStream());
                 }
 
                 // Write the end of the headers section
-                HttpUtils.writeCRLF(getRequestHeadStream());
+                HeaderUtils.writeCRLF(getRequestHeadStream());
                 getRequestHeadStream().flush();
 
                 // Write the request body

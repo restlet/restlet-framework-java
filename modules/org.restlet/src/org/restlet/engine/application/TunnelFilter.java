@@ -54,8 +54,8 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
 import org.restlet.data.Reference;
 import org.restlet.engine.Engine;
-import org.restlet.engine.http.HttpConstants;
-import org.restlet.engine.http.PreferenceUtils;
+import org.restlet.engine.http.header.HeaderConstants;
+import org.restlet.engine.http.header.PreferenceUtils;
 import org.restlet.routing.Filter;
 import org.restlet.service.MetadataService;
 import org.restlet.service.TunnelService;
@@ -341,7 +341,7 @@ public class TunnelFilter extends Filter {
         if (tunnelService.isMethodTunnel()) {
             // get the headers
             final Series<Parameter> extraHeaders = (Series<Parameter>) request
-                    .getAttributes().get(HttpConstants.ATTRIBUTE_HEADERS);
+                    .getAttributes().get(HeaderConstants.ATTRIBUTE_HEADERS);
 
             if (extraHeaders != null) {
                 // look for the new value of the method
@@ -508,10 +508,10 @@ public class TunnelFilter extends Filter {
             if (getAcceptReplacers() != null) {
                 // Get the old Accept header value
                 final Form headers = (Form) request.getAttributes().get(
-                        HttpConstants.ATTRIBUTE_HEADERS);
+                        HeaderConstants.ATTRIBUTE_HEADERS);
 
                 final String acceptOld = (headers != null) ? headers
-                        .getFirstValue(HttpConstants.HEADER_ACCEPT, true)
+                        .getFirstValue(HeaderConstants.HEADER_ACCEPT, true)
                         : null;
 
                 // Check each replacer

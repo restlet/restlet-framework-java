@@ -42,7 +42,7 @@ import javax.net.ssl.TrustManagerFactory;
 
 import org.restlet.Server;
 import org.restlet.data.Protocol;
-import org.restlet.engine.http.HttpsUtils;
+import org.restlet.engine.security.SslUtils;
 import org.restlet.engine.security.SslContextFactory;
 import org.restlet.ext.simple.internal.SimpleContainer;
 import org.restlet.ext.simple.internal.SimpleServer;
@@ -265,7 +265,7 @@ public class HttpsServerHelper extends SimpleServerHelper {
     @Override
     public void start() throws Exception {
         // Initialize the SSL context
-        final SslContextFactory sslContextFactory = HttpsUtils
+        final SslContextFactory sslContextFactory = SslUtils
                 .getSslContextFactory(this);
         SSLContext sslContext;
         /*

@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.http;
+package org.restlet.engine.security;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,14 +40,13 @@ import java.util.logging.Level;
 import org.restlet.Context;
 
 import org.restlet.engine.RestletHelper;
-import org.restlet.engine.security.SslContextFactory;
 
 /**
  * Various HTTPS utilities.
  * 
  * @author Jerome Louvel
  */
-public class HttpsUtils {
+public class SslUtils {
 
     /** Cache of SSL key sizes for various cipher suites. */
     private final static ConcurrentMap<String, Integer> keySizesCache = new ConcurrentHashMap<String, Integer>();
@@ -224,6 +223,6 @@ public class HttpsUtils {
      * Private constructor to ensure that the class acts as a true utility class
      * i.e. it isn't instantiable and extensible.
      */
-    private HttpsUtils() {
+    private SslUtils() {
     }
 }

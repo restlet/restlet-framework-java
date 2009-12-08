@@ -32,7 +32,7 @@ package org.restlet.data;
 
 import java.util.List;
 
-import org.restlet.engine.http.HttpConstants;
+import org.restlet.engine.http.header.HeaderConstants;
 
 /**
  * Directive for caching mechanisms along the call chain. This overrides the
@@ -64,7 +64,7 @@ public final class CacheDirective extends Parameter {
      *      1.1 - Cache Revalidation and Reload Controls</a>
      */
     public static CacheDirective maxAge(int maxAge) {
-        return new CacheDirective(HttpConstants.CACHE_MAX_AGE, Integer
+        return new CacheDirective(HeaderConstants.CACHE_MAX_AGE, Integer
                 .toString(maxAge), true);
     }
 
@@ -81,7 +81,7 @@ public final class CacheDirective extends Parameter {
      *      1.1 - Modifications of the Basic Expiration Mechanism</a>
      */
     public static CacheDirective maxStale() {
-        return new CacheDirective(HttpConstants.CACHE_MAX_STALE);
+        return new CacheDirective(HeaderConstants.CACHE_MAX_STALE);
     }
 
     /**
@@ -99,7 +99,7 @@ public final class CacheDirective extends Parameter {
      *      1.1 - Modifications of the Basic Expiration Mechanism</a>
      */
     public static CacheDirective maxStale(int maxStale) {
-        return new CacheDirective(HttpConstants.CACHE_MAX_STALE, Integer
+        return new CacheDirective(HeaderConstants.CACHE_MAX_STALE, Integer
                 .toString(maxStale), true);
     }
 
@@ -120,7 +120,7 @@ public final class CacheDirective extends Parameter {
      *      1.1 - Modifications of the Basic Expiration Mechanism</a>
      */
     public static CacheDirective minFresh(int minFresh) {
-        return new CacheDirective(HttpConstants.CACHE_MIN_FRESH, Integer
+        return new CacheDirective(HeaderConstants.CACHE_MIN_FRESH, Integer
                 .toString(minFresh), true);
     }
 
@@ -136,7 +136,7 @@ public final class CacheDirective extends Parameter {
      *      1.1 - Cache Revalidation and Reload Controls</a>
      */
     public static CacheDirective mustRevalidate() {
-        return new CacheDirective(HttpConstants.CACHE_MUST_REVALIDATE);
+        return new CacheDirective(HeaderConstants.CACHE_MUST_REVALIDATE);
     }
 
     /**
@@ -152,7 +152,7 @@ public final class CacheDirective extends Parameter {
      *      1.1 - What is Cacheable</a>
      */
     public static CacheDirective noCache() {
-        return new CacheDirective(HttpConstants.CACHE_NO_CACHE);
+        return new CacheDirective(HeaderConstants.CACHE_NO_CACHE);
     }
 
     /**
@@ -183,7 +183,7 @@ public final class CacheDirective extends Parameter {
             }
         }
 
-        return new CacheDirective(HttpConstants.CACHE_NO_CACHE, sb.toString());
+        return new CacheDirective(HeaderConstants.CACHE_NO_CACHE, sb.toString());
     }
 
     /**
@@ -202,7 +202,7 @@ public final class CacheDirective extends Parameter {
      *      1.1 - What is Cacheable</a>
      */
     public static CacheDirective noCache(String fieldName) {
-        return new CacheDirective(HttpConstants.CACHE_NO_CACHE, "\""
+        return new CacheDirective(HeaderConstants.CACHE_NO_CACHE, "\""
                 + fieldName + "\"");
     }
 
@@ -219,7 +219,7 @@ public final class CacheDirective extends Parameter {
      *      1.1 - What May be Stored by Caches</a>
      */
     public static CacheDirective noStore() {
-        return new CacheDirective(HttpConstants.CACHE_NO_STORE);
+        return new CacheDirective(HeaderConstants.CACHE_NO_STORE);
     }
 
     /**
@@ -234,7 +234,7 @@ public final class CacheDirective extends Parameter {
      *      1.1 - No-Transform Directive</a>
      */
     public static CacheDirective noTransform() {
-        return new CacheDirective(HttpConstants.CACHE_NO_TRANSFORM);
+        return new CacheDirective(HeaderConstants.CACHE_NO_TRANSFORM);
     }
 
     /**
@@ -249,7 +249,7 @@ public final class CacheDirective extends Parameter {
      *      1.1 - Cache Revalidation and Reload Controls</a>
      */
     public static CacheDirective onlyIfCached() {
-        return new CacheDirective(HttpConstants.CACHE_ONLY_IF_CACHED);
+        return new CacheDirective(HeaderConstants.CACHE_ONLY_IF_CACHED);
     }
 
     /**
@@ -265,7 +265,7 @@ public final class CacheDirective extends Parameter {
      *      1.1 - What is Cacheable</a>
      */
     public static CacheDirective privateInfo() {
-        return new CacheDirective(HttpConstants.CACHE_PRIVATE);
+        return new CacheDirective(HeaderConstants.CACHE_PRIVATE);
     }
 
     /**
@@ -296,7 +296,7 @@ public final class CacheDirective extends Parameter {
             }
         }
 
-        return new CacheDirective(HttpConstants.CACHE_PRIVATE, sb.toString());
+        return new CacheDirective(HeaderConstants.CACHE_PRIVATE, sb.toString());
     }
 
     /**
@@ -314,7 +314,7 @@ public final class CacheDirective extends Parameter {
      *      1.1 - What is Cacheable</a>
      */
     public static CacheDirective privateInfo(String fieldName) {
-        return new CacheDirective(HttpConstants.CACHE_PRIVATE, "\"" + fieldName
+        return new CacheDirective(HeaderConstants.CACHE_PRIVATE, "\"" + fieldName
                 + "\"");
     }
 
@@ -331,7 +331,7 @@ public final class CacheDirective extends Parameter {
      *      1.1 - Cache Revalidation and Reload Controls</a>
      */
     public static CacheDirective proxyMustRevalidate() {
-        return new CacheDirective(HttpConstants.CACHE_PROXY_MUST_REVALIDATE);
+        return new CacheDirective(HeaderConstants.CACHE_PROXY_MUST_REVALIDATE);
     }
 
     /**
@@ -347,7 +347,7 @@ public final class CacheDirective extends Parameter {
      *      1.1 - What is Cacheable</a>
      */
     public static CacheDirective publicInfo() {
-        return new CacheDirective(HttpConstants.CACHE_PUBLIC);
+        return new CacheDirective(HeaderConstants.CACHE_PUBLIC);
     }
 
     /**
@@ -365,7 +365,7 @@ public final class CacheDirective extends Parameter {
      *      1.1 - Modifications of the Basic Expiration Mechanism</a>
      */
     public static CacheDirective sharedMaxAge(int sharedMaxAge) {
-        return new CacheDirective(HttpConstants.CACHE_SHARED_MAX_AGE, Integer
+        return new CacheDirective(HeaderConstants.CACHE_SHARED_MAX_AGE, Integer
                 .toString(sharedMaxAge), true);
     }
 

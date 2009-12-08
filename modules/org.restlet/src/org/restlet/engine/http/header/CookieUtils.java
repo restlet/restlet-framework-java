@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.http;
+package org.restlet.engine.http.header;
 
 import java.io.IOException;
 import java.util.Date;
@@ -63,7 +63,7 @@ public class CookieUtils {
         if (version == 0) {
             destination.append(value.toString());
         } else {
-            HttpUtils.appendQuote(value, destination);
+            HeaderUtils.appendQuote(value, destination);
         }
 
         return destination;
@@ -121,13 +121,13 @@ public class CookieUtils {
             final String path = cookie.getPath();
             if ((path != null) && (path.length() > 0)) {
                 destination.append("; $Path=");
-                HttpUtils.appendQuote(path, destination);
+                HeaderUtils.appendQuote(path, destination);
             }
             // Append the domain
             final String domain = cookie.getDomain();
             if ((domain != null) && (domain.length() > 0)) {
                 destination.append("; $Domain=");
-                HttpUtils.appendQuote(domain, destination);
+                HeaderUtils.appendQuote(domain, destination);
             }
         }
     }
@@ -198,7 +198,7 @@ public class CookieUtils {
             if (version == 0) {
                 destination.append(path);
             } else {
-                HttpUtils.appendQuote(path, destination);
+                HeaderUtils.appendQuote(path, destination);
             }
         }
 

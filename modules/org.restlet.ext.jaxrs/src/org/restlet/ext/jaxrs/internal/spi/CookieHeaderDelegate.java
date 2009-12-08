@@ -34,7 +34,7 @@ import javax.ws.rs.core.Cookie;
 import javax.ws.rs.ext.RuntimeDelegate;
 import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
 
-import org.restlet.engine.http.CookieUtils;
+import org.restlet.engine.http.header.CookieUtils;
 import org.restlet.ext.jaxrs.internal.util.Converter;
 
 /**

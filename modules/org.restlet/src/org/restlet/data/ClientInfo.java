@@ -489,7 +489,7 @@ public final class ClientInfo {
      */
     public List<Product> getAgentProducts() {
         if (this.agentProducts == null) {
-            this.agentProducts = org.restlet.engine.http.UserAgentUtils
+            this.agentProducts = org.restlet.engine.http.header.UserAgentUtils
                     .parse(getAgent());
         }
         return this.agentProducts;

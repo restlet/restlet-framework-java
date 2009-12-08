@@ -54,9 +54,9 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.engine.http.HttpCall;
-import org.restlet.engine.http.HttpConstants;
 import org.restlet.engine.http.HttpRequest;
 import org.restlet.engine.http.HttpServerCall;
+import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.util.Series;
 
 /**
@@ -387,7 +387,7 @@ public class ServletCall extends HttpServerCall {
                     // because it could send the response too early on some
                     // containers (ex: Tomcat 5.0).
                     if (!header.getName().equals(
-                            HttpConstants.HEADER_CONTENT_LENGTH)) {
+                            HeaderConstants.HEADER_CONTENT_LENGTH)) {
                         getResponse().addHeader(header.getName(),
                                 header.getValue());
                     }
@@ -413,7 +413,7 @@ public class ServletCall extends HttpServerCall {
                 header = iter.next();
 
                 if (header.getName()
-                        .equals(HttpConstants.HEADER_CONTENT_LENGTH)) {
+                        .equals(HeaderConstants.HEADER_CONTENT_LENGTH)) {
                     contentLengthHeader = header;
                 } else {
                     getResponse()

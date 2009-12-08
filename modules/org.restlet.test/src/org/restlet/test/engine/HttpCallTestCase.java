@@ -37,8 +37,8 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import org.restlet.data.Disposition;
-import org.restlet.engine.http.DispositionReader;
-import org.restlet.engine.http.DispositionUtils;
+import org.restlet.engine.http.header.DispositionReader;
+import org.restlet.engine.http.header.DispositionUtils;
 import org.restlet.test.RestletTestCase;
 
 /**

@@ -52,7 +52,7 @@ import org.restlet.data.Form;
 import org.restlet.data.Language;
 import org.restlet.data.Parameter;
 import org.restlet.data.Tag;
-import org.restlet.engine.http.HttpConstants;
+import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.util.FormUtils;
 import org.restlet.util.Series;
 
@@ -479,20 +479,20 @@ public class Converter {
             List<CacheDirective> cacheDirectives) {
         CacheControl jaxRsCacheControl = new CacheControl();
         for (CacheDirective cacheDirective : cacheDirectives) {
-            if (cacheDirective.getName() == HttpConstants.CACHE_MAX_AGE)
+            if (cacheDirective.getName() == HeaderConstants.CACHE_MAX_AGE)
                 jaxRsCacheControl.setMaxAge(Integer.valueOf(cacheDirective
                         .getValue()));
-            else if (cacheDirective.getName() == HttpConstants.CACHE_MUST_REVALIDATE)
+            else if (cacheDirective.getName() == HeaderConstants.CACHE_MUST_REVALIDATE)
                 jaxRsCacheControl.setMustRevalidate(true);
-            else if (cacheDirective.getName() == HttpConstants.CACHE_NO_CACHE)
+            else if (cacheDirective.getName() == HeaderConstants.CACHE_NO_CACHE)
                 jaxRsCacheControl.setNoCache(true);
-            else if (cacheDirective.getName() == HttpConstants.CACHE_NO_STORE)
+            else if (cacheDirective.getName() == HeaderConstants.CACHE_NO_STORE)
                 jaxRsCacheControl.setNoStore(true);
-            else if (cacheDirective.getName() == HttpConstants.CACHE_NO_TRANSFORM)
+            else if (cacheDirective.getName() == HeaderConstants.CACHE_NO_TRANSFORM)
                 jaxRsCacheControl.setNoTransform(true);
-            else if (cacheDirective.getName() == HttpConstants.CACHE_PROXY_MUST_REVALIDATE)
+            else if (cacheDirective.getName() == HeaderConstants.CACHE_PROXY_MUST_REVALIDATE)
                 jaxRsCacheControl.setProxyRevalidate(true);
-            else if (cacheDirective.getName() == HttpConstants.CACHE_PUBLIC)
+            else if (cacheDirective.getName() == HeaderConstants.CACHE_PUBLIC)
                 jaxRsCacheControl.setPrivate(false);
             else
                 jaxRsCacheControl.getCacheExtension().put(

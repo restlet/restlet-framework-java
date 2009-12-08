@@ -38,7 +38,7 @@ import org.restlet.Request;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Parameter;
-import org.restlet.engine.http.HeaderBuilder;
+import org.restlet.engine.http.header.HeaderBuilder;
 import org.restlet.engine.util.Base64;
 import org.restlet.util.Series;
 

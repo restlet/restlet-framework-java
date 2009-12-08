@@ -28,14 +28,14 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.http;
+package org.restlet.engine.http.header;
 
 /**
  * Constants related to the HTTP protocol.
  * 
  * @author Jerome Louvel
  */
-public final class HttpConstants {
+public final class HeaderConstants {
 
     // ------------------------
     // --- Cache directives ---

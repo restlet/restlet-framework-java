@@ -48,6 +48,12 @@ import org.restlet.data.Range;
 import org.restlet.data.Reference;
 import org.restlet.data.Tag;
 import org.restlet.data.Warning;
+import org.restlet.engine.http.header.CacheControlReader;
+import org.restlet.engine.http.header.CookieReader;
+import org.restlet.engine.http.header.HeaderReader;
+import org.restlet.engine.http.header.HeaderConstants;
+import org.restlet.engine.http.header.PreferenceUtils;
+import org.restlet.engine.http.header.WarningReader;
 import org.restlet.engine.security.AuthenticatorUtils;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.engine.util.RangeUtils;
@@ -167,7 +173,7 @@ public class HttpRequest extends Request {
 
         // Set the request date
         String dateHeader = httpCall.getRequestHeaders().getFirstValue(
-                HttpConstants.HEADER_DATE);
+                HeaderConstants.HEADER_DATE);
         Date date = null;
         if (dateHeader != null) {
             date = DateUtils.parse(dateHeader);
@@ -185,7 +191,7 @@ public class HttpRequest extends Request {
         List<CacheDirective> result = super.getCacheDirectives();
         if (!cacheDirectivesAdded) {
             for (String string : getHttpCall().getRequestHeaders()
-                    .getValuesArray(HttpConstants.HEADER_CACHE_CONTROL)) {
+                    .getValuesArray(HeaderConstants.HEADER_CACHE_CONTROL)) {
                 CacheControlReader ccr = new CacheControlReader(string);
                 try {
                     result.addAll(ccr.readDirectives());
@@ -208,7 +214,7 @@ public class HttpRequest extends Request {
         if (!this.securityAdded) {
             // Extract the header value
             String authorization = getHttpCall().getRequestHeaders().getValues(
-                    HttpConstants.HEADER_AUTHORIZATION);
+                    HeaderConstants.HEADER_AUTHORIZATION);
 
             // Set the challenge response
             result = AuthenticatorUtils.parseResponse(this, authorization,
@@ -232,13 +238,13 @@ public class HttpRequest extends Request {
         if (!this.clientAdded) {
             // Extract the header values
             final String acceptCharset = getHttpCall().getRequestHeaders()
-                    .getValues(HttpConstants.HEADER_ACCEPT_CHARSET);
+                    .getValues(HeaderConstants.HEADER_ACCEPT_CHARSET);
             final String acceptEncoding = getHttpCall().getRequestHeaders()
-                    .getValues(HttpConstants.HEADER_ACCEPT_ENCODING);
+                    .getValues(HeaderConstants.HEADER_ACCEPT_ENCODING);
             final String acceptLanguage = getHttpCall().getRequestHeaders()
-                    .getValues(HttpConstants.HEADER_ACCEPT_LANGUAGE);
+                    .getValues(HeaderConstants.HEADER_ACCEPT_LANGUAGE);
             final String acceptMediaType = getHttpCall().getRequestHeaders()
-                    .getValues(HttpConstants.HEADER_ACCEPT);
+                    .getValues(HeaderConstants.HEADER_ACCEPT);
 
             // Parse the headers and update the call preferences
 
@@ -268,9 +274,9 @@ public class HttpRequest extends Request {
 
             // Set other properties
             result.setAgent(getHttpCall().getRequestHeaders().getValues(
-                    HttpConstants.HEADER_USER_AGENT));
+                    HeaderConstants.HEADER_USER_AGENT));
             result.setFrom(getHttpCall().getRequestHeaders().getValues(
-                    HttpConstants.HEADER_FROM));
+                    HeaderConstants.HEADER_FROM));
             result.setAddress(getHttpCall().getClientAddress());
             result.setPort(getHttpCall().getClientPort());
 
@@ -288,7 +294,7 @@ public class HttpRequest extends Request {
                     // Lookup the "X-Forwarded-For" header supported by popular
                     // proxies and caches.
                     final String header = getHttpCall().getRequestHeaders()
-                            .getValues(HttpConstants.HEADER_X_FORWARDED_FOR);
+                            .getValues(HeaderConstants.HEADER_X_FORWARDED_FOR);
                     if (header != null) {
                         final String[] addresses = header.split(",");
                         for (int i = 0; i < addresses.length; i++) {
@@ -317,21 +323,21 @@ public class HttpRequest extends Request {
         if (!this.conditionAdded) {
             // Extract the header values
             final String ifMatchHeader = getHttpCall().getRequestHeaders()
-                    .getValues(HttpConstants.HEADER_IF_MATCH);
+                    .getValues(HeaderConstants.HEADER_IF_MATCH);
             final String ifNoneMatchHeader = getHttpCall().getRequestHeaders()
-                    .getValues(HttpConstants.HEADER_IF_NONE_MATCH);
+                    .getValues(HeaderConstants.HEADER_IF_NONE_MATCH);
             Date ifModifiedSince = null;
             Date ifUnmodifiedSince = null;
             String ifRangeHeader = getHttpCall().getRequestHeaders()
-                    .getFirstValue(HttpConstants.HEADER_IF_RANGE);
+                    .getFirstValue(HeaderConstants.HEADER_IF_RANGE);
 
             for (final Parameter header : getHttpCall().getRequestHeaders()) {
                 if (header.getName().equalsIgnoreCase(
-                        HttpConstants.HEADER_IF_MODIFIED_SINCE)) {
+                        HeaderConstants.HEADER_IF_MODIFIED_SINCE)) {
                     ifModifiedSince = HttpCall.parseDate(header.getValue(),
                             false);
                 } else if (header.getName().equalsIgnoreCase(
-                        HttpConstants.HEADER_IF_UNMODIFIED_SINCE)) {
+                        HeaderConstants.HEADER_IF_UNMODIFIED_SINCE)) {
                     ifUnmodifiedSince = HttpCall.parseDate(header.getValue(),
                             false);
                 }
@@ -433,7 +439,7 @@ public class HttpRequest extends Request {
 
         if (!this.cookiesAdded) {
             final String cookiesValue = getHttpCall().getRequestHeaders()
-                    .getValues(HttpConstants.HEADER_COOKIE);
+                    .getValues(HeaderConstants.HEADER_COOKIE);
 
             if (cookiesValue != null) {
                 try {
@@ -480,7 +486,7 @@ public class HttpRequest extends Request {
     @SuppressWarnings("unchecked")
     public Series<Parameter> getHeaders() {
         return (Series<Parameter>) getAttributes().get(
-                HttpConstants.ATTRIBUTE_HEADERS);
+                HeaderConstants.ATTRIBUTE_HEADERS);
     }
 
     /**
@@ -499,7 +505,7 @@ public class HttpRequest extends Request {
         if (!this.proxySecurityAdded) {
             // Extract the header value
             final String authorization = getHttpCall().getRequestHeaders()
-                    .getValues(HttpConstants.HEADER_PROXY_AUTHORIZATION);
+                    .getValues(HeaderConstants.HEADER_PROXY_AUTHORIZATION);
 
             // Set the challenge response
             result = AuthenticatorUtils.parseResponse(this, authorization,
@@ -518,7 +524,7 @@ public class HttpRequest extends Request {
         if (!this.rangesAdded) {
             // Extract the header value
             final String ranges = getHttpCall().getRequestHeaders().getValues(
-                    HttpConstants.HEADER_RANGE);
+                    HeaderConstants.HEADER_RANGE);
             result.addAll(RangeUtils.parseRangeHeader(ranges));
 
             this.rangesAdded = true;
@@ -536,7 +542,7 @@ public class HttpRequest extends Request {
     public Reference getReferrerRef() {
         if (!this.referrerAdded) {
             final String referrerValue = getHttpCall().getRequestHeaders()
-                    .getValues(HttpConstants.HEADER_REFERRER);
+                    .getValues(HeaderConstants.HEADER_REFERRER);
             if (referrerValue != null) {
                 setReferrerRef(new Reference(referrerValue));
             }
@@ -552,7 +558,7 @@ public class HttpRequest extends Request {
         List<Warning> result = super.getWarnings();
         if (!warningsAdded) {
             for (String string : getHttpCall().getRequestHeaders()
-                    .getValuesArray(HttpConstants.HEADER_WARNING)) {
+                    .getValuesArray(HeaderConstants.HEADER_WARNING)) {
                 WarningReader hr = new WarningReader(string);
                 try {
                     result.add(hr.readWarning());

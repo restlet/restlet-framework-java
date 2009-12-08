@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.http;
+package org.restlet.engine.http.header;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,7 +45,7 @@ import org.restlet.data.Reference;
  * 
  * @author Jerome Louvel
  */
-public class HttpUtils {
+public class HeaderUtils {
     /**
      * Appends a source string as an HTTP quoted string.
      * 
@@ -122,17 +122,17 @@ public class HttpUtils {
                     }
 
                     if (dim == Dimension.CHARACTER_SET) {
-                        sb.append(HttpConstants.HEADER_ACCEPT_CHARSET);
+                        sb.append(HeaderConstants.HEADER_ACCEPT_CHARSET);
                     } else if (dim == Dimension.CLIENT_AGENT) {
-                        sb.append(HttpConstants.HEADER_USER_AGENT);
+                        sb.append(HeaderConstants.HEADER_USER_AGENT);
                     } else if (dim == Dimension.ENCODING) {
-                        sb.append(HttpConstants.HEADER_ACCEPT_ENCODING);
+                        sb.append(HeaderConstants.HEADER_ACCEPT_ENCODING);
                     } else if (dim == Dimension.LANGUAGE) {
-                        sb.append(HttpConstants.HEADER_ACCEPT_LANGUAGE);
+                        sb.append(HeaderConstants.HEADER_ACCEPT_LANGUAGE);
                     } else if (dim == Dimension.MEDIA_TYPE) {
-                        sb.append(HttpConstants.HEADER_ACCEPT);
+                        sb.append(HeaderConstants.HEADER_ACCEPT);
                     } else if (dim == Dimension.AUTHORIZATION) {
-                        sb.append(HttpConstants.HEADER_AUTHORIZATION);
+                        sb.append(HeaderConstants.HEADER_AUTHORIZATION);
                     }
                 }
                 vary = sb.toString();
@@ -269,9 +269,9 @@ public class HttpUtils {
      * @return True if the given character is a value separator.
      */
     public static boolean isLinearWhiteSpace(int character) {
-        return (HttpUtils.isCarriageReturn(character)
-                || HttpUtils.isSpace(character)
-                || HttpUtils.isLineFeed(character) || HttpUtils
+        return (HeaderUtils.isCarriageReturn(character)
+                || HeaderUtils.isSpace(character)
+                || HeaderUtils.isLineFeed(character) || HeaderUtils
                 .isHorizontalTab(character));
     }
 
@@ -438,9 +438,9 @@ public class HttpUtils {
 
         // Detect the end of headers
         int next = is.read();
-        if (HttpUtils.isCarriageReturn(next)) {
+        if (HeaderUtils.isCarriageReturn(next)) {
             next = is.read();
-            if (!HttpUtils.isLineFeed(next)) {
+            if (!HeaderUtils.isLineFeed(next)) {
                 throw new IOException(
                         "Invalid end of headers. Line feed missing after the carriage return.");
             }
@@ -462,13 +462,13 @@ public class HttpUtils {
             sb.delete(0, sb.length());
 
             next = is.read();
-            while (HttpUtils.isSpace(next)) {
+            while (HeaderUtils.isSpace(next)) {
                 // Skip any separator space between colon and header value
                 next = is.read();
             }
 
             // Parse the header value
-            while ((next != -1) && (!HttpUtils.isCarriageReturn(next))) {
+            while ((next != -1) && (!HeaderUtils.isCarriageReturn(next))) {
                 sb.append((char) next);
                 next = is.read();
             }
@@ -479,7 +479,7 @@ public class HttpUtils {
             }
             next = is.read();
 
-            if (HttpUtils.isLineFeed(next)) {
+            if (HeaderUtils.isLineFeed(next)) {
                 result.setValue(sb.toString());
                 sb.delete(0, sb.length());
             } else {
@@ -532,6 +532,6 @@ public class HttpUtils {
      * Private constructor to ensure that the class acts as a true utility class
      * i.e. it isn't instantiable and extensible.
      */
-    private HttpUtils() {
+    private HeaderUtils() {
     }
 }

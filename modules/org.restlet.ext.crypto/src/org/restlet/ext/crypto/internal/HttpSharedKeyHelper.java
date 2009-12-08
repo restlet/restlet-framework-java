@@ -42,8 +42,8 @@ import org.restlet.data.Form;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
-import org.restlet.engine.http.HeaderBuilder;
-import org.restlet.engine.http.HttpConstants;
+import org.restlet.engine.http.header.HeaderBuilder;
+import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.security.AuthenticatorHelper;
 import org.restlet.engine.util.Base64;
 import org.restlet.engine.util.DateUtils;
@@ -136,24 +136,24 @@ public class HttpSharedKeyHelper extends AuthenticatorHelper {
 
         if (httpHeaders.getFirstValue("x-ms-date", true) == null) {
             // X-ms-Date header didn't override the standard Date header
-            date = httpHeaders.getFirstValue(HttpConstants.HEADER_DATE, true);
+            date = httpHeaders.getFirstValue(HeaderConstants.HEADER_DATE, true);
             if (date == null) {
                 // Add a fresh Date header
                 date = DateUtils.format(new Date(), DateUtils.FORMAT_RFC_1123
                         .get(0));
-                httpHeaders.add(HttpConstants.HEADER_DATE, date);
+                httpHeaders.add(HeaderConstants.HEADER_DATE, date);
             }
         }
         // Setup the ContentType header
         String contentMd5 = httpHeaders.getFirstValue(
-                HttpConstants.HEADER_CONTENT_MD5, true);
+                HeaderConstants.HEADER_CONTENT_MD5, true);
         if (contentMd5 == null) {
             contentMd5 = "";
         }
 
         // Setup the ContentType header
         String contentType = httpHeaders.getFirstValue(
-                HttpConstants.HEADER_CONTENT_TYPE, true);
+                HeaderConstants.HEADER_CONTENT_TYPE, true);
         if (contentType == null) {
             boolean applyPatch = false;
 

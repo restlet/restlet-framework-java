@@ -45,6 +45,12 @@ import org.restlet.data.Digest;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
 import org.restlet.data.Parameter;
+import org.restlet.engine.http.header.ContentType;
+import org.restlet.engine.http.header.DispositionUtils;
+import org.restlet.engine.http.header.HeaderReader;
+import org.restlet.engine.http.header.HeaderUtils;
+import org.restlet.engine.http.header.HeaderConstants;
+import org.restlet.engine.security.SslUtils;
 import org.restlet.engine.util.Base64;
 import org.restlet.engine.util.RangeUtils;
 import org.restlet.representation.InputRepresentation;
@@ -197,7 +203,7 @@ public abstract class HttpServerCall extends HttpCall {
         // Extract some interesting header values
         for (final Parameter header : getRequestHeaders()) {
             if (header.getName().equalsIgnoreCase(
-                    HttpConstants.HEADER_CONTENT_ENCODING)) {
+                    HeaderConstants.HEADER_CONTENT_ENCODING)) {
                 final HeaderReader hr = new HeaderReader(header.getValue());
                 String value = hr.readValue();
                 while (value != null) {
@@ -208,7 +214,7 @@ public abstract class HttpServerCall extends HttpCall {
                     value = hr.readValue();
                 }
             } else if (header.getName().equalsIgnoreCase(
-                    HttpConstants.HEADER_CONTENT_LANGUAGE)) {
+                    HeaderConstants.HEADER_CONTENT_LANGUAGE)) {
                 final HeaderReader hr = new HeaderReader(header.getValue());
                 String value = hr.readValue();
                 while (value != null) {
@@ -216,16 +222,16 @@ public abstract class HttpServerCall extends HttpCall {
                     value = hr.readValue();
                 }
             } else if (header.getName().equalsIgnoreCase(
-                    HttpConstants.HEADER_CONTENT_TYPE)) {
+                    HeaderConstants.HEADER_CONTENT_TYPE)) {
                 final ContentType contentType = new ContentType(header
                         .getValue());
                 result.setMediaType(contentType.getMediaType());
                 result.setCharacterSet(contentType.getCharacterSet());
             } else if (header.getName().equalsIgnoreCase(
-                    HttpConstants.HEADER_CONTENT_RANGE)) {
+                    HeaderConstants.HEADER_CONTENT_RANGE)) {
                 RangeUtils.parseContentRange(header.getValue(), result);
             } else if (header.getName().equalsIgnoreCase(
-                    HttpConstants.HEADER_CONTENT_MD5)) {
+                    HeaderConstants.HEADER_CONTENT_MD5)) {
                 result.setDigest(new Digest(Digest.ALGORITHM_MD5, Base64
                         .decode(header.getValue())));
             }
@@ -310,7 +316,7 @@ public abstract class HttpServerCall extends HttpCall {
         final String sslCipherSuite = getSslCipherSuite();
 
         if (sslCipherSuite != null) {
-            keySize = HttpsUtils.extractKeySize(sslCipherSuite);
+            keySize = SslUtils.extractKeySize(sslCipherSuite);
         }
 
         return keySize;
@@ -319,7 +325,7 @@ public abstract class HttpServerCall extends HttpCall {
     @Override
     protected boolean isClientKeepAlive() {
         final String header = getRequestHeaders().getFirstValue(
-                HttpConstants.HEADER_CONNECTION, true);
+                HeaderConstants.HEADER_CONNECTION, true);
         return (header == null) || !header.equalsIgnoreCase("close");
     }
 
@@ -333,7 +339,7 @@ public abstract class HttpServerCall extends HttpCall {
      */
     private void parseHost() {
         final String host = getRequestHeaders().getFirstValue(
-                HttpConstants.HEADER_HOST, true);
+                HeaderConstants.HEADER_HOST, true);
         if (host != null) {
             final int colonIndex = host.indexOf(':');
 
@@ -363,7 +369,7 @@ public abstract class HttpServerCall extends HttpCall {
 
         // Parse the request method
         int next = headStream.read();
-        while ((next != -1) && !HttpUtils.isSpace(next)) {
+        while ((next != -1) && !HeaderUtils.isSpace(next)) {
             sb.append((char) next);
             next = headStream.read();
         }
@@ -378,7 +384,7 @@ public abstract class HttpServerCall extends HttpCall {
 
         // Parse the request URI
         next = headStream.read();
-        while ((next != -1) && !HttpUtils.isSpace(next)) {
+        while ((next != -1) && !HeaderUtils.isSpace(next)) {
             sb.append((char) next);
             next = headStream.read();
         }
@@ -392,7 +398,7 @@ public abstract class HttpServerCall extends HttpCall {
 
         // Parse the HTTP version
         next = headStream.read();
-        while ((next != -1) && !HttpUtils.isCarriageReturn(next)) {
+        while ((next != -1) && !HeaderUtils.isCarriageReturn(next)) {
             sb.append((char) next);
             next = headStream.read();
         }
@@ -403,15 +409,15 @@ public abstract class HttpServerCall extends HttpCall {
         }
         next = headStream.read();
 
-        if (HttpUtils.isLineFeed(next)) {
+        if (HeaderUtils.isLineFeed(next)) {
             setVersion(sb.toString());
             sb.delete(0, sb.length());
 
             // Parse the headers
-            Parameter header = HttpUtils.readHeader(headStream, sb);
+            Parameter header = HeaderUtils.readHeader(headStream, sb);
             while (header != null) {
                 getRequestHeaders().add(header);
-                header = HttpUtils.readHeader(headStream, sb);
+                header = HeaderUtils.readHeader(headStream, sb);
             }
         } else {
             throw new IOException(
@@ -555,18 +561,18 @@ public abstract class HttpServerCall extends HttpCall {
         headStream.write(10); // LF
 
         // We don't support persistent connections yet
-        getResponseHeaders().set(HttpConstants.HEADER_CONNECTION, "close",
+        getResponseHeaders().set(HeaderConstants.HEADER_CONNECTION, "close",
                 isServerKeepAlive());
 
         // Check if 'Transfer-Encoding' header should be set
         if (shouldResponseBeChunked(response)) {
-            getResponseHeaders().add(HttpConstants.HEADER_TRANSFER_ENCODING,
+            getResponseHeaders().add(HeaderConstants.HEADER_TRANSFER_ENCODING,
                     "chunked");
         }
 
         // Write the response headers
         for (final Parameter header : getResponseHeaders()) {
-            HttpUtils.writeHeader(header, headStream);
+            HeaderUtils.writeHeader(header, headStream);
         }
 
         // Write the end of the headers section

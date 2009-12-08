@@ -35,8 +35,8 @@ import java.util.Date;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Encoding;
 import org.restlet.data.MediaType;
-import org.restlet.engine.http.HeaderReader;
-import org.restlet.engine.http.PreferenceUtils;
+import org.restlet.engine.http.header.HeaderReader;
+import org.restlet.engine.http.header.PreferenceUtils;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.test.RestletTestCase;
 

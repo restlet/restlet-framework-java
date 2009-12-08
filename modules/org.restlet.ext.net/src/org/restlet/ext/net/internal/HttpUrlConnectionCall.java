@@ -51,7 +51,7 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Status;
 import org.restlet.engine.Edition;
 import org.restlet.engine.http.HttpClientCall;
-import org.restlet.engine.http.HttpsUtils;
+import org.restlet.engine.security.SslUtils;
 import org.restlet.engine.security.SslContextFactory;
 import org.restlet.engine.util.SystemUtils;
 import org.restlet.ext.net.HttpClientHelper;
@@ -116,7 +116,7 @@ public class HttpUrlConnectionCall extends HttpClientCall {
             if (this.connection instanceof HttpsURLConnection) {
                 setConfidential(true);
                 HttpsURLConnection https = (HttpsURLConnection) this.connection;
-                SslContextFactory sslContextFactory = HttpsUtils
+                SslContextFactory sslContextFactory = SslUtils
                         .getSslContextFactory(getHelper());
                 if (sslContextFactory != null) {
                     try {

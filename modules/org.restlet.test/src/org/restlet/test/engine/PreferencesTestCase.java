@@ -36,8 +36,8 @@ import java.util.List;
 
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
-import org.restlet.engine.http.PreferenceReader;
-import org.restlet.engine.http.PreferenceUtils;
+import org.restlet.engine.http.header.PreferenceReader;
+import org.restlet.engine.http.header.PreferenceUtils;
 import org.restlet.test.RestletTestCase;
 
 

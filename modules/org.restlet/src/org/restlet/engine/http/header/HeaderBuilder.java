@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.http;
+package org.restlet.engine.http.header;
 
 import java.io.IOException;
 
@@ -111,7 +111,7 @@ public class HeaderBuilder implements Appendable {
         for (int i = 0; i < content.length(); i++) {
             c = content.charAt(i);
 
-            if (HttpUtils.isCommentText(c)) {
+            if (HeaderUtils.isCommentText(c)) {
                 this.wrappedBuilder.append(c);
             } else {
                 appendQuotedPair(c);
@@ -260,7 +260,7 @@ public class HeaderBuilder implements Appendable {
         for (int i = 0; i < content.length(); i++) {
             c = content.charAt(i);
 
-            if (HttpUtils.isQuotedText(c)) {
+            if (HeaderUtils.isQuotedText(c)) {
                 this.wrappedBuilder.append(c);
             } else {
                 appendQuotedPair(c);
@@ -290,7 +290,7 @@ public class HeaderBuilder implements Appendable {
      * @throws IOException
      */
     public HeaderBuilder appendToken(String token) throws IOException {
-        if (HttpUtils.isToken(token)) {
+        if (HeaderUtils.isToken(token)) {
             this.wrappedBuilder.append(token);
         } else {
             throw new IOException("Unexpected character found in token: "

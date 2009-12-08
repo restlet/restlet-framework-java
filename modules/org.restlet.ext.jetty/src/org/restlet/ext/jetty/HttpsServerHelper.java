@@ -40,7 +40,7 @@ import org.eclipse.jetty.server.ssl.SslSelectChannelConnector;
 import org.eclipse.jetty.server.ssl.SslSocketConnector;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
-import org.restlet.engine.http.HttpsUtils;
+import org.restlet.engine.security.SslUtils;
 import org.restlet.engine.security.SslContextFactory;
 
 /**
@@ -165,10 +165,10 @@ public class HttpsServerHelper extends JettyServerHelper {
     @Override
     protected AbstractConnector createConnector() {
         AbstractConnector result = null;
-        final SslContextFactory sslContextFactory = HttpsUtils
+        final SslContextFactory sslContextFactory = SslUtils
                 .getSslContextFactory(this);
 
-        final String[] excludedCipherSuites = HttpsUtils
+        final String[] excludedCipherSuites = SslUtils
                 .getDisabledCipherSuites(this);
 
         // Create and configure the Jetty HTTP connector

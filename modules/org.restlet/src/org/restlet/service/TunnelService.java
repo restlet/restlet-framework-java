@@ -34,7 +34,7 @@ import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.data.ClientInfo;
 import org.restlet.engine.application.TunnelFilter;
-import org.restlet.engine.http.HttpConstants;
+import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.routing.Filter;
 
 /**
@@ -294,7 +294,7 @@ public class TunnelService extends Service {
         this.languageParameter = "language";
         this.mediaTypeParameter = "media";
         this.methodParameter = "method";
-        this.methodHeader = HttpConstants.HEADER_X_HTTP_METHOD_OVERRIDE;
+        this.methodHeader = HeaderConstants.HEADER_X_HTTP_METHOD_OVERRIDE;
     }
 
     /**

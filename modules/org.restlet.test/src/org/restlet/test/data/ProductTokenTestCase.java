@@ -36,7 +36,7 @@ import java.util.Map;
 
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Product;
-import org.restlet.engine.http.UserAgentUtils;
+import org.restlet.engine.http.header.UserAgentUtils;
 import org.restlet.test.RestletTestCase;
 
 /**

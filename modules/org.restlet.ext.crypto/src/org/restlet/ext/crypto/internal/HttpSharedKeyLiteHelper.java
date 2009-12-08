@@ -38,8 +38,8 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
-import org.restlet.engine.http.HeaderBuilder;
-import org.restlet.engine.http.HttpConstants;
+import org.restlet.engine.http.header.HeaderBuilder;
+import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.security.AuthenticatorHelper;
 import org.restlet.engine.util.Base64;
 import org.restlet.engine.util.DateUtils;
@@ -93,12 +93,12 @@ public class HttpSharedKeyLiteHelper extends AuthenticatorHelper {
 
         if (httpHeaders.getFirstValue("x-ms-date", true) == null) {
             // X-ms-Date header didn't override the standard Date header
-            date = httpHeaders.getFirstValue(HttpConstants.HEADER_DATE, true);
+            date = httpHeaders.getFirstValue(HeaderConstants.HEADER_DATE, true);
             if (date == null) {
                 // Add a fresh Date header
                 date = DateUtils.format(new Date(), DateUtils.FORMAT_RFC_1123
                         .get(0));
-                httpHeaders.add(HttpConstants.HEADER_DATE, date);
+                httpHeaders.add(HeaderConstants.HEADER_DATE, date);
             }
         } else {
             date = httpHeaders.getFirstValue("x-ms-date", true);

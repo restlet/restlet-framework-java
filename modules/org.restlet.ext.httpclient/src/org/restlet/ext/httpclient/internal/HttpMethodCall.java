@@ -59,7 +59,7 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.engine.http.HttpClientCall;
-import org.restlet.engine.http.HttpConstants;
+import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.ext.httpclient.HttpClientHelper;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
@@ -284,7 +284,7 @@ public class HttpMethodCall extends HttpClientCall {
             // Set the request headers
             for (Parameter header : getRequestHeaders()) {
                 if (!header.getName().equals(
-                        HttpConstants.HEADER_CONTENT_LENGTH)) {
+                        HeaderConstants.HEADER_CONTENT_LENGTH)) {
                     getHttpRequest().addHeader(header.getName(),
                             header.getValue());
                 }
@@ -301,7 +301,7 @@ public class HttpMethodCall extends HttpClientCall {
 
                     public Header getContentType() {
                         return new BasicHeader(
-                                HttpConstants.HEADER_CONTENT_TYPE, (entity
+                                HeaderConstants.HEADER_CONTENT_TYPE, (entity
                                         .getMediaType() != null) ? entity
                                         .getMediaType().toString() : null);
                     }

@@ -40,7 +40,7 @@ import javax.net.ssl.SSLContext;
 
 import org.restlet.Server;
 import org.restlet.data.Protocol;
-import org.restlet.engine.http.HttpsUtils;
+import org.restlet.engine.security.SslUtils;
 import org.restlet.engine.security.SslContextFactory;
 import org.restlet.ext.grizzly.internal.HttpParserFilter;
 
@@ -146,7 +146,7 @@ public class HttpsServerHelper extends GrizzlyServerHelper {
     @Override
     protected void configure(Controller controller) throws Exception {
         // Initialize the SSL context
-        final SslContextFactory sslContextFactory = HttpsUtils
+        final SslContextFactory sslContextFactory = SslUtils
                 .getSslContextFactory(this);
         SSLContext sslContext;
 
@@ -181,7 +181,7 @@ public class HttpsServerHelper extends GrizzlyServerHelper {
         final SSLReadFilter readFilter = new SSLReadFilter();
         readFilter.setSSLContext(sslContext);
 
-        final String[] enabledCipherSuites = HttpsUtils
+        final String[] enabledCipherSuites = SslUtils
                 .getEnabledCipherSuites(this);
         if (enabledCipherSuites != null) {
             readFilter.setEnabledCipherSuites(enabledCipherSuites);

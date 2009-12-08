@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.http;
+package org.restlet.engine.http.header;
 
 import java.io.IOException;
 
@@ -63,10 +63,10 @@ public class HeaderReader {
      * @param character
      *            The character to test.
      * @return True if the given character is a value separator.
-     * @see HttpUtils#isValueSeparator(int)
+     * @see HeaderUtils#isValueSeparator(int)
      */
     public boolean isValueSeparator(int character) {
-        return HttpUtils.isValueSeparator(character);
+        return HeaderUtils.isValueSeparator(character);
     }
 
     /**
@@ -106,7 +106,7 @@ public class HeaderReader {
             nextChar = read();
 
             if (readingName) {
-                if ((HttpUtils.isSpace(nextChar)) && (nameBuffer.length() == 0)) {
+                if ((HeaderUtils.isSpace(nextChar)) && (nameBuffer.length() == 0)) {
                     // Skip spaces
                 } else if ((nextChar == -1) || (nextChar == ',')) {
                     if (nameBuffer.length() > 0) {
@@ -121,14 +121,14 @@ public class HeaderReader {
                 } else if (nextChar == '=') {
                     readingName = false;
                     readingValue = true;
-                } else if (HttpUtils.isTokenChar(nextChar)) {
+                } else if (HeaderUtils.isTokenChar(nextChar)) {
                     nameBuffer.append((char) nextChar);
                 } else {
                     throw new IOException(
                             "Separator and control characters are not allowed within a token. Please check your HTTP header");
                 }
             } else if (readingValue) {
-                if ((HttpUtils.isSpace(nextChar))
+                if ((HeaderUtils.isSpace(nextChar))
                         && (valueBuffer.length() == 0)) {
                     // Skip spaces
                 } else if ((nextChar == -1) || (nextChar == ',')) {
@@ -136,7 +136,7 @@ public class HeaderReader {
                     result = Parameter.create(nameBuffer, valueBuffer);
                 } else if ((nextChar == '"') && (valueBuffer.length() == 0)) {
                     valueBuffer.append(readQuotedString());
-                } else if (HttpUtils.isTokenChar(nextChar)) {
+                } else if (HeaderUtils.isTokenChar(nextChar)) {
                     valueBuffer.append((char) nextChar);
                 } else {
                     throw new IOException(
@@ -177,20 +177,20 @@ public class HeaderReader {
 
             if (quotedPair) {
                 // End of quoted pair (escape sequence)
-                if (HttpUtils.isText(nextChar)) {
+                if (HeaderUtils.isText(nextChar)) {
                     buffer.append((char) nextChar);
                     quotedPair = false;
                 } else {
                     throw new IOException(
                             "Invalid character detected in quoted string. Please check your value");
                 }
-            } else if (HttpUtils.isDoubleQuote(nextChar)) {
+            } else if (HeaderUtils.isDoubleQuote(nextChar)) {
                 // End of quoted string
                 done = true;
             } else if (nextChar == '\\') {
                 // Begin of quoted pair (escape sequence)
                 quotedPair = true;
-            } else if (HttpUtils.isText(nextChar)) {
+            } else if (HeaderUtils.isText(nextChar)) {
                 buffer.append((char) nextChar);
             } else {
                 throw new IOException(
@@ -209,11 +209,11 @@ public class HeaderReader {
         int next = read();
 
         // Skip leading spaces
-        while ((next != -1) && HttpUtils.isLinearWhiteSpace(next)) {
+        while ((next != -1) && HeaderUtils.isLinearWhiteSpace(next)) {
             next = read();
         }
 
-        while ((next != -1) && HttpUtils.isTokenChar(next)) {
+        while ((next != -1) && HeaderUtils.isTokenChar(next)) {
             if (sb == null) {
                 sb = new StringBuilder();
             }
@@ -240,7 +240,7 @@ public class HeaderReader {
         int next = read();
 
         // Skip leading spaces
-        while ((next != -1) && HttpUtils.isLinearWhiteSpace(next)) {
+        while ((next != -1) && HeaderUtils.isLinearWhiteSpace(next)) {
             next = read();
         }
 
@@ -256,7 +256,7 @@ public class HeaderReader {
         // Remove trailing spaces
         if (sb != null) {
             for (int i = sb.length() - 1; (i >= 0)
-                    && HttpUtils.isLinearWhiteSpace(sb.charAt(i)); i--) {
+                    && HeaderUtils.isLinearWhiteSpace(sb.charAt(i)); i--) {
                 sb.deleteCharAt(i);
             }
         }

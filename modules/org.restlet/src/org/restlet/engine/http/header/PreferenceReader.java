@@ -28,117 +28,231 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.http;
+package org.restlet.engine.http.header;
 
 import java.io.IOException;
+import java.util.Iterator;
 
 import org.restlet.data.CharacterSet;
+import org.restlet.data.Encoding;
 import org.restlet.data.Form;
+import org.restlet.data.Language;
 import org.restlet.data.MediaType;
+import org.restlet.data.Metadata;
 import org.restlet.data.Parameter;
+import org.restlet.data.Preference;
 import org.restlet.util.Series;
 
 /**
- * Content type header reader.
+ * Preference header reader. Works for character sets, encodings, languages or
+ * media types.
  * 
  * @author Jerome Louvel
  */
-public class ContentTypeReader extends HeaderReader {
+public class PreferenceReader<T extends Metadata> extends HeaderReader {
+    public static final int TYPE_CHARACTER_SET = 1;
+
+    public static final int TYPE_ENCODING = 2;
+
+    public static final int TYPE_LANGUAGE = 3;
+
+    public static final int TYPE_MEDIA_TYPE = 4;
+
+    /** The type of metadata read. */
+    private volatile int type;
 
     /**
      * Constructor.
      * 
+     * @param type
+     *            The type of metadata read.
      * @param header
      *            The header to read.
      */
-    public ContentTypeReader(String header) {
+    public PreferenceReader(int type, String header) {
         super(header);
+        this.type = type;
     }
 
     /**
-     * Creates a content type.
+     * Creates a new preference.
      * 
-     * @param mediaType
-     *            The media type name.
+     * @param metadata
+     *            The metadata name.
      * @param parameters
-     *            The parameters parsed.
-     * @return The content type.
+     *            The parameters list.
+     * @return The new preference.
      */
-    private ContentType createContentType(StringBuilder mediaType,
+    @SuppressWarnings("unchecked")
+    protected Preference<T> createPreference(CharSequence metadata,
             Series<Parameter> parameters) {
-        // Attempt to extract the character set
-        CharacterSet characterSet = null;
+        Preference<T> result;
+
+        if (parameters == null) {
+            result = new Preference<T>();
+
+            switch (this.type) {
+            case TYPE_CHARACTER_SET:
+                result.setMetadata((T) CharacterSet
+                        .valueOf(metadata.toString()));
+                break;
+
+            case TYPE_ENCODING:
+                result.setMetadata((T) Encoding.valueOf(metadata.toString()));
+                break;
+
+            case TYPE_LANGUAGE:
+                result.setMetadata((T) Language.valueOf(metadata.toString()));
+                break;
+
+            case TYPE_MEDIA_TYPE:
+                result.setMetadata((T) MediaType.valueOf(metadata.toString()));
+                break;
+            }
+        } else {
+            final Series<Parameter> mediaParams = extractMediaParams(parameters);
+            final float quality = extractQuality(parameters);
+            result = new Preference<T>(null, quality, parameters);
+
+            switch (this.type) {
+            case TYPE_CHARACTER_SET:
+                result.setMetadata((T) new CharacterSet(metadata.toString()));
+                break;
+
+            case TYPE_ENCODING:
+                result.setMetadata((T) new Encoding(metadata.toString()));
+                break;
+
+            case TYPE_LANGUAGE:
+                result.setMetadata((T) new Language(metadata.toString()));
+                break;
+
+            case TYPE_MEDIA_TYPE:
+                result.setMetadata((T) new MediaType(metadata.toString(),
+                        mediaParams));
+                break;
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Extract the media parameters. Only leave as the quality parameter if
+     * found. Modifies the parameters list.
+     * 
+     * @param parameters
+     *            All the preference parameters.
+     * @return The media parameters.
+     */
+    protected Series<Parameter> extractMediaParams(Series<Parameter> parameters) {
+        Series<Parameter> result = null;
+        boolean qualityFound = false;
+        Parameter param = null;
 
         if (parameters != null) {
-            String charSet = parameters.getFirstValue("charset");
+            result = new Form();
 
-            if (charSet != null) {
-                parameters.removeAll("charset");
-                characterSet = new CharacterSet(charSet);
+            for (final Iterator<Parameter> iter = parameters.iterator(); !qualityFound
+                    && iter.hasNext();) {
+                param = iter.next();
+
+                if (param.getName().equals("q")) {
+                    qualityFound = true;
+                } else {
+                    iter.remove();
+                    result.add(param);
+                }
             }
-
-            return new ContentType(new MediaType(mediaType.toString(),
-                    parameters), characterSet);
         }
-        
-        return new ContentType(new MediaType(mediaType.toString()), null);
+
+        return result;
     }
 
     /**
-     * Read the content type.
+     * Extract the quality value. If the value is not found, 1 is returned.
+     * 
+     * @param parameters
+     *            The preference parameters.
+     * @return The quality value.
+     */
+    protected float extractQuality(Series<Parameter> parameters) {
+        float result = 1F;
+        boolean found = false;
+
+        if (parameters != null) {
+            Parameter param = null;
+            for (final Iterator<Parameter> iter = parameters.iterator(); !found
+                    && iter.hasNext();) {
+                param = iter.next();
+                if (param.getName().equals("q")) {
+                    result = PreferenceUtils.parseQuality(param.getValue());
+                    found = true;
+
+                    // Remove the quality parameter as we will directly store it
+                    // in the Preference object
+                    iter.remove();
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Read the next preference.
      * 
      * @return The next preference.
      */
-    public ContentType readContentType() throws IOException {
-        ContentType result = null;
+    public Preference<T> readPreference() throws IOException {
+        Preference<T> result = null;
 
-        boolean readingMediaType = true;
+        boolean readingMetadata = true;
         boolean readingParamName = false;
         boolean readingParamValue = false;
 
-        StringBuilder mediaTypeBuffer = new StringBuilder();
+        final StringBuilder metadataBuffer = new StringBuilder();
         StringBuilder paramNameBuffer = null;
         StringBuilder paramValueBuffer = null;
 
         Series<Parameter> parameters = null;
-        String nextValue = readValue();
+
+        final String nextValue = readValue();
         int nextIndex = 0;
 
         if (nextValue != null) {
             int nextChar = nextValue.charAt(nextIndex++);
 
             while (result == null) {
-                if (readingMediaType) {
+                if (readingMetadata) {
                     if (nextChar == -1) {
-                        if (mediaTypeBuffer.length() > 0) {
+                        if (metadataBuffer.length() > 0) {
                             // End of metadata section
                             // No parameters detected
-                            result = createContentType(mediaTypeBuffer, null);
+                            result = createPreference(metadataBuffer, null);
                             paramNameBuffer = new StringBuilder();
                         } else {
                             // Ignore empty metadata name
                         }
                     } else if (nextChar == ';') {
-                        if (mediaTypeBuffer.length() > 0) {
-                            // End of mediaType section
+                        if (metadataBuffer.length() > 0) {
+                            // End of metadata section
                             // Parameters detected
-                            readingMediaType = false;
+                            readingMetadata = false;
                             readingParamName = true;
                             paramNameBuffer = new StringBuilder();
                             parameters = new Form();
                         } else {
                             throw new IOException(
-                                    "Empty mediaType name detected.");
+                                    "Empty metadata name detected.");
                         }
-                    } else if (HttpUtils.isSpace(nextChar)) {
+                    } else if (HeaderUtils.isSpace(nextChar)) {
                         // Ignore spaces
-                    } else if (HttpUtils.isText(nextChar)) {
-                        mediaTypeBuffer.append((char) nextChar);
+                    } else if (HeaderUtils.isText(nextChar)) {
+                        metadataBuffer.append((char) nextChar);
                     } else {
                         throw new IOException(
-                                "The "
-                                        + (char) nextChar
-                                        + " character isn't allowed in a media type name.");
+                                "Control characters are not allowed within a metadata name.");
                     }
                 } else if (readingParamName) {
                     if (nextChar == '=') {
@@ -156,7 +270,7 @@ public class ContentTypeReader extends HeaderReader {
                             // End of parameters section
                             parameters.add(Parameter.create(paramNameBuffer,
                                     null));
-                            result = createContentType(mediaTypeBuffer,
+                            result = createPreference(metadataBuffer,
                                     parameters);
                         } else {
                             throw new IOException(
@@ -168,16 +282,14 @@ public class ContentTypeReader extends HeaderReader {
                         paramNameBuffer = new StringBuilder();
                         readingParamName = true;
                         readingParamValue = false;
-                    } else if (HttpUtils.isSpace(nextChar)
+                    } else if (HeaderUtils.isSpace(nextChar)
                             && (paramNameBuffer.length() == 0)) {
                         // Ignore white spaces
-                    } else if (HttpUtils.isTokenChar(nextChar)) {
+                    } else if (HeaderUtils.isTokenChar(nextChar)) {
                         paramNameBuffer.append((char) nextChar);
                     } else {
                         throw new IOException(
-                                "The \""
-                                        + (char) nextChar
-                                        + "\" character isn't allowed in a media type parameter name.");
+                                "Separator and control characters are not allowed within a token.");
                     }
                 } else if (readingParamValue) {
                     if (nextChar == -1) {
@@ -185,7 +297,7 @@ public class ContentTypeReader extends HeaderReader {
                             // End of parameters section
                             parameters.add(Parameter.create(paramNameBuffer,
                                     paramValueBuffer));
-                            result = createContentType(mediaTypeBuffer,
+                            result = createPreference(metadataBuffer,
                                     parameters);
                         } else {
                             throw new IOException(
@@ -211,37 +323,31 @@ public class ContentTypeReader extends HeaderReader {
 
                             if (quotedPair) {
                                 // End of quoted pair (escape sequence)
-                                if (HttpUtils.isText(nextChar)) {
+                                if (HeaderUtils.isText(nextChar)) {
                                     paramValueBuffer.append((char) nextChar);
                                     quotedPair = false;
                                 } else {
                                     throw new IOException(
-                                            "Invalid character \""
-                                                    + (char) nextChar
-                                                    + "\" detected in quoted string. Please check your value");
+                                            "Invalid character detected in quoted string. Please check your value");
                                 }
-                            } else if (HttpUtils.isDoubleQuote(nextChar)) {
+                            } else if (HeaderUtils.isDoubleQuote(nextChar)) {
                                 // End of quoted string
                                 done = true;
                             } else if (nextChar == '\\') {
                                 // Begin of quoted pair (escape sequence)
                                 quotedPair = true;
-                            } else if (HttpUtils.isText(nextChar)) {
+                            } else if (HeaderUtils.isText(nextChar)) {
                                 paramValueBuffer.append((char) nextChar);
                             } else {
                                 throw new IOException(
-                                        "Invalid character \""
-                                                + (char) nextChar
-                                                + "\" detected in quoted string. Please check your value");
+                                        "Invalid character detected in quoted string. Please check your value");
                             }
                         }
-                    } else if (HttpUtils.isTokenChar(nextChar)) {
+                    } else if (HeaderUtils.isTokenChar(nextChar)) {
                         paramValueBuffer.append((char) nextChar);
                     } else {
                         throw new IOException(
-                                "The \""
-                                        + (char) nextChar
-                                        + "\" character isn't allowed in a media type parameter value.");
+                                "Separator and control characters are not allowed within a token");
                     }
                 }
 

@@ -42,9 +42,9 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Digest;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
-import org.restlet.engine.http.HeaderBuilder;
-import org.restlet.engine.http.HeaderReader;
-import org.restlet.engine.http.HttpUtils;
+import org.restlet.engine.http.header.HeaderBuilder;
+import org.restlet.engine.http.header.HeaderReader;
+import org.restlet.engine.http.header.HeaderUtils;
 import org.restlet.engine.security.AuthenticatorHelper;
 import org.restlet.engine.security.AuthenticatorUtils;
 import org.restlet.engine.util.Base64;
@@ -273,7 +273,7 @@ public class HttpDigestHelper extends AuthenticatorHelper {
         }
 
         for (Parameter param : challenge.getParameters()) {
-            if (HttpUtils.isToken(param.getValue())) {
+            if (HeaderUtils.isToken(param.getValue())) {
                 hb.appendParameter(param);
             } else {
                 hb.appendQuotedParameter(param);
@@ -332,7 +332,7 @@ public class HttpDigestHelper extends AuthenticatorHelper {
         }
 
         for (Parameter param : challenge.getParameters()) {
-            if (HttpUtils.isToken(param.getValue())) {
+            if (HeaderUtils.isToken(param.getValue())) {
                 hb.appendParameter(param);
             } else {
                 hb.appendQuotedParameter(param);

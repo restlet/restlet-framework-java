@@ -52,7 +52,7 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
 import org.restlet.data.Reference;
 import org.restlet.engine.application.TunnelFilter;
-import org.restlet.engine.http.HttpConstants;
+import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.util.Series;
 
 /**
@@ -358,10 +358,10 @@ public class TunnelFilterTestCase extends TestCase {
         tunnelFilter.getTunnelService().setMethodTunnel(true);
         Map<String, Object> attributesHeader = new HashMap<String, Object>();
         Series<Parameter> headers = new Form();
-        headers.add(HttpConstants.HEADER_X_HTTP_METHOD_OVERRIDE, Method.GET
+        headers.add(HeaderConstants.HEADER_X_HTTP_METHOD_OVERRIDE, Method.GET
                 .getName());
-        headers.add(HttpConstants.HEADER_X_FORWARDED_FOR, "TEST");
-        attributesHeader.put(HttpConstants.ATTRIBUTE_HEADERS, headers);
+        headers.add(HeaderConstants.HEADER_X_FORWARDED_FOR, "TEST");
+        attributesHeader.put(HeaderConstants.ATTRIBUTE_HEADERS, headers);
 
         createGet(UNEFFECTED);
         this.request.setAttributes(attributesHeader);
@@ -374,14 +374,14 @@ public class TunnelFilterTestCase extends TestCase {
 
         createPost(UNEFFECTED);
         tunnelFilter.getTunnelService().setMethodHeader(
-                HttpConstants.HEADER_X_FORWARDED_FOR);
+                HeaderConstants.HEADER_X_FORWARDED_FOR);
         this.request.setAttributes(attributesHeader);
         filter();
         assertNotSameMethod(Method.PUT);
 
         createPost(UNEFFECTED);
         tunnelFilter.getTunnelService().setMethodHeader(
-                HttpConstants.HEADER_X_FORWARDED_FOR);
+                HeaderConstants.HEADER_X_FORWARDED_FOR);
         tunnelFilter.getTunnelService().setHeaderTunnel(false);
         this.request.setAttributes(attributesHeader);
         filter();

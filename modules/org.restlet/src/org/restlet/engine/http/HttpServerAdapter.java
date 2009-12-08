@@ -49,6 +49,12 @@ import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Status;
 import org.restlet.data.Warning;
+import org.restlet.engine.http.header.CacheControlUtils;
+import org.restlet.engine.http.header.CookieUtils;
+import org.restlet.engine.http.header.DispositionUtils;
+import org.restlet.engine.http.header.HeaderUtils;
+import org.restlet.engine.http.header.HeaderConstants;
+import org.restlet.engine.http.header.WarningUtils;
 import org.restlet.engine.security.AuthenticatorUtils;
 import org.restlet.engine.util.Base64;
 import org.restlet.engine.util.DateUtils;
@@ -74,10 +80,10 @@ public class HttpServerAdapter extends HttpAdapter {
     public static void addEntityHeaders(Representation entity,
             Series<Parameter> responseHeaders) {
         if (entity == null) {
-            responseHeaders.add(HttpConstants.HEADER_CONTENT_LENGTH, "0");
+            responseHeaders.add(HeaderConstants.HEADER_CONTENT_LENGTH, "0");
         } else {
             if (entity.getExpirationDate() != null) {
-                responseHeaders.add(HttpConstants.HEADER_EXPIRES, DateUtils
+                responseHeaders.add(HeaderConstants.HEADER_EXPIRES, DateUtils
                         .format(entity.getExpirationDate()));
             }
 
@@ -92,7 +98,7 @@ public class HttpServerAdapter extends HttpAdapter {
                     }
                 }
                 if (value.length() > 0) {
-                    responseHeaders.add(HttpConstants.HEADER_CONTENT_ENCODING,
+                    responseHeaders.add(HeaderConstants.HEADER_CONTENT_ENCODING,
                             value.toString());
                 }
 
@@ -106,7 +112,7 @@ public class HttpServerAdapter extends HttpAdapter {
                     }
                     value.append(entity.getLanguages().get(i).getName());
                 }
-                responseHeaders.add(HttpConstants.HEADER_CONTENT_LANGUAGE,
+                responseHeaders.add(HeaderConstants.HEADER_CONTENT_LANGUAGE,
                         value.toString());
             }
 
@@ -120,42 +126,42 @@ public class HttpServerAdapter extends HttpAdapter {
                             entity.getCharacterSet().getName());
                 }
 
-                responseHeaders.add(HttpConstants.HEADER_CONTENT_TYPE,
+                responseHeaders.add(HeaderConstants.HEADER_CONTENT_TYPE,
                         contentType.toString());
             }
 
             if (entity.getModificationDate() != null) {
                 responseHeaders
-                        .add(HttpConstants.HEADER_LAST_MODIFIED,
+                        .add(HeaderConstants.HEADER_LAST_MODIFIED,
                                 HttpCall.formatDate(entity
                                         .getModificationDate(), false));
             }
 
             if (entity.getTag() != null) {
-                responseHeaders.add(HttpConstants.HEADER_ETAG, entity.getTag()
+                responseHeaders.add(HeaderConstants.HEADER_ETAG, entity.getTag()
                         .format());
             }
             long size = entity.getAvailableSize();
             if (size != Representation.UNKNOWN_SIZE) {
-                responseHeaders.add(HttpConstants.HEADER_CONTENT_LENGTH, Long
+                responseHeaders.add(HeaderConstants.HEADER_CONTENT_LENGTH, Long
                         .toString(size));
             }
 
             if (entity.getIdentifier() != null) {
-                responseHeaders.add(HttpConstants.HEADER_CONTENT_LOCATION,
+                responseHeaders.add(HeaderConstants.HEADER_CONTENT_LOCATION,
                         entity.getIdentifier().toString());
             }
 
             if (entity.getDisposition() != null
                     && !Disposition.TYPE_NONE.equals(entity.getDisposition()
                             .getType())) {
-                responseHeaders.add(HttpConstants.HEADER_CONTENT_DISPOSITION,
+                responseHeaders.add(HeaderConstants.HEADER_CONTENT_DISPOSITION,
                         DispositionUtils.format(entity.getDisposition()));
             }
 
             if (entity.getRange() != null) {
                 try {
-                    responseHeaders.add(HttpConstants.HEADER_CONTENT_RANGE,
+                    responseHeaders.add(HeaderConstants.HEADER_CONTENT_RANGE,
                             RangeUtils.formatContentRange(entity.getRange(),
                                     entity.getSize()));
                 } catch (Exception e) {
@@ -171,7 +177,7 @@ public class HttpServerAdapter extends HttpAdapter {
             if (entity.getDigest() != null
                     && Digest.ALGORITHM_MD5.equals(entity.getDigest()
                             .getAlgorithm())) {
-                responseHeaders.add(HttpConstants.HEADER_CONTENT_MD5,
+                responseHeaders.add(HeaderConstants.HEADER_CONTENT_MD5,
                         new String(Base64.encode(entity.getDigest().getValue(),
                                 false)));
             }
@@ -205,37 +211,37 @@ public class HttpServerAdapter extends HttpAdapter {
                 sb.append(method.getName());
             }
 
-            responseHeaders.add(HttpConstants.HEADER_ALLOW, sb.toString());
+            responseHeaders.add(HeaderConstants.HEADER_ALLOW, sb.toString());
         }
 
         // Add the date
         response.setDate(new Date());
-        responseHeaders.add(HttpConstants.HEADER_DATE, DateUtils
+        responseHeaders.add(HeaderConstants.HEADER_DATE, DateUtils
                 .format(response.getDate()));
 
         // Add the age
         if (response.getAge() > 0) {
-            responseHeaders.add(HttpConstants.HEADER_AGE, Integer
+            responseHeaders.add(HeaderConstants.HEADER_AGE, Integer
                     .toString(response.getAge()));
         }
 
         // Add the retry after date
         if (response.getRetryAfter() != null) {
-            responseHeaders.add(HttpConstants.HEADER_RETRY_AFTER, DateUtils
+            responseHeaders.add(HeaderConstants.HEADER_RETRY_AFTER, DateUtils
                     .format(response.getRetryAfter()));
         }
 
         // Add the cookie settings
         List<CookieSetting> cookies = response.getCookieSettings();
         for (int i = 0; i < cookies.size(); i++) {
-            responseHeaders.add(HttpConstants.HEADER_SET_COOKIE, CookieUtils
+            responseHeaders.add(HeaderConstants.HEADER_SET_COOKIE, CookieUtils
                     .format(cookies.get(i)));
         }
 
         // Set the location URI (for redirections or creations)
         if (response.getLocationRef() != null) {
             // The location header must contain an absolute URI.
-            responseHeaders.add(HttpConstants.HEADER_LOCATION, response
+            responseHeaders.add(HeaderConstants.HEADER_LOCATION, response
                     .getLocationRef().getTargetRef().toString());
         }
 
@@ -243,7 +249,7 @@ public class HttpServerAdapter extends HttpAdapter {
         if (response.getChallengeRequests() != null) {
             for (final ChallengeRequest challengeRequest : response
                     .getChallengeRequests()) {
-                responseHeaders.add(HttpConstants.HEADER_WWW_AUTHENTICATE,
+                responseHeaders.add(HeaderConstants.HEADER_WWW_AUTHENTICATE,
                         AuthenticatorUtils.formatRequest(challengeRequest,
                                 response, responseHeaders));
             }
@@ -252,7 +258,7 @@ public class HttpServerAdapter extends HttpAdapter {
         if (response.getProxyChallengeRequests() != null) {
             for (final ChallengeRequest challengeRequest : response
                     .getProxyChallengeRequests()) {
-                responseHeaders.add(HttpConstants.HEADER_PROXY_AUTHENTICATE,
+                responseHeaders.add(HeaderConstants.HEADER_PROXY_AUTHENTICATE,
                         AuthenticatorUtils.formatRequest(challengeRequest,
                                 response, responseHeaders));
             }
@@ -264,35 +270,35 @@ public class HttpServerAdapter extends HttpAdapter {
                 .getRequest().getClientInfo().getAgent().contains("MSIE"))) {
             // Add the Vary header if content negotiation was used
             final Set<Dimension> dimensions = response.getDimensions();
-            final String vary = HttpUtils.createVaryHeader(dimensions);
+            final String vary = HeaderUtils.createVaryHeader(dimensions);
             if (vary != null) {
-                responseHeaders.add(HttpConstants.HEADER_VARY, vary);
+                responseHeaders.add(HeaderConstants.HEADER_VARY, vary);
             }
         }
 
         // Add the accept-ranges header
         if (response.getServerInfo().isAcceptingRanges()) {
-            responseHeaders.add(HttpConstants.HEADER_ACCEPT_RANGES, "bytes");
+            responseHeaders.add(HeaderConstants.HEADER_ACCEPT_RANGES, "bytes");
         }
 
         // Add the warning headers
         if (!response.getWarnings().isEmpty()) {
             for (Warning warning : response.getWarnings()) {
-                responseHeaders.add(HttpConstants.HEADER_WARNING, WarningUtils
+                responseHeaders.add(HeaderConstants.HEADER_WARNING, WarningUtils
                         .format(warning));
             }
         }
 
         // Add the Cache-control headers
         if (!response.getCacheDirectives().isEmpty()) {
-            responseHeaders.add(HttpConstants.HEADER_CACHE_CONTROL,
+            responseHeaders.add(HeaderConstants.HEADER_CACHE_CONTROL,
                     CacheControlUtils.format(response.getCacheDirectives()));
         }
 
         // Add the Authentication-Info header
         if (response.getAuthenticationInfo() != null) {
             try {
-                responseHeaders.add(HttpConstants.HEADER_AUTHENTICATION_INFO,
+                responseHeaders.add(HeaderConstants.HEADER_AUTHENTICATION_INFO,
                         org.restlet.engine.security.AuthenticatorUtils
                                 .formatAuthenticationInfo(response
                                         .getAuthenticationInfo()));
@@ -343,12 +349,12 @@ public class HttpServerAdapter extends HttpAdapter {
 
             // Add user-defined extension headers
             Series<Parameter> additionalHeaders = (Series<Parameter>) response
-                    .getAttributes().get(HttpConstants.ATTRIBUTE_HEADERS);
+                    .getAttributes().get(HeaderConstants.ATTRIBUTE_HEADERS);
             addAdditionalHeaders(responseHeaders, additionalHeaders);
 
             // Set the server name again
             response.getHttpCall().getResponseHeaders().add(
-                    HttpConstants.HEADER_SERVER,
+                    HeaderConstants.HEADER_SERVER,
                     response.getServerInfo().getAgent());
 
             // Set the status code in the response
@@ -492,11 +498,11 @@ public class HttpServerAdapter extends HttpAdapter {
      */
     public HttpRequest toRequest(HttpServerCall httpCall) {
         final HttpRequest result = new HttpRequest(getContext(), httpCall);
-        result.getAttributes().put(HttpConstants.ATTRIBUTE_HEADERS,
+        result.getAttributes().put(HeaderConstants.ATTRIBUTE_HEADERS,
                 httpCall.getRequestHeaders());
 
         if (httpCall.getVersion() != null) {
-            result.getAttributes().put(HttpConstants.ATTRIBUTE_VERSION,
+            result.getAttributes().put(HeaderConstants.ATTRIBUTE_VERSION,
                     httpCall.getVersion());
         }
 
@@ -505,21 +511,21 @@ public class HttpServerAdapter extends HttpAdapter {
                     .getSslClientCertificates();
             if (clientCertificates != null) {
                 result.getAttributes().put(
-                        HttpConstants.ATTRIBUTE_HTTPS_CLIENT_CERTIFICATES,
+                        HeaderConstants.ATTRIBUTE_HTTPS_CLIENT_CERTIFICATES,
                         clientCertificates);
             }
 
             final String cipherSuite = httpCall.getSslCipherSuite();
             if (cipherSuite != null) {
                 result.getAttributes()
-                        .put(HttpConstants.ATTRIBUTE_HTTPS_CIPHER_SUITE,
+                        .put(HeaderConstants.ATTRIBUTE_HTTPS_CIPHER_SUITE,
                                 cipherSuite);
             }
 
             final Integer keySize = httpCall.getSslKeySize();
             if (keySize != null) {
                 result.getAttributes().put(
-                        HttpConstants.ATTRIBUTE_HTTPS_KEY_SIZE, keySize);
+                        HeaderConstants.ATTRIBUTE_HTTPS_KEY_SIZE, keySize);
             }
         }
 

@@ -41,7 +41,7 @@ import javax.net.ssl.TrustManagerFactory;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
-import org.restlet.engine.http.HttpsUtils;
+import org.restlet.engine.security.SslUtils;
 import org.restlet.engine.security.SslContextFactory;
 import org.restlet.ext.netty.internal.HttpsServerPipelineFactory;
 
@@ -230,7 +230,7 @@ public class HttpsServerHelper extends NettyServerHelper {
 	@Override
 	public void start() throws Exception {
 		// Initialize the SSL context
-		SslContextFactory sslContextFactory = HttpsUtils
+		SslContextFactory sslContextFactory = SslUtils
 				.getSslContextFactory(this);
 
 		if (sslContextFactory == null) {

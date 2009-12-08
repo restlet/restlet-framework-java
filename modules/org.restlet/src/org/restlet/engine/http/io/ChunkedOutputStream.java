@@ -28,10 +28,12 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.http;
+package org.restlet.engine.http.io;
 
 import java.io.IOException;
 import java.io.OutputStream;
+
+import org.restlet.engine.http.header.HeaderUtils;
 
 /**
  * OutputStream to write data in the HTTP chunked encoding format to a
@@ -136,7 +138,7 @@ public class ChunkedOutputStream extends OutputStream {
      */
     private void writeBuffer() throws IOException {
         this.destination.write(this.buffer, 0, this.bytesWritten);
-        HttpUtils.writeCRLF(this.destination);
+        HeaderUtils.writeCRLF(this.destination);
     }
 
     /**
@@ -159,8 +161,8 @@ public class ChunkedOutputStream extends OutputStream {
      */
     private void writeFinalChunk() throws IOException {
         this.destination.write((byte) '0');
-        HttpUtils.writeCRLF(this.destination);
-        HttpUtils.writeCRLF(this.destination);
+        HeaderUtils.writeCRLF(this.destination);
+        HeaderUtils.writeCRLF(this.destination);
     }
 
     /**
@@ -171,6 +173,6 @@ public class ChunkedOutputStream extends OutputStream {
     private void writePosition() throws IOException {
         this.destination.write(Integer.toHexString(this.bytesWritten)
                 .getBytes());
-        HttpUtils.writeCRLF(this.destination);
+        HeaderUtils.writeCRLF(this.destination);
     }
 }

@@ -40,7 +40,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
-import org.restlet.engine.http.HttpConstants;
+import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.resource.AnnotationInfo;
 import org.restlet.engine.resource.AnnotationUtils;
 import org.restlet.representation.Representation;
@@ -353,7 +353,7 @@ public class WadlServerResource extends ServerResource {
      */
     private Form getHeader() {
         return (Form) getRequestAttributes().get(
-                HttpConstants.ATTRIBUTE_HEADERS);
+                HeaderConstants.ATTRIBUTE_HEADERS);
     }
 
     /**
