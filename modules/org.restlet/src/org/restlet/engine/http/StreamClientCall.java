@@ -55,8 +55,8 @@ import org.restlet.engine.http.header.HeaderUtils;
 import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.http.io.ChunkedInputStream;
 import org.restlet.engine.http.io.ChunkedOutputStream;
-import org.restlet.engine.io.InputEntityStream;
-import org.restlet.engine.io.KeepAliveOutputStream;
+import org.restlet.engine.http.io.InputEntityStream;
+import org.restlet.engine.http.io.KeepAliveOutputStream;
 import org.restlet.representation.Representation;
 import org.restlet.util.WrapperRepresentation;
 

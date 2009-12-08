@@ -37,7 +37,8 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 
 import org.restlet.data.MediaType;
-import org.restlet.engine.io.ByteUtils;
+import org.restlet.engine.io.BioUtils;
+import org.restlet.engine.io.NioUtils;
 
 /**
  * Representation based on a BIO character stream.
@@ -57,22 +58,22 @@ public abstract class CharacterRepresentation extends Representation {
 
     @Override
     public ReadableByteChannel getChannel() throws IOException {
-        return ByteUtils.getChannel(getStream());
+        return NioUtils.getChannel(getStream());
     }
 
     @Override
     public InputStream getStream() throws IOException {
-        return ByteUtils.getStream(getReader(), getCharacterSet());
+        return BioUtils.getStream(getReader(), getCharacterSet());
     }
 
     @Override
     public void write(OutputStream outputStream) throws IOException {
-        ByteUtils.write(getStream(), outputStream);
+        BioUtils.write(getStream(), outputStream);
     }
 
     @Override
     public void write(WritableByteChannel writableChannel) throws IOException {
-        write(ByteUtils.getStream(writableChannel));
+        write(NioUtils.getStream(writableChannel));
     }
 
 }

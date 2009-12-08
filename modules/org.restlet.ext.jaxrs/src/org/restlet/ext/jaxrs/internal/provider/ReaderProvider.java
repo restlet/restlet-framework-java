@@ -48,7 +48,7 @@ import javax.ws.rs.ext.Provider;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.CharacterSet;
-import org.restlet.engine.io.ByteUtils;
+import org.restlet.engine.io.BioUtils;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.representation.Representation;
 
@@ -78,10 +78,10 @@ public class ReaderProvider extends AbstractProvider<Reader> {
             cs = Util.JAX_RS_DEFAULT_CHARACTER_SET;
         }
         try {
-            return ByteUtils.getReader(entityStream, cs);
+            return BioUtils.getReader(entityStream, cs);
         } catch (UnsupportedEncodingException e) {
             try {
-                return ByteUtils.getReader(entityStream, null);
+                return BioUtils.getReader(entityStream, null);
             } catch (UnsupportedEncodingException e2) {
                 throw new WebApplicationException(500);
             }
@@ -125,7 +125,7 @@ public class ReaderProvider extends AbstractProvider<Reader> {
             OutputStream entityStream) throws IOException {
         final CharacterSet cs = Response.getCurrent().getEntity()
                 .getCharacterSet();
-        Util.copyStream(ByteUtils.getStream(reader, cs), entityStream);
+        Util.copyStream(BioUtils.getStream(reader, cs), entityStream);
         // NICE testen charset for ReaderProvider.writeTo(..) ?
     }
 }

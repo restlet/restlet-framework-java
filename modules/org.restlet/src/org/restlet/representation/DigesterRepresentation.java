@@ -43,7 +43,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import org.restlet.data.Digest;
-import org.restlet.engine.io.ByteUtils;
+import org.restlet.engine.io.BioUtils;
+import org.restlet.engine.io.NioUtils;
 import org.restlet.util.WrapperRepresentation;
 
 /**
@@ -165,7 +166,7 @@ public class DigesterRepresentation extends WrapperRepresentation {
         long result = -1L;
 
         if (isAvailable()) {
-            result = ByteUtils.exhaust(getStream());
+            result = BioUtils.exhaust(getStream());
         }
 
         return result;
@@ -173,7 +174,7 @@ public class DigesterRepresentation extends WrapperRepresentation {
 
     @Override
     public ReadableByteChannel getChannel() throws IOException {
-        return ByteUtils.getChannel(getStream());
+        return NioUtils.getChannel(getStream());
     }
 
     /**
@@ -189,7 +190,7 @@ public class DigesterRepresentation extends WrapperRepresentation {
 
     @Override
     public Reader getReader() throws IOException {
-        return ByteUtils.getReader(getStream(), getCharacterSet());
+        return BioUtils.getReader(getStream(), getCharacterSet());
     }
 
     /**
@@ -220,11 +221,11 @@ public class DigesterRepresentation extends WrapperRepresentation {
 
     @Override
     public void write(WritableByteChannel writableChannel) throws IOException {
-        write(ByteUtils.getStream(writableChannel));
+        write(NioUtils.getStream(writableChannel));
     }
 
     @Override
     public void write(Writer writer) throws IOException {
-        write(ByteUtils.getStream(writer));
+        write(BioUtils.getStream(writer));
     }
 }

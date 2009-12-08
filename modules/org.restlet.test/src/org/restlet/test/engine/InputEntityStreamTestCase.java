@@ -34,8 +34,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.restlet.engine.io.ByteUtils;
-import org.restlet.engine.io.InputEntityStream;
+import org.restlet.engine.http.io.InputEntityStream;
+import org.restlet.engine.io.BioUtils;
 import org.restlet.test.RestletTestCase;
 
 /**
@@ -49,7 +49,7 @@ public class InputEntityStreamTestCase extends RestletTestCase {
     public void testRead() {
         String data = "test data";
         InputStream input = new ByteArrayInputStream(data.getBytes());
-        assertEquals("test", ByteUtils
+        assertEquals("test", BioUtils
                 .toString(new InputEntityStream(input, 4)));
     }
 

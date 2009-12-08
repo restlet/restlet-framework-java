@@ -39,11 +39,11 @@ import java.io.UnsupportedEncodingException;
 import org.restlet.data.CharacterSet;
 
 /**
- * Byte manipulation utilities.
+ * Basic IO manipulation utilities.
  * 
  * @author Jerome Louvel
  */
-public final class ByteUtils {
+public final class BioUtils {
 
     /**
      * Returns a reader from an input stream and a character set.
@@ -154,7 +154,7 @@ public final class ByteUtils {
      * Private constructor to ensure that the class acts as a true utility class
      * i.e. it isn't instantiable and extensible.
      */
-    private ByteUtils() {
+    private BioUtils() {
     }
 
 }

@@ -34,7 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.restlet.data.MediaType;
-import org.restlet.engine.io.ByteUtils;
+import org.restlet.engine.io.BioUtils;
 
 /**
  * Representation based on a BIO output stream. This class is a good basis to
@@ -78,7 +78,7 @@ public abstract class OutputRepresentation extends StreamRepresentation {
      */
     @Override
     public InputStream getStream() throws IOException {
-        return ByteUtils.getStream(this);
+        return BioUtils.getStream(this);
     }
 
     /**

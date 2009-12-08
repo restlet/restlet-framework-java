@@ -34,7 +34,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
 
-import org.restlet.engine.io.ByteUtils;
+import org.restlet.engine.io.BioUtils;
 import org.restlet.test.RestletTestCase;
 
 /**
@@ -47,7 +47,7 @@ public class ByteUtilsTestCase extends RestletTestCase {
     public void testGetStream() throws IOException {
         final StringWriter writer = new StringWriter();
 
-        final OutputStream out = ByteUtils.getStream(writer);
+        final OutputStream out = BioUtils.getStream(writer);
 
         out.write("test".getBytes());
         out.flush();

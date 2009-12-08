@@ -59,7 +59,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Range;
 import org.restlet.data.Status;
-import org.restlet.engine.io.ByteUtils;
+import org.restlet.engine.io.BioUtils;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 
@@ -440,7 +440,7 @@ public class FileClientHelper extends EntityClientHelper {
 
                         // Write the entity to the temporary file.
                         if (request.isEntityAvailable()) {
-                            ByteUtils.write(request.getEntity().getStream(),
+                            BioUtils.write(request.getEntity().getStream(),
                                     raf);
                         }
                     } catch (IOException ioe) {
@@ -473,7 +473,7 @@ public class FileClientHelper extends EntityClientHelper {
                         tmp = File.createTempFile("restlet-upload", "bin");
                         if (request.isEntityAvailable()) {
                             fos = new FileOutputStream(tmp);
-                            ByteUtils.write(request.getEntity().getStream(),
+                            BioUtils.write(request.getEntity().getStream(),
                                     fos);
                         }
                     } catch (IOException ioe) {
@@ -595,7 +595,7 @@ public class FileClientHelper extends EntityClientHelper {
                         }
                         // Write the entity to the file.
                         if (request.isEntityAvailable()) {
-                            ByteUtils.write(request.getEntity().getStream(),
+                            BioUtils.write(request.getEntity().getStream(),
                                     raf);
                         }
                     } catch (FileNotFoundException fnfe) {
@@ -632,7 +632,7 @@ public class FileClientHelper extends EntityClientHelper {
                                 response.setStatus(Status.SUCCESS_NO_CONTENT);
                             } else {
                                 fos = new FileOutputStream(file);
-                                ByteUtils.write(
+                                BioUtils.write(
                                         request.getEntity().getStream(), fos);
                                 response.setStatus(Status.SUCCESS_CREATED);
                             }

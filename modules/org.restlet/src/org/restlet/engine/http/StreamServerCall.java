@@ -44,9 +44,9 @@ import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.engine.http.io.ChunkedInputStream;
 import org.restlet.engine.http.io.ChunkedOutputStream;
-import org.restlet.engine.io.ByteUtils;
-import org.restlet.engine.io.InputEntityStream;
-import org.restlet.engine.io.KeepAliveOutputStream;
+import org.restlet.engine.http.io.InputEntityStream;
+import org.restlet.engine.http.io.KeepAliveOutputStream;
+import org.restlet.engine.io.BioUtils;
 
 /**
  * HTTP server call based on streams.
@@ -105,7 +105,7 @@ public class StreamServerCall extends HttpServerCall {
             if (!this.socket.isClosed()) {
                 // Exhaust the input stream before closing in case
                 // the client is still writing to it
-                ByteUtils.exhaust(getRequestEntityStream(getContentLength()));
+                BioUtils.exhaust(getRequestEntityStream(getContentLength()));
                 if (!(this.socket instanceof SSLSocket)) {
                     this.socket.shutdownInput();
                 }

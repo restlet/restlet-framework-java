@@ -46,7 +46,8 @@ import java.util.zip.ZipOutputStream;
 
 import org.restlet.data.Disposition;
 import org.restlet.data.Encoding;
-import org.restlet.engine.io.ByteUtils;
+import org.restlet.engine.io.BioUtils;
+import org.restlet.engine.io.NioUtils;
 import org.restlet.representation.Representation;
 import org.restlet.util.WrapperList;
 import org.restlet.util.WrapperRepresentation;
@@ -133,7 +134,7 @@ public class EncodeRepresentation extends WrapperRepresentation {
     @Override
     public ReadableByteChannel getChannel() throws IOException {
         if (canEncode()) {
-            return ByteUtils.getChannel(getStream());
+            return NioUtils.getChannel(getStream());
         }
 
         return getWrappedRepresentation().getChannel();
@@ -241,7 +242,7 @@ public class EncodeRepresentation extends WrapperRepresentation {
     @Override
     public InputStream getStream() throws IOException {
         if (canEncode()) {
-            return ByteUtils.getStream(this);
+            return BioUtils.getStream(this);
         }
 
         return getWrappedRepresentation().getStream();
@@ -259,7 +260,7 @@ public class EncodeRepresentation extends WrapperRepresentation {
         String result = null;
 
         if (canEncode()) {
-            result = ByteUtils.toString(getStream(), getCharacterSet());
+            result = BioUtils.toString(getStream(), getCharacterSet());
         } else {
             result = getWrappedRepresentation().getText();
         }
@@ -318,7 +319,7 @@ public class EncodeRepresentation extends WrapperRepresentation {
     @Override
     public void write(WritableByteChannel writableChannel) throws IOException {
         if (canEncode()) {
-            write(ByteUtils.getStream(writableChannel));
+            write(NioUtils.getStream(writableChannel));
         } else {
             getWrappedRepresentation().write(writableChannel);
         }

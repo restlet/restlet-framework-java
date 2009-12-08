@@ -42,7 +42,7 @@ import org.restlet.data.Disposition;
 import org.restlet.data.MediaType;
 import org.restlet.data.Range;
 import org.restlet.data.Tag;
-import org.restlet.engine.io.ByteUtils;
+import org.restlet.engine.io.BioUtils;
 import org.restlet.engine.util.DateUtils;
 
 /**
@@ -299,7 +299,7 @@ public abstract class Representation extends RepresentationInfo {
                         .getInstance(algorithm);
                 java.security.DigestInputStream dis = new java.security.DigestInputStream(
                         getStream(), md);
-                org.restlet.engine.io.ByteUtils.exhaust(dis);
+                org.restlet.engine.io.BioUtils.exhaust(dis);
                 result = new org.restlet.data.Digest(algorithm, md.digest());
             } catch (java.security.NoSuchAlgorithmException e) {
                 Context.getCurrentLogger().log(Level.WARNING,
@@ -323,7 +323,7 @@ public abstract class Representation extends RepresentationInfo {
         long result = -1L;
         // [ifndef gwt]
         if (isAvailable()) {
-            result = ByteUtils.exhaust(getStream());
+            result = BioUtils.exhaust(getStream());
         }
         // [enddef]
 

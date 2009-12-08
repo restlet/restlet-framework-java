@@ -50,7 +50,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.ReferenceList;
 import org.restlet.data.Status;
-import org.restlet.engine.io.ByteUtils;
+import org.restlet.engine.io.BioUtils;
 import org.restlet.representation.Representation;
 import org.restlet.service.MetadataService;
 
@@ -287,7 +287,7 @@ public class ZipClientHelper extends LocalClientHelper {
                                 replaced = true;
                             } else {
                                 zipOut.putNextEntry(e);
-                                ByteUtils.write(new BufferedInputStream(zipFile
+                                BioUtils.write(new BufferedInputStream(zipFile
                                         .getInputStream(e)), zipOut);
                                 zipOut.closeEntry();
                             }
@@ -317,7 +317,7 @@ public class ZipClientHelper extends LocalClientHelper {
                             fos = new FileOutputStream(file);
                             // ByteUtils.write(fis.getChannel(),
                             // fos.getChannel());
-                            ByteUtils.write(fis, fos);
+                            BioUtils.write(fis, fos);
                             response.setStatus(Status.SUCCESS_OK);
                         } finally {
                             try {
@@ -362,7 +362,7 @@ public class ZipClientHelper extends LocalClientHelper {
                 entry.setTime(System.currentTimeMillis());
             }
             out.putNextEntry(entry);
-            ByteUtils.write(new BufferedInputStream(entity.getStream()), out);
+            BioUtils.write(new BufferedInputStream(entity.getStream()), out);
             out.closeEntry();
             return true;
         }

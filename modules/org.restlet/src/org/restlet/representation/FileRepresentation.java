@@ -45,7 +45,8 @@ import java.util.Date;
 import org.restlet.data.Disposition;
 import org.restlet.data.LocalReference;
 import org.restlet.data.MediaType;
-import org.restlet.engine.io.ByteUtils;
+import org.restlet.engine.io.BioUtils;
+import org.restlet.engine.io.NioUtils;
 
 /**
  * Representation based on a static file. Note that in order for Web clients to
@@ -206,7 +207,7 @@ public class FileRepresentation extends Representation {
 
     @Override
     public String getText() throws IOException {
-        return ByteUtils.toString(getStream(), getCharacterSet());
+        return BioUtils.toString(getStream(), getCharacterSet());
     }
 
     /**
@@ -287,7 +288,7 @@ public class FileRepresentation extends Representation {
 
     @Override
     public void write(OutputStream outputStream) throws IOException {
-        ByteUtils.write(getStream(), outputStream);
+        BioUtils.write(getStream(), outputStream);
     }
 
     /**
@@ -299,12 +300,12 @@ public class FileRepresentation extends Representation {
      */
     @Override
     public void write(WritableByteChannel writableChannel) throws IOException {
-        ByteUtils.write(getChannel(), writableChannel);
+        NioUtils.write(getChannel(), writableChannel);
     }
 
     @Override
     public void write(Writer writer) throws IOException {
-        ByteUtils.write(getReader(), writer);
+        BioUtils.write(getReader(), writer);
     }
 
 }

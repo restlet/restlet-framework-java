@@ -54,8 +54,8 @@ import org.restlet.Server;
 import org.restlet.engine.http.HttpServerCall;
 import org.restlet.engine.http.io.ChunkedInputStream;
 import org.restlet.engine.http.io.ChunkedOutputStream;
-import org.restlet.engine.io.ByteUtils;
-import org.restlet.engine.io.ReadableEntityChannel;
+import org.restlet.engine.http.io.ReadableEntityChannel;
+import org.restlet.engine.io.NioUtils;
 
 import com.sun.grizzly.util.InputReader;
 import com.sun.grizzly.util.OutputWriter;
@@ -173,7 +173,7 @@ public class GrizzlyServerCall extends HttpServerCall {
     @Override
     public OutputStream getResponseEntityStream() {
         if (isResponseChunked()) {
-            return new ChunkedOutputStream(ByteUtils
+            return new ChunkedOutputStream(NioUtils
                     .getStream(getWritableChannel()));
         }
         // Leave normal encoding to the channel mode

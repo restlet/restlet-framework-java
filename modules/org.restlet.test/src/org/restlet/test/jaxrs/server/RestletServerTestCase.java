@@ -62,7 +62,7 @@ import org.restlet.data.Preference;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
-import org.restlet.engine.io.ByteUtils;
+import org.restlet.engine.io.NioUtils;
 import org.restlet.representation.Representation;
 import org.restlet.security.ChallengeAuthenticator;
 import org.restlet.security.MemoryRealm;
@@ -370,7 +370,7 @@ public abstract class RestletServerTestCase extends TestCase {
 
                 @Override
                 public ReadableByteChannel getChannel() throws IOException {
-                    return ByteUtils.getChannel(getStream());
+                    return NioUtils.getChannel(getStream());
                 }
 
                 @Override

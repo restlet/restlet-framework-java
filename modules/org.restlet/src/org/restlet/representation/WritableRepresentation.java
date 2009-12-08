@@ -35,7 +35,7 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 
 import org.restlet.data.MediaType;
-import org.restlet.engine.io.ByteUtils;
+import org.restlet.engine.io.NioUtils;
 
 /**
  * Representation based on a writable NIO byte channel. This class is a good
@@ -62,7 +62,7 @@ public abstract class WritableRepresentation extends ChannelRepresentation {
 
     @Override
     public ReadableByteChannel getChannel() throws IOException {
-        return ByteUtils.getChannel(this);
+        return NioUtils.getChannel(this);
     }
 
     /**
