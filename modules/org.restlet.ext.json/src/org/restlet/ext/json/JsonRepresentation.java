@@ -259,6 +259,14 @@ public class JsonRepresentation extends WriterRepresentation {
         return toJsonTokener();
     }
 
+    @Override
+    public long getSize() {
+        if (this.jsonRepresentation != null) {
+            return this.jsonRepresentation.getSize();
+        }
+        return super.getSize();
+    }
+
     /**
      * 
      * @param jsonObject

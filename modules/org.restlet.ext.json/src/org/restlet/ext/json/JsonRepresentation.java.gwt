@@ -128,6 +128,14 @@ public class JsonRepresentation extends Representation {
     }
 
     @Override
+    public long getSize() {
+        if (this.jsonRepresentation != null) {
+            return this.jsonRepresentation.getSize();
+        }
+        return super.getSize();
+    }
+
+    @Override
     public InputStream getStream() throws IOException {
         return new StringBufferInputStream(getValue().toString());
     }
