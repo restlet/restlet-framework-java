@@ -41,10 +41,8 @@ import java.net.UnknownHostException;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.net.SocketFactory;
-import javax.net.ssl.SSLSocket;
 
 import org.restlet.Request;
 import org.restlet.data.Method;
@@ -57,8 +55,8 @@ import org.restlet.engine.http.io.ChunkedInputStream;
 import org.restlet.engine.http.io.ChunkedOutputStream;
 import org.restlet.engine.http.io.InputEntityStream;
 import org.restlet.engine.http.io.KeepAliveOutputStream;
+import org.restlet.engine.http.io.ClosingRepresentation;
 import org.restlet.representation.Representation;
-import org.restlet.util.WrapperRepresentation;
 
 /**
  * HTTP client call based on streams.
@@ -66,42 +64,6 @@ import org.restlet.util.WrapperRepresentation;
  * @author Jerome Louvel
  */
 public class StreamClientCall extends HttpClientCall {
-
-    /**
-     * Wrapper representation to close the associated socket when the
-     * representation is released.
-     */
-    private static class SocketWrapperRepresentation extends
-            WrapperRepresentation {
-
-        private final Logger log;
-
-        private final Socket socket;
-
-        public SocketWrapperRepresentation(
-                Representation wrappedRepresentation, Socket socket, Logger log) {
-            super(wrappedRepresentation);
-            this.socket = socket;
-            this.log = log;
-        }
-
-        @Override
-        public void release() {
-            try {
-                if (!this.socket.isClosed()) {
-                    if (!(this.socket instanceof SSLSocket)) {
-                        this.socket.shutdownOutput();
-                    }
-                    this.socket.close();
-                }
-            } catch (IOException ex) {
-                this.log.log(Level.WARNING,
-                        "An error occured closing the client socket", ex);
-            }
-
-            super.release();
-        }
-    }
 
     /**
      * Returns the absolute request URI.
@@ -188,7 +150,7 @@ public class StreamClientCall extends HttpClientCall {
     @Override
     protected Representation getRepresentation(InputStream stream) {
         final Representation result = super.getRepresentation(stream);
-        return new SocketWrapperRepresentation(result, this.socket, getHelper()
+        return new ClosingRepresentation(result, this.socket, getHelper()
                 .getLogger());
     }
 
