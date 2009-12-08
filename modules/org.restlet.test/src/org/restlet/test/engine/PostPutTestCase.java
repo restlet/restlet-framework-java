@@ -39,6 +39,7 @@ import org.restlet.Restlet;
 import org.restlet.data.Form;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
+import org.restlet.representation.Representation;
 
 /**
  * Unit tests for POST and PUT requests.
@@ -61,8 +62,12 @@ public class PostPutTestCase extends BaseConnectorsTestCase {
                 final Restlet trace = new Restlet(getContext()) {
                     @Override
                     public void handle(Request request, Response response) {
-                        final Form inputForm = request.getEntityAsForm();
-                        response.setEntity(inputForm.getWebRepresentation());
+                        Representation entity = request.getEntity();
+                        if (entity != null) {
+                            response.setEntity(new Form(entity)
+                                    .getWebRepresentation());
+                        }
+
                     }
                 };
 
@@ -85,11 +90,11 @@ public class PostPutTestCase extends BaseConnectorsTestCase {
         final Response response = client.handle(request);
         assertNotNull(response.getEntity());
 
-        final Form outputForm = response.getEntityAsForm();
+        final Representation entity = response.getEntity();
+        final Form outputForm = new Form(entity);
         assertEquals(2, outputForm.size());
         assertEquals("a", outputForm.getFirstValue("a"));
         assertEquals("b", outputForm.getFirstValue("b"));
     }
-  
 
 }

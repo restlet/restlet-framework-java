@@ -72,415 +72,530 @@ import com.google.gwt.user.rebind.rpc.TypeSerializerCreator;
 
 /**
  * Deferred binding generator capable of creating a subclass of
- * {@link GwtClientProxy} implementing a custom Java interface, extending
- * the marker {@link ClientProxy} interface, and annotated with Restlet
- * annotations such as {@link Get} , {@link Post} or {@link Delete}.
+ * {@link GwtClientProxy} implementing a custom Java interface, extending the
+ * marker {@link ClientProxy} interface, and annotated with Restlet annotations
+ * such as {@link Get} , {@link Post} or {@link Delete}.
  * 
  * @author Jerome Louvel
  */
 public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
 
-	private TreeLogger logger;
+    /** The name of the proxy class that will be generated. */
+    private String className;
 
-	private JClassType classType;
+    /** The parent type. */
+    private JClassType classType;
 
-	private GeneratorContext context;
+    /** Provides metadata to defered binding generators. */
+    private GeneratorContext context;
 
-	private String className;
+    /** The logger used by the deferred binding generators. */
+    private TreeLogger logger;
 
-	private String packageName;
+    /** The package name of the parent type. */
+    private String packageName;
 
-	private String typeQName;
+    /** Used to write the content of the proxy class. */
+    private SourceWriter sourceWriter;
 
-	private SourceWriter sourceWriter;
+    /** Represents the serializer class. */
+    private SerializableTypeOracle sto;
 
-	private TypeOracle typeOracle;
+    /** The builder of the serializer class. */
+    private SerializableTypeOracleBuilder stob;
 
-	private SerializableTypeOracleBuilder stob;
+    /** The type oracle for the current generator context. */
+    private TypeOracle typeOracle;
 
-	private SerializableTypeOracle sto;
+    /**
+     * The parent type for which a default constructible subclass will be
+     * generated.
+     */
+    private String typeQName;
 
-	/**
-	 * Default constructor.
-	 */
-	public ClientProxyGenerator() {
-		this.logger = null;
-		this.classType = null;
-		this.context = null;
-		this.className = null;
-		this.packageName = null;
-		this.typeQName = null;
-		this.sourceWriter = null;
-		this.typeOracle = null;
-		this.stob = null;
-		this.sto = null;
-	}
+    /**
+     * Default constructor.
+     */
+    public ClientProxyGenerator() {
+        this.logger = null;
+        this.classType = null;
+        this.context = null;
+        this.className = null;
+        this.packageName = null;
+        this.typeQName = null;
+        this.sourceWriter = null;
+        this.typeOracle = null;
+        this.stob = null;
+        this.sto = null;
+    }
 
-	@Override
-	public String generate(TreeLogger logger, GeneratorContext context,
-			String typeQName) throws UnableToCompleteException {
-		String result = null;
+    @Override
+    public String generate(TreeLogger logger, GeneratorContext context,
+            String typeQName) throws UnableToCompleteException {
+        String result = null;
 
-		try {
-			this.logger = logger;
-			this.context = context;
-			this.typeQName = typeQName;
-			this.sourceWriter = null;
-			this.typeOracle = context.getTypeOracle();
-			this.classType = typeOracle.getType(typeQName);
-			this.packageName = getClassType().getPackage().getName();
-			this.className = getClassType().getSimpleSourceName() + "Proxy";
-			generateProxy();
-			result = getPackageName() + "." + getClassName();
-		} catch (Exception e) {
-			e.printStackTrace();
-			UnableToCompleteException utce = new UnableToCompleteException();
-			utce.initCause(e);
-			throw utce;
-		}
+        try {
+            this.logger = logger;
+            this.context = context;
+            this.typeQName = typeQName;
+            this.sourceWriter = null;
+            this.typeOracle = context.getTypeOracle();
+            this.classType = typeOracle.getType(typeQName);
+            this.packageName = getClassType().getPackage().getName();
+            this.className = getClassType().getSimpleSourceName() + "Proxy";
+            generateProxy();
+            result = getPackageName() + "." + getClassName();
+        } catch (Exception e) {
+            e.printStackTrace();
+            UnableToCompleteException utce = new UnableToCompleteException();
+            utce.initCause(e);
+            throw utce;
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	protected void generateContructor() {
-		println("public " + getClassName() + "() {");
-		indent();
-		println("super(GWT.getModuleBaseURL(),");
-		indent();
-		println("SERIALIZATION_POLICY, ");
-		println("SERIALIZER);");
-		outdent();
-		outdent();
-		println("}");
-	}
+    /**
+     * Generates the default constructor.
+     */
+    protected void generateContructor() {
+        println("public " + getClassName() + "() {");
+        indent();
+        println("super(GWT.getModuleBaseURL(),");
+        indent();
+        println("SERIALIZATION_POLICY, ");
+        println("SERIALIZER);");
+        outdent();
+        outdent();
+        println("}");
+    }
 
-	protected void generateFields(SerializableTypeOracle serializableTypeOracle) {
-		String typeSerializerName = serializableTypeOracle
-				.getTypeSerializerQualifiedName(getClassType());
-		println("private static final String SERIALIZATION_POLICY =\"" + "null"
-				+ "\";");
-		println("private static final " + typeSerializerName
-				+ " SERIALIZER = new " + typeSerializerName + "();");
-	}
+    /**
+     * Generates the private members of the proxy class.
+     * 
+     * @param serializableTypeOracle
+     *            The type of the object serializer/deserializer.
+     */
+    protected void generateFields(SerializableTypeOracle serializableTypeOracle) {
+        String typeSerializerName = serializableTypeOracle
+                .getTypeSerializerQualifiedName(getClassType());
+        println("private static final String SERIALIZATION_POLICY =\"null\";");
+        println("private static final " + typeSerializerName
+                + " SERIALIZER = new " + typeSerializerName + "();");
+    }
 
-	protected void generateMethod(java.lang.reflect.Method method) throws Exception {
-		AnnotationInfo info = AnnotationUtils.getAnnotation(method);
+    /**
+     * Generates the code of a given Java method (must be correctly annotated
+     * using Restlet annotation).
+     * 
+     * @param method
+     *            The Java method.
+     * @throws Exception
+     */
+    protected void generateMethod(java.lang.reflect.Method method)
+            throws Exception {
+        AnnotationInfo info = AnnotationUtils.getAnnotation(method);
 
-		if (info == null) {
-			getLogger().log(
-					Type.WARN,
-					"The " + getTypeQName() + " interface contains a \""
-							+ method.getName()
-							+ "\" method without a proper Restlet annotation.");
-		} else {
-			int modifiers = method.getModifiers();
-			if (Modifier.isPublic(modifiers)) {
-				print("public ");
-			} else if (Modifier.isPrivate(modifiers)) {
-				print("private ");
-			} else if (Modifier.isProtected(modifiers)) {
-				print("protected ");
-			}
+        if (info == null) {
+            getLogger().log(
+                    Type.WARN,
+                    "The " + getTypeQName() + " interface contains a \""
+                            + method.getName()
+                            + "\" method without a proper Restlet annotation.");
+        } else {
+            int modifiers = method.getModifiers();
+            if (Modifier.isPublic(modifiers)) {
+                print("public ");
+            } else if (Modifier.isPrivate(modifiers)) {
+                print("private ");
+            } else if (Modifier.isProtected(modifiers)) {
+                print("protected ");
+            }
 
-			print("void " + method.getName() + "(");
+            print("void " + method.getName() + "(");
 
-			Class<?>[] parameterTypes = method.getParameterTypes();
-			java.lang.reflect.Type[] genericParameterTypes = method
-					.getGenericParameterTypes();
-			Class<?> parameterType;
-			java.lang.reflect.Type genericParameterType;
-			ParameterizedType parameterizedType;
-			Class<?> actualType = null;
-			Class<?> callbackType = null;
+            Class<?>[] parameterTypes = method.getParameterTypes();
+            java.lang.reflect.Type[] genericParameterTypes = method
+                    .getGenericParameterTypes();
+            Class<?> parameterType;
+            java.lang.reflect.Type genericParameterType;
+            ParameterizedType parameterizedType;
+            Class<?> actualType = null;
+            Class<?> callbackType = null;
 
-			for (int i = 0; i < parameterTypes.length; i++) {
-				parameterType = parameterTypes[i];
-				genericParameterType = genericParameterTypes[i];
-				parameterizedType = (genericParameterType instanceof ParameterizedType) ? (ParameterizedType) genericParameterType
-						: null;
+            for (int i = 0; i < parameterTypes.length; i++) {
+                parameterType = parameterTypes[i];
+                genericParameterType = genericParameterTypes[i];
+                parameterizedType = (genericParameterType instanceof ParameterizedType) ? (ParameterizedType) genericParameterType
+                        : null;
 
-				if (parameterizedType != null) {
-					actualType = (parameterizedType.getActualTypeArguments()[0] instanceof Class<?>) ? (Class<?>) parameterizedType
-							.getActualTypeArguments()[0]
-							: null;
-				} else {
-					actualType = null;
-				}
+                if (parameterizedType != null) {
+                    actualType = (parameterizedType.getActualTypeArguments()[0] instanceof Class<?>) ? (Class<?>) parameterizedType
+                            .getActualTypeArguments()[0]
+                            : null;
+                } else {
+                    actualType = null;
+                }
 
-				if (i == (parameterTypes.length - 1)) {
-					if (AsyncCallback.class.isAssignableFrom(parameterType)) {
-						callbackType = actualType;
+                if (i == (parameterTypes.length - 1)) {
+                    if (AsyncCallback.class.isAssignableFrom(parameterType)) {
+                        callbackType = actualType;
 
-						if (callbackType == null) {
-							print("final " + parameterType.getSimpleName()
-									+ " callback");
-						} else {
-							print("final " + parameterType.getSimpleName()
-									+ "<" + callbackType.getName() + ">"
-									+ " callback");
-						}
-					} else {
-						getLogger()
-								.log(
-										Type.WARN,
-										"The "
-												+ getTypeQName()
-												+ " interface contains a \""
-												+ method.getName()
-												+ "\" method without a callback as last parameter.");
-					}
-				} else {
-					print(parameterType.getName() + " param" + (i + 1) + ", ");
-				}
-			}
+                        if (callbackType == null) {
+                            print("final " + parameterType.getSimpleName()
+                                    + " callback");
+                        } else {
+                            print("final " + parameterType.getSimpleName()
+                                    + "<" + callbackType.getName() + ">"
+                                    + " callback");
+                        }
+                    } else {
+                        getLogger()
+                                .log(
+                                        Type.WARN,
+                                        "The "
+                                                + getTypeQName()
+                                                + " interface contains a \""
+                                                + method.getName()
+                                                + "\" method without a callback as last parameter.");
+                    }
+                } else {
+                    print(parameterType.getName() + " param" + (i + 1) + ", ");
+                }
+            }
 
-			println("){");
-			indent();
+            println("){");
+            indent();
 
-			if (parameterTypes.length > 1) {
-				parameterType = parameterTypes[0];
-				println("Representation requestEntity = new ObjectRepresentation<"
-						+ parameterType.getName()
-						+ ">(param1,(SerializationStreamFactory) "
-						+ getClassName() + ".this);");
-				println("getClientResource().getRequest().setEntity(requestEntity);");
-			}
+            if (parameterTypes.length > 1) {
+                parameterType = parameterTypes[0];
+                println("Representation requestEntity = new ObjectRepresentation<"
+                        + parameterType.getName()
+                        + ">(param1,(SerializationStreamFactory) "
+                        + getClassName() + ".this);");
+                println("getClientResource().getRequest().setEntity(requestEntity);");
+            }
 
-			println("getClientResource().setMethod(Method."
-					+ info.getRestletMethod().toString() + ");");
-			println("getClientResource().setOnReceived(new Uniform() {");
-			indent();
-			println("public void handle(Request request, Response response) {");
-			indent();
-			println("if (getClientResource().getStatus().isError()) {");
-			indent();
-			println("callback.onFailure(new ResourceException(getClientResource().getStatus()));");
-			outdent();
-			println("} else {");
-			indent();
+            println("getClientResource().setMethod(Method."
+                    + info.getRestletMethod().toString() + ");");
+            println("getClientResource().setOnReceived(new Uniform() {");
+            indent();
+            println("public void handle(Request request, Response response) {");
+            indent();
+            println("if (getClientResource().getStatus().isError()) {");
+            indent();
+            println("callback.onFailure(new ResourceException(getClientResource().getStatus()));");
+            outdent();
+            println("} else {");
+            indent();
 
-			if (Void.class.equals(callbackType)) {
-				println("callback.onSuccess(null);");
-			} else {
-				println(callbackType.getName() + " result;");
-				println("try {");
-				indent();
-				println("result = new ObjectRepresentation<"
-						+ callbackType.getName() + ">(");
-				indent();
-				println("response.getEntity().getText(),");
-				println("(SerializationStreamFactory) " + getClassName()
-						+ ".this)");
-				println(".getObject();");
-				outdent();
-				println("callback.onSuccess(result);");
-				outdent();
-				println("} catch (IOException ioe) {");
-				indent();
-				println("callback.onFailure(ioe);");
-				println("}");
-				outdent();
-			}
+            if (Void.class.equals(callbackType)) {
+                println("callback.onSuccess(null);");
+            } else {
+                println(callbackType.getName() + " result;");
+                println("try {");
+                indent();
+                println("result = new ObjectRepresentation<"
+                        + callbackType.getName() + ">(");
+                indent();
+                println("response.getEntity().getText(),");
+                println("(SerializationStreamFactory) " + getClassName()
+                        + ".this)");
+                println(".getObject();");
+                outdent();
+                println("callback.onSuccess(result);");
+                outdent();
+                println("} catch (IOException ioe) {");
+                indent();
+                println("callback.onFailure(ioe);");
+                println("}");
+            }
+            outdent();
+            println("}");
+            outdent();
+            println("}");
+            outdent();
+            println("});");
+            println("getClientResource().handle();");
+            outdent();
+            println("}");
+        }
+    }
 
-			println("}");
-			outdent();
-			println("}");
-			outdent();
-			println("});");
-			println("getClientResource().handle();");
-			outdent();
-			println("}");
-		}
-	}
+    /**
+     * Generates the code of the proxy class.
+     * 
+     * @throws Exception
+     */
+    protected void generateProxy() throws Exception {
+        PrintWriter printWriter = getContext().tryCreate(getLogger(),
+                getPackageName(), getClassName());
 
-	protected void generateProxy() throws Exception {
-		PrintWriter printWriter = getContext().tryCreate(getLogger(),
-				getPackageName(), getClassName());
+        if (printWriter != null) {
+            generateSerializers();
 
-		if (printWriter != null) {
-			generateSerializers();
+            ClassSourceFileComposerFactory composer = new ClassSourceFileComposerFactory(
+                    getPackageName(), getClassName());
+            composer.setSuperclass(GwtClientProxy.class.getCanonicalName());
+            composer.addImplementedInterface(getTypeQName());
+            composer.addImport(GWT.class.getCanonicalName());
+            composer.addImport(IOException.class.getCanonicalName());
+            composer.addImport(Request.class.getCanonicalName());
+            composer.addImport(Response.class.getCanonicalName());
+            composer.addImport(Uniform.class.getCanonicalName());
+            composer.addImport(Method.class.getCanonicalName());
+            composer.addImport(Representation.class.getCanonicalName());
+            composer.addImport(ObjectRepresentation.class.getCanonicalName());
+            composer.addImport(ResourceException.class.getCanonicalName());
+            composer.addImport(AsyncCallback.class.getCanonicalName());
+            composer.addImport(SerializationStreamFactory.class
+                    .getCanonicalName());
 
-			ClassSourceFileComposerFactory composer = new ClassSourceFileComposerFactory(
-					getPackageName(), getClassName());
-			composer.setSuperclass(GwtClientProxy.class.getCanonicalName());
-			composer.addImplementedInterface(getTypeQName());
-			composer.addImport(GWT.class.getCanonicalName());
-			composer.addImport(IOException.class.getCanonicalName());
-			composer.addImport(Request.class.getCanonicalName());
-			composer.addImport(Response.class.getCanonicalName());
-			composer.addImport(Uniform.class.getCanonicalName());
-			composer.addImport(Method.class.getCanonicalName());
-			composer.addImport(Representation.class.getCanonicalName());
-			composer.addImport(ObjectRepresentation.class.getCanonicalName());
-			composer.addImport(ResourceException.class.getCanonicalName());
-			composer.addImport(AsyncCallback.class.getCanonicalName());
-			composer.addImport(SerializationStreamFactory.class
-					.getCanonicalName());
+            this.sourceWriter = composer.createSourceWriter(getContext(),
+                    printWriter);
+            indent();
+            println();
+            generateFields(getSto());
+            println();
+            generateContructor();
+            println();
 
-			this.sourceWriter = composer.createSourceWriter(getContext(),
-					printWriter);
-			indent();
-			println();
-			generateFields(getSto());
-			println();
-			generateContructor();
-			println();
+            // Generate the proxy methods
+            Class<?> interfaceClass = Class.forName(getTypeQName());
 
-			// Generate the proxy methods
-			Class<?> interfaceClass = Class.forName(getTypeQName());
+            for (java.lang.reflect.Method method : interfaceClass.getMethods()) {
+                if (!"getClientResource".equals(method.getName())) {
+                    if ("void".equals(method.getReturnType().toString())) {
+                        generateMethod(method);
+                        println();
+                    } else {
+                        getLogger()
+                                .log(
+                                        Type.WARN,
+                                        "The "
+                                                + getTypeQName()
+                                                + " interface contains a \""
+                                                + method.getName()
+                                                + "\" method without a void return type.");
+                    }
+                }
+            }
 
-			for (java.lang.reflect.Method method : interfaceClass.getMethods()) {
-				if (!"getClientResource".equals(method.getName())) {
-					if ("void".equals(method.getReturnType().toString())) {
-						generateMethod(method);
-						println();
-					} else {
-						getLogger()
-								.log(
-										Type.WARN,
-										"The "
-												+ getTypeQName()
-												+ " interface contains a \""
-												+ method.getName()
-												+ "\" method without a void return type.");
-					}
-				}
-			}
+            outdent();
+            println("}");
+            getContext().commit(getLogger(), printWriter);
+        }
+    }
 
-			outdent();
-			println("}");
-			getContext().commit(getLogger(), printWriter);
-		}
-	}
+    /**
+     * Generates the code of the necessary object serializers.
+     * 
+     * @throws UnableToCompleteException
+     */
+    protected void generateSerializers() throws UnableToCompleteException {
+        try {
+            this.stob = new SerializableTypeOracleBuilder(getLogger(),
+                    getContext().getPropertyOracle(), getTypeOracle());
 
-	protected void generateSerializers() throws UnableToCompleteException {
-		try {
-			this.stob = new SerializableTypeOracleBuilder(getLogger(),
-					getContext().getPropertyOracle(), getTypeOracle());
+            // Discover and add serializable types
+            getStob().addRootType(getLogger(),
+                    getTypeOracle().getType(String.class.getName()));
+            JMethod[] methods = getClassType().getOverridableMethods();
+            JClassType exceptionClass = getTypeOracle().getType(
+                    Exception.class.getName());
+            JType asyncType = getTypeOracle().getType(
+                    AsyncCallback.class.getName());
 
-			// Discover and add serializable types
-			getStob().addRootType(getLogger(),
-					getTypeOracle().getType(String.class.getName()));
-			JMethod[] methods = getClassType().getOverridableMethods();
-			JClassType exceptionClass = getTypeOracle().getType(
-					Exception.class.getName());
-			JType asyncType = getTypeOracle().getType(
-					AsyncCallback.class.getName());
+            for (JMethod method : methods) {
+                if (!"getClientResource".equals(method.getName())) {
+                    JType returnType = method.getReturnType();
 
-			for (JMethod method : methods) {
-				if (!"getClientResource".equals(method.getName())) {
-					JType returnType = method.getReturnType();
+                    if (returnType != JPrimitiveType.VOID) {
+                        getStob().addRootType(getLogger(), returnType);
+                    }
 
-					if (returnType != JPrimitiveType.VOID) {
-						getStob().addRootType(getLogger(), returnType);
-					}
+                    JParameter[] parameters = method.getParameters();
+                    for (JParameter parameter : parameters) {
+                        JType parameterType = parameter.getType();
+                        JParameterizedType parameterizedType = parameterType
+                                .isParameterized();
 
-					JParameter[] parameters = method.getParameters();
-					for (JParameter parameter : parameters) {
-						JType parameterType = parameter.getType();
-						JParameterizedType parameterizedType = parameterType
-								.isParameterized();
+                        if ((parameterizedType == null)
+                                || (parameterizedType.getBaseType() != asyncType)) {
+                            getStob().addRootType(getLogger(), parameterType);
+                        }
+                    }
 
-						if ((parameterizedType == null)
-								|| (parameterizedType.getBaseType() != asyncType)) {
-							getStob().addRootType(getLogger(), parameterType);
-						}
-					}
+                    JType[] exceptions = method.getThrows();
+                    if (exceptions.length > 0) {
+                        for (JType exception : exceptions) {
+                            if (!exceptionClass.isAssignableFrom(exception
+                                    .isClass())) {
+                                getLogger()
+                                        .log(Type.WARN,
+                                                "Only checked exceptions are supported");
+                            }
 
-					JType[] exceptions = method.getThrows();
-					if (exceptions.length > 0) {
-						for (JType exception : exceptions) {
-							if (!exceptionClass.isAssignableFrom(exception
-									.isClass())) {
-								getLogger()
-										.log(Type.WARN,
-												"Only checked exceptions are supported");
-							}
+                            getStob().addRootType(getLogger(), exception);
+                        }
+                    }
+                }
+            }
 
-							getStob().addRootType(getLogger(), exception);
-						}
-					}
-				}
-			}
+            // Log serialization information
+            OutputStream los = getContext().tryCreateResource(getLogger(),
+                    getClassType().getQualifiedSourceName() + ".restlet.log");
+            getStob().setLogOutputStream(los);
+            this.sto = getStob().build(getLogger());
 
-			// Log serialization information
-			OutputStream los = getContext().tryCreateResource(getLogger(),
-					getClassType().getQualifiedSourceName() + ".restlet.log");
-			getStob().setLogOutputStream(los);
-			this.sto = getStob().build(getLogger());
+            if (los != null) {
+                getContext().commitResource(getLogger(), los).setPrivate(true);
+            }
 
-			if (los != null) {
-				getContext().commitResource(getLogger(), los).setPrivate(true);
-			}
+            TypeSerializerCreator tsc = new TypeSerializerCreator(getLogger(),
+                    getSto(), getContext(), getSto()
+                            .getTypeSerializerQualifiedName(getClassType()));
+            tsc.realize(getLogger());
+        } catch (NotFoundException e) {
+            getLogger().log(TreeLogger.ERROR, "", e);
+            throw new UnableToCompleteException();
+        }
+    }
 
-			TypeSerializerCreator tsc = new TypeSerializerCreator(getLogger(),
-					getSto(), getContext(), getSto()
-							.getTypeSerializerQualifiedName(getClassType()));
-			tsc.realize(getLogger());
-		} catch (NotFoundException e) {
-			getLogger().log(TreeLogger.ERROR, "", e);
-			throw new UnableToCompleteException();
-		}
-	}
+    /**
+     * Returns the name of the proxy class that will be generated.
+     * 
+     * @return The name of the proxy class that will be generated.
+     */
+    protected String getClassName() {
+        return className;
+    }
 
-	protected String getClassName() {
-		return className;
-	}
+    /**
+     * Returns the parent type.
+     * 
+     * @return The parent type.
+     */
+    protected JClassType getClassType() {
+        return classType;
+    }
 
-	protected JClassType getClassType() {
-		return classType;
-	}
+    /**
+     * Returns the context object that provides metadata to defered binding
+     * generators.
+     * 
+     * @return The context object that provides metadata to defered binding
+     *         generators.
+     */
+    protected GeneratorContext getContext() {
+        return context;
+    }
 
-	protected GeneratorContext getContext() {
-		return context;
-	}
+    /**
+     * Returns the logger used by the deferred binding generator.
+     * 
+     * @return The logger used by the deferred binding generator.
+     */
+    protected TreeLogger getLogger() {
+        return logger;
+    }
 
-	protected TreeLogger getLogger() {
-		return logger;
-	}
+    /**
+     * Returns the package name of the parent type.
+     * 
+     * @return The package name of the parent type.
+     */
+    protected String getPackageName() {
+        return packageName;
+    }
 
-	protected String getPackageName() {
-		return packageName;
-	}
+    /**
+     * Returns the writer used for the content of the proxy class.
+     * 
+     * @return The writer used for the content of the proxy class.
+     */
+    protected SourceWriter getSourceWriter() {
+        return sourceWriter;
+    }
 
-	protected SourceWriter getSourceWriter() {
-		return sourceWriter;
-	}
+    /**
+     * Returns the serializer class.
+     * 
+     * @return The serializer class.
+     */
+    protected SerializableTypeOracle getSto() {
+        return sto;
+    }
 
-	protected SerializableTypeOracle getSto() {
-		return sto;
-	}
+    /**
+     * Returns the builder of the serializer class.
+     * 
+     * @return The builder of the serializer class.
+     */
+    protected SerializableTypeOracleBuilder getStob() {
+        return stob;
+    }
 
-	protected SerializableTypeOracleBuilder getStob() {
-		return stob;
-	}
+    /**
+     * Returns the type oracle for the current generator context.
+     * 
+     * @return The type oracle for the current generator context.
+     */
+    protected TypeOracle getTypeOracle() {
+        return typeOracle;
+    }
 
-	protected TypeOracle getTypeOracle() {
-		return typeOracle;
-	}
+    /**
+     * Returns the parent type for which a default constructible subclass will
+     * be generated.
+     * 
+     * @return The parent type for which a default constructible subclass will
+     *         be generated.
+     */
+    protected String getTypeQName() {
+        return typeQName;
+    }
 
-	protected String getTypeQName() {
-		return typeQName;
-	}
+    /**
+     * Increments the indentation of the generated source code.
+     */
+    protected void indent() {
+        getSourceWriter().indent();
+    }
 
-	protected void indent() {
-		getSourceWriter().indent();
-	}
+    /**
+     * Decrements the indentation of the generated source code.
+     */
+    protected void outdent() {
+        getSourceWriter().outdent();
+    }
 
-	protected void outdent() {
-		getSourceWriter().outdent();
-	}
+    /**
+     * Prints the given value in the generated source code.
+     * 
+     * @param value
+     *            The value to write.
+     */
+    protected void print(String value) {
+        getSourceWriter().print(value);
+    }
 
-	protected void print(String value) {
-		getSourceWriter().print(value);
-	}
+    /**
+     * Terminates the current line with a new line separator.
+     */
+    protected void println() {
+        getSourceWriter().println();
+    }
 
-	protected void println() {
-		getSourceWriter().println();
-	}
-
-	protected void println(String value) {
-		getSourceWriter().println(value);
-	}
+    /**
+     * Prints the given value in the generated source code and terminates the
+     * current line with a new line separator.
+     * 
+     * @param value
+     *            The value to write.
+     */
+    protected void println(String value) {
+        getSourceWriter().println(value);
+    }
 
 }

@@ -32,11 +32,10 @@ package org.restlet.resource;
 
 import org.restlet.engine.resource.GwtClientProxy;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
-
 /**
  * Marker interface for remote RESTful resources. This is an equivalent to the
- * {@link AsyncCallback} interface used by the GWT-RPC mechanism.
+ * {@link com.google.gwt.user.client.rpc.AsyncCallback} interface used by the
+ * GWT-RPC mechanism.
  * 
  * @param <T>
  *            The class of the result object returned in case of success.
