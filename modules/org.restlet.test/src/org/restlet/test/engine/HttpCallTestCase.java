@@ -50,6 +50,9 @@ public class HttpCallTestCase extends RestletTestCase {
 
     public void testFormatContentDisposition() {
         Disposition disposition = new Disposition();
+        assertNull(DispositionUtils.format(disposition));
+
+        disposition = new Disposition(Disposition.TYPE_ATTACHMENT);
         assertEquals("attachment", DispositionUtils.format(disposition));
         disposition.setFilename("");
         assertEquals("attachment; filename=", DispositionUtils
