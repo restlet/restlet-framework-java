@@ -40,6 +40,7 @@ import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
+import org.restlet.data.Disposition;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
@@ -112,6 +113,8 @@ public class FileRepresentationTestCase extends RestletTestCase {
                     public void handle(Request request, Response response) {
                         response.setEntity(new FileRepresentation(file,
                                 MediaType.TEXT_PLAIN));
+                        response.getEntity().getDisposition().setType(
+                                Disposition.TYPE_ATTACHMENT);
                     }
                 };
             }
