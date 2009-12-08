@@ -280,6 +280,7 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
 
             println("getClientResource().setMethod(Method."
                     + info.getRestletMethod().toString() + ");");
+            println("getClientResource().setNext(new Client(Protocol.HTTP));");
             println("getClientResource().setOnReceived(new Uniform() {");
             indent();
             println("public void handle(Request request, Response response) {");
@@ -342,6 +343,8 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
             composer.addImplementedInterface(getTypeQName());
             composer.addImport(GWT.class.getCanonicalName());
             composer.addImport(IOException.class.getCanonicalName());
+            composer.addImport(Client.class.getCanonicalName());
+            composer.addImport(Protocol.class.getCanonicalName());
             composer.addImport(Request.class.getCanonicalName());
             composer.addImport(Response.class.getCanonicalName());
             composer.addImport(Uniform.class.getCanonicalName());
