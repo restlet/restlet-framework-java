@@ -52,7 +52,7 @@ import org.restlet.engine.ClientHelper;
  * <tr>
  * <td>adapter</td>
  * <td>String</td>
- * <td>org.restlet.engine.http.HttpClientAdapter</td>
+ * <td>org.restlet.engine.http.ClientAdapter</td>
  * <td>Class name of the adapter of low-level HTTP calls into high level
  * requests and responses.</td>
  * </tr>
@@ -61,8 +61,9 @@ import org.restlet.engine.ClientHelper;
  * @author Jerome Louvel
  */
 public abstract class HttpClientHelper extends ClientHelper {
+
     /** The adapter from uniform calls to HTTP calls. */
-    private volatile HttpClientAdapter adapter;
+    private volatile ClientAdapter adapter;
 
     /**
      * Constructor.
@@ -82,24 +83,24 @@ public abstract class HttpClientHelper extends ClientHelper {
      *            The high-level request.
      * @return A low-level HTTP client call.
      */
-    public abstract HttpClientCall create(Request request);
+    public abstract ClientCall create(Request request);
 
     /**
      * Returns the adapter from uniform calls to HTTP calls.
      * 
      * @return the adapter from uniform calls to HTTP calls.
      */
-    public HttpClientAdapter getAdapter() throws Exception {
+    public ClientAdapter getAdapter() throws Exception {
         if (this.adapter == null) {
             // [ifndef gwt]
             final String adapterClass = getHelpedParameters().getFirstValue(
-                    "adapter", "org.restlet.engine.http.HttpClientAdapter");
-            this.adapter = (HttpClientAdapter) Class.forName(adapterClass)
+                    "adapter", "org.restlet.engine.http.ClientAdapter");
+            this.adapter = (ClientAdapter) Class.forName(adapterClass)
                     .getConstructor(Context.class).newInstance(getContext());
             // [enddef]
 
             // [ifdef gwt] instruction uncomment
-            // this.adapter = new HttpClientAdapter(getContext());
+            // this.adapter = new ClientAdapter(getContext());
         }
 
         return this.adapter;
@@ -108,9 +109,9 @@ public abstract class HttpClientHelper extends ClientHelper {
     @Override
     public void handle(Request request, Response response) {
         try {
-            final HttpClientCall httpCall = getAdapter().toSpecific(this,
-                    request);
-            getAdapter().commit(httpCall, request, response);
+            final ClientCall clientCall = getAdapter()
+                    .toSpecific(this, request);
+            getAdapter().commit(clientCall, request, response);
         } catch (Exception e) {
             getLogger().log(Level.INFO,
                     "Error while handling an HTTP client call", e);
@@ -124,7 +125,7 @@ public abstract class HttpClientHelper extends ClientHelper {
      * @param adapter
      *            The adapter to set.
      */
-    public void setAdapter(HttpClientAdapter adapter) {
+    public void setAdapter(ClientAdapter adapter) {
         this.adapter = adapter;
     }
 }

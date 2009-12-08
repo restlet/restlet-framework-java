@@ -51,7 +51,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
-public abstract class HttpCall {
+public abstract class Call {
     /**
      * Formats a date as a header string.
      * 
@@ -138,7 +138,7 @@ public abstract class HttpCall {
     /**
      * Constructor.
      */
-    public HttpCall() {
+    public Call() {
         this.hostDomain = null;
         this.hostPort = -1;
         this.clientAddress = null;

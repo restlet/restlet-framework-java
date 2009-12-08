@@ -67,7 +67,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
-public class HttpServerAdapter extends HttpAdapter {
+public class ServerAdapter extends Adapter {
     /**
      * Copies the entity headers from the {@link Representation} to the
      * {@link Series}.
@@ -133,7 +133,7 @@ public class HttpServerAdapter extends HttpAdapter {
             if (entity.getModificationDate() != null) {
                 responseHeaders
                         .add(HeaderConstants.HEADER_LAST_MODIFIED,
-                                HttpCall.formatDate(entity
+                                Call.formatDate(entity
                                         .getModificationDate(), false));
             }
 
@@ -316,7 +316,7 @@ public class HttpServerAdapter extends HttpAdapter {
      * @param context
      *            The client context.
      */
-    public HttpServerAdapter(Context context) {
+    public ServerAdapter(Context context) {
         super(context);
     }
 
@@ -496,7 +496,7 @@ public class HttpServerAdapter extends HttpAdapter {
      *            The low-level HTTP call.
      * @return A new high-level uniform request.
      */
-    public HttpRequest toRequest(HttpServerCall httpCall) {
+    public HttpRequest toRequest(ServerCall httpCall) {
         final HttpRequest result = new HttpRequest(getContext(), httpCall);
         result.getAttributes().put(HeaderConstants.ATTRIBUTE_HEADERS,
                 httpCall.getRequestHeaders());

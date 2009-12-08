@@ -58,7 +58,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
-import org.restlet.engine.http.HttpClientCall;
+import org.restlet.engine.http.ClientCall;
 import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.ext.httpclient.HttpClientHelper;
 import org.restlet.representation.Representation;
@@ -69,7 +69,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
-public class HttpMethodCall extends HttpClientCall {
+public class HttpMethodCall extends ClientCall {
 
     /** The associated HTTP client. */
     private volatile HttpClientHelper clientHelper;

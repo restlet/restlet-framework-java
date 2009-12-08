@@ -39,7 +39,7 @@ import javax.net.ssl.HostnameVerifier;
 import org.restlet.Client;
 import org.restlet.Request;
 import org.restlet.data.Protocol;
-import org.restlet.engine.http.HttpClientCall;
+import org.restlet.engine.http.ClientCall;
 import org.restlet.ext.net.internal.HttpUrlConnectionCall;
 
 /**
@@ -128,8 +128,8 @@ public class HttpClientHelper extends org.restlet.engine.http.HttpClientHelper {
      * @return A low-level HTTP client call.
      */
     @Override
-    public HttpClientCall create(Request request) {
-        HttpClientCall result = null;
+    public ClientCall create(Request request) {
+        ClientCall result = null;
 
         try {
             result = new HttpUrlConnectionCall(this, request.getMethod()

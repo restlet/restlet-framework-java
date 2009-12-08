@@ -53,9 +53,9 @@ import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
-import org.restlet.engine.http.HttpCall;
+import org.restlet.engine.http.Call;
 import org.restlet.engine.http.HttpRequest;
-import org.restlet.engine.http.HttpServerCall;
+import org.restlet.engine.http.ServerCall;
 import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.util.Series;
 
@@ -64,7 +64,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
-public class ServletCall extends HttpServerCall {
+public class ServletCall extends ServerCall {
 
     /**
      * Returns the Servlet request that was used to generate the given Restlet
@@ -78,10 +78,10 @@ public class ServletCall extends HttpServerCall {
         HttpServletRequest result = null;
 
         if (request instanceof HttpRequest) {
-            final HttpCall httpCall = ((HttpRequest) request).getHttpCall();
+            final Call call = ((HttpRequest) request).getHttpCall();
 
-            if (httpCall instanceof ServletCall) {
-                result = ((ServletCall) httpCall).getRequest();
+            if (call instanceof ServletCall) {
+                result = ((ServletCall) call).getRequest();
             }
         }
 

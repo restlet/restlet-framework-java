@@ -43,7 +43,7 @@ import org.restlet.Restlet;
 import org.restlet.data.Reference;
 import org.restlet.engine.http.HttpRequest;
 import org.restlet.engine.http.HttpResponse;
-import org.restlet.engine.http.HttpServerAdapter;
+import org.restlet.engine.http.ServerAdapter;
 import org.restlet.ext.servlet.internal.ServletCall;
 import org.restlet.ext.servlet.internal.ServletLogger;
 
@@ -85,7 +85,7 @@ import org.restlet.ext.servlet.internal.ServletLogger;
  * 
  * @author Jerome Louvel
  */
-public class ServletAdapter extends HttpServerAdapter {
+public class ServletAdapter extends ServerAdapter {
     /** The target Restlet. */
     private volatile Restlet target;
 
@@ -217,7 +217,7 @@ public class ServletAdapter extends HttpServerAdapter {
 
     /**
      * Converts a low-level Servlet call into a high-level Restlet request. In
-     * addition to the parent {@link HttpServerAdapter}, it also copies the
+     * addition to the parent {@link ServerAdapter}, it also copies the
      * Servlet's request attributes into the Restlet's request attributes map.
      * 
      * @param servletCall

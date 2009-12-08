@@ -59,10 +59,10 @@ import org.restlet.engine.ServerHelper;
  * header and should not be trusted for serious security checks.</td>
  * </tr>
  * <tr>
- * <td>converter</td>
+ * <td>adapter</td>
  * <td>String</td>
- * <td>org.restlet.engine.http.HttpServerAdapter</td>
- * <td>Class name of the converter of low-level HTTP calls into high level
+ * <td>org.restlet.engine.http.ServerAdapter</td>
+ * <td>Class name of the adapter of low-level HTTP calls into high level
  * requests and responses.</td>
  * </tr>
  * </table>
@@ -71,8 +71,8 @@ import org.restlet.engine.ServerHelper;
  */
 public class HttpServerHelper extends ServerHelper {
 
-    /** The converter from HTTP calls to uniform calls. */
-    private volatile HttpServerAdapter converter;
+    /** The adapter from HTTP calls to uniform calls. */
+    private volatile ServerAdapter adapter;
 
     /**
      * Default constructor. Note that many methods assume that a non-null server
@@ -91,64 +91,63 @@ public class HttpServerHelper extends ServerHelper {
      */
     public HttpServerHelper(Server server) {
         super(server);
-        this.converter = null;
+        this.adapter = null;
     }
 
     /**
-     * Returns the converter from HTTP calls to uniform calls.
+     * Returns the adapter from HTTP calls to uniform calls.
      * 
-     * @return the converter from HTTP calls to uniform calls.
+     * @return the adapter from HTTP calls to uniform calls.
      */
-    public HttpServerAdapter getConverter() {
-        if (this.converter == null) {
+    public ServerAdapter getAdapter() {
+        if (this.adapter == null) {
             try {
-                final String converterClass = getHelpedParameters()
-                        .getFirstValue("converter",
-                                "org.restlet.engine.http.HttpServerAdapter");
-                this.converter = (HttpServerAdapter) Engine.loadClass(
-                        converterClass).getConstructor(Context.class)
+                final String adapterClass = getHelpedParameters()
+                        .getFirstValue("adapter",
+                                "org.restlet.engine.http.ServerAdapter");
+                this.adapter = (ServerAdapter) Engine.loadClass(adapterClass)
+                        .getConstructor(Context.class)
                         .newInstance(getContext());
             } catch (IllegalArgumentException e) {
                 getLogger().log(Level.SEVERE,
-                        "Unable to create the HTTP server converter", e);
+                        "Unable to create the HTTP server adapter", e);
             } catch (SecurityException e) {
                 getLogger().log(Level.SEVERE,
-                        "Unable to create the HTTP server converter", e);
+                        "Unable to create the HTTP server adapter", e);
             } catch (InstantiationException e) {
                 getLogger().log(Level.SEVERE,
-                        "Unable to create the HTTP server converter", e);
+                        "Unable to create the HTTP server adapter", e);
             } catch (IllegalAccessException e) {
                 getLogger().log(Level.SEVERE,
-                        "Unable to create the HTTP server converter", e);
+                        "Unable to create the HTTP server adapter", e);
             } catch (InvocationTargetException e) {
                 getLogger().log(Level.SEVERE,
-                        "Unable to create the HTTP server converter", e);
+                        "Unable to create the HTTP server adapter", e);
             } catch (NoSuchMethodException e) {
                 getLogger().log(Level.SEVERE,
-                        "Unable to create the HTTP server converter", e);
+                        "Unable to create the HTTP server adapter", e);
             } catch (ClassNotFoundException e) {
                 getLogger().log(Level.SEVERE,
-                        "Unable to create the HTTP server converter", e);
+                        "Unable to create the HTTP server adapter", e);
             }
         }
 
-        return this.converter;
+        return this.adapter;
     }
 
     /**
-     * Handles the connector call.<br>
-     * The default behavior is to create an REST call and delegate it to the
-     * attached Restlet.
+     * Handles the connector call. The default behavior is to create an REST
+     * call and delegate it to the attached Restlet.
      * 
      * @param httpCall
      *            The HTTP server call.
      */
-    public void handle(HttpServerCall httpCall) {
+    public void handle(ServerCall httpCall) {
         try {
-            HttpRequest request = getConverter().toRequest(httpCall);
+            HttpRequest request = getAdapter().toRequest(httpCall);
             HttpResponse response = new HttpResponse(httpCall, request);
             handle(request, response);
-            getConverter().commit(response);
+            getAdapter().commit(response);
         } catch (Exception e) {
             getLogger().log(Level.WARNING,
                     "Error while handling an HTTP server call: ",
@@ -159,12 +158,12 @@ public class HttpServerHelper extends ServerHelper {
     }
 
     /**
-     * Sets the converter from HTTP calls to uniform calls.
+     * Sets the adapter from HTTP calls to uniform calls.
      * 
-     * @param converter
+     * @param adapter
      *            The converter to set.
      */
-    public void setConverter(HttpServerAdapter converter) {
-        this.converter = converter;
+    public void setAdapter(ServerAdapter adapter) {
+        this.adapter = adapter;
     }
 }

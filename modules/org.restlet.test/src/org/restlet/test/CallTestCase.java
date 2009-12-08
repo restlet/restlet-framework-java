@@ -39,7 +39,7 @@ import org.restlet.data.ClientInfo;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
-import org.restlet.engine.http.HttpCall;
+import org.restlet.engine.http.Call;
 
 /**
  * Test {@link org.restlet.Call}.
@@ -52,8 +52,8 @@ public class CallTestCase extends RestletTestCase {
      * 
      * @return A connector call instance.
      */
-    protected HttpCall getHttpCall() {
-        return new HttpCall() {
+    protected Call getCall() {
+        return new Call() {
 
             @Override
             protected boolean isClientKeepAlive() {

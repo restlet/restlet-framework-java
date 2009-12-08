@@ -51,7 +51,7 @@ import javax.net.ssl.SSLSocket;
 
 import org.restlet.Response;
 import org.restlet.Server;
-import org.restlet.engine.http.HttpServerCall;
+import org.restlet.engine.http.ServerCall;
 import org.restlet.engine.http.io.ChunkedInputStream;
 import org.restlet.engine.http.io.ChunkedOutputStream;
 import org.restlet.engine.http.io.ReadableEntityChannel;
@@ -66,7 +66,7 @@ import com.sun.grizzly.util.SSLOutputWriter;
  * 
  * @author Jerome Louvel
  */
-public class GrizzlyServerCall extends HttpServerCall {
+public class GrizzlyServerCall extends ServerCall {
 
     /** The NIO byte buffer. */
     private final ByteBuffer byteBuffer;

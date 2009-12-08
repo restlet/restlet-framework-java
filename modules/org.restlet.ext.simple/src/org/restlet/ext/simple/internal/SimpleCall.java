@@ -47,7 +47,7 @@ import javax.net.ssl.SSLSession;
 
 import org.restlet.Server;
 import org.restlet.data.Parameter;
-import org.restlet.engine.http.HttpServerCall;
+import org.restlet.engine.http.ServerCall;
 import org.restlet.util.Series;
 import org.simpleframework.http.Request;
 import org.simpleframework.http.Response;
@@ -58,7 +58,7 @@ import org.simpleframework.http.Response;
  * @author Lars Heuer
  * @author Jerome Louvel
  */
-public class SimpleCall extends HttpServerCall {
+public class SimpleCall extends ServerCall {
 
     /**
      * Simple Request.

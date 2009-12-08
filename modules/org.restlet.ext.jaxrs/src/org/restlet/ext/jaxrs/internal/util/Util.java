@@ -76,9 +76,9 @@ import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
 import org.restlet.data.Parameter;
-import org.restlet.engine.http.HttpClientAdapter;
-import org.restlet.engine.http.HttpClientCall;
-import org.restlet.engine.http.HttpServerAdapter;
+import org.restlet.engine.http.ClientAdapter;
+import org.restlet.engine.http.ClientCall;
+import org.restlet.engine.http.ServerAdapter;
 import org.restlet.engine.http.header.ContentType;
 import org.restlet.engine.http.header.HeaderUtils;
 import org.restlet.engine.util.DateUtils;
@@ -310,9 +310,9 @@ public class Util {
             restletResponse.setEntity(new EmptyRepresentation());
         }
 
-        HttpClientAdapter
+        ClientAdapter
                 .copyResponseTransportHeaders(headers, restletResponse);
-        HttpClientCall.copyResponseEntityHeaders(headers, restletResponse
+        ClientCall.copyResponseEntityHeaders(headers, restletResponse
                 .getEntity());
     }
 
@@ -328,8 +328,8 @@ public class Util {
      */
     public static Series<Parameter> copyResponseHeaders(Response restletResponse) {
         final Series<Parameter> headers = new Form();
-        HttpServerAdapter.addResponseHeaders(restletResponse, headers);
-        HttpServerAdapter
+        ServerAdapter.addResponseHeaders(restletResponse, headers);
+        ServerAdapter
                 .addEntityHeaders(restletResponse.getEntity(), headers);
         return headers;
     }
@@ -493,7 +493,7 @@ public class Util {
 
     /**
      * Converts the given Date into a String. Copied from
-     * {@link org.restlet.engine.HttpCall}.
+     * {@link org.restlet.engine.Call}.
      * 
      * @param date
      *            Date to format

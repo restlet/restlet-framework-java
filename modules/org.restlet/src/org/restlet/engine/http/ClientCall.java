@@ -57,7 +57,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
-public abstract class HttpClientCall extends HttpCall {
+public abstract class ClientCall extends Call {
     /**
      * Copies entity headers into a response and ensures that a non null
      * representation is returned when at least one entity header is present.
@@ -70,7 +70,7 @@ public abstract class HttpClientCall extends HttpCall {
      *         if no representation has been provided and the response has not
      *         sent any entity header.
      * @throws NumberFormatException
-     * @see {@link HttpClientAdapter#copyResponseTransportHeaders(Series, Response)}
+     * @see {@link ClientAdapter#copyResponseTransportHeaders(Series, Response)}
      */
     public static Representation copyResponseEntityHeaders(
             Iterable<Parameter> responseHeaders, Representation representation)
@@ -232,7 +232,7 @@ public abstract class HttpClientCall extends HttpCall {
      * @param requestUri
      *            The request URI.
      */
-    public HttpClientCall(HttpClientHelper helper, String method,
+    public ClientCall(HttpClientHelper helper, String method,
             String requestUri) {
         this.helper = helper;
         setMethod(method);

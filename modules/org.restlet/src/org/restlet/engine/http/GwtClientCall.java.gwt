@@ -51,7 +51,7 @@ import com.google.gwt.http.client.Response;
  * 
  * @author Jerome Louvel
  */
-public class GwtHttpClientCall extends HttpClientCall {
+public class GwtClientCall extends ClientCall {
 
     /**
      * Special reason phrase in case of error.

@@ -30,9 +30,10 @@
 
 package org.restlet.engine.http;
 
+import java.util.logging.Logger;
+
 import org.restlet.Context;
 import org.restlet.data.Parameter;
-import org.restlet.engine.Adapter;
 import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.util.Series;
 
@@ -41,7 +42,9 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
-public class HttpAdapter extends Adapter {
+public class Adapter {
+    /** The context. */
+    private volatile Context context;
 
     /**
      * Constructor.
@@ -49,8 +52,8 @@ public class HttpAdapter extends Adapter {
      * @param context
      *            The context to use.
      */
-    public HttpAdapter(Context context) {
-        super(context);
+    public Adapter(Context context) {
+        this.context = context;
     }
 
     /**
@@ -187,6 +190,28 @@ public class HttpAdapter extends Adapter {
                 }
             }
         }
+    }
+
+    /**
+     * Returns the context.
+     * 
+     * @return The context.
+     */
+    public Context getContext() {
+        return this.context;
+    }
+
+    /**
+     * Returns the logger.
+     * 
+     * @return The logger.
+     */
+    public Logger getLogger() {
+        if (getContext() != null) {
+            return getContext().getLogger();
+        }
+
+        return Context.getCurrentLogger();
     }
 
 }

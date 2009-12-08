@@ -53,7 +53,7 @@ import org.restlet.engine.io.BioUtils;
  * 
  * @author Jerome Louvel
  */
-public class StreamServerCall extends HttpServerCall {
+public class StreamServerCall extends ServerCall {
 
     /** The request entity stream */
     private volatile InputStream requestEntityStream;

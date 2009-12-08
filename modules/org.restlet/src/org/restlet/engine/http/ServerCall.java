@@ -63,7 +63,7 @@ import org.restlet.service.ConnectorService;
  * 
  * @author Jerome Louvel
  */
-public abstract class HttpServerCall extends HttpCall {
+public abstract class ServerCall extends Call {
 
     /**
      * Formats {@code fileName} as a Content-Disposition header value. By
@@ -119,7 +119,7 @@ public abstract class HttpServerCall extends HttpCall {
      * @param serverPort
      *            The server port.
      */
-    public HttpServerCall(String serverAddress, int serverPort) {
+    public ServerCall(String serverAddress, int serverPort) {
         setServerAddress(serverAddress);
         setServerPort(serverPort);
         this.hostParsed = false;
@@ -131,7 +131,7 @@ public abstract class HttpServerCall extends HttpCall {
      * @param server
      *            The parent server connector.
      */
-    public HttpServerCall(Server server) {
+    public ServerCall(Server server) {
         this(server.getAddress(), server.getPort());
     }
 

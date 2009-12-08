@@ -59,7 +59,7 @@ import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Parameter;
-import org.restlet.engine.http.HttpServerCall;
+import org.restlet.engine.http.ServerCall;
 import org.restlet.engine.http.io.ChunkedInputStream;
 import org.restlet.engine.http.io.ChunkedOutputStream;
 import org.restlet.util.Series;
@@ -69,7 +69,7 @@ import org.restlet.util.Series;
  * 
  * @author Gabriel Ciuloaica (gciuloaica@gmail.com)
  */
-public class NettyServerCall extends HttpServerCall {
+public class NettyServerCall extends ServerCall {
 
     private final HttpRequest request;
 

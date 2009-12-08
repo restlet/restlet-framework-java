@@ -150,7 +150,7 @@ public class StreamClientHelper extends HttpClientHelper {
     }
 
     @Override
-    public HttpClientCall create(Request request) {
+    public ClientCall create(Request request) {
         return new StreamClientCall(this, request, createSocketFactory(request
                 .isConfidential()));
     }

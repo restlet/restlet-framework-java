@@ -47,7 +47,7 @@ import org.restlet.Restlet;
 import org.restlet.data.Reference;
 import org.restlet.engine.http.HttpRequest;
 import org.restlet.engine.http.HttpResponse;
-import org.restlet.engine.http.HttpServerAdapter;
+import org.restlet.engine.http.ServerAdapter;
 import org.restlet.ext.servlet.internal.ServletLogger;
 import org.restlet.ext.xdb.internal.XdbServletCall;
 
@@ -91,7 +91,7 @@ import org.restlet.ext.xdb.internal.XdbServletCall;
  * @deprecated Use {@link XdbServletAdapter} instead
  */
 @Deprecated
-public class XdbServletConverter extends HttpServerAdapter {
+public class XdbServletConverter extends ServerAdapter {
     /** The target Restlet. */
     private volatile Restlet target;
 

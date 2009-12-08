@@ -63,7 +63,7 @@ import org.restlet.representation.Representation;
  * 
  * @author Jerome Louvel
  */
-public class StreamClientCall extends HttpClientCall {
+public class StreamClientCall extends ClientCall {
 
     /**
      * Returns the absolute request URI.

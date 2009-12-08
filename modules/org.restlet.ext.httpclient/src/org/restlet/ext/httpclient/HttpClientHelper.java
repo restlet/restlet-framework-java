@@ -58,7 +58,7 @@ import org.restlet.Client;
 import org.restlet.Request;
 import org.restlet.data.Protocol;
 import org.restlet.engine.Engine;
-import org.restlet.engine.http.HttpClientCall;
+import org.restlet.engine.http.ClientCall;
 import org.restlet.engine.security.SslUtils;
 import org.restlet.engine.security.SslContextFactory;
 import org.restlet.ext.httpclient.internal.HttpMethodCall;
@@ -252,8 +252,8 @@ public class HttpClientHelper extends org.restlet.engine.http.HttpClientHelper {
      * @return A low-level HTTP client call.
      */
     @Override
-    public HttpClientCall create(Request request) {
-        HttpClientCall result = null;
+    public ClientCall create(Request request) {
+        ClientCall result = null;
 
         try {
             result = new HttpMethodCall(this, request.getMethod().toString(),

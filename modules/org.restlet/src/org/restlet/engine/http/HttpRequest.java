@@ -102,7 +102,7 @@ public class HttpRequest extends Request {
     private volatile boolean entityAdded;
 
     /** The low-level HTTP call. */
-    private volatile HttpCall httpCall;
+    private volatile Call call;
 
     /** Indicates if the proxy security data was parsed and added. */
     private volatile boolean proxySecurityAdded;
@@ -127,7 +127,7 @@ public class HttpRequest extends Request {
      * @param httpCall
      *            The low-level HTTP server call.
      */
-    public HttpRequest(Context context, HttpServerCall httpCall) {
+    public HttpRequest(Context context, ServerCall httpCall) {
         this.context = context;
         this.clientAdded = false;
         this.conditionAdded = false;
@@ -137,7 +137,7 @@ public class HttpRequest extends Request {
         this.securityAdded = false;
         this.proxySecurityAdded = false;
         this.warningsAdded = false;
-        this.httpCall = httpCall;
+        this.call = httpCall;
 
         // Set the properties
         setMethod(Method.valueOf(httpCall.getMethod()));
@@ -334,11 +334,11 @@ public class HttpRequest extends Request {
             for (final Parameter header : getHttpCall().getRequestHeaders()) {
                 if (header.getName().equalsIgnoreCase(
                         HeaderConstants.HEADER_IF_MODIFIED_SINCE)) {
-                    ifModifiedSince = HttpCall.parseDate(header.getValue(),
+                    ifModifiedSince = Call.parseDate(header.getValue(),
                             false);
                 } else if (header.getName().equalsIgnoreCase(
                         HeaderConstants.HEADER_IF_UNMODIFIED_SINCE)) {
-                    ifUnmodifiedSince = HttpCall.parseDate(header.getValue(),
+                    ifUnmodifiedSince = Call.parseDate(header.getValue(),
                             false);
                 }
             }
@@ -417,7 +417,7 @@ public class HttpRequest extends Request {
                 if (tag != null) {
                     result.setRangeTag(tag);
                 } else {
-                    Date date = HttpCall.parseDate(ifRangeHeader, false);
+                    Date date = Call.parseDate(ifRangeHeader, false);
                     result.setRangeDate(date);
                 }
             }
@@ -471,7 +471,7 @@ public class HttpRequest extends Request {
     @Override
     public Representation getEntity() {
         if (!this.entityAdded) {
-            setEntity(((HttpServerCall) getHttpCall()).getRequestEntity());
+            setEntity(((ServerCall) getHttpCall()).getRequestEntity());
             this.entityAdded = true;
         }
 
@@ -494,8 +494,8 @@ public class HttpRequest extends Request {
      * 
      * @return The low-level HTTP call.
      */
-    public HttpCall getHttpCall() {
-        return this.httpCall;
+    public Call getHttpCall() {
+        return this.call;
     }
 
     @Override

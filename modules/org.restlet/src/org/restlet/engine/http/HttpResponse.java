@@ -63,7 +63,7 @@ public class HttpResponse extends Response {
     }
 
     /** The low-level HTTP call. */
-    private volatile HttpServerCall httpCall;
+    private volatile ServerCall httpCall;
 
     /** Indicates if the server data was parsed and added. */
     private volatile boolean serverAdded;
@@ -76,7 +76,7 @@ public class HttpResponse extends Response {
      * @param request
      *            The associated high-level request.
      */
-    public HttpResponse(HttpServerCall httpCall, Request request) {
+    public HttpResponse(ServerCall httpCall, Request request) {
         super(request);
         this.serverAdded = false;
         this.httpCall = httpCall;
@@ -101,7 +101,7 @@ public class HttpResponse extends Response {
      * 
      * @return The low-level HTTP call.
      */
-    public HttpServerCall getHttpCall() {
+    public ServerCall getHttpCall() {
         return this.httpCall;
     }
 

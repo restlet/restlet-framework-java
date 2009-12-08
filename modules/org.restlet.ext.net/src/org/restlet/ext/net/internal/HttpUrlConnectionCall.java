@@ -50,7 +50,7 @@ import org.restlet.Request;
 import org.restlet.data.Parameter;
 import org.restlet.data.Status;
 import org.restlet.engine.Edition;
-import org.restlet.engine.http.HttpClientCall;
+import org.restlet.engine.http.ClientCall;
 import org.restlet.engine.security.SslUtils;
 import org.restlet.engine.security.SslContextFactory;
 import org.restlet.engine.util.SystemUtils;
@@ -63,7 +63,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
-public class HttpUrlConnectionCall extends HttpClientCall {
+public class HttpUrlConnectionCall extends ClientCall {
 
     /** The wrapped HTTP URL connection. */
     private final HttpURLConnection connection;

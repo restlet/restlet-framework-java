@@ -43,7 +43,7 @@ import org.restlet.Restlet;
 import org.restlet.data.Reference;
 import org.restlet.engine.http.HttpRequest;
 import org.restlet.engine.http.HttpResponse;
-import org.restlet.engine.http.HttpServerAdapter;
+import org.restlet.engine.http.ServerAdapter;
 import org.restlet.ext.servlet.internal.ServletCall;
 import org.restlet.ext.servlet.internal.ServletLogger;
 
@@ -87,7 +87,7 @@ import org.restlet.ext.servlet.internal.ServletLogger;
  * @deprecated Use {@link ServletAdapter} instead.
  */
 @Deprecated
-public class ServletConverter extends HttpServerAdapter {
+public class ServletConverter extends ServerAdapter {
     /** The target Restlet. */
     private volatile Restlet target;
 

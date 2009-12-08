@@ -51,7 +51,7 @@ import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
-import org.restlet.engine.http.HttpServerCall;
+import org.restlet.engine.http.ServerCall;
 import org.restlet.engine.http.io.ChunkedInputStream;
 import org.restlet.engine.http.io.ChunkedOutputStream;
 import org.restlet.engine.http.io.InputEntityStream;
@@ -64,7 +64,7 @@ import org.restlet.util.Series;
  * @see org.restlet.ext.servlet.internal.ServletCall
  * @author Marcelo F. Ochoa (mochoa@ieee.org)
  */
-public class XdbServletCall extends HttpServerCall {
+public class XdbServletCall extends ServerCall {
     /** The request entity stream */
     private volatile InputStream requestEntityStream;
 

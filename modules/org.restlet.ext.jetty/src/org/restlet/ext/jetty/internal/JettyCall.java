@@ -48,7 +48,7 @@ import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Parameter;
 import org.restlet.data.Status;
-import org.restlet.engine.http.HttpServerCall;
+import org.restlet.engine.http.ServerCall;
 import org.restlet.util.Series;
 
 /**
@@ -56,7 +56,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
-public class JettyCall extends HttpServerCall {
+public class JettyCall extends ServerCall {
     /** The wrapped Jetty HTTP connection. */
     private final HttpConnection connection;
 

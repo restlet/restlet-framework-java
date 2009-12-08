@@ -70,7 +70,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
-public class HttpClientAdapter extends HttpAdapter {
+public class ClientAdapter extends Adapter {
     /**
      * Copies headers into a response.
      * 
@@ -239,7 +239,7 @@ public class HttpClientAdapter extends HttpAdapter {
      * @param context
      *            The context to use.
      */
-    public HttpClientAdapter(Context context) {
+    public ClientAdapter(Context context) {
         super(context);
     }
 
@@ -252,7 +252,7 @@ public class HttpClientAdapter extends HttpAdapter {
      *            The high-level request.
      */
     @SuppressWarnings("unchecked")
-    protected void addRequestHeaders(HttpClientCall httpCall, Request request) {
+    protected void addRequestHeaders(ClientCall httpCall, Request request) {
         if (httpCall != null) {
             Series<Parameter> requestHeaders = httpCall.getRequestHeaders();
 
@@ -578,7 +578,7 @@ public class HttpClientAdapter extends HttpAdapter {
      *            The high-level response.
      * @throws Exception
      */
-    public void commit(final HttpClientCall httpCall, Request request,
+    public void commit(final ClientCall httpCall, Request request,
             Response response) throws Exception {
         if (httpCall != null) {
             // Check if the call is asynchronous
@@ -627,7 +627,7 @@ public class HttpClientAdapter extends HttpAdapter {
      * @param response
      *            The high-level response to update.
      */
-    protected void readResponseHeaders(HttpClientCall httpCall,
+    protected void readResponseHeaders(ClientCall httpCall,
             Response response) {
         try {
             Series<Parameter> responseHeaders = httpCall.getResponseHeaders();
@@ -654,9 +654,9 @@ public class HttpClientAdapter extends HttpAdapter {
      *            The high-level request.
      * @return A new high-level uniform call.
      */
-    public HttpClientCall toSpecific(HttpClientHelper client, Request request) {
+    public ClientCall toSpecific(HttpClientHelper client, Request request) {
         // Create the low-level HTTP client call
-        HttpClientCall result = client.create(request);
+        ClientCall result = client.create(request);
 
         // Add the request headers
         addRequestHeaders(result, request);
@@ -677,7 +677,7 @@ public class HttpClientAdapter extends HttpAdapter {
      * @throws IOException
      */
     public void updateResponse(Response response, Status status,
-            HttpClientCall httpCall) {
+            ClientCall httpCall) {
         // Send the request to the client
         response.setStatus(status);
 

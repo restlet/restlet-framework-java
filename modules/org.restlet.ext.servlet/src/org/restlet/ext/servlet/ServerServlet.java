@@ -50,7 +50,7 @@ import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.engine.Engine;
 import org.restlet.engine.component.ComponentContext;
-import org.restlet.engine.http.HttpServerCall;
+import org.restlet.engine.http.ServerCall;
 import org.restlet.engine.http.HttpServerHelper;
 import org.restlet.ext.servlet.internal.ServletCall;
 import org.restlet.ext.servlet.internal.ServletWarClient;
@@ -488,7 +488,7 @@ public class ServerServlet extends HttpServlet {
      *            The Servlet response.
      * @return The new ServletCall instance.
      */
-    protected HttpServerCall createCall(Server server,
+    protected ServerCall createCall(Server server,
             HttpServletRequest request, HttpServletResponse response) {
         return new ServletCall(server, request, response);
     }
