@@ -28,42 +28,12 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine;
-
-import java.io.InputStream;
-
-import org.restlet.representation.InputRepresentation;
-import org.restlet.representation.Representation;
+package org.restlet.engine.http;
 
 /**
- * Low-level call for the protocol-specific connectors.
  * 
  * @author Jerome Louvel
  */
-public abstract class Call {
+public class Connection {
 
-    /**
-     * Returns the representation wrapping the given stream.
-     * 
-     * @param stream
-     *            The response input stream.
-     * @return The wrapping representation.
-     */
-    protected Representation getRepresentation(InputStream stream) {
-        return new InputRepresentation(stream, null);
-    }
-
-    // [ifndef gwt] method
-    /**
-     * Returns the representation wrapping the given channel.
-     * 
-     * @param channel
-     *            The response channel.
-     * @return The wrapping representation.
-     */
-    protected Representation getRepresentation(
-            java.nio.channels.ReadableByteChannel channel) {
-        return new org.restlet.representation.ReadableRepresentation(channel,
-                null);
-    }
 }

@@ -31,6 +31,7 @@
 package org.restlet.engine.http;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Date;
 import java.util.logging.Logger;
 
@@ -39,9 +40,9 @@ import org.restlet.Request;
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
-import org.restlet.engine.Call;
 import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.util.DateUtils;
+import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 
@@ -50,8 +51,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
-public abstract class HttpCall extends Call {
-
+public abstract class HttpCall {
     /**
      * Formats a date as a header string.
      * 
@@ -280,6 +280,31 @@ public abstract class HttpCall extends Call {
      */
     public String getReasonPhrase() {
         return this.reasonPhrase;
+    }
+
+    /**
+     * Returns the representation wrapping the given stream.
+     * 
+     * @param stream
+     *            The response input stream.
+     * @return The wrapping representation.
+     */
+    protected Representation getRepresentation(InputStream stream) {
+        return new InputRepresentation(stream, null);
+    }
+
+    // [ifndef gwt] method
+    /**
+     * Returns the representation wrapping the given channel.
+     * 
+     * @param channel
+     *            The response channel.
+     * @return The wrapping representation.
+     */
+    protected Representation getRepresentation(
+            java.nio.channels.ReadableByteChannel channel) {
+        return new org.restlet.representation.ReadableRepresentation(channel,
+                null);
     }
 
     /**
