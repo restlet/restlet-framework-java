@@ -74,7 +74,7 @@ import com.google.gwt.user.rebind.rpc.TypeSerializerCreator;
  * Deferred binding generator capable of creating a subclass of
  * {@link GwtClientProxy} implementing a custom Java interface, extending the
  * marker {@link ClientProxy} interface, and annotated with Restlet annotations
- * such as {@link Get} , {@link Post} or {@link Delete}.
+ * such as {@link Get}, {@link Post}, {@link Put} or {@link Delete}.
  * 
  * @author Jerome Louvel
  */
@@ -238,7 +238,9 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
                 }
 
                 if (i == (parameterTypes.length - 1)) {
-                    if (AsyncCallback.class.isAssignableFrom(parameterType)) {
+                    if (AsyncCallback.class.isAssignableFrom(parameterType)
+                            || ClientCallback.class
+                                    .isAssignableFrom(parameterType)) {
                         callbackType = actualType;
 
                         if (callbackType == null) {
@@ -348,6 +350,7 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
             composer.addImport(ObjectRepresentation.class.getCanonicalName());
             composer.addImport(ResourceException.class.getCanonicalName());
             composer.addImport(AsyncCallback.class.getCanonicalName());
+            composer.addImport(ClientCallback.class.getCanonicalName());
             composer.addImport(SerializationStreamFactory.class
                     .getCanonicalName());
 
@@ -405,6 +408,8 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
                     Exception.class.getName());
             JType asyncType = getTypeOracle().getType(
                     AsyncCallback.class.getName());
+            JType cbType = getTypeOracle().getType(
+                    ClientCallback.class.getName());
 
             for (JMethod method : methods) {
                 if (!"getClientResource".equals(method.getName())) {
@@ -421,7 +426,8 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
                                 .isParameterized();
 
                         if ((parameterizedType == null)
-                                || (parameterizedType.getBaseType() != asyncType)) {
+                                || ((parameterizedType.getBaseType() != asyncType) && (parameterizedType
+                                        .getBaseType() != cbType))) {
                             getStob().addRootType(getLogger(), parameterType);
                         }
                     }
