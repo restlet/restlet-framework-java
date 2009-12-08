@@ -536,6 +536,8 @@ public class ParameterList {
 
         private final FormParam formParam;
 
+        private static Form form;
+
         FormParamGetter(FormParam formParam, DefaultValue defaultValue,
                 Class<?> convToCl, Type convToGen,
                 ThreadLocalizedContext tlContext, boolean leaveEncoded) {
@@ -547,7 +549,9 @@ public class ParameterList {
         public Object getParamValue() {
             Representation entity = this.tlContext.get().getRequest()
                     .getEntity();
-            final Form form = (entity == null) ? null : new Form(entity);
+            if (entity != null && entity.isAvailable()) {
+                form = new Form(entity);
+            }
 
             final String paramName = this.formParam.value();
             try {
