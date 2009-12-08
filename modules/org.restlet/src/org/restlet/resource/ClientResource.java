@@ -601,6 +601,7 @@ public class ClientResource extends UniformResource {
             // if (getReference().isRelative()) {
             // getReference().setBaseRef(
             // com.google.gwt.core.client.GWT.getHostPageBaseURL());
+            // setReference(getReference().getTargetRef());
             // }
             // [enddef]
 
