@@ -523,7 +523,7 @@ public class TunnelFilter extends Filter {
                         final String attribute = agentAttributes.get(key);
                         checked = checked
                                 && (attribute != null && attribute
-                                        .equals(acceptReplacer
+                                        .equalsIgnoreCase(acceptReplacer
                                                 .getAgentAttributes().get(key)));
 
                     }

@@ -85,6 +85,8 @@ public class TunnelFilterTestCase extends TestCase {
 
     private TunnelFilter tunnelFilter;
 
+    private String userAgent;
+
     void assertCharSets(CharacterSet... characterSets) {
         assertEqualSet(this.accCharsets, characterSets);
     }
@@ -206,6 +208,7 @@ public class TunnelFilterTestCase extends TestCase {
         this.response = new Response(this.request);
         this.lastCreatedReference = reference;
         setPrefs();
+        this.request.getClientInfo().setAgent(this.userAgent);
     }
 
     private void extensionTunnelOff() {
@@ -397,5 +400,32 @@ public class TunnelFilterTestCase extends TestCase {
         assertLanguages();
         assertCharSets();
         assertCharSets();
+    }
+
+    public void testMethodTunnelingViaUserAgent() {
+        tunnelFilter.getTunnelService().setExtensionsTunnel(false);
+        tunnelFilter.getTunnelService().setHeaderTunnel(false);
+        tunnelFilter.getTunnelService().setMethodTunnel(false);
+        tunnelFilter.getTunnelService().setPreferencesTunnel(false);
+        tunnelFilter.getTunnelService().setQueryTunnel(false);
+        tunnelFilter.getTunnelService().setUserAgentTunnel(true);
+
+        createGet(UNEFFECTED);
+        this.accMediaTypes.add(new Preference<MediaType>(
+                MediaType.APPLICATION_ZIP));
+        filter();
+        assertEquals(UNEFFECTED, this.request.getResourceRef().toString());
+        assertMediaTypes(MediaType.APPLICATION_ZIP);
+        assertCharSets();
+        assertEncodings();
+
+        this.userAgent = "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; WOW64; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0)";
+        createGet(UNEFFECTED);
+        this.accMediaTypes.add(new Preference<MediaType>(
+                MediaType.APPLICATION_ZIP));
+        filter();
+        assertEquals(UNEFFECTED, this.request.getResourceRef().toString());
+        assertMediaTypes(MediaType.TEXT_HTML, MediaType.APPLICATION_XHTML_XML,
+                MediaType.APPLICATION_XML, MediaType.ALL);
     }
 }
