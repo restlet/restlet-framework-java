@@ -30,9 +30,6 @@ Changes log
           to representations in the Jdbc extension.
         - Added support of the dataservices extension in Android.
         - Added GWT object serialization.
-    - Misc
-        - Updated Simple framework library to version 4.1.16.
-        - Deprecated Message#getEntityAs* methods.
     - Bugs fixed
         - Fixed issue in DomRepresentation with createTransformer()
           method. Fix contributed by Remi Dewitte. 
@@ -46,7 +43,11 @@ Changes log
           was available and the status was 200. The logic has been
           moved from the HTTP server connectors to the ServerResource.
           Reported by Bruno Harbulot.
+        - Relaxed tunneling of user agent string.
+          Reported by Erick Fleming and Fabian Mandelbaum.
     - Misc
+        - Updated Simple framework library to version 4.1.16.
+        - Deprecated Message#getEntityAs* methods.
 
 - 2.0 Milestone 6 (2009-11-20)
     - API changes
