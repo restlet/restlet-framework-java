@@ -71,6 +71,7 @@
          <exclude name="META-INF/MANIFEST.MF" />
          <exclude name="src/com/**" />
          <exclude name="src/org/restlet/engine/internal/Activator.java" />
+         <exclude name="src/org/restlet/engine/http/Connection*.java" />
          <exclude name="src/org/restlet/engine/http/StreamServer*" />
          <exclude name="src/org/restlet/engine/http/StreamClient*" />
          <exclude name="src/org/restlet/engine/log/IdentClient.java" />
@@ -108,9 +109,11 @@
          <exclude name="src/org/restlet/engine/TemplateDispatcher.java" />
          <exclude name="src/org/restlet/engine/component/**" />
          <exclude name="src/org/restlet/engine/converter/**" />
+         <exclude name="src/org/restlet/engine/http/Connection*.java" />
          <exclude name="src/org/restlet/engine/http/HttpRequest.java" />
          <exclude name="src/org/restlet/engine/http/HttpResponse*.java" />
          <exclude name="src/org/restlet/engine/http/HttpServer*.java" />
+         <exclude name="src/org/restlet/engine/http/Server*" />
          <exclude name="src/org/restlet/engine/http/StreamServer*" />
          <exclude name="src/org/restlet/engine/http/StreamClient*" />
          <exclude name="src/org/restlet/engine/http/io/ChunkedInputStream.java" />

@@ -86,7 +86,7 @@ public class GwtClientCall extends ClientCall {
      *            Indicates if the call will have an entity to send to the
      *            server.
      */
-    public GwtHttpClientCall(GwtHttpClientHelper helper, String method,
+    public GwtClientCall(GwtHttpClientHelper helper, String method,
             String requestUri, boolean hasEntity) {
         super(helper, method, requestUri);
 
