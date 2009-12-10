@@ -1,4 +1,4 @@
-<module includes="jee, jse" id="gwt" type="integration" package="org.restlet.ext.gwt">
+<module includes="gae, jee, jse" id="gwt" type="integration" package="org.restlet.ext.gwt">
    <name>Restlet Extension - GWT</name>
    <description>
       Server-side integration with GWT.
@@ -10,9 +10,9 @@
 
    <dependencies>
       <dependency type="library" id="gwt" primary="true" />
-      <dependency type="library" id="servlet" includes="jee" maven-scope="provided" />
+      <dependency type="library" id="servlet" includes="gae, jee" maven-scope="provided" />
       <dependency type="module" id="core" />
-      <dependency type="module" id="servlet" includes="jee" />
+      <dependency type="module" id="servlet" includes="gae, jee" />
    </dependencies>
    <source edition="jse">
 		<files-mappers>
