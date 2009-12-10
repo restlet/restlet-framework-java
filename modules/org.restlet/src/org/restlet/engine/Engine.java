@@ -249,9 +249,7 @@ public class Engine {
      * @return The registered engine.
      */
     public static synchronized Engine register(boolean discoverPlugins) {
-        final Engine result = new Engine(discoverPlugins);
-        org.restlet.engine.Engine.setInstance(result);
-        return result;
+        return new Engine(discoverPlugins);
     }
 
     /**
@@ -307,6 +305,7 @@ public class Engine {
      *            True if helpers should be automatically discovered.
      */
     public Engine(boolean discoverHelpers) {
+        org.restlet.engine.Engine.setInstance(this);
         // Instantiate the logger facade
         if (Edition.CURRENT == Edition.GWT) {
             this.loggerFacade = new LoggerFacade();
