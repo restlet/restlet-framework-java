@@ -116,8 +116,7 @@
          <exclude name="src/org/restlet/engine/http/Server*" />
          <exclude name="src/org/restlet/engine/http/StreamServer*" />
          <exclude name="src/org/restlet/engine/http/StreamClient*" />
-         <exclude name="src/org/restlet/engine/http/io/ChunkedInputStream.java" />
-         <exclude name="src/org/restlet/engine/http/io/ChunkedOutputStream.java" />
+         <exclude name="src/org/restlet/engine/http/io/**" />
          <exclude name="src/org/restlet/engine/http/security/**" />
          <exclude name="src/org/restlet/engine/internal/**" />
          <exclude name="src/org/restlet/engine/io/BioUtils.java" />
