@@ -45,6 +45,8 @@ Changes log
           Reported by Bruno Harbulot.
         - Relaxed tunneling of user agent string.
           Reported by Erick Fleming and Fabian Mandelbaum.
+        - Fixed potential infinite loop when getting the Engine 
+          instance.
     - Misc
         - Updated Simple framework library to version 4.1.16.
         - Deprecated Message#getEntityAs* methods.
