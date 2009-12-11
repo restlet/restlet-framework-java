@@ -200,26 +200,31 @@ public class GrizzlyServerCall extends ServerCall {
 
     @Override
     public String getSslCipherSuite() {
-        final Socket socket = getSocket();
+        Socket socket = getSocket();
+
         if (socket instanceof SSLSocket) {
-            final SSLSocket sslSocket = (SSLSocket) socket;
-            final SSLSession sslSession = sslSocket.getSession();
+            SSLSocket sslSocket = (SSLSocket) socket;
+            SSLSession sslSession = sslSocket.getSession();
+
             if (sslSession != null) {
                 return sslSession.getCipherSuite();
             }
         }
+
         return null;
     }
 
     @Override
     public List<Certificate> getSslClientCertificates() {
-        final Socket socket = getSocket();
+        Socket socket = getSocket();
+
         if (socket instanceof SSLSocket) {
-            final SSLSocket sslSocket = (SSLSocket) socket;
-            final SSLSession sslSession = sslSocket.getSession();
+            SSLSocket sslSocket = (SSLSocket) socket;
+            SSLSession sslSession = sslSocket.getSession();
+
             if (sslSession != null) {
                 try {
-                    final List<Certificate> clientCertificates = Arrays
+                    List<Certificate> clientCertificates = Arrays
                             .asList(sslSession.getPeerCertificates());
 
                     return clientCertificates;
