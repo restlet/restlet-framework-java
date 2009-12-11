@@ -243,7 +243,7 @@ public class JaxRsApplication extends org.restlet.Application {
      *            the RoleChecker to use
      * @see #setGuard(Authenticator)
      * @see #setRoleChecker(RoleChecker)
-     * @deprecated Use {@link ClientInfo#getRoles} instead
+     * @deprecated Use {@link ClientInfo#getRoles()} instead
      */
     @Deprecated
     public void setAuthentication(Authenticator guard, RoleChecker roleChecker) {
