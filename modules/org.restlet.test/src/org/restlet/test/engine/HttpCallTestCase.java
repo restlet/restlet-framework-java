@@ -79,7 +79,7 @@ public class HttpCallTestCase extends RestletTestCase {
         c.set(Calendar.MILLISECOND, 13);
         c.setTimeZone(TimeZone.getTimeZone("GMT"));
         disposition.setCreationDate(c.getTime());
-        assertEquals("inline; creation-date=\"Wed, 11 Nov 09 22:11:12 GMT\"",
+        assertEquals("inline; creation-date=\"Wed, 11 Nov 09 10:11:12 GMT\"",
                 DispositionUtils.format(disposition));
 
     }
