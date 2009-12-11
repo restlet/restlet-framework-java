@@ -11,10 +11,10 @@
    <dependencies>
       <dependency type="library" id="cglib" />
       <dependency type="library" id="logging" />
-      <dependency type="library" id="servlet" includes="jee" maven-scope="provided" />
+      <dependency type="library" id="servlet" includes="gae,jee" maven-scope="provided" />
       <dependency type="library" id="spring" primary="true" />
       <dependency type="module" id="core" />
-      <dependency type="module" id="servlet" includes="jee" />
+      <dependency type="module" id="servlet" includes="gae,jee" />
    </dependencies>
    <source edition="jse">
 		<files-mappers>
@@ -29,6 +29,7 @@
 ]]>
       </files-sets>
    </source>
+<!-- 
    <source edition="gae">
 		<files-mappers>
 <![CDATA[
@@ -42,4 +43,5 @@
 ]]>
       </files-sets>
    </source>
-</module>
+ -->
+ </module>
