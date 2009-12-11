@@ -107,7 +107,7 @@ public class StreamServerHelper extends HttpServerHelper {
         super.start();
         getLogger().info("Starting the internal HTTP server");
 
-        final ThreadFactory factory = new LoggingThreadFactory(getLogger());
+        ThreadFactory factory = new LoggingThreadFactory(getLogger());
 
         // Configure the thread services
         this.handlerService = Executors.newFixedThreadPool(10, factory);

@@ -365,7 +365,7 @@ public abstract class ServerCall extends Call {
      * @throws IOException
      */
     protected void readRequestHead(InputStream headStream) throws IOException {
-        final StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
 
         // Parse the request method
         int next = headStream.read();
