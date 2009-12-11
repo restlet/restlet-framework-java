@@ -425,7 +425,7 @@ public class TunnelFilterTestCase extends TestCase {
                 MediaType.APPLICATION_ZIP));
         filter();
         assertEquals(UNEFFECTED, this.request.getResourceRef().toString());
-        assertMediaTypes(MediaType.TEXT_HTML, MediaType.APPLICATION_XHTML_XML,
+        assertMediaTypes(MediaType.TEXT_HTML, MediaType.APPLICATION_XHTML,
                 MediaType.APPLICATION_XML, MediaType.ALL);
     }
 }
