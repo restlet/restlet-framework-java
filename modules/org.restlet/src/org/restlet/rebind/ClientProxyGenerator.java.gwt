@@ -242,7 +242,7 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
 
                 if (i == (parameterTypes.length - 1)) {
                     if (AsyncCallback.class.isAssignableFrom(parameterType)
-                            || ClientCallback.class
+                            || Result.class
                                     .isAssignableFrom(parameterType)) {
                         callbackType = actualType;
 
