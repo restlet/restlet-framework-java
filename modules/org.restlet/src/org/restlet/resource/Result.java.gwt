@@ -41,7 +41,7 @@ import org.restlet.engine.resource.GwtClientProxy;
  *            The class of the result object returned in case of success.
  * @author Jerome Louvel
  */
-public interface ClientCallback<T> {
+public interface Result<T> {
 
     /**
      * Method called back by the associated {@link GwtClientProxy} object when a

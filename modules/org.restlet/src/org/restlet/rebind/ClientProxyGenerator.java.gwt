@@ -44,7 +44,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.representation.ObjectRepresentation;
 import org.restlet.representation.Representation;
-import org.restlet.resource.ClientCallback;
+import org.restlet.resource.Result;
 import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
@@ -355,7 +355,7 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
             composer.addImport(ObjectRepresentation.class.getCanonicalName());
             composer.addImport(ResourceException.class.getCanonicalName());
             composer.addImport(AsyncCallback.class.getCanonicalName());
-            composer.addImport(ClientCallback.class.getCanonicalName());
+            composer.addImport(Result.class.getCanonicalName());
             composer.addImport(SerializationStreamFactory.class
                     .getCanonicalName());
 
@@ -414,7 +414,7 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
             JType asyncType = getTypeOracle().getType(
                     AsyncCallback.class.getName());
             JType cbType = getTypeOracle().getType(
-                    ClientCallback.class.getName());
+                    Result.class.getName());
 
             for (JMethod method : methods) {
                 if (!"getClientResource".equals(method.getName())) {
