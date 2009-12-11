@@ -153,7 +153,7 @@ public class ObjectRepresentation<T extends Serializable> extends
                 ServerSerializationStreamWriter objectWriter = new ServerSerializationStreamWriter(
                         getSerializationPolicy());
                 objectWriter.serializeValue(this.object, this.targetClass);
-                setText(objectWriter.toString());
+                setText("//OK" + objectWriter.toString());
             } catch (Exception e) {
                 e.printStackTrace();
             }
