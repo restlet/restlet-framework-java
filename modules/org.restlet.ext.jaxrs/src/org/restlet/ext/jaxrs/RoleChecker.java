@@ -72,7 +72,7 @@ import org.restlet.security.Guard;
  * 
  * @author Stephan Koops
  * @see SecurityContext
- * @see {@link ClientInfo#getRoles()}
+ * @see {@link ClientInfo#getRoles}
  * @deprecated Use the new Restlet security model instead.
  */
 @Deprecated
