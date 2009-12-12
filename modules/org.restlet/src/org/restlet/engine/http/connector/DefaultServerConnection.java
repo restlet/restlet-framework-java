@@ -160,25 +160,33 @@ public class DefaultServerConnection extends ServerConnection {
         return pipelining;
     }
 
+    /**
+     * Reads the next requests. Only one request at a time if pipelining isn't
+     * enabled.
+     */
     public void readRequests() {
         try {
-            // Read the request on the socket
-            ConnectedRequest request = readRequest();
-
             if (isPipelining()) {
-                boolean idempotentSequence = true;
-
+                // boolean idempotentSequence = true;
+                // TODO
             } else {
-                // Add it to the connection queue
-                getInboundRequests().add(request);
+                // Ensure that no request is pending for this connection
+                if (getInboundRequests().size() == 0) {
+                    // Read the request on the socket
+                    ConnectedRequest request = readRequest();
 
-                // Add it to the helper queue
-                getHelper().getPendingRequests().add(request);
+                    if (request != null) {
+                        // Add it to the connection queue
+                        getInboundRequests().add(request);
+
+                        // Add it to the helper queue
+                        getHelper().getPendingRequests().add(request);
+                    }
+                }
             }
 
-            while (request != null) {
-
-            }
+            // Offer some workforce to the helper
+            getHelper().handleNext();
         } catch (Exception e) {
             getLogger().log(Level.WARNING,
                     "Error while reading an HTTP request: ", e.getMessage());
@@ -188,23 +196,67 @@ public class DefaultServerConnection extends ServerConnection {
     }
 
     /**
-     * 
-     * @return
+     * Writes the next responses. Only one response at a time if pipelining
+     * isn't enabled.
      */
-    public boolean writeResponses() {
-        boolean result = false;
-
+    public void writeResponses() {
         try {
-            // Response nextResponse = getOutboundResponses().poll();
+            if (isPipelining()) {
+                // TODO
+            } else {
+                if (getOutboundResponses().size() > 0) {
+                    Response nextResponse = getOutboundResponses().poll();
+                    Request request = nextResponse.getRequest();
 
+                    // Ensure that the response does match the next
+                    // inbound request pending for this connection.
+                    if (getInboundRequests().peek() == request) {
+                        writeResponse(nextResponse);
+
+                        // Remove the pending request
+                        getInboundRequests().remove(nextResponse.getRequest());
+                    }
+                }
+            }
+
+            // Check if some new requests can be read
+            readRequests();
         } catch (Exception e) {
             getLogger().log(Level.WARNING,
                     "Error while writing an HTTP response: ", e.getMessage());
             getLogger().log(Level.INFO, "Error while writing an HTTP response",
                     e);
         }
+    }
 
-        return result;
+    public void control() {
+        if (!getHandlerService().isShutdown()) {
+            try {
+                // Attempts to read requests
+                if (!isInboundBusy()) {
+                    getHandlerService().execute(new Runnable() {
+                        public void run() {
+                            readRequests();
+                        }
+                    });
+                }
+
+                // Attempts to write responses
+                if (!isOutboundBusy()) {
+                    getHandlerService().execute(new Runnable() {
+                        public void run() {
+                            writeResponses();
+                        }
+                    });
+                }
+            } catch (Exception e) {
+                getLogger().log(Level.WARNING,
+                        "Error while controlling an HTTP connection: ",
+                        e.getMessage());
+                getLogger().log(Level.INFO,
+                        "Error while controlling an HTTP connection", e);
+            }
+        }
     }
 
     @Override
@@ -215,9 +267,9 @@ public class DefaultServerConnection extends ServerConnection {
             try {
                 getHandlerService().execute(new Runnable() {
                     public void run() {
+                        readRequests();
                     }
                 });
-                getHelper().handle(null, null);
             } catch (Exception e) {
                 getLogger().log(Level.WARNING,
                         "Error while handling an HTTP server call: ",

@@ -98,11 +98,14 @@ import com.google.gwt.emul.java.util.concurrent.CopyOnWriteArraySet;
  */
 public class DefaultServerHelper extends ServerHelper {
 
+    /** The connection controller service. */
+    private volatile ExecutorService controllerService;
+
     /** The connection handler service. */
     private volatile ExecutorService handlerService;
 
-    /** The socket listener service. */
-    private volatile ExecutorService listenerService;
+    /** The connection acceptor service. */
+    private volatile ExecutorService acceptorService;
 
     /** The server socket channel. */
     private volatile ServerSocketChannel serverSocketChannel;
@@ -142,6 +145,16 @@ public class DefaultServerHelper extends ServerHelper {
                 TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(),
                 new LoggingThreadFactory(getLogger()));
         return result;
+    }
+
+    /**
+     * Creates the connector controller service.
+     * 
+     * @return The connector controller service.
+     */
+    protected ExecutorService createControllerService() {
+        return Executors.newSingleThreadExecutor(new LoggingThreadFactory(
+                getLogger()));
     }
 
     /**
@@ -270,8 +283,9 @@ public class DefaultServerHelper extends ServerHelper {
         getLogger().info("Starting the default HTTP server");
 
         // Create the thread services
+        this.acceptorService = createListenerService();
+        this.controllerService = createControllerService();
         this.handlerService = createHandlerService();
-        this.listenerService = createListenerService();
 
         // Create the server socket
         this.serverSocketChannel = createServerSocket();
@@ -281,7 +295,9 @@ public class DefaultServerHelper extends ServerHelper {
 
         // Start the socket listener service
         this.latch = new CountDownLatch(1);
-        this.listenerService.submit(new ConnectionListener(this,
+        this.acceptorService.submit(new ConnectionAcceptor(this,
+                this.serverSocketChannel, this.latch));
+        this.controllerService.submit(new ConnectionAcceptor(this,
                 this.serverSocketChannel, this.latch));
 
         // Wait for the listener to start up and count down the latch
@@ -315,13 +331,13 @@ public class DefaultServerHelper extends ServerHelper {
             }
         }
 
-        if (this.listenerService != null) {
+        if (this.acceptorService != null) {
             // This must be forcefully interrupted because the thread
             // is most likely blocked on channel.accept()
-            this.listenerService.shutdownNow();
+            this.acceptorService.shutdownNow();
 
             try {
-                this.listenerService.awaitTermination(30, TimeUnit.SECONDS);
+                this.acceptorService.awaitTermination(30, TimeUnit.SECONDS);
             } catch (Exception ex) {
                 getLogger().log(Level.FINE,
                         "Interruption while shutting down internal server", ex);

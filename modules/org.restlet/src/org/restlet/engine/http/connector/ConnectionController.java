@@ -30,50 +30,26 @@
 
 package org.restlet.engine.http.connector;
 
-import java.io.IOException;
-import java.nio.channels.ClosedByInterruptException;
-import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
-import java.util.concurrent.CountDownLatch;
 import java.util.logging.Level;
 
 /**
- * Listens on the given socket channel for incoming connections and dispatches
- * them to the given handler pool
+ * 
  * 
  * @author Jerome Louvel
  */
-public class ConnectionListener implements Runnable {
+public class ConnectionController implements Runnable {
 
     /** The parent server helper. */
     private final DefaultServerHelper helper;
-
-    /** The server socket channel to listen on. */
-    private final ServerSocketChannel serverSocket;
-
-    /**
-     * The latch to countdown when the socket is ready to accept connections.
-     */
-    private final CountDownLatch latch;
 
     /**
      * Constructor.
      * 
      * @param helper
      *            The target server helper.
-     * @param serverSocket
-     *            The server socket channel to listen on.
-     * @param latch
-     *            The latch to countdown when the socket is ready to accept
-     *            connections.
-     * @param handlerService
-     *            The handler service.
      */
-    public ConnectionListener(DefaultServerHelper helper,
-            ServerSocketChannel serverSocket, CountDownLatch latch) {
+    public ConnectionController(DefaultServerHelper helper) {
         this.helper = helper;
-        this.serverSocket = serverSocket;
-        this.latch = latch;
     }
 
     /**
@@ -89,21 +65,17 @@ public class ConnectionListener implements Runnable {
      * Listens on the given server socket for incoming connections.
      */
     public void run() {
-        this.latch.countDown();
         while (true) {
             try {
-                SocketChannel client = this.serverSocket.accept();
-                DefaultServerConnection connection = new DefaultServerConnection(
-                        getHelper(), client.socket());
-                getHelper().getConnections().add(connection);
-                connection.open();
-            } catch (ClosedByInterruptException ex) {
-                this.helper.getLogger().log(Level.FINE,
-                        "ServerSocket channel was closed by interrupt", ex);
-                break;
-            } catch (IOException ex) {
+                for (DefaultServerConnection connection : getHelper()
+                        .getConnections()) {
+                    connection.control();
+                }
+
+                Thread.sleep(100);
+            } catch (Exception ex) {
                 this.helper.getLogger().log(Level.WARNING,
-                        "Unexpected error while accepting new connection", ex);
+                        "Unexpected error while controlling connections", ex);
             }
         }
     }
