@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.http;
+package org.restlet.engine.http.connector;
 
 import java.io.IOException;
 import java.nio.channels.ClosedByInterruptException;
@@ -44,10 +44,10 @@ import java.util.logging.Level;
  * 
  * @author Jerome Louvel
  */
-public class ConnectionListener implements Runnable {
+public class InternalServerListener implements Runnable {
 
     /** The target server helper. */
-    private final StreamServerHelper helper;
+    private final InternalServerHelper helper;
 
     /** The server socket channel to listen on. */
     private final ServerSocketChannel serverSocket;
@@ -73,7 +73,7 @@ public class ConnectionListener implements Runnable {
      * @param handlerService
      *            The handler service.
      */
-    public ConnectionListener(StreamServerHelper helper,
+    public InternalServerListener(InternalServerHelper helper,
             ServerSocketChannel serverSocket, CountDownLatch latch,
             ExecutorService handlerService) {
         this.helper = helper;
@@ -92,7 +92,7 @@ public class ConnectionListener implements Runnable {
                 SocketChannel client = this.serverSocket.accept();
 
                 if (!this.handlerService.isShutdown()) {
-                    this.handlerService.submit(new ConnectionHandler(
+                    this.handlerService.submit(new InternalServerHandler(
                             this.helper, client.socket()));
                 }
             } catch (ClosedByInterruptException ex) {

@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.http;
+package org.restlet.engine.http.stream;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -43,6 +43,7 @@ import java.util.logging.Level;
 
 import org.restlet.Server;
 import org.restlet.data.Protocol;
+import org.restlet.engine.http.HttpServerHelper;
 import org.restlet.engine.log.LoggingThreadFactory;
 
 /**
@@ -121,7 +122,7 @@ public class StreamServerHelper extends HttpServerHelper {
 
         // Start the socket listener service
         this.latch = new CountDownLatch(1);
-        this.listenerService.submit(new ConnectionListener(this,
+        this.listenerService.submit(new StreamListener(this,
                 this.serverSocketChannel, this.latch, this.handlerService));
 
         // Wait for the listener to start up and count down the latch

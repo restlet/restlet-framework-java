@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.http;
+package org.restlet.engine.http.stream;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,6 +42,7 @@ import javax.net.ssl.SSLSocket;
 
 import org.restlet.Response;
 import org.restlet.Server;
+import org.restlet.engine.http.ServerCall;
 import org.restlet.engine.http.io.ChunkedInputStream;
 import org.restlet.engine.http.io.ChunkedOutputStream;
 import org.restlet.engine.http.io.InputEntityStream;

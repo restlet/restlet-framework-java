@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.http;
+package org.restlet.engine.http.stream;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -49,6 +49,8 @@ import javax.net.ssl.TrustManagerFactory;
 import org.restlet.Client;
 import org.restlet.Request;
 import org.restlet.data.Protocol;
+import org.restlet.engine.http.ClientCall;
+import org.restlet.engine.http.HttpClientHelper;
 
 /**
  * HTTP client helper based on BIO sockets. Here is the list of parameters that

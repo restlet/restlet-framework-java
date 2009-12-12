@@ -44,6 +44,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
+import org.restlet.engine.http.adapter.ClientAdapter;
 import org.restlet.engine.http.header.ContentType;
 import org.restlet.engine.http.header.DispositionReader;
 import org.restlet.engine.http.header.HeaderReader;

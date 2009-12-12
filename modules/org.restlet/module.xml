@@ -21,9 +21,12 @@
 		<export>org.restlet.engine.component</export>
 		<export>org.restlet.engine.converter</export>
 		<export>org.restlet.engine.http</export>
+		<export>org.restlet.engine.http.adapter</export>
+		<export>org.restlet.engine.http.connector</export>
 		<export>org.restlet.engine.http.header</export>
 		<export>org.restlet.engine.http.io</export>
 		<export>org.restlet.engine.http.security</export>
+		<export>org.restlet.engine.http.stream</export>
 		<export>org.restlet.engine.io</export>
 		<export>org.restlet.engine.local</export>
 		<export>org.restlet.engine.riap</export>
@@ -71,9 +74,8 @@
          <exclude name="META-INF/MANIFEST.MF" />
          <exclude name="src/com/**" />
          <exclude name="src/org/restlet/engine/internal/Activator.java" />
-         <exclude name="src/org/restlet/engine/http/Connection*.java" />
-         <exclude name="src/org/restlet/engine/http/StreamServer*" />
-         <exclude name="src/org/restlet/engine/http/StreamClient*" />
+         <exclude name="src/org/restlet/engine/http/connector/**" />
+         <exclude name="src/org/restlet/engine/http/stream/**" />
          <exclude name="src/org/restlet/engine/log/IdentClient.java" />
          <exclude name="src/org/restlet/service/TaskService.java" />
 ]]>
@@ -109,15 +111,14 @@
          <exclude name="src/org/restlet/engine/TemplateDispatcher.java" />
          <exclude name="src/org/restlet/engine/component/**" />
          <exclude name="src/org/restlet/engine/converter/**" />
-         <exclude name="src/org/restlet/engine/http/Connection*.java" />
          <exclude name="src/org/restlet/engine/http/HttpRequest.java" />
          <exclude name="src/org/restlet/engine/http/HttpResponse*.java" />
          <exclude name="src/org/restlet/engine/http/HttpServer*.java" />
          <exclude name="src/org/restlet/engine/http/Server*" />
-         <exclude name="src/org/restlet/engine/http/StreamServer*" />
-         <exclude name="src/org/restlet/engine/http/StreamClient*" />
+         <exclude name="src/org/restlet/engine/http/connector/**" />
          <exclude name="src/org/restlet/engine/http/io/**" />
          <exclude name="src/org/restlet/engine/http/security/**" />
+         <exclude name="src/org/restlet/engine/http/stream/**" />
          <exclude name="src/org/restlet/engine/internal/**" />
          <exclude name="src/org/restlet/engine/io/BioUtils.java" />
          <exclude name="src/org/restlet/engine/local/**" />

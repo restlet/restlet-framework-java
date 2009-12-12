@@ -37,7 +37,7 @@ import java.net.UnknownHostException;
 import net.jxta.socket.JxtaSocket;
 
 import org.restlet.Request;
-import org.restlet.engine.http.StreamClientCall;
+import org.restlet.engine.http.stream.StreamClientCall;
 
 /**
  * JXTA HTTP client call.

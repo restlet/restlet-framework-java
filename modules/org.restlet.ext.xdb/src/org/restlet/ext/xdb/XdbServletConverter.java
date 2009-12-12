@@ -47,7 +47,7 @@ import org.restlet.Restlet;
 import org.restlet.data.Reference;
 import org.restlet.engine.http.HttpRequest;
 import org.restlet.engine.http.HttpResponse;
-import org.restlet.engine.http.ServerAdapter;
+import org.restlet.engine.http.adapter.ServerAdapter;
 import org.restlet.ext.servlet.internal.ServletLogger;
 import org.restlet.ext.xdb.internal.XdbServletCall;
 

@@ -37,8 +37,8 @@ import org.restlet.data.Protocol;
 import org.restlet.engine.ClientHelper;
 import org.restlet.engine.Engine;
 import org.restlet.engine.ServerHelper;
-import org.restlet.engine.http.StreamClientHelper;
-import org.restlet.engine.http.StreamServerHelper;
+import org.restlet.engine.http.stream.StreamClientHelper;
+import org.restlet.engine.http.stream.StreamServerHelper;
 import org.restlet.test.RestletTestCase;
 
 /**

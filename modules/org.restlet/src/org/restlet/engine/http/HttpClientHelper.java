@@ -38,6 +38,7 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Status;
 import org.restlet.engine.ClientHelper;
+import org.restlet.engine.http.adapter.ClientAdapter;
 
 /**
  * Base HTTP client connector. Here is the list of parameters that are

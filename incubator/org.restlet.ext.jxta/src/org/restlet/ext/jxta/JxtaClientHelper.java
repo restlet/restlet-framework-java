@@ -35,7 +35,7 @@ import net.jxta.pipe.PipeService;
 import net.jxta.protocol.PipeAdvertisement;
 
 import org.restlet.Client;
-import org.restlet.engine.http.StreamClientHelper;
+import org.restlet.engine.http.stream.StreamClientHelper;
 
 /**
  * Abstract JXTA-based HTTP server connector helper.

@@ -638,7 +638,7 @@ public class Engine {
     public void registerDefaultConnectors() {
         // [ifndef gae, gwt]
         getRegisteredClients().add(
-                new org.restlet.engine.http.StreamClientHelper(null));
+                new org.restlet.engine.http.stream.StreamClientHelper(null));
         // [enddef]
         // [ifndef gwt]
         getRegisteredClients().add(
@@ -654,7 +654,7 @@ public class Engine {
         // [enddef]
         // [ifndef gae, gwt]
         getRegisteredServers().add(
-                new org.restlet.engine.http.StreamServerHelper(null));
+                new org.restlet.engine.http.stream.StreamServerHelper(null));
         // [enddef]
         // [ifdef gwt] uncomment
         // getRegisteredClients().add(

@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.http;
+package org.restlet.engine.http.connector;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -36,15 +36,17 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.logging.Level;
 
+import org.restlet.engine.http.stream.StreamServerCall;
+
 /**
  * Class that handles an incoming socket.
  * 
  * @author Jerome Louvel
  */
-public class ConnectionHandler implements Runnable {
+public class InternalServerHandler implements Runnable {
 
     /** The target server helper. */
-    private final StreamServerHelper helper;
+    private final InternalServerHelper helper;
 
     /** The socket connection to handle. */
     private final Socket socket;
@@ -57,7 +59,7 @@ public class ConnectionHandler implements Runnable {
      * @param socket
      *            The socket connection to handle.
      */
-    public ConnectionHandler(StreamServerHelper helper, Socket socket) {
+    public InternalServerHandler(InternalServerHelper helper, Socket socket) {
         this.helper = helper;
         this.socket = socket;
     }
