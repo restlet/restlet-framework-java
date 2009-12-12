@@ -41,7 +41,7 @@ public enum ConnectionState {
     OPENING,
 
     /** The network connection has been successfully opened. */
-    OPENED,
+    OPEN,
 
     /** The network connection is being closed. */
     CLOSING,

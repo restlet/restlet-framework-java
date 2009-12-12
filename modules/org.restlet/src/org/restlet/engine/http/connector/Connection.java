@@ -37,8 +37,6 @@ import java.net.Socket;
 import java.security.cert.Certificate;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -47,8 +45,6 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
 
 import org.restlet.Connector;
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.Parameter;
 import org.restlet.engine.ConnectorHelper;
 import org.restlet.engine.http.header.HeaderConstants;
@@ -88,19 +84,11 @@ public abstract class Connection<T extends Connector> {
         return result;
     }
 
-    private volatile boolean persistent;
-
-    private volatile boolean pipelining;
-
-    private final Queue<Request> requests;
-
-    private final Queue<Response> responses;
-
-    private volatile ConnectionState state;
-
     private volatile boolean inboundBusy;
 
     private volatile boolean outboundBusy;
+
+    private volatile ConnectionState state;
 
     /** The connecting user */
     private final Socket socket;
@@ -117,10 +105,6 @@ public abstract class Connection<T extends Connector> {
     public Connection(ConnectorHelper<T> helper, Socket socket)
             throws IOException {
         this.helper = helper;
-        this.persistent = false;
-        this.pipelining = false;
-        this.requests = new ConcurrentLinkedQueue<Request>();
-        this.responses = new ConcurrentLinkedQueue<Response>();
         this.state = ConnectionState.CLOSED;
         this.socket = socket;
         this.inboundBusy = false;
@@ -265,10 +249,10 @@ public abstract class Connection<T extends Connector> {
 
     /**
      * Closes the connection. By default, set the state to
-     * {@link ConnectionState#CLOSING}.
+     * {@link ConnectionState#CLOSED}.
      */
     public void close() {
-        setState(ConnectionState.CLOSING);
+        setState(ConnectionState.CLOSED);
     }
 
     public String getAddress() {
@@ -320,14 +304,6 @@ public abstract class Connection<T extends Connector> {
             java.nio.channels.ReadableByteChannel channel) {
         return new org.restlet.representation.ReadableRepresentation(channel,
                 null);
-    }
-
-    public Queue<Request> getRequests() {
-        return requests;
-    }
-
-    public Queue<Response> getResponses() {
-        return responses;
     }
 
     public Socket getSocket() {
@@ -395,20 +371,12 @@ public abstract class Connection<T extends Connector> {
         return outboundBusy;
     }
 
-    public boolean isPersistent() {
-        return persistent;
-    }
-
-    public boolean isPipelining() {
-        return pipelining;
-    }
-
     /**
      * Opens the connection. By default, set the state to
-     * {@link ConnectionState#OPENING}.
+     * {@link ConnectionState#OPEN}.
      */
     public void open() {
-        setState(ConnectionState.OPENING);
+        setState(ConnectionState.OPEN);
     }
 
     public void setInboundBusy(boolean inboundBusy) {
@@ -417,14 +385,6 @@ public abstract class Connection<T extends Connector> {
 
     public void setOutboundBusy(boolean outboundBusy) {
         this.outboundBusy = outboundBusy;
-    }
-
-    public void setPersistent(boolean persistent) {
-        this.persistent = persistent;
-    }
-
-    public void setPipelining(boolean pipelining) {
-        this.pipelining = pipelining;
     }
 
     public void setState(ConnectionState state) {

@@ -64,7 +64,8 @@ public class HttpServerHelper extends GrizzlyServerHelper {
     @Override
     protected void configure(Controller controller) throws Exception {
         // Get the TCP select handler of the controller
-        final TCPSelectorHandler selectorHandler = getSelectorHandler();
+        TCPSelectorHandler selectorHandler = getSelectorHandler();
+
         // Configure it
         selectorHandler.setPort(getHelped().getPort());
         if (getHelped().getAddress() != null) {

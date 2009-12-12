@@ -38,8 +38,13 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
+
+import org.restlet.Request;
+import org.restlet.Response;
 
 /**
  * An internal HTTP server connection.
@@ -54,6 +59,14 @@ public class DefaultServerConnection extends ServerConnection {
     /** The outbound stream. */
     private final OutputStream outboundStream;
 
+    private volatile boolean persistent;
+
+    private volatile boolean pipelining;
+
+    private final Queue<Request> requests;
+
+    private final Queue<Response> responses;
+
     /**
      * Constructor.
      * 
@@ -66,23 +79,10 @@ public class DefaultServerConnection extends ServerConnection {
         super(helper, socket);
         this.inboundStream = new BufferedInputStream(socket.getInputStream());
         this.outboundStream = new BufferedOutputStream(socket.getOutputStream());
-    }
-
-    @Override
-    public void open() {
-        super.open();
-
-        if (!getHelper().getHandlerService().isShutdown()) {
-            try {
-                getHelper().handle(null, null);
-            } catch (Exception e) {
-                getLogger().log(Level.WARNING,
-                        "Error while handling an HTTP server call: ",
-                        e.getMessage());
-                getLogger().log(Level.INFO,
-                        "Error while handling an HTTP server call", e);
-            }
-        }
+        this.persistent = false;
+        this.pipelining = false;
+        this.requests = new ConcurrentLinkedQueue<Request>();
+        this.responses = new ConcurrentLinkedQueue<Response>();
     }
 
     @Override
@@ -134,6 +134,10 @@ public class DefaultServerConnection extends ServerConnection {
         return getInboundStream();
     }
 
+    public Queue<Request> getRequests() {
+        return requests;
+    }
+
     @Override
     public WritableByteChannel getResponseEntityChannel() {
         return null;
@@ -142,6 +146,44 @@ public class DefaultServerConnection extends ServerConnection {
     @Override
     public OutputStream getResponseEntityStream() {
         return null;
+    }
+
+    public Queue<Response> getResponses() {
+        return responses;
+    }
+
+    public boolean isPersistent() {
+        return persistent;
+    }
+
+    public boolean isPipelining() {
+        return pipelining;
+    }
+
+    @Override
+    public void open() {
+        super.open();
+
+        if (!getHelper().getHandlerService().isShutdown()) {
+            try {
+
+                getHelper().handle(null, null);
+            } catch (Exception e) {
+                getLogger().log(Level.WARNING,
+                        "Error while handling an HTTP server call: ",
+                        e.getMessage());
+                getLogger().log(Level.INFO,
+                        "Error while handling an HTTP server call", e);
+            }
+        }
+    }
+
+    public void setPersistent(boolean persistent) {
+        this.persistent = persistent;
+    }
+
+    public void setPipelining(boolean pipelining) {
+        this.pipelining = pipelining;
     }
 
 }
