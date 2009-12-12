@@ -35,7 +35,6 @@ import java.io.InputStream;
 import java.util.logging.Logger;
 
 import org.restlet.Context;
-import org.restlet.Request;
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
@@ -141,29 +140,6 @@ public abstract class Call {
      */
     public int getClientPort() {
         return this.clientPort;
-    }
-
-    // [ifndef gwt] method
-    /**
-     * Returns the connector service associated to a request.
-     * 
-     * @param request
-     *            The request to lookup.
-     * @return The connector service associated to a request.
-     */
-    public org.restlet.service.ConnectorService getConnectorService(
-            Request request) {
-        org.restlet.service.ConnectorService result = null;
-        final org.restlet.Application application = org.restlet.Application
-                .getCurrent();
-
-        if (application != null) {
-            result = application.getConnectorService();
-        } else {
-            result = new org.restlet.service.ConnectorService();
-        }
-
-        return result;
     }
 
     /**
@@ -355,9 +331,9 @@ public abstract class Call {
                     || (exception
                             .getMessage()
                             .equals(
-                                    "Une connexion existante a dû être fermée par l'hôte distant") || (exception
+                                    "An existing connection must have been closed by the remote party.") || (exception
                             .getMessage()
-                            .equals("Une connexion établie a été abandonnée par un logiciel de votre ordinateur hôte")));
+                            .equals("An open connection has been abandonned by your network stack.")));
         }
 
         return result;

@@ -45,11 +45,12 @@ import org.restlet.data.Digest;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
 import org.restlet.data.Parameter;
+import org.restlet.engine.ConnectorHelper;
 import org.restlet.engine.http.header.ContentType;
 import org.restlet.engine.http.header.DispositionUtils;
+import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.http.header.HeaderReader;
 import org.restlet.engine.http.header.HeaderUtils;
-import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.http.header.RangeUtils;
 import org.restlet.engine.security.SslUtils;
 import org.restlet.engine.util.Base64;
@@ -443,8 +444,8 @@ public abstract class ServerCall extends Call {
         if (response != null) {
             // Get the connector service to callback
             Representation responseEntity = response.getEntity();
-            ConnectorService connectorService = getConnectorService(response
-                    .getRequest());
+            ConnectorService connectorService = ConnectorHelper
+                    .getConnectorService(response.getRequest());
             if (connectorService != null) {
                 connectorService.beforeSend(responseEntity);
             }

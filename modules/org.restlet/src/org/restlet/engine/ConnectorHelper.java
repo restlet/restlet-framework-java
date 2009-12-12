@@ -35,6 +35,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.restlet.Connector;
 import org.restlet.Context;
+import org.restlet.Request;
 import org.restlet.data.Protocol;
 
 /**
@@ -44,6 +45,29 @@ import org.restlet.data.Protocol;
  */
 public abstract class ConnectorHelper<T extends Connector> extends
         RestletHelper<T> {
+
+    // [ifndef gwt] method
+    /**
+     * Returns the connector service associated to a request.
+     * 
+     * @param request
+     *            The request to lookup.
+     * @return The connector service associated to a request.
+     */
+    public static org.restlet.service.ConnectorService getConnectorService(
+            Request request) {
+        org.restlet.service.ConnectorService result = null;
+        org.restlet.Application application = org.restlet.Application
+                .getCurrent();
+
+        if (application != null) {
+            result = application.getConnectorService();
+        } else {
+            result = new org.restlet.service.ConnectorService();
+        }
+
+        return result;
+    }
 
     /** The protocols simultaneously supported. */
     private final List<Protocol> protocols;

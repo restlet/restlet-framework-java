@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSession;
@@ -123,6 +124,15 @@ public abstract class Connection<T extends Connector> {
 
     public InputStream getInboundStream() {
         return this.inboundStream;
+    }
+
+    /**
+     * Returns the logger.
+     * 
+     * @return The logger.
+     */
+    public Logger getLogger() {
+        return getHelper().getLogger();
     }
 
     public OutputStream getOutboundStream() {
