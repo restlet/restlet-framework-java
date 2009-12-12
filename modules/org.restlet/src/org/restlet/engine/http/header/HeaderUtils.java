@@ -252,26 +252,14 @@ public class HeaderUtils {
     }
 
     /**
-     * Parses a date string.
+     * Indicates if the entity is chunked.
      * 
-     * @param date
-     *            The date string to parse.
-     * @param cookie
-     *            Indicates if the date is in the cookie format.
-     * @return The parsed date.
+     * @return True if the entity is chunked.
      */
-    public static Date parseDate(String date, boolean cookie) {
-        if (cookie) {
-            return DateUtils.parse(date, DateUtils.FORMAT_RFC_1036);
-        }
-
-        return DateUtils.parse(date, DateUtils.FORMAT_RFC_1123);
-    }
-
-    public static boolean isConnectionPersistent(Series<Parameter> headers) {
-        String header = headers.getFirstValue(
-                HeaderConstants.HEADER_CONNECTION, true);
-        return (header == null) || !header.equalsIgnoreCase("close");
+    public static boolean isChunkedEncoding(Series<Parameter> headers) {
+        final String header = headers.getFirstValue(
+                HeaderConstants.HEADER_TRANSFER_ENCODING, true);
+        return "chunked".equalsIgnoreCase(header);
     }
 
     /**
@@ -284,6 +272,19 @@ public class HeaderUtils {
      */
     public static boolean isCommentText(int character) {
         return isText(character) && (character != '(') && (character != ')');
+    }
+
+    /**
+     * Indicates if the connection must be closed.
+     * 
+     * @param headers
+     *            The headers to test.
+     * @return True if the connection must be closed.
+     */
+    public static boolean isConnectionClose(Series<Parameter> headers) {
+        String header = headers.getFirstValue(
+                HeaderConstants.HEADER_CONNECTION, true);
+        return "close".equalsIgnoreCase(header);
     }
 
     /**
@@ -489,6 +490,23 @@ public class HeaderUtils {
      */
     public static boolean isValueSeparator(int character) {
         return (character == ',');
+    }
+
+    /**
+     * Parses a date string.
+     * 
+     * @param date
+     *            The date string to parse.
+     * @param cookie
+     *            Indicates if the date is in the cookie format.
+     * @return The parsed date.
+     */
+    public static Date parseDate(String date, boolean cookie) {
+        if (cookie) {
+            return DateUtils.parse(date, DateUtils.FORMAT_RFC_1036);
+        }
+
+        return DateUtils.parse(date, DateUtils.FORMAT_RFC_1123);
     }
 
     /**

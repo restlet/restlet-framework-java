@@ -38,7 +38,8 @@ import org.restlet.Context;
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
-import org.restlet.engine.http.header.HeaderConstants;
+import org.restlet.engine.http.connector.Connection;
+import org.restlet.engine.http.header.HeaderUtils;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
@@ -324,19 +325,7 @@ public abstract class Call {
      * @return True if the given exception is caused by a broken connection.
      */
     public boolean isConnectionBroken(Exception exception) {
-        boolean result = false;
-
-        if (exception.getMessage() != null) {
-            result = (exception.getMessage().indexOf("Broken pipe") != -1)
-                    || (exception
-                            .getMessage()
-                            .equals(
-                                    "An existing connection must have been closed by the remote party.") || (exception
-                            .getMessage()
-                            .equals("An open connection has been abandonned by your network stack.")));
-        }
-
-        return result;
+        return Connection.isBroken(exception);
     }
 
     /**
@@ -355,9 +344,7 @@ public abstract class Call {
      * @return True if the request entity is chunked.
      */
     protected boolean isRequestChunked() {
-        final String header = getRequestHeaders().getFirstValue(
-                HeaderConstants.HEADER_TRANSFER_ENCODING, true);
-        return (header != null) && header.equalsIgnoreCase("chunked");
+        return HeaderUtils.isChunkedEncoding(getRequestHeaders());
     }
 
     /**
@@ -366,9 +353,7 @@ public abstract class Call {
      * @return True if the response entity is chunked.
      */
     protected boolean isResponseChunked() {
-        final String header = getResponseHeaders().getFirstValue(
-                HeaderConstants.HEADER_TRANSFER_ENCODING, true);
-        return (header != null) && header.equalsIgnoreCase("chunked");
+        return HeaderUtils.isChunkedEncoding(getResponseHeaders());
     }
 
     /**

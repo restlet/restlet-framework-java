@@ -64,6 +64,29 @@ import org.restlet.representation.Representation;
  */
 public abstract class Connection<T extends Connector> {
 
+    /**
+     * Returns true if the given exception is caused by a broken connection.
+     * 
+     * @param exception
+     *            The exception to inspect.
+     * @return True if the given exception is caused by a broken connection.
+     */
+    public static boolean isBroken(Exception exception) {
+        boolean result = false;
+
+        if (exception.getMessage() != null) {
+            result = (exception.getMessage().indexOf("Broken pipe") != -1)
+                    || (exception
+                            .getMessage()
+                            .equals(
+                                    "An existing connection must have been closed by the remote party.") || (exception
+                            .getMessage()
+                            .equals("An open connection has been abandonned by your network stack.")));
+        }
+
+        return result;
+    }
+
     private volatile boolean persistent;
 
     private volatile boolean pipelining;
