@@ -422,9 +422,7 @@ public abstract class ClientCall extends Call {
 
     @Override
     protected boolean isServerKeepAlive() {
-        String header = getResponseHeaders().getFirstValue(
-                HeaderConstants.HEADER_CONNECTION, true);
-        return (header == null) || !header.equalsIgnoreCase("close");
+        return !HeaderUtils.isConnectionClose(getResponseHeaders());
     }
 
     // [ifndef gwt] method

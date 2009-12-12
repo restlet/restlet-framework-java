@@ -47,7 +47,6 @@ import org.restlet.data.Language;
 import org.restlet.data.Parameter;
 import org.restlet.engine.ConnectorHelper;
 import org.restlet.engine.http.header.ContentType;
-import org.restlet.engine.http.header.DispositionUtils;
 import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.http.header.HeaderReader;
 import org.restlet.engine.http.header.HeaderUtils;
@@ -66,51 +65,18 @@ import org.restlet.service.ConnectorService;
  */
 public abstract class ServerCall extends Call {
 
-    /**
-     * Formats {@code fileName} as a Content-Disposition header value. By
-     * default, the file is considered as an attachment.
-     * 
-     * @param fileName
-     *            Filename to format
-     * @return {@code fileName} formatted
-     * @deprecated Use the {@link DispositionUtils} class instead.
-     */
-    @Deprecated
-    public static String formatContentDisposition(String fileName) {
-        return formatContentDisposition(fileName, true);
-    }
-
-    /**
-     * Formats {@code fileName} as a Content-Disposition header value.
-     * 
-     * @param fileName
-     *            Filename to format
-     * @param isAttached
-     *            Indicates if the file is separated from the request's body.
-     * @return {@code fileName} formatted
-     * @deprecated Use the {@link DispositionUtils} class instead.
-     */
-    @Deprecated
-    public static String formatContentDisposition(String fileName,
-            boolean isAttached) {
-        final StringBuilder b = new StringBuilder();
-        if (isAttached) {
-            b.append("attachment; filename=\"");
-        } else {
-            b.append("inline; filename=\"");
-        }
-
-        if (fileName != null) {
-            b.append(fileName);
-        }
-
-        b.append('"');
-
-        return b.toString();
-    }
-
     /** Indicates if the "host" header was already parsed. */
     private volatile boolean hostParsed;
+
+    /**
+     * Constructor.
+     * 
+     * @param server
+     *            The parent server connector.
+     */
+    public ServerCall(Server server) {
+        this(server.getAddress(), server.getPort());
+    }
 
     /**
      * Constructor.
@@ -124,16 +90,6 @@ public abstract class ServerCall extends Call {
         setServerAddress(serverAddress);
         setServerPort(serverPort);
         this.hostParsed = false;
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param server
-     *            The parent server connector.
-     */
-    public ServerCall(Server server) {
-        this(server.getAddress(), server.getPort());
     }
 
     /**
@@ -327,9 +283,7 @@ public abstract class ServerCall extends Call {
 
     @Override
     protected boolean isClientKeepAlive() {
-        String header = getRequestHeaders().getFirstValue(
-                HeaderConstants.HEADER_CONNECTION, true);
-        return (header == null) || !header.equalsIgnoreCase("close");
+        return !HeaderUtils.isConnectionClose(getRequestHeaders());
     }
 
     @Override
