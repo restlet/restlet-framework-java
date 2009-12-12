@@ -62,7 +62,7 @@ import org.restlet.engine.http.adapter.ServerAdapter;
  * <tr>
  * <td>adapter</td>
  * <td>String</td>
- * <td>org.restlet.engine.http.ServerAdapter</td>
+ * <td>org.restlet.engine.http.adapter.ServerAdapter</td>
  * <td>Class name of the adapter of low-level HTTP calls into high level
  * requests and responses.</td>
  * </tr>

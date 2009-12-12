@@ -36,14 +36,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 import java.util.concurrent.ExecutorService;
+import java.util.logging.Level;
 
 /**
  * An internal HTTP server connection.
  * 
  * @author Jerome Louvel
  */
-public abstract class DefaultServerConnection extends ServerConnection {
+public class DefaultServerConnection extends ServerConnection {
 
     /** The inbound stream. */
     private final InputStream inboundStream;
@@ -66,8 +69,25 @@ public abstract class DefaultServerConnection extends ServerConnection {
     }
 
     @Override
-    public DefaultServerHelper getHelper() {
-        return (DefaultServerHelper) super.getHelper();
+    public void open() {
+        super.open();
+
+        if (!getHelper().getHandlerService().isShutdown()) {
+            try {
+                getHelper().handle(null, null);
+            } catch (Exception e) {
+                getLogger().log(Level.WARNING,
+                        "Error while handling an HTTP server call: ",
+                        e.getMessage());
+                getLogger().log(Level.INFO,
+                        "Error while handling an HTTP server call", e);
+            }
+        }
+    }
+
+    @Override
+    public void close() {
+        super.close();
     }
 
     /**
@@ -80,6 +100,11 @@ public abstract class DefaultServerConnection extends ServerConnection {
     }
 
     @Override
+    public DefaultServerHelper getHelper() {
+        return (DefaultServerHelper) super.getHelper();
+    }
+
+    @Override
     public InputStream getInboundStream() {
         return this.inboundStream;
     }
@@ -87,6 +112,36 @@ public abstract class DefaultServerConnection extends ServerConnection {
     @Override
     public OutputStream getOutboundStream() {
         return this.outboundStream;
+    }
+
+    @Override
+    public ReadableByteChannel getRequestEntityChannel(long size) {
+        return null;
+    }
+
+    @Override
+    public InputStream getRequestEntityStream(long size) {
+        return null;
+    }
+
+    @Override
+    public ReadableByteChannel getRequestHeadChannel() {
+        return null;
+    }
+
+    @Override
+    public InputStream getRequestHeadStream() {
+        return getInboundStream();
+    }
+
+    @Override
+    public WritableByteChannel getResponseEntityChannel() {
+        return null;
+    }
+
+    @Override
+    public OutputStream getResponseEntityStream() {
+        return null;
     }
 
 }

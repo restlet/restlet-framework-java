@@ -34,24 +34,66 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.channels.ServerSocketChannel;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 import org.restlet.Server;
 import org.restlet.data.Protocol;
-import org.restlet.engine.http.HttpServerHelper;
+import org.restlet.engine.ServerHelper;
 import org.restlet.engine.log.LoggingThreadFactory;
 
+import com.google.gwt.emul.java.util.concurrent.CopyOnWriteArraySet;
+
 /**
- * HTTP server helper based on NIO blocking sockets.
+ * HTTP server helper based on NIO blocking sockets. Here is the list of
+ * parameters that are supported. They should be set in the Server's context
+ * before it is started:
+ * <table>
+ * <tr>
+ * <th>Parameter name</th>
+ * <th>Value type</th>
+ * <th>Default value</th>
+ * <th>Description</th>
+ * </tr>
+ * <tr>
+ * <td>minThreads</td>
+ * <td>int</td>
+ * <td>1</td>
+ * <td>Minimum threads waiting to service requests.</td>
+ * </tr>
+ * <tr>
+ * <td>maxThread</td>
+ * <td>int</td>
+ * <td>255</td>
+ * <td>Maximum threads that will service requests.</td>
+ * </tr>
+ * <tr>
+ * <td>threadMaxIdleTimeMs</td>
+ * <td>int</td>
+ * <td>60000</td>
+ * <td>Time for an idle thread to wait for a request or read.</td>
+ * </tr>
+ * <tr>
+ * <td>useForwardedForHeader</td>
+ * <td>boolean</td>
+ * <td>false</td>
+ * <td>Lookup the "X-Forwarded-For" header supported by popular proxies and
+ * caches and uses it to populate the Request.getClientAddresses() method
+ * result. This information is only safe for intermediary components within your
+ * local network. Other addresses could easily be changed by setting a fake
+ * header and should not be trusted for serious security checks.</td>
+ * </tr>
+ * </table>
  * 
  * @author Jerome Louvel
  */
-public class DefaultServerHelper extends HttpServerHelper {
+public class DefaultServerHelper extends ServerHelper {
 
     /** The connection handler service. */
     private volatile ExecutorService handlerService;
@@ -65,6 +107,8 @@ public class DefaultServerHelper extends HttpServerHelper {
     /** The synchronization aid between listener and handler service. */
     private volatile CountDownLatch latch;
 
+    private final Set<DefaultServerConnection> connections;
+
     /**
      * Constructor.
      * 
@@ -74,6 +118,30 @@ public class DefaultServerHelper extends HttpServerHelper {
     public DefaultServerHelper(Server server) {
         super(server);
         getProtocols().add(Protocol.HTTP);
+        this.connections = new CopyOnWriteArraySet<DefaultServerConnection>();
+    }
+
+    /**
+     * Creates the handler service.
+     * 
+     * @return The handler service.
+     */
+    protected ExecutorService createHandlerService() {
+        ThreadPoolExecutor result = new ThreadPoolExecutor(getMinThreads(),
+                getMaxThreads(), (long) getThreadMaxIdleTimeMs(),
+                TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(),
+                new LoggingThreadFactory(getLogger()));
+        return result;
+    }
+
+    /**
+     * Creates the handler service.
+     * 
+     * @return The handler service.
+     */
+    protected ExecutorService createListenerService() {
+        return Executors.newSingleThreadExecutor(new LoggingThreadFactory(
+                getLogger()));
     }
 
     /**
@@ -103,6 +171,10 @@ public class DefaultServerHelper extends HttpServerHelper {
                 .getPort());
     }
 
+    protected Set<DefaultServerConnection> getConnections() {
+        return connections;
+    }
+
     /**
      * Returns the connection handler service.
      * 
@@ -112,16 +184,44 @@ public class DefaultServerHelper extends HttpServerHelper {
         return handlerService;
     }
 
+    /**
+     * Returns the maximum threads that will service requests.
+     * 
+     * @return The maximum threads that will service requests.
+     */
+    public int getMaxThreads() {
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "maxThreads", "255"));
+    }
+
+    /**
+     * Returns the minimum threads waiting to service requests.
+     * 
+     * @return The minimum threads waiting to service requests.
+     */
+    public int getMinThreads() {
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "minThreads", "1"));
+    }
+
+    /**
+     * Returns the time for an idle thread to wait for a request or read.
+     * 
+     * @return The time for an idle thread to wait for a request or read.
+     */
+    public int getThreadMaxIdleTimeMs() {
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "threadMaxIdleTimeMs", "60000"));
+    }
+
     @Override
     public synchronized void start() throws Exception {
         super.start();
         getLogger().info("Starting the default HTTP server");
 
-        final ThreadFactory factory = new LoggingThreadFactory(getLogger());
-
-        // Configure the thread services
-        this.handlerService = Executors.newFixedThreadPool(10, factory);
-        this.listenerService = Executors.newSingleThreadExecutor(factory);
+        // Create the thread services
+        this.handlerService = createHandlerService();
+        this.listenerService = createListenerService();
 
         // Create the server socket
         this.serverSocketChannel = createServerSocket();

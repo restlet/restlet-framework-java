@@ -48,6 +48,10 @@ public class ConnectionListener implements Runnable {
     /** The target server helper. */
     private final DefaultServerHelper helper;
 
+    protected DefaultServerHelper getHelper() {
+        return helper;
+    }
+
     /** The server socket channel to listen on. */
     private final ServerSocketChannel serverSocket;
 
@@ -84,13 +88,10 @@ public class ConnectionListener implements Runnable {
         while (true) {
             try {
                 SocketChannel client = this.serverSocket.accept();
-
-                if (!this.helper.getHandlerService().isShutdown()) {
-                    this.helper.getHandlerService()
-                            .submit(
-                                    new ConnectionHandler(this.helper, client
-                                            .socket()));
-                }
+                DefaultServerConnection connection = new DefaultServerConnection(
+                        getHelper(), client.socket());
+                getHelper().getConnections().add(connection);
+                connection.open();
             } catch (ClosedByInterruptException ex) {
                 this.helper.getLogger().log(Level.FINE,
                         "ServerSocket channel was closed by interrupt", ex);
@@ -101,5 +102,4 @@ public class ConnectionListener implements Runnable {
             }
         }
     }
-
 }
