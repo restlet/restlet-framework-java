@@ -211,7 +211,7 @@ public abstract class Call {
         long contentLength = Representation.UNKNOWN_SIZE;
 
         // Extract the content length header
-        for (final Parameter header : headers) {
+        for (Parameter header : headers) {
             if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_CONTENT_LENGTH)) {
                 try {
