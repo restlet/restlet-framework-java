@@ -34,7 +34,9 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.channels.ServerSocketChannel;
+import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -43,6 +45,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
+import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.engine.ServerHelper;
@@ -110,6 +113,10 @@ public class DefaultServerHelper extends ServerHelper {
     /** The set of active connections. */
     private final Set<DefaultServerConnection> connections;
 
+    private final Queue<ConnectedRequest> pendingRequests;
+
+    private final Queue<Response> pendingResponses;
+
     /**
      * Constructor.
      * 
@@ -120,6 +127,8 @@ public class DefaultServerHelper extends ServerHelper {
         super(server);
         getProtocols().add(Protocol.HTTP);
         this.connections = new CopyOnWriteArraySet<DefaultServerConnection>();
+        this.pendingRequests = new ConcurrentLinkedQueue<ConnectedRequest>();
+        this.pendingResponses = new ConcurrentLinkedQueue<Response>();
     }
 
     /**
@@ -210,6 +219,14 @@ public class DefaultServerHelper extends ServerHelper {
                 "minThreads", "1"));
     }
 
+    protected Queue<ConnectedRequest> getPendingRequests() {
+        return pendingRequests;
+    }
+
+    protected Queue<Response> getPendingResponses() {
+        return pendingResponses;
+    }
+
     /**
      * Returns the time for an idle thread to wait for a request or read.
      * 
@@ -218,6 +235,33 @@ public class DefaultServerHelper extends ServerHelper {
     public int getThreadMaxIdleTimeMs() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
                 "threadMaxIdleTimeMs", "60000"));
+    }
+
+    /**
+     * Handles the next pending request and response if available.
+     */
+    public synchronized void handleNext() {
+        // Attempts to handle the next pending request
+        ConnectedRequest nextRequest = getPendingRequests().poll();
+
+        if (nextRequest != null) {
+            Response response = new Response(nextRequest);
+            handle(nextRequest, response);
+
+            // if(response.isCommitted()){
+
+            // }
+        }
+
+        // Attempts to write the next pending response
+        Response nextResponse = getPendingResponses().poll();
+
+        while (nextResponse != null) {
+            ConnectedRequest request = (ConnectedRequest) nextResponse
+                    .getRequest();
+            request.getConnection().writeResponse(nextResponse);
+            nextResponse = getPendingResponses().poll();
+        }
     }
 
     @Override

@@ -63,9 +63,9 @@ public class DefaultServerConnection extends ServerConnection {
 
     private volatile boolean pipelining;
 
-    private final Queue<Request> requests;
+    private final Queue<Request> inboundRequests;
 
-    private final Queue<Response> responses;
+    private final Queue<Response> outboundResponses;
 
     /**
      * Constructor.
@@ -81,8 +81,8 @@ public class DefaultServerConnection extends ServerConnection {
         this.outboundStream = new BufferedOutputStream(socket.getOutputStream());
         this.persistent = false;
         this.pipelining = false;
-        this.requests = new ConcurrentLinkedQueue<Request>();
-        this.responses = new ConcurrentLinkedQueue<Response>();
+        this.inboundRequests = new ConcurrentLinkedQueue<Request>();
+        this.outboundResponses = new ConcurrentLinkedQueue<Response>();
     }
 
     @Override
@@ -134,8 +134,8 @@ public class DefaultServerConnection extends ServerConnection {
         return getInboundStream();
     }
 
-    public Queue<Request> getRequests() {
-        return requests;
+    public Queue<Request> getInboundRequests() {
+        return inboundRequests;
     }
 
     @Override
@@ -148,8 +148,8 @@ public class DefaultServerConnection extends ServerConnection {
         return null;
     }
 
-    public Queue<Response> getResponses() {
-        return responses;
+    public Queue<Response> getOutboundResponses() {
+        return outboundResponses;
     }
 
     public boolean isPersistent() {
@@ -160,13 +160,63 @@ public class DefaultServerConnection extends ServerConnection {
         return pipelining;
     }
 
+    public void readRequests() {
+        try {
+            // Read the request on the socket
+            ConnectedRequest request = readRequest();
+
+            if (isPipelining()) {
+                boolean idempotentSequence = true;
+
+            } else {
+                // Add it to the connection queue
+                getInboundRequests().add(request);
+
+                // Add it to the helper queue
+                getHelper().getPendingRequests().add(request);
+            }
+
+            while (request != null) {
+
+            }
+        } catch (Exception e) {
+            getLogger().log(Level.WARNING,
+                    "Error while reading an HTTP request: ", e.getMessage());
+            getLogger().log(Level.INFO, "Error while reading an HTTP request",
+                    e);
+        }
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public boolean writeResponses() {
+        boolean result = false;
+
+        try {
+            // Response nextResponse = getOutboundResponses().poll();
+
+        } catch (Exception e) {
+            getLogger().log(Level.WARNING,
+                    "Error while writing an HTTP response: ", e.getMessage());
+            getLogger().log(Level.INFO, "Error while writing an HTTP response",
+                    e);
+        }
+
+        return result;
+    }
+
     @Override
     public void open() {
         super.open();
 
-        if (!getHelper().getHandlerService().isShutdown()) {
+        if (!getHandlerService().isShutdown()) {
             try {
-
+                getHandlerService().execute(new Runnable() {
+                    public void run() {
+                    }
+                });
                 getHelper().handle(null, null);
             } catch (Exception e) {
                 getLogger().log(Level.WARNING,

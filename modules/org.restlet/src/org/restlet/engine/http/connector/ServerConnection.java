@@ -61,6 +61,7 @@ import org.restlet.service.ConnectorService;
 import org.restlet.util.Series;
 
 /**
+ * Generic HTTP server connection.
  * 
  * @author Jerome Louvel
  */
@@ -202,7 +203,7 @@ public abstract class ServerConnection extends Connection<Server> {
      * @return The next request sent by the client if available.
      * @throws IOException
      */
-    public synchronized ConnectedRequest readRequest() throws IOException {
+    protected ConnectedRequest readRequest() throws IOException {
         ConnectedRequest result = null;
         String requestMethod = null;
         String requestUri = null;
@@ -309,7 +310,7 @@ public abstract class ServerConnection extends Connection<Server> {
      *            The high-level response.
      */
     @SuppressWarnings("unchecked")
-    public void writeResponse(Response response) {
+    protected void writeResponse(Response response) {
         Series<Parameter> headers = new Form();
 
         try {
