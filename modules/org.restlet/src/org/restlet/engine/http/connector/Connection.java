@@ -263,8 +263,12 @@ public abstract class Connection<T extends Connector> {
         }
     }
 
+    /**
+     * Closes the connection. By default, set the state to
+     * {@link ConnectionState#CLOSING}.
+     */
     public void close() {
-
+        setState(ConnectionState.CLOSING);
     }
 
     public String getAddress() {
@@ -399,8 +403,12 @@ public abstract class Connection<T extends Connector> {
         return pipelining;
     }
 
+    /**
+     * Opens the connection. By default, set the state to
+     * {@link ConnectionState#OPENING}.
+     */
     public void open() {
-
+        setState(ConnectionState.OPENING);
     }
 
     public void setInboundBusy(boolean inboundBusy) {

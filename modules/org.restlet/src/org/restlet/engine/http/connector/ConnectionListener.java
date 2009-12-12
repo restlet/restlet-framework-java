@@ -45,12 +45,8 @@ import java.util.logging.Level;
  */
 public class ConnectionListener implements Runnable {
 
-    /** The target server helper. */
+    /** The parent server helper. */
     private final DefaultServerHelper helper;
-
-    protected DefaultServerHelper getHelper() {
-        return helper;
-    }
 
     /** The server socket channel to listen on. */
     private final ServerSocketChannel serverSocket;
@@ -78,6 +74,15 @@ public class ConnectionListener implements Runnable {
         this.helper = helper;
         this.serverSocket = serverSocket;
         this.latch = latch;
+    }
+
+    /**
+     * Returns the parent server helper.
+     * 
+     * @return The parent server helper.
+     */
+    protected DefaultServerHelper getHelper() {
+        return helper;
     }
 
     /**

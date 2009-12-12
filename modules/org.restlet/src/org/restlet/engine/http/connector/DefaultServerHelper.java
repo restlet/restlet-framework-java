@@ -107,6 +107,7 @@ public class DefaultServerHelper extends ServerHelper {
     /** The synchronization aid between listener and handler service. */
     private volatile CountDownLatch latch;
 
+    /** The set of active connections. */
     private final Set<DefaultServerConnection> connections;
 
     /**
@@ -171,6 +172,11 @@ public class DefaultServerHelper extends ServerHelper {
                 .getPort());
     }
 
+    /**
+     * Returns the set of active connections.
+     * 
+     * @return The set of active connections.
+     */
     protected Set<DefaultServerConnection> getConnections() {
         return connections;
     }
