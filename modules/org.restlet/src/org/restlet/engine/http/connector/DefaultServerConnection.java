@@ -36,9 +36,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-
-import org.restlet.Server;
-import org.restlet.engine.ConnectorHelper;
+import java.util.concurrent.ExecutorService;
 
 /**
  * An internal HTTP server connection.
@@ -60,17 +58,33 @@ public abstract class DefaultServerConnection extends ServerConnection {
      * @param socket
      * @throws IOException
      */
-    public DefaultServerConnection(ConnectorHelper<Server> helper,
-            Socket socket) throws IOException {
+    public DefaultServerConnection(DefaultServerHelper helper, Socket socket)
+            throws IOException {
         super(helper, socket);
         this.inboundStream = new BufferedInputStream(socket.getInputStream());
         this.outboundStream = new BufferedOutputStream(socket.getOutputStream());
     }
 
+    @Override
+    public DefaultServerHelper getHelper() {
+        return (DefaultServerHelper) super.getHelper();
+    }
+
+    /**
+     * Returns the connection handler service.
+     * 
+     * @return The connection handler service.
+     */
+    protected ExecutorService getHandlerService() {
+        return getHelper().getHandlerService();
+    }
+
+    @Override
     public InputStream getInboundStream() {
         return this.inboundStream;
     }
 
+    @Override
     public OutputStream getOutboundStream() {
         return this.outboundStream;
     }

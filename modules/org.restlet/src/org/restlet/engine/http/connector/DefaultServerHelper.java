@@ -103,10 +103,19 @@ public class DefaultServerHelper extends HttpServerHelper {
                 .getPort());
     }
 
+    /**
+     * Returns the connection handler service.
+     * 
+     * @return The connection handler service.
+     */
+    public ExecutorService getHandlerService() {
+        return handlerService;
+    }
+
     @Override
     public synchronized void start() throws Exception {
         super.start();
-        getLogger().info("Starting the internal HTTP server");
+        getLogger().info("Starting the default HTTP server");
 
         final ThreadFactory factory = new LoggingThreadFactory(getLogger());
 
@@ -122,8 +131,8 @@ public class DefaultServerHelper extends HttpServerHelper {
 
         // Start the socket listener service
         this.latch = new CountDownLatch(1);
-        this.listenerService.submit(new DefaultServerListener(this,
-                this.serverSocketChannel, this.latch, this.handlerService));
+        this.listenerService.submit(new ConnectionListener(this,
+                this.serverSocketChannel, this.latch));
 
         // Wait for the listener to start up and count down the latch
         // This blocks until the server is ready to receive connections
@@ -142,7 +151,7 @@ public class DefaultServerHelper extends HttpServerHelper {
     @Override
     public synchronized void stop() throws Exception {
         super.stop();
-        getLogger().info("Stopping the internal HTTP server");
+        getLogger().info("Stopping the default HTTP server");
 
         if (this.handlerService != null) {
             // Gracefully shutdown the handlers, they should complete

@@ -263,6 +263,10 @@ public abstract class Connection<T extends Connector> {
         }
     }
 
+    public void close() {
+
+    }
+
     public String getAddress() {
         return (getSocket().getInetAddress() == null) ? null : getSocket()
                 .getInetAddress().getHostAddress();
@@ -393,6 +397,10 @@ public abstract class Connection<T extends Connector> {
 
     public boolean isPipelining() {
         return pipelining;
+    }
+
+    public void open() {
+
     }
 
     public void setInboundBusy(boolean inboundBusy) {

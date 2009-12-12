@@ -43,7 +43,7 @@ import org.restlet.engine.http.stream.StreamServerCall;
  * 
  * @author Jerome Louvel
  */
-public class DefaultServerHandler implements Runnable {
+public class ConnectionHandler implements Runnable {
 
     /** The target server helper. */
     private final DefaultServerHelper helper;
@@ -59,7 +59,7 @@ public class DefaultServerHandler implements Runnable {
      * @param socket
      *            The socket connection to handle.
      */
-    public DefaultServerHandler(DefaultServerHelper helper, Socket socket) {
+    public ConnectionHandler(DefaultServerHelper helper, Socket socket) {
         this.helper = helper;
         this.socket = socket;
     }

@@ -35,7 +35,6 @@ import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 
 /**
@@ -44,7 +43,7 @@ import java.util.logging.Level;
  * 
  * @author Jerome Louvel
  */
-public class DefaultServerListener implements Runnable {
+public class ConnectionListener implements Runnable {
 
     /** The target server helper. */
     private final DefaultServerHelper helper;
@@ -56,9 +55,6 @@ public class DefaultServerListener implements Runnable {
      * The latch to countdown when the socket is ready to accept connections.
      */
     private final CountDownLatch latch;
-
-    /** The handler service. */
-    private final ExecutorService handlerService;
 
     /**
      * Constructor.
@@ -73,13 +69,11 @@ public class DefaultServerListener implements Runnable {
      * @param handlerService
      *            The handler service.
      */
-    public DefaultServerListener(DefaultServerHelper helper,
-            ServerSocketChannel serverSocket, CountDownLatch latch,
-            ExecutorService handlerService) {
+    public ConnectionListener(DefaultServerHelper helper,
+            ServerSocketChannel serverSocket, CountDownLatch latch) {
         this.helper = helper;
         this.serverSocket = serverSocket;
         this.latch = latch;
-        this.handlerService = handlerService;
     }
 
     /**
@@ -87,13 +81,15 @@ public class DefaultServerListener implements Runnable {
      */
     public void run() {
         this.latch.countDown();
-        for (;;) {
+        while (true) {
             try {
                 SocketChannel client = this.serverSocket.accept();
 
-                if (!this.handlerService.isShutdown()) {
-                    this.handlerService.submit(new DefaultServerHandler(
-                            this.helper, client.socket()));
+                if (!this.helper.getHandlerService().isShutdown()) {
+                    this.helper.getHandlerService()
+                            .submit(
+                                    new ConnectionHandler(this.helper, client
+                                            .socket()));
                 }
             } catch (ClosedByInterruptException ex) {
                 this.helper.getLogger().log(Level.FINE,
