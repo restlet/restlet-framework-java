@@ -157,12 +157,8 @@ public class InternalRequest extends Request {
         setEntity(entity);
         getAttributes().put(HeaderConstants.ATTRIBUTE_HEADERS, headers);
 
-        if (httpVersion != null) {
-            getAttributes().put(HeaderConstants.ATTRIBUTE_VERSION, httpVersion);
-        }
-
         if (confidential) {
-            final List<Certificate> clientCertificates = getConnection()
+            List<Certificate> clientCertificates = getConnection()
                     .getSslClientCertificates();
             if (clientCertificates != null) {
                 getAttributes().put(
@@ -170,18 +166,25 @@ public class InternalRequest extends Request {
                         clientCertificates);
             }
 
-            final String cipherSuite = getConnection().getSslCipherSuite();
+            String cipherSuite = getConnection().getSslCipherSuite();
             if (cipherSuite != null) {
                 getAttributes().put(
                         HeaderConstants.ATTRIBUTE_HTTPS_CIPHER_SUITE,
                         cipherSuite);
             }
 
-            final Integer keySize = getConnection().getSslKeySize();
+            Integer keySize = getConnection().getSslKeySize();
             if (keySize != null) {
                 getAttributes().put(HeaderConstants.ATTRIBUTE_HTTPS_KEY_SIZE,
                         keySize);
             }
+
+            setProtocol(new Protocol("https", "HTTPS",
+                    "HyperText Transport Protocol (Secure)", 443, true,
+                    httpVersion));
+        } else {
+            setProtocol(new Protocol("http", "HTTP",
+                    "HyperText Transport Protocol", 80, httpVersion));
         }
 
         // Parse the host header

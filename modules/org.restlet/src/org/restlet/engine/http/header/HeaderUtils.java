@@ -35,11 +35,26 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Level;
 
+import org.restlet.Context;
+import org.restlet.Response;
+import org.restlet.data.ChallengeRequest;
 import org.restlet.data.CharacterSet;
+import org.restlet.data.CookieSetting;
+import org.restlet.data.Digest;
 import org.restlet.data.Dimension;
+import org.restlet.data.Disposition;
+import org.restlet.data.Encoding;
+import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
+import org.restlet.data.Status;
+import org.restlet.data.Warning;
+import org.restlet.engine.security.AuthenticatorUtils;
+import org.restlet.engine.util.Base64;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
@@ -50,6 +65,246 @@ import org.restlet.util.Series;
  * @author Jerome Louvel
  */
 public class HeaderUtils {
+    /**
+     * Copies the entity headers from the {@link Representation} to the
+     * {@link Series}.
+     * 
+     * @param entity
+     *            The {@link Representation} to copy the headers from.
+     * @param responseHeaders
+     *            The {@link Series} to copy the headers to.
+     */
+    public static void addEntityHeaders(Representation entity,
+            Series<Parameter> responseHeaders) {
+        if (entity == null) {
+            responseHeaders.add(HeaderConstants.HEADER_CONTENT_LENGTH, "0");
+        } else {
+            if (entity.getExpirationDate() != null) {
+                responseHeaders.add(HeaderConstants.HEADER_EXPIRES, DateUtils
+                        .format(entity.getExpirationDate()));
+            }
+
+            if (!entity.getEncodings().isEmpty()) {
+                final StringBuilder value = new StringBuilder();
+                for (final Encoding encoding : entity.getEncodings()) {
+                    if (!encoding.equals(Encoding.IDENTITY)) {
+                        if (value.length() > 0) {
+                            value.append(", ");
+                        }
+                        value.append(encoding.getName());
+                    }
+                }
+                if (value.length() > 0) {
+                    responseHeaders.add(
+                            HeaderConstants.HEADER_CONTENT_ENCODING, value
+                                    .toString());
+                }
+
+            }
+
+            if (!entity.getLanguages().isEmpty()) {
+                final StringBuilder value = new StringBuilder();
+                for (int i = 0; i < entity.getLanguages().size(); i++) {
+                    if (i > 0) {
+                        value.append(", ");
+                    }
+                    value.append(entity.getLanguages().get(i).getName());
+                }
+                responseHeaders.add(HeaderConstants.HEADER_CONTENT_LANGUAGE,
+                        value.toString());
+            }
+
+            if (entity.getMediaType() != null) {
+                final StringBuilder contentType = new StringBuilder(entity
+                        .getMediaType().getName());
+
+                if (entity.getCharacterSet() != null) {
+                    // Specify the character set parameter
+                    contentType.append("; charset=").append(
+                            entity.getCharacterSet().getName());
+                }
+
+                responseHeaders.add(HeaderConstants.HEADER_CONTENT_TYPE,
+                        contentType.toString());
+            }
+
+            if (entity.getModificationDate() != null) {
+                responseHeaders.add(HeaderConstants.HEADER_LAST_MODIFIED,
+                        HeaderUtils.formatDate(entity.getModificationDate(),
+                                false));
+            }
+
+            if (entity.getTag() != null) {
+                responseHeaders.add(HeaderConstants.HEADER_ETAG, entity
+                        .getTag().format());
+            }
+            long size = entity.getAvailableSize();
+            if (size != Representation.UNKNOWN_SIZE) {
+                responseHeaders.add(HeaderConstants.HEADER_CONTENT_LENGTH, Long
+                        .toString(size));
+            }
+
+            if (entity.getIdentifier() != null) {
+                responseHeaders.add(HeaderConstants.HEADER_CONTENT_LOCATION,
+                        entity.getIdentifier().toString());
+            }
+
+            if (entity.getDisposition() != null
+                    && !Disposition.TYPE_NONE.equals(entity.getDisposition()
+                            .getType())) {
+                responseHeaders.add(HeaderConstants.HEADER_CONTENT_DISPOSITION,
+                        DispositionUtils.format(entity.getDisposition()));
+            }
+
+            if (entity.getRange() != null) {
+                try {
+                    responseHeaders.add(HeaderConstants.HEADER_CONTENT_RANGE,
+                            RangeUtils.formatContentRange(entity.getRange(),
+                                    entity.getSize()));
+                } catch (Exception e) {
+                    Context
+                            .getCurrentLogger()
+                            .log(
+                                    Level.WARNING,
+                                    "Unable to format the HTTP Content-Range header",
+                                    e);
+                }
+            }
+
+            if (entity.getDigest() != null
+                    && Digest.ALGORITHM_MD5.equals(entity.getDigest()
+                            .getAlgorithm())) {
+                responseHeaders.add(HeaderConstants.HEADER_CONTENT_MD5,
+                        new String(Base64.encode(entity.getDigest().getValue(),
+                                false)));
+            }
+        }
+    }
+
+    /**
+     * Copies the headers from the {@link Response} to the given {@link Series}.
+     * 
+     * @param response
+     *            The {@link Response} to copy the headers from.
+     * @param responseHeaders
+     *            The {@link Series} to copy the headers to.
+     * @throws IllegalArgumentException
+     */
+    public static void addResponseHeaders(Response response,
+            Series<Parameter> responseHeaders) throws IllegalArgumentException {
+        if (response.getStatus().equals(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED)
+                || Method.OPTIONS.equals(response.getRequest().getMethod())) {
+            // Format the "Allow" header
+            StringBuilder sb = new StringBuilder();
+            boolean first = true;
+
+            for (final Method method : response.getAllowedMethods()) {
+                if (first) {
+                    first = false;
+                } else {
+                    sb.append(", ");
+                }
+
+                sb.append(method.getName());
+            }
+
+            responseHeaders.add(HeaderConstants.HEADER_ALLOW, sb.toString());
+        }
+
+        // Add the date
+        response.setDate(new Date());
+        responseHeaders.add(HeaderConstants.HEADER_DATE, DateUtils
+                .format(response.getDate()));
+
+        // Add the age
+        if (response.getAge() > 0) {
+            responseHeaders.add(HeaderConstants.HEADER_AGE, Integer
+                    .toString(response.getAge()));
+        }
+
+        // Add the retry after date
+        if (response.getRetryAfter() != null) {
+            responseHeaders.add(HeaderConstants.HEADER_RETRY_AFTER, DateUtils
+                    .format(response.getRetryAfter()));
+        }
+
+        // Add the cookie settings
+        List<CookieSetting> cookies = response.getCookieSettings();
+        for (int i = 0; i < cookies.size(); i++) {
+            responseHeaders.add(HeaderConstants.HEADER_SET_COOKIE, CookieUtils
+                    .format(cookies.get(i)));
+        }
+
+        // Set the location URI (for redirections or creations)
+        if (response.getLocationRef() != null) {
+            // The location header must contain an absolute URI.
+            responseHeaders.add(HeaderConstants.HEADER_LOCATION, response
+                    .getLocationRef().getTargetRef().toString());
+        }
+
+        // Set the security data
+        if (response.getChallengeRequests() != null) {
+            for (final ChallengeRequest challengeRequest : response
+                    .getChallengeRequests()) {
+                responseHeaders.add(HeaderConstants.HEADER_WWW_AUTHENTICATE,
+                        AuthenticatorUtils.formatRequest(challengeRequest,
+                                response, responseHeaders));
+            }
+        }
+
+        if (response.getProxyChallengeRequests() != null) {
+            for (final ChallengeRequest challengeRequest : response
+                    .getProxyChallengeRequests()) {
+                responseHeaders.add(HeaderConstants.HEADER_PROXY_AUTHENTICATE,
+                        AuthenticatorUtils.formatRequest(challengeRequest,
+                                response, responseHeaders));
+            }
+        }
+
+        // Send the Vary header only to none-MSIE user agents as MSIE seems
+        // to support partially and badly this header (cf issue 261).
+        if (!((response.getRequest().getClientInfo().getAgent() != null) && response
+                .getRequest().getClientInfo().getAgent().contains("MSIE"))) {
+            // Add the Vary header if content negotiation was used
+            final Set<Dimension> dimensions = response.getDimensions();
+            final String vary = HeaderUtils.createVaryHeader(dimensions);
+            if (vary != null) {
+                responseHeaders.add(HeaderConstants.HEADER_VARY, vary);
+            }
+        }
+
+        // Add the accept-ranges header
+        if (response.getServerInfo().isAcceptingRanges()) {
+            responseHeaders.add(HeaderConstants.HEADER_ACCEPT_RANGES, "bytes");
+        }
+
+        // Add the warning headers
+        if (!response.getWarnings().isEmpty()) {
+            for (Warning warning : response.getWarnings()) {
+                responseHeaders.add(HeaderConstants.HEADER_WARNING,
+                        WarningUtils.format(warning));
+            }
+        }
+
+        // Add the Cache-control headers
+        if (!response.getCacheDirectives().isEmpty()) {
+            responseHeaders.add(HeaderConstants.HEADER_CACHE_CONTROL,
+                    CacheControlUtils.format(response.getCacheDirectives()));
+        }
+
+        // Add the Authentication-Info header
+        if (response.getAuthenticationInfo() != null) {
+            try {
+                responseHeaders.add(HeaderConstants.HEADER_AUTHENTICATION_INFO,
+                        org.restlet.engine.security.AuthenticatorUtils
+                                .formatAuthenticationInfo(response
+                                        .getAuthenticationInfo()));
+            } catch (IOException e) {
+                Context.getCurrentLogger().log(Level.WARNING,
+                        "Unable to write the Authentication-Info header", e);
+            }
+        }
+    }
 
     /**
      * Appends a source string as an HTTP quoted string.

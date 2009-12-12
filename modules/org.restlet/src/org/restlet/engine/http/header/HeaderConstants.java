@@ -185,6 +185,7 @@ public final class HeaderConstants {
 
     public static final String ATTRIBUTE_HEADERS = "org.restlet.http.headers";
 
+    @Deprecated
     public static final String ATTRIBUTE_VERSION = "org.restlet.http.version";
 
     public static final String ATTRIBUTE_HTTPS_CLIENT_CERTIFICATES = "org.restlet.https.clientCertificates";

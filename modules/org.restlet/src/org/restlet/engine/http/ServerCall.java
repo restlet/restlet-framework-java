@@ -385,7 +385,7 @@ public abstract class ServerCall extends Call {
     /**
      * Sends the response back to the client. Commits the status, headers and
      * optional entity and send them over the network. The default
-     * implementation only writes the response entity on the reponse stream or
+     * implementation only writes the response entity on the response stream or
      * channel. Subclasses will probably also copy the response headers and
      * status.
      * 
@@ -467,7 +467,7 @@ public abstract class ServerCall extends Call {
      *            The response entity stream or null if a channel is used.
      * @throws IOException
      */
-    public void writeResponseBody(Representation entity,
+    protected void writeResponseBody(Representation entity,
             WritableByteChannel responseEntityChannel,
             OutputStream responseEntityStream) throws IOException {
         // Send the entity to the client
@@ -486,7 +486,7 @@ public abstract class ServerCall extends Call {
      *            The response.
      * @throws IOException
      */
-    public void writeResponseHead(Response response) throws IOException {
+    protected void writeResponseHead(Response response) throws IOException {
         // Do nothing by default
     }
 

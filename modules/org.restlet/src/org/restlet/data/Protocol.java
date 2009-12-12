@@ -83,11 +83,11 @@ public final class Protocol {
 
     /** HTTP protocol. */
     public static final Protocol HTTP = new Protocol("http", "HTTP",
-            "HyperText Transport Protocol", 80);
+            "HyperText Transport Protocol", 80, "1.1");
 
     /** HTTPS protocol (via SSL socket). */
     public static final Protocol HTTPS = new Protocol("https", "HTTPS",
-            "HyperText Transport Protocol (Secure)", 443, true);
+            "HyperText Transport Protocol (Secure)", 443, true, "1.1");
 
     /**
      * JAR (Java ARchive) is a common scheme to access to representations inside
@@ -213,13 +213,16 @@ public final class Protocol {
     /** The scheme name. */
     private volatile String schemeName;
 
+    /** The version. */
+    private volatile String version;
+
     /**
      * Constructor.
      * 
      * @param schemeName
      *            The scheme name.
      */
-    public Protocol(final String schemeName) {
+    public Protocol(String schemeName) {
         this(schemeName, schemeName.toUpperCase(), schemeName.toUpperCase()
                 + " Protocol", UNKNOWN_PORT);
     }
@@ -236,9 +239,28 @@ public final class Protocol {
      * @param defaultPort
      *            The default port.
      */
-    public Protocol(final String schemeName, final String name,
-            final String description, int defaultPort) {
+    public Protocol(String schemeName, String name, String description,
+            int defaultPort) {
         this(schemeName, name, description, defaultPort, false);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param schemeName
+     *            The scheme name.
+     * @param name
+     *            The unique name.
+     * @param description
+     *            The description.
+     * @param defaultPort
+     *            The default port.
+     * @param version
+     *            The version.
+     */
+    public Protocol(String schemeName, String name, String description,
+            int defaultPort, String version) {
+        this(schemeName, name, description, defaultPort, false, version);
     }
 
     /**
@@ -255,14 +277,35 @@ public final class Protocol {
      * @param confidential
      *            The confidentiality.
      */
-    public Protocol(final String schemeName, final String name,
-            final String description, int defaultPort,
-            final boolean confidential) {
+    public Protocol(String schemeName, String name, String description,
+            int defaultPort, boolean confidential) {
+        this(name, description, schemeName, defaultPort, confidential, null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param schemeName
+     *            The scheme name.
+     * @param name
+     *            The unique name.
+     * @param description
+     *            The description.
+     * @param defaultPort
+     *            The default port.
+     * @param confidential
+     *            The confidentiality.
+     * @param version
+     *            The version.
+     */
+    public Protocol(String schemeName, String name, String description,
+            int defaultPort, boolean confidential, String version) {
         this.name = name;
         this.description = description;
         this.schemeName = schemeName;
         this.defaultPort = defaultPort;
         this.confidential = confidential;
+        this.version = version;
     }
 
     /** {@inheritDoc} */
@@ -306,6 +349,15 @@ public final class Protocol {
      */
     public String getSchemeName() {
         return this.schemeName;
+    }
+
+    /**
+     * Returns the version.
+     * 
+     * @return The version.
+     */
+    public String getVersion() {
+        return version;
     }
 
     /** {@inheritDoc} */

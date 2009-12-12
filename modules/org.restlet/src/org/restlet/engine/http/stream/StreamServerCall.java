@@ -121,6 +121,7 @@ public class StreamServerCall extends ServerCall {
             getLogger().log(Level.WARNING, "Unable to shutdown server socket",
                     ex);
         }
+
         try {
             if (!this.socket.isClosed()) {
                 // As we don't support persistent connections,

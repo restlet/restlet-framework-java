@@ -92,6 +92,9 @@ public class Request extends Message {
     /** The host reference. */
     private volatile Reference hostRef;
 
+    /** The protocol. */
+    private volatile Protocol protocol;
+
     /** The method. */
     private volatile Method method;
 
@@ -149,6 +152,7 @@ public class Request extends Message {
         this.originalRef = null;
         // [ifndef gwt] instruction
         this.proxyChallengeResponse = null;
+        this.protocol = null;
         this.ranges = null;
         this.referrerRef = null;
         this.resourceRef = resourceRef;
@@ -291,15 +295,14 @@ public class Request extends Message {
     }
 
     /**
-     * Returns the protocol by first returning the resourceRef.schemeProtocol
-     * property if it is set, or the baseRef.schemeProtocol property otherwise.
+     * Returns the protocol used or to be used, if known.
      * 
-     * @return The protocol or null if not available.
+     * @return The protocol used or to be used.
      */
     public Protocol getProtocol() {
-        Protocol result = null;
+        Protocol result = this.protocol;
 
-        if (getResourceRef() != null) {
+        if ((result == null) && (getResourceRef() != null)) {
             // Attempt to guess the protocol to use
             // from the target reference scheme
             result = getResourceRef().getSchemeProtocol();
@@ -513,6 +516,16 @@ public class Request extends Message {
      */
     public void setOriginalRef(Reference originalRef) {
         this.originalRef = originalRef;
+    }
+
+    /**
+     * Sets the protocol used or to be used.
+     * 
+     * @param protocol
+     *            The protocol used or to be used.
+     */
+    public void setProtocol(Protocol protocol) {
+        this.protocol = protocol;
     }
 
     // [ifndef gwt] method

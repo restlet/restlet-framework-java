@@ -51,10 +51,13 @@ import javax.net.ssl.SSLSocket;
 import org.restlet.Connector;
 import org.restlet.Request;
 import org.restlet.Response;
+import org.restlet.data.Parameter;
 import org.restlet.engine.ConnectorHelper;
+import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.security.SslUtils;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
+import org.restlet.util.Series;
 
 /**
  * A network connection though which requests and responses are exchanged by
@@ -134,6 +137,142 @@ public abstract class Connection<T extends Connector> {
         this.outboundBusy = false;
         this.outboundStream = new BufferedOutputStream(this.socket
                 .getOutputStream());
+    }
+
+    /**
+     * Adds additional headers if they are non-standard headers.
+     * 
+     * @param existingHeaders
+     *            The headers to update.
+     * @param additionalHeaders
+     *            The headers to add.
+     */
+    public void addAdditionalHeaders(Series<Parameter> existingHeaders,
+            Series<Parameter> additionalHeaders) {
+        if (additionalHeaders != null) {
+            for (final Parameter param : additionalHeaders) {
+                if (param.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_ACCEPT)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_ACCEPT_CHARSET)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_ACCEPT_ENCODING)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_ACCEPT_LANGUAGE)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_ACCEPT_RANGES)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_AGE)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_ALLOW)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_AUTHENTICATION_INFO)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_AUTHORIZATION)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_CACHE_CONTROL)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_CONNECTION)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_CONTENT_DISPOSITION)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_CONTENT_ENCODING)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_CONTENT_LANGUAGE)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_CONTENT_LENGTH)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_CONTENT_LOCATION)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_CONTENT_MD5)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_CONTENT_RANGE)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_CONTENT_TYPE)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_COOKIE)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_DATE)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_ETAG)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_EXPIRES)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_FROM)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_HOST)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_IF_MATCH)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_IF_MODIFIED_SINCE)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_IF_NONE_MATCH)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_IF_RANGE)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_IF_UNMODIFIED_SINCE)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_LAST_MODIFIED)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_LOCATION)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_PROXY_AUTHENTICATE)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_PROXY_AUTHORIZATION)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_RANGE)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_REFERRER)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_RETRY_AFTER)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_SERVER)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_SET_COOKIE)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_SET_COOKIE2)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_USER_AGENT)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_VARY)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_WARNING)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_WWW_AUTHENTICATE)) {
+                    // Standard headers that can't be overridden
+                    getLogger()
+                            .warning(
+                                    "Addition of the standard header \""
+                                            + param.getName()
+                                            + "\" is not allowed. Please use the equivalent property in the Restlet API.");
+                } else if (param.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_EXPECT)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_MAX_FORWARDS)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_PRAGMA)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_TRAILER)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_TRANSFER_ENCODING)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_TRANSFER_EXTENSION)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_UPGRADE)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_VIA)) {
+                    // Standard headers that shouldn't be overridden
+                    getLogger()
+                            .info(
+                                    "Addition of the standard header \""
+                                            + param.getName()
+                                            + "\" is discouraged as a future versions of the Restlet API will directly support it.");
+                    existingHeaders.add(param);
+                } else {
+                    existingHeaders.add(param);
+                }
+            }
+        }
     }
 
     public String getAddress() {
@@ -291,4 +430,5 @@ public abstract class Connection<T extends Connector> {
     public void setState(ConnectionState state) {
         this.state = state;
     }
+
 }
