@@ -202,7 +202,90 @@ public abstract class ServerConnection extends Connection<Server> {
      * @return The next request sent by the client if available.
      * @throws IOException
      */
-    public abstract InternalRequest readRequest() throws IOException;
+    public synchronized ConnectedRequest readRequest() throws IOException {
+        ConnectedRequest result = null;
+        String requestMethod = null;
+        String requestUri = null;
+        String httpVersion = null;
+        Series<Parameter> requestHeaders = null;
+
+        setInboundBusy(true);
+
+        StringBuilder sb = new StringBuilder();
+
+        // Parse the request method
+        int next = getInboundStream().read();
+        while ((next != -1) && !HeaderUtils.isSpace(next)) {
+            sb.append((char) next);
+            next = getInboundStream().read();
+        }
+
+        if (next == -1) {
+            throw new IOException(
+                    "Unable to parse the request method. End of stream reached too early.");
+        }
+
+        requestMethod = sb.toString();
+        sb.delete(0, sb.length());
+
+        // Parse the request URI
+        next = getInboundStream().read();
+        while ((next != -1) && !HeaderUtils.isSpace(next)) {
+            sb.append((char) next);
+            next = getInboundStream().read();
+        }
+
+        if (next == -1) {
+            throw new IOException(
+                    "Unable to parse the request URI. End of stream reached too early.");
+        }
+
+        requestUri = sb.toString();
+        if ((requestUri == null) || (requestUri.equals(""))) {
+            requestUri = "/";
+        }
+
+        sb.delete(0, sb.length());
+
+        // Parse the HTTP version
+        next = getInboundStream().read();
+        while ((next != -1) && !HeaderUtils.isCarriageReturn(next)) {
+            sb.append((char) next);
+            next = getInboundStream().read();
+        }
+
+        if (next == -1) {
+            throw new IOException(
+                    "Unable to parse the HTTP version. End of stream reached too early.");
+        }
+        next = getInboundStream().read();
+
+        if (HeaderUtils.isLineFeed(next)) {
+            httpVersion = sb.toString();
+            sb.delete(0, sb.length());
+
+            // Parse the headers
+            Parameter header = HeaderUtils.readHeader(getInboundStream(), sb);
+            while (header != null) {
+                if (requestHeaders == null) {
+                    requestHeaders = new Form();
+                }
+
+                requestHeaders.add(header);
+                header = HeaderUtils.readHeader(getInboundStream(), sb);
+            }
+        } else {
+            throw new IOException(
+                    "Unable to parse the HTTP version. The carriage return must be followed by a line feed.");
+        }
+
+        // Create the HTTP request
+        result = new ConnectedRequest(getHelper().getContext(), this,
+                requestMethod, requestUri, httpVersion, requestHeaders,
+                createRequestEntity(requestHeaders), false, null);
+
+        return result;
+    }
 
     /**
      * Indicates if the response should be chunked because its length is
@@ -482,7 +565,8 @@ public abstract class ServerConnection extends Connection<Server> {
 
         // We don't support persistent connections yet
         // TODO: FIX!
-        // headers.set(HeaderConstants.HEADER_CONNECTION, "close", isServerKeepAlive());
+        // headers.set(HeaderConstants.HEADER_CONNECTION, "close",
+        // isServerKeepAlive());
 
         // Check if 'Transfer-Encoding' header should be set
         if (shouldResponseBeChunked(response)) {

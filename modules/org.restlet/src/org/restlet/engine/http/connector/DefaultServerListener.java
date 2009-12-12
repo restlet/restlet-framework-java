@@ -44,10 +44,10 @@ import java.util.logging.Level;
  * 
  * @author Jerome Louvel
  */
-public class InternalServerListener implements Runnable {
+public class DefaultServerListener implements Runnable {
 
     /** The target server helper. */
-    private final InternalServerHelper helper;
+    private final DefaultServerHelper helper;
 
     /** The server socket channel to listen on. */
     private final ServerSocketChannel serverSocket;
@@ -73,7 +73,7 @@ public class InternalServerListener implements Runnable {
      * @param handlerService
      *            The handler service.
      */
-    public InternalServerListener(InternalServerHelper helper,
+    public DefaultServerListener(DefaultServerHelper helper,
             ServerSocketChannel serverSocket, CountDownLatch latch,
             ExecutorService handlerService) {
         this.helper = helper;
@@ -92,7 +92,7 @@ public class InternalServerListener implements Runnable {
                 SocketChannel client = this.serverSocket.accept();
 
                 if (!this.handlerService.isShutdown()) {
-                    this.handlerService.submit(new InternalServerHandler(
+                    this.handlerService.submit(new DefaultServerHandler(
                             this.helper, client.socket()));
                 }
             } catch (ClosedByInterruptException ex) {

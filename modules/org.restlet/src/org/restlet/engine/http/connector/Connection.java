@@ -30,8 +30,6 @@
 
 package org.restlet.engine.http.connector;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -104,12 +102,6 @@ public abstract class Connection<T extends Connector> {
 
     private volatile boolean outboundBusy;
 
-    /** The inbound stream. */
-    private final InputStream inboundStream;
-
-    /** The outbound stream. */
-    private final OutputStream outboundStream;
-
     /** The connecting user */
     private final Socket socket;
 
@@ -132,11 +124,7 @@ public abstract class Connection<T extends Connector> {
         this.state = ConnectionState.CLOSED;
         this.socket = socket;
         this.inboundBusy = false;
-        this.inboundStream = new BufferedInputStream(this.socket
-                .getInputStream());
         this.outboundBusy = false;
-        this.outboundStream = new BufferedOutputStream(this.socket
-                .getOutputStream());
     }
 
     /**
@@ -284,9 +272,7 @@ public abstract class Connection<T extends Connector> {
         return helper;
     }
 
-    public InputStream getInboundStream() {
-        return this.inboundStream;
-    }
+    public abstract InputStream getInboundStream();
 
     /**
      * Returns the logger.
@@ -297,9 +283,7 @@ public abstract class Connection<T extends Connector> {
         return getHelper().getLogger();
     }
 
-    public OutputStream getOutboundStream() {
-        return this.outboundStream;
-    }
+    public abstract OutputStream getOutboundStream();
 
     public int getPort() {
         return getSocket().getPort();

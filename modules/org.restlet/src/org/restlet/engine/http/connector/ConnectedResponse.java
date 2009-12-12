@@ -45,7 +45,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
-public class InternalResponse extends Response {
+public class ConnectedResponse extends Response {
     /**
      * Adds a new header to the given request.
      * 
@@ -58,8 +58,8 @@ public class InternalResponse extends Response {
      */
     public static void addHeader(Response response, String headerName,
             String headerValue) {
-        if (response instanceof InternalResponse) {
-            ((InternalResponse) response).getHeaders().add(headerName,
+        if (response instanceof ConnectedResponse) {
+            ((ConnectedResponse) response).getHeaders().add(headerName,
                     headerValue);
         }
     }
@@ -78,7 +78,7 @@ public class InternalResponse extends Response {
      * @param request
      *            The associated high-level request.
      */
-    public InternalResponse(ServerCall httpCall, Request request) {
+    public ConnectedResponse(ServerCall httpCall, Request request) {
         super(request);
         this.serverAdded = false;
         this.httpCall = httpCall;

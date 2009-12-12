@@ -69,7 +69,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
-public class InternalRequest extends Request {
+public class ConnectedRequest extends Request {
     /**
      * Adds a new header to the given request.
      * 
@@ -82,8 +82,8 @@ public class InternalRequest extends Request {
      */
     public static void addHeader(Request request, String headerName,
             String headerValue) {
-        if (request instanceof InternalRequest) {
-            ((InternalRequest) request).getHeaders().add(headerName,
+        if (request instanceof ConnectedRequest) {
+            ((ConnectedRequest) request).getHeaders().add(headerName,
                     headerValue);
         }
     }
@@ -123,7 +123,7 @@ public class InternalRequest extends Request {
     private volatile boolean warningsAdded;
 
     /** The parent HTTP connection. */
-    private final InternalServerConnection connection;
+    private final ServerConnection connection;
 
     private final Principal userPrincipal;
 
@@ -135,10 +135,10 @@ public class InternalRequest extends Request {
      * @param httpCall
      *            The low-level HTTP server call.
      */
-    public InternalRequest(Context context,
-            InternalServerConnection connection, String methodName,
-            String resourceUri, String httpVersion, Series<Parameter> headers,
-            Representation entity, boolean confidential, Principal userPrincipal) {
+    public ConnectedRequest(Context context, ServerConnection connection,
+            String methodName, String resourceUri, String httpVersion,
+            Series<Parameter> headers, Representation entity,
+            boolean confidential, Principal userPrincipal) {
         this.context = context;
         this.clientAdded = false;
         this.conditionAdded = false;
@@ -493,7 +493,7 @@ public class InternalRequest extends Request {
         return result;
     }
 
-    protected InternalServerConnection getConnection() {
+    protected ServerConnection getConnection() {
         return connection;
     }
 

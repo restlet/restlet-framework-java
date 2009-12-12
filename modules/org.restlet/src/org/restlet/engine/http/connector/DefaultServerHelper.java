@@ -51,7 +51,7 @@ import org.restlet.engine.log.LoggingThreadFactory;
  * 
  * @author Jerome Louvel
  */
-public class InternalServerHelper extends HttpServerHelper {
+public class DefaultServerHelper extends HttpServerHelper {
 
     /** The connection handler service. */
     private volatile ExecutorService handlerService;
@@ -71,7 +71,7 @@ public class InternalServerHelper extends HttpServerHelper {
      * @param server
      *            The server to help.
      */
-    public InternalServerHelper(Server server) {
+    public DefaultServerHelper(Server server) {
         super(server);
         getProtocols().add(Protocol.HTTP);
     }
@@ -122,7 +122,7 @@ public class InternalServerHelper extends HttpServerHelper {
 
         // Start the socket listener service
         this.latch = new CountDownLatch(1);
-        this.listenerService.submit(new InternalServerListener(this,
+        this.listenerService.submit(new DefaultServerListener(this,
                 this.serverSocketChannel, this.latch, this.handlerService));
 
         // Wait for the listener to start up and count down the latch

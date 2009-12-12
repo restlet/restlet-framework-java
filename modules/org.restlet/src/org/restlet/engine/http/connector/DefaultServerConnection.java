@@ -33,49 +33,46 @@ package org.restlet.engine.http.connector;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.Socket;
-import java.util.logging.Level;
 
-import org.restlet.engine.http.stream.StreamServerCall;
+import org.restlet.Server;
+import org.restlet.engine.ConnectorHelper;
 
 /**
- * Class that handles an incoming socket.
+ * An internal HTTP server connection.
  * 
  * @author Jerome Louvel
  */
-public class InternalServerHandler implements Runnable {
+public abstract class DefaultServerConnection extends ServerConnection {
 
-    /** The target server helper. */
-    private final InternalServerHelper helper;
+    /** The inbound stream. */
+    private final InputStream inboundStream;
 
-    /** The socket connection to handle. */
-    private final Socket socket;
+    /** The outbound stream. */
+    private final OutputStream outboundStream;
 
     /**
      * Constructor.
      * 
      * @param helper
-     *            The target server helper.
      * @param socket
-     *            The socket connection to handle.
+     * @throws IOException
      */
-    public InternalServerHandler(InternalServerHelper helper, Socket socket) {
-        this.helper = helper;
-        this.socket = socket;
+    public DefaultServerConnection(ConnectorHelper<Server> helper,
+            Socket socket) throws IOException {
+        super(helper, socket);
+        this.inboundStream = new BufferedInputStream(socket.getInputStream());
+        this.outboundStream = new BufferedOutputStream(socket.getOutputStream());
     }
 
-    /**
-     * Handles the given socket connection.
-     */
-    public void run() {
-        try {
-            this.helper.handle(new StreamServerCall(this.helper.getHelped(),
-                    new BufferedInputStream(this.socket.getInputStream()),
-                    new BufferedOutputStream(this.socket.getOutputStream()),
-                    this.socket));
-        } catch (IOException ex) {
-            this.helper.getLogger().log(Level.WARNING,
-                    "Unexpected error while handling a call", ex);
-        }
+    public InputStream getInboundStream() {
+        return this.inboundStream;
     }
+
+    public OutputStream getOutboundStream() {
+        return this.outboundStream;
+    }
+
 }
