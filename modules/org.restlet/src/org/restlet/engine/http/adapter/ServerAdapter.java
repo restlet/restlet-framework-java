@@ -49,15 +49,14 @@ import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Status;
 import org.restlet.data.Warning;
-import org.restlet.engine.http.Call;
 import org.restlet.engine.http.HttpRequest;
 import org.restlet.engine.http.HttpResponse;
 import org.restlet.engine.http.ServerCall;
 import org.restlet.engine.http.header.CacheControlUtils;
 import org.restlet.engine.http.header.CookieUtils;
 import org.restlet.engine.http.header.DispositionUtils;
-import org.restlet.engine.http.header.HeaderUtils;
 import org.restlet.engine.http.header.HeaderConstants;
+import org.restlet.engine.http.header.HeaderUtils;
 import org.restlet.engine.http.header.RangeUtils;
 import org.restlet.engine.http.header.WarningUtils;
 import org.restlet.engine.security.AuthenticatorUtils;
@@ -102,8 +101,9 @@ public class ServerAdapter extends Adapter {
                     }
                 }
                 if (value.length() > 0) {
-                    responseHeaders.add(HeaderConstants.HEADER_CONTENT_ENCODING,
-                            value.toString());
+                    responseHeaders.add(
+                            HeaderConstants.HEADER_CONTENT_ENCODING, value
+                                    .toString());
                 }
 
             }
@@ -135,15 +135,14 @@ public class ServerAdapter extends Adapter {
             }
 
             if (entity.getModificationDate() != null) {
-                responseHeaders
-                        .add(HeaderConstants.HEADER_LAST_MODIFIED,
-                                Call.formatDate(entity
-                                        .getModificationDate(), false));
+                responseHeaders.add(HeaderConstants.HEADER_LAST_MODIFIED,
+                        HeaderUtils.formatDate(entity.getModificationDate(),
+                                false));
             }
 
             if (entity.getTag() != null) {
-                responseHeaders.add(HeaderConstants.HEADER_ETAG, entity.getTag()
-                        .format());
+                responseHeaders.add(HeaderConstants.HEADER_ETAG, entity
+                        .getTag().format());
             }
             long size = entity.getAvailableSize();
             if (size != Representation.UNKNOWN_SIZE) {
@@ -288,8 +287,8 @@ public class ServerAdapter extends Adapter {
         // Add the warning headers
         if (!response.getWarnings().isEmpty()) {
             for (Warning warning : response.getWarnings()) {
-                responseHeaders.add(HeaderConstants.HEADER_WARNING, WarningUtils
-                        .format(warning));
+                responseHeaders.add(HeaderConstants.HEADER_WARNING,
+                        WarningUtils.format(warning));
             }
         }
 
@@ -521,9 +520,9 @@ public class ServerAdapter extends Adapter {
 
             final String cipherSuite = httpCall.getSslCipherSuite();
             if (cipherSuite != null) {
-                result.getAttributes()
-                        .put(HeaderConstants.ATTRIBUTE_HTTPS_CIPHER_SUITE,
-                                cipherSuite);
+                result.getAttributes().put(
+                        HeaderConstants.ATTRIBUTE_HTTPS_CIPHER_SUITE,
+                        cipherSuite);
             }
 
             final Integer keySize = httpCall.getSslKeySize();

@@ -32,7 +32,6 @@ package org.restlet.engine.http;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Date;
 import java.util.logging.Logger;
 
 import org.restlet.Context;
@@ -41,7 +40,6 @@ import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.engine.http.header.HeaderConstants;
-import org.restlet.engine.util.DateUtils;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
@@ -52,39 +50,6 @@ import org.restlet.util.Series;
  * @author Jerome Louvel
  */
 public abstract class Call {
-    /**
-     * Formats a date as a header string.
-     * 
-     * @param date
-     *            The date to format.
-     * @param cookie
-     *            Indicates if the date should be in the cookie format.
-     * @return The formatted date.
-     */
-    public static String formatDate(Date date, boolean cookie) {
-        if (cookie) {
-            return DateUtils.format(date, DateUtils.FORMAT_RFC_1036.get(0));
-        }
-
-        return DateUtils.format(date, DateUtils.FORMAT_RFC_1123.get(0));
-    }
-
-    /**
-     * Parses a date string.
-     * 
-     * @param date
-     *            The date string to parse.
-     * @param cookie
-     *            Indicates if the date is in the cookie format.
-     * @return The parsed date.
-     */
-    public static Date parseDate(String date, boolean cookie) {
-        if (cookie) {
-            return DateUtils.parse(date, DateUtils.FORMAT_RFC_1036);
-        }
-
-        return DateUtils.parse(date, DateUtils.FORMAT_RFC_1123);
-    }
 
     /** The client IP address. */
     private volatile String clientAddress;
@@ -199,30 +164,6 @@ public abstract class Call {
         }
 
         return result;
-    }
-
-    /**
-     * Returns the content length of the request entity if know,
-     * {@link Representation#UNKNOWN_SIZE} otherwise.
-     * 
-     * @return The request content length.
-     */
-    protected long getContentLength(Series<Parameter> headers) {
-        long contentLength = Representation.UNKNOWN_SIZE;
-
-        // Extract the content length header
-        for (Parameter header : headers) {
-            if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_CONTENT_LENGTH)) {
-                try {
-                    contentLength = Long.parseLong(header.getValue());
-                } catch (NumberFormatException e) {
-                    contentLength = Representation.UNKNOWN_SIZE;
-                }
-            }
-        }
-
-        return contentLength;
     }
 
     /**

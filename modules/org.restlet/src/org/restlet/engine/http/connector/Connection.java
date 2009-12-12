@@ -52,6 +52,8 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.engine.ConnectorHelper;
 import org.restlet.engine.security.SslUtils;
+import org.restlet.representation.InputRepresentation;
+import org.restlet.representation.Representation;
 
 /**
  * A network connection though which requests and responses are exchanged by
@@ -59,7 +61,7 @@ import org.restlet.engine.security.SslUtils;
  * 
  * @author Jerome Louvel
  */
-public class Connection<T extends Connector> {
+public abstract class Connection<T extends Connector> {
 
     private volatile boolean persistent;
 
@@ -86,6 +88,13 @@ public class Connection<T extends Connector> {
 
     private final ConnectorHelper<T> helper;
 
+    /**
+     * Constructor.
+     * 
+     * @param helper
+     * @param socket
+     * @throws IOException
+     */
     public Connection(ConnectorHelper<T> helper, Socket socket)
             throws IOException {
         this.helper = helper;
@@ -122,6 +131,31 @@ public class Connection<T extends Connector> {
 
     public int getPort() {
         return getSocket().getPort();
+    }
+
+    /**
+     * Returns the representation wrapping the given stream.
+     * 
+     * @param stream
+     *            The response input stream.
+     * @return The wrapping representation.
+     */
+    protected Representation getRepresentation(InputStream stream) {
+        return new InputRepresentation(stream, null);
+    }
+
+    // [ifndef gwt] method
+    /**
+     * Returns the representation wrapping the given channel.
+     * 
+     * @param channel
+     *            The response channel.
+     * @return The wrapping representation.
+     */
+    protected Representation getRepresentation(
+            java.nio.channels.ReadableByteChannel channel) {
+        return new org.restlet.representation.ReadableRepresentation(channel,
+                null);
     }
 
     public Queue<Request> getRequests() {

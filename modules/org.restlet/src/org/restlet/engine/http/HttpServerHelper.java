@@ -105,7 +105,7 @@ public class HttpServerHelper extends ServerHelper {
             try {
                 final String adapterClass = getHelpedParameters()
                         .getFirstValue("adapter",
-                                "org.restlet.engine.http.ServerAdapter");
+                                "org.restlet.engine.http.adapter.ServerAdapter");
                 this.adapter = (ServerAdapter) Engine.loadClass(adapterClass)
                         .getConstructor(Context.class)
                         .newInstance(getContext());

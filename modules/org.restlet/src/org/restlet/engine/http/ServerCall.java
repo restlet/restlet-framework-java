@@ -149,7 +149,7 @@ public abstract class ServerCall extends Call {
      * @return The request content length.
      */
     protected long getContentLength() {
-        return getContentLength(getRequestHeaders());
+        return HeaderUtils.getContentLength(getRequestHeaders());
     }
 
     /**
@@ -185,11 +185,11 @@ public abstract class ServerCall extends Call {
      */
     public Representation getRequestEntity() {
         Representation result = null;
-        final long contentLength = getContentLength();
+        long contentLength = getContentLength();
 
         // Create the result representation
-        final InputStream requestStream = getRequestEntityStream(contentLength);
-        final ReadableByteChannel requestChannel = getRequestEntityChannel(contentLength);
+        InputStream requestStream = getRequestEntityStream(contentLength);
+        ReadableByteChannel requestChannel = getRequestEntityChannel(contentLength);
 
         if (requestStream != null) {
             result = new InputRepresentation(requestStream, null, contentLength);
@@ -201,13 +201,15 @@ public abstract class ServerCall extends Call {
         result.setSize(contentLength);
 
         // Extract some interesting header values
-        for (final Parameter header : getRequestHeaders()) {
+        for (Parameter header : getRequestHeaders()) {
             if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_CONTENT_ENCODING)) {
-                final HeaderReader hr = new HeaderReader(header.getValue());
+                HeaderReader hr = new HeaderReader(header.getValue());
                 String value = hr.readValue();
+
                 while (value != null) {
-                    final Encoding encoding = Encoding.valueOf(value);
+                    Encoding encoding = Encoding.valueOf(value);
+
                     if (!encoding.equals(Encoding.IDENTITY)) {
                         result.getEncodings().add(encoding);
                     }
@@ -215,16 +217,16 @@ public abstract class ServerCall extends Call {
                 }
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_CONTENT_LANGUAGE)) {
-                final HeaderReader hr = new HeaderReader(header.getValue());
+                HeaderReader hr = new HeaderReader(header.getValue());
                 String value = hr.readValue();
+
                 while (value != null) {
                     result.getLanguages().add(Language.valueOf(value));
                     value = hr.readValue();
                 }
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_CONTENT_TYPE)) {
-                final ContentType contentType = new ContentType(header
-                        .getValue());
+                ContentType contentType = new ContentType(header.getValue());
                 result.setMediaType(contentType.getMediaType());
                 result.setCharacterSet(contentType.getCharacterSet());
             } else if (header.getName().equalsIgnoreCase(
@@ -313,7 +315,7 @@ public abstract class ServerCall extends Call {
      */
     public Integer getSslKeySize() {
         Integer keySize = null;
-        final String sslCipherSuite = getSslCipherSuite();
+        String sslCipherSuite = getSslCipherSuite();
 
         if (sslCipherSuite != null) {
             keySize = SslUtils.extractKeySize(sslCipherSuite);
@@ -324,7 +326,7 @@ public abstract class ServerCall extends Call {
 
     @Override
     protected boolean isClientKeepAlive() {
-        final String header = getRequestHeaders().getFirstValue(
+        String header = getRequestHeaders().getFirstValue(
                 HeaderConstants.HEADER_CONNECTION, true);
         return (header == null) || !header.equalsIgnoreCase("close");
     }

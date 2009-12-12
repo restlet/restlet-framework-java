@@ -34,11 +34,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collection;
+import java.util.Date;
 
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Dimension;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
+import org.restlet.engine.util.DateUtils;
+import org.restlet.representation.Representation;
+import org.restlet.util.Series;
 
 /**
  * Various HTTP utilities.
@@ -46,6 +50,7 @@ import org.restlet.data.Reference;
  * @author Jerome Louvel
  */
 public class HeaderUtils {
+
     /**
      * Appends a source string as an HTTP quoted string.
      * 
@@ -142,6 +147,23 @@ public class HeaderUtils {
     }
 
     /**
+     * Formats a date as a header string.
+     * 
+     * @param date
+     *            The date to format.
+     * @param cookie
+     *            Indicates if the date should be in the cookie format.
+     * @return The formatted date.
+     */
+    public static String formatDate(Date date, boolean cookie) {
+        if (cookie) {
+            return DateUtils.format(date, DateUtils.FORMAT_RFC_1036.get(0));
+        }
+
+        return DateUtils.format(date, DateUtils.FORMAT_RFC_1123.get(0));
+    }
+
+    /**
      * Formats a product description.
      * 
      * @param nameToken
@@ -170,6 +192,30 @@ public class HeaderUtils {
 
             destination.append('/').append(versionToken);
         }
+    }
+
+    /**
+     * Returns the content length of the request entity if know,
+     * {@link Representation#UNKNOWN_SIZE} otherwise.
+     * 
+     * @return The request content length.
+     */
+    public static long getContentLength(Series<Parameter> headers) {
+        long contentLength = Representation.UNKNOWN_SIZE;
+
+        // Extract the content length header
+        for (Parameter header : headers) {
+            if (header.getName().equalsIgnoreCase(
+                    HeaderConstants.HEADER_CONTENT_LENGTH)) {
+                try {
+                    contentLength = Long.parseLong(header.getValue());
+                } catch (NumberFormatException e) {
+                    contentLength = Representation.UNKNOWN_SIZE;
+                }
+            }
+        }
+
+        return contentLength;
     }
 
     /**
@@ -203,6 +249,29 @@ public class HeaderUtils {
      */
     public static boolean isCarriageReturn(int character) {
         return (character == 13);
+    }
+
+    /**
+     * Parses a date string.
+     * 
+     * @param date
+     *            The date string to parse.
+     * @param cookie
+     *            Indicates if the date is in the cookie format.
+     * @return The parsed date.
+     */
+    public static Date parseDate(String date, boolean cookie) {
+        if (cookie) {
+            return DateUtils.parse(date, DateUtils.FORMAT_RFC_1036);
+        }
+
+        return DateUtils.parse(date, DateUtils.FORMAT_RFC_1123);
+    }
+
+    public static boolean isConnectionPersistent(Series<Parameter> headers) {
+        String header = headers.getFirstValue(
+                HeaderConstants.HEADER_CONNECTION, true);
+        return (header == null) || !header.equalsIgnoreCase("close");
     }
 
     /**

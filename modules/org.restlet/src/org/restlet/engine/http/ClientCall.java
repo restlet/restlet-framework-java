@@ -49,6 +49,7 @@ import org.restlet.engine.http.header.ContentType;
 import org.restlet.engine.http.header.DispositionReader;
 import org.restlet.engine.http.header.HeaderReader;
 import org.restlet.engine.http.header.HeaderConstants;
+import org.restlet.engine.http.header.HeaderUtils;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
@@ -80,11 +81,10 @@ public abstract class ClientCall extends Call {
                 : representation;
         boolean entityHeaderFound = false;
 
-        for (final Parameter header : responseHeaders) {
+        for (Parameter header : responseHeaders) {
             if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_CONTENT_TYPE)) {
-                final ContentType contentType = new ContentType(header
-                        .getValue());
+                ContentType contentType = new ContentType(header.getValue());
                 result.setMediaType(contentType.getMediaType());
 
                 if ((result.getCharacterSet() == null)
@@ -98,14 +98,15 @@ public abstract class ClientCall extends Call {
                 entityHeaderFound = true;
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_EXPIRES)) {
-                result.setExpirationDate(parseDate(header.getValue(), false));
+                result.setExpirationDate(HeaderUtils.parseDate(header
+                        .getValue(), false));
                 entityHeaderFound = true;
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_CONTENT_ENCODING)) {
-                final HeaderReader hr = new HeaderReader(header.getValue());
+                HeaderReader hr = new HeaderReader(header.getValue());
                 String value = hr.readValue();
                 while (value != null) {
-                    final Encoding encoding = new Encoding(value);
+                    Encoding encoding = new Encoding(value);
                     if (!encoding.equals(Encoding.IDENTITY)) {
                         result.getEncodings().add(encoding);
                     }
@@ -114,7 +115,7 @@ public abstract class ClientCall extends Call {
                 entityHeaderFound = true;
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_CONTENT_LANGUAGE)) {
-                final HeaderReader hr = new HeaderReader(header.getValue());
+                HeaderReader hr = new HeaderReader(header.getValue());
                 String value = hr.readValue();
                 while (value != null) {
                     result.getLanguages().add(new Language(value));
@@ -123,7 +124,8 @@ public abstract class ClientCall extends Call {
                 entityHeaderFound = true;
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_LAST_MODIFIED)) {
-                result.setModificationDate(parseDate(header.getValue(), false));
+                result.setModificationDate(HeaderUtils.parseDate(header
+                        .getValue(), false));
                 entityHeaderFound = true;
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_ETAG)) {
@@ -136,7 +138,7 @@ public abstract class ClientCall extends Call {
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_CONTENT_DISPOSITION)) {
                 try {
-                    final DispositionReader r = new DispositionReader(header
+                    DispositionReader r = new DispositionReader(header
                             .getValue());
                     result.setDisposition(r.readDisposition());
                     entityHeaderFound = true;
@@ -149,8 +151,8 @@ public abstract class ClientCall extends Call {
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_CONTENT_RANGE)) {
                 // [ifndef gwt]
-                org.restlet.engine.http.header.RangeUtils.parseContentRange(header
-                        .getValue(), result);
+                org.restlet.engine.http.header.RangeUtils.parseContentRange(
+                        header.getValue(), result);
                 entityHeaderFound = true;
                 // [enddef]
             } else if (header.getName().equalsIgnoreCase(
@@ -233,8 +235,7 @@ public abstract class ClientCall extends Call {
      * @param requestUri
      *            The request URI.
      */
-    public ClientCall(HttpClientHelper helper, String method,
-            String requestUri) {
+    public ClientCall(HttpClientHelper helper, String method, String requestUri) {
         this.helper = helper;
         setMethod(method);
         setRequestUri(requestUri);
@@ -248,7 +249,7 @@ public abstract class ClientCall extends Call {
      * @return The request content length.
      */
     protected long getContentLength() {
-        return getContentLength(getResponseHeaders());
+        return HeaderUtils.getContentLength(getResponseHeaders());
     }
 
     /**
@@ -306,8 +307,8 @@ public abstract class ClientCall extends Call {
         long size = Representation.UNKNOWN_SIZE;
 
         // Compute the content length
-        final Series<Parameter> responseHeaders = getResponseHeaders();
-        final String transferEncoding = responseHeaders.getFirstValue(
+        Series<Parameter> responseHeaders = getResponseHeaders();
+        String transferEncoding = responseHeaders.getFirstValue(
                 HeaderConstants.HEADER_TRANSFER_ENCODING, true);
         if ((transferEncoding != null)
                 && !"identity".equalsIgnoreCase(transferEncoding)) {
@@ -324,11 +325,11 @@ public abstract class ClientCall extends Call {
                 && !response.getStatus().equals(Status.SUCCESS_RESET_CONTENT)) {
             // Make sure that an InputRepresentation will not be instantiated
             // while the stream is closed.
-            final InputStream stream = getUnClosedResponseEntityStream(getResponseEntityStream(size));
+            InputStream stream = getUnClosedResponseEntityStream(getResponseEntityStream(size));
             // [ifndef gwt] line
-            final java.nio.channels.ReadableByteChannel channel = getResponseEntityChannel(size);
+            java.nio.channels.ReadableByteChannel channel = getResponseEntityChannel(size);
             // [ifdef gwt] line uncomment
-            // final InputStream channel = null;
+            // InputStream channel = null;
 
             if (stream != null) {
                 result = getRepresentation(stream);
@@ -393,9 +394,10 @@ public abstract class ClientCall extends Call {
                     result = inputStream;
                     // [ifndef gwt]
                 } else {
-                    final java.io.PushbackInputStream is = new java.io.PushbackInputStream(
+                    java.io.PushbackInputStream is = new java.io.PushbackInputStream(
                             inputStream);
-                    final int i = is.read();
+                    int i = is.read();
+
                     if (i >= 0) {
                         is.unread(i);
                         result = is;
@@ -419,7 +421,7 @@ public abstract class ClientCall extends Call {
 
     @Override
     protected boolean isServerKeepAlive() {
-        final String header = getResponseHeaders().getFirstValue(
+        String header = getResponseHeaders().getFirstValue(
                 HeaderConstants.HEADER_CONNECTION, true);
         return (header == null) || !header.equalsIgnoreCase("close");
     }
@@ -435,11 +437,11 @@ public abstract class ClientCall extends Call {
      */
     public Status sendRequest(Request request) {
         Status result = null;
-        final Representation entity = request.isEntityAvailable() ? request
+        Representation entity = request.isEntityAvailable() ? request
                 .getEntity() : null;
 
         // Get the connector service to callback
-        final org.restlet.service.ConnectorService connectorService = getConnectorService(request);
+        org.restlet.service.ConnectorService connectorService = getConnectorService(request);
         if (connectorService != null) {
             connectorService.beforeSend(entity);
         }
@@ -453,8 +455,8 @@ public abstract class ClientCall extends Call {
                 // reference when manipulating the request stream, otherwise
                 // "insufficient data sent" exceptions will occur in
                 // "fixedLengthMode"
-                final OutputStream requestStream = getRequestEntityStream();
-                final java.nio.channels.WritableByteChannel wbc = getRequestEntityChannel();
+                OutputStream requestStream = getRequestEntityStream();
+                java.nio.channels.WritableByteChannel wbc = getRequestEntityChannel();
 
                 if (wbc != null) {
                     entity.write(wbc);
