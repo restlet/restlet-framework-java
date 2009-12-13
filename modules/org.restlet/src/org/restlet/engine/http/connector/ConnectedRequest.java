@@ -39,6 +39,7 @@ import java.util.logging.Level;
 
 import org.restlet.Context;
 import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.CacheDirective;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ClientInfo;
@@ -260,6 +261,14 @@ public class ConnectedRequest extends Request {
         }
 
         setDate(date);
+    }
+
+    @Override
+    public synchronized void commit(Response response) {
+        if ((response != null) && !response.isCommitted()) {
+            getConnection().commit(response);
+            response.setCommitted(true);
+        }
     }
 
     @Override

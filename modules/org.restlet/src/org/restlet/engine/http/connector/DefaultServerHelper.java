@@ -134,6 +134,16 @@ public class DefaultServerHelper extends ServerHelper {
     }
 
     /**
+     * Creates the connector controller service.
+     * 
+     * @return The connector controller service.
+     */
+    protected ExecutorService createControllerService() {
+        return Executors.newSingleThreadExecutor(new LoggingThreadFactory(
+                getLogger()));
+    }
+
+    /**
      * Creates the handler service.
      * 
      * @return The handler service.
@@ -144,16 +154,6 @@ public class DefaultServerHelper extends ServerHelper {
                 TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(),
                 new LoggingThreadFactory(getLogger()));
         return result;
-    }
-
-    /**
-     * Creates the connector controller service.
-     * 
-     * @return The connector controller service.
-     */
-    protected ExecutorService createControllerService() {
-        return Executors.newSingleThreadExecutor(new LoggingThreadFactory(
-                getLogger()));
     }
 
     /**
@@ -260,9 +260,10 @@ public class DefaultServerHelper extends ServerHelper {
             Response response = new Response(nextRequest);
             handle(nextRequest, response);
 
-            // if(response.isCommitted()){
-
-            // }
+            if (!response.isCommitted() && response.isAutoCommitting()) {
+                getPendingResponses().add(response);
+                response.setCommitted(true);
+            }
         }
 
         // Attempts to write the next pending response

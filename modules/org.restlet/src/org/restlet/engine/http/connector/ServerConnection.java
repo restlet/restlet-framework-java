@@ -84,6 +84,14 @@ public abstract class ServerConnection extends Connection<Server> {
     }
 
     /**
+     * Asks the server connector to immediately commit the given response
+     * associated to this request, making it ready to be sent back to the
+     * client. Note that all server connectors don't necessarily support this
+     * feature.
+     */
+    public abstract void commit(Response response);
+
+    /**
      * Returns the request entity if available.
      * 
      * @param headers
@@ -325,7 +333,6 @@ public abstract class ServerConnection extends Connection<Server> {
         Series<Parameter> headers = new Form();
 
         try {
-
             if ((response.getRequest().getMethod() != null)
                     && response.getRequest().getMethod().equals(Method.HEAD)) {
                 addEntityHeaders(response, headers);
@@ -474,7 +481,6 @@ public abstract class ServerConnection extends Connection<Server> {
                 writeResponseHead(response);
 
                 if (responseEntity != null) {
-
                     WritableByteChannel responseEntityChannel = getResponseEntityChannel();
                     OutputStream responseEntityStream = getResponseEntityStream();
                     writeResponseBody(responseEntity, responseEntityChannel,

@@ -61,12 +61,16 @@ public class DefaultServerConnection extends ServerConnection {
     /** The outbound stream. */
     private final OutputStream outboundStream;
 
+    /** Indicates if the connection should be persisted across calls. */
     private volatile boolean persistent;
 
+    /** Indicates if idempotent sequences of requests should be pipelined. */
     private volatile boolean pipelining;
 
+    /** Queue of inbound requests. */
     private final Queue<Request> inboundRequests;
 
+    /** Queue of outbound response. */
     private final Queue<Response> outboundResponses;
 
     /**
@@ -92,6 +96,41 @@ public class DefaultServerConnection extends ServerConnection {
         super.close();
     }
 
+    @Override
+    public void commit(Response response) {
+        getHelper().getPendingResponses().add(response);
+    }
+
+    public void control() {
+        if (!getHandlerService().isShutdown()) {
+            try {
+                // Attempts to read requests
+                if (!isInboundBusy()) {
+                    getHandlerService().execute(new Runnable() {
+                        public void run() {
+                            readRequests();
+                        }
+                    });
+                }
+
+                // Attempts to write responses
+                if (!isOutboundBusy()) {
+                    getHandlerService().execute(new Runnable() {
+                        public void run() {
+                            writeResponses();
+                        }
+                    });
+                }
+            } catch (Exception e) {
+                getLogger().log(Level.WARNING,
+                        "Error while controlling an HTTP connection: ",
+                        e.getMessage());
+                getLogger().log(Level.INFO,
+                        "Error while controlling an HTTP connection", e);
+            }
+        }
+    }
+
     /**
      * Returns the connection handler service.
      * 
@@ -106,9 +145,17 @@ public class DefaultServerConnection extends ServerConnection {
         return (DefaultServerHelper) super.getHelper();
     }
 
+    public Queue<Request> getInboundRequests() {
+        return inboundRequests;
+    }
+
     @Override
     public InputStream getInboundStream() {
         return this.inboundStream;
+    }
+
+    public Queue<Response> getOutboundResponses() {
+        return outboundResponses;
     }
 
     @Override
@@ -145,10 +192,6 @@ public class DefaultServerConnection extends ServerConnection {
         return getInboundStream();
     }
 
-    public Queue<Request> getInboundRequests() {
-        return inboundRequests;
-    }
-
     @Override
     public WritableByteChannel getResponseEntityChannel() {
         return null;
@@ -159,16 +202,33 @@ public class DefaultServerConnection extends ServerConnection {
         return null;
     }
 
-    public Queue<Response> getOutboundResponses() {
-        return outboundResponses;
-    }
-
     public boolean isPersistent() {
         return persistent;
     }
 
     public boolean isPipelining() {
         return pipelining;
+    }
+
+    @Override
+    public void open() {
+        super.open();
+
+        if (!getHandlerService().isShutdown()) {
+            try {
+                getHandlerService().execute(new Runnable() {
+                    public void run() {
+                        readRequests();
+                    }
+                });
+            } catch (Exception e) {
+                getLogger().log(Level.WARNING,
+                        "Error while handling an HTTP server call: ",
+                        e.getMessage());
+                getLogger().log(Level.INFO,
+                        "Error while handling an HTTP server call", e);
+            }
+        }
     }
 
     /**
@@ -206,6 +266,14 @@ public class DefaultServerConnection extends ServerConnection {
         }
     }
 
+    public void setPersistent(boolean persistent) {
+        this.persistent = persistent;
+    }
+
+    public void setPipelining(boolean pipelining) {
+        this.pipelining = pipelining;
+    }
+
     /**
      * Writes the next responses. Only one response at a time if pipelining
      * isn't enabled.
@@ -238,65 +306,6 @@ public class DefaultServerConnection extends ServerConnection {
             getLogger().log(Level.INFO, "Error while writing an HTTP response",
                     e);
         }
-    }
-
-    public void control() {
-        if (!getHandlerService().isShutdown()) {
-            try {
-                // Attempts to read requests
-                if (!isInboundBusy()) {
-                    getHandlerService().execute(new Runnable() {
-                        public void run() {
-                            readRequests();
-                        }
-                    });
-                }
-
-                // Attempts to write responses
-                if (!isOutboundBusy()) {
-                    getHandlerService().execute(new Runnable() {
-                        public void run() {
-                            writeResponses();
-                        }
-                    });
-                }
-            } catch (Exception e) {
-                getLogger().log(Level.WARNING,
-                        "Error while controlling an HTTP connection: ",
-                        e.getMessage());
-                getLogger().log(Level.INFO,
-                        "Error while controlling an HTTP connection", e);
-            }
-        }
-    }
-
-    @Override
-    public void open() {
-        super.open();
-
-        if (!getHandlerService().isShutdown()) {
-            try {
-                getHandlerService().execute(new Runnable() {
-                    public void run() {
-                        readRequests();
-                    }
-                });
-            } catch (Exception e) {
-                getLogger().log(Level.WARNING,
-                        "Error while handling an HTTP server call: ",
-                        e.getMessage());
-                getLogger().log(Level.INFO,
-                        "Error while handling an HTTP server call", e);
-            }
-        }
-    }
-
-    public void setPersistent(boolean persistent) {
-        this.persistent = persistent;
-    }
-
-    public void setPipelining(boolean pipelining) {
-        this.pipelining = pipelining;
     }
 
 }

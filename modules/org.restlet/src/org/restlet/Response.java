@@ -89,6 +89,11 @@ public class Response extends Message {
         CURRENT.set(response);
     }
 
+    /** Indicates if the response should be automatically committed. */
+    private volatile boolean autoCommitting;
+
+    private volatile boolean committed;
+
     /**
      * Estimated amount of time since a response was generated or revalidated by
      * the origin server.
@@ -146,8 +151,10 @@ public class Response extends Message {
     public Response(Request request) {
         this.age = 0;
         this.allowedMethods = null;
+        this.autoCommitting = true;
         this.challengeRequests = null;
         this.cookieSettings = null;
+        this.committed = false;
         this.dimensions = null;
         this.locationRef = null;
         this.proxyChallengeRequests = null;
@@ -156,6 +163,15 @@ public class Response extends Message {
         this.serverInfo = null;
         this.status = Status.SUCCESS_OK;
         this.onReceived = null;
+    }
+
+    /**
+     * Asks the server connector to immediately commit the given response,
+     * making it ready to be sent back to the client. Note that all server
+     * connectors don't necessarily support this feature.
+     */
+    public void commit() {
+        getRequest().commit(this);
     }
 
     /**
@@ -371,6 +387,29 @@ public class Response extends Message {
         return this.status;
     }
 
+    /**
+     * Indicates if the response should be automatically committed. When
+     * processing a request on the server-side, setting this property to 'false'
+     * let you ask to the server connector to wait before sending the response
+     * back to the client when the initial calling thread returns. This will let
+     * you do further updates to the response and manually calling
+     * {@link #commit()} later on, using another thread.
+     * 
+     * @return True if the response should be automatically committed.
+     */
+    public boolean isAutoCommitting() {
+        return autoCommitting;
+    }
+
+    /**
+     * Indicates if the response has already been committed.
+     * 
+     * @return True if the response has already been committed.
+     */
+    public boolean isCommitted() {
+        return committed;
+    }
+
     @Override
     public boolean isConfidential() {
         return getRequest().isConfidential();
@@ -512,6 +551,16 @@ public class Response extends Message {
     }
 
     /**
+     * Indicates if the response should be automatically committed.
+     * 
+     * @param autoCommit
+     *            True if the response should be automatically committed
+     */
+    public void setAutoCommitting(boolean autoCommit) {
+        this.autoCommitting = autoCommit;
+    }
+
+    /**
      * Sets the authentication request sent by an origin server to a client.
      * 
      * @param request
@@ -541,6 +590,15 @@ public class Response extends Message {
      */
     public void setChallengeRequests(List<ChallengeRequest> requests) {
         this.challengeRequests = requests;
+    }
+
+    /**
+     * Indicates if the response has already been committed.
+     * 
+     * @return True if the response has already been committed.
+     */
+    public void setCommitted(boolean committed) {
+        this.committed = committed;
     }
 
     /**

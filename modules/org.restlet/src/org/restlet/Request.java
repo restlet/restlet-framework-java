@@ -186,6 +186,15 @@ public class Request extends Message {
     }
 
     /**
+     * Asks the server connector to immediately commit the given response
+     * associated to this request, making it ready to be sent back to the
+     * client. Note that all server connectors don't necessarily support this
+     * feature.
+     */
+    public synchronized void commit(Response response) {
+    }
+
+    /**
      * Returns the authentication response sent by a client to an origin server.
      * Note that when used with HTTP connectors, this property maps to the
      * "Authorization" header.
