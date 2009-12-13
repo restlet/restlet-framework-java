@@ -206,14 +206,14 @@ public abstract class ServerConnection extends Connection<Server> {
      * 
      * @return The response channel if it exists.
      */
-    public abstract WritableByteChannel getResponseEntityChannel();
+    public abstract WritableByteChannel getResponseEntityChannel(boolean chunked);
 
     /**
      * Returns the response entity stream if it exists.
      * 
      * @return The response entity stream if it exists.
      */
-    public abstract OutputStream getResponseEntityStream();
+    public abstract OutputStream getResponseEntityStream(boolean chunked);
 
     /**
      * Reads the next request sent by the client if available. Note that the
@@ -478,11 +478,12 @@ public abstract class ServerConnection extends Connection<Server> {
             }
 
             try {
-                writeResponseHead(response);
+                writeResponseHead(response, headers);
 
                 if (responseEntity != null) {
-                    WritableByteChannel responseEntityChannel = getResponseEntityChannel();
-                    OutputStream responseEntityStream = getResponseEntityStream();
+                    boolean chunked = HeaderUtils.isChunkedEncoding(headers);
+                    WritableByteChannel responseEntityChannel = getResponseEntityChannel(chunked);
+                    OutputStream responseEntityStream = getResponseEntityStream(chunked);
                     writeResponseBody(responseEntity, responseEntityChannel,
                             responseEntityStream);
 
@@ -545,7 +546,8 @@ public abstract class ServerConnection extends Connection<Server> {
      *            The response.
      * @throws IOException
      */
-    protected void writeResponseHead(Response response) throws IOException {
+    protected void writeResponseHead(Response response,
+            Series<Parameter> headers) throws IOException {
         // Do nothing by default
     }
 
@@ -564,7 +566,8 @@ public abstract class ServerConnection extends Connection<Server> {
         // Write the status line
         String requestVersion = response.getRequest().getProtocol()
                 .getVersion();
-        String version = (requestVersion == null) ? "1.1" : requestVersion;
+        String version = "HTTP/"
+                + ((requestVersion == null) ? "1.1" : requestVersion);
         headStream.write(version.getBytes());
         headStream.write(' ');
         headStream.write(Integer.toString(response.getStatus().getCode())
@@ -592,7 +595,7 @@ public abstract class ServerConnection extends Connection<Server> {
         }
 
         // Write the response headers
-        for (final Parameter header : headers) {
+        for (Parameter header : headers) {
             HeaderUtils.writeHeader(header, headStream);
         }
 

@@ -45,8 +45,11 @@ import java.util.logging.Level;
 
 import org.restlet.Request;
 import org.restlet.Response;
+import org.restlet.data.Parameter;
 import org.restlet.engine.http.io.ChunkedInputStream;
+import org.restlet.engine.http.io.ChunkedOutputStream;
 import org.restlet.engine.http.io.InputEntityStream;
+import org.restlet.util.Series;
 
 /**
  * An internal HTTP server connection.
@@ -193,13 +196,24 @@ public class DefaultServerConnection extends ServerConnection {
     }
 
     @Override
-    public WritableByteChannel getResponseEntityChannel() {
+    public WritableByteChannel getResponseEntityChannel(boolean chunked) {
         return null;
     }
 
     @Override
-    public OutputStream getResponseEntityStream() {
-        return null;
+    public OutputStream getResponseEntityStream(boolean chunked) {
+        OutputStream result = getOutboundStream();
+
+        // if (isKeepAlive()) {
+        // this.responseEntityStream = new KeepAliveOutputStream(
+        // this.responseEntityStream);
+        // }
+
+        if (chunked) {
+            result = new ChunkedOutputStream(result);
+        }
+
+        return result;
     }
 
     public boolean isPersistent() {
@@ -272,6 +286,12 @@ public class DefaultServerConnection extends ServerConnection {
 
     public void setPipelining(boolean pipelining) {
         this.pipelining = pipelining;
+    }
+
+    @Override
+    public void writeResponseHead(Response response, Series<Parameter> headers)
+            throws IOException {
+        writeResponseHead(response, getOutboundStream(), headers);
     }
 
     /**

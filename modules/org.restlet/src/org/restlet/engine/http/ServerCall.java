@@ -502,7 +502,7 @@ public abstract class ServerCall extends Call {
     protected void writeResponseHead(Response response, OutputStream headStream)
             throws IOException {
         // Write the status line
-        final String version = (getVersion() == null) ? "1.1" : getVersion();
+        String version = (getVersion() == null) ? "1.1" : getVersion();
         headStream.write(version.getBytes());
         headStream.write(' ');
         headStream.write(Integer.toString(getStatusCode()).getBytes());
@@ -528,7 +528,7 @@ public abstract class ServerCall extends Call {
         }
 
         // Write the response headers
-        for (final Parameter header : getResponseHeaders()) {
+        for (Parameter header : getResponseHeaders()) {
             HeaderUtils.writeHeader(header, headStream);
         }
 
