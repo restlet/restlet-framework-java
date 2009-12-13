@@ -267,13 +267,28 @@ public class DefaultServerHelper extends ServerHelper {
         }
 
         // Attempts to write the next pending response
-        Response nextResponse = getPendingResponses().poll();
+        Response nextResponse = null;
+        ConnectedRequest request = null;
+        DefaultServerConnection connection = null;
+        int count = getPendingResponses().size();
 
-        while (nextResponse != null) {
-            ConnectedRequest request = (ConnectedRequest) nextResponse
-                    .getRequest();
-            request.getConnection().writeResponse(nextResponse);
+        for (int i = 0; i < count; i++) {
             nextResponse = getPendingResponses().poll();
+            request = (ConnectedRequest) nextResponse.getRequest();
+            connection = (DefaultServerConnection) request.getConnection();
+
+            // Check if the response is indeed the next one
+            // to be written for this connection
+            if (connection.getInboundRequests().peek() == request) {
+                // Remove the matching request from the inbound queue
+                connection.getInboundRequests().remove(request);
+
+                // Add the response to the outbound queue
+                connection.getOutboundResponses().add(nextResponse);
+            } else {
+                // Put the response at the beginning of the queue
+                getPendingResponses().add(nextResponse);
+            }
         }
     }
 

@@ -92,8 +92,8 @@ public class DefaultServerConnection extends ServerConnection {
     }
 
     @Override
-    public void close() {
-        super.close();
+    public void close(boolean graceful) {
+        super.close(graceful);
     }
 
     @Override
@@ -101,6 +101,10 @@ public class DefaultServerConnection extends ServerConnection {
         getHelper().getPendingResponses().add(response);
     }
 
+    /**
+     * Controls the connection for actions that needs to be done, such as
+     * reading more requests or writing pending responses.
+     */
     public void control() {
         if (!getHandlerService().isShutdown()) {
             try {
@@ -240,9 +244,9 @@ public class DefaultServerConnection extends ServerConnection {
     public void readRequests() {
         try {
             if (isPipelining()) {
-                // boolean idempotentSequence = true;
                 // TODO
-            } else {
+                // boolean idempotentSequence = true;
+            } else if (!isInboundBusy()) {
                 // Ensure that no request is pending for this connection
                 if (getInboundRequests().size() == 0) {
                     // Read the request on the socket

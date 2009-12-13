@@ -67,6 +67,13 @@ public class ConnectionController implements Runnable {
     public void run() {
         while (true) {
             try {
+                // Control if some pending requests that should be processed
+                // or some pending responses that should be moved to their
+                // respective connection queues
+                getHelper().handleNext();
+
+                // Control each connection for requests to read or responses to
+                // write
                 for (DefaultServerConnection connection : getHelper()
                         .getConnections()) {
                     connection.control();

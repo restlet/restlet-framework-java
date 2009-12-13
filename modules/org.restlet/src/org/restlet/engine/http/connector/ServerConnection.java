@@ -132,6 +132,10 @@ public abstract class ServerConnection extends Connection<Server> {
             result.setSize(contentLength);
         } else {
             result = new EmptyRepresentation();
+
+            // Mark the inbound as free so new requests can be read if
+            // possible
+            setInboundBusy(false);
         }
 
         // Extract some interesting header values
@@ -244,6 +248,7 @@ public abstract class ServerConnection extends Connection<Server> {
         String httpVersion = null;
         Series<Parameter> requestHeaders = null;
 
+        // Mark the inbound as busy
         setInboundBusy(true);
 
         StringBuilder sb = new StringBuilder();

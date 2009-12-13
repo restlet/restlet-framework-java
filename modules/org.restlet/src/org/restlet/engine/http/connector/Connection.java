@@ -250,8 +250,11 @@ public abstract class Connection<T extends Connector> {
     /**
      * Closes the connection. By default, set the state to
      * {@link ConnectionState#CLOSED}.
+     * 
+     * @param graceful
+     *            Indicates if a graceful close should be attempted.
      */
-    public void close() {
+    public void close(boolean graceful) {
         setState(ConnectionState.CLOSED);
     }
 
