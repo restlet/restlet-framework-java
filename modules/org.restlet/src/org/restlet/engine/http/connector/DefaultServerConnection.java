@@ -293,16 +293,7 @@ public class DefaultServerConnection extends ServerConnection {
             } else {
                 if (getOutboundResponses().size() > 0) {
                     Response nextResponse = getOutboundResponses().poll();
-                    Request request = nextResponse.getRequest();
-
-                    // Ensure that the response does match the next
-                    // inbound request pending for this connection.
-                    if (getInboundRequests().peek() == request) {
-                        writeResponse(nextResponse);
-
-                        // Remove the pending request
-                        getInboundRequests().remove(nextResponse.getRequest());
-                    }
+                    writeResponse(nextResponse);
                 }
             }
 

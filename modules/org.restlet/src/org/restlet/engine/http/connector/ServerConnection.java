@@ -251,9 +251,8 @@ public abstract class ServerConnection extends Connection<Server> {
         // Mark the inbound as busy
         setInboundBusy(true);
 
-        StringBuilder sb = new StringBuilder();
-
         // Parse the request method
+        StringBuilder sb = new StringBuilder();
         int next = getInboundStream().read();
         while ((next != -1) && !HeaderUtils.isSpace(next)) {
             sb.append((char) next);
@@ -354,6 +353,10 @@ public abstract class ServerConnection extends Connection<Server> {
      */
     @SuppressWarnings("unchecked")
     protected void writeResponse(Response response) {
+        // Mark the outbound as busy
+        setOutboundBusy(true);
+
+        // Prepare the headers
         Series<Parameter> headers = new Form();
 
         try {
@@ -525,6 +528,8 @@ public abstract class ServerConnection extends Connection<Server> {
                                             ioe);
                         }
                     }
+                } else {
+                    setOutboundBusy(false);
                 }
             } finally {
                 if (responseEntity != null) {
