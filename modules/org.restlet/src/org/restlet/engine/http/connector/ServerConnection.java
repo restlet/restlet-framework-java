@@ -54,6 +54,7 @@ import org.restlet.engine.http.header.HeaderReader;
 import org.restlet.engine.http.header.HeaderUtils;
 import org.restlet.engine.http.header.RangeUtils;
 import org.restlet.engine.util.Base64;
+import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.ReadableRepresentation;
 import org.restlet.representation.Representation;
@@ -92,19 +93,27 @@ public abstract class ServerConnection extends Connection<Server> {
     public Representation createRequestEntity(Series<Parameter> headers) {
         Representation result = null;
         long contentLength = HeaderUtils.getContentLength(headers);
+        boolean chunkedEncoding = HeaderUtils.isChunkedEncoding(headers);
 
-        // Create the result representation
-        InputStream requestStream = getRequestEntityStream(contentLength);
-        ReadableByteChannel requestChannel = getRequestEntityChannel(contentLength);
+        // Create the representation
+        if ((contentLength != Representation.UNKNOWN_SIZE) || chunkedEncoding) {
+            InputStream requestStream = getRequestEntityStream(contentLength,
+                    chunkedEncoding);
+            ReadableByteChannel requestChannel = getRequestEntityChannel(
+                    contentLength, chunkedEncoding);
 
-        if (requestStream != null) {
-            result = new InputRepresentation(requestStream, null, contentLength);
-        } else if (requestChannel != null) {
-            result = new ReadableRepresentation(requestChannel, null,
-                    contentLength);
+            if (requestStream != null) {
+                result = new InputRepresentation(requestStream, null,
+                        contentLength);
+            } else if (requestChannel != null) {
+                result = new ReadableRepresentation(requestChannel, null,
+                        contentLength);
+            }
+
+            result.setSize(contentLength);
+        } else {
+            result = new EmptyRepresentation();
         }
-
-        result.setSize(contentLength);
 
         // Extract some interesting header values
         for (Parameter header : headers) {
@@ -156,7 +165,8 @@ public abstract class ServerConnection extends Connection<Server> {
      * 
      * @return The request entity channel if it exists.
      */
-    public abstract ReadableByteChannel getRequestEntityChannel(long size);
+    public abstract ReadableByteChannel getRequestEntityChannel(long size,
+            boolean chunked);
 
     /**
      * Returns the request entity stream if it exists.
@@ -166,7 +176,8 @@ public abstract class ServerConnection extends Connection<Server> {
      * 
      * @return The request entity stream if it exists.
      */
-    public abstract InputStream getRequestEntityStream(long size);
+    public abstract InputStream getRequestEntityStream(long size,
+            boolean chunked);
 
     /**
      * Returns the request head channel if it exists.

@@ -37,6 +37,8 @@ import java.io.InputStream;
 // [excludes=gwt]
 /**
  * Input stream based on a source stream that must only be partially read.
+ * 
+ * @author Jerome Louvel
  */
 public class InputEntityStream extends FilterInputStream {
 

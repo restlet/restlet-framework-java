@@ -45,6 +45,8 @@ import java.util.logging.Level;
 
 import org.restlet.Request;
 import org.restlet.Response;
+import org.restlet.engine.http.io.ChunkedInputStream;
+import org.restlet.engine.http.io.InputEntityStream;
 
 /**
  * An internal HTTP server connection.
@@ -115,13 +117,22 @@ public class DefaultServerConnection extends ServerConnection {
     }
 
     @Override
-    public ReadableByteChannel getRequestEntityChannel(long size) {
+    public ReadableByteChannel getRequestEntityChannel(long size,
+            boolean chunked) {
         return null;
     }
 
     @Override
-    public InputStream getRequestEntityStream(long size) {
-        return null;
+    public InputStream getRequestEntityStream(long size, boolean chunked) {
+        InputStream result = null;
+
+        if (chunked) {
+            result = new ChunkedInputStream(getInboundStream());
+        } else {
+            result = new InputEntityStream(getInboundStream(), size);
+        }
+
+        return result;
     }
 
     @Override

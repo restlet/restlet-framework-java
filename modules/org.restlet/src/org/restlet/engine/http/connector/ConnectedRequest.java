@@ -157,6 +157,16 @@ public class ConnectedRequest extends Request {
         setEntity(entity);
         getAttributes().put(HeaderConstants.ATTRIBUTE_HEADERS, headers);
 
+        if (httpVersion != null) {
+            int slashIndex = httpVersion.indexOf('/');
+
+            if (slashIndex != -1) {
+                httpVersion = httpVersion.substring(slashIndex + 1);
+            } else {
+                httpVersion = null;
+            }
+        }
+
         if (confidential) {
             List<Certificate> clientCertificates = getConnection()
                     .getSslClientCertificates();

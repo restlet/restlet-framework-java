@@ -37,6 +37,7 @@ import java.nio.channels.ServerSocketChannel;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -50,8 +51,6 @@ import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.engine.ServerHelper;
 import org.restlet.engine.log.LoggingThreadFactory;
-
-import com.google.gwt.emul.java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * HTTP server helper based on NIO blocking sockets. Here is the list of
