@@ -42,6 +42,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -149,10 +150,19 @@ public class DefaultServerHelper extends ServerHelper {
      * @return The handler service.
      */
     protected ExecutorService createHandlerService() {
-        ThreadPoolExecutor result = new ThreadPoolExecutor(getMinThreads(),
-                getMaxThreads(), (long) getThreadMaxIdleTimeMs(),
+        int maxThreads = getMaxThreads();
+        int minThreads = getMinThreads();
+
+        ThreadPoolExecutor result = new ThreadPoolExecutor(minThreads,
+                maxThreads, (long) getThreadMaxIdleTimeMs(),
                 TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(),
                 new LoggingThreadFactory(getLogger()));
+        result.setRejectedExecutionHandler(new RejectedExecutionHandler() {
+            public void rejectedExecution(Runnable r,
+                    ThreadPoolExecutor executor) {
+                getLogger().warning("Unable to run the following task: " + r);
+            }
+        });
         return result;
     }
 
@@ -161,7 +171,7 @@ public class DefaultServerHelper extends ServerHelper {
      * 
      * @return The handler service.
      */
-    protected ExecutorService createListenerService() {
+    protected ExecutorService createAcceptorService() {
         return Executors.newSingleThreadExecutor(new LoggingThreadFactory(
                 getLogger()));
     }
@@ -252,7 +262,7 @@ public class DefaultServerHelper extends ServerHelper {
     /**
      * Handles the next pending request and response if available.
      */
-    public synchronized void handleNext() {
+    public synchronized void control() {
         // Attempts to handle the next pending request
         ConnectedRequest nextRequest = getPendingRequests().poll();
 
@@ -290,6 +300,12 @@ public class DefaultServerHelper extends ServerHelper {
                 getPendingResponses().add(nextResponse);
             }
         }
+
+        // Control each connection for requests to read or responses to
+        // write
+        for (DefaultServerConnection conn : getConnections()) {
+            conn.control();
+        }
     }
 
     @Override
@@ -298,7 +314,7 @@ public class DefaultServerHelper extends ServerHelper {
         getLogger().info("Starting the default HTTP server");
 
         // Create the thread services
-        this.acceptorService = createListenerService();
+        this.acceptorService = createAcceptorService();
         this.controllerService = createControllerService();
         this.handlerService = createHandlerService();
 

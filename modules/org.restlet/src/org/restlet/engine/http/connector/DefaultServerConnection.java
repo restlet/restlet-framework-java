@@ -109,7 +109,8 @@ public class DefaultServerConnection extends ServerConnection {
         if (!getHandlerService().isShutdown()) {
             try {
                 // Attempts to read requests
-                if (!isInboundBusy()) {
+                if (!isInboundBusy()
+                        && (getInboundRequests().isEmpty() || isPipelining())) {
                     getHandlerService().execute(new Runnable() {
                         public void run() {
                             readRequests();
@@ -263,7 +264,7 @@ public class DefaultServerConnection extends ServerConnection {
             }
 
             // Offer some workforce to the helper
-            getHelper().handleNext();
+            getHelper().control();
         } catch (Exception e) {
             getLogger().log(Level.WARNING,
                     "Error while reading an HTTP request: ", e.getMessage());

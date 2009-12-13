@@ -74,6 +74,7 @@ public class LoggingThreadFactory implements ThreadFactory {
      */
     public Thread newThread(Runnable r) {
         Thread result = new Thread(r);
+        result.setName("Restlet-" + result.hashCode());
         result.setUncaughtExceptionHandler(new LoggingExceptionHandler());
         return result;
     }

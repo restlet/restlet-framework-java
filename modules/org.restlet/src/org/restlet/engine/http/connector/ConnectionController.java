@@ -70,15 +70,9 @@ public class ConnectionController implements Runnable {
                 // Control if some pending requests that should be processed
                 // or some pending responses that should be moved to their
                 // respective connection queues
-                getHelper().handleNext();
+                getHelper().control();
 
-                // Control each connection for requests to read or responses to
-                // write
-                for (DefaultServerConnection connection : getHelper()
-                        .getConnections()) {
-                    connection.control();
-                }
-
+                // Sleep a bit
                 Thread.sleep(100);
             } catch (Exception ex) {
                 this.helper.getLogger().log(Level.WARNING,
