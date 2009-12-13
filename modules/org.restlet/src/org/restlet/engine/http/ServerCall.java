@@ -519,7 +519,7 @@ public abstract class ServerCall extends Call {
 
         // We don't support persistent connections yet
         getResponseHeaders().set(HeaderConstants.HEADER_CONNECTION, "close",
-                isServerKeepAlive());
+                true);
 
         // Check if 'Transfer-Encoding' header should be set
         if (shouldResponseBeChunked(response)) {

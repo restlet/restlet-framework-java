@@ -30,8 +30,6 @@
 
 package org.restlet.engine.http.connector;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -48,7 +46,9 @@ import org.restlet.Response;
 import org.restlet.data.Parameter;
 import org.restlet.engine.http.io.ChunkedInputStream;
 import org.restlet.engine.http.io.ChunkedOutputStream;
+import org.restlet.engine.http.io.InboundStream;
 import org.restlet.engine.http.io.InputEntityStream;
+import org.restlet.engine.http.io.OutboundStream;
 import org.restlet.util.Series;
 
 /**
@@ -83,11 +83,12 @@ public class DefaultServerConnection extends ServerConnection {
     public DefaultServerConnection(DefaultServerHelper helper, Socket socket)
             throws IOException {
         super(helper, socket);
-        this.inboundStream = new BufferedInputStream(socket.getInputStream());
-        this.outboundStream = new BufferedOutputStream(socket.getOutputStream());
+        this.inboundStream = new InboundStream(socket.getInputStream());
+        this.outboundStream = new OutboundStream(socket.getOutputStream());
         this.pipelining = false;
         this.inboundRequests = new ConcurrentLinkedQueue<Request>();
         this.outboundResponses = new ConcurrentLinkedQueue<Response>();
+        setPersistent(true);
     }
 
     @Override
@@ -199,11 +200,6 @@ public class DefaultServerConnection extends ServerConnection {
     @Override
     public OutputStream getResponseEntityStream(boolean chunked) {
         OutputStream result = getOutboundStream();
-
-        // if (isKeepAlive()) {
-        // this.responseEntityStream = new KeepAliveOutputStream(
-        // this.responseEntityStream);
-        // }
 
         if (chunked) {
             result = new ChunkedOutputStream(result);
