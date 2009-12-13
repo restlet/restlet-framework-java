@@ -68,9 +68,20 @@ import org.restlet.util.Series;
  */
 public abstract class ServerConnection extends Connection<Server> {
 
+    /** Indicates if the connection should be persisted across calls. */
+    private volatile boolean persistent;
+
+    /**
+     * Constructor.
+     * 
+     * @param helper
+     * @param socket
+     * @throws IOException
+     */
     public ServerConnection(ConnectorHelper<Server> helper, Socket socket)
             throws IOException {
         super(helper, socket);
+        this.persistent = false;
     }
 
     /**
@@ -215,6 +226,10 @@ public abstract class ServerConnection extends Connection<Server> {
      */
     public abstract OutputStream getResponseEntityStream(boolean chunked);
 
+    public boolean isPersistent() {
+        return persistent;
+    }
+
     /**
      * Reads the next request sent by the client if available. Note that the
      * optional entity is not fully read.
@@ -305,6 +320,10 @@ public abstract class ServerConnection extends Connection<Server> {
                 createRequestEntity(requestHeaders), false, null);
 
         return result;
+    }
+
+    public void setPersistent(boolean persistent) {
+        this.persistent = persistent;
     }
 
     /**
@@ -540,18 +559,6 @@ public abstract class ServerConnection extends Connection<Server> {
     }
 
     /**
-     * Writes the response status line and headers. Does nothing by default.
-     * 
-     * @param response
-     *            The response.
-     * @throws IOException
-     */
-    protected void writeResponseHead(Response response,
-            Series<Parameter> headers) throws IOException {
-        // Do nothing by default
-    }
-
-    /**
      * Writes the response head to the given output stream.
      * 
      * @param response
@@ -584,10 +591,9 @@ public abstract class ServerConnection extends Connection<Server> {
         headStream.write(13); // CR
         headStream.write(10); // LF
 
-        // We don't support persistent connections yet
-        // TODO: FIX!
-        // headers.set(HeaderConstants.HEADER_CONNECTION, "close",
-        // isServerKeepAlive());
+        if (!isPersistent()) {
+            headers.set(HeaderConstants.HEADER_CONNECTION, "close", true);
+        }
 
         // Check if 'Transfer-Encoding' header should be set
         if (shouldResponseBeChunked(response)) {
@@ -603,6 +609,18 @@ public abstract class ServerConnection extends Connection<Server> {
         headStream.write(13); // CR
         headStream.write(10); // LF
         headStream.flush();
+    }
+
+    /**
+     * Writes the response status line and headers. Does nothing by default.
+     * 
+     * @param response
+     *            The response.
+     * @throws IOException
+     */
+    protected void writeResponseHead(Response response,
+            Series<Parameter> headers) throws IOException {
+        // Do nothing by default
     }
 
 }

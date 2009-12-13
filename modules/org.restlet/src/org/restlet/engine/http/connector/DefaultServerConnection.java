@@ -64,9 +64,6 @@ public class DefaultServerConnection extends ServerConnection {
     /** The outbound stream. */
     private final OutputStream outboundStream;
 
-    /** Indicates if the connection should be persisted across calls. */
-    private volatile boolean persistent;
-
     /** Indicates if idempotent sequences of requests should be pipelined. */
     private volatile boolean pipelining;
 
@@ -88,7 +85,6 @@ public class DefaultServerConnection extends ServerConnection {
         super(helper, socket);
         this.inboundStream = new BufferedInputStream(socket.getInputStream());
         this.outboundStream = new BufferedOutputStream(socket.getOutputStream());
-        this.persistent = false;
         this.pipelining = false;
         this.inboundRequests = new ConcurrentLinkedQueue<Request>();
         this.outboundResponses = new ConcurrentLinkedQueue<Response>();
@@ -216,10 +212,6 @@ public class DefaultServerConnection extends ServerConnection {
         return result;
     }
 
-    public boolean isPersistent() {
-        return persistent;
-    }
-
     public boolean isPipelining() {
         return pipelining;
     }
@@ -278,10 +270,6 @@ public class DefaultServerConnection extends ServerConnection {
             getLogger().log(Level.INFO, "Error while reading an HTTP request",
                     e);
         }
-    }
-
-    public void setPersistent(boolean persistent) {
-        this.persistent = persistent;
     }
 
     public void setPipelining(boolean pipelining) {
