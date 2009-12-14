@@ -340,7 +340,7 @@ public abstract class BaseServerHelper extends ServerHelper {
         this.latch = new CountDownLatch(1);
         this.acceptorService.submit(new ConnectionAcceptor(this,
                 this.serverSocketChannel, this.latch));
-        this.controllerService.submit(new ConnectionController(this));
+        this.controllerService.submit(new BaseServerController(this));
 
         // Wait for the listener to start up and count down the latch
         // This blocks until the server is ready to receive connections

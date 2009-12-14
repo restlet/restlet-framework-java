@@ -223,7 +223,7 @@ public class BaseServerConnection extends ServerConnection {
      * Reads the next requests. Only one request at a time if pipelining isn't
      * enabled.
      */
-    public void readRequests() {
+    public synchronized void readRequests() {
         try {
             if (isPipelining()) {
                 // TODO
@@ -243,9 +243,6 @@ public class BaseServerConnection extends ServerConnection {
                     }
                 }
             }
-
-            // Offer some workforce to the helper
-            getHelper().control();
         } catch (Exception e) {
             getLogger().log(Level.WARNING,
                     "Error while reading an HTTP request: ", e.getMessage());
@@ -268,7 +265,7 @@ public class BaseServerConnection extends ServerConnection {
      * Writes the next responses. Only one response at a time if pipelining
      * isn't enabled.
      */
-    public void writeResponses() {
+    public synchronized void writeResponses() {
         try {
             if (isPipelining()) {
                 // TODO

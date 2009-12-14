@@ -37,7 +37,7 @@ import java.util.logging.Level;
  * 
  * @author Jerome Louvel
  */
-public class ConnectionController implements Runnable {
+public class BaseServerController implements Runnable {
 
     /** The parent server helper. */
     private final BaseServerHelper helper;
@@ -48,7 +48,7 @@ public class ConnectionController implements Runnable {
      * @param helper
      *            The target server helper.
      */
-    public ConnectionController(BaseServerHelper helper) {
+    public BaseServerController(BaseServerHelper helper) {
         this.helper = helper;
     }
 
