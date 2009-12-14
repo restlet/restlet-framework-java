@@ -30,11 +30,13 @@
 
 package org.restlet.ext.sip.example;
 
+import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.ext.sip.Ack;
 import org.restlet.ext.sip.Bye;
 import org.restlet.ext.sip.Invite;
+import org.restlet.ext.sip.SipStatus;
 import org.restlet.resource.ServerResource;
 
 /**
@@ -51,16 +53,30 @@ public class MySipServerResource extends ServerResource {
 
     @Ack
     public void acknowledge() {
-        System.out.println("ACKNOWLEDGE");
+        System.out.println("ACK");
     }
 
     @Invite
     public void start() {
         System.out.println("INVITE");
+
+        // Indicate successful reception
+        Response provisionalResponse = new Response(getRequest());
+        provisionalResponse.setStatus(SipStatus.INFO_TRYING);
+        provisionalResponse.commit();
+
+        // Indicate that the user phone is ringing
+        provisionalResponse = new Response(getRequest());
+        provisionalResponse.setStatus(SipStatus.INFO_RINGING);
+        provisionalResponse.commit();
+
+        // Set the final response
+        setStatus(SipStatus.SUCCESS_OK);
     }
 
     @Bye
     public void stop() {
         System.out.println("BYE");
+        setStatus(SipStatus.SUCCESS_OK);
     }
 }

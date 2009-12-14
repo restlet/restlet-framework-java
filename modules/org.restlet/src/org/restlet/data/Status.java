@@ -681,6 +681,18 @@ public final class Status {
     }
 
     /**
+     * Indicates if the status is a client error status, meaning "The request
+     * contains bad syntax or cannot be fulfilled".
+     * 
+     * @param code
+     *            The code of the status.
+     * @return True if the status is a client error status.
+     */
+    public static boolean isGlobalError(int code) {
+        return (code >= 600) && (code <= 699);
+    }
+
+    /**
      * Indicates if the status is an information status, meaning "request
      * received, continuing process".
      * 
@@ -1662,6 +1674,16 @@ public final class Status {
      */
     public boolean isError() {
         return isError(getCode());
+    }
+
+    /**
+     * Indicates if the status is a global error status, meaning "The server has
+     * definitive information about a particular user".
+     * 
+     * @return True if the status is a global error status.
+     */
+    public boolean isGlobalError() {
+        return isGlobalError(getCode());
     }
 
     /**

@@ -11,7 +11,9 @@ Changes log
         - Added Response#commit() and Request#commit(Response) methods.
         - Added Response#autoCommitting and committed boolean 
           properties for asynchronous processing of calls.
-    - Enhancements
+        - Added Status#isGlobalError() methods for 6xx range 
+          (SIP protocol).
+     - Enhancements
         - Added a new Jackson extension, with transparent conversion
           between JSON representations and objects.
           Suggested by Tal Liron.    
