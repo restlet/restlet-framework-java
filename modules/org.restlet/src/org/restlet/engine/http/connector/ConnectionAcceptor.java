@@ -46,7 +46,7 @@ import java.util.logging.Level;
 public class ConnectionAcceptor implements Runnable {
 
     /** The parent server helper. */
-    private final DefaultServerHelper helper;
+    private final BaseServerHelper helper;
 
     /** The server socket channel to listen on. */
     private final ServerSocketChannel serverSocket;
@@ -69,7 +69,7 @@ public class ConnectionAcceptor implements Runnable {
      * @param handlerService
      *            The handler service.
      */
-    public ConnectionAcceptor(DefaultServerHelper helper,
+    public ConnectionAcceptor(BaseServerHelper helper,
             ServerSocketChannel serverSocket, CountDownLatch latch) {
         this.helper = helper;
         this.serverSocket = serverSocket;
@@ -81,7 +81,7 @@ public class ConnectionAcceptor implements Runnable {
      * 
      * @return The parent server helper.
      */
-    protected DefaultServerHelper getHelper() {
+    protected BaseServerHelper getHelper() {
         return helper;
     }
 
@@ -93,7 +93,7 @@ public class ConnectionAcceptor implements Runnable {
         while (true) {
             try {
                 SocketChannel client = this.serverSocket.accept();
-                DefaultServerConnection connection = new DefaultServerConnection(
+                BaseServerConnection connection = new BaseServerConnection(
                         getHelper(), client.socket());
                 getHelper().getConnections().add(connection);
                 connection.open();

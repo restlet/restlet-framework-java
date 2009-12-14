@@ -89,6 +89,14 @@ public final class Protocol {
     public static final Protocol HTTPS = new Protocol("https", "HTTPS",
             "HyperText Transport Protocol (Secure)", 443, true, "1.1");
 
+    /** SIP protocol. */
+    public static final Protocol SIP = new Protocol("sip", "SIP",
+            "Session Initiation Protocol", 5060, "2.0");
+
+    /** SIPS protocol (via SSL socket). */
+    public static final Protocol SIPS = new Protocol("sips", "SIPS",
+            "Session Initiation Protocol (Secure)", 5061, true, "2.0");
+
     /**
      * JAR (Java ARchive) is a common scheme to access to representations inside
      * archive files. Example URI:
@@ -255,25 +263,6 @@ public final class Protocol {
      *            The description.
      * @param defaultPort
      *            The default port.
-     * @param version
-     *            The version.
-     */
-    public Protocol(String schemeName, String name, String description,
-            int defaultPort, String version) {
-        this(schemeName, name, description, defaultPort, false, version);
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param schemeName
-     *            The scheme name.
-     * @param name
-     *            The unique name.
-     * @param description
-     *            The description.
-     * @param defaultPort
-     *            The default port.
      * @param confidential
      *            The confidentiality.
      */
@@ -306,6 +295,25 @@ public final class Protocol {
         this.defaultPort = defaultPort;
         this.confidential = confidential;
         this.version = version;
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param schemeName
+     *            The scheme name.
+     * @param name
+     *            The unique name.
+     * @param description
+     *            The description.
+     * @param defaultPort
+     *            The default port.
+     * @param version
+     *            The version.
+     */
+    public Protocol(String schemeName, String name, String description,
+            int defaultPort, String version) {
+        this(schemeName, name, description, defaultPort, false, version);
     }
 
     /** {@inheritDoc} */

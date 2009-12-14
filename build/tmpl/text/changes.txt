@@ -7,6 +7,10 @@ Changes log
     - API changes
         - Added more specific Validator#validatePresence and 
           validateFormat methods.
+        - Added Protocol#SIP and SIPS constants.
+        - Added Response#commit() and Request#commit(Response) methods.
+        - Added Response#autoCommitting and committed boolean 
+          properties for asynchronous processing of calls.
     - Enhancements
         - Added a new Jackson extension, with transparent conversion
           between JSON representations and objects.

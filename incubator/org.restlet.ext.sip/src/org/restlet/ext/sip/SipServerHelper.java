@@ -28,56 +28,39 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.http.connector;
+package org.restlet.ext.sip;
 
-import java.util.logging.Level;
+import org.restlet.Server;
+import org.restlet.data.Protocol;
+import org.restlet.engine.http.connector.BaseServerHelper;
 
 /**
- * 
+ * SIP server helper based on NIO blocking sockets.
  * 
  * @author Jerome Louvel
  */
-public class ConnectionController implements Runnable {
-
-    /** The parent server helper. */
-    private final BaseServerHelper helper;
+public class SipServerHelper extends BaseServerHelper {
 
     /**
      * Constructor.
      * 
-     * @param helper
-     *            The target server helper.
+     * @param server
+     *            The server to help.
      */
-    public ConnectionController(BaseServerHelper helper) {
-        this.helper = helper;
+    public SipServerHelper(Server server) {
+        super(server);
+        getProtocols().add(Protocol.SIP);
     }
 
-    /**
-     * Returns the parent server helper.
-     * 
-     * @return The parent server helper.
-     */
-    protected BaseServerHelper getHelper() {
-        return helper;
+    @Override
+    public synchronized void start() throws Exception {
+        getLogger().info("Starting the SIP server");
+        super.start();
     }
 
-    /**
-     * Listens on the given server socket for incoming connections.
-     */
-    public void run() {
-        while (true) {
-            try {
-                // Control if some pending requests that should be processed
-                // or some pending responses that should be moved to their
-                // respective connection queues
-                getHelper().control();
-
-                // Sleep a bit
-                Thread.sleep(100);
-            } catch (Exception ex) {
-                this.helper.getLogger().log(Level.WARNING,
-                        "Unexpected error while controlling connections", ex);
-            }
-        }
+    @Override
+    public synchronized void stop() throws Exception {
+        getLogger().info("Stopping the SIP server");
+        super.stop();
     }
 }

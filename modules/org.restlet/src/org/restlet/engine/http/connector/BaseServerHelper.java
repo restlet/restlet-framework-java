@@ -49,12 +49,11 @@ import java.util.logging.Level;
 
 import org.restlet.Response;
 import org.restlet.Server;
-import org.restlet.data.Protocol;
 import org.restlet.engine.ServerHelper;
 import org.restlet.engine.log.LoggingThreadFactory;
 
 /**
- * HTTP server helper based on NIO blocking sockets. Here is the list of
+ * Base server helper based on NIO blocking sockets. Here is the list of
  * parameters that are supported. They should be set in the Server's context
  * before it is started:
  * <table>
@@ -96,7 +95,7 @@ import org.restlet.engine.log.LoggingThreadFactory;
  * 
  * @author Jerome Louvel
  */
-public class DefaultServerHelper extends ServerHelper {
+public abstract class BaseServerHelper extends ServerHelper {
 
     /** The connection controller service. */
     private volatile ExecutorService controllerService;
@@ -114,7 +113,7 @@ public class DefaultServerHelper extends ServerHelper {
     private volatile CountDownLatch latch;
 
     /** The set of active connections. */
-    private final Set<DefaultServerConnection> connections;
+    private final Set<BaseServerConnection> connections;
 
     /** The queue of requests pending for handling. */
     private final Queue<ConnectedRequest> pendingRequests;
@@ -128,10 +127,9 @@ public class DefaultServerHelper extends ServerHelper {
      * @param server
      *            The server to help.
      */
-    public DefaultServerHelper(Server server) {
+    public BaseServerHelper(Server server) {
         super(server);
-        getProtocols().add(Protocol.HTTP);
-        this.connections = new CopyOnWriteArraySet<DefaultServerConnection>();
+        this.connections = new CopyOnWriteArraySet<BaseServerConnection>();
         this.pendingRequests = new ConcurrentLinkedQueue<ConnectedRequest>();
         this.pendingResponses = new ConcurrentLinkedQueue<Response>();
     }
@@ -210,7 +208,7 @@ public class DefaultServerHelper extends ServerHelper {
      * 
      * @return The set of active connections.
      */
-    protected Set<DefaultServerConnection> getConnections() {
+    protected Set<BaseServerConnection> getConnections() {
         return connections;
     }
 
@@ -291,13 +289,13 @@ public class DefaultServerHelper extends ServerHelper {
         // Attempts to write the next pending response
         Response nextResponse = null;
         ConnectedRequest request = null;
-        DefaultServerConnection connection = null;
+        BaseServerConnection connection = null;
         int count = getPendingResponses().size();
 
         for (int i = 0; i < count; i++) {
             nextResponse = getPendingResponses().poll();
             request = (ConnectedRequest) nextResponse.getRequest();
-            connection = (DefaultServerConnection) request.getConnection();
+            connection = (BaseServerConnection) request.getConnection();
 
             // Check if the response is indeed the next one
             // to be written for this connection
@@ -318,7 +316,7 @@ public class DefaultServerHelper extends ServerHelper {
 
         // Control each connection for requests to read or responses to
         // write
-        for (DefaultServerConnection conn : getConnections()) {
+        for (BaseServerConnection conn : getConnections()) {
             conn.control();
         }
     }
@@ -326,7 +324,6 @@ public class DefaultServerHelper extends ServerHelper {
     @Override
     public synchronized void start() throws Exception {
         super.start();
-        getLogger().info("Starting the default HTTP server");
 
         // Create the thread services
         this.acceptorService = createAcceptorService();
@@ -362,7 +359,6 @@ public class DefaultServerHelper extends ServerHelper {
     @Override
     public synchronized void stop() throws Exception {
         super.stop();
-        getLogger().info("Stopping the default HTTP server");
 
         if (this.handlerService != null) {
             // Gracefully shutdown the handlers, they should complete

@@ -56,7 +56,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
-public class DefaultServerConnection extends ServerConnection {
+public class BaseServerConnection extends ServerConnection {
 
     /** The inbound stream. */
     private final InputStream inboundStream;
@@ -80,7 +80,7 @@ public class DefaultServerConnection extends ServerConnection {
      * @param socket
      * @throws IOException
      */
-    public DefaultServerConnection(DefaultServerHelper helper, Socket socket)
+    public BaseServerConnection(BaseServerHelper helper, Socket socket)
             throws IOException {
         super(helper, socket);
         this.inboundStream = new InboundStream(socket.getInputStream());
@@ -146,8 +146,8 @@ public class DefaultServerConnection extends ServerConnection {
     }
 
     @Override
-    public DefaultServerHelper getHelper() {
-        return (DefaultServerHelper) super.getHelper();
+    public BaseServerHelper getHelper() {
+        return (BaseServerHelper) super.getHelper();
     }
 
     public Queue<Request> getInboundRequests() {
