@@ -244,6 +244,18 @@ public class Server extends Connector {
     }
 
     /**
+     * Constructor using the protocol's default port.
+     * 
+     * @param protocol
+     *            The connector protocol.
+     * @param nextClass
+     *            The next server resource.
+     */
+    public Server(Protocol protocol, Class<?> nextClass) {
+        this(null, protocol, new Finder(Context.getCurrent(), nextClass));
+    }
+
+    /**
      * Constructor.
      * 
      * @param protocol

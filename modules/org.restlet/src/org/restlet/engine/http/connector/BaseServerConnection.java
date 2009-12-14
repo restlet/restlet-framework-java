@@ -105,26 +105,28 @@ public class BaseServerConnection extends ServerConnection {
      * Controls the connection for actions that needs to be done, such as
      * reading more requests or writing pending responses.
      */
-    public void control() {
+    public synchronized void control() {
         if (!getHandlerService().isShutdown()) {
             try {
-                // Attempts to read requests
-                if (!isInboundBusy()
-                        && (getInboundRequests().isEmpty() || isPipelining())) {
-                    getHandlerService().execute(new Runnable() {
-                        public void run() {
-                            readRequests();
-                        }
-                    });
-                }
+                if (getState() == ConnectionState.OPEN) {
+                    // Attempts to read requests
+                    if (!isInboundBusy()
+                            && (getInboundRequests().isEmpty() || isPipelining())) {
+                        getHandlerService().execute(new Runnable() {
+                            public void run() {
+                                readRequests();
+                            }
+                        });
+                    }
 
-                // Attempts to write responses
-                if (!isOutboundBusy()) {
-                    getHandlerService().execute(new Runnable() {
-                        public void run() {
-                            writeResponses();
-                        }
-                    });
+                    // Attempts to write responses
+                    if (!isOutboundBusy()) {
+                        getHandlerService().execute(new Runnable() {
+                            public void run() {
+                                writeResponses();
+                            }
+                        });
+                    }
                 }
             } catch (Exception e) {
                 getLogger().log(Level.WARNING,
@@ -215,27 +217,6 @@ public class BaseServerConnection extends ServerConnection {
 
     public boolean isPipelining() {
         return pipelining;
-    }
-
-    @Override
-    public void open() {
-        super.open();
-
-        if (!getHandlerService().isShutdown()) {
-            try {
-                getHandlerService().execute(new Runnable() {
-                    public void run() {
-                        readRequests();
-                    }
-                });
-            } catch (Exception e) {
-                getLogger().log(Level.WARNING,
-                        "Error while handling an HTTP server call: ",
-                        e.getMessage());
-                getLogger().log(Level.INFO,
-                        "Error while handling an HTTP server call", e);
-            }
-        }
     }
 
     /**

@@ -137,7 +137,7 @@ public class ConnectedRequest extends Request {
      *            The low-level HTTP server call.
      */
     public ConnectedRequest(Context context, ServerConnection connection,
-            String methodName, String resourceUri, String httpVersion,
+            String methodName, String resourceUri, String version,
             Series<Parameter> headers, Representation entity,
             boolean confidential, Principal userPrincipal) {
         this.context = context;
@@ -158,13 +158,13 @@ public class ConnectedRequest extends Request {
         setEntity(entity);
         getAttributes().put(HeaderConstants.ATTRIBUTE_HEADERS, headers);
 
-        if (httpVersion != null) {
-            int slashIndex = httpVersion.indexOf('/');
+        if (version != null) {
+            int slashIndex = version.indexOf('/');
 
             if (slashIndex != -1) {
-                httpVersion = httpVersion.substring(slashIndex + 1);
+                version = version.substring(slashIndex + 1);
             } else {
-                httpVersion = null;
+                version = null;
             }
         }
 
@@ -189,14 +189,14 @@ public class ConnectedRequest extends Request {
                 getAttributes().put(HeaderConstants.ATTRIBUTE_HTTPS_KEY_SIZE,
                         keySize);
             }
-
-            setProtocol(new Protocol("https", "HTTPS",
-                    "HyperText Transport Protocol (Secure)", 443, true,
-                    httpVersion));
-        } else {
-            setProtocol(new Protocol("http", "HTTP",
-                    "HyperText Transport Protocol", 80, httpVersion));
         }
+
+        // Set the protocol used for this request
+        Protocol serverProtocol = getConnection().getHelper().getHelped()
+                .getProtocols().get(0);
+        setProtocol(new Protocol(serverProtocol.getSchemeName(), serverProtocol
+                .getName(), serverProtocol.getDescription(), serverProtocol
+                .getDefaultPort(), serverProtocol.isConfidential(), version));
 
         // Parse the host header
         String host = getHeaders().getFirstValue(HeaderConstants.HEADER_HOST,
@@ -215,8 +215,13 @@ public class ConnectedRequest extends Request {
                 hostPort = getProtocol().getDefaultPort();
             }
         } else {
-            Context.getCurrentLogger().info(
-                    "Couldn't find the mandatory \"Host\" HTTP header.");
+            if (!Protocol.SIP.getSchemeName().equals(
+                    serverProtocol.getSchemeName())
+                    && !Protocol.SIPS.getSchemeName().equals(
+                            serverProtocol.getSchemeName())) {
+                Context.getCurrentLogger().info(
+                        "Couldn't find the mandatory \"Host\" HTTP header.");
+            }
         }
 
         // Set the host reference

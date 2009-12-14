@@ -97,6 +97,7 @@ public class ConnectionAcceptor implements Runnable {
                         getHelper(), client.socket());
                 getHelper().getConnections().add(connection);
                 connection.open();
+                connection.control();
             } catch (ClosedByInterruptException ex) {
                 this.helper.getLogger().log(Level.FINE,
                         "ServerSocket channel was closed by interrupt", ex);

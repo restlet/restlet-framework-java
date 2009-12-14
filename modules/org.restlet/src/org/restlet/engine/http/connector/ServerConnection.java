@@ -245,7 +245,7 @@ public abstract class ServerConnection extends Connection<Server> {
         ConnectedRequest result = null;
         String requestMethod = null;
         String requestUri = null;
-        String httpVersion = null;
+        String version = null;
         Series<Parameter> requestHeaders = null;
 
         // Mark the inbound as busy
@@ -300,7 +300,7 @@ public abstract class ServerConnection extends Connection<Server> {
         next = getInboundStream().read();
 
         if (HeaderUtils.isLineFeed(next)) {
-            httpVersion = sb.toString();
+            version = sb.toString();
             sb.delete(0, sb.length());
 
             // Parse the headers
@@ -320,7 +320,7 @@ public abstract class ServerConnection extends Connection<Server> {
 
         // Create the HTTP request
         result = new ConnectedRequest(getHelper().getContext(), this,
-                requestMethod, requestUri, httpVersion, requestHeaders,
+                requestMethod, requestUri, version, requestHeaders,
                 createRequestEntity(requestHeaders), false, null);
 
         return result;
