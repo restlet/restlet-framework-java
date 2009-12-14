@@ -116,8 +116,10 @@ public class DefaultServerHelper extends ServerHelper {
     /** The set of active connections. */
     private final Set<DefaultServerConnection> connections;
 
+    /** The queue of requests pending for handling. */
     private final Queue<ConnectedRequest> pendingRequests;
 
+    /** The queue of responses pending for writing. */
     private final Queue<Response> pendingResponses;
 
     /**
@@ -241,10 +243,20 @@ public class DefaultServerHelper extends ServerHelper {
                 "minThreads", "1"));
     }
 
+    /**
+     * Returns the queue of requests pending for handling.
+     * 
+     * @return The queue of requests pending for handling.
+     */
     protected Queue<ConnectedRequest> getPendingRequests() {
         return pendingRequests;
     }
 
+    /**
+     * Returns the queue of responses pending for writing.
+     * 
+     * @return The queue of responses pending for writing.
+     */
     protected Queue<Response> getPendingResponses() {
         return pendingResponses;
     }
@@ -260,7 +272,7 @@ public class DefaultServerHelper extends ServerHelper {
     }
 
     /**
-     * Handles the next pending request and response if available.
+     * Controls the helper for next tasks to accomplish.
      */
     public synchronized void control() {
         // Attempts to handle the next pending request
@@ -290,8 +302,11 @@ public class DefaultServerHelper extends ServerHelper {
             // Check if the response is indeed the next one
             // to be written for this connection
             if (connection.getInboundRequests().peek() == request) {
-                // Remove the matching request from the inbound queue
-                connection.getInboundRequests().remove(request);
+                // Check if a final response was received for the request
+                if (!nextResponse.getStatus().isInformational()) {
+                    // Remove the matching request from the inbound queue
+                    connection.getInboundRequests().remove(request);
+                }
 
                 // Add the response to the outbound queue
                 connection.getOutboundResponses().add(nextResponse);
