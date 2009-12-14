@@ -38,7 +38,6 @@ import org.restlet.Context;
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
-import org.restlet.engine.http.connector.Connection;
 import org.restlet.engine.http.header.HeaderUtils;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
@@ -317,6 +316,7 @@ public abstract class Call {
         return this.confidential;
     }
 
+    // [ifndef gae,gwt] method
     /**
      * Returns true if the given exception is caused by a broken connection.
      * 
@@ -325,7 +325,7 @@ public abstract class Call {
      * @return True if the given exception is caused by a broken connection.
      */
     public boolean isConnectionBroken(Exception exception) {
-        return Connection.isBroken(exception);
+        return org.restlet.engine.http.connector.Connection.isBroken(exception);
     }
 
     /**
