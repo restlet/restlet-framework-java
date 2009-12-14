@@ -206,13 +206,16 @@ public class ServerAdapter extends Adapter {
             // Send the response to the client
             response.getHttpCall().sendResponse(response);
         } catch (Exception e) {
+            // [ifndef gae]
             if (response.getHttpCall().isConnectionBroken(e)) {
                 getLogger()
                         .log(
                                 Level.INFO,
                                 "The connection was broken. It was probably closed by the client.",
                                 e);
-            } else {
+            } else
+            // [enddef]
+            {
                 getLogger().log(Level.SEVERE,
                         "An exception occured writing the response entity", e);
                 response.getHttpCall().setStatusCode(
