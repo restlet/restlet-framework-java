@@ -53,8 +53,6 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.data.Warning;
-import org.restlet.engine.security.AuthenticatorUtils;
-import org.restlet.engine.util.Base64;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
@@ -171,16 +169,19 @@ public class HeaderUtils {
                 }
             }
 
+            // [ifndef gwt]
             if (entity.getDigest() != null
                     && Digest.ALGORITHM_MD5.equals(entity.getDigest()
                             .getAlgorithm())) {
                 responseHeaders.add(HeaderConstants.HEADER_CONTENT_MD5,
-                        new String(Base64.encode(entity.getDigest().getValue(),
-                                false)));
+                        new String(org.restlet.engine.util.Base64.encode(entity
+                                .getDigest().getValue(), false)));
             }
+            // [enddef]
         }
     }
 
+    // [ifndef gwt] method
     /**
      * Copies the headers from the {@link Response} to the given {@link Series}.
      * 
@@ -247,8 +248,9 @@ public class HeaderUtils {
             for (final ChallengeRequest challengeRequest : response
                     .getChallengeRequests()) {
                 responseHeaders.add(HeaderConstants.HEADER_WWW_AUTHENTICATE,
-                        AuthenticatorUtils.formatRequest(challengeRequest,
-                                response, responseHeaders));
+                        org.restlet.client.engine.security.AuthenticatorUtils
+                                .formatRequest(challengeRequest, response,
+                                        responseHeaders));
             }
         }
 
@@ -256,8 +258,9 @@ public class HeaderUtils {
             for (final ChallengeRequest challengeRequest : response
                     .getProxyChallengeRequests()) {
                 responseHeaders.add(HeaderConstants.HEADER_PROXY_AUTHENTICATE,
-                        AuthenticatorUtils.formatRequest(challengeRequest,
-                                response, responseHeaders));
+                        org.restlet.client.engine.security.AuthenticatorUtils
+                                .formatRequest(challengeRequest, response,
+                                        responseHeaders));
             }
         }
 
