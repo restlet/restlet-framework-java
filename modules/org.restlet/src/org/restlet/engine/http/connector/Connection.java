@@ -366,11 +366,11 @@ public abstract class Connection<T extends Connector> {
         return state;
     }
 
-    public boolean isInboundBusy() {
+    protected boolean isInboundBusy() {
         return inboundBusy;
     }
 
-    public boolean isOutboundBusy() {
+    protected boolean isOutboundBusy() {
         return outboundBusy;
     }
 
@@ -382,11 +382,11 @@ public abstract class Connection<T extends Connector> {
         setState(ConnectionState.OPEN);
     }
 
-    public void setInboundBusy(boolean inboundBusy) {
+    protected void setInboundBusy(boolean inboundBusy) {
         this.inboundBusy = inboundBusy;
     }
 
-    public void setOutboundBusy(boolean outboundBusy) {
+    protected void setOutboundBusy(boolean outboundBusy) {
         this.outboundBusy = outboundBusy;
     }
 

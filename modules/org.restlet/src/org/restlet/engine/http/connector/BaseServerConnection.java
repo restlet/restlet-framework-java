@@ -102,49 +102,12 @@ public class BaseServerConnection extends ServerConnection {
     }
 
     /**
-     * Controls the connection for actions that needs to be done, such as
-     * reading more requests or writing pending responses.
-     */
-    public synchronized void control() {
-        if (!getHandlerService().isShutdown()) {
-            try {
-                if (getState() == ConnectionState.OPEN) {
-                    // Attempts to read requests
-                    if (!isInboundBusy()
-                            && (getInboundRequests().isEmpty() || isPipelining())) {
-                        getHandlerService().execute(new Runnable() {
-                            public void run() {
-                                readRequests();
-                            }
-                        });
-                    }
-
-                    // Attempts to write responses
-                    if (!isOutboundBusy()) {
-                        getHandlerService().execute(new Runnable() {
-                            public void run() {
-                                writeResponses();
-                            }
-                        });
-                    }
-                }
-            } catch (Exception e) {
-                getLogger().log(Level.WARNING,
-                        "Error while controlling an HTTP connection: ",
-                        e.getMessage());
-                getLogger().log(Level.INFO,
-                        "Error while controlling an HTTP connection", e);
-            }
-        }
-    }
-
-    /**
      * Returns the connection handler service.
      * 
      * @return The connection handler service.
      */
-    protected ExecutorService getHandlerService() {
-        return getHelper().getHandlerService();
+    protected ExecutorService getWorkerService() {
+        return getHelper().getWorkerService();
     }
 
     @Override
@@ -219,28 +182,51 @@ public class BaseServerConnection extends ServerConnection {
         return pipelining;
     }
 
+    @Override
+    protected ConnectedRequest readRequest() throws IOException {
+        ConnectedRequest result = super.readRequest();
+
+        // Add it to the connection queue
+        getInboundRequests().add(result);
+
+        // Add it to the helper queue
+        getHelper().getPendingRequests().add(result);
+
+        return result;
+    }
+
+    public boolean canRead() {
+        return !isInboundBusy() && (getInboundRequests().size() == 0);
+    }
+
+    public boolean canWrite() {
+        return !isOutboundBusy() && (getOutboundResponses().size() > 0);
+    }
+
     /**
      * Reads the next requests. Only one request at a time if pipelining isn't
      * enabled.
      */
-    public synchronized void readRequests() {
+    public void readRequests() {
         try {
             if (isPipelining()) {
                 // TODO
                 // boolean idempotentSequence = true;
-            } else if (!isInboundBusy()) {
-                // Ensure that no request is pending for this connection
-                if (getInboundRequests().size() == 0) {
-                    // Read the request on the socket
-                    ConnectedRequest request = readRequest();
+            } else {
+                boolean doRead = false;
 
-                    if (request != null) {
-                        // Add it to the connection queue
-                        getInboundRequests().add(request);
-
-                        // Add it to the helper queue
-                        getHelper().getPendingRequests().add(request);
+                // We want to make sure that requests are read by one thread
+                // at a time without blocking other concurrent threads during
+                // the reading
+                synchronized (getInboundRequests()) {
+                    if (canRead()) {
+                        doRead = (getInboundStream().available() > 0);
+                        setInboundBusy(doRead);
                     }
+                }
+
+                if (doRead) {
+                    readRequest();
                 }
             }
         } catch (Exception e) {
@@ -249,6 +235,10 @@ public class BaseServerConnection extends ServerConnection {
             getLogger().log(Level.INFO, "Error while reading an HTTP request",
                     e);
         }
+
+        // Immediately attempt to handle the next pending request, trying
+        // to prevent a thread context switch.
+        getHelper().handleNextRequest();
     }
 
     public void setPipelining(boolean pipelining) {
@@ -256,8 +246,8 @@ public class BaseServerConnection extends ServerConnection {
     }
 
     @Override
-    public void writeResponseHead(Response response, Series<Parameter> headers)
-            throws IOException {
+    protected void writeResponseHead(Response response,
+            Series<Parameter> headers) throws IOException {
         writeResponseHead(response, getOutboundStream(), headers);
     }
 
@@ -265,19 +255,24 @@ public class BaseServerConnection extends ServerConnection {
      * Writes the next responses. Only one response at a time if pipelining
      * isn't enabled.
      */
-    public synchronized void writeResponses() {
+    public void writeResponses() {
         try {
             if (isPipelining()) {
                 // TODO
             } else {
-                if (getOutboundResponses().size() > 0) {
-                    Response nextResponse = getOutboundResponses().poll();
-                    writeResponse(nextResponse);
-                }
-            }
+                Response response = null;
 
-            // Check if some new requests can be read
-            readRequests();
+                // We want to make sure that responses are written in order
+                // without blocking other concurrent threads during the writing
+                synchronized (getOutboundResponses()) {
+                    if (canWrite()) {
+                        response = getOutboundResponses().poll();
+                        setOutboundBusy((response != null));
+                    }
+                }
+
+                writeResponse(response);
+            }
         } catch (Exception e) {
             getLogger().log(Level.WARNING,
                     "Error while writing an HTTP response: ", e.getMessage());
@@ -285,5 +280,4 @@ public class BaseServerConnection extends ServerConnection {
                     e);
         }
     }
-
 }

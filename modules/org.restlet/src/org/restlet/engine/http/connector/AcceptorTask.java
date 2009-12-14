@@ -43,7 +43,7 @@ import java.util.logging.Level;
  * 
  * @author Jerome Louvel
  */
-public class ConnectionAcceptor implements Runnable {
+public class AcceptorTask implements Runnable {
 
     /** The parent server helper. */
     private final BaseServerHelper helper;
@@ -69,7 +69,7 @@ public class ConnectionAcceptor implements Runnable {
      * @param handlerService
      *            The handler service.
      */
-    public ConnectionAcceptor(BaseServerHelper helper,
+    public AcceptorTask(BaseServerHelper helper,
             ServerSocketChannel serverSocket, CountDownLatch latch) {
         this.helper = helper;
         this.serverSocket = serverSocket;
@@ -93,11 +93,18 @@ public class ConnectionAcceptor implements Runnable {
         while (true) {
             try {
                 SocketChannel client = this.serverSocket.accept();
-                BaseServerConnection connection = new BaseServerConnection(
+                final BaseServerConnection connection = new BaseServerConnection(
                         getHelper(), client.socket());
                 getHelper().getConnections().add(connection);
                 connection.open();
-                connection.control();
+
+                // Immediately attempt to read inbound requests, trying
+                // to prevent a thread context switch.
+                getHelper().getWorkerService().execute(new Runnable() {
+                    public void run() {
+                        connection.readRequests();
+                    }
+                });
             } catch (ClosedByInterruptException ex) {
                 this.helper.getLogger().log(Level.FINE,
                         "ServerSocket channel was closed by interrupt", ex);

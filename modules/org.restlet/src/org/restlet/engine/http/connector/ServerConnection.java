@@ -353,131 +353,139 @@ public abstract class ServerConnection extends Connection<Server> {
      */
     @SuppressWarnings("unchecked")
     protected void writeResponse(Response response) {
-        // Mark the outbound as busy
-        setOutboundBusy(true);
+        if (response != null) {
+            // Prepare the headers
+            Series<Parameter> headers = new Form();
 
-        // Prepare the headers
-        Series<Parameter> headers = new Form();
-
-        try {
-            if ((response.getRequest().getMethod() != null)
-                    && response.getRequest().getMethod().equals(Method.HEAD)) {
-                addEntityHeaders(response, headers);
-                response.setEntity(null);
-            } else if (Method.GET.equals(response.getRequest().getMethod())
-                    && Status.SUCCESS_OK.equals(response.getStatus())
-                    && (!response.isEntityAvailable())) {
-                addEntityHeaders(response, headers);
-                getLogger()
-                        .warning(
-                                "A response with a 200 (Ok) status should have an entity. Make sure that resource \""
-                                        + response.getRequest()
-                                                .getResourceRef()
-                                        + "\" returns one or sets the status to 204 (No content).");
-            } else if (response.getStatus().equals(Status.SUCCESS_NO_CONTENT)) {
-                addEntityHeaders(response, headers);
-
-                if (response.isEntityAvailable()) {
-                    getLogger()
-                            .fine(
-                                    "Responses with a 204 (No content) status generally don't have an entity. Only adding entity headers for resource \""
-                                            + response.getRequest()
-                                                    .getResourceRef() + "\".");
-                    response.setEntity(null);
-                }
-            } else if (response.getStatus()
-                    .equals(Status.SUCCESS_RESET_CONTENT)) {
-                if (response.isEntityAvailable()) {
-                    getLogger()
-                            .warning(
-                                    "Responses with a 205 (Reset content) status can't have an entity. Ignoring the entity for resource \""
-                                            + response.getRequest()
-                                                    .getResourceRef() + "\".");
-                    response.setEntity(null);
-                }
-            } else if (response.getStatus().equals(
-                    Status.REDIRECTION_NOT_MODIFIED)) {
-                addEntityHeaders(response, headers);
-
-                if (response.isEntityAvailable()) {
-                    getLogger()
-                            .warning(
-                                    "Responses with a 304 (Not modified) status can't have an entity. Only adding entity headers for resource \""
-                                            + response.getRequest()
-                                                    .getResourceRef() + "\".");
-                    response.setEntity(null);
-                }
-            } else if (response.getStatus().isInformational()) {
-                if (response.isEntityAvailable()) {
-                    getLogger()
-                            .warning(
-                                    "Responses with an informational (1xx) status can't have an entity. Ignoring the entity for resource \""
-                                            + response.getRequest()
-                                                    .getResourceRef() + "\".");
-                    response.setEntity(null);
-                }
-            } else {
-                addEntityHeaders(response, headers);
-
-                if ((response.getEntity() != null)
-                        && !response.getEntity().isAvailable()) {
-                    // An entity was returned but isn't really available
-                    getLogger()
-                            .warning(
-                                    "A response with an unavailable entity was returned. Ignoring the entity for resource \""
-                                            + response.getRequest()
-                                                    .getResourceRef() + "\".");
-                    response.setEntity(null);
-                }
-            }
-
-            // Add the response headers
             try {
-                HeaderUtils.addResponseHeaders(response, headers);
+                if ((response.getRequest().getMethod() != null)
+                        && response.getRequest().getMethod()
+                                .equals(Method.HEAD)) {
+                    addEntityHeaders(response, headers);
+                    response.setEntity(null);
+                } else if (Method.GET.equals(response.getRequest().getMethod())
+                        && Status.SUCCESS_OK.equals(response.getStatus())
+                        && (!response.isEntityAvailable())) {
+                    addEntityHeaders(response, headers);
+                    getLogger()
+                            .warning(
+                                    "A response with a 200 (Ok) status should have an entity. Make sure that resource \""
+                                            + response.getRequest()
+                                                    .getResourceRef()
+                                            + "\" returns one or sets the status to 204 (No content).");
+                } else if (response.getStatus().equals(
+                        Status.SUCCESS_NO_CONTENT)) {
+                    addEntityHeaders(response, headers);
 
-                // Add user-defined extension headers
-                Series<Parameter> additionalHeaders = (Series<Parameter>) response
-                        .getAttributes().get(HeaderConstants.ATTRIBUTE_HEADERS);
-                addAdditionalHeaders(headers, additionalHeaders);
+                    if (response.isEntityAvailable()) {
+                        getLogger()
+                                .fine(
+                                        "Responses with a 204 (No content) status generally don't have an entity. Only adding entity headers for resource \""
+                                                + response.getRequest()
+                                                        .getResourceRef()
+                                                + "\".");
+                        response.setEntity(null);
+                    }
+                } else if (response.getStatus().equals(
+                        Status.SUCCESS_RESET_CONTENT)) {
+                    if (response.isEntityAvailable()) {
+                        getLogger()
+                                .warning(
+                                        "Responses with a 205 (Reset content) status can't have an entity. Ignoring the entity for resource \""
+                                                + response.getRequest()
+                                                        .getResourceRef()
+                                                + "\".");
+                        response.setEntity(null);
+                    }
+                } else if (response.getStatus().equals(
+                        Status.REDIRECTION_NOT_MODIFIED)) {
+                    addEntityHeaders(response, headers);
 
-                // Set the server name again
-                headers.add(HeaderConstants.HEADER_SERVER, response
-                        .getServerInfo().getAgent());
-            } catch (Exception e) {
-                getLogger()
-                        .log(
-                                Level.INFO,
-                                "Exception intercepted while adding the response headers",
-                                e);
-                response.setStatus(Status.SERVER_ERROR_INTERNAL);
-            }
+                    if (response.isEntityAvailable()) {
+                        getLogger()
+                                .warning(
+                                        "Responses with a 304 (Not modified) status can't have an entity. Only adding entity headers for resource \""
+                                                + response.getRequest()
+                                                        .getResourceRef()
+                                                + "\".");
+                        response.setEntity(null);
+                    }
+                } else if (response.getStatus().isInformational()) {
+                    if (response.isEntityAvailable()) {
+                        getLogger()
+                                .warning(
+                                        "Responses with an informational (1xx) status can't have an entity. Ignoring the entity for resource \""
+                                                + response.getRequest()
+                                                        .getResourceRef()
+                                                + "\".");
+                        response.setEntity(null);
+                    }
+                } else {
+                    addEntityHeaders(response, headers);
 
-            // Write the response to the client
-            writeResponse(response, headers);
-        } catch (Exception e) {
-            if (isBroken(e)) {
-                getLogger()
-                        .log(
-                                Level.INFO,
-                                "The connection was broken. It was probably closed by the client.",
-                                e);
-            } else {
-                getLogger().log(Level.SEVERE,
-                        "An exception occured writing the response entity", e);
-                response.setStatus(Status.SERVER_ERROR_INTERNAL,
-                        "An exception occured writing the response entity");
-                response.setEntity(null);
-
-                try {
-                    writeResponse(response, headers);
-                } catch (IOException ioe) {
-                    getLogger().log(Level.WARNING,
-                            "Unable to send error response", ioe);
+                    if ((response.getEntity() != null)
+                            && !response.getEntity().isAvailable()) {
+                        // An entity was returned but isn't really available
+                        getLogger()
+                                .warning(
+                                        "A response with an unavailable entity was returned. Ignoring the entity for resource \""
+                                                + response.getRequest()
+                                                        .getResourceRef()
+                                                + "\".");
+                        response.setEntity(null);
+                    }
                 }
+
+                // Add the response headers
+                try {
+                    HeaderUtils.addResponseHeaders(response, headers);
+
+                    // Add user-defined extension headers
+                    Series<Parameter> additionalHeaders = (Series<Parameter>) response
+                            .getAttributes().get(
+                                    HeaderConstants.ATTRIBUTE_HEADERS);
+                    addAdditionalHeaders(headers, additionalHeaders);
+
+                    // Set the server name again
+                    headers.add(HeaderConstants.HEADER_SERVER, response
+                            .getServerInfo().getAgent());
+                } catch (Exception e) {
+                    getLogger()
+                            .log(
+                                    Level.INFO,
+                                    "Exception intercepted while adding the response headers",
+                                    e);
+                    response.setStatus(Status.SERVER_ERROR_INTERNAL);
+                }
+
+                // Write the response to the client
+                writeResponse(response, headers);
+            } catch (Exception e) {
+                if (isBroken(e)) {
+                    getLogger()
+                            .log(
+                                    Level.INFO,
+                                    "The connection was broken. It was probably closed by the client.",
+                                    e);
+                } else {
+                    getLogger().log(Level.SEVERE,
+                            "An exception occured writing the response entity",
+                            e);
+                    response.setStatus(Status.SERVER_ERROR_INTERNAL,
+                            "An exception occured writing the response entity");
+                    response.setEntity(null);
+
+                    try {
+                        writeResponse(response, headers);
+                    } catch (IOException ioe) {
+                        getLogger().log(Level.WARNING,
+                                "Unable to send error response", ioe);
+                    }
+                }
+            } finally {
+                // TODO: Adjust for persistent connections
+                // response.getHttpCall().complete();
             }
-        } finally {
-            // TODO: Adjust for persistent connections
-            // response.getHttpCall().complete();
         }
     }
 

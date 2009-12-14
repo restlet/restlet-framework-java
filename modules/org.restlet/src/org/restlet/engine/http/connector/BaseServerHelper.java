@@ -97,11 +97,11 @@ import org.restlet.engine.log.LoggingThreadFactory;
  */
 public abstract class BaseServerHelper extends ServerHelper {
 
-    /** The connection controller service. */
+    /** The controller service. */
     private volatile ExecutorService controllerService;
 
-    /** The connection handler service. */
-    private volatile ExecutorService handlerService;
+    /** The worker service. */
+    private volatile ExecutorService workerService;
 
     /** The connection acceptor service. */
     private volatile ExecutorService acceptorService;
@@ -135,43 +135,21 @@ public abstract class BaseServerHelper extends ServerHelper {
     }
 
     /**
-     * Creates the connector controller service.
-     * 
-     * @return The connector controller service.
-     */
-    protected ExecutorService createControllerService() {
-        return Executors.newSingleThreadExecutor(new LoggingThreadFactory(
-                getLogger()));
-    }
-
-    /**
-     * Creates the handler service.
-     * 
-     * @return The handler service.
-     */
-    protected ExecutorService createHandlerService() {
-        int maxThreads = getMaxThreads();
-        int minThreads = getMinThreads();
-
-        ThreadPoolExecutor result = new ThreadPoolExecutor(minThreads,
-                maxThreads, (long) getThreadMaxIdleTimeMs(),
-                TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(),
-                new LoggingThreadFactory(getLogger()));
-        result.setRejectedExecutionHandler(new RejectedExecutionHandler() {
-            public void rejectedExecution(Runnable r,
-                    ThreadPoolExecutor executor) {
-                getLogger().warning("Unable to run the following task: " + r);
-            }
-        });
-        return result;
-    }
-
-    /**
      * Creates the handler service.
      * 
      * @return The handler service.
      */
     protected ExecutorService createAcceptorService() {
+        return Executors.newSingleThreadExecutor(new LoggingThreadFactory(
+                getLogger()));
+    }
+
+    /**
+     * Creates the connector controller service.
+     * 
+     * @return The connector controller service.
+     */
+    protected ExecutorService createControllerService() {
         return Executors.newSingleThreadExecutor(new LoggingThreadFactory(
                 getLogger()));
     }
@@ -204,21 +182,34 @@ public abstract class BaseServerHelper extends ServerHelper {
     }
 
     /**
+     * Creates the handler service.
+     * 
+     * @return The handler service.
+     */
+    protected ExecutorService createWorkerService() {
+        int maxThreads = getMaxThreads();
+        int minThreads = getMinThreads();
+
+        ThreadPoolExecutor result = new ThreadPoolExecutor(minThreads,
+                maxThreads, (long) getThreadMaxIdleTimeMs(),
+                TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(),
+                new LoggingThreadFactory(getLogger()));
+        result.setRejectedExecutionHandler(new RejectedExecutionHandler() {
+            public void rejectedExecution(Runnable r,
+                    ThreadPoolExecutor executor) {
+                getLogger().warning("Unable to run the following task: " + r);
+            }
+        });
+        return result;
+    }
+
+    /**
      * Returns the set of active connections.
      * 
      * @return The set of active connections.
      */
     protected Set<BaseServerConnection> getConnections() {
         return connections;
-    }
-
-    /**
-     * Returns the connection handler service.
-     * 
-     * @return The connection handler service.
-     */
-    public ExecutorService getHandlerService() {
-        return handlerService;
     }
 
     /**
@@ -270,15 +261,18 @@ public abstract class BaseServerHelper extends ServerHelper {
     }
 
     /**
-     * Controls the helper for next tasks to accomplish.
+     * Returns the connection handler service.
+     * 
+     * @return The connection handler service.
      */
-    public synchronized void control() {
-        // Attempts to handle the next pending request
-        ConnectedRequest nextRequest = getPendingRequests().poll();
+    public ExecutorService getWorkerService() {
+        return workerService;
+    }
 
-        if (nextRequest != null) {
-            Response response = new Response(nextRequest);
-            handle(nextRequest, response);
+    public void handle(ConnectedRequest request) {
+        if (request != null) {
+            Response response = new Response(request);
+            handle(request, response);
 
             if (!response.isCommitted() && response.isAutoCommitting()) {
                 getPendingResponses().add(response);
@@ -286,39 +280,39 @@ public abstract class BaseServerHelper extends ServerHelper {
             }
         }
 
-        // Attempts to write the next pending response
-        Response nextResponse = null;
-        ConnectedRequest request = null;
-        BaseServerConnection connection = null;
-        int count = getPendingResponses().size();
+        handleNextResponse();
+    }
 
-        for (int i = 0; i < count; i++) {
-            nextResponse = getPendingResponses().poll();
-            request = (ConnectedRequest) nextResponse.getRequest();
-            connection = (BaseServerConnection) request.getConnection();
+    public void handle(Response response) {
+        if (response != null) {
+            ConnectedRequest request = (ConnectedRequest) response.getRequest();
+            BaseServerConnection connection = (BaseServerConnection) request
+                    .getConnection();
 
             // Check if the response is indeed the next one
             // to be written for this connection
             if (connection.getInboundRequests().peek() == request) {
                 // Check if a final response was received for the request
-                if (!nextResponse.getStatus().isInformational()) {
+                if (!response.getStatus().isInformational()) {
                     // Remove the matching request from the inbound queue
                     connection.getInboundRequests().remove(request);
                 }
 
                 // Add the response to the outbound queue
-                connection.getOutboundResponses().add(nextResponse);
+                connection.getOutboundResponses().add(response);
             } else {
                 // Put the response at the beginning of the queue
-                getPendingResponses().add(nextResponse);
+                getPendingResponses().add(response);
             }
         }
+    }
 
-        // Control each connection for requests to read or responses to
-        // write
-        for (BaseServerConnection conn : getConnections()) {
-            conn.control();
-        }
+    public void handleNextRequest() {
+        handle(getPendingRequests().poll());
+    }
+
+    protected void handleNextResponse() {
+        handle(getPendingResponses().poll());
     }
 
     @Override
@@ -328,7 +322,7 @@ public abstract class BaseServerHelper extends ServerHelper {
         // Create the thread services
         this.acceptorService = createAcceptorService();
         this.controllerService = createControllerService();
-        this.handlerService = createHandlerService();
+        this.workerService = createWorkerService();
 
         // Create the server socket
         this.serverSocketChannel = createServerSocket();
@@ -338,9 +332,9 @@ public abstract class BaseServerHelper extends ServerHelper {
 
         // Start the socket listener service
         this.latch = new CountDownLatch(1);
-        this.acceptorService.submit(new ConnectionAcceptor(this,
+        this.acceptorService.submit(new AcceptorTask(this,
                 this.serverSocketChannel, this.latch));
-        this.controllerService.submit(new BaseServerController(this));
+        this.controllerService.submit(new ControllerTask(this));
 
         // Wait for the listener to start up and count down the latch
         // This blocks until the server is ready to receive connections
@@ -360,12 +354,12 @@ public abstract class BaseServerHelper extends ServerHelper {
     public synchronized void stop() throws Exception {
         super.stop();
 
-        if (this.handlerService != null) {
+        if (this.workerService != null) {
             // Gracefully shutdown the handlers, they should complete
             // in a timely fashion
-            this.handlerService.shutdown();
+            this.workerService.shutdown();
             try {
-                this.handlerService.awaitTermination(30, TimeUnit.SECONDS);
+                this.workerService.awaitTermination(30, TimeUnit.SECONDS);
             } catch (InterruptedException ex) {
                 getLogger().log(Level.FINE,
                         "Interruption while shutting down internal server", ex);
