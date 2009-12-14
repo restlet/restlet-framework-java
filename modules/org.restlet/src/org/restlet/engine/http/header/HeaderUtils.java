@@ -248,7 +248,7 @@ public class HeaderUtils {
             for (final ChallengeRequest challengeRequest : response
                     .getChallengeRequests()) {
                 responseHeaders.add(HeaderConstants.HEADER_WWW_AUTHENTICATE,
-                        org.restlet.client.engine.security.AuthenticatorUtils
+                        org.restlet.engine.security.AuthenticatorUtils
                                 .formatRequest(challengeRequest, response,
                                         responseHeaders));
             }
@@ -258,7 +258,7 @@ public class HeaderUtils {
             for (final ChallengeRequest challengeRequest : response
                     .getProxyChallengeRequests()) {
                 responseHeaders.add(HeaderConstants.HEADER_PROXY_AUTHENTICATE,
-                        org.restlet.client.engine.security.AuthenticatorUtils
+                        org.restlet.engine.security.AuthenticatorUtils
                                 .formatRequest(challengeRequest, response,
                                         responseHeaders));
             }
