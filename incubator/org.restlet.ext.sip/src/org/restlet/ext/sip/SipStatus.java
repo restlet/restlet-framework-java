@@ -33,7 +33,7 @@ package org.restlet.ext.sip;
 import org.restlet.data.Status;
 
 /**
- * Status to return after handling a SIP call.
+ * Constants for SIP statuses.
  * 
  * @author Jerome Louvel
  */
