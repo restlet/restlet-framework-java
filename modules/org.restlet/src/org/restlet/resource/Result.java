@@ -30,8 +30,7 @@
 
 package org.restlet.resource;
 
-import org.restlet.engine.resource.GwtClientProxy;
-
+// [ifdef gwt] javadocs
 /**
  * Marker interface for remote RESTful resources. This is an equivalent to the
  * {@link com.google.gwt.user.client.rpc.AsyncCallback} interface used by the
@@ -41,20 +40,46 @@ import org.restlet.engine.resource.GwtClientProxy;
  *            The class of the result object returned in case of success.
  * @author Jerome Louvel
  */
+// [ifndef gwt] javadocs
+/**
+ * Marker interface for remote RESTful resources.
+ * 
+ * @param <T>
+ *            The class of the result object returned in case of success.
+ * @author Jerome Louvel
+ */
 public interface Result<T> {
 
+    // [ifdef gwt] javadocs
     /**
-     * Method called back by the associated {@link GwtClientProxy} object when a
-     * failure is detected.
+     * Method called back by the associated
+     * {@link org.restlet.engine.resource.GwtClientProxy} object when a failure
+     * is detected.
      * 
      * @param caught
-     *            The exception or error caugt.
+     *            The exception or error caught.
+     */
+    // [ifndef gwt] javadocs
+    /**
+     * Method called back by the associated object when a failure is detected.
+     * 
+     * @param caught
+     *            The exception or error caught.
      */
     void onFailure(Throwable caught);
 
+    // [ifdef gwt] javadocs
     /**
-     * Method called back by the associated {@link GwtClientProxy} object in
-     * case of success.
+     * Method called back by the associated
+     * {@link org.restlet.engine.resource.GwtClientProxy} object in case of
+     * success.
+     * 
+     * @param result
+     *            The result object.
+     */
+    // [ifndef gwt] javadocs
+    /**
+     * Method called back by the associated object in case of success.
      * 
      * @param result
      *            The result object.
