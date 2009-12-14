@@ -95,16 +95,8 @@ public class AcceptorTask implements Runnable {
                 SocketChannel client = this.serverSocket.accept();
                 final BaseServerConnection connection = new BaseServerConnection(
                         getHelper(), client.socket());
-                getHelper().getConnections().add(connection);
                 connection.open();
-
-                // Immediately attempt to read inbound requests, trying
-                // to prevent a thread context switch.
-                getHelper().getWorkerService().execute(new Runnable() {
-                    public void run() {
-                        connection.readRequests();
-                    }
-                });
+                getHelper().getConnections().add(connection);
             } catch (ClosedByInterruptException ex) {
                 this.helper.getLogger().log(Level.FINE,
                         "ServerSocket channel was closed by interrupt", ex);

@@ -300,6 +300,10 @@ public abstract class BaseServerHelper extends ServerHelper {
 
                 // Add the response to the outbound queue
                 connection.getOutboundResponses().add(response);
+
+                // Attempt to directly write the response, preventing a context
+                // switching
+                connection.writeResponses();
             } else {
                 // Put the response at the beginning of the queue
                 getPendingResponses().add(response);

@@ -69,6 +69,27 @@ public class ControllerTask implements Runnable {
     public void run() {
         while (true) {
             try {
+                // Control each connection for requests to read
+                // or responses to write
+                for (final BaseServerConnection conn : getHelper()
+                        .getConnections()) {
+                    if (conn.canRead()) {
+                        getHelper().getWorkerService().execute(new Runnable() {
+                            public void run() {
+                                conn.readRequests();
+                            }
+                        });
+                    }
+
+                    if (conn.canWrite()) {
+                        getHelper().getWorkerService().execute(new Runnable() {
+                            public void run() {
+                                conn.writeResponses();
+                            }
+                        });
+                    }
+                }
+
                 // Control if there are some pending requests that could be
                 // processed
                 for (int i = 0; i < getHelper().getPendingRequests().size(); i++) {
@@ -94,27 +115,6 @@ public class ControllerTask implements Runnable {
                         getHelper().getWorkerService().execute(new Runnable() {
                             public void run() {
                                 getHelper().handle(response);
-                            }
-                        });
-                    }
-                }
-
-                // Control each connection for requests to read
-                // or responses to write
-                for (final BaseServerConnection conn : getHelper()
-                        .getConnections()) {
-                    if (conn.canRead()) {
-                        getHelper().getWorkerService().execute(new Runnable() {
-                            public void run() {
-                                conn.readRequests();
-                            }
-                        });
-                    }
-
-                    if (conn.canWrite()) {
-                        getHelper().getWorkerService().execute(new Runnable() {
-                            public void run() {
-                                conn.writeResponses();
                             }
                         });
                     }
