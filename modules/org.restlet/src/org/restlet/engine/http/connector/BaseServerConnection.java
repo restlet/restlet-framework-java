@@ -220,7 +220,7 @@ public class BaseServerConnection extends ServerConnection {
                 // the reading
                 synchronized (getInboundRequests()) {
                     if (canRead()) {
-                        doRead = (getInboundStream().available() > 0);
+                        doRead = true; // (getInboundStream().available() > 0);
                         setInboundBusy(doRead);
                     }
                 }
