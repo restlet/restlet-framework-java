@@ -41,8 +41,8 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -70,10 +70,16 @@ import org.restlet.engine.log.LoggingThreadFactory;
  * <td>Minimum threads waiting to service requests.</td>
  * </tr>
  * <tr>
- * <td>maxThread</td>
+ * <td>maxThreads</td>
  * <td>int</td>
  * <td>255</td>
  * <td>Maximum threads that will service requests.</td>
+ * </tr>
+ * <tr>
+ * <td>maxConnections</td>
+ * <td>int</td>
+ * <td>-1</td>
+ * <td>Maximum concurrent connections.</td>
  * </tr>
  * <tr>
  * <td>threadMaxIdleTimeMs</td>
@@ -192,7 +198,7 @@ public abstract class BaseServerHelper extends ServerHelper {
 
         ThreadPoolExecutor result = new ThreadPoolExecutor(minThreads,
                 maxThreads, (long) getThreadMaxIdleTimeMs(),
-                TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(),
+                TimeUnit.MILLISECONDS, new SynchronousQueue<Runnable>(),
                 new LoggingThreadFactory(getLogger()));
         result.setRejectedExecutionHandler(new RejectedExecutionHandler() {
             public void rejectedExecution(Runnable r,
@@ -220,6 +226,17 @@ public abstract class BaseServerHelper extends ServerHelper {
     public int getMaxThreads() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
                 "maxThreads", "255"));
+    }
+
+    /**
+     * Returns the maximum concurrent connections allowed. By default, it is
+     * unbounded.
+     * 
+     * @return The maximum concurrent connections allowed.
+     */
+    public int getMaxConnections() {
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "maxConnections", "-1"));
     }
 
     /**

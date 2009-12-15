@@ -65,9 +65,6 @@ public abstract class Message {
     /** The optional cached text. */
     private volatile String entityText;
 
-    /** Callback invoked before sending the response entity. */
-    private volatile Uniform onContinue;
-
     /** Callback invoked after sending the response. */
     private volatile Uniform onSent;
 
@@ -98,7 +95,6 @@ public abstract class Message {
         this.entityForm = null;
         // [ifndef gwt] instruction
         this.entityText = null;
-        this.onContinue = null;
         this.onSent = null;
         this.warnings = null;
     }
@@ -234,15 +230,6 @@ public abstract class Message {
     }
 
     /**
-     * Returns the callback invoked before sending the message entity.
-     * 
-     * @return The callback invoked before sending the message entity.
-     */
-    public Uniform getOnContinue() {
-        return onContinue;
-    }
-
-    /**
      * Returns the callback invoked after sending the message.
      * 
      * @return The callback invoked after sending the message.
@@ -359,16 +346,6 @@ public abstract class Message {
      */
     public void setEntity(String value, MediaType mediaType) {
         setEntity(new StringRepresentation(value, mediaType));
-    }
-
-    /**
-     * Sets the callback invoked before sending the message entity.
-     * 
-     * @param onContinueCallback
-     *            The callback invoked before sending the message entity.
-     */
-    public void setOnContinue(Uniform onContinueCallback) {
-        this.onContinue = onContinueCallback;
     }
 
     /**

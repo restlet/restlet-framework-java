@@ -318,6 +318,10 @@ public abstract class ServerConnection extends Connection<Server> {
                     "Unable to parse the HTTP version. The carriage return must be followed by a line feed.");
         }
 
+        if (HeaderUtils.isConnectionClose(requestHeaders)) {
+            setState(ConnectionState.CLOSING);
+        }
+
         // Create the HTTP request
         result = new ConnectedRequest(getHelper().getContext(), this,
                 requestMethod, requestUri, version, requestHeaders,
@@ -483,8 +487,10 @@ public abstract class ServerConnection extends Connection<Server> {
                     }
                 }
             } finally {
-                // TODO: Adjust for persistent connections
-                // response.getHttpCall().complete();
+                if (response.getOnSent() != null) {
+                    response.getOnSent()
+                            .handle(response.getRequest(), response);
+                }
             }
         }
     }
@@ -536,10 +542,12 @@ public abstract class ServerConnection extends Connection<Server> {
                                             ioe);
                         }
                     }
-                } else {
-                    setOutboundBusy(false);
                 }
             } finally {
+                // TEST
+                getSocket().getOutputStream().flush();
+                setOutboundBusy(false);
+
                 if (responseEntity != null) {
                     responseEntity.release();
                 }

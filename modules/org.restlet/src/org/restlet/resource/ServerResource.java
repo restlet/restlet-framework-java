@@ -656,15 +656,6 @@ public abstract class ServerResource extends UniformResource {
     }
 
     /**
-     * Returns the callback invoked before sending the response entity.
-     * 
-     * @return The callback invoked before sending the response entity.
-     */
-    public Uniform getOnContinue() {
-        return getResponse().getOnContinue();
-    }
-
-    /**
      * Returns the callback invoked after sending the response.
      * 
      * @return The callback invoked after sending the response.
@@ -908,7 +899,7 @@ public abstract class ServerResource extends UniformResource {
 
         // Updates the list of allowed methods
         updateAllowedMethods();
-        
+
         if (annotationInfo != null) {
             result = doHandle(annotationInfo, null);
         } else {
@@ -1312,16 +1303,6 @@ public abstract class ServerResource extends UniformResource {
      */
     public void setNegotiated(boolean negotiateContent) {
         this.negotiated = negotiateContent;
-    }
-
-    /**
-     * Sets the callback invoked before sending the response entity.
-     * 
-     * @param onContinueCallback
-     *            The callback invoked before sending the response entity.
-     */
-    public void setOnContinue(Uniform onContinueCallback) {
-        getResponse().setOnContinue(onContinueCallback);
     }
 
     /**

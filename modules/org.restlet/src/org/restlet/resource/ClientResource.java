@@ -518,15 +518,6 @@ public class ClientResource extends UniformResource {
     }
 
     /**
-     * Returns the callback invoked before sending the request entity.
-     * 
-     * @return The callback invoked before sending the request entity.
-     */
-    public Uniform getOnContinue() {
-        return getRequest().getOnContinue();
-    }
-
-    /**
      * Returns the callback invoked on response reception. If the value is not
      * null, then the associated request will be executed asynchronously.
      * 
@@ -1251,16 +1242,6 @@ public class ClientResource extends UniformResource {
         }
 
         this.next = next;
-    }
-
-    /**
-     * Sets the callback invoked before sending the request entity.
-     * 
-     * @param onContinueCallback
-     *            The callback invoked before sending the request entity.
-     */
-    public void setOnContinue(Uniform onContinueCallback) {
-        getRequest().setOnContinue(onContinueCallback);
     }
 
     /**

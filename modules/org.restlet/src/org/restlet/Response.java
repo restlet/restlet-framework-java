@@ -166,6 +166,14 @@ public class Response extends Message {
     }
 
     /**
+     * Ask the connector to abort the related network connection, for example
+     * immediately closing the socket.
+     */
+    public void abort() {
+        getRequest().abort();
+    }
+
+    /**
      * Asks the server connector to immediately commit the given response,
      * making it ready to be sent back to the client. Note that all server
      * connectors don't necessarily support this feature.

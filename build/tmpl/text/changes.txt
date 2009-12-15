@@ -8,11 +8,14 @@ Changes log
         - Added more specific Validator#validatePresence and 
           validateFormat methods.
         - Added Protocol#SIP and SIPS constants.
+        - Added Response#abort() and Request#abort() methods.
         - Added Response#commit() and Request#commit(Response) methods.
         - Added Response#autoCommitting and committed boolean 
           properties for asynchronous processing of calls.
         - Added Status#isGlobalError() methods for 6xx range 
           (SIP protocol).
+        - Removed "onContinue" property on Message introduced in 
+          2.0 M6 until real use cases are identified. 
      - Enhancements
         - Added a new Jackson extension, with transparent conversion
           between JSON representations and objects.
@@ -28,12 +31,12 @@ Changes log
         - Added converter of Velocity Template objects in the 
           Velocity extension.
         - Added converter of Graph objects in the RDF extension.
-        - Added converter of Syndfeed objects in the Rome extension.
+        - Added converter of Syndfeed objects in the ROME extension.
         - Added converter for the JiBX extension.
         - Added converter for Message objects to representations in the
           JavaMail extension.
         - Added converter for WebRowSet, JdbcResult, ResultSet objects
-          to representations in the Jdbc extension.
+          to representations in the JDBC extension.
         - Added support of the dataservices extension in Android.
         - Added GWT object serialization.
     - Bugs fixed

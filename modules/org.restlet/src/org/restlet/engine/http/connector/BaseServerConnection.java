@@ -41,6 +41,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 
+import javax.net.ssl.SSLSocket;
+
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Parameter;
@@ -94,6 +96,36 @@ public class BaseServerConnection extends ServerConnection {
     @Override
     public void close(boolean graceful) {
         super.close(graceful);
+
+        try {
+            if (!getSocket().isClosed()) {
+                // Flush the output stream
+                getSocket().getOutputStream().flush();
+
+                if (!(getSocket() instanceof SSLSocket)) {
+                    getSocket().shutdownInput();
+                }
+
+                if (!(getSocket() instanceof SSLSocket)) {
+                    getSocket().shutdownOutput();
+                }
+            }
+        } catch (IOException ex) {
+            getLogger().log(Level.FINE, "Unable to shutdown server socket", ex);
+        }
+
+        try {
+            if (!getSocket().isClosed()) {
+                // As we don't support persistent connections,
+                // we must call this method to make sure sockets
+                // are properly released.
+                getSocket().close();
+            }
+        } catch (IOException ex) {
+            getLogger().log(Level.FINE, "Unable to close server socket", ex);
+        } finally {
+            setState(ConnectionState.CLOSED);
+        }
     }
 
     @Override
@@ -195,8 +227,9 @@ public class BaseServerConnection extends ServerConnection {
         return result;
     }
 
-    public boolean canRead() {
-        return !isInboundBusy() && (getInboundRequests().size() == 0);
+    public boolean canRead() throws IOException {
+        return (getState() == ConnectionState.OPEN) && !isInboundBusy()
+                && (getInboundRequests().size() == 0);
     }
 
     public boolean canWrite() {
@@ -220,7 +253,7 @@ public class BaseServerConnection extends ServerConnection {
                 // the reading
                 synchronized (getInboundRequests()) {
                     if (canRead()) {
-                        doRead = true; // (getInboundStream().available() > 0);
+                        doRead = true;
                         setInboundBusy(doRead);
                     }
                 }
@@ -230,10 +263,17 @@ public class BaseServerConnection extends ServerConnection {
                 }
             }
         } catch (Exception e) {
-            getLogger().log(Level.WARNING,
-                    "Error while reading an HTTP request: ", e.getMessage());
-            getLogger().log(Level.INFO, "Error while reading an HTTP request",
-                    e);
+            getLogger()
+                    .log(
+                            Level.INFO,
+                            "Error while reading an HTTP request. Closing the connection: ",
+                            e.getMessage());
+            getLogger()
+                    .log(
+                            Level.INFO,
+                            "Error while reading an HTTP request. Closing the connection.",
+                            e);
+            close(false);
         }
 
         // Immediately attempt to handle the next pending request, trying
@@ -272,6 +312,10 @@ public class BaseServerConnection extends ServerConnection {
                 }
 
                 writeResponse(response);
+
+                if (getState() == ConnectionState.CLOSING) {
+                    close(true);
+                }
             }
         } catch (Exception e) {
             getLogger().log(Level.WARNING,

@@ -269,6 +269,11 @@ public class ConnectedRequest extends Request {
     }
 
     @Override
+    public void abort() {
+        getConnection().close(false);
+    }
+
+    @Override
     public synchronized void commit(Response response) {
         if ((response != null) && !response.isCommitted()) {
             getConnection().commit(response);

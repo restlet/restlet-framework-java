@@ -93,10 +93,22 @@ public class AcceptorTask implements Runnable {
         while (true) {
             try {
                 SocketChannel client = this.serverSocket.accept();
-                final BaseServerConnection connection = new BaseServerConnection(
-                        getHelper(), client.socket());
-                connection.open();
-                getHelper().getConnections().add(connection);
+                int connectionsCount = getHelper().getConnections().size();
+
+                if ((getHelper().getMaxConnections() == -1)
+                        || (connectionsCount <= getHelper().getMaxConnections())) {
+                    final BaseServerConnection connection = new BaseServerConnection(
+                            getHelper(), client.socket());
+                    connection.open();
+                    getHelper().getConnections().add(connection);
+                } else {
+                    // Rejection connection
+                    client.close();
+                    getHelper()
+                            .getLogger()
+                            .info(
+                                    "Connection rejected because maximum number of concurrent connections reached");
+                }
             } catch (ClosedByInterruptException ex) {
                 this.helper.getLogger().log(Level.FINE,
                         "ServerSocket channel was closed by interrupt", ex);
