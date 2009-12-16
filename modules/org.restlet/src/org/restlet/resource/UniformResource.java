@@ -341,6 +341,15 @@ public abstract class UniformResource {
     }
 
     /**
+     * Returns the maximum number of intermediaries.
+     * 
+     * @return The maximum number of intermediaries.
+     */
+    public int getMaxForwards() {
+        return getRequest() == null ? null : getRequest().getMaxForwards();
+    }
+
+    /**
      * Returns the application's metadata service or create a new one.
      * 
      * @return The metadata service.

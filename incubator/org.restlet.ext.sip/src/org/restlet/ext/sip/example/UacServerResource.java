@@ -44,21 +44,21 @@ import org.restlet.ext.sip.SipStatus;
  * 
  * @author Jerome Louvel
  */
-public class MySipServerResource extends SipServerResource {
+public class UacServerResource extends SipServerResource {
 
     public static void main(String[] args) throws Exception {
-        Server server = new Server(Protocol.SIP, MySipServerResource.class);
+        Server server = new Server(Protocol.SIP, UacServerResource.class);
         server.start();
     }
 
     @Ack
     public void acknowledge() {
-        System.out.println("ACK");
+        trace();
     }
 
     @Invite
     public void start() {
-        System.out.println("INVITE");
+        trace();
 
         // Indicate successful reception
         Response provisionalResponse = new Response(getRequest());
@@ -76,7 +76,21 @@ public class MySipServerResource extends SipServerResource {
 
     @Bye
     public void stop() {
-        System.out.println("BYE");
+        trace();
         setStatus(SipStatus.SUCCESS_OK);
+    }
+
+    /**
+     * Displays info about the current request.
+     * 
+     */
+    private void trace() {
+        System.out.println("Method: " + getMethod());
+        System.out.println("Call ID: " + getCallId());
+        System.out.println("Call Sequence: " + getCallSeq());
+        System.out.println("To: " + getTo());
+        System.out.println("From: " + getFrom());
+        System.out.println("Max Forwards: " + getMaxForwards());
+        System.out.println("-------------------------------------------------");
     }
 }

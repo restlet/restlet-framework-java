@@ -145,6 +145,7 @@ public class ConnectedRequest extends Request {
             String methodName, String resourceUri, String version,
             Series<Parameter> headers, Representation entity,
             boolean confidential, Principal userPrincipal) {
+        super();
         this.context = context;
         this.clientAdded = false;
         this.conditionAdded = false;

@@ -120,6 +120,7 @@ public class Request extends Message {
      * Constructor.
      */
     public Request() {
+        this((Method) null, (Reference) null, (Representation) null);
     }
 
     /**
