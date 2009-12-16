@@ -16,6 +16,8 @@ Changes log
           (SIP protocol).
         - Removed "onContinue" property on Message introduced in 
           2.0 M6 until real use cases are identified. 
+        - Added Protocol#technicalName property to indicate the actual
+          name used on the wire, such as "HTTP" for Protocol#HTTPS.
      - Enhancements
         - Added a new Jackson extension, with transparent conversion
           between JSON representations and objects.

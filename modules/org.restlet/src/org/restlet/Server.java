@@ -346,6 +346,23 @@ public class Server extends Connector {
     }
 
     /**
+     * Constructor using the protocol's default port.
+     * 
+     * @param protocol
+     *            The connector protocol.
+     * @param address
+     *            The listening IP address (useful if multiple IP addresses
+     *            available). You can also use a domain name as an alias for the
+     *            IP address to listen to.
+     * @param nextClass
+     *            The next server resource.
+     */
+    public Server(Protocol protocol, String address, Class<?> nextClass) {
+        this(null, protocol, address, protocol.getDefaultPort(), new Finder(
+                Context.getCurrent(), nextClass));
+    }
+
+    /**
      * Returns the optional listening IP address (local host used if null).
      * 
      * @return The optional listening IP address (local host used if null).

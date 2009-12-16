@@ -86,7 +86,7 @@ public final class Protocol {
             "HyperText Transport Protocol", 80, "1.1");
 
     /** HTTPS protocol (via SSL socket). */
-    public static final Protocol HTTPS = new Protocol("https", "HTTPS",
+    public static final Protocol HTTPS = new Protocol("https", "HTTPS", "HTTP",
             "HyperText Transport Protocol (Secure)", 443, true, "1.1");
 
     /** SIP protocol. */
@@ -94,7 +94,7 @@ public final class Protocol {
             "Session Initiation Protocol", 5060, "2.0");
 
     /** SIPS protocol (via SSL socket). */
-    public static final Protocol SIPS = new Protocol("sips", "SIPS",
+    public static final Protocol SIPS = new Protocol("sips", "SIPS", "SIP",
             "Session Initiation Protocol (Secure)", 5061, true, "2.0");
 
     /**
@@ -207,16 +207,19 @@ public final class Protocol {
     }
 
     /** The confidentiality. */
-    private volatile boolean confidential;
+    private final boolean confidential;
 
     /** The default port if known or -1. */
-    private volatile int defaultPort;
+    private final int defaultPort;
 
     /** The description. */
     private final String description;
 
     /** The name. */
-    private volatile String name;
+    private final String name;
+
+    /** The technical name that appears on the wire. */
+    private final String technicalName;
 
     /** The scheme name. */
     private volatile String schemeName;
@@ -289,12 +292,8 @@ public final class Protocol {
      */
     public Protocol(String schemeName, String name, String description,
             int defaultPort, boolean confidential, String version) {
-        this.name = name;
-        this.description = description;
-        this.schemeName = schemeName;
-        this.defaultPort = defaultPort;
-        this.confidential = confidential;
-        this.version = version;
+        this(schemeName, name, name, description, defaultPort, confidential,
+                version);
     }
 
     /**
@@ -314,6 +313,36 @@ public final class Protocol {
     public Protocol(String schemeName, String name, String description,
             int defaultPort, String version) {
         this(schemeName, name, description, defaultPort, false, version);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param schemeName
+     *            The scheme name.
+     * @param name
+     *            The unique name.
+     * @param technicalName
+     *            The technical name that appears on the wire.
+     * @param description
+     *            The description.
+     * @param defaultPort
+     *            The default port.
+     * @param confidential
+     *            The confidentiality.
+     * @param version
+     *            The version.
+     */
+    public Protocol(String schemeName, String name, String technicalName,
+            String description, int defaultPort, boolean confidential,
+            String version) {
+        this.name = name;
+        this.description = description;
+        this.schemeName = schemeName;
+        this.technicalName = technicalName;
+        this.defaultPort = defaultPort;
+        this.confidential = confidential;
+        this.version = version;
     }
 
     /** {@inheritDoc} */
@@ -357,6 +386,15 @@ public final class Protocol {
      */
     public String getSchemeName() {
         return this.schemeName;
+    }
+
+    /**
+     * Returns the technical name that appears on the wire.
+     * 
+     * @return The technical name that appears on the wire.
+     */
+    public String getTechnicalName() {
+        return technicalName;
     }
 
     /**

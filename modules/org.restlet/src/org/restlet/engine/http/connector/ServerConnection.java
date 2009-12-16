@@ -46,6 +46,7 @@ import org.restlet.data.Form;
 import org.restlet.data.Language;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
+import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.engine.ConnectorHelper;
 import org.restlet.engine.http.header.ContentType;
@@ -138,42 +139,44 @@ public abstract class ServerConnection extends Connection<Server> {
             setInboundBusy(false);
         }
 
-        // Extract some interesting header values
-        for (Parameter header : headers) {
-            if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_CONTENT_ENCODING)) {
-                HeaderReader hr = new HeaderReader(header.getValue());
-                String value = hr.readValue();
+        if (headers != null) {
+            // Extract some interesting header values
+            for (Parameter header : headers) {
+                if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_CONTENT_ENCODING)) {
+                    HeaderReader hr = new HeaderReader(header.getValue());
+                    String value = hr.readValue();
 
-                while (value != null) {
-                    Encoding encoding = Encoding.valueOf(value);
+                    while (value != null) {
+                        Encoding encoding = Encoding.valueOf(value);
 
-                    if (!encoding.equals(Encoding.IDENTITY)) {
-                        result.getEncodings().add(encoding);
+                        if (!encoding.equals(Encoding.IDENTITY)) {
+                            result.getEncodings().add(encoding);
+                        }
+                        value = hr.readValue();
                     }
-                    value = hr.readValue();
-                }
-            } else if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_CONTENT_LANGUAGE)) {
-                HeaderReader hr = new HeaderReader(header.getValue());
-                String value = hr.readValue();
+                } else if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_CONTENT_LANGUAGE)) {
+                    HeaderReader hr = new HeaderReader(header.getValue());
+                    String value = hr.readValue();
 
-                while (value != null) {
-                    result.getLanguages().add(Language.valueOf(value));
-                    value = hr.readValue();
+                    while (value != null) {
+                        result.getLanguages().add(Language.valueOf(value));
+                        value = hr.readValue();
+                    }
+                } else if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_CONTENT_TYPE)) {
+                    ContentType contentType = new ContentType(header.getValue());
+                    result.setMediaType(contentType.getMediaType());
+                    result.setCharacterSet(contentType.getCharacterSet());
+                } else if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_CONTENT_RANGE)) {
+                    RangeUtils.parseContentRange(header.getValue(), result);
+                } else if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_CONTENT_MD5)) {
+                    result.setDigest(new Digest(Digest.ALGORITHM_MD5, Base64
+                            .decode(header.getValue())));
                 }
-            } else if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_CONTENT_TYPE)) {
-                ContentType contentType = new ContentType(header.getValue());
-                result.setMediaType(contentType.getMediaType());
-                result.setCharacterSet(contentType.getCharacterSet());
-            } else if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_CONTENT_RANGE)) {
-                RangeUtils.parseContentRange(header.getValue(), result);
-            } else if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_CONTENT_MD5)) {
-                result.setDigest(new Digest(Digest.ALGORITHM_MD5, Base64
-                        .decode(header.getValue())));
             }
         }
 
@@ -597,9 +600,9 @@ public abstract class ServerConnection extends Connection<Server> {
             OutputStream headStream, Series<Parameter> headers)
             throws IOException {
         // Write the status line
-        String requestVersion = response.getRequest().getProtocol()
-                .getVersion();
-        String version = "HTTP/"
+        Protocol protocol = response.getRequest().getProtocol();
+        String requestVersion = protocol.getVersion();
+        String version = protocol.getTechnicalName() + '/'
                 + ((requestVersion == null) ? "1.1" : requestVersion);
         headStream.write(version.getBytes());
         headStream.write(' ');

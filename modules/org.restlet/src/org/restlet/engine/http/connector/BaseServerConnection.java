@@ -218,11 +218,13 @@ public class BaseServerConnection extends ServerConnection {
     protected ConnectedRequest readRequest() throws IOException {
         ConnectedRequest result = super.readRequest();
 
-        // Add it to the connection queue
-        getInboundRequests().add(result);
+        if (result != null) {
+            // Add it to the connection queue
+            getInboundRequests().add(result);
 
-        // Add it to the helper queue
-        getHelper().getPendingRequests().add(result);
+            // Add it to the helper queue
+            getHelper().getPendingRequests().add(result);
+        }
 
         return result;
     }

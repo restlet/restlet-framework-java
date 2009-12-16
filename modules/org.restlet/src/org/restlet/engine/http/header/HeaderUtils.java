@@ -461,14 +461,16 @@ public class HeaderUtils {
     public static long getContentLength(Series<Parameter> headers) {
         long contentLength = Representation.UNKNOWN_SIZE;
 
-        // Extract the content length header
-        for (Parameter header : headers) {
-            if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_CONTENT_LENGTH)) {
-                try {
-                    contentLength = Long.parseLong(header.getValue());
-                } catch (NumberFormatException e) {
-                    contentLength = Representation.UNKNOWN_SIZE;
+        if (headers != null) {
+            // Extract the content length header
+            for (Parameter header : headers) {
+                if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_CONTENT_LENGTH)) {
+                    try {
+                        contentLength = Long.parseLong(header.getValue());
+                    } catch (NumberFormatException e) {
+                        contentLength = Representation.UNKNOWN_SIZE;
+                    }
                 }
             }
         }
@@ -515,9 +517,15 @@ public class HeaderUtils {
      * @return True if the entity is chunked.
      */
     public static boolean isChunkedEncoding(Series<Parameter> headers) {
-        final String header = headers.getFirstValue(
-                HeaderConstants.HEADER_TRANSFER_ENCODING, true);
-        return "chunked".equalsIgnoreCase(header);
+        boolean result = false;
+
+        if (headers != null) {
+            final String header = headers.getFirstValue(
+                    HeaderConstants.HEADER_TRANSFER_ENCODING, true);
+            result = "chunked".equalsIgnoreCase(header);
+        }
+
+        return result;
     }
 
     /**
@@ -540,9 +548,15 @@ public class HeaderUtils {
      * @return True if the connection must be closed.
      */
     public static boolean isConnectionClose(Series<Parameter> headers) {
-        String header = headers.getFirstValue(
-                HeaderConstants.HEADER_CONNECTION, true);
-        return "close".equalsIgnoreCase(header);
+        boolean result = false;
+
+        if (headers != null) {
+            String header = headers.getFirstValue(
+                    HeaderConstants.HEADER_CONNECTION, true);
+            result = "close".equalsIgnoreCase(header);
+        }
+
+        return result;
     }
 
     /**
