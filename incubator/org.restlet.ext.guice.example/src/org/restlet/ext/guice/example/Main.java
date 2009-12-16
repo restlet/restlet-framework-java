@@ -44,32 +44,32 @@ public class Main {
 
         @Override public Restlet createInboundRoot() {
 
-            DependencyInjection dependencyInjection = null;
+            DependencyInjection di = null;
             switch (mode) {
 
             case EXPLICIT_INJECTOR: // (1) Use explicit Injector creation.
 
                 Injector injector = RestletGuice.createInjector(mainModule);
-                dependencyInjection = injector.getInstance(DependencyInjection.class);
+                di = injector.getInstance(DependencyInjection.class);
                 break;
 
             case AUTO_INJECTOR: // (2) Use a special module that is also a DependencyInjection
                                 //     and that automatically creates the Injector when needed.
-                dependencyInjection = new RestletGuice.Module(mainModule);
+                di = new RestletGuice.Module(mainModule);
                 break;
             }
 
-            if (dependencyInjection == null) {
+            if (di == null) {
                 throw new IllegalStateException("No Injector creation mode specified.");
             }
 
             Router router = new Router(getContext());
 
-            // Route /hello to whatever is bound to ServerResource annotated with @HelloWorld.
-            dependencyInjection.attach(router, HELLO_PATH, ServerResource.class, HelloWorld.class);
+            // Route HELLO_PATH to whatever is bound to ServerResource annotated with @HelloWorld.
+            router.attach(HELLO_PATH, di.inject(ServerResource.class, HelloWorld.class));
 
-            // Everything else goes here.
-            dependencyInjection.attachDefault(router, DefaultResource.class);
+            // Everything else goes to DefaultResource.
+            router.attachDefault(di.inject(DefaultResource.class));
 
             return router;
         }
@@ -77,8 +77,12 @@ public class Main {
 
 
     public static class DefaultResource extends ServerResource {
+        private final String path;
+        @Inject DefaultResource(@Named(HELLO_PATH_Q) String path) {
+            this.path = path;
+        }
         @Get public String represent() {
-            return "Default resource, try " + HELLO_PATH;
+            return "Default resource, try " + path;
         }
     }
 
@@ -86,7 +90,7 @@ public class Main {
 
         private static final AtomicInteger count = new AtomicInteger();
 
-        @Inject public HelloServerResource(@Named(HELLO_MSG) String msg) {
+        @Inject public HelloServerResource(@Named(HELLO_MSG_Q) String msg) {
             this.msg = msg;
         }
 
@@ -97,8 +101,9 @@ public class Main {
         private final String msg;
     }
 
-    static final String HELLO_MSG = "hello.message.qualifier.name";
     static final String HELLO_PATH = "/hello";
+    static final String HELLO_PATH_Q = "hello.path";
+    static final String HELLO_MSG_Q = "hello.message";
 
     static class MainModule extends AbstractModule {
         protected void configure() {
@@ -107,8 +112,12 @@ public class Main {
                 .to(HelloServerResource.class);
 
             bindConstant()
-                .annotatedWith(named(HELLO_MSG))
+                .annotatedWith(named(HELLO_MSG_Q))
                 .to("Hello, Restlet 2.0 - Guice 2.0!");
+
+            bindConstant()
+                .annotatedWith(named(HELLO_PATH_Q))
+                .to(HELLO_PATH);
         }
     }
 }

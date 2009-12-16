@@ -103,36 +103,12 @@ public class RestletGuice {
         // DependencyInjection methods
         //
 
-        public Finder finderFor(Class<? extends ServerResource> cls) {
+        public Finder inject(Class<? extends ServerResource> cls) {
             return new ServerResourceKeyFinder(Key.get(cls));
         }
 
-        public Finder finderFor(Class<? extends ServerResource> cls, Class<? extends Annotation> qualifier) {
+        public Finder inject(Class<? extends ServerResource> cls, Class<? extends Annotation> qualifier) {
             return new ServerResourceKeyFinder(Key.get(cls, qualifier));
-        }
-
-        public TemplateRoute attach(Object restlet, String pathTemplate, Class<? extends ServerResource> targetClass) {
-            return invokeAttach(restlet, pathTemplate, finderFor(targetClass));
-        }
-
-        public TemplateRoute attach(Object restlet, String pathTemplate, Class<? extends ServerResource> targetClass, Class<? extends Annotation> qualifier) {
-            return invokeAttach(restlet, pathTemplate, finderFor(targetClass, qualifier));
-        }
-
-        public TemplateRoute attachDefault(Object restlet, Class<? extends ServerResource> targetClass) {
-            return invokeAttachDefault(restlet, finderFor(targetClass));
-        }
-
-        public TemplateRoute attachDefault(Object restlet, Class<? extends ServerResource> targetClass, Class<? extends Annotation> qualifier) {
-            return invokeAttachDefault(restlet, finderFor(targetClass, qualifier));
-        }
-
-        public void setNext(Object target, Class<? extends ServerResource> nextClass) {
-            invokeSetNext(target, finderFor(nextClass));
-        }
-
-        public void setNext(Object target, Class<? extends ServerResource> nextClass, Class<? extends Annotation> qualifier) {
-            invokeSetNext(target, finderFor(nextClass, qualifier));
         }
 
 
@@ -259,36 +235,6 @@ public class RestletGuice {
         }
 
 
-        private TemplateRoute invokeAttach(Object target, String pathTemplate, Restlet restlet) {
-            Class<?>[] paramTypes = new Class<?>[] { String.class, Restlet.class };
-            return invoke(target, "attach", TemplateRoute.class, paramTypes, pathTemplate, restlet);
-        }
-
-        private TemplateRoute invokeAttachDefault(Object target, Restlet restlet) {
-            Class<?>[] paramTypes = new Class<?>[] { Restlet.class };
-            return invoke(target, "attachDefault", TemplateRoute.class, paramTypes, restlet);
-        }
-
-        private void invokeSetNext(Object target, Restlet restlet) {
-            Class<?>[] paramTypes = new Class<?>[] { Restlet.class };
-            invoke(target, "setNext", Void.class, paramTypes, restlet);
-        }
-
-
-        private <T> T invoke(Object target, String methodName, Class<T> resultType, Class<?>[] paramTypes, Object... paramValues) {
-            try {
-                Method method = target.getClass().getMethod(methodName, paramTypes);
-                Object result = method.invoke(target, paramValues);
-                return resultType.cast(result);
-            } catch (NoSuchMethodException e) {
-                throw new UnsupportedOperationException("setNext not supported on target");
-            } catch (IllegalAccessException e) {
-                throw new UnsupportedOperationException("setNext not accessible on target");
-            } catch (InvocationTargetException e) {
-                throw (RuntimeException) e.getCause();
-            }
-        }
-
         private final Iterable<? extends com.google.inject.Module> modules;
         @Inject private volatile Injector injector;
 
@@ -300,12 +246,11 @@ public class RestletGuice {
         @Inject private void clearAlreadyBound() {
             alreadyBound.set(false);
         }
+
+        private static ThreadLocal<Boolean> alreadyBound = new ThreadLocal<Boolean>() {
+            @Override protected Boolean initialValue() {
+                return false;
+            }
+        };
     }
-
-    private static ThreadLocal<Boolean> alreadyBound = new ThreadLocal<Boolean>() {
-        @Override protected Boolean initialValue() {
-            return false;
-        }
-    };
-
 }
