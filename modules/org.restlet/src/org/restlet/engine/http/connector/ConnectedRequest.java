@@ -707,6 +707,10 @@ public class ConnectedRequest extends Request {
         return result;
     }
 
+    protected boolean producesResponse() {
+        return true;
+    }
+
     @Override
     public void setChallengeResponse(ChallengeResponse response) {
         super.setChallengeResponse(response);

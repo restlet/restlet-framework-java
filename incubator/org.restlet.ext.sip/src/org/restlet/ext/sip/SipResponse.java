@@ -33,6 +33,11 @@ package org.restlet.ext.sip;
 import org.restlet.Request;
 import org.restlet.Response;
 
+/**
+ * SIP specific response.
+ * 
+ * @author Jerome Louvel
+ */
 public class SipResponse extends Response {
 
     public SipResponse(Request request) {

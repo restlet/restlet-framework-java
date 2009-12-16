@@ -297,11 +297,17 @@ public abstract class BaseServerHelper extends ServerHelper {
 
     public void handle(ConnectedRequest request) {
         if (request != null) {
-            Response response = createResponse(request);
-            response.getServerInfo().setAgent(Engine.VERSION_HEADER);
+            Response response = null;
+
+            if (request.producesResponse()) {
+                response = createResponse(request);
+                response.getServerInfo().setAgent(Engine.VERSION_HEADER);
+            }
+
             handle(request, response);
 
-            if (!response.isCommitted() && response.isAutoCommitting()) {
+            if ((response != null) && !response.isCommitted()
+                    && response.isAutoCommitting()) {
                 getPendingResponses().add(response);
                 response.setCommitted(true);
             }

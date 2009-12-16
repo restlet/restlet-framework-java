@@ -70,6 +70,11 @@ public class UacServerResource extends SipServerResource {
         provisionalResponse.setStatus(SipStatus.INFO_RINGING);
         provisionalResponse.commit();
 
+        // Indicate that the session is progressing
+        provisionalResponse = new Response(getRequest());
+        provisionalResponse.setStatus(SipStatus.INFO_SESSION_PROGRESS);
+        provisionalResponse.commit();
+
         // Set the final response
         setStatus(SipStatus.SUCCESS_OK);
     }

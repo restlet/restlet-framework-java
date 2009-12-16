@@ -40,6 +40,11 @@ import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 
+/**
+ * SIP specific request.
+ * 
+ * @author Jerome Louvel
+ */
 public class SipRequest extends ConnectedRequest {
 
     private volatile String callId;
@@ -114,6 +119,11 @@ public class SipRequest extends ConnectedRequest {
 
     public String getVia() {
         return via;
+    }
+
+    @Override
+    protected boolean producesResponse() {
+        return !SipMethod.ACK.equals(getMethod());
     }
 
     public void setCallId(String callId) {

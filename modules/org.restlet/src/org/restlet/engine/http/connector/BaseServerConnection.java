@@ -94,6 +94,15 @@ public abstract class BaseServerConnection extends ServerConnection {
         setPersistent(true);
     }
 
+    public boolean canRead() throws IOException {
+        return (getState() == ConnectionState.OPEN) && !isInboundBusy()
+                && (getInboundRequests().size() == 0);
+    }
+
+    public boolean canWrite() {
+        return !isOutboundBusy() && (getOutboundResponses().size() > 0);
+    }
+
     @Override
     public void close(boolean graceful) {
         super.close(graceful);
@@ -136,15 +145,6 @@ public abstract class BaseServerConnection extends ServerConnection {
         }
 
         getHelper().getPendingResponses().add(response);
-    }
-
-    /**
-     * Returns the connection handler service.
-     * 
-     * @return The connection handler service.
-     */
-    protected ExecutorService getWorkerService() {
-        return getHelper().getWorkerService();
     }
 
     @Override
@@ -215,6 +215,15 @@ public abstract class BaseServerConnection extends ServerConnection {
         return result;
     }
 
+    /**
+     * Returns the connection handler service.
+     * 
+     * @return The connection handler service.
+     */
+    protected ExecutorService getWorkerService() {
+        return getHelper().getWorkerService();
+    }
+
     public boolean isPipelining() {
         return pipelining;
     }
@@ -224,23 +233,16 @@ public abstract class BaseServerConnection extends ServerConnection {
         ConnectedRequest result = super.readRequest();
 
         if (result != null) {
-            // Add it to the connection queue
-            getInboundRequests().add(result);
+            if (result.producesResponse()) {
+                // Add it to the connection queue
+                getInboundRequests().add(result);
+            }
 
             // Add it to the helper queue
             getHelper().getPendingRequests().add(result);
         }
 
         return result;
-    }
-
-    public boolean canRead() throws IOException {
-        return (getState() == ConnectionState.OPEN) && !isInboundBusy()
-                && (getInboundRequests().size() == 0);
-    }
-
-    public boolean canWrite() {
-        return !isOutboundBusy() && (getOutboundResponses().size() > 0);
     }
 
     /**
