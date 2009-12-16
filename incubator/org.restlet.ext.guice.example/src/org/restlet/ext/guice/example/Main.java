@@ -77,18 +77,19 @@ public class Main {
 
 
     public static class DefaultResource extends ServerResource {
-        private final String path;
+
         @Inject DefaultResource(@Named(HELLO_PATH_Q) String path) {
             this.path = path;
         }
+
         @Get public String represent() {
             return "Default resource, try " + path;
         }
+
+        private final String path;
     }
 
     public static class HelloServerResource extends ServerResource {
-
-        private static final AtomicInteger count = new AtomicInteger();
 
         @Inject public HelloServerResource(@Named(HELLO_MSG_Q) String msg) {
             this.msg = msg;
@@ -99,6 +100,8 @@ public class Main {
         }
 
         private final String msg;
+
+        private static final AtomicInteger count = new AtomicInteger();
     }
 
     static final String HELLO_PATH = "/hello";
