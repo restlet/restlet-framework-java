@@ -49,6 +49,7 @@ import java.util.logging.Level;
 
 import org.restlet.Response;
 import org.restlet.Server;
+import org.restlet.engine.Engine;
 import org.restlet.engine.ServerHelper;
 import org.restlet.engine.log.LoggingThreadFactory;
 
@@ -289,6 +290,7 @@ public abstract class BaseServerHelper extends ServerHelper {
     public void handle(ConnectedRequest request) {
         if (request != null) {
             Response response = new Response(request);
+            response.getServerInfo().setAgent(Engine.VERSION_HEADER);
             handle(request, response);
 
             if (!response.isCommitted() && response.isAutoCommitting()) {

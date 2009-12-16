@@ -46,6 +46,7 @@ import javax.net.ssl.SSLSocket;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Parameter;
+import org.restlet.engine.Engine;
 import org.restlet.engine.http.io.ChunkedInputStream;
 import org.restlet.engine.http.io.ChunkedOutputStream;
 import org.restlet.engine.http.io.InboundStream;
@@ -130,6 +131,10 @@ public class BaseServerConnection extends ServerConnection {
 
     @Override
     public void commit(Response response) {
+        if (response.getServerInfo().getAgent() == null) {
+            response.getServerInfo().setAgent(Engine.VERSION_HEADER);
+        }
+
         getHelper().getPendingResponses().add(response);
     }
 
