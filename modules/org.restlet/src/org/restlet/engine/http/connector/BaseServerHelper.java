@@ -311,6 +311,19 @@ public abstract class BaseServerHelper extends ServerHelper {
                 getPendingResponses().add(response);
                 response.setCommitted(true);
             }
+
+            if ((request.getEntity() != null)
+                    && (!request.producesResponse() || ((response != null) && response
+                            .isCommitted()))) {
+                try {
+                    request.getEntity().exhaust();
+                } catch (IOException e) {
+                    getLogger().log(Level.INFO,
+                            "Unable to exhaust request entity", e);
+                } finally {
+                    request.getEntity().release();
+                }
+            }
         }
 
         handleNextResponse();

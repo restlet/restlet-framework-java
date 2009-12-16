@@ -760,7 +760,9 @@ public abstract class ServerResource extends UniformResource {
                     result = doHandle();
                 }
 
-                getResponse().setEntity(result);
+                if (getResponse() != null) {
+                    getResponse().setEntity(result);
+                }
 
                 if (Status.CLIENT_ERROR_METHOD_NOT_ALLOWED.equals(getStatus())) {
                     updateAllowedMethods();

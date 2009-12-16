@@ -274,12 +274,12 @@ public abstract class BaseServerConnection extends ServerConnection {
         } catch (Exception e) {
             getLogger()
                     .log(
-                            Level.INFO,
+                            Level.FINE,
                             "Error while reading an HTTP request. Closing the connection: ",
                             e.getMessage());
             getLogger()
                     .log(
-                            Level.INFO,
+                            Level.FINE,
                             "Error while reading an HTTP request. Closing the connection.",
                             e);
             close(false);

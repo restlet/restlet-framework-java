@@ -144,10 +144,22 @@ public abstract class ServerConnection extends Connection<Server> {
 
             if (requestStream != null) {
                 result = new InputRepresentation(requestStream, null,
-                        contentLength);
+                        contentLength) {
+                    @Override
+                    public void release() {
+                        super.release();
+                        setInboundBusy(false);
+                    }
+                };
             } else if (requestChannel != null) {
                 result = new ReadableRepresentation(requestChannel, null,
-                        contentLength);
+                        contentLength) {
+                    @Override
+                    public void release() {
+                        super.release();
+                        setInboundBusy(false);
+                    }
+                };
             }
 
             result.setSize(contentLength);

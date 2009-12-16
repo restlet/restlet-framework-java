@@ -46,6 +46,8 @@ import org.restlet.ext.sip.SipStatus;
  */
 public class UacServerResource extends SipServerResource {
 
+    private static final boolean TRACE = false;
+
     public static void main(String[] args) throws Exception {
         Server server = new Server(Protocol.SIP, UacServerResource.class);
         server.start();
@@ -90,12 +92,15 @@ public class UacServerResource extends SipServerResource {
      * 
      */
     private void trace() {
-        System.out.println("Method: " + getMethod());
-        System.out.println("Call ID: " + getCallId());
-        System.out.println("Call Sequence: " + getCallSeq());
-        System.out.println("To: " + getTo());
-        System.out.println("From: " + getFrom());
-        System.out.println("Max Forwards: " + getMaxForwards());
-        System.out.println("-------------------------------------------------");
+        if (TRACE) {
+            System.out.println("Method: " + getMethod());
+            System.out.println("Call ID: " + getCallId());
+            System.out.println("Call Sequence: " + getCallSeq());
+            System.out.println("To: " + getTo());
+            System.out.println("From: " + getFrom());
+            System.out.println("Max Forwards: " + getMaxForwards());
+            System.out
+                    .println("-------------------------------------------------");
+        }
     }
 }

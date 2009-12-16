@@ -118,8 +118,10 @@ public class InputRepresentation extends StreamRepresentation {
                 Context.getCurrentLogger().log(Level.WARNING,
                         "Error while releasing the representation.", e);
             }
+
             this.stream = null;
         }
+
         super.release();
     }
 
