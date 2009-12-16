@@ -98,12 +98,30 @@ public abstract class ServerConnection extends Connection<Server> {
     }
 
     /**
+     * Adds the response headers.
+     * 
+     * @param response
+     *            The response to inspect.
+     * @param headers
+     *            The headers series to update.
+     */
+    protected void addResponseHeaders(Response response,
+            Series<Parameter> headers) {
+        HeaderUtils.addResponseHeaders(response, headers);
+    }
+
+    /**
      * Asks the server connector to immediately commit the given response
      * associated to this request, making it ready to be sent back to the
      * client. Note that all server connectors don't necessarily support this
      * feature.
      */
     public abstract void commit(Response response);
+
+    protected abstract ConnectedRequest createRequest(Context context,
+            ServerConnection connection, String methodName, String resourceUri,
+            String version, Series<Parameter> headers, Representation entity,
+            boolean confidential, Principal userPrincipal);
 
     /**
      * Returns the request entity if available.
@@ -335,11 +353,6 @@ public abstract class ServerConnection extends Connection<Server> {
         return result;
     }
 
-    protected abstract ConnectedRequest createRequest(Context context,
-            ServerConnection connection, String methodName, String resourceUri,
-            String version, Series<Parameter> headers, Representation entity,
-            boolean confidential, Principal userPrincipal);
-
     public void setPersistent(boolean persistent) {
         this.persistent = persistent;
     }
@@ -452,7 +465,7 @@ public abstract class ServerConnection extends Connection<Server> {
 
                 // Add the response headers
                 try {
-                    HeaderUtils.addResponseHeaders(response, headers);
+                    addResponseHeaders(response, headers);
 
                     // Add user-defined extension headers
                     Series<Parameter> additionalHeaders = (Series<Parameter>) response

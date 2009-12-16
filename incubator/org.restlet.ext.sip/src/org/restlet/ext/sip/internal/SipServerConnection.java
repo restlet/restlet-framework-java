@@ -35,11 +35,14 @@ import java.net.Socket;
 import java.security.Principal;
 
 import org.restlet.Context;
+import org.restlet.Response;
 import org.restlet.data.Parameter;
 import org.restlet.engine.http.connector.BaseServerConnection;
 import org.restlet.engine.http.connector.BaseServerHelper;
 import org.restlet.engine.http.connector.ConnectedRequest;
 import org.restlet.engine.http.connector.ServerConnection;
+import org.restlet.engine.http.header.HeaderConstants;
+import org.restlet.ext.sip.SipConstants;
 import org.restlet.ext.sip.SipRequest;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
@@ -54,6 +57,35 @@ public class SipServerConnection extends BaseServerConnection {
     public SipServerConnection(BaseServerHelper helper, Socket socket)
             throws IOException {
         super(helper, socket);
+    }
+
+    @Override
+    protected void addResponseHeaders(Response response,
+            Series<Parameter> headers) {
+        super.addResponseHeaders(response, headers);
+
+        SipRequest sipRequest = (SipRequest) response.getRequest();
+        // SipResponse sipResponse = (SipResponse) response;
+
+        if (sipRequest.getCallId() != null) {
+            headers.add(SipConstants.HEADER_CALL_ID, sipRequest.getCallId());
+        }
+
+        if (sipRequest.getCallSeq() != null) {
+            headers.add(SipConstants.HEADER_CALL_SEQ, sipRequest.getCallSeq());
+        }
+
+        if (sipRequest.getFrom() != null) {
+            headers.add(HeaderConstants.HEADER_FROM, sipRequest.getFrom());
+        }
+
+        if (sipRequest.getTo() != null) {
+            headers.add(SipConstants.HEADER_TO, sipRequest.getTo());
+        }
+
+        if (sipRequest.getVia() != null) {
+            headers.add(HeaderConstants.HEADER_VIA, sipRequest.getVia());
+        }
     }
 
     @Override
