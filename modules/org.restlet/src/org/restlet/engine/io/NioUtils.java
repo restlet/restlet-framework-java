@@ -46,7 +46,7 @@ import org.restlet.Context;
 import org.restlet.engine.Edition;
 import org.restlet.representation.Representation;
 
-// [excludes=gwt]
+// [excludes gwt]
 /**
  * Utility methods for NIO processing.
  * 

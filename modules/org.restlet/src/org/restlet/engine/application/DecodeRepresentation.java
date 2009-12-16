@@ -49,7 +49,7 @@ import org.restlet.engine.io.NioUtils;
 import org.restlet.representation.Representation;
 import org.restlet.util.WrapperRepresentation;
 
-// [excludes=gwt]
+// [excludes gwt]
 /**
  * Representation that decodes a wrapped representation if its encoding is
  * supported. If at least one encoding of the wrapped representation is not

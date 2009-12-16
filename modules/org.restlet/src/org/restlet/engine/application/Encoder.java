@@ -45,7 +45,7 @@ import org.restlet.data.Preference;
 import org.restlet.representation.Representation;
 import org.restlet.routing.Filter;
 
-// [excludes=gwt]
+// [excludes gwt]
 /**
  * Filter compressing entities. The best encoding is automatically selected
  * based on the preferences of the client and on the encoding supported by NRE:

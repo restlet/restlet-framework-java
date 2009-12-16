@@ -42,7 +42,7 @@ import org.restlet.service.Service;
  * 
  * @author Jerome Louvel
  */
-// [excludes=gwt]
+// [excludes gwt]
 public class ApplicationHelper extends ChainHelper<Application> {
     /**
      * Constructor.

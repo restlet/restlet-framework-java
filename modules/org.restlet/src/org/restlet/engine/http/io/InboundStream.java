@@ -34,7 +34,7 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-// [excludes=gwt]
+// [excludes gwt]
 /**
  * Buffered input stream that prevent the underlying stream from being closed.
  * 

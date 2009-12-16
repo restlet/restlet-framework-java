@@ -37,7 +37,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-// [excludes=gwt]
+// [excludes gwt]
 /**
  * Pipe stream that pipes output streams into input streams. Implementation
  * based on a shared synchronized queue.

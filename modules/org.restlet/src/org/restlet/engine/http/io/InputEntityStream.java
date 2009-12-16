@@ -34,7 +34,7 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-// [excludes=gwt]
+// [excludes gwt]
 /**
  * Input stream based on a source stream that must only be partially read.
  * 

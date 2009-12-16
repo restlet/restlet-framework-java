@@ -34,7 +34,7 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-// [excludes=gwt]
+// [excludes gwt]
 /**
  * Buffered output stream that prevent the underlying stream from being closed.
  * 

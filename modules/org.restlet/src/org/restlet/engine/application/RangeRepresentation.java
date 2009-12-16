@@ -41,7 +41,7 @@ import org.restlet.engine.io.NioUtils;
 import org.restlet.representation.Representation;
 import org.restlet.util.WrapperRepresentation;
 
-// [excludes=gwt]
+// [excludes gwt]
 /**
  * Representation that exposes only a range of the content of a wrapped
  * representation.
