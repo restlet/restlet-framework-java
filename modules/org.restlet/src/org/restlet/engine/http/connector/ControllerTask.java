@@ -107,7 +107,7 @@ public class ControllerTask implements Runnable {
 
                 // Control if some pending responses that could be moved to
                 // their respective connection queues
-                for (int i = 0; i < getHelper().getPendingRequests().size(); i++) {
+                for (int i = 0; i < getHelper().getPendingResponses().size(); i++) {
                     final Response response = getHelper().getPendingResponses()
                             .poll();
 

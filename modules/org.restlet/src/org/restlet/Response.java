@@ -561,11 +561,11 @@ public class Response extends Message {
     /**
      * Indicates if the response should be automatically committed.
      * 
-     * @param autoCommit
+     * @param autoCommitting
      *            True if the response should be automatically committed
      */
-    public void setAutoCommitting(boolean autoCommit) {
-        this.autoCommitting = autoCommit;
+    public void setAutoCommitting(boolean autoCommitting) {
+        this.autoCommitting = autoCommitting;
     }
 
     /**

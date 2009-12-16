@@ -842,6 +842,29 @@ public abstract class ServerResource extends UniformResource {
     }
 
     /**
+     * Indicates if the response should be automatically committed. When
+     * processing a request on the server-side, setting this property to 'false'
+     * let you ask to the server connector to wait before sending the response
+     * back to the client when the initial calling thread returns. This will let
+     * you do further updates to the response and manually calling
+     * {@link #commit()} later on, using another thread.
+     * 
+     * @return True if the response should be automatically committed.
+     */
+    public boolean isAutoCommitting() {
+        return getResponse().isAutoCommitting();
+    }
+
+    /**
+     * Indicates if the response has already been committed.
+     * 
+     * @return True if the response has already been committed.
+     */
+    public boolean isCommitted() {
+        return getResponse().isCommitted();
+    }
+
+    /**
      * Indicates if conditional handling is enabled. The default value is true.
      * 
      * @return True if conditional handling is enabled.
@@ -1200,6 +1223,16 @@ public abstract class ServerResource extends UniformResource {
     }
 
     /**
+     * Indicates if the response should be automatically committed.
+     * 
+     * @param autoCommitting
+     *            True if the response should be automatically committed
+     */
+    public void setAutoCommitting(boolean autoCommitting) {
+        getResponse().setAutoCommitting(autoCommitting);
+    }
+
+    /**
      * Sets the list of authentication requests sent by an origin server to a
      * client. The list instance set must be thread-safe (use
      * {@link CopyOnWriteArrayList} for example.
@@ -1213,6 +1246,15 @@ public abstract class ServerResource extends UniformResource {
         if (getResponse() != null) {
             getResponse().setChallengeRequests(requests);
         }
+    }
+
+    /**
+     * Indicates if the response has already been committed.
+     * 
+     * @return True if the response has already been committed.
+     */
+    public void setCommitted(boolean committed) {
+        getResponse().setCommitted(committed);
     }
 
     /**
