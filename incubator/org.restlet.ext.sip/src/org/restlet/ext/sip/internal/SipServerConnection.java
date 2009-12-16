@@ -28,57 +28,41 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.sip;
+package org.restlet.ext.sip.internal;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.security.Principal;
 
-import org.restlet.Response;
-import org.restlet.Server;
-import org.restlet.data.Protocol;
+import org.restlet.Context;
+import org.restlet.data.Parameter;
 import org.restlet.engine.http.connector.BaseServerConnection;
 import org.restlet.engine.http.connector.BaseServerHelper;
 import org.restlet.engine.http.connector.ConnectedRequest;
-import org.restlet.ext.sip.internal.SipServerConnection;
+import org.restlet.engine.http.connector.ServerConnection;
+import org.restlet.ext.sip.SipRequest;
+import org.restlet.representation.Representation;
+import org.restlet.util.Series;
 
 /**
- * SIP server helper based on NIO blocking sockets.
+ * SIP server connector for the SIP connector.
  * 
  * @author Jerome Louvel
  */
-public class SipServerHelper extends BaseServerHelper {
+public class SipServerConnection extends BaseServerConnection {
 
-    /**
-     * Constructor.
-     * 
-     * @param server
-     *            The server to help.
-     */
-    public SipServerHelper(Server server) {
-        super(server);
-        getProtocols().add(Protocol.SIP);
+    public SipServerConnection(BaseServerHelper helper, Socket socket)
+            throws IOException {
+        super(helper, socket);
     }
 
     @Override
-    protected Response createResponse(ConnectedRequest request) {
-        return new SipResponse(request);
-    }
-
-    @Override
-    protected BaseServerConnection createServerConnection(
-            BaseServerHelper helper, Socket socket) throws IOException {
-        return new SipServerConnection(helper, socket);
-    }
-
-    @Override
-    public synchronized void start() throws Exception {
-        getLogger().info("Starting the SIP server");
-        super.start();
-    }
-
-    @Override
-    public synchronized void stop() throws Exception {
-        getLogger().info("Stopping the SIP server");
-        super.stop();
+    protected ConnectedRequest createRequest(Context context,
+            ServerConnection connection, String methodName, String resourceUri,
+            String version, Series<Parameter> headers, Representation entity,
+            boolean confidential, Principal userPrincipal) {
+        return new SipRequest(getHelper().getContext(), this, methodName,
+                resourceUri, version, headers, createRequestEntity(headers),
+                false, null);
     }
 }

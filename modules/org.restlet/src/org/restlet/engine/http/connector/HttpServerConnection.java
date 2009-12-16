@@ -32,43 +32,32 @@ package org.restlet.engine.http.connector;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.security.Principal;
 
-import org.restlet.Server;
-import org.restlet.data.Protocol;
+import org.restlet.Context;
+import org.restlet.data.Parameter;
+import org.restlet.representation.Representation;
+import org.restlet.util.Series;
 
 /**
- * HTTP server helper based on NIO blocking sockets.
+ * HTTP server connector for the default HTTP connector.
  * 
  * @author Jerome Louvel
  */
-public class HttpServerHelper extends BaseServerHelper {
+public class HttpServerConnection extends BaseServerConnection {
 
-    /**
-     * Constructor.
-     * 
-     * @param server
-     *            The server to help.
-     */
-    public HttpServerHelper(Server server) {
-        super(server);
-        getProtocols().add(Protocol.HTTP);
+    public HttpServerConnection(BaseServerHelper helper, Socket socket)
+            throws IOException {
+        super(helper, socket);
     }
 
     @Override
-    protected BaseServerConnection createServerConnection(
-            BaseServerHelper helper, Socket socket) throws IOException {
-        return new HttpServerConnection(helper, socket);
-    }
-
-    @Override
-    public synchronized void start() throws Exception {
-        getLogger().info("Starting the default HTTP server");
-        super.start();
-    }
-
-    @Override
-    public synchronized void stop() throws Exception {
-        getLogger().info("Stopping the default HTTP server");
-        super.stop();
+    protected ConnectedRequest createRequest(Context context,
+            ServerConnection connection, String methodName, String resourceUri,
+            String version, Series<Parameter> headers, Representation entity,
+            boolean confidential, Principal userPrincipal) {
+        return new ConnectedRequest(getHelper().getContext(), this, methodName,
+                resourceUri, version, headers, createRequestEntity(headers),
+                false, null);
     }
 }

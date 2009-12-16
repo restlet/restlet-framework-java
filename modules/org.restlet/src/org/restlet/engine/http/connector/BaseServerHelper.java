@@ -32,6 +32,7 @@ package org.restlet.engine.http.connector;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.net.SocketAddress;
 import java.nio.channels.ServerSocketChannel;
 import java.util.Queue;
@@ -161,6 +162,13 @@ public abstract class BaseServerHelper extends ServerHelper {
                 getLogger()));
     }
 
+    protected Response createResponse(ConnectedRequest request) {
+        return new Response(request);
+    }
+
+    protected abstract BaseServerConnection createServerConnection(
+            BaseServerHelper helper, Socket socket) throws IOException;
+
     /**
      * Create a server socket channel and bind it to the given address
      * 
@@ -220,16 +228,6 @@ public abstract class BaseServerHelper extends ServerHelper {
     }
 
     /**
-     * Returns the maximum threads that will service requests.
-     * 
-     * @return The maximum threads that will service requests.
-     */
-    public int getMaxThreads() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "maxThreads", "255"));
-    }
-
-    /**
      * Returns the maximum concurrent connections allowed. By default, it is
      * unbounded.
      * 
@@ -238,6 +236,16 @@ public abstract class BaseServerHelper extends ServerHelper {
     public int getMaxConnections() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
                 "maxConnections", "-1"));
+    }
+
+    /**
+     * Returns the maximum threads that will service requests.
+     * 
+     * @return The maximum threads that will service requests.
+     */
+    public int getMaxThreads() {
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "maxThreads", "255"));
     }
 
     /**
@@ -289,7 +297,7 @@ public abstract class BaseServerHelper extends ServerHelper {
 
     public void handle(ConnectedRequest request) {
         if (request != null) {
-            Response response = new Response(request);
+            Response response = createResponse(request);
             response.getServerInfo().setAgent(Engine.VERSION_HEADER);
             handle(request, response);
 

@@ -59,7 +59,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
-public class BaseServerConnection extends ServerConnection {
+public abstract class BaseServerConnection extends ServerConnection {
 
     /** The inbound stream. */
     private final InputStream inboundStream;

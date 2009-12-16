@@ -129,6 +129,15 @@ public class ConnectedRequest extends Request {
      * 
      * @param context
      *            The context of the HTTP server connector that issued the call.
+     * @param connection
+     * @param methodName
+     * @param resourceUri
+     * @param version
+     * @param headers
+     * @param entity
+     * @param confidential
+     * @param userPrincipal
+     * 
      * @param httpCall
      *            The low-level HTTP server call.
      */

@@ -36,8 +36,10 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
+import java.security.Principal;
 import java.util.logging.Level;
 
+import org.restlet.Context;
 import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Digest;
@@ -326,12 +328,17 @@ public abstract class ServerConnection extends Connection<Server> {
         }
 
         // Create the HTTP request
-        result = new ConnectedRequest(getHelper().getContext(), this,
-                requestMethod, requestUri, version, requestHeaders,
+        result = createRequest(getHelper().getContext(), this, requestMethod,
+                requestUri, version, requestHeaders,
                 createRequestEntity(requestHeaders), false, null);
 
         return result;
     }
+
+    protected abstract ConnectedRequest createRequest(Context context,
+            ServerConnection connection, String methodName, String resourceUri,
+            String version, Series<Parameter> headers, Representation entity,
+            boolean confidential, Principal userPrincipal);
 
     public void setPersistent(boolean persistent) {
         this.persistent = persistent;

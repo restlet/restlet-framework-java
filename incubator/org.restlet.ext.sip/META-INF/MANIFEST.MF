@@ -5,12 +5,17 @@ Bundle-SymbolicName: org.restlet.ext.sip
 Bundle-Version: 2.0
 Bundle-Vendor: Noelios Technologies
 Export-Package: org.restlet.ext.sip;
-  uses:="org.restlet.engine.authentication,
+  uses:="org.restlet.data,
+   org.restlet.engine.http.connector,
    org.restlet.resource,
+   org.restlet.representation,
    org.restlet.util,
-   org.restlet,
-   org.restlet.data,
-   net.oauth"
+   org.restlet",
+ org.restlet.ext.sip.internal;
+  uses:="org.restlet.engine.http.connector,
+   org.restlet.representation,
+   org.restlet.util,
+   org.restlet"
 Import-Package: org.restlet,
  org.restlet.data,
  org.restlet.engine,
