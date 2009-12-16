@@ -92,6 +92,9 @@ public class Request extends Message {
     /** The host reference. */
     private volatile Reference hostRef;
 
+    /** The maximum number of intermediaries. */
+    private volatile int maxForwards;
+
     /** The protocol. */
     private volatile Protocol protocol;
 
@@ -148,6 +151,7 @@ public class Request extends Message {
         this.conditions = null;
         this.cookies = null;
         this.hostRef = null;
+        this.maxForwards = -1;
         this.method = method;
         this.originalRef = null;
         // [ifndef gwt] instruction
@@ -287,6 +291,15 @@ public class Request extends Message {
      */
     public Reference getHostRef() {
         return this.hostRef;
+    }
+
+    /**
+     * Returns the maximum number of intermediaries.
+     * 
+     * @return The maximum number of intermediaries.
+     */
+    public int getMaxForwards() {
+        return maxForwards;
     }
 
     /**
@@ -511,6 +524,16 @@ public class Request extends Message {
      */
     public void setHostRef(String hostUri) {
         setHostRef(new Reference(hostUri));
+    }
+
+    /**
+     * Sets the maximum number of intermediaries.
+     * 
+     * @param maxForwards
+     *            The maximum number of intermediaries.
+     */
+    public void setMaxForwards(int maxForwards) {
+        this.maxForwards = maxForwards;
     }
 
     /**

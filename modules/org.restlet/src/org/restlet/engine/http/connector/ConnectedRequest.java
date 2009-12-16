@@ -89,10 +89,6 @@ public class ConnectedRequest extends Request {
         }
     }
 
-    private final String methodName;
-
-    private final String resourceUri;
-
     /** Indicates if the cache control data was parsed and added. */
     private volatile boolean cacheDirectivesAdded;
 
@@ -150,11 +146,9 @@ public class ConnectedRequest extends Request {
         this.userPrincipal = userPrincipal;
         this.proxySecurityAdded = false;
         this.warningsAdded = false;
-        this.methodName = methodName;
-        this.resourceUri = resourceUri;
 
         // Set the properties
-        setMethod(Method.valueOf(this.methodName));
+        setMethod(Method.valueOf(methodName));
         setEntity(entity);
         getAttributes().put(HeaderConstants.ATTRIBUTE_HEADERS, headers);
 
@@ -239,16 +233,16 @@ public class ConnectedRequest extends Request {
 
         // Set the resource reference
         if (resourceUri != null) {
-            setResourceRef(new Reference(getHostRef(), this.resourceUri));
+            setResourceRef(new Reference(getHostRef(), resourceUri));
 
             if (getResourceRef().isRelative()) {
                 // Take care of the "/" between the host part and the segments.
-                if (!this.resourceUri.startsWith("/")) {
+                if (!resourceUri.startsWith("/")) {
                     setResourceRef(new Reference(getHostRef().toString() + "/"
-                            + this.resourceUri));
+                            + resourceUri));
                 } else {
                     setResourceRef(new Reference(getHostRef().toString()
-                            + this.resourceUri));
+                            + resourceUri));
                 }
             }
 
@@ -268,6 +262,19 @@ public class ConnectedRequest extends Request {
         }
 
         setDate(date);
+
+        // Set the max forwards
+        String maxForwardsHeader = (getHeaders() == null) ? null : getHeaders()
+                .getFirstValue(HeaderConstants.HEADER_MAX_FORWARDS);
+        if (maxForwardsHeader != null) {
+            try {
+                setMaxForwards(Integer.parseInt(maxForwardsHeader));
+            } catch (NumberFormatException nfe) {
+                Context.getCurrentLogger().info(
+                        "Unable to parse the Max-Forwards header: "
+                                + maxForwardsHeader);
+            }
+        }
     }
 
     @Override

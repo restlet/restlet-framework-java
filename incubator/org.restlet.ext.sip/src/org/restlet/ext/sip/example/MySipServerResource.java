@@ -36,15 +36,15 @@ import org.restlet.data.Protocol;
 import org.restlet.ext.sip.Ack;
 import org.restlet.ext.sip.Bye;
 import org.restlet.ext.sip.Invite;
+import org.restlet.ext.sip.SipServerResource;
 import org.restlet.ext.sip.SipStatus;
-import org.restlet.resource.ServerResource;
 
 /**
  * Example SIP server resource for the UAC test scenario.
  * 
  * @author Jerome Louvel
  */
-public class MySipServerResource extends ServerResource {
+public class MySipServerResource extends SipServerResource {
 
     public static void main(String[] args) throws Exception {
         Server server = new Server(Protocol.SIP, MySipServerResource.class);

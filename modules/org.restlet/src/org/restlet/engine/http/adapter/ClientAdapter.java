@@ -85,8 +85,8 @@ public class ClientAdapter extends Adapter {
             Response response) {
         // Read info from headers
         for (Parameter header : headers) {
-            if (header.getName()
-                    .equalsIgnoreCase(HeaderConstants.HEADER_LOCATION)) {
+            if (header.getName().equalsIgnoreCase(
+                    HeaderConstants.HEADER_LOCATION)) {
                 response.setLocationRef(header.getValue());
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_AGE)) {
@@ -310,8 +310,8 @@ public class ClientAdapter extends Adapter {
                     value.append(condition.getMatch().get(i).format());
                 }
 
-                httpCall.getRequestHeaders().add(HeaderConstants.HEADER_IF_MATCH,
-                        value.toString());
+                httpCall.getRequestHeaders().add(
+                        HeaderConstants.HEADER_IF_MATCH, value.toString());
             }
 
             if (condition.getModifiedSince() != null) {
@@ -342,8 +342,8 @@ public class ClientAdapter extends Adapter {
                                 "Unable to format the HTTP If-Range header due to the presence of both entity tag and modification date.");
             } else {
                 if (condition.getRangeTag() != null) {
-                    requestHeaders.add(HeaderConstants.HEADER_IF_RANGE, condition
-                            .getRangeTag().format());
+                    requestHeaders.add(HeaderConstants.HEADER_IF_RANGE,
+                            condition.getRangeTag().format());
                 } else if (condition.getRangeDate() != null) {
                     String rDate = DateUtils.format(condition.getRangeDate(),
                             DateUtils.FORMAT_RFC_1123.get(0));
@@ -363,6 +363,12 @@ public class ClientAdapter extends Adapter {
             if (request.getCookies().size() > 0) {
                 String cookies = CookieUtils.format(request.getCookies());
                 requestHeaders.add(HeaderConstants.HEADER_COOKIE, cookies);
+            }
+
+            // Add the maxForwards header
+            if (request.getMaxForwards() > -1) {
+                requestHeaders.add(HeaderConstants.HEADER_MAX_FORWARDS, Integer
+                        .toString(request.getMaxForwards()));
             }
 
             // Add the referrer header
@@ -423,8 +429,8 @@ public class ClientAdapter extends Adapter {
             // Add Range header
             if (!request.getRanges().isEmpty()) {
                 requestHeaders.add(HeaderConstants.HEADER_RANGE,
-                        org.restlet.engine.http.header.RangeUtils.formatRanges(request
-                                .getRanges()));
+                        org.restlet.engine.http.header.RangeUtils
+                                .formatRanges(request.getRanges()));
             }
 
             // Add entity headers
@@ -481,7 +487,8 @@ public class ClientAdapter extends Adapter {
                 }
                 if (request.getEntity().getRange() != null) {
                     try {
-                        requestHeaders.add(HeaderConstants.HEADER_CONTENT_RANGE,
+                        requestHeaders.add(
+                                HeaderConstants.HEADER_CONTENT_RANGE,
                                 org.restlet.engine.http.header.RangeUtils
                                         .formatContentRange(request.getEntity()
                                                 .getRange(), request
@@ -558,6 +565,7 @@ public class ClientAdapter extends Adapter {
                             WarningUtils.format(warning));
                 }
             }
+
             // Add the Cache-control headers
             if (!request.getCacheDirectives().isEmpty()) {
                 requestHeaders.add(HeaderConstants.HEADER_CACHE_CONTROL,
@@ -629,8 +637,7 @@ public class ClientAdapter extends Adapter {
      * @param response
      *            The high-level response to update.
      */
-    protected void readResponseHeaders(ClientCall httpCall,
-            Response response) {
+    protected void readResponseHeaders(ClientCall httpCall, Response response) {
         try {
             Series<Parameter> responseHeaders = httpCall.getResponseHeaders();
             // Put the response headers in the call's attributes map

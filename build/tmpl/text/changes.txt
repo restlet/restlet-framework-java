@@ -18,6 +18,8 @@ Changes log
           2.0 M6 until real use cases are identified. 
         - Added Protocol#technicalName property to indicate the actual
           name used on the wire, such as "HTTP" for Protocol#HTTPS.
+        - Added Request#maxForwards property mapping to the HTTP header
+          "Max-Forwards".
      - Enhancements
         - Added a new Jackson extension, with transparent conversion
           between JSON representations and objects.
