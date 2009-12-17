@@ -45,6 +45,9 @@ public class ControllerTask implements Runnable {
     /** The parent server helper. */
     private final BaseServerHelper helper;
 
+    /** Indicates if the controller is overloaded. */
+    private volatile boolean overloaded;
+
     /**
      * Constructor.
      * 
@@ -53,6 +56,7 @@ public class ControllerTask implements Runnable {
      */
     public ControllerTask(BaseServerHelper helper) {
         this.helper = helper;
+        this.overloaded = false;
     }
 
     protected void execute(Runnable task) {
@@ -74,6 +78,10 @@ public class ControllerTask implements Runnable {
         return getHelper().getWorkerService();
     }
 
+    public boolean isOverloaded() {
+        return overloaded;
+    }
+
     protected boolean isWorkerServiceBusy() {
         return getHelper().isWorkerServiceBusy();
     }
@@ -85,62 +93,70 @@ public class ControllerTask implements Runnable {
 
         while (true) {
             try {
-                if (isWorkerServiceBusy()) {
-                    getHelper()
-                            .getLogger()
-                            .log(
-                                    Level.INFO,
-                                    "Can't submit additional tasks. Consider increasing the maximum number of threads.");
+                if (isOverloaded()) {
+                    setOverloaded(isWorkerServiceBusy());
                 } else {
-                    // Control each connection for requests to read
-                    // or responses to write
-                    for (final BaseServerConnection conn : getHelper()
-                            .getConnections()) {
-                        if (conn.canRead()) {
-                            execute(new Runnable() {
-                                public void run() {
-                                    conn.readRequests();
-                                }
-                            });
+                    if (isWorkerServiceBusy()) {
+                        setOverloaded(true);
+                        getHelper()
+                                .getLogger()
+                                .log(
+                                        Level.INFO,
+                                        "Can't submit additional tasks. Consider increasing the maximum number of threads.");
+                    } else {
+                        // Control each connection for requests to read
+                        // or responses to write
+                        for (final BaseServerConnection conn : getHelper()
+                                .getConnections()) {
+                            if (conn.canRead()) {
+                                execute(new Runnable() {
+                                    public void run() {
+                                        conn.readRequests();
+                                    }
+                                });
+                            }
+
+                            if (conn.canWrite()) {
+                                execute(new Runnable() {
+                                    public void run() {
+                                        conn.writeResponses();
+                                    }
+                                });
+                            }
                         }
 
-                        if (conn.canWrite()) {
-                            execute(new Runnable() {
-                                public void run() {
-                                    conn.writeResponses();
-                                }
-                            });
+                        // Control if there are some pending requests that could
+                        // be
+                        // processed
+                        for (int i = 0; i < getHelper().getPendingRequests()
+                                .size(); i++) {
+                            final ConnectedRequest request = getHelper()
+                                    .getPendingRequests().poll();
+
+                            if (request != null) {
+                                execute(new Runnable() {
+                                    public void run() {
+                                        getHelper().handle(request);
+                                    }
+                                });
+                            }
                         }
-                    }
 
-                    // Control if there are some pending requests that could be
-                    // processed
-                    for (int i = 0; i < getHelper().getPendingRequests().size(); i++) {
-                        final ConnectedRequest request = getHelper()
-                                .getPendingRequests().poll();
+                        // Control if some pending responses that could be moved
+                        // to
+                        // their respective connection queues
+                        for (int i = 0; i < getHelper().getPendingResponses()
+                                .size(); i++) {
+                            final Response response = getHelper()
+                                    .getPendingResponses().poll();
 
-                        if (request != null) {
-                            execute(new Runnable() {
-                                public void run() {
-                                    getHelper().handle(request);
-                                }
-                            });
-                        }
-                    }
-
-                    // Control if some pending responses that could be moved to
-                    // their respective connection queues
-                    for (int i = 0; i < getHelper().getPendingResponses()
-                            .size(); i++) {
-                        final Response response = getHelper()
-                                .getPendingResponses().poll();
-
-                        if (response != null) {
-                            execute(new Runnable() {
-                                public void run() {
-                                    getHelper().handle(response);
-                                }
-                            });
+                            if (response != null) {
+                                execute(new Runnable() {
+                                    public void run() {
+                                        getHelper().handle(response);
+                                    }
+                                });
+                            }
                         }
                     }
                 }
@@ -152,5 +168,9 @@ public class ControllerTask implements Runnable {
                         "Unexpected error while controlling connections", ex);
             }
         }
+    }
+
+    public void setOverloaded(boolean overloaded) {
+        this.overloaded = overloaded;
     }
 }

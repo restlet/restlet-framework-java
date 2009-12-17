@@ -268,8 +268,8 @@ public abstract class BaseServerHelper extends ServerHelper {
     }
 
     protected boolean isWorkerServiceBusy() {
-        return getWorkerService().getActiveCount() >= getWorkerService()
-                .getMaximumPoolSize();
+        return getWorkerService().getActiveCount() >= (getWorkerService()
+                .getMaximumPoolSize() - 1);
     }
 
     /**

@@ -108,7 +108,7 @@ public class AcceptorTask implements Runnable {
                     getHelper()
                             .getLogger()
                             .info(
-                                    "Connection rejected because maximum number of concurrent connections reached");
+                                    "Maximum number of concurrent connections reached. New connection rejected.");
                 }
             } catch (ClosedByInterruptException ex) {
                 this.helper.getLogger().log(Level.FINE,
