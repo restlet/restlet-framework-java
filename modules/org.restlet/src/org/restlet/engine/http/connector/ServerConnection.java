@@ -564,23 +564,19 @@ public abstract class ServerConnection extends Connection<Server> {
                             responseEntityStream);
 
                     if (responseEntityStream != null) {
-                        try {
-                            responseEntityStream.flush();
-                            responseEntityStream.close();
-                        } catch (IOException ioe) {
-                            // The stream was probably already closed by the
-                            // connector. Probably OK, low message priority.
-                            getLogger()
-                                    .log(
-                                            Level.FINE,
-                                            "Exception while flushing and closing the entity stream.",
-                                            ioe);
-                        }
+                        responseEntityStream.flush();
+                        responseEntityStream.close();
                     }
                 }
+            } catch (IOException ioe) {
+                // The stream was probably already closed by the
+                // connector. Probably OK, low message priority.
+                getLogger()
+                        .log(
+                                Level.FINE,
+                                "Exception while flushing and closing the entity stream.",
+                                ioe);
             } finally {
-                // TEST
-                getSocket().getOutputStream().flush();
                 setOutboundBusy(false);
 
                 if (responseEntity != null) {

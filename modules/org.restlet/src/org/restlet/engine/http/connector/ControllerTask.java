@@ -30,6 +30,7 @@
 
 package org.restlet.engine.http.connector;
 
+import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 
 import org.restlet.Response;
@@ -54,6 +55,12 @@ public class ControllerTask implements Runnable {
         this.helper = helper;
     }
 
+    protected void execute(Runnable task) {
+        if (!isWorkerServiceBusy()) {
+            getWorkerService().execute(task);
+        }
+    }
+
     /**
      * Returns the parent server helper.
      * 
@@ -63,60 +70,78 @@ public class ControllerTask implements Runnable {
         return helper;
     }
 
+    protected ExecutorService getWorkerService() {
+        return getHelper().getWorkerService();
+    }
+
+    protected boolean isWorkerServiceBusy() {
+        return getHelper().isWorkerServiceBusy();
+    }
+
     /**
      * Listens on the given server socket for incoming connections.
      */
     public void run() {
+
         while (true) {
             try {
-                // Control each connection for requests to read
-                // or responses to write
-                for (final BaseServerConnection conn : getHelper()
-                        .getConnections()) {
-                    if (conn.canRead()) {
-                        getHelper().getWorkerService().execute(new Runnable() {
-                            public void run() {
-                                conn.readRequests();
-                            }
-                        });
+                if (isWorkerServiceBusy()) {
+                    getHelper()
+                            .getLogger()
+                            .log(
+                                    Level.INFO,
+                                    "Can't submit additional tasks. Consider increasing the maximum number of threads.");
+                } else {
+                    // Control each connection for requests to read
+                    // or responses to write
+                    for (final BaseServerConnection conn : getHelper()
+                            .getConnections()) {
+                        if (conn.canRead()) {
+                            execute(new Runnable() {
+                                public void run() {
+                                    conn.readRequests();
+                                }
+                            });
+                        }
+
+                        if (conn.canWrite()) {
+                            execute(new Runnable() {
+                                public void run() {
+                                    conn.writeResponses();
+                                }
+                            });
+                        }
                     }
 
-                    if (conn.canWrite()) {
-                        getHelper().getWorkerService().execute(new Runnable() {
-                            public void run() {
-                                conn.writeResponses();
-                            }
-                        });
+                    // Control if there are some pending requests that could be
+                    // processed
+                    for (int i = 0; i < getHelper().getPendingRequests().size(); i++) {
+                        final ConnectedRequest request = getHelper()
+                                .getPendingRequests().poll();
+
+                        if (request != null) {
+                            execute(new Runnable() {
+                                public void run() {
+                                    getHelper().handle(request);
+                                }
+                            });
+                        }
                     }
-                }
 
-                // Control if there are some pending requests that could be
-                // processed
-                for (int i = 0; i < getHelper().getPendingRequests().size(); i++) {
-                    final ConnectedRequest request = getHelper()
-                            .getPendingRequests().poll();
+                    // Control if some pending responses that could be moved to
+                    // their respective connection queues
+                    for (int i = 0; i < getHelper().getPendingResponses()
+                            .size(); i++) {
+                        final Response response = getHelper()
+                                .getPendingResponses().poll();
 
-                    if (request != null) {
-                        getHelper().getWorkerService().execute(new Runnable() {
-                            public void run() {
-                                getHelper().handle(request);
-                            }
-                        });
-                    }
-                }
-
-                // Control if some pending responses that could be moved to
-                // their respective connection queues
-                for (int i = 0; i < getHelper().getPendingResponses().size(); i++) {
-                    final Response response = getHelper().getPendingResponses()
-                            .poll();
-
-                    if (response != null) {
-                        getHelper().getWorkerService().execute(new Runnable() {
-                            public void run() {
-                                getHelper().handle(response);
-                            }
-                        });
+                        if (response != null) {
+                            execute(new Runnable() {
+                                public void run() {
+                                    getHelper().handle(response);
+                                }
+                            });
+                        }
                     }
                 }
 

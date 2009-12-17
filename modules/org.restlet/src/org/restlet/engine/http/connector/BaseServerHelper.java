@@ -109,7 +109,7 @@ public abstract class BaseServerHelper extends ServerHelper {
     private volatile ExecutorService controllerService;
 
     /** The worker service. */
-    private volatile ExecutorService workerService;
+    private volatile ThreadPoolExecutor workerService;
 
     /** The connection acceptor service. */
     private volatile ExecutorService acceptorService;
@@ -201,7 +201,7 @@ public abstract class BaseServerHelper extends ServerHelper {
      * 
      * @return The handler service.
      */
-    protected ExecutorService createWorkerService() {
+    protected ThreadPoolExecutor createWorkerService() {
         int maxThreads = getMaxThreads();
         int minThreads = getMinThreads();
 
@@ -267,6 +267,11 @@ public abstract class BaseServerHelper extends ServerHelper {
         return pendingRequests;
     }
 
+    protected boolean isWorkerServiceBusy() {
+        return getWorkerService().getActiveCount() >= getWorkerService()
+                .getMaximumPoolSize();
+    }
+
     /**
      * Returns the queue of responses pending for writing.
      * 
@@ -291,7 +296,7 @@ public abstract class BaseServerHelper extends ServerHelper {
      * 
      * @return The connection handler service.
      */
-    public ExecutorService getWorkerService() {
+    public ThreadPoolExecutor getWorkerService() {
         return workerService;
     }
 
