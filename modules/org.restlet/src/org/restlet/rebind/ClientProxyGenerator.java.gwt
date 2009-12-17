@@ -33,6 +33,7 @@ package org.restlet.rebind;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 
@@ -42,15 +43,16 @@ import org.restlet.Response;
 import org.restlet.Uniform;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
+import org.restlet.engine.resource.GwtClientProxy;
 import org.restlet.representation.ObjectRepresentation;
 import org.restlet.representation.Representation;
-import org.restlet.resource.Result;
+import org.restlet.resource.ClientProxy;
 import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
-import org.restlet.resource.ClientProxy;
-import org.restlet.engine.resource.GwtClientProxy;
+import org.restlet.resource.Put;
 import org.restlet.resource.ResourceException;
+import org.restlet.resource.Result;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.ext.GeneratorContext;
@@ -180,11 +182,11 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
      *            The type of the object serializer/deserializer.
      */
     protected void generateFields(SerializableTypeOracle serializableTypeOracle) {
-        String typeSerializerName = serializableTypeOracle
-                .getTypeSerializerQualifiedName(getClassType());
+        String tsn = getTypeSerializerQualifiedName(getClassType());
+
         println("private static final String SERIALIZATION_POLICY =\"null\";");
-        println("private static final " + typeSerializerName
-                + " SERIALIZER = new " + typeSerializerName + "();");
+        println("private static final " + tsn + " SERIALIZER = new " + tsn
+                + "();");
     }
 
     /**
@@ -242,8 +244,7 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
 
                 if (i == (parameterTypes.length - 1)) {
                     if (AsyncCallback.class.isAssignableFrom(parameterType)
-                            || Result.class
-                                    .isAssignableFrom(parameterType)) {
+                            || Result.class.isAssignableFrom(parameterType)) {
                         callbackType = actualType;
 
                         if (callbackType == null) {
@@ -413,8 +414,7 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
                     Exception.class.getName());
             JType asyncType = getTypeOracle().getType(
                     AsyncCallback.class.getName());
-            JType cbType = getTypeOracle().getType(
-                    Result.class.getName());
+            JType cbType = getTypeOracle().getType(Result.class.getName());
 
             for (JMethod method : methods) {
                 if (!"getClientResource".equals(method.getName())) {
@@ -463,10 +463,24 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
                 getContext().commitResource(getLogger(), los).setPrivate(true);
             }
 
-            TypeSerializerCreator tsc = new TypeSerializerCreator(getLogger(),
-                    getSto(), getContext(), getSto()
-                            .getTypeSerializerQualifiedName(getClassType()));
-            tsc.realize(getLogger());
+            TypeSerializerCreator tsc = null;
+            try {
+                tsc = getTypeSerializerCreatorGwt1_7();
+            } catch (Exception e) {
+                try {
+                    tsc = getTypeSerializerCreatorGwt2_0();
+                } catch (Exception e2) {
+                    getLogger().log(TreeLogger.ERROR, "", e2);
+                    throw new UnableToCompleteException();
+                }
+            }
+            if (tsc != null) {
+                tsc.realize(getLogger());
+            } else {
+                getLogger().log(TreeLogger.ERROR,
+                        "Cannot create a TypeSerializerCreator instance.");
+                throw new UnableToCompleteException();
+            }
         } catch (NotFoundException e) {
             getLogger().log(TreeLogger.ERROR, "", e);
             throw new UnableToCompleteException();
@@ -565,6 +579,72 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
      */
     protected String getTypeQName() {
         return typeQName;
+    }
+
+    /**
+     * Instantiates a TypeSerializerCreator instance using the GWT1.7
+     * constructor.
+     * 
+     * @return An instance of a TypeSerializerCreator.
+     * @throws Exception
+     */
+    private TypeSerializerCreator getTypeSerializerCreatorGwt1_7()
+            throws Exception {
+        TypeSerializerCreator result = null;
+
+        Constructor<TypeSerializerCreator> c = null;
+        c = TypeSerializerCreator.class.getDeclaredConstructor(
+                TreeLogger.class, SerializableTypeOracle.class,
+                GeneratorContext.class, String.class);
+        result = c.newInstance(getLogger(), getSto(), getContext(),
+                getTypeSerializerQualifiedName(getClassType()));
+
+        return result;
+    }
+
+    /**
+     * Instantiates a TypeSerializerCreator instance using the GWT2.0
+     * constructor.
+     * 
+     * @return An instance of a TypeSerializerCreator.
+     * @throws Exception
+     */
+    private TypeSerializerCreator getTypeSerializerCreatorGwt2_0()
+            throws Exception {
+        TypeSerializerCreator result = null;
+
+        Constructor<TypeSerializerCreator> c = null;
+        c = TypeSerializerCreator.class.getDeclaredConstructor(
+                TreeLogger.class, SerializableTypeOracle.class,
+                GeneratorContext.class, String.class);
+        result = c.newInstance(getLogger(), getSto(), getContext(),
+                getTypeSerializerQualifiedName(getClassType()));
+
+        return result;
+    }
+
+    /**
+     * Returns the qualified name of the given type serializer.
+     * 
+     * @param type
+     *            The type serializer's type object.
+     * @return The qualified name of the given type serializer.
+     */
+    private String getTypeSerializerQualifiedName(JClassType type) {
+        StringBuilder sb = new StringBuilder();
+
+        JType leafType = type.getLeafType();
+        JClassType classOrInterface = leafType.isClassOrInterface();
+        // Add the package name.
+        String packageName = classOrInterface.getPackage().getName();
+        if (packageName != null && packageName.length() > 0) {
+            sb.append(packageName).append(".");
+        }
+        // Add the class name
+        String className = classOrInterface.getName();
+        className = className.replace('.', '_');
+        sb.append(className).append("_TypeSerializer");
+        return sb.toString();
     }
 
     /**
