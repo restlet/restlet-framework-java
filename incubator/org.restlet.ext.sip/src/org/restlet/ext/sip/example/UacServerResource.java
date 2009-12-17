@@ -30,6 +30,7 @@
 
 package org.restlet.ext.sip.example;
 
+import org.restlet.Context;
 import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
@@ -49,7 +50,9 @@ public class UacServerResource extends SipServerResource {
     private static final boolean TRACE = false;
 
     public static void main(String[] args) throws Exception {
-        Server server = new Server(Protocol.SIP, UacServerResource.class);
+        Server server = new Server(new Context(), Protocol.SIP,
+                UacServerResource.class);
+        server.getContext().getParameters().add("maxThreads", "100");
         server.start();
     }
 

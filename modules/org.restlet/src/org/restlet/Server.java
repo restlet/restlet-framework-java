@@ -148,6 +148,39 @@ public class Server extends Connector {
     }
 
     /**
+     * Constructor.
+     * 
+     * @param context
+     *            The context.
+     * @param protocol
+     *            The connector protocol.
+     * @param port
+     *            The listening port.
+     * @param nextClass
+     *            The next server resource.
+     */
+    public Server(Context context, Protocol protocol, int port,
+            Class<?> nextClass) {
+        this(context, protocol, null, port, new Finder(Context.getCurrent(),
+                nextClass));
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param context
+     *            The context.
+     * @param protocol
+     *            The connector protocol.
+     * @param nextClass
+     *            The next server resource.
+     */
+    public Server(Context context, Protocol protocol, Class<?> nextClass) {
+        this(context, protocol, null, (protocol == null) ? -1 : protocol
+                .getDefaultPort(), new Finder(Context.getCurrent(), nextClass));
+    }
+
+    /**
      * Constructor using the protocol's default port.
      * 
      * @param context
@@ -226,7 +259,7 @@ public class Server extends Connector {
      *            The listening port.
      */
     public Server(Protocol protocol, int port) {
-        this(null, protocol, port, null);
+        this(null, protocol, port, (Restlet) null);
     }
 
     /**
