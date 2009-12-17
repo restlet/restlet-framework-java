@@ -38,12 +38,12 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.restlet.data.Method;
 
+// [excludes gwt]
 /**
  * Utilities to manipulate Restlet annotations.
  * 
  * @author Jerome Louvel
  */
-//[excludes=gwt]
 public class AnnotationUtils {
 
     /** Annotation info cache. */

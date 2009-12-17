@@ -39,12 +39,12 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.service.MetadataService;
 
+// [excludes gwt]
 /**
  * Descriptor for method annotations.
  * 
  * @author Jerome Louvel
  */
-//[excludes=gwt]
 public class AnnotationInfo {
     /** The annotated Java method. */
     private final java.lang.reflect.Method javaMethod;
@@ -157,7 +157,8 @@ public class AnnotationInfo {
      */
     @SuppressWarnings("unchecked")
     public List<Variant> getResponseVariants(Representation requestEntity,
-            MetadataService metadataService, org.restlet.service.ConverterService converterService) {
+            MetadataService metadataService,
+            org.restlet.service.ConverterService converterService) {
         List<Variant> result = null;
         String value = getValue();
         boolean compatibleRequestEntity = true;

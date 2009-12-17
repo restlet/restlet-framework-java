@@ -33,12 +33,12 @@ package org.restlet.engine.resource;
 import org.restlet.data.MediaType;
 import org.restlet.representation.Variant;
 
+// [excludes gwt]
 /**
  * Variant that is declared by an annotated Java method.
  * 
  * @author Jerome Louvel
  */
-//[excludes=gwt]
 public class VariantInfo extends Variant {
 
     /** The optional annotation descriptor. */

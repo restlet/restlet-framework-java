@@ -37,12 +37,12 @@ import java.io.InputStream;
 import org.restlet.data.Range;
 import org.restlet.representation.Representation;
 
+// [excludes gwt]
 /**
  * Filters an input stream to expose only a given range.
  * 
  * @author Jerome Louvel
  */
-//[excludes=gwt]
 public class RangeInputStream extends FilterInputStream {
 
     /** The current position. */
