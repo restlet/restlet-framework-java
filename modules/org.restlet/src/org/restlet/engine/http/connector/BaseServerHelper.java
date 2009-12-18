@@ -206,9 +206,9 @@ public abstract class BaseServerHelper extends ServerHelper {
         int minThreads = getMinThreads();
 
         ThreadPoolExecutor result = new ThreadPoolExecutor(minThreads,
-                maxThreads, (long) getThreadMaxIdleTimeMs(),
-                TimeUnit.MILLISECONDS, new SynchronousQueue<Runnable>(),
-                new LoggingThreadFactory(getLogger()));
+                maxThreads, getThreadMaxIdleTimeMs(), TimeUnit.MILLISECONDS,
+                new SynchronousQueue<Runnable>(), new LoggingThreadFactory(
+                        getLogger()));
         result.setRejectedExecutionHandler(new RejectedExecutionHandler() {
             public void rejectedExecution(Runnable r,
                     ThreadPoolExecutor executor) {

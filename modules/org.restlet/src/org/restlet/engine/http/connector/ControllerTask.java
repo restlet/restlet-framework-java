@@ -126,8 +126,7 @@ public class ControllerTask implements Runnable {
                         }
 
                         // Control if there are some pending requests that could
-                        // be
-                        // processed
+                        // be processed
                         for (int i = 0; i < getHelper().getPendingRequests()
                                 .size(); i++) {
                             final ConnectedRequest request = getHelper()
@@ -143,8 +142,7 @@ public class ControllerTask implements Runnable {
                         }
 
                         // Control if some pending responses that could be moved
-                        // to
-                        // their respective connection queues
+                        // to their respective connection queues
                         for (int i = 0; i < getHelper().getPendingResponses()
                                 .size(); i++) {
                             final Response response = getHelper()
