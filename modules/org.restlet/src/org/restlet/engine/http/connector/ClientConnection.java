@@ -28,57 +28,69 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.sip;
+package org.restlet.engine.http.connector;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.Socket;
 
-import org.restlet.Response;
-import org.restlet.Server;
-import org.restlet.data.Protocol;
-import org.restlet.engine.http.connector.BaseServerHelper;
-import org.restlet.engine.http.connector.ConnectedRequest;
-import org.restlet.engine.http.connector.ServerConnection;
-import org.restlet.ext.sip.internal.SipServerConnection;
+import org.restlet.Client;
+import org.restlet.engine.ConnectorHelper;
 
 /**
- * SIP server helper based on NIO blocking sockets.
+ * Generic HTTP client connection.
  * 
  * @author Jerome Louvel
  */
-public class SipServerHelper extends BaseServerHelper {
+public class ClientConnection extends Connection<Client> {
 
     /**
      * Constructor.
      * 
-     * @param server
-     *            The server to help.
+     * @param helper
+     *            The parent connector helper.
+     * @param socket
+     *            The underlying socket.
+     * @throws IOException
      */
-    public SipServerHelper(Server server) {
-        super(server);
-        getProtocols().add(Protocol.SIP);
+    public ClientConnection(ConnectorHelper<Client> helper, Socket socket)
+            throws IOException {
+        super(helper, socket);
     }
 
     @Override
-    protected Response createResponse(ConnectedRequest request) {
-        return new SipResponse(request);
+    public boolean canRead() throws IOException {
+        // TODO Auto-generated method stub
+        return false;
     }
 
     @Override
-    protected ServerConnection createServerConnection(BaseServerHelper helper,
-            Socket socket) throws IOException {
-        return new SipServerConnection(helper, socket);
+    public boolean canWrite() throws IOException {
+        // TODO Auto-generated method stub
+        return false;
     }
 
     @Override
-    public synchronized void start() throws Exception {
-        getLogger().info("Starting the SIP server");
-        super.start();
+    public InputStream getInboundStream() {
+        return null;
     }
 
     @Override
-    public synchronized void stop() throws Exception {
-        getLogger().info("Stopping the SIP server");
-        super.stop();
+    public OutputStream getOutboundStream() {
+        return null;
     }
+
+    @Override
+    public void readMessages() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void writeMessages() {
+        // TODO Auto-generated method stub
+
+    }
+
 }

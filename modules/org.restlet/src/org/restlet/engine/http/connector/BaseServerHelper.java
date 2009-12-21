@@ -32,26 +32,20 @@ package org.restlet.engine.http.connector;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.nio.channels.ServerSocketChannel;
-import java.util.Queue;
-import java.util.Set;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.RejectedExecutionHandler;
-import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
+import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.engine.Engine;
-import org.restlet.engine.ServerHelper;
 import org.restlet.engine.log.LoggingThreadFactory;
 
 /**
@@ -65,31 +59,6 @@ import org.restlet.engine.log.LoggingThreadFactory;
  * <th>Default value</th>
  * <th>Description</th>
  * </tr>
- * <tr>
- * <td>minThreads</td>
- * <td>int</td>
- * <td>1</td>
- * <td>Minimum threads waiting to service requests.</td>
- * </tr>
- * <tr>
- * <td>maxThreads</td>
- * <td>int</td>
- * <td>255</td>
- * <td>Maximum threads that will service requests.</td>
- * </tr>
- * <tr>
- * <td>maxConnections</td>
- * <td>int</td>
- * <td>-1</td>
- * <td>Maximum concurrent connections.</td>
- * </tr>
- * <tr>
- * <td>threadMaxIdleTimeMs</td>
- * <td>int</td>
- * <td>60000</td>
- * <td>Time for an idle thread to wait for a request or read.</td>
- * </tr>
- * <tr>
  * <td>useForwardedForHeader</td>
  * <td>boolean</td>
  * <td>false</td>
@@ -103,13 +72,7 @@ import org.restlet.engine.log.LoggingThreadFactory;
  * 
  * @author Jerome Louvel
  */
-public abstract class BaseServerHelper extends ServerHelper {
-
-    /** The controller service. */
-    private volatile ExecutorService controllerService;
-
-    /** The worker service. */
-    private volatile ThreadPoolExecutor workerService;
+public abstract class BaseServerHelper extends BaseHelper<Server> {
 
     /** The connection acceptor service. */
     private volatile ExecutorService acceptorService;
@@ -120,15 +83,6 @@ public abstract class BaseServerHelper extends ServerHelper {
     /** The synchronization aid between listener and handler service. */
     private volatile CountDownLatch latch;
 
-    /** The set of active connections. */
-    private final Set<BaseServerConnection> connections;
-
-    /** The queue of requests pending for handling. */
-    private final Queue<ConnectedRequest> pendingRequests;
-
-    /** The queue of responses pending for writing. */
-    private final Queue<Response> pendingResponses;
-
     /**
      * Constructor.
      * 
@@ -137,9 +91,9 @@ public abstract class BaseServerHelper extends ServerHelper {
      */
     public BaseServerHelper(Server server) {
         super(server);
-        this.connections = new CopyOnWriteArraySet<BaseServerConnection>();
-        this.pendingRequests = new ConcurrentLinkedQueue<ConnectedRequest>();
-        this.pendingResponses = new ConcurrentLinkedQueue<Response>();
+
+        // Clear the ephemeral port
+        getAttributes().put("ephemeralPort", -1);
     }
 
     /**
@@ -152,21 +106,11 @@ public abstract class BaseServerHelper extends ServerHelper {
                 getLogger()));
     }
 
-    /**
-     * Creates the connector controller service.
-     * 
-     * @return The connector controller service.
-     */
-    protected ExecutorService createControllerService() {
-        return Executors.newSingleThreadExecutor(new LoggingThreadFactory(
-                getLogger()));
-    }
-
     protected Response createResponse(ConnectedRequest request) {
         return new Response(request);
     }
 
-    protected abstract BaseServerConnection createServerConnection(
+    protected abstract ServerConnection createServerConnection(
             BaseServerHelper helper, Socket socket) throws IOException;
 
     /**
@@ -196,116 +140,14 @@ public abstract class BaseServerHelper extends ServerHelper {
                 .getPort());
     }
 
-    /**
-     * Creates the handler service.
-     * 
-     * @return The handler service.
-     */
-    protected ThreadPoolExecutor createWorkerService() {
-        int maxThreads = getMaxThreads();
-        int minThreads = getMinThreads();
-
-        ThreadPoolExecutor result = new ThreadPoolExecutor(minThreads,
-                maxThreads, getThreadMaxIdleTimeMs(), TimeUnit.MILLISECONDS,
-                new SynchronousQueue<Runnable>(), new LoggingThreadFactory(
-                        getLogger()));
-        result.setRejectedExecutionHandler(new RejectedExecutionHandler() {
-            public void rejectedExecution(Runnable r,
-                    ThreadPoolExecutor executor) {
-                getLogger().warning("Unable to run the following task: " + r);
-            }
-        });
-        return result;
-    }
-
-    /**
-     * Returns the set of active connections.
-     * 
-     * @return The set of active connections.
-     */
-    protected Set<BaseServerConnection> getConnections() {
-        return connections;
-    }
-
-    /**
-     * Returns the maximum concurrent connections allowed. By default, it is
-     * unbounded.
-     * 
-     * @return The maximum concurrent connections allowed.
-     */
-    public int getMaxConnections() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "maxConnections", "-1"));
-    }
-
-    /**
-     * Returns the maximum threads that will service requests.
-     * 
-     * @return The maximum threads that will service requests.
-     */
-    public int getMaxThreads() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "maxThreads", "255"));
-    }
-
-    /**
-     * Returns the minimum threads waiting to service requests.
-     * 
-     * @return The minimum threads waiting to service requests.
-     */
-    public int getMinThreads() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "minThreads", "1"));
-    }
-
-    /**
-     * Returns the queue of requests pending for handling.
-     * 
-     * @return The queue of requests pending for handling.
-     */
-    protected Queue<ConnectedRequest> getPendingRequests() {
-        return pendingRequests;
-    }
-
-    protected boolean isWorkerServiceBusy() {
-        return getWorkerService().getActiveCount() >= (getWorkerService()
-                .getMaximumPoolSize() - 1);
-    }
-
-    /**
-     * Returns the queue of responses pending for writing.
-     * 
-     * @return The queue of responses pending for writing.
-     */
-    protected Queue<Response> getPendingResponses() {
-        return pendingResponses;
-    }
-
-    /**
-     * Returns the time for an idle thread to wait for a request or read.
-     * 
-     * @return The time for an idle thread to wait for a request or read.
-     */
-    public int getThreadMaxIdleTimeMs() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "threadMaxIdleTimeMs", "60000"));
-    }
-
-    /**
-     * Returns the connection handler service.
-     * 
-     * @return The connection handler service.
-     */
-    public ThreadPoolExecutor getWorkerService() {
-        return workerService;
-    }
-
-    public void handle(ConnectedRequest request) {
+    @Override
+    public void handle(Request request) {
         if (request != null) {
+            ConnectedRequest connectedRequest = (ConnectedRequest) request;
             Response response = null;
 
-            if (request.producesResponse()) {
-                response = createResponse(request);
+            if (connectedRequest.producesResponse()) {
+                response = createResponse(connectedRequest);
                 response.getServerInfo().setAgent(Engine.VERSION_HEADER);
             }
 
@@ -318,7 +160,7 @@ public abstract class BaseServerHelper extends ServerHelper {
             }
 
             if ((request.getEntity() != null)
-                    && (!request.producesResponse() || ((response != null) && response
+                    && (!connectedRequest.producesResponse() || ((response != null) && response
                             .isCommitted()))) {
                 try {
                     request.getEntity().exhaust();
@@ -334,27 +176,43 @@ public abstract class BaseServerHelper extends ServerHelper {
         handleNextResponse();
     }
 
+    /**
+     * Handles a call by invoking the helped Server's
+     * {@link Server#handle(Request, Response)} method.
+     * 
+     * @param request
+     *            The request to handle.
+     * @param response
+     *            The response to update.
+     */
+    @Override
+    public void handle(Request request, Response response) {
+        super.handle(request, response);
+        getHelped().handle(request, response);
+    }
+
+    @Override
     public void handle(Response response) {
         if (response != null) {
             ConnectedRequest request = (ConnectedRequest) response.getRequest();
-            BaseServerConnection connection = (BaseServerConnection) request
+            ServerConnection connection = (ServerConnection) request
                     .getConnection();
 
             // Check if the response is indeed the next one
             // to be written for this connection
-            if (connection.getInboundRequests().peek() == request) {
+            if (connection.getInboundMessages().peek() == request) {
                 // Check if a final response was received for the request
                 if (!response.getStatus().isInformational()) {
                     // Remove the matching request from the inbound queue
-                    connection.getInboundRequests().remove(request);
+                    connection.getInboundMessages().remove(request);
                 }
 
                 // Add the response to the outbound queue
-                connection.getOutboundResponses().add(response);
+                connection.getOutboundMessages().add(response);
 
                 // Attempt to directly write the response, preventing a context
                 // switching
-                connection.writeResponses();
+                connection.writeMessages();
             } else {
                 // Put the response at the beginning of the queue
                 getPendingResponses().add(response);
@@ -362,12 +220,42 @@ public abstract class BaseServerHelper extends ServerHelper {
         }
     }
 
+    /**
+     * 
+     */
     public void handleNextRequest() {
         handle(getPendingRequests().poll());
     }
 
+    /**
+     * 
+     */
     protected void handleNextResponse() {
         handle(getPendingResponses().poll());
+    }
+
+    /**
+     * Sets the ephemeral port in the attributes map if necessary.
+     * 
+     * @param localPort
+     *            The ephemeral local port.
+     */
+    public void setEphemeralPort(int localPort) {
+        // If an ephemeral port is used, make sure we update the attribute for
+        // the API
+        if (getHelped().getPort() == 0) {
+            getAttributes().put("ephemeralPort", localPort);
+        }
+    }
+
+    /**
+     * Sets the ephemeral port in the attributes map if necessary.
+     * 
+     * @param socket
+     *            The bound server socket.
+     */
+    public void setEphemeralPort(ServerSocket socket) {
+        setEphemeralPort(socket.getLocalPort());
     }
 
     @Override
@@ -376,8 +264,6 @@ public abstract class BaseServerHelper extends ServerHelper {
 
         // Create the thread services
         this.acceptorService = createAcceptorService();
-        this.controllerService = createControllerService();
-        this.workerService = createWorkerService();
 
         // Create the server socket
         this.serverSocketChannel = createServerSocket();
@@ -389,7 +275,6 @@ public abstract class BaseServerHelper extends ServerHelper {
         this.latch = new CountDownLatch(1);
         this.acceptorService.submit(new AcceptorTask(this,
                 this.serverSocketChannel, this.latch));
-        this.controllerService.submit(new ControllerTask(this));
 
         // Wait for the listener to start up and count down the latch
         // This blocks until the server is ready to receive connections
@@ -409,17 +294,8 @@ public abstract class BaseServerHelper extends ServerHelper {
     public synchronized void stop() throws Exception {
         super.stop();
 
-        if (this.workerService != null) {
-            // Gracefully shutdown the handlers, they should complete
-            // in a timely fashion
-            this.workerService.shutdown();
-            try {
-                this.workerService.awaitTermination(30, TimeUnit.SECONDS);
-            } catch (InterruptedException ex) {
-                getLogger().log(Level.FINE,
-                        "Interruption while shutting down internal server", ex);
-            }
-        }
+        // Clear the ephemeral port
+        getAttributes().put("ephemeralPort", -1);
 
         if (this.acceptorService != null) {
             // This must be forcefully interrupted because the thread

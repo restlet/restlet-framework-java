@@ -55,7 +55,7 @@ public class HttpServerHelper extends BaseServerHelper {
     }
 
     @Override
-    protected BaseServerConnection createServerConnection(
+    protected ServerConnection createServerConnection(
             BaseServerHelper helper, Socket socket) throws IOException {
         return new HttpServerConnection(helper, socket);
     }

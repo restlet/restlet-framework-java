@@ -49,6 +49,28 @@ import org.restlet.util.Series;
  * @author Jerome Louvel
  */
 public abstract class Call {
+    /**
+     * Returns true if the given exception is caused by a broken connection.
+     * 
+     * @param exception
+     *            The exception to inspect.
+     * @return True if the given exception is caused by a broken connection.
+     */
+    public static boolean isBroken(Exception exception) {
+        boolean result = false;
+
+        if (exception.getMessage() != null) {
+            result = (exception.getMessage().indexOf("Broken pipe") != -1)
+                    || (exception
+                            .getMessage()
+                            .equals(
+                                    "An existing connection must have been closed by the remote party.") || (exception
+                            .getMessage()
+                            .equals("An open connection has been abandonned by your network stack.")));
+        }
+
+        return result;
+    }
 
     /** The client IP address. */
     private volatile String clientAddress;
@@ -325,7 +347,7 @@ public abstract class Call {
      * @return True if the given exception is caused by a broken connection.
      */
     public boolean isConnectionBroken(Exception exception) {
-        return org.restlet.engine.http.connector.Connection.isBroken(exception);
+        return isBroken(exception);
     }
 
     /**

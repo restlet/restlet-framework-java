@@ -33,6 +33,7 @@ package org.restlet.engine.http.connector;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 
+import org.restlet.Request;
 import org.restlet.Response;
 
 /**
@@ -43,7 +44,7 @@ import org.restlet.Response;
 public class ControllerTask implements Runnable {
 
     /** The parent server helper. */
-    private final BaseServerHelper helper;
+    private final BaseHelper<?> helper;
 
     /** Indicates if the controller is overloaded. */
     private volatile boolean overloaded;
@@ -52,13 +53,20 @@ public class ControllerTask implements Runnable {
      * Constructor.
      * 
      * @param helper
-     *            The target server helper.
+     *            The parent connector helper.
      */
-    public ControllerTask(BaseServerHelper helper) {
+    public ControllerTask(BaseHelper<?> helper) {
         this.helper = helper;
         this.overloaded = false;
     }
 
+    /**
+     * Executes the next task in a separate thread provided by the worker
+     * service, only if the worker service isn't busy.
+     * 
+     * @param task
+     *            The next task to execute.
+     */
     protected void execute(Runnable task) {
         if (!isWorkerServiceBusy()) {
             getWorkerService().execute(task);
@@ -66,22 +74,38 @@ public class ControllerTask implements Runnable {
     }
 
     /**
-     * Returns the parent server helper.
+     * Returns the parent connector helper.
      * 
-     * @return The parent server helper.
+     * @return The parent connector helper.
      */
-    protected BaseServerHelper getHelper() {
+    protected BaseHelper<?> getHelper() {
         return helper;
     }
 
+    /**
+     * Returns the helper's worker service.
+     * 
+     * @return The helper's worker service.
+     */
     protected ExecutorService getWorkerService() {
         return getHelper().getWorkerService();
     }
 
+    /**
+     * Indicates if the controller is overloaded.
+     * 
+     * @return True if the controller is overloaded.
+     */
     public boolean isOverloaded() {
         return overloaded;
     }
 
+    /**
+     * Indicates if the helper's worker service is busy and can't accept more
+     * tasks.
+     * 
+     * @return True if the helper's worker service is busy.
+     */
     protected boolean isWorkerServiceBusy() {
         return getHelper().isWorkerServiceBusy();
     }
@@ -104,14 +128,13 @@ public class ControllerTask implements Runnable {
                                         Level.INFO,
                                         "Can't submit additional tasks. Consider increasing the maximum number of threads.");
                     } else {
-                        // Control each connection for requests to read
-                        // or responses to write
-                        for (final BaseServerConnection conn : getHelper()
+                        // Control each connection for messages to read or write
+                        for (final Connection<?> conn : getHelper()
                                 .getConnections()) {
                             if (conn.canRead()) {
                                 execute(new Runnable() {
                                     public void run() {
-                                        conn.readRequests();
+                                        conn.readMessages();
                                     }
                                 });
                             }
@@ -119,7 +142,7 @@ public class ControllerTask implements Runnable {
                             if (conn.canWrite()) {
                                 execute(new Runnable() {
                                     public void run() {
-                                        conn.writeResponses();
+                                        conn.writeMessages();
                                     }
                                 });
                             }
@@ -129,7 +152,7 @@ public class ControllerTask implements Runnable {
                         // be processed
                         for (int i = 0; i < getHelper().getPendingRequests()
                                 .size(); i++) {
-                            final ConnectedRequest request = getHelper()
+                            final Request request = getHelper()
                                     .getPendingRequests().poll();
 
                             if (request != null) {
@@ -160,7 +183,7 @@ public class ControllerTask implements Runnable {
                 }
 
                 // Sleep a bit
-                Thread.sleep(100);
+                Thread.sleep(getHelper().getControllerSleepTimeMs());
             } catch (Exception ex) {
                 this.helper.getLogger().log(Level.WARNING,
                         "Unexpected error while controlling connections", ex);
@@ -168,6 +191,12 @@ public class ControllerTask implements Runnable {
         }
     }
 
+    /**
+     * Indicates if the controller is overloaded.
+     * 
+     * @param overloaded
+     *            True if the controller is overloaded.
+     */
     public void setOverloaded(boolean overloaded) {
         this.overloaded = overloaded;
     }

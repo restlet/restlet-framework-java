@@ -37,7 +37,10 @@ import java.net.Socket;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.security.Principal;
+import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
+
+import javax.net.ssl.SSLSocket;
 
 import org.restlet.Context;
 import org.restlet.Response;
@@ -51,11 +54,17 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.engine.ConnectorHelper;
+import org.restlet.engine.Engine;
 import org.restlet.engine.http.header.ContentType;
 import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.http.header.HeaderReader;
 import org.restlet.engine.http.header.HeaderUtils;
 import org.restlet.engine.http.header.RangeUtils;
+import org.restlet.engine.http.io.ChunkedInputStream;
+import org.restlet.engine.http.io.ChunkedOutputStream;
+import org.restlet.engine.http.io.InboundStream;
+import org.restlet.engine.http.io.InputEntityStream;
+import org.restlet.engine.http.io.OutboundStream;
 import org.restlet.engine.util.Base64;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.InputRepresentation;
@@ -71,20 +80,27 @@ import org.restlet.util.Series;
  */
 public abstract class ServerConnection extends Connection<Server> {
 
-    /** Indicates if the connection should be persisted across calls. */
-    private volatile boolean persistent;
+    /** The inbound stream. */
+    private final InputStream inboundStream;
+
+    /** The outbound stream. */
+    private final OutputStream outboundStream;
 
     /**
      * Constructor.
      * 
      * @param helper
+     *            The parent connector helper.
      * @param socket
+     *            The underlying socket.
      * @throws IOException
      */
     public ServerConnection(ConnectorHelper<Server> helper, Socket socket)
             throws IOException {
         super(helper, socket);
-        this.persistent = false;
+        this.inboundStream = new InboundStream(socket.getInputStream());
+        this.outboundStream = new OutboundStream(socket.getOutputStream());
+        setPersistent(true);
     }
 
     /**
@@ -110,13 +126,65 @@ public abstract class ServerConnection extends Connection<Server> {
         HeaderUtils.addResponseHeaders(response, headers);
     }
 
+    @Override
+    public boolean canRead() throws IOException {
+        return (getState() == ConnectionState.OPEN) && !isInboundBusy()
+                && (getInboundMessages().size() == 0);
+    }
+
+    @Override
+    public boolean canWrite() throws IOException {
+        return !isOutboundBusy() && (getOutboundMessages().size() > 0);
+    }
+
+    @Override
+    public void close(boolean graceful) {
+        super.close(graceful);
+
+        try {
+            if (!getSocket().isClosed()) {
+                // Flush the output stream
+                getSocket().getOutputStream().flush();
+
+                if (!(getSocket() instanceof SSLSocket)) {
+                    getSocket().shutdownInput();
+                }
+
+                if (!(getSocket() instanceof SSLSocket)) {
+                    getSocket().shutdownOutput();
+                }
+            }
+        } catch (IOException ex) {
+            getLogger().log(Level.FINE, "Unable to shutdown server socket", ex);
+        }
+
+        try {
+            if (!getSocket().isClosed()) {
+                // As we don't support persistent connections,
+                // we must call this method to make sure sockets
+                // are properly released.
+                getSocket().close();
+            }
+        } catch (IOException ex) {
+            getLogger().log(Level.FINE, "Unable to close server socket", ex);
+        } finally {
+            setState(ConnectionState.CLOSED);
+        }
+    }
+
     /**
      * Asks the server connector to immediately commit the given response
      * associated to this request, making it ready to be sent back to the
      * client. Note that all server connectors don't necessarily support this
      * feature.
      */
-    public abstract void commit(Response response);
+    public void commit(Response response) {
+        if (response.getServerInfo().getAgent() == null) {
+            response.getServerInfo().setAgent(Engine.VERSION_HEADER);
+        }
+
+        getHelper().getPendingResponses().add(response);
+    }
 
     protected abstract ConnectedRequest createRequest(Context context,
             ServerConnection connection, String methodName, String resourceUri,
@@ -215,6 +283,21 @@ public abstract class ServerConnection extends Connection<Server> {
         return result;
     }
 
+    @Override
+    public BaseServerHelper getHelper() {
+        return (BaseServerHelper) super.getHelper();
+    }
+
+    @Override
+    public InputStream getInboundStream() {
+        return this.inboundStream;
+    }
+
+    @Override
+    public OutputStream getOutboundStream() {
+        return this.outboundStream;
+    }
+
     /**
      * Returns the request entity channel if it exists.
      * 
@@ -223,8 +306,10 @@ public abstract class ServerConnection extends Connection<Server> {
      * 
      * @return The request entity channel if it exists.
      */
-    public abstract ReadableByteChannel getRequestEntityChannel(long size,
-            boolean chunked);
+    public ReadableByteChannel getRequestEntityChannel(long size,
+            boolean chunked) {
+        return null;
+    }
 
     /**
      * Returns the request entity stream if it exists.
@@ -234,39 +319,113 @@ public abstract class ServerConnection extends Connection<Server> {
      * 
      * @return The request entity stream if it exists.
      */
-    public abstract InputStream getRequestEntityStream(long size,
-            boolean chunked);
+    public InputStream getRequestEntityStream(long size, boolean chunked) {
+        InputStream result = null;
+
+        if (chunked) {
+            result = new ChunkedInputStream(getInboundStream());
+        } else {
+            result = new InputEntityStream(getInboundStream(), size);
+        }
+
+        return result;
+    }
 
     /**
      * Returns the request head channel if it exists.
      * 
      * @return The request head channel if it exists.
      */
-    public abstract ReadableByteChannel getRequestHeadChannel();
+    public ReadableByteChannel getRequestHeadChannel() {
+        return null;
+    }
 
     /**
      * Returns the request head stream if it exists.
      * 
      * @return The request head stream if it exists.
      */
-    public abstract InputStream getRequestHeadStream();
+    public InputStream getRequestHeadStream() {
+        return getInboundStream();
+    }
 
     /**
      * Returns the response channel if it exists.
      * 
      * @return The response channel if it exists.
      */
-    public abstract WritableByteChannel getResponseEntityChannel(boolean chunked);
+    public WritableByteChannel getResponseEntityChannel(boolean chunked) {
+        return null;
+    }
 
     /**
      * Returns the response entity stream if it exists.
      * 
      * @return The response entity stream if it exists.
      */
-    public abstract OutputStream getResponseEntityStream(boolean chunked);
+    public OutputStream getResponseEntityStream(boolean chunked) {
+        OutputStream result = getOutboundStream();
 
-    public boolean isPersistent() {
-        return persistent;
+        if (chunked) {
+            result = new ChunkedOutputStream(result);
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the connection handler service.
+     * 
+     * @return The connection handler service.
+     */
+    protected ExecutorService getWorkerService() {
+        return getHelper().getWorkerService();
+    }
+
+    /**
+     * Reads the next requests. Only one request at a time if pipelining isn't
+     * enabled.
+     */
+    @Override
+    public void readMessages() {
+        try {
+            if (isPipelining()) {
+                // TODO
+                // boolean idempotentSequence = true;
+            } else {
+                boolean doRead = false;
+
+                // We want to make sure that requests are read by one thread
+                // at a time without blocking other concurrent threads during
+                // the reading
+                synchronized (getInboundMessages()) {
+                    if (canRead()) {
+                        doRead = true;
+                        setInboundBusy(doRead);
+                    }
+                }
+
+                if (doRead) {
+                    readRequest();
+                }
+            }
+        } catch (Exception e) {
+            getLogger()
+                    .log(
+                            Level.FINE,
+                            "Error while reading an HTTP request. Closing the connection: ",
+                            e.getMessage());
+            getLogger()
+                    .log(
+                            Level.FINE,
+                            "Error while reading an HTTP request. Closing the connection.",
+                            e);
+            close(false);
+        }
+
+        // Immediately attempt to handle the next pending request, trying
+        // to prevent a thread context switch.
+        getHelper().handleNextRequest();
     }
 
     /**
@@ -362,11 +521,17 @@ public abstract class ServerConnection extends Connection<Server> {
                 requestUri, version, requestHeaders,
                 createRequestEntity(requestHeaders), false, null);
 
-        return result;
-    }
+        if (result != null) {
+            if (result.producesResponse()) {
+                // Add it to the connection queue
+                getInboundMessages().add(result);
+            }
 
-    public void setPersistent(boolean persistent) {
-        this.persistent = persistent;
+            // Add it to the helper queue
+            getHelper().getPendingRequests().add(result);
+        }
+
+        return result;
     }
 
     /**
@@ -380,6 +545,41 @@ public abstract class ServerConnection extends Connection<Server> {
     protected boolean shouldResponseBeChunked(Response response) {
         return (response.getEntity() != null)
                 && (response.getEntity().getSize() == Representation.UNKNOWN_SIZE);
+    }
+
+    /**
+     * Writes the next responses. Only one response at a time if pipelining
+     * isn't enabled.
+     */
+    @Override
+    public void writeMessages() {
+        try {
+            if (isPipelining()) {
+                // TODO
+            } else {
+                Response response = null;
+
+                // We want to make sure that responses are written in order
+                // without blocking other concurrent threads during the writing
+                synchronized (getOutboundMessages()) {
+                    if (canWrite()) {
+                        response = (Response) getOutboundMessages().poll();
+                        setOutboundBusy((response != null));
+                    }
+                }
+
+                writeResponse(response);
+
+                if (getState() == ConnectionState.CLOSING) {
+                    close(true);
+                }
+            }
+        } catch (Exception e) {
+            getLogger().log(Level.WARNING,
+                    "Error while writing an HTTP response: ", e.getMessage());
+            getLogger().log(Level.INFO, "Error while writing an HTTP response",
+                    e);
+        }
     }
 
     /**
@@ -500,26 +700,17 @@ public abstract class ServerConnection extends Connection<Server> {
                 // Write the response to the client
                 writeResponse(response, headers);
             } catch (Exception e) {
-                if (isBroken(e)) {
-                    getLogger()
-                            .log(
-                                    Level.INFO,
-                                    "The connection was broken. It was probably closed by the client.",
-                                    e);
-                } else {
-                    getLogger().log(Level.SEVERE,
-                            "An exception occured writing the response entity",
-                            e);
-                    response.setStatus(Status.SERVER_ERROR_INTERNAL,
-                            "An exception occured writing the response entity");
-                    response.setEntity(null);
+                getLogger().log(Level.INFO,
+                        "An exception occured writing the response entity", e);
+                response.setStatus(Status.SERVER_ERROR_INTERNAL,
+                        "An exception occured writing the response entity");
+                response.setEntity(null);
 
-                    try {
-                        writeResponse(response, headers);
-                    } catch (IOException ioe) {
-                        getLogger().log(Level.WARNING,
-                                "Unable to send error response", ioe);
-                    }
+                try {
+                    writeResponse(response, headers);
+                } catch (IOException ioe) {
+                    getLogger().log(Level.WARNING,
+                            "Unable to send error response", ioe);
                 }
             } finally {
                 if (response.getOnSent() != null) {
@@ -677,7 +868,7 @@ public abstract class ServerConnection extends Connection<Server> {
      */
     protected void writeResponseHead(Response response,
             Series<Parameter> headers) throws IOException {
-        // Do nothing by default
+        writeResponseHead(response, getOutboundStream(), headers);
     }
 
 }

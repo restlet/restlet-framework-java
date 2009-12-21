@@ -44,7 +44,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
-public class HttpServerConnection extends BaseServerConnection {
+public class HttpServerConnection extends ServerConnection {
 
     public HttpServerConnection(BaseServerHelper helper, Socket socket)
             throws IOException {

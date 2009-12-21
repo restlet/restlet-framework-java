@@ -49,6 +49,8 @@ public class UacServerResource extends SipServerResource {
 
     private static final boolean TRACE = false;
 
+    // private static AtomicLong TAG = new AtomicLong(1000);
+
     public static void main(String[] args) throws Exception {
         Server server = new Server(new Context(), Protocol.SIP,
                 UacServerResource.class);
@@ -70,15 +72,23 @@ public class UacServerResource extends SipServerResource {
         provisionalResponse.setStatus(SipStatus.INFO_TRYING);
         provisionalResponse.commit();
 
+        sleep();
+
         // Indicate that the user phone is ringing
         provisionalResponse = new Response(getRequest());
         provisionalResponse.setStatus(SipStatus.INFO_RINGING);
         provisionalResponse.commit();
 
+        sleep();
+
         // Indicate that the session is progressing
-        provisionalResponse = new Response(getRequest());
-        provisionalResponse.setStatus(SipStatus.INFO_SESSION_PROGRESS);
-        provisionalResponse.commit();
+        // provisionalResponse = new Response(getRequest());
+        // provisionalResponse.setStatus(SipStatus.INFO_SESSION_PROGRESS);
+        // provisionalResponse.commit();
+        // 
+        // sleep();
+
+        // getRequest().setTo(getTo() + ";tag=restlet" + TAG.incrementAndGet());
 
         // Set the final response
         setStatus(SipStatus.SUCCESS_OK);
@@ -91,8 +101,18 @@ public class UacServerResource extends SipServerResource {
     }
 
     /**
+     * Makes the current thread sleep.
+     */
+    private void sleep() {
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * Displays info about the current request.
-     * 
      */
     private void trace() {
         if (TRACE) {
