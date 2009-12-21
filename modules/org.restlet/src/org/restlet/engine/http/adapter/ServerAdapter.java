@@ -84,23 +84,11 @@ public class ServerAdapter extends Adapter {
      * @param response
      *            The response returned.
      */
-    @SuppressWarnings("unchecked")
     protected void addResponseHeaders(HttpResponse response) {
-        // Add all the necessary response headers
-        final Series<Parameter> responseHeaders = response.getHttpCall()
-                .getResponseHeaders();
         try {
-            HeaderUtils.addResponseHeaders(response, responseHeaders);
-
-            // Add user-defined extension headers
-            Series<Parameter> additionalHeaders = (Series<Parameter>) response
-                    .getAttributes().get(HeaderConstants.ATTRIBUTE_HEADERS);
-            addAdditionalHeaders(responseHeaders, additionalHeaders);
-
-            // Set the server name again
-            response.getHttpCall().getResponseHeaders().add(
-                    HeaderConstants.HEADER_SERVER,
-                    response.getServerInfo().getAgent());
+            // Add all the necessary response headers
+            HeaderUtils.addResponseHeaders(response, response.getHttpCall()
+                    .getResponseHeaders());
 
             // Set the status code in the response
             if (response.getStatus() != null) {

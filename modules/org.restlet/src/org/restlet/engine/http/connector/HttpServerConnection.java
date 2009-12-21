@@ -67,7 +67,7 @@ public class HttpServerConnection extends ServerConnection {
             String version, Series<Parameter> headers, Representation entity,
             boolean confidential, Principal userPrincipal) {
         return new ConnectedRequest(getHelper().getContext(), this, methodName,
-                resourceUri, version, headers, createRequestEntity(headers),
+                resourceUri, version, headers, createInboundEntity(headers),
                 false, null);
     }
 }

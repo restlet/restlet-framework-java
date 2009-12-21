@@ -261,7 +261,10 @@ public abstract class Connection<T extends Connector> {
      * @return True if the connection's socket can be read for inbound data.
      * @throws IOException
      */
-    public abstract boolean canRead() throws IOException;
+    public boolean canRead() throws IOException {
+        return (getState() == ConnectionState.OPEN) && !isInboundBusy()
+                && (getInboundMessages().size() == 0);
+    }
 
     /**
      * Indicates if the connection's socket can be written for outbound data.
@@ -269,7 +272,10 @@ public abstract class Connection<T extends Connector> {
      * @return True if the connection's socket can be written for outbound data.
      * @throws IOException
      */
-    public abstract boolean canWrite() throws IOException;
+    public boolean canWrite() throws IOException {
+        return (getState() == ConnectionState.OPEN) && !isOutboundBusy()
+                && (getOutboundMessages().size() > 0);
+    }
 
     /**
      * Closes the connection. By default, set the state to
@@ -279,7 +285,35 @@ public abstract class Connection<T extends Connector> {
      *            Indicates if a graceful close should be attempted.
      */
     public void close(boolean graceful) {
-        setState(ConnectionState.CLOSED);
+        try {
+            if (!getSocket().isClosed()) {
+                // Flush the output stream
+                getSocket().getOutputStream().flush();
+
+                if (!(getSocket() instanceof SSLSocket)) {
+                    getSocket().shutdownInput();
+                }
+
+                if (!(getSocket() instanceof SSLSocket)) {
+                    getSocket().shutdownOutput();
+                }
+            }
+        } catch (IOException ex) {
+            getLogger().log(Level.FINE, "Unable to shutdown socket", ex);
+        }
+
+        try {
+            if (!getSocket().isClosed()) {
+                // As we don't support persistent connections,
+                // we must call this method to make sure sockets
+                // are properly released.
+                getSocket().close();
+            }
+        } catch (IOException ex) {
+            getLogger().log(Level.FINE, "Unable to close socket", ex);
+        } finally {
+            setState(ConnectionState.CLOSED);
+        }
     }
 
     /**

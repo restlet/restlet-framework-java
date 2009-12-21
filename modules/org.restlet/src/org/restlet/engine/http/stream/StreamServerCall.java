@@ -174,6 +174,11 @@ public class StreamServerCall extends ServerCall {
         return getRequestStream();
     }
 
+    /**
+     * Returns the request input stream.
+     * 
+     * @return The request input stream.
+     */
     private InputStream getRequestStream() {
         return this.requestStream;
     }

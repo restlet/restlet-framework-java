@@ -44,7 +44,6 @@ import java.util.logging.Level;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Server;
-import org.restlet.engine.Engine;
 import org.restlet.engine.log.LoggingThreadFactory;
 
 /**
@@ -140,7 +139,6 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
 
             if (connectedRequest.isExpectingResponse()) {
                 response = createResponse(connectedRequest);
-                response.getServerInfo().setAgent(Engine.VERSION_HEADER);
             }
 
             handle(request, response);
