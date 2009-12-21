@@ -34,7 +34,6 @@ import java.io.IOException;
 import java.net.Socket;
 
 import org.restlet.Client;
-import org.restlet.engine.ConnectorHelper;
 
 /**
  * HTTP client connection for the default HTTP connector.
@@ -52,7 +51,7 @@ public class HttpClientConnection extends ClientConnection {
      *            The associated socket.
      * @throws IOException
      */
-    public HttpClientConnection(ConnectorHelper<Client> helper, Socket socket)
+    public HttpClientConnection(BaseHelper<Client> helper, Socket socket)
             throws IOException {
         super(helper, socket);
     }

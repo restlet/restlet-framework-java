@@ -36,7 +36,6 @@ import java.io.OutputStream;
 import java.net.Socket;
 
 import org.restlet.Client;
-import org.restlet.engine.ConnectorHelper;
 
 /**
  * Generic HTTP client connection.
@@ -54,20 +53,18 @@ public class ClientConnection extends Connection<Client> {
      *            The underlying socket.
      * @throws IOException
      */
-    public ClientConnection(ConnectorHelper<Client> helper, Socket socket)
+    public ClientConnection(BaseHelper<Client> helper, Socket socket)
             throws IOException {
         super(helper, socket);
     }
 
     @Override
     public boolean canRead() throws IOException {
-        // TODO Auto-generated method stub
         return false;
     }
 
     @Override
     public boolean canWrite() throws IOException {
-        // TODO Auto-generated method stub
         return false;
     }
 
@@ -83,14 +80,10 @@ public class ClientConnection extends Connection<Client> {
 
     @Override
     public void readMessages() {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void writeMessages() {
-        // TODO Auto-generated method stub
-
     }
 
 }

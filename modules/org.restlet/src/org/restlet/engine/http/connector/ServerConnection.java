@@ -62,9 +62,7 @@ import org.restlet.engine.http.header.HeaderUtils;
 import org.restlet.engine.http.header.RangeUtils;
 import org.restlet.engine.http.io.ChunkedInputStream;
 import org.restlet.engine.http.io.ChunkedOutputStream;
-import org.restlet.engine.http.io.InboundStream;
 import org.restlet.engine.http.io.InputEntityStream;
-import org.restlet.engine.http.io.OutboundStream;
 import org.restlet.engine.util.Base64;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.InputRepresentation;
@@ -80,12 +78,6 @@ import org.restlet.util.Series;
  */
 public abstract class ServerConnection extends Connection<Server> {
 
-    /** The inbound stream. */
-    private final InputStream inboundStream;
-
-    /** The outbound stream. */
-    private final OutputStream outboundStream;
-
     /**
      * Constructor.
      * 
@@ -95,12 +87,9 @@ public abstract class ServerConnection extends Connection<Server> {
      *            The underlying socket.
      * @throws IOException
      */
-    public ServerConnection(ConnectorHelper<Server> helper, Socket socket)
+    public ServerConnection(BaseHelper<Server> helper, Socket socket)
             throws IOException {
         super(helper, socket);
-        this.inboundStream = new InboundStream(socket.getInputStream());
-        this.outboundStream = new OutboundStream(socket.getOutputStream());
-        setPersistent(true);
     }
 
     /**
@@ -286,16 +275,6 @@ public abstract class ServerConnection extends Connection<Server> {
     @Override
     public BaseServerHelper getHelper() {
         return (BaseServerHelper) super.getHelper();
-    }
-
-    @Override
-    public InputStream getInboundStream() {
-        return this.inboundStream;
-    }
-
-    @Override
-    public OutputStream getOutboundStream() {
-        return this.outboundStream;
     }
 
     /**

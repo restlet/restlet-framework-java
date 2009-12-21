@@ -49,8 +49,9 @@ import javax.net.ssl.SSLSocket;
 import org.restlet.Connector;
 import org.restlet.Message;
 import org.restlet.data.Parameter;
-import org.restlet.engine.ConnectorHelper;
 import org.restlet.engine.http.header.HeaderConstants;
+import org.restlet.engine.http.io.InboundStream;
+import org.restlet.engine.http.io.OutboundStream;
 import org.restlet.engine.security.SslUtils;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
@@ -70,6 +71,12 @@ public abstract class Connection<T extends Connector> {
     /** Indicates if the output of the socket is busy. */
     private volatile boolean outboundBusy;
 
+    /** The inbound stream. */
+    private final InputStream inboundStream;
+
+    /** The outbound stream. */
+    private final OutputStream outboundStream;
+
     /** Indicates if the connection should be persisted across calls. */
     private volatile boolean persistent;
 
@@ -83,7 +90,7 @@ public abstract class Connection<T extends Connector> {
     private final Socket socket;
 
     /** The parent connector helper. */
-    private final ConnectorHelper<T> helper;
+    private final BaseHelper<T> helper;
 
     /** The queue of inbound messages. */
     private final Queue<Message> inboundMessages;
@@ -100,12 +107,13 @@ public abstract class Connection<T extends Connector> {
      *            The underlying socket.
      * @throws IOException
      */
-    public Connection(ConnectorHelper<T> helper, Socket socket)
-            throws IOException {
+    public Connection(BaseHelper<T> helper, Socket socket) throws IOException {
         this.helper = helper;
+        this.inboundStream = new InboundStream(socket.getInputStream());
         this.inboundMessages = new ConcurrentLinkedQueue<Message>();
+        this.outboundStream = new OutboundStream(socket.getOutputStream());
         this.outboundMessages = new ConcurrentLinkedQueue<Message>();
-        this.persistent = false;
+        this.persistent = helper.isPersistingConnections();
         this.pipelining = false;
         this.state = ConnectionState.CLOSED;
         this.socket = socket;
@@ -289,7 +297,7 @@ public abstract class Connection<T extends Connector> {
      * 
      * @return The parent connector helper.
      */
-    public ConnectorHelper<T> getHelper() {
+    public BaseHelper<T> getHelper() {
         return helper;
     }
 
@@ -307,7 +315,9 @@ public abstract class Connection<T extends Connector> {
      * 
      * @return The inbound stream.
      */
-    public abstract InputStream getInboundStream();
+    public InputStream getInboundStream() {
+        return this.inboundStream;
+    }
 
     /**
      * Returns the logger.
@@ -332,7 +342,9 @@ public abstract class Connection<T extends Connector> {
      * 
      * @return The outbound stream.
      */
-    public abstract OutputStream getOutboundStream();
+    public OutputStream getOutboundStream() {
+        return this.outboundStream;
+    }
 
     /**
      * Returns the socket port.

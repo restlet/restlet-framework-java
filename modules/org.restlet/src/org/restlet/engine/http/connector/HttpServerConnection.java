@@ -37,7 +37,6 @@ import java.security.Principal;
 import org.restlet.Context;
 import org.restlet.Server;
 import org.restlet.data.Parameter;
-import org.restlet.engine.ConnectorHelper;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 
@@ -57,7 +56,7 @@ public class HttpServerConnection extends ServerConnection {
      *            The associated socket.
      * @throws IOException
      */
-    public HttpServerConnection(ConnectorHelper<Server> helper, Socket socket)
+    public HttpServerConnection(BaseHelper<Server> helper, Socket socket)
             throws IOException {
         super(helper, socket);
     }

@@ -85,6 +85,12 @@ import org.restlet.engine.log.LoggingThreadFactory;
  * <td>Maximum number of concurrent connections per host (IP address).</td>
  * </tr>
  * <tr>
+ * <td>persistingConnections</td>
+ * <td>boolean</td>
+ * <td>true</td>
+ * <td>Indicates if connections should be kept alive after a call.</td>
+ * </tr>
+ * <tr>
  * <td>threadMaxIdleTimeMs</td>
  * <td>int</td>
  * <td>60000</td>
@@ -224,6 +230,16 @@ public abstract class BaseHelper<T extends Connector> extends
     public int getMaxThreads() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
                 "maxThreads", "255"));
+    }
+
+    /**
+     * Returns the maximum threads that will service requests.
+     * 
+     * @return The maximum threads that will service requests.
+     */
+    public boolean isPersistingConnections() {
+        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
+                "persistingConnections", "true"));
     }
 
     /**
