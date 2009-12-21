@@ -522,7 +522,7 @@ public abstract class ServerConnection extends Connection<Server> {
                 createRequestEntity(requestHeaders), false, null);
 
         if (result != null) {
-            if (result.producesResponse()) {
+            if (result.isExpectingResponse()) {
                 // Add it to the connection queue
                 getInboundMessages().add(result);
             }

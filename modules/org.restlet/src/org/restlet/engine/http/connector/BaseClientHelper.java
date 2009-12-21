@@ -32,43 +32,49 @@ package org.restlet.engine.http.connector;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.security.Principal;
 
-import org.restlet.Context;
-import org.restlet.Server;
-import org.restlet.data.Parameter;
-import org.restlet.engine.ConnectorHelper;
-import org.restlet.representation.Representation;
-import org.restlet.util.Series;
+import org.restlet.Client;
+import org.restlet.Request;
+import org.restlet.Response;
 
 /**
- * HTTP server connection for the default HTTP connector.
+ * Base client helper based on NIO blocking sockets. Here is the list of
+ * parameters that are supported. They should be set in the Server's context
+ * before it is started:
+ * <table>
+ * <tr>
+ * <th>Parameter name</th>
+ * <th>Value type</th>
+ * <th>Default value</th>
+ * <th>Description</th>
+ * </tr>
+ * <td>*</td>
+ * <td>*</td>
+ * <td>*</td>
+ * <td>*.</td>
+ * </tr>
+ * </table>
  * 
  * @author Jerome Louvel
  */
-public class HttpServerConnection extends ServerConnection {
+public class BaseClientHelper extends BaseHelper<Client> {
 
-    /**
-     * Constructor.
-     * 
-     * @param helper
-     *            The parent helper.
-     * @param socket
-     *            The associated socket.
-     * @throws IOException
-     */
-    public HttpServerConnection(ConnectorHelper<Server> helper, Socket socket)
-            throws IOException {
-        super(helper, socket);
+    public BaseClientHelper(Client connector) {
+        super(connector);
     }
 
     @Override
-    protected ConnectedRequest createRequest(Context context,
-            ServerConnection connection, String methodName, String resourceUri,
-            String version, Series<Parameter> headers, Representation entity,
-            boolean confidential, Principal userPrincipal) {
-        return new ConnectedRequest(getHelper().getContext(), this, methodName,
-                resourceUri, version, headers, createRequestEntity(headers),
-                false, null);
+    protected Connection<?> createConnection(BaseHelper<Client> helper,
+            Socket socket) throws IOException {
+        return null;
     }
+
+    @Override
+    public void handle(Request request) {
+    }
+
+    @Override
+    public void handle(Response response) {
+    }
+
 }

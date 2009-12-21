@@ -32,21 +32,16 @@ package org.restlet.engine.http.connector;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.security.Principal;
 
-import org.restlet.Context;
-import org.restlet.Server;
-import org.restlet.data.Parameter;
+import org.restlet.Client;
 import org.restlet.engine.ConnectorHelper;
-import org.restlet.representation.Representation;
-import org.restlet.util.Series;
 
 /**
- * HTTP server connection for the default HTTP connector.
+ * HTTP client connection for the default HTTP connector.
  * 
  * @author Jerome Louvel
  */
-public class HttpServerConnection extends ServerConnection {
+public class HttpClientConnection extends ClientConnection {
 
     /**
      * Constructor.
@@ -57,18 +52,9 @@ public class HttpServerConnection extends ServerConnection {
      *            The associated socket.
      * @throws IOException
      */
-    public HttpServerConnection(ConnectorHelper<Server> helper, Socket socket)
+    public HttpClientConnection(ConnectorHelper<Client> helper, Socket socket)
             throws IOException {
         super(helper, socket);
     }
 
-    @Override
-    protected ConnectedRequest createRequest(Context context,
-            ServerConnection connection, String methodName, String resourceUri,
-            String version, Series<Parameter> headers, Representation entity,
-            boolean confidential, Principal userPrincipal) {
-        return new ConnectedRequest(getHelper().getContext(), this, methodName,
-                resourceUri, version, headers, createRequestEntity(headers),
-                false, null);
-    }
 }

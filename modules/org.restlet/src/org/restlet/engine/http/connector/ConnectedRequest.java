@@ -707,7 +707,12 @@ public class ConnectedRequest extends Request {
         return result;
     }
 
-    protected boolean producesResponse() {
+    /**
+     * Indicates if an associated response is expected.
+     * 
+     * @return True if an associated response is expected.
+     */
+    protected boolean isExpectingResponse() {
         return true;
     }
 

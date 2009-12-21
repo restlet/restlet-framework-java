@@ -303,6 +303,20 @@ public abstract class BaseHelper<T extends Connector> extends
     public abstract void handle(Response response);
 
     /**
+     * Handles the next request.
+     */
+    public void handleNextRequest() {
+        handle(getPendingRequests().poll());
+    }
+
+    /**
+     * Handles the next response.
+     */
+    protected void handleNextResponse() {
+        handle(getPendingResponses().poll());
+    }
+
+    /**
      * Indicates if the worker service is busy. This state is detected by
      * checking if the number of active task running is superior or equal to the
      * maximum pool size.

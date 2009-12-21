@@ -32,43 +32,44 @@ package org.restlet.engine.http.connector;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.security.Principal;
 
-import org.restlet.Context;
-import org.restlet.Server;
-import org.restlet.data.Parameter;
-import org.restlet.engine.ConnectorHelper;
-import org.restlet.representation.Representation;
-import org.restlet.util.Series;
+import org.restlet.Client;
+import org.restlet.data.Protocol;
 
 /**
- * HTTP server connection for the default HTTP connector.
+ * HTTP client helper based on NIO blocking sockets.
  * 
  * @author Jerome Louvel
  */
-public class HttpServerConnection extends ServerConnection {
+public class HttpClientHelper extends BaseClientHelper {
 
     /**
      * Constructor.
      * 
-     * @param helper
-     *            The parent helper.
-     * @param socket
-     *            The associated socket.
-     * @throws IOException
+     * @param client
+     *            The client to help.
      */
-    public HttpServerConnection(ConnectorHelper<Server> helper, Socket socket)
-            throws IOException {
-        super(helper, socket);
+    public HttpClientHelper(Client client) {
+        super(client);
+        getProtocols().add(Protocol.HTTP);
+        getProtocols().add(Protocol.HTTPS);
     }
 
     @Override
-    protected ConnectedRequest createRequest(Context context,
-            ServerConnection connection, String methodName, String resourceUri,
-            String version, Series<Parameter> headers, Representation entity,
-            boolean confidential, Principal userPrincipal) {
-        return new ConnectedRequest(getHelper().getContext(), this, methodName,
-                resourceUri, version, headers, createRequestEntity(headers),
-                false, null);
+    protected Connection<?> createConnection(BaseHelper<Client> helper,
+            Socket socket) throws IOException {
+        return new HttpClientConnection(helper, socket);
+    }
+
+    @Override
+    public synchronized void start() throws Exception {
+        getLogger().info("Starting the default HTTP client");
+        super.start();
+    }
+
+    @Override
+    public synchronized void stop() throws Exception {
+        getLogger().info("Stopping the default HTTP client");
+        super.stop();
     }
 }

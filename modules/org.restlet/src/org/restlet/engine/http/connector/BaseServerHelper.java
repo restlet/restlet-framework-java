@@ -138,7 +138,7 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
             ConnectedRequest connectedRequest = (ConnectedRequest) request;
             Response response = null;
 
-            if (connectedRequest.producesResponse()) {
+            if (connectedRequest.isExpectingResponse()) {
                 response = createResponse(connectedRequest);
                 response.getServerInfo().setAgent(Engine.VERSION_HEADER);
             }
@@ -152,7 +152,7 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
             }
 
             if ((request.getEntity() != null)
-                    && (!connectedRequest.producesResponse() || ((response != null) && response
+                    && (!connectedRequest.isExpectingResponse() || ((response != null) && response
                             .isCommitted()))) {
                 try {
                     request.getEntity().exhaust();
@@ -210,20 +210,6 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
                 getPendingResponses().add(response);
             }
         }
-    }
-
-    /**
-     * 
-     */
-    public void handleNextRequest() {
-        handle(getPendingRequests().poll());
-    }
-
-    /**
-     * 
-     */
-    protected void handleNextResponse() {
-        handle(getPendingResponses().poll());
     }
 
     /**

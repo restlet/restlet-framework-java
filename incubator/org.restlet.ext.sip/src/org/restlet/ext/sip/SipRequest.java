@@ -122,7 +122,7 @@ public class SipRequest extends ConnectedRequest {
     }
 
     @Override
-    protected boolean producesResponse() {
+    protected boolean isExpectingResponse() {
         return !SipMethod.ACK.equals(getMethod());
     }
 
