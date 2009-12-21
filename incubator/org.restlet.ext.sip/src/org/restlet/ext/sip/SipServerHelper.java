@@ -33,12 +33,13 @@ package org.restlet.ext.sip;
 import java.io.IOException;
 import java.net.Socket;
 
+import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
+import org.restlet.engine.http.connector.BaseHelper;
 import org.restlet.engine.http.connector.BaseServerHelper;
-import org.restlet.engine.http.connector.ConnectedRequest;
-import org.restlet.engine.http.connector.ServerConnection;
+import org.restlet.engine.http.connector.Connection;
 import org.restlet.ext.sip.internal.SipServerConnection;
 
 /**
@@ -60,12 +61,12 @@ public class SipServerHelper extends BaseServerHelper {
     }
 
     @Override
-    protected Response createResponse(ConnectedRequest request) {
+    protected Response createResponse(Request request) {
         return new SipResponse(request);
     }
 
     @Override
-    protected ServerConnection createServerConnection(BaseServerHelper helper,
+    protected Connection<?> createConnection(BaseHelper<Server> helper,
             Socket socket) throws IOException {
         return new SipServerConnection(helper, socket);
     }

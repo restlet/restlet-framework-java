@@ -36,8 +36,9 @@ import java.security.Principal;
 
 import org.restlet.Context;
 import org.restlet.Response;
+import org.restlet.Server;
 import org.restlet.data.Parameter;
-import org.restlet.engine.http.connector.BaseServerHelper;
+import org.restlet.engine.http.connector.BaseHelper;
 import org.restlet.engine.http.connector.ConnectedRequest;
 import org.restlet.engine.http.connector.ServerConnection;
 import org.restlet.engine.http.header.HeaderConstants;
@@ -53,7 +54,16 @@ import org.restlet.util.Series;
  */
 public class SipServerConnection extends ServerConnection {
 
-    public SipServerConnection(BaseServerHelper helper, Socket socket)
+    /**
+     * Constructor.
+     * 
+     * @param helper
+     *            The parent helper.
+     * @param socket
+     *            The associated socket.
+     * @throws IOException
+     */
+    public SipServerConnection(BaseHelper<Server> helper, Socket socket)
             throws IOException {
         super(helper, socket);
     }

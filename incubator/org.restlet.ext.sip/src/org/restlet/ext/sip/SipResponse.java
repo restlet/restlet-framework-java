@@ -40,6 +40,12 @@ import org.restlet.Response;
  */
 public class SipResponse extends Response {
 
+    /**
+     * Constructor.
+     * 
+     * @param request
+     *            The associated request.
+     */
     public SipResponse(Request request) {
         super(request);
     }

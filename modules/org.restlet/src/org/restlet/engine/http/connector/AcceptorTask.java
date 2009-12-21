@@ -90,15 +90,17 @@ public class AcceptorTask implements Runnable {
      */
     public void run() {
         this.latch.countDown();
+
         while (true) {
             try {
                 SocketChannel client = this.serverSocket.accept();
                 int connectionsCount = getHelper().getConnections().size();
 
-                if ((getHelper().getMaxConnections() == -1)
-                        || (connectionsCount <= getHelper().getMaxConnections())) {
-                    final ServerConnection connection = getHelper()
-                            .createServerConnection(getHelper(),
+                if ((getHelper().getMaxTotalConnections() == -1)
+                        || (connectionsCount <= getHelper()
+                                .getMaxTotalConnections())) {
+                    final Connection<?> connection = getHelper()
+                            .createConnection(getHelper(),
                                     client.socket());
                     connection.open();
                     getHelper().getConnections().add(connection);

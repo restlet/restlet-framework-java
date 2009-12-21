@@ -30,6 +30,8 @@
 
 package org.restlet.engine.http.connector;
 
+import java.io.IOException;
+import java.net.Socket;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -71,10 +73,16 @@ import org.restlet.engine.log.LoggingThreadFactory;
  * <td>Maximum threads that will service requests.</td>
  * </tr>
  * <tr>
- * <td>maxConnections</td>
+ * <td>maxTotalConnections</td>
  * <td>int</td>
  * <td>-1</td>
- * <td>Maximum concurrent connections.</td>
+ * <td>Maximum number of concurrent connections in total.</td>
+ * </tr>
+ * <tr>
+ * <td>maxConnectionsPerHost</td>
+ * <td>int</td>
+ * <td>-1</td>
+ * <td>Maximum number of concurrent connections per host (IP address).</td>
  * </tr>
  * <tr>
  * <td>threadMaxIdleTimeMs</td>
@@ -123,6 +131,19 @@ public abstract class BaseHelper<T extends Connector> extends
     }
 
     /**
+     * Creates a connection associated to the given socket.
+     * 
+     * @param helper
+     *            The parent helper.
+     * @param socket
+     *            The associated socket.
+     * @return The new connection.
+     * @throws IOException
+     */
+    protected abstract Connection<?> createConnection(BaseHelper<T> helper,
+            Socket socket) throws IOException;
+
+    /**
      * Creates the connector controller service.
      * 
      * @return The connector controller service.
@@ -130,6 +151,17 @@ public abstract class BaseHelper<T extends Connector> extends
     protected ExecutorService createControllerService() {
         return Executors.newSingleThreadExecutor(new LoggingThreadFactory(
                 getLogger()));
+    }
+
+    /**
+     * Creates the response object.
+     * 
+     * @param request
+     *            The associated request.
+     * @return The response object.
+     */
+    protected Response createResponse(Request request) {
+        return new Response(request);
     }
 
     /**
@@ -174,14 +206,14 @@ public abstract class BaseHelper<T extends Connector> extends
     }
 
     /**
-     * Returns the maximum concurrent connections allowed. By default, it is
-     * unbounded.
+     * Returns the maximum concurrent connections per host (IP address). By
+     * default, it is unbounded.
      * 
-     * @return The maximum concurrent connections allowed.
+     * @return Maximum number of concurrent connections per host (IP address).
      */
-    public int getMaxConnections() {
+    public int getMaxConnectionsPerHost() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "maxConnections", "-1"));
+                "maxConnectionsPerHost", "-1"));
     }
 
     /**
@@ -192,6 +224,17 @@ public abstract class BaseHelper<T extends Connector> extends
     public int getMaxThreads() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
                 "maxThreads", "255"));
+    }
+
+    /**
+     * Returns the maximum number of concurrent connections allowed. By default,
+     * it is unbounded.
+     * 
+     * @return The maximum number of concurrent connections allowed.
+     */
+    public int getMaxTotalConnections() {
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "maxTotalConnections", "-1"));
     }
 
     /**
