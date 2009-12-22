@@ -31,39 +31,24 @@
 package org.restlet.engine.http.connector;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.security.Principal;
-import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 
 import org.restlet.Context;
+import org.restlet.Message;
 import org.restlet.Response;
 import org.restlet.Server;
-import org.restlet.data.Digest;
-import org.restlet.data.Encoding;
 import org.restlet.data.Form;
-import org.restlet.data.Language;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.engine.ConnectorHelper;
-import org.restlet.engine.http.header.ContentType;
 import org.restlet.engine.http.header.HeaderConstants;
-import org.restlet.engine.http.header.HeaderReader;
 import org.restlet.engine.http.header.HeaderUtils;
-import org.restlet.engine.http.header.RangeUtils;
-import org.restlet.engine.http.io.ChunkedInputStream;
-import org.restlet.engine.http.io.ChunkedOutputStream;
-import org.restlet.engine.http.io.InputEntityStream;
-import org.restlet.engine.util.Base64;
-import org.restlet.representation.EmptyRepresentation;
-import org.restlet.representation.InputRepresentation;
-import org.restlet.representation.ReadableRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.service.ConnectorService;
 import org.restlet.util.Series;
@@ -116,97 +101,6 @@ public abstract class ServerConnection extends Connection<Server> {
     }
 
     /**
-     * Returns the inbound message entity if available.
-     * 
-     * @param headers
-     *            The headers to use.
-     * @return The inbound message if available.
-     */
-    public Representation createInboundEntity(Series<Parameter> headers) {
-        Representation result = null;
-        long contentLength = HeaderUtils.getContentLength(headers);
-        boolean chunkedEncoding = HeaderUtils.isChunkedEncoding(headers);
-
-        // Create the representation
-        if ((contentLength != Representation.UNKNOWN_SIZE) || chunkedEncoding) {
-            InputStream inboundEntityStream = getInboundEntityStream(
-                    contentLength, chunkedEncoding);
-            ReadableByteChannel inboundEntityChannel = getInboundEntityChannel(
-                    contentLength, chunkedEncoding);
-
-            if (inboundEntityStream != null) {
-                result = new InputRepresentation(inboundEntityStream, null,
-                        contentLength) {
-                    @Override
-                    public void release() {
-                        super.release();
-                        setInboundBusy(false);
-                    }
-                };
-            } else if (inboundEntityChannel != null) {
-                result = new ReadableRepresentation(inboundEntityChannel, null,
-                        contentLength) {
-                    @Override
-                    public void release() {
-                        super.release();
-                        setInboundBusy(false);
-                    }
-                };
-            }
-
-            result.setSize(contentLength);
-        } else {
-            result = new EmptyRepresentation();
-
-            // Mark the inbound as free so new messages can be read if possible
-            setInboundBusy(false);
-        }
-
-        if (headers != null) {
-            // Extract some interesting header values
-            for (Parameter header : headers) {
-                if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_CONTENT_ENCODING)) {
-                    HeaderReader hr = new HeaderReader(header.getValue());
-                    String value = hr.readValue();
-
-                    while (value != null) {
-                        Encoding encoding = Encoding.valueOf(value);
-
-                        if (!encoding.equals(Encoding.IDENTITY)) {
-                            result.getEncodings().add(encoding);
-                        }
-                        value = hr.readValue();
-                    }
-                } else if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_CONTENT_LANGUAGE)) {
-                    HeaderReader hr = new HeaderReader(header.getValue());
-                    String value = hr.readValue();
-
-                    while (value != null) {
-                        result.getLanguages().add(Language.valueOf(value));
-                        value = hr.readValue();
-                    }
-                } else if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_CONTENT_TYPE)) {
-                    ContentType contentType = new ContentType(header.getValue());
-                    result.setMediaType(contentType.getMediaType());
-                    result.setCharacterSet(contentType.getCharacterSet());
-                } else if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_CONTENT_RANGE)) {
-                    RangeUtils.parseContentRange(header.getValue(), result);
-                } else if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_CONTENT_MD5)) {
-                    result.setDigest(new Digest(Digest.ALGORITHM_MD5, Base64
-                            .decode(header.getValue())));
-                }
-            }
-        }
-
-        return result;
-    }
-
-    /**
      * Creates a new request.
      * 
      * @param context
@@ -234,133 +128,8 @@ public abstract class ServerConnection extends Connection<Server> {
             String version, Series<Parameter> headers, Representation entity,
             boolean confidential, Principal userPrincipal);
 
-    /**
-     * Returns the inbound message entity channel if it exists.
-     * 
-     * @param size
-     *            The expected entity size or -1 if unknown.
-     * 
-     * @return The inbound message entity channel if it exists.
-     */
-    public ReadableByteChannel getInboundEntityChannel(long size,
-            boolean chunked) {
-        return null;
-    }
-
-    /**
-     * Returns the inbound message entity stream if it exists.
-     * 
-     * @param size
-     *            The expected entity size or -1 if unknown.
-     * 
-     * @return The inbound message entity stream if it exists.
-     */
-    public InputStream getInboundEntityStream(long size, boolean chunked) {
-        InputStream result = null;
-
-        if (chunked) {
-            result = new ChunkedInputStream(getInboundStream());
-        } else {
-            result = new InputEntityStream(getInboundStream(), size);
-        }
-
-        return result;
-    }
-
-    /**
-     * Returns the inbound message head channel if it exists.
-     * 
-     * @return The inbound message head channel if it exists.
-     */
-    public ReadableByteChannel getInboundHeadChannel() {
-        return null;
-    }
-
-    /**
-     * Returns the inbound message head stream if it exists.
-     * 
-     * @return The inbound message head stream if it exists.
-     */
-    public InputStream getInboundHeadStream() {
-        return getInboundStream();
-    }
-
-    /**
-     * Returns the response channel if it exists.
-     * 
-     * @return The response channel if it exists.
-     */
-    public WritableByteChannel getOutboundEntityChannel(boolean chunked) {
-        return null;
-    }
-
-    /**
-     * Returns the response entity stream if it exists.
-     * 
-     * @return The response entity stream if it exists.
-     */
-    public OutputStream getOutboundEntityStream(boolean chunked) {
-        OutputStream result = getOutboundStream();
-
-        if (chunked) {
-            result = new ChunkedOutputStream(result);
-        }
-
-        return result;
-    }
-
-    /**
-     * Returns the connection handler service.
-     * 
-     * @return The connection handler service.
-     */
-    protected ExecutorService getWorkerService() {
-        return getHelper().getWorkerService();
-    }
-
-    /**
-     * Reads the next messages. Only one message at a time if pipelining isn't
-     * enabled.
-     */
     @Override
-    public void readMessages() {
-        try {
-            if (isPipelining()) {
-                // TODO
-                // boolean idempotentSequence = true;
-            } else {
-                boolean doRead = false;
-
-                // We want to make sure that messages are read by one thread
-                // at a time without blocking other concurrent threads during
-                // the reading
-                synchronized (getInboundMessages()) {
-                    if (canRead()) {
-                        doRead = true;
-                        setInboundBusy(doRead);
-                    }
-                }
-
-                if (doRead) {
-                    readRequest();
-                }
-            }
-        } catch (Exception e) {
-            getLogger()
-                    .log(
-                            Level.FINE,
-                            "Error while reading an HTTP request. Closing the connection: ",
-                            e.getMessage());
-            getLogger()
-                    .log(
-                            Level.FINE,
-                            "Error while reading an HTTP request. Closing the connection.",
-                            e);
-            close(false);
-        }
-
-        // Immediately attempt to handle the next pending request, trying
-        // to prevent a thread context switch.
+    protected void handleNextMessage() {
         getHelper().handleNextRequest();
     }
 
@@ -371,7 +140,8 @@ public abstract class ServerConnection extends Connection<Server> {
      * @return The next request sent by the client if available.
      * @throws IOException
      */
-    protected ConnectedRequest readRequest() throws IOException {
+    @Override
+    protected ConnectedRequest readMessage() throws IOException {
         ConnectedRequest result = null;
         String requestMethod = null;
         String requestUri = null;
@@ -471,75 +241,28 @@ public abstract class ServerConnection extends Connection<Server> {
     }
 
     /**
-     * Indicates if the response should be chunked because its length is
-     * unknown.
-     * 
-     * @param response
-     *            The response to analyze.
-     * @return True if the response should be chunked.
-     */
-    protected boolean shouldResponseBeChunked(Response response) {
-        return (response.getEntity() != null)
-                && (response.getEntity().getSize() == Representation.UNKNOWN_SIZE);
-    }
-
-    /**
      * Writes the entity headers for the given response.
      * 
-     * @param response
-     *            The response returned.
+     * @param entity
+     *            The entity to inspect.
      */
-    protected void writeEntityHeaders(Response response,
+    protected void writeEntityHeaders(Representation entity,
             Series<Parameter> headers) {
-        HeaderUtils.addEntityHeaders(response.getEntity(), headers);
+        HeaderUtils.addEntityHeaders(entity, headers);
     }
 
     /**
-     * Writes the next responses. Only one response at a time if pipelining
-     * isn't enabled.
-     */
-    @Override
-    public void writeMessages() {
-        try {
-            if (isPipelining()) {
-                // TODO
-            } else {
-                Response response = null;
-
-                // We want to make sure that responses are written in order
-                // without blocking other concurrent threads during the writing
-                synchronized (getOutboundMessages()) {
-                    if (canWrite()) {
-                        response = (Response) getOutboundMessages().poll();
-                        setOutboundBusy((response != null));
-                    }
-                }
-
-                writeResponse(response);
-
-                if (getState() == ConnectionState.CLOSING) {
-                    close(true);
-                }
-            }
-        } catch (Exception e) {
-            getLogger().log(Level.WARNING,
-                    "Error while writing an HTTP response: ", e.getMessage());
-            getLogger().log(Level.INFO, "Error while writing an HTTP response",
-                    e);
-        }
-    }
-
-    /**
-     * Commits the changes to a handled uniform call back into the original HTTP
-     * call. The default implementation first invokes the "addResponseHeaders"
-     * then asks the "htppCall" to send the response back to the client.
+     * Write the given response on the socket.
      * 
      * @param response
-     *            The high-level response.
+     *            The response to write.
      */
     @SuppressWarnings("unchecked")
-    protected void writeResponse(Response response) {
-        if (response != null) {
+    @Override
+    protected void writeMessage(Message message) {
+        if (message instanceof Response) {
+            Response response = (Response) message;
+
             // Prepare the headers
             Series<Parameter> headers = new Form();
 
@@ -547,12 +270,12 @@ public abstract class ServerConnection extends Connection<Server> {
                 if ((response.getRequest().getMethod() != null)
                         && response.getRequest().getMethod()
                                 .equals(Method.HEAD)) {
-                    writeEntityHeaders(response, headers);
+                    writeEntityHeaders(response.getEntity(), headers);
                     response.setEntity(null);
                 } else if (Method.GET.equals(response.getRequest().getMethod())
                         && Status.SUCCESS_OK.equals(response.getStatus())
                         && (!response.isEntityAvailable())) {
-                    writeEntityHeaders(response, headers);
+                    writeEntityHeaders(response.getEntity(), headers);
                     getLogger()
                             .warning(
                                     "A response with a 200 (Ok) status should have an entity. Make sure that resource \""
@@ -561,7 +284,7 @@ public abstract class ServerConnection extends Connection<Server> {
                                             + "\" returns one or sets the status to 204 (No content).");
                 } else if (response.getStatus().equals(
                         Status.SUCCESS_NO_CONTENT)) {
-                    writeEntityHeaders(response, headers);
+                    writeEntityHeaders(response.getEntity(), headers);
 
                     if (response.isEntityAvailable()) {
                         getLogger()
@@ -585,7 +308,7 @@ public abstract class ServerConnection extends Connection<Server> {
                     }
                 } else if (response.getStatus().equals(
                         Status.REDIRECTION_NOT_MODIFIED)) {
-                    writeEntityHeaders(response, headers);
+                    writeEntityHeaders(response.getEntity(), headers);
 
                     if (response.isEntityAvailable()) {
                         getLogger()
@@ -607,7 +330,7 @@ public abstract class ServerConnection extends Connection<Server> {
                         response.setEntity(null);
                     }
                 } else {
-                    writeEntityHeaders(response, headers);
+                    writeEntityHeaders(response.getEntity(), headers);
 
                     if ((response.getEntity() != null)
                             && !response.getEntity().isAvailable()) {
@@ -792,7 +515,7 @@ public abstract class ServerConnection extends Connection<Server> {
         }
 
         // Check if 'Transfer-Encoding' header should be set
-        if (shouldResponseBeChunked(response)) {
+        if (shouldBeChunked(response.getEntity())) {
             headers.add(HeaderConstants.HEADER_TRANSFER_ENCODING, "chunked");
         }
 

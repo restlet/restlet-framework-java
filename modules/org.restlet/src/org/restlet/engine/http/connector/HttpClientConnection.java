@@ -34,6 +34,10 @@ import java.io.IOException;
 import java.net.Socket;
 
 import org.restlet.Client;
+import org.restlet.Context;
+import org.restlet.data.Parameter;
+import org.restlet.representation.Representation;
+import org.restlet.util.Series;
 
 /**
  * HTTP client connection for the default HTTP connector.
@@ -54,6 +58,13 @@ public class HttpClientConnection extends ClientConnection {
     public HttpClientConnection(BaseHelper<Client> helper, Socket socket)
             throws IOException {
         super(helper, socket);
+    }
+
+    @Override
+    protected ConnectedResponse createResponse(Context context,
+            ClientConnection connection, Series<Parameter> headers,
+            Representation entity) {
+        return null;
     }
 
 }

@@ -34,11 +34,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 import java.security.cert.Certificate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -48,12 +51,25 @@ import javax.net.ssl.SSLSocket;
 
 import org.restlet.Connector;
 import org.restlet.Message;
+import org.restlet.data.Digest;
+import org.restlet.data.Encoding;
+import org.restlet.data.Language;
 import org.restlet.data.Parameter;
+import org.restlet.engine.http.header.ContentType;
 import org.restlet.engine.http.header.HeaderConstants;
+import org.restlet.engine.http.header.HeaderReader;
+import org.restlet.engine.http.header.HeaderUtils;
+import org.restlet.engine.http.header.RangeUtils;
+import org.restlet.engine.http.io.ChunkedInputStream;
+import org.restlet.engine.http.io.ChunkedOutputStream;
 import org.restlet.engine.http.io.InboundStream;
+import org.restlet.engine.http.io.InputEntityStream;
 import org.restlet.engine.http.io.OutboundStream;
 import org.restlet.engine.security.SslUtils;
+import org.restlet.engine.util.Base64;
+import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.InputRepresentation;
+import org.restlet.representation.ReadableRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 
@@ -317,6 +333,97 @@ public abstract class Connection<T extends Connector> {
     }
 
     /**
+     * Returns the inbound message entity if available.
+     * 
+     * @param headers
+     *            The headers to use.
+     * @return The inbound message if available.
+     */
+    public Representation createInboundEntity(Series<Parameter> headers) {
+        Representation result = null;
+        long contentLength = HeaderUtils.getContentLength(headers);
+        boolean chunkedEncoding = HeaderUtils.isChunkedEncoding(headers);
+
+        // Create the representation
+        if ((contentLength != Representation.UNKNOWN_SIZE) || chunkedEncoding) {
+            InputStream inboundEntityStream = getInboundEntityStream(
+                    contentLength, chunkedEncoding);
+            ReadableByteChannel inboundEntityChannel = getInboundEntityChannel(
+                    contentLength, chunkedEncoding);
+
+            if (inboundEntityStream != null) {
+                result = new InputRepresentation(inboundEntityStream, null,
+                        contentLength) {
+                    @Override
+                    public void release() {
+                        super.release();
+                        setInboundBusy(false);
+                    }
+                };
+            } else if (inboundEntityChannel != null) {
+                result = new ReadableRepresentation(inboundEntityChannel, null,
+                        contentLength) {
+                    @Override
+                    public void release() {
+                        super.release();
+                        setInboundBusy(false);
+                    }
+                };
+            }
+
+            result.setSize(contentLength);
+        } else {
+            result = new EmptyRepresentation();
+
+            // Mark the inbound as free so new messages can be read if possible
+            setInboundBusy(false);
+        }
+
+        if (headers != null) {
+            // Extract some interesting header values
+            for (Parameter header : headers) {
+                if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_CONTENT_ENCODING)) {
+                    HeaderReader hr = new HeaderReader(header.getValue());
+                    String value = hr.readValue();
+
+                    while (value != null) {
+                        Encoding encoding = Encoding.valueOf(value);
+
+                        if (!encoding.equals(Encoding.IDENTITY)) {
+                            result.getEncodings().add(encoding);
+                        }
+                        value = hr.readValue();
+                    }
+                } else if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_CONTENT_LANGUAGE)) {
+                    HeaderReader hr = new HeaderReader(header.getValue());
+                    String value = hr.readValue();
+
+                    while (value != null) {
+                        result.getLanguages().add(Language.valueOf(value));
+                        value = hr.readValue();
+                    }
+                } else if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_CONTENT_TYPE)) {
+                    ContentType contentType = new ContentType(header.getValue());
+                    result.setMediaType(contentType.getMediaType());
+                    result.setCharacterSet(contentType.getCharacterSet());
+                } else if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_CONTENT_RANGE)) {
+                    RangeUtils.parseContentRange(header.getValue(), result);
+                } else if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_CONTENT_MD5)) {
+                    result.setDigest(new Digest(Digest.ALGORITHM_MD5, Base64
+                            .decode(header.getValue())));
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
      * Returns the socket IP address.
      * 
      * @return The socket IP address.
@@ -333,6 +440,57 @@ public abstract class Connection<T extends Connector> {
      */
     public BaseHelper<T> getHelper() {
         return helper;
+    }
+
+    /**
+     * Returns the inbound message entity channel if it exists.
+     * 
+     * @param size
+     *            The expected entity size or -1 if unknown.
+     * 
+     * @return The inbound message entity channel if it exists.
+     */
+    public ReadableByteChannel getInboundEntityChannel(long size,
+            boolean chunked) {
+        return null;
+    }
+
+    /**
+     * Returns the inbound message entity stream if it exists.
+     * 
+     * @param size
+     *            The expected entity size or -1 if unknown.
+     * 
+     * @return The inbound message entity stream if it exists.
+     */
+    public InputStream getInboundEntityStream(long size, boolean chunked) {
+        InputStream result = null;
+
+        if (chunked) {
+            result = new ChunkedInputStream(getInboundStream());
+        } else {
+            result = new InputEntityStream(getInboundStream(), size);
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the inbound message head channel if it exists.
+     * 
+     * @return The inbound message head channel if it exists.
+     */
+    public ReadableByteChannel getInboundHeadChannel() {
+        return null;
+    }
+
+    /**
+     * Returns the inbound message head stream if it exists.
+     * 
+     * @return The inbound message head stream if it exists.
+     */
+    public InputStream getInboundHeadStream() {
+        return getInboundStream();
     }
 
     /**
@@ -360,6 +518,30 @@ public abstract class Connection<T extends Connector> {
      */
     public Logger getLogger() {
         return getHelper().getLogger();
+    }
+
+    /**
+     * Returns the response channel if it exists.
+     * 
+     * @return The response channel if it exists.
+     */
+    public WritableByteChannel getOutboundEntityChannel(boolean chunked) {
+        return null;
+    }
+
+    /**
+     * Returns the response entity stream if it exists.
+     * 
+     * @return The response entity stream if it exists.
+     */
+    public OutputStream getOutboundEntityStream(boolean chunked) {
+        OutputStream result = getOutboundStream();
+
+        if (chunked) {
+            result = new ChunkedOutputStream(result);
+        }
+
+        return result;
     }
 
     /**
@@ -492,6 +674,20 @@ public abstract class Connection<T extends Connector> {
     }
 
     /**
+     * Returns the connection handler service.
+     * 
+     * @return The connection handler service.
+     */
+    protected ExecutorService getWorkerService() {
+        return getHelper().getWorkerService();
+    }
+
+    /**
+     * Asks the parent helper to handle the next message.
+     */
+    protected abstract void handleNextMessage();
+
+    /**
      * Indicates if the input of the socket is busy.
      * 
      * @return True if the input of the socket is busy.
@@ -536,9 +732,58 @@ public abstract class Connection<T extends Connector> {
     }
 
     /**
-     * Reads inbound messages from the socket.
+     * Reads the next message received via the inbound stream or channel. Note
+     * that the optional entity is not fully read.
+     * 
+     * @return The next message received if available.
+     * @throws IOException
      */
-    public abstract void readMessages();
+    protected abstract Message readMessage() throws IOException;
+
+    /**
+     * Reads inbound messages from the socket. Only one message at a time if
+     * pipelining isn't enabled.
+     */
+    public void readMessages() {
+        try {
+            if (isPipelining()) {
+                // TODO
+                // boolean idempotentSequence = true;
+            } else {
+                boolean doRead = false;
+
+                // We want to make sure that messages are read by one thread
+                // at a time without blocking other concurrent threads during
+                // the reading
+                synchronized (getInboundMessages()) {
+                    if (canRead()) {
+                        doRead = true;
+                        setInboundBusy(doRead);
+                    }
+                }
+
+                if (doRead) {
+                    readMessage();
+                }
+            }
+        } catch (Exception e) {
+            getLogger()
+                    .log(
+                            Level.FINE,
+                            "Error while reading an HTTP message. Closing the connection: ",
+                            e.getMessage());
+            getLogger()
+                    .log(
+                            Level.FINE,
+                            "Error while reading an HTTP message. Closing the connection.",
+                            e);
+            close(false);
+        }
+
+        // Immediately attempt to handle the next pending message, trying
+        // to prevent a thread context switch.
+        handleNextMessage();
+    }
 
     /**
      * Indicates if the input of the socket is busy.
@@ -591,8 +836,57 @@ public abstract class Connection<T extends Connector> {
     }
 
     /**
-     * Writes outbound messages to the socket.
+     * Indicates if the entity should be chunked because its length is unknown.
+     * 
+     * @param response
+     *            The response to analyze.
+     * @return True if the response should be chunked.
      */
-    public abstract void writeMessages();
+    protected boolean shouldBeChunked(Representation entity) {
+        return (entity != null)
+                && (entity.getSize() == Representation.UNKNOWN_SIZE);
+    }
+
+    /**
+     * Write the given message on the socket.
+     * 
+     * @param message
+     *            The message to write.
+     */
+    protected abstract void writeMessage(Message message);
+
+    /**
+     * Writes outbound messages to the socket. Only one response at a time if
+     * pipelining isn't enabled.
+     */
+    public void writeMessages() {
+        try {
+            if (isPipelining()) {
+                // TODO
+            } else {
+                Message message = null;
+
+                // We want to make sure that responses are written in order
+                // without blocking other concurrent threads during the writing
+                synchronized (getOutboundMessages()) {
+                    if (canWrite()) {
+                        message = getOutboundMessages().poll();
+                        setOutboundBusy((message != null));
+                    }
+                }
+
+                writeMessage(message);
+
+                if (getState() == ConnectionState.CLOSING) {
+                    close(true);
+                }
+            }
+        } catch (Exception e) {
+            getLogger().log(Level.WARNING,
+                    "Error while writing an HTTP message: ", e.getMessage());
+            getLogger().log(Level.INFO, "Error while writing an HTTP message",
+                    e);
+        }
+    }
 
 }

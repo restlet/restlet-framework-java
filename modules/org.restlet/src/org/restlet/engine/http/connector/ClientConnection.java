@@ -31,18 +31,23 @@
 package org.restlet.engine.http.connector;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.Socket;
 
 import org.restlet.Client;
+import org.restlet.Context;
+import org.restlet.Message;
+import org.restlet.Request;
+import org.restlet.data.Parameter;
+import org.restlet.engine.http.header.HeaderUtils;
+import org.restlet.representation.Representation;
+import org.restlet.util.Series;
 
 /**
  * Generic HTTP client connection.
  * 
  * @author Jerome Louvel
  */
-public class ClientConnection extends Connection<Client> {
+public abstract class ClientConnection extends Connection<Client> {
 
     /**
      * Constructor.
@@ -58,32 +63,46 @@ public class ClientConnection extends Connection<Client> {
         super(helper, socket);
     }
 
+    /**
+     * Adds the request headers.
+     * 
+     * @param request
+     *            The request to inspect.
+     * @param headers
+     *            The headers series to update.
+     */
+    protected void addRequestHeaders(Request request, Series<Parameter> headers) {
+        HeaderUtils.addRequestHeaders(request, headers);
+    }
+
+    /**
+     * Creates a new response.
+     * 
+     * @param context
+     *            The current context.
+     * @param connection
+     *            The associated connection.
+     * @param headers
+     *            The response headers.
+     * @param entity
+     *            The response entity.
+     * @return The created response.
+     */
+    protected abstract ConnectedResponse createResponse(Context context,
+            ClientConnection connection, Series<Parameter> headers,
+            Representation entity);
+
     @Override
-    public boolean canRead() throws IOException {
-        return false;
+    protected void handleNextMessage() {
     }
 
     @Override
-    public boolean canWrite() throws IOException {
-        return false;
-    }
-
-    @Override
-    public InputStream getInboundStream() {
+    protected Message readMessage() throws IOException {
         return null;
     }
 
     @Override
-    public OutputStream getOutboundStream() {
-        return null;
-    }
-
-    @Override
-    public void readMessages() {
-    }
-
-    @Override
-    public void writeMessages() {
+    protected void writeMessage(Message message) {
     }
 
 }
