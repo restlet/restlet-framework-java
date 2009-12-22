@@ -31,23 +31,46 @@
 package org.restlet.engine.http.connector;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
+
+import javax.net.SocketFactory;
 
 import org.restlet.Client;
 import org.restlet.Context;
-import org.restlet.Message;
 import org.restlet.Request;
+import org.restlet.data.Form;
 import org.restlet.data.Parameter;
+import org.restlet.data.Reference;
 import org.restlet.engine.http.header.HeaderUtils;
-import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 
 /**
- * Generic HTTP client connection.
+ * Generic HTTP-like client connection.
  * 
  * @author Jerome Louvel
  */
-public abstract class ClientConnection extends Connection<Client> {
+public class ClientConnection extends
+        Connection<Client, ConnectedResponse, Request> {
+
+    /**
+     * Returns the absolute request URI.
+     * 
+     * @param resourceRef
+     *            The resource reference.
+     * @return The absolute request URI.
+     */
+    private static String getRequestUri(Reference resourceRef) {
+        Reference absoluteRef = resourceRef.isAbsolute() ? resourceRef
+                : resourceRef.getTargetRef();
+        if (absoluteRef.hasQuery()) {
+            return absoluteRef.getPath() + "?" + absoluteRef.getQuery();
+        }
+
+        return absoluteRef.getPath();
+    }
 
     /**
      * Constructor.
@@ -58,7 +81,8 @@ public abstract class ClientConnection extends Connection<Client> {
      *            The underlying socket.
      * @throws IOException
      */
-    public ClientConnection(BaseHelper<Client> helper, Socket socket)
+    public ClientConnection(
+            BaseHelper<Client, ConnectedResponse, Request> helper, Socket socket)
             throws IOException {
         super(helper, socket);
     }
@@ -79,30 +103,202 @@ public abstract class ClientConnection extends Connection<Client> {
      * Creates a new response.
      * 
      * @param context
-     *            The current context.
+     *            The context of the parent connector.
      * @param connection
-     *            The associated connection.
-     * @param headers
-     *            The response headers.
-     * @param entity
-     *            The response entity.
+     *            The parent network connection.
+     * @param request
+     *            The associated request.
+     * @param version
+     *            The protocol version.
+     * @param serverAddress
+     *            The server IP address.
+     * @param serverPort
+     *            The server IP port number.
      * @return The created response.
      */
-    protected abstract ConnectedResponse createResponse(Context context,
-            ClientConnection connection, Series<Parameter> headers,
-            Representation entity);
+    protected ConnectedResponse createResponse(Context context,
+            ClientConnection connection, Request request, String version,
+            int statusCode, String reasonPhrase, String serverAddress,
+            int serverPort) {
+        return new ConnectedResponse(context, connection, request, version,
+                statusCode, reasonPhrase, serverAddress, serverPort);
+    }
+
+    /**
+     * Creates the socket that will be used to send the request and get the
+     * response.
+     * 
+     * @param hostDomain
+     *            The target host domain name.
+     * @param hostPort
+     *            The target host port.
+     * @return The created socket.
+     * @throws UnknownHostException
+     * @throws IOException
+     */
+    public Socket createSocket(boolean secure, String hostDomain, int hostPort)
+            throws UnknownHostException, IOException {
+        Socket result = null;
+        SocketFactory factory = getHelper().getSocketFactory(secure);
+
+        if (factory != null) {
+            result = factory.createSocket();
+            InetSocketAddress address = new InetSocketAddress(hostDomain,
+                    hostPort);
+            result.connect(address, getHelper().getConnectTimeout());
+            result.setTcpNoDelay(getHelper().getTcpNoDelay());
+        }
+
+        return result;
+    }
+
+    @Override
+    public BaseClientHelper getHelper() {
+        return (BaseClientHelper) super.getHelper();
+    }
 
     @Override
     protected void handleNextMessage() {
+        getHelper().handleNextResponse();
     }
 
     @Override
-    protected Message readMessage() throws IOException {
-        return null;
+    protected ConnectedResponse readMessage() throws IOException {
+        ConnectedResponse result = null;
+        String version = null;
+        Series<Parameter> headers = null;
+        int statusCode = 0;
+        String reasonPhrase = null;
+
+        // Mark the inbound as busy
+        setInboundBusy(true);
+
+        // Parse the HTTP version
+        StringBuilder sb = new StringBuilder();
+        int next = getInboundStream().read();
+        while ((next != -1) && !HeaderUtils.isSpace(next)) {
+            sb.append((char) next);
+            next = getInboundStream().read();
+        }
+
+        if (next == -1) {
+            throw new IOException(
+                    "Unable to parse the response HTTP version. End of stream reached too early.");
+        }
+
+        version = sb.toString();
+        sb.delete(0, sb.length());
+
+        // Parse the status code
+        next = getInboundStream().read();
+        while ((next != -1) && !HeaderUtils.isSpace(next)) {
+            sb.append((char) next);
+            next = getInboundStream().read();
+        }
+
+        if (next == -1) {
+            throw new IOException(
+                    "Unable to parse the response status. End of stream reached too early.");
+        }
+
+        statusCode = Integer.parseInt(sb.toString());
+        sb.delete(0, sb.length());
+
+        // Parse the reason phrase
+        next = getInboundStream().read();
+        while ((next != -1) && !HeaderUtils.isCarriageReturn(next)) {
+            sb.append((char) next);
+            next = getInboundStream().read();
+        }
+
+        if (next == -1) {
+            throw new IOException(
+                    "Unable to parse the reason phrase. End of stream reached too early.");
+        }
+
+        next = getInboundStream().read();
+
+        if (HeaderUtils.isLineFeed(next)) {
+            reasonPhrase = sb.toString();
+            sb.delete(0, sb.length());
+
+            // Parse the headers
+            Parameter header = HeaderUtils.readHeader(getInboundStream(), sb);
+            while (header != null) {
+                if (headers == null) {
+                    headers = new Form();
+                }
+
+                headers.add(header);
+                header = HeaderUtils.readHeader(getInboundStream(), sb);
+            }
+        } else {
+            throw new IOException(
+                    "Unable to parse the reason phrase. The carriage return must be followed by a line feed.");
+        }
+
+        // Check if the server wants to close the connection
+        if (HeaderUtils.isConnectionClose(headers)) {
+            setState(ConnectionState.CLOSING);
+        }
+
+        // Create the response
+        result = createResponse(getHelper().getContext(), this, null, version,
+                statusCode, reasonPhrase, getSocket().getLocalAddress()
+                        .toString(), getSocket().getPort());
+
+        if (result != null) {
+            if (!result.getStatus().isInformational()) {
+                // Add it to the connection queue
+                getInboundMessages().add(result);
+            }
+
+            // Add it to the helper queue
+            getHelper().getPendingResponses().add(result);
+        }
+
+        return result;
     }
 
     @Override
-    protected void writeMessage(Message message) {
+    protected void writeMessage(Request request) {
+        // Prepare the host header
+        // String host = hostDomain;
+        //
+        // if (resourceRef.getHostPort() != -1) {
+        // host += ":" + resourceRef.getHostPort();
+        // }
+        //
+        // headers.set(HeaderConstants.HEADER_HOST, host, true);
+
+        // TODO may be replaced by an attribute on the Method class
+        // telling that a method requires an entity.
+        // Actually, since such classes are used in the context of
+        // clients and servers, there could be two attributes
+        // if ((request.getEntity() == null || !request.isEntityAvailable() ||
+        // request
+        // .getEntity().getSize() == 0)
+        // && (Method.POST.equals(request.getMethod()) || Method.PUT
+        // .equals(request.getMethod()))) {
+        // HeaderUtils.writeHeader(new Parameter(
+        // HeaderConstants.HEADER_CONTENT_LENGTH, "0"),
+        // getOutboundStream());
+        // }
+
+        // if (result.equals(Status.CONNECTOR_ERROR_COMMUNICATION)) {
+        // return result;
+        // }
+    }
+
+    @Override
+    protected void writeMessageHeadLine(Request request, OutputStream headStream)
+            throws IOException {
+        headStream.write(request.getMethod().getName().getBytes());
+        headStream.write(' ');
+        headStream.write(getRequestUri(request.getResourceRef()).getBytes());
+        headStream.write(' ');
+        headStream.write(request.getProtocol().getVersion().getBytes());
+        HeaderUtils.writeCRLF(getOutboundStream());
     }
 
 }

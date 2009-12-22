@@ -98,8 +98,8 @@ public class ConnectedRequest extends Request {
     /** Indicates if the conditions were parsed and added. */
     private volatile boolean conditionAdded;
 
-    /** The context of the HTTP server connector that issued the call. */
-    private volatile Context context;
+    /** The context of the parent connector. */
+    private final Context context;
 
     /** Indicates if the cookies were parsed and added. */
     private volatile boolean cookiesAdded;
@@ -119,27 +119,33 @@ public class ConnectedRequest extends Request {
     /** Indicates if the warning data was parsed and added. */
     private volatile boolean warningsAdded;
 
-    /** The parent HTTP connection. */
+    /** The parent network connection. */
     private final ServerConnection connection;
 
+    /** The user principal. */
     private final Principal userPrincipal;
 
     /**
      * Constructor.
      * 
      * @param context
-     *            The context of the HTTP server connector that issued the call.
+     *            The context of the parent connector.
      * @param connection
+     *            The associated network connection.
      * @param methodName
+     *            The protocol method name.
      * @param resourceUri
+     *            The target resource URI.
      * @param version
+     *            The protocol version.
      * @param headers
+     *            The request headers.
      * @param entity
+     *            The request entity.
      * @param confidential
+     *            True if received confidentially.
      * @param userPrincipal
-     * 
-     * @param httpCall
-     *            The low-level HTTP server call.
+     *            The user principal.
      */
     public ConnectedRequest(Context context, ServerConnection connection,
             String methodName, String resourceUri, String version,

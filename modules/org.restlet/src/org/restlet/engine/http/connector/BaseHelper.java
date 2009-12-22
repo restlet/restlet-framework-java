@@ -45,6 +45,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 import org.restlet.Connector;
+import org.restlet.Message;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.engine.ConnectorHelper;
@@ -106,8 +107,8 @@ import org.restlet.engine.log.LoggingThreadFactory;
  * 
  * @author Jerome Louvel
  */
-public abstract class BaseHelper<T extends Connector> extends
-        ConnectorHelper<T> {
+public abstract class BaseHelper<T extends Connector, U extends Message, V extends Message>
+        extends ConnectorHelper<T> {
 
     /** The controller service. */
     private volatile ExecutorService controllerService;
@@ -116,7 +117,7 @@ public abstract class BaseHelper<T extends Connector> extends
     private volatile ThreadPoolExecutor workerService;
 
     /** The set of active connections. */
-    private final Set<Connection<?>> connections;
+    private final Set<Connection<T, U, V>> connections;
 
     /** The queue of requests pending for handling. */
     private final Queue<Request> pendingRequests;
@@ -131,7 +132,7 @@ public abstract class BaseHelper<T extends Connector> extends
      */
     public BaseHelper(T connector) {
         super(connector);
-        this.connections = new CopyOnWriteArraySet<Connection<?>>();
+        this.connections = new CopyOnWriteArraySet<Connection<T, U, V>>();
         this.pendingRequests = new ConcurrentLinkedQueue<Request>();
         this.pendingResponses = new ConcurrentLinkedQueue<Response>();
     }
@@ -146,8 +147,8 @@ public abstract class BaseHelper<T extends Connector> extends
      * @return The new connection.
      * @throws IOException
      */
-    protected abstract Connection<?> createConnection(BaseHelper<T> helper,
-            Socket socket) throws IOException;
+    protected abstract Connection<T, U, V> createConnection(
+            BaseHelper<T, U, V> helper, Socket socket) throws IOException;
 
     /**
      * Creates the connector controller service.
@@ -197,7 +198,7 @@ public abstract class BaseHelper<T extends Connector> extends
      * 
      * @return The set of active connections.
      */
-    protected Set<Connection<?>> getConnections() {
+    protected Set<Connection<T, U, V>> getConnections() {
         return connections;
     }
 

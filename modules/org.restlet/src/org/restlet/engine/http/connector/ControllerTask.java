@@ -44,7 +44,7 @@ import org.restlet.Response;
 public class ControllerTask implements Runnable {
 
     /** The parent server helper. */
-    private final BaseHelper<?> helper;
+    private final BaseHelper<?, ?, ?> helper;
 
     /** Indicates if the controller is overloaded. */
     private volatile boolean overloaded;
@@ -55,7 +55,7 @@ public class ControllerTask implements Runnable {
      * @param helper
      *            The parent connector helper.
      */
-    public ControllerTask(BaseHelper<?> helper) {
+    public ControllerTask(BaseHelper<?, ?, ?> helper) {
         this.helper = helper;
         this.overloaded = false;
     }
@@ -78,7 +78,7 @@ public class ControllerTask implements Runnable {
      * 
      * @return The parent connector helper.
      */
-    protected BaseHelper<?> getHelper() {
+    protected BaseHelper<?, ?, ?> getHelper() {
         return helper;
     }
 
@@ -129,7 +129,7 @@ public class ControllerTask implements Runnable {
                                         "Can't submit additional tasks. Consider increasing the maximum number of threads.");
                     } else {
                         // Control each connection for messages to read or write
-                        for (final Connection<?> conn : getHelper()
+                        for (final Connection<?, ?, ?> conn : getHelper()
                                 .getConnections()) {
                             if (conn.canRead()) {
                                 execute(new Runnable() {

@@ -70,7 +70,8 @@ import org.restlet.engine.log.LoggingThreadFactory;
  * 
  * @author Jerome Louvel
  */
-public abstract class BaseServerHelper extends BaseHelper<Server> {
+public abstract class BaseServerHelper extends
+        BaseHelper<Server, ConnectedRequest, Response> {
 
     /** The connection acceptor service. */
     private volatile ExecutorService acceptorService;

@@ -55,6 +55,7 @@ import org.restlet.data.Digest;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
 import org.restlet.data.Parameter;
+import org.restlet.engine.ConnectorHelper;
 import org.restlet.engine.http.header.ContentType;
 import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.http.header.HeaderReader;
@@ -71,16 +72,22 @@ import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.ReadableRepresentation;
 import org.restlet.representation.Representation;
+import org.restlet.service.ConnectorService;
 import org.restlet.util.Series;
 
 /**
  * A network connection though which requests and responses are exchanged by
  * connectors.
  * 
+ * @param <T>
+ *            The parent connector type.
+ * @param <U>
+ *            The type of inbound messages.
+ * @param <V>
+ *            The type of outbound messages.
  * @author Jerome Louvel
  */
-public abstract class Connection<T extends Connector> {
-
+public abstract class Connection<T extends Connector, U extends Message, V extends Message> {
     /** Indicates if the input of the socket is busy. */
     private volatile boolean inboundBusy;
 
@@ -106,13 +113,13 @@ public abstract class Connection<T extends Connector> {
     private final Socket socket;
 
     /** The parent connector helper. */
-    private final BaseHelper<T> helper;
+    private final BaseHelper<T, U, V> helper;
 
     /** The queue of inbound messages. */
-    private final Queue<Message> inboundMessages;
+    private final Queue<U> inboundMessages;
 
     /** The queue of outbound messages. */
-    private final Queue<Message> outboundMessages;
+    private final Queue<V> outboundMessages;
 
     /**
      * Constructor.
@@ -123,15 +130,16 @@ public abstract class Connection<T extends Connector> {
      *            The underlying socket.
      * @throws IOException
      */
-    public Connection(BaseHelper<T> helper, Socket socket) throws IOException {
+    public Connection(BaseHelper<T, U, V> helper, Socket socket)
+            throws IOException {
         this.helper = helper;
         this.inboundStream = new InboundStream(socket.getInputStream());
-        this.inboundMessages = new ConcurrentLinkedQueue<Message>();
+        this.inboundMessages = new ConcurrentLinkedQueue<U>();
         this.outboundStream = new OutboundStream(socket.getOutputStream());
-        this.outboundMessages = new ConcurrentLinkedQueue<Message>();
+        this.outboundMessages = new ConcurrentLinkedQueue<V>();
         this.persistent = helper.isPersistingConnections();
         this.pipelining = false;
-        this.state = ConnectionState.CLOSED;
+        this.state = ConnectionState.OPENING;
         this.socket = socket;
         this.inboundBusy = false;
         this.outboundBusy = false;
@@ -272,6 +280,28 @@ public abstract class Connection<T extends Connector> {
     }
 
     /**
+     * Adds the transport headers related to persistent connections and chunked
+     * encoding.
+     * 
+     * @param headers
+     *            The series of headers to update.
+     * @param entity
+     *            The optional entity sent.
+     */
+    public void addTransportHeaders(Series<Parameter> headers,
+            Representation entity) {
+
+        if (!isPersistent()) {
+            headers.set(HeaderConstants.HEADER_CONNECTION, "close", true);
+        }
+
+        if (shouldBeChunked(entity)) {
+            headers.add(HeaderConstants.HEADER_TRANSFER_ENCODING, "chunked");
+        }
+
+    }
+
+    /**
      * Indicates if the connection's socket can be read for inbound data.
      * 
      * @return True if the connection's socket can be read for inbound data.
@@ -308,14 +338,12 @@ public abstract class Connection<T extends Connector> {
 
                 if (!(getSocket() instanceof SSLSocket)) {
                     getSocket().shutdownInput();
-                }
-
-                if (!(getSocket() instanceof SSLSocket)) {
                     getSocket().shutdownOutput();
                 }
             }
         } catch (IOException ex) {
-            getLogger().log(Level.FINE, "Unable to shutdown socket", ex);
+            getLogger().log(Level.FINE, "Unable to properly shutdown socket",
+                    ex);
         }
 
         try {
@@ -326,7 +354,7 @@ public abstract class Connection<T extends Connector> {
                 getSocket().close();
             }
         } catch (IOException ex) {
-            getLogger().log(Level.FINE, "Unable to close socket", ex);
+            getLogger().log(Level.FINE, "Unable to properly close socket", ex);
         } finally {
             setState(ConnectionState.CLOSED);
         }
@@ -438,7 +466,7 @@ public abstract class Connection<T extends Connector> {
      * 
      * @return The parent connector helper.
      */
-    public BaseHelper<T> getHelper() {
+    public BaseHelper<T, U, V> getHelper() {
         return helper;
     }
 
@@ -468,8 +496,10 @@ public abstract class Connection<T extends Connector> {
 
         if (chunked) {
             result = new ChunkedInputStream(getInboundStream());
-        } else {
+        } else if (size >= 0) {
             result = new InputEntityStream(getInboundStream(), size);
+        } else {
+            result = getInboundStream();
         }
 
         return result;
@@ -498,7 +528,7 @@ public abstract class Connection<T extends Connector> {
      * 
      * @return The queue of inbound messages.
      */
-    public Queue<Message> getInboundMessages() {
+    public Queue<U> getInboundMessages() {
         return inboundMessages;
     }
 
@@ -549,7 +579,7 @@ public abstract class Connection<T extends Connector> {
      * 
      * @return The queue of outbound messages.
      */
-    public Queue<Message> getOutboundMessages() {
+    public Queue<V> getOutboundMessages() {
         return outboundMessages;
     }
 
@@ -738,7 +768,7 @@ public abstract class Connection<T extends Connector> {
      * @return The next message received if available.
      * @throws IOException
      */
-    protected abstract Message readMessage() throws IOException;
+    protected abstract U readMessage() throws IOException;
 
     /**
      * Reads inbound messages from the socket. Only one message at a time if
@@ -853,7 +883,144 @@ public abstract class Connection<T extends Connector> {
      * @param message
      *            The message to write.
      */
-    protected abstract void writeMessage(Message message);
+    protected abstract void writeMessage(V message);
+
+    /**
+     * Writes the message and its headers.
+     * 
+     * @param message
+     *            The message to write.
+     * @throws IOException
+     *             if the Response could not be written to the network.
+     */
+    protected void writeMessage(V message, Series<Parameter> headers)
+            throws IOException {
+        if (message != null) {
+            // Get the connector service to callback
+            Representation entity = message.isEntityAvailable() ? message
+                    .getEntity() : null;
+            ConnectorService connectorService = ConnectorHelper
+                    .getConnectorService();
+
+            if (connectorService != null) {
+                connectorService.beforeSend(entity);
+            }
+
+            try {
+                writeMessageHead(message, headers);
+
+                if (entity != null) {
+                    // In order to workaround bug #6472250
+                    // (http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6472250),
+                    // it is very important to reuse that exact same
+                    // "entityStream" reference when manipulating the entity
+                    // stream, otherwise "insufficient data sent" exceptions
+                    // will occur in "fixedLengthMode"
+                    boolean chunked = HeaderUtils.isChunkedEncoding(headers);
+                    WritableByteChannel entityChannel = getOutboundEntityChannel(chunked);
+                    OutputStream entityStream = getOutboundEntityStream(chunked);
+                    writeMessageBody(entity, entityChannel, entityStream);
+
+                    if (entityStream != null) {
+                        entityStream.flush();
+                        entityStream.close();
+                    }
+                }
+            } catch (IOException ioe) {
+                // The stream was probably already closed by the
+                // connector. Probably OK, low message priority.
+                getLogger()
+                        .log(
+                                Level.FINE,
+                                "Exception while flushing and closing the entity stream.",
+                                ioe);
+            } finally {
+                setOutboundBusy(false);
+
+                if (entity != null) {
+                    entity.release();
+                }
+
+                if (connectorService != null) {
+                    connectorService.afterSend(entity);
+                }
+            }
+        }
+    }
+
+    /**
+     * Effectively writes the message body. The entity to write is guaranteed to
+     * be non null. Attempts to write the entity on the outbound channel or
+     * outbound stream by default.
+     * 
+     * @param entity
+     *            The representation to write as entity of the body.
+     * @param entityChannel
+     *            The outbound entity channel or null if a stream is used.
+     * @param entityStream
+     *            The outbound entity stream or null if a channel is used.
+     * @throws IOException
+     */
+    protected void writeMessageBody(Representation entity,
+            WritableByteChannel entityChannel, OutputStream entityStream)
+            throws IOException {
+        if (entityChannel != null) {
+            entity.write(entityChannel);
+        } else if (entityStream != null) {
+            entity.write(entityStream);
+            entityStream.flush();
+        }
+    }
+
+    /**
+     * Writes the message head to the given output stream.
+     * 
+     * @param message
+     *            The source message.
+     * @param headStream
+     *            The target stream.
+     * @throws IOException
+     */
+    protected void writeMessageHead(V message, OutputStream headStream,
+            Series<Parameter> headers) throws IOException {
+
+        // Write the head line
+        writeMessageHeadLine(message, headStream);
+
+        // Write the headers
+        for (Parameter header : headers) {
+            HeaderUtils.writeHeader(header, headStream);
+        }
+
+        // Write the end of the headers section
+        headStream.write(13); // CR
+        headStream.write(10); // LF
+        headStream.flush();
+    }
+
+    /**
+     * Writes the message head.
+     * 
+     * @param message
+     *            The message.
+     * @throws IOException
+     */
+    protected void writeMessageHead(V message, Series<Parameter> headers)
+            throws IOException {
+        writeMessageHead(message, getOutboundStream(), headers);
+    }
+
+    /**
+     * Writes the message head line to the given output stream.
+     * 
+     * @param message
+     *            The source message.
+     * @param headStream
+     *            The target stream.
+     * @throws IOException
+     */
+    protected abstract void writeMessageHeadLine(V message,
+            OutputStream headStream) throws IOException;
 
     /**
      * Writes outbound messages to the socket. Only one response at a time if
@@ -864,7 +1031,7 @@ public abstract class Connection<T extends Connector> {
             if (isPipelining()) {
                 // TODO
             } else {
-                Message message = null;
+                V message = null;
 
                 // We want to make sure that responses are written in order
                 // without blocking other concurrent threads during the writing

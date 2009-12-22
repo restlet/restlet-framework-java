@@ -150,7 +150,7 @@ public class StreamClientCall extends ClientCall {
 
     @Override
     protected Representation getRepresentation(InputStream stream) {
-        final Representation result = super.getRepresentation(stream);
+        Representation result = super.getRepresentation(stream);
         return new ClosingRepresentation(result, this.socket, getHelper()
                 .getLogger());
     }
@@ -221,7 +221,7 @@ public class StreamClientCall extends ClientCall {
      * @throws IOException
      */
     protected void parseResponse() throws IOException {
-        final StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
 
         // Parse the HTTP version
         int next = getResponseStream().read();
@@ -331,8 +331,8 @@ public class StreamClientCall extends ClientCall {
 
                 if (shouldRequestBeChunked(request)) {
                     getRequestHeaders().set(
-                            HeaderConstants.HEADER_TRANSFER_ENCODING, "chunked",
-                            true);
+                            HeaderConstants.HEADER_TRANSFER_ENCODING,
+                            "chunked", true);
                 }
 
                 // We don't support persistent connections yet
@@ -344,10 +344,11 @@ public class StreamClientCall extends ClientCall {
                 if (resourceRef.getHostPort() != -1) {
                     host += ":" + resourceRef.getHostPort();
                 }
-                getRequestHeaders().set(HeaderConstants.HEADER_HOST, host, true);
+                getRequestHeaders()
+                        .set(HeaderConstants.HEADER_HOST, host, true);
 
                 // Write the request headers
-                for (final Parameter header : getRequestHeaders()) {
+                for (Parameter header : getRequestHeaders()) {
                     HeaderUtils.writeHeader(header, getRequestHeadStream());
                 }
 

@@ -37,6 +37,9 @@ import java.nio.channels.SocketChannel;
 import java.util.concurrent.CountDownLatch;
 import java.util.logging.Level;
 
+import org.restlet.Response;
+import org.restlet.Server;
+
 /**
  * Listens on the given socket channel for incoming connections and dispatches
  * them to the given handler pool
@@ -99,8 +102,8 @@ public class AcceptorTask implements Runnable {
                 if ((getHelper().getMaxTotalConnections() == -1)
                         || (connectionsCount <= getHelper()
                                 .getMaxTotalConnections())) {
-                    Connection<?> connection = getHelper().createConnection(
-                            getHelper(), client.socket());
+                    Connection<Server, ConnectedRequest, Response> connection = getHelper()
+                            .createConnection(getHelper(), client.socket());
                     connection.open();
                     getHelper().getConnections().add(connection);
                 } else {

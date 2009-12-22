@@ -399,7 +399,7 @@ public abstract class ServerCall extends Call {
             // Get the connector service to callback
             Representation responseEntity = response.getEntity();
             ConnectorService connectorService = ConnectorHelper
-                    .getConnectorService(response.getRequest());
+                    .getConnectorService();
             if (connectorService != null) {
                 connectorService.beforeSend(responseEntity);
             }

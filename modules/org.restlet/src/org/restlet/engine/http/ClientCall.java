@@ -441,7 +441,7 @@ public abstract class ClientCall extends Call {
 
         // Get the connector service to callback
         org.restlet.service.ConnectorService connectorService = ConnectorHelper
-                .getConnectorService(request);
+                .getConnectorService();
         if (connectorService != null) {
             connectorService.beforeSend(entity);
         }
@@ -456,10 +456,10 @@ public abstract class ClientCall extends Call {
                 // "insufficient data sent" exceptions will occur in
                 // "fixedLengthMode"
                 OutputStream requestStream = getRequestEntityStream();
-                java.nio.channels.WritableByteChannel wbc = getRequestEntityChannel();
+                java.nio.channels.WritableByteChannel requestChannel = getRequestEntityChannel();
 
-                if (wbc != null) {
-                    entity.write(wbc);
+                if (requestChannel != null) {
+                    entity.write(requestChannel);
                 } else if (requestStream != null) {
                     entity.write(requestStream);
                     requestStream.flush();
@@ -467,8 +467,8 @@ public abstract class ClientCall extends Call {
 
                 if (requestStream != null) {
                     requestStream.close();
-                } else if (wbc != null) {
-                    wbc.close();
+                } else if (requestChannel != null) {
+                    requestChannel.close();
                 }
             }
 

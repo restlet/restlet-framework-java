@@ -35,7 +35,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.restlet.Connector;
 import org.restlet.Context;
-import org.restlet.Request;
 import org.restlet.data.Protocol;
 
 /**
@@ -50,12 +49,9 @@ public abstract class ConnectorHelper<T extends Connector> extends
     /**
      * Returns the connector service associated to a request.
      * 
-     * @param request
-     *            The request to lookup.
      * @return The connector service associated to a request.
      */
-    public static org.restlet.service.ConnectorService getConnectorService(
-            Request request) {
+    public static org.restlet.service.ConnectorService getConnectorService() {
         org.restlet.service.ConnectorService result = null;
         org.restlet.Application application = org.restlet.Application
                 .getCurrent();

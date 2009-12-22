@@ -30,13 +30,13 @@
 
 package org.restlet.engine.http.connector;
 
+import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Parameter;
 import org.restlet.data.ServerInfo;
 import org.restlet.data.Status;
 import org.restlet.engine.Engine;
-import org.restlet.engine.http.ServerCall;
 import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.util.Series;
 
@@ -46,6 +46,7 @@ import org.restlet.util.Series;
  * @author Jerome Louvel
  */
 public class ConnectedResponse extends Response {
+
     /**
      * Adds a new header to the given request.
      * 
@@ -64,8 +65,11 @@ public class ConnectedResponse extends Response {
         }
     }
 
-    /** The low-level HTTP call. */
-    private volatile ServerCall httpCall;
+    /** The server IP address. */
+    private final String serverAddress;
+
+    /** The server IP port number. */
+    private final int serverPort;
 
     /** Indicates if the server data was parsed and added. */
     private volatile boolean serverAdded;
@@ -73,18 +77,28 @@ public class ConnectedResponse extends Response {
     /**
      * Constructor.
      * 
-     * @param httpCall
-     *            The low-level HTTP server call.
+     * @param context
+     *            The context of the parent connector.
+     * @param connection
+     *            The parent network connection.
      * @param request
-     *            The associated high-level request.
+     *            The associated request.
+     * @param version
+     *            The protocol version.
+     * @param serverAddress
+     *            The server IP address.
+     * @param serverPort
+     *            The server IP port number.
      */
-    public ConnectedResponse(ServerCall httpCall, Request request) {
+    public ConnectedResponse(Context context, ClientConnection connection,
+            Request request, String version, int statusCode,
+            String reasonPhrase, String serverAddress, int serverPort) {
         super(request);
-        this.serverAdded = false;
-        this.httpCall = httpCall;
+        this.serverAddress = serverAddress;
+        this.serverPort = serverPort;
 
         // Set the properties
-        setStatus(Status.SUCCESS_OK);
+        setStatus(Status.valueOf(statusCode), reasonPhrase);
     }
 
     /**
@@ -99,15 +113,6 @@ public class ConnectedResponse extends Response {
     }
 
     /**
-     * Returns the low-level HTTP call.
-     * 
-     * @return The low-level HTTP call.
-     */
-    public ServerCall getHttpCall() {
-        return this.httpCall;
-    }
-
-    /**
      * Returns the server-specific information.
      * 
      * @return The server-specific information.
@@ -117,9 +122,9 @@ public class ConnectedResponse extends Response {
         final ServerInfo result = super.getServerInfo();
 
         if (!this.serverAdded) {
-            result.setAddress(this.httpCall.getServerAddress());
+            result.setAddress(this.serverAddress);
             result.setAgent(Engine.VERSION_HEADER);
-            result.setPort(this.httpCall.getServerPort());
+            result.setPort(this.serverPort);
             this.serverAdded = true;
         }
 
