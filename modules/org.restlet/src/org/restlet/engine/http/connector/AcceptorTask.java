@@ -99,9 +99,8 @@ public class AcceptorTask implements Runnable {
                 if ((getHelper().getMaxTotalConnections() == -1)
                         || (connectionsCount <= getHelper()
                                 .getMaxTotalConnections())) {
-                    final Connection<?> connection = getHelper()
-                            .createConnection(getHelper(),
-                                    client.socket());
+                    Connection<?> connection = getHelper().createConnection(
+                            getHelper(), client.socket());
                     connection.open();
                     getHelper().getConnections().add(connection);
                 } else {

@@ -146,6 +146,10 @@ public class ControllerTask implements Runnable {
                                     }
                                 });
                             }
+
+                            if (conn.getState() == ConnectionState.CLOSED) {
+                                getHelper().getConnections().remove(conn);
+                            }
                         }
 
                         // Control if there are some pending requests that could
