@@ -50,6 +50,7 @@ import javax.net.ssl.TrustManagerFactory;
 import org.restlet.Client;
 import org.restlet.Request;
 import org.restlet.Response;
+import org.restlet.data.Reference;
 import org.restlet.data.Status;
 
 /**
@@ -138,8 +139,7 @@ import org.restlet.data.Status;
  * 
  * @author Jerome Louvel
  */
-public class BaseClientHelper extends
-        BaseHelper<Client, ConnectedResponse, Request> {
+public class BaseClientHelper extends BaseHelper<Client> {
 
     /** The regular socket factory. */
     private volatile SocketFactory regularSocketFactory;
@@ -160,10 +160,9 @@ public class BaseClientHelper extends
     }
 
     @Override
-    protected Connection<Client, ConnectedResponse, Request> createConnection(
-            BaseHelper<Client, ConnectedResponse, Request> helper, Socket socket)
-            throws IOException {
-        return null;
+    protected Connection<Client> createConnection(BaseHelper<Client> helper,
+            Socket socket) throws IOException {
+        return new ClientConnection(helper, socket);
     }
 
     /**
@@ -443,13 +442,32 @@ public class BaseClientHelper extends
     }
 
     @Override
-    public void handle(Request request) {
+    public void handleInbound(Response response) {
     }
 
     @Override
     public void handle(Request request, Response response) {
         try {
+            // Resolve relative references
+            Reference resourceRef = request.getResourceRef().isRelative() ? request
+                    .getResourceRef().getTargetRef()
+                    : request.getResourceRef();
+
+            // Extract the host info
+            String hostDomain = resourceRef.getHostDomain();
+            int hostPort = resourceRef.getHostPort();
+
+            if (hostPort == -1) {
+                if (resourceRef.getSchemeProtocol() != null) {
+                    hostPort = resourceRef.getSchemeProtocol().getDefaultPort();
+                } else {
+                    hostPort = getProtocols().get(0).getDefaultPort();
+                }
+            }
+
             // ...
+            // request.getAttributes().put("org.restlet.", value);
+
         } catch (Exception e) {
             getLogger().log(
                     Level.INFO,
@@ -460,7 +478,7 @@ public class BaseClientHelper extends
     }
 
     @Override
-    public void handle(Response response) {
+    public void handleOutbound(Response response) {
     }
 
     /**

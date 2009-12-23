@@ -33,7 +33,6 @@ package org.restlet.engine.http.connector;
 import java.io.IOException;
 import java.net.Socket;
 
-import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 
@@ -56,9 +55,8 @@ public class HttpServerHelper extends BaseServerHelper {
     }
 
     @Override
-    protected Connection<Server, ConnectedRequest, Response> createConnection(
-            BaseHelper<Server, ConnectedRequest, Response> helper, Socket socket)
-            throws IOException {
+    protected Connection<Server> createConnection(BaseHelper<Server> helper,
+            Socket socket) throws IOException {
         return new ServerConnection(helper, socket);
     }
 

@@ -41,6 +41,7 @@ import javax.net.SocketFactory;
 import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
@@ -52,8 +53,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
-public class ClientConnection extends
-        Connection<Client, ConnectedResponse, Request> {
+public class ClientConnection extends Connection<Client> {
 
     /**
      * Returns the absolute request URI.
@@ -81,8 +81,7 @@ public class ClientConnection extends
      *            The underlying socket.
      * @throws IOException
      */
-    public ClientConnection(
-            BaseHelper<Client, ConnectedResponse, Request> helper, Socket socket)
+    public ClientConnection(BaseHelper<Client> helper, Socket socket)
             throws IOException {
         super(helper, socket);
     }
@@ -159,7 +158,7 @@ public class ClientConnection extends
 
     @Override
     protected void handleNextMessage() {
-        getHelper().handleNextResponse();
+        getHelper().handleNextOutbound();
     }
 
     @Override
@@ -254,14 +253,14 @@ public class ClientConnection extends
             }
 
             // Add it to the helper queue
-            getHelper().getPendingResponses().add(result);
+            getHelper().getOutboundMessages().add(result);
         }
 
         return result;
     }
 
     @Override
-    protected void writeMessage(Request request) {
+    protected void writeMessage(Response message) {
         // Prepare the host header
         // String host = hostDomain;
         //
@@ -291,8 +290,9 @@ public class ClientConnection extends
     }
 
     @Override
-    protected void writeMessageHeadLine(Request request, OutputStream headStream)
-            throws IOException {
+    protected void writeMessageHeadLine(Response message,
+            OutputStream headStream) throws IOException {
+        Request request = message.getRequest();
         headStream.write(request.getMethod().getName().getBytes());
         headStream.write(' ');
         headStream.write(getRequestUri(request.getResourceRef()).getBytes());

@@ -39,7 +39,6 @@ import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.engine.http.connector.BaseHelper;
 import org.restlet.engine.http.connector.BaseServerHelper;
-import org.restlet.engine.http.connector.ConnectedRequest;
 import org.restlet.engine.http.connector.Connection;
 import org.restlet.ext.sip.internal.SipServerConnection;
 
@@ -67,9 +66,8 @@ public class SipServerHelper extends BaseServerHelper {
     }
 
     @Override
-    protected Connection<Server, ConnectedRequest, Response> createConnection(
-            BaseHelper<Server, ConnectedRequest, Response> helper, Socket socket)
-            throws IOException {
+    protected Connection<Server> createConnection(BaseHelper<Server> helper,
+            Socket socket) throws IOException {
         return new SipServerConnection(helper, socket);
     }
 

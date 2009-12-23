@@ -70,8 +70,7 @@ import org.restlet.engine.log.LoggingThreadFactory;
  * 
  * @author Jerome Louvel
  */
-public abstract class BaseServerHelper extends
-        BaseHelper<Server, ConnectedRequest, Response> {
+public abstract class BaseServerHelper extends BaseHelper<Server> {
 
     /** The connection acceptor service. */
     private volatile ExecutorService acceptorService;
@@ -133,25 +132,21 @@ public abstract class BaseServerHelper extends
     }
 
     @Override
-    public void handle(Request request) {
-        if (request != null) {
-            ConnectedRequest connectedRequest = (ConnectedRequest) request;
-            Response response = null;
+    public void handleInbound(Response response) {
+        if (response.getRequest() != null) {
+            ConnectedRequest request = (ConnectedRequest) response.getRequest();
 
-            if (connectedRequest.isExpectingResponse()) {
-                response = createResponse(connectedRequest);
-            }
-
+            // Effectively handles the request
             handle(request, response);
 
             if ((response != null) && !response.isCommitted()
                     && response.isAutoCommitting()) {
-                getPendingResponses().add(response);
+                getOutboundMessages().add(response);
                 response.setCommitted(true);
             }
 
             if ((request.getEntity() != null)
-                    && (!connectedRequest.isExpectingResponse() || ((response != null) && response
+                    && (!request.isExpectingResponse() || ((response != null) && response
                             .isCommitted()))) {
                 try {
                     request.getEntity().exhaust();
@@ -164,7 +159,7 @@ public abstract class BaseServerHelper extends
             }
         }
 
-        handleNextResponse();
+        handleNextOutbound();
     }
 
     /**
@@ -183,7 +178,7 @@ public abstract class BaseServerHelper extends
     }
 
     @Override
-    public void handle(Response response) {
+    public void handleOutbound(Response response) {
         if (response != null) {
             ConnectedRequest request = (ConnectedRequest) response.getRequest();
             ServerConnection connection = (ServerConnection) request
@@ -191,7 +186,7 @@ public abstract class BaseServerHelper extends
 
             // Check if the response is indeed the next one
             // to be written for this connection
-            if (connection.getInboundMessages().peek() == request) {
+            if (connection.getInboundMessages().peek().getRequest() == request) {
                 // Check if a final response was received for the request
                 if (!response.getStatus().isInformational()) {
                     // Remove the matching request from the inbound queue
@@ -206,7 +201,7 @@ public abstract class BaseServerHelper extends
                 connection.writeMessages();
             } else {
                 // Put the response at the beginning of the queue
-                getPendingResponses().add(response);
+                getOutboundMessages().add(response);
             }
         }
     }

@@ -50,7 +50,7 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
 
 import org.restlet.Connector;
-import org.restlet.Message;
+import org.restlet.Response;
 import org.restlet.data.Digest;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
@@ -81,13 +81,9 @@ import org.restlet.util.Series;
  * 
  * @param <T>
  *            The parent connector type.
- * @param <U>
- *            The type of inbound messages.
- * @param <V>
- *            The type of outbound messages.
  * @author Jerome Louvel
  */
-public abstract class Connection<T extends Connector, U extends Message, V extends Message> {
+public abstract class Connection<T extends Connector> {
     /** Indicates if the input of the socket is busy. */
     private volatile boolean inboundBusy;
 
@@ -113,13 +109,13 @@ public abstract class Connection<T extends Connector, U extends Message, V exten
     private final Socket socket;
 
     /** The parent connector helper. */
-    private final BaseHelper<T, U, V> helper;
+    private final BaseHelper<T> helper;
 
     /** The queue of inbound messages. */
-    private final Queue<U> inboundMessages;
+    private final Queue<Response> inboundMessages;
 
     /** The queue of outbound messages. */
-    private final Queue<V> outboundMessages;
+    private final Queue<Response> outboundMessages;
 
     /**
      * Constructor.
@@ -130,13 +126,12 @@ public abstract class Connection<T extends Connector, U extends Message, V exten
      *            The underlying socket.
      * @throws IOException
      */
-    public Connection(BaseHelper<T, U, V> helper, Socket socket)
-            throws IOException {
+    public Connection(BaseHelper<T> helper, Socket socket) throws IOException {
         this.helper = helper;
         this.inboundStream = new InboundStream(socket.getInputStream());
-        this.inboundMessages = new ConcurrentLinkedQueue<U>();
+        this.inboundMessages = new ConcurrentLinkedQueue<Response>();
         this.outboundStream = new OutboundStream(socket.getOutputStream());
-        this.outboundMessages = new ConcurrentLinkedQueue<V>();
+        this.outboundMessages = new ConcurrentLinkedQueue<Response>();
         this.persistent = helper.isPersistingConnections();
         this.pipelining = false;
         this.state = ConnectionState.OPENING;
@@ -466,7 +461,7 @@ public abstract class Connection<T extends Connector, U extends Message, V exten
      * 
      * @return The parent connector helper.
      */
-    public BaseHelper<T, U, V> getHelper() {
+    public BaseHelper<T> getHelper() {
         return helper;
     }
 
@@ -528,7 +523,7 @@ public abstract class Connection<T extends Connector, U extends Message, V exten
      * 
      * @return The queue of inbound messages.
      */
-    public Queue<U> getInboundMessages() {
+    public Queue<Response> getInboundMessages() {
         return inboundMessages;
     }
 
@@ -579,7 +574,7 @@ public abstract class Connection<T extends Connector, U extends Message, V exten
      * 
      * @return The queue of outbound messages.
      */
-    public Queue<V> getOutboundMessages() {
+    public Queue<Response> getOutboundMessages() {
         return outboundMessages;
     }
 
@@ -768,7 +763,7 @@ public abstract class Connection<T extends Connector, U extends Message, V exten
      * @return The next message received if available.
      * @throws IOException
      */
-    protected abstract U readMessage() throws IOException;
+    protected abstract Response readMessage() throws IOException;
 
     /**
      * Reads inbound messages from the socket. Only one message at a time if
@@ -883,7 +878,7 @@ public abstract class Connection<T extends Connector, U extends Message, V exten
      * @param message
      *            The message to write.
      */
-    protected abstract void writeMessage(V message);
+    protected abstract void writeMessage(Response message);
 
     /**
      * Writes the message and its headers.
@@ -893,7 +888,7 @@ public abstract class Connection<T extends Connector, U extends Message, V exten
      * @throws IOException
      *             if the Response could not be written to the network.
      */
-    protected void writeMessage(V message, Series<Parameter> headers)
+    protected void writeMessage(Response message, Series<Parameter> headers)
             throws IOException {
         if (message != null) {
             // Get the connector service to callback
@@ -981,7 +976,7 @@ public abstract class Connection<T extends Connector, U extends Message, V exten
      *            The target stream.
      * @throws IOException
      */
-    protected void writeMessageHead(V message, OutputStream headStream,
+    protected void writeMessageHead(Response message, OutputStream headStream,
             Series<Parameter> headers) throws IOException {
 
         // Write the head line
@@ -1005,7 +1000,7 @@ public abstract class Connection<T extends Connector, U extends Message, V exten
      *            The message.
      * @throws IOException
      */
-    protected void writeMessageHead(V message, Series<Parameter> headers)
+    protected void writeMessageHead(Response message, Series<Parameter> headers)
             throws IOException {
         writeMessageHead(message, getOutboundStream(), headers);
     }
@@ -1019,7 +1014,7 @@ public abstract class Connection<T extends Connector, U extends Message, V exten
      *            The target stream.
      * @throws IOException
      */
-    protected abstract void writeMessageHeadLine(V message,
+    protected abstract void writeMessageHeadLine(Response message,
             OutputStream headStream) throws IOException;
 
     /**
@@ -1031,7 +1026,7 @@ public abstract class Connection<T extends Connector, U extends Message, V exten
             if (isPipelining()) {
                 // TODO
             } else {
-                V message = null;
+                Response message = null;
 
                 // We want to make sure that responses are written in order
                 // without blocking other concurrent threads during the writing

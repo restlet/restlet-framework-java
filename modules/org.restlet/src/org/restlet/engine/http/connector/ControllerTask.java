@@ -33,7 +33,6 @@ package org.restlet.engine.http.connector;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 
-import org.restlet.Request;
 import org.restlet.Response;
 
 /**
@@ -44,7 +43,7 @@ import org.restlet.Response;
 public class ControllerTask implements Runnable {
 
     /** The parent server helper. */
-    private final BaseHelper<?, ?, ?> helper;
+    private final BaseHelper<?> helper;
 
     /** Indicates if the controller is overloaded. */
     private volatile boolean overloaded;
@@ -55,7 +54,7 @@ public class ControllerTask implements Runnable {
      * @param helper
      *            The parent connector helper.
      */
-    public ControllerTask(BaseHelper<?, ?, ?> helper) {
+    public ControllerTask(BaseHelper<?> helper) {
         this.helper = helper;
         this.overloaded = false;
     }
@@ -78,7 +77,7 @@ public class ControllerTask implements Runnable {
      * 
      * @return The parent connector helper.
      */
-    protected BaseHelper<?, ?, ?> getHelper() {
+    protected BaseHelper<?> getHelper() {
         return helper;
     }
 
@@ -129,7 +128,7 @@ public class ControllerTask implements Runnable {
                                         "Can't submit additional tasks. Consider increasing the maximum number of threads.");
                     } else {
                         // Control each connection for messages to read or write
-                        for (final Connection<?, ?, ?> conn : getHelper()
+                        for (final Connection<?> conn : getHelper()
                                 .getConnections()) {
                             if (conn.canRead()) {
                                 execute(new Runnable() {
@@ -154,15 +153,15 @@ public class ControllerTask implements Runnable {
 
                         // Control if there are some pending requests that could
                         // be processed
-                        for (int i = 0; i < getHelper().getPendingRequests()
+                        for (int i = 0; i < getHelper().getInboundMessages()
                                 .size(); i++) {
-                            final Request request = getHelper()
-                                    .getPendingRequests().poll();
+                            final Response response = getHelper()
+                                    .getInboundMessages().poll();
 
-                            if (request != null) {
+                            if (response != null) {
                                 execute(new Runnable() {
                                     public void run() {
-                                        getHelper().handle(request);
+                                        getHelper().handleInbound(response);
                                     }
                                 });
                             }
@@ -170,15 +169,15 @@ public class ControllerTask implements Runnable {
 
                         // Control if some pending responses that could be moved
                         // to their respective connection queues
-                        for (int i = 0; i < getHelper().getPendingResponses()
+                        for (int i = 0; i < getHelper().getOutboundMessages()
                                 .size(); i++) {
                             final Response response = getHelper()
-                                    .getPendingResponses().poll();
+                                    .getOutboundMessages().poll();
 
                             if (response != null) {
                                 execute(new Runnable() {
                                     public void run() {
-                                        getHelper().handle(response);
+                                        getHelper().handleOutbound(response);
                                     }
                                 });
                             }

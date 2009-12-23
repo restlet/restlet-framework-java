@@ -54,8 +54,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
-public class ServerConnection extends
-        Connection<Server, ConnectedRequest, Response> {
+public class ServerConnection extends Connection<Server> {
 
     /**
      * Constructor.
@@ -66,8 +65,7 @@ public class ServerConnection extends
      *            The underlying socket.
      * @throws IOException
      */
-    public ServerConnection(
-            BaseHelper<Server, ConnectedRequest, Response> helper, Socket socket)
+    public ServerConnection(BaseHelper<Server> helper, Socket socket)
             throws IOException {
         super(helper, socket);
     }
@@ -106,7 +104,7 @@ public class ServerConnection extends
      *            The response to commit.
      */
     public void commit(Response response) {
-        getHelper().getPendingResponses().add(response);
+        getHelper().getOutboundMessages().add(response);
     }
 
     /**
@@ -143,7 +141,7 @@ public class ServerConnection extends
 
     @Override
     protected void handleNextMessage() {
-        getHelper().handleNextRequest();
+        getHelper().handleNextInbound();
     }
 
     /**
@@ -154,8 +152,9 @@ public class ServerConnection extends
      * @throws IOException
      */
     @Override
-    protected ConnectedRequest readMessage() throws IOException {
-        ConnectedRequest result = null;
+    protected Response readMessage() throws IOException {
+        Response result = null;
+        ConnectedRequest request = null;
         String requestMethod = null;
         String requestUri = null;
         String version = null;
@@ -237,18 +236,19 @@ public class ServerConnection extends
         }
 
         // Create the request
-        result = createRequest(getHelper().getContext(), this, requestMethod,
+        request = createRequest(getHelper().getContext(), this, requestMethod,
                 requestUri, version, headers, createInboundEntity(headers),
                 false, null);
+        result = getHelper().createResponse(request);
 
-        if (result != null) {
-            if (result.isExpectingResponse()) {
+        if (request != null) {
+            if (request.isExpectingResponse()) {
                 // Add it to the connection queue
                 getInboundMessages().add(result);
             }
 
             // Add it to the helper queue
-            getHelper().getPendingRequests().add(result);
+            getHelper().getInboundMessages().add(result);
         }
 
         return result;

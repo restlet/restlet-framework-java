@@ -30,11 +30,7 @@
 
 package org.restlet.engine.http.connector;
 
-import java.io.IOException;
-import java.net.Socket;
-
 import org.restlet.Client;
-import org.restlet.Request;
 import org.restlet.data.Protocol;
 
 /**
@@ -54,13 +50,6 @@ public class HttpClientHelper extends BaseClientHelper {
         super(client);
         getProtocols().add(Protocol.HTTP);
         getProtocols().add(Protocol.HTTPS);
-    }
-
-    @Override
-    protected Connection<Client, ConnectedResponse, Request> createConnection(
-            BaseHelper<Client, ConnectedResponse, Request> helper, Socket socket)
-            throws IOException {
-        return new ClientConnection(helper, socket);
     }
 
     @Override

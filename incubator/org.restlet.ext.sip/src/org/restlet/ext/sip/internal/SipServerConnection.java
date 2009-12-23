@@ -63,8 +63,7 @@ public class SipServerConnection extends ServerConnection {
      *            The associated socket.
      * @throws IOException
      */
-    public SipServerConnection(
-            BaseHelper<Server, ConnectedRequest, Response> helper, Socket socket)
+    public SipServerConnection(BaseHelper<Server> helper, Socket socket)
             throws IOException {
         super(helper, socket);
     }

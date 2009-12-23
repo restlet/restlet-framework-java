@@ -45,7 +45,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 import org.restlet.Connector;
-import org.restlet.Message;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.engine.ConnectorHelper;
@@ -107,8 +106,8 @@ import org.restlet.engine.log.LoggingThreadFactory;
  * 
  * @author Jerome Louvel
  */
-public abstract class BaseHelper<T extends Connector, U extends Message, V extends Message>
-        extends ConnectorHelper<T> {
+public abstract class BaseHelper<T extends Connector> extends
+        ConnectorHelper<T> {
 
     /** The controller service. */
     private volatile ExecutorService controllerService;
@@ -117,13 +116,13 @@ public abstract class BaseHelper<T extends Connector, U extends Message, V exten
     private volatile ThreadPoolExecutor workerService;
 
     /** The set of active connections. */
-    private final Set<Connection<T, U, V>> connections;
+    private final Set<Connection<T>> connections;
 
-    /** The queue of requests pending for handling. */
-    private final Queue<Request> pendingRequests;
+    /** The queue of inbound messages. */
+    private final Queue<Response> inboundMessages;
 
-    /** The queue of responses pending for writing. */
-    private final Queue<Response> pendingResponses;
+    /** The queue of outbound messages. */
+    private final Queue<Response> outboundMessages;
 
     /**
      * Constructor.
@@ -132,9 +131,9 @@ public abstract class BaseHelper<T extends Connector, U extends Message, V exten
      */
     public BaseHelper(T connector) {
         super(connector);
-        this.connections = new CopyOnWriteArraySet<Connection<T, U, V>>();
-        this.pendingRequests = new ConcurrentLinkedQueue<Request>();
-        this.pendingResponses = new ConcurrentLinkedQueue<Response>();
+        this.connections = new CopyOnWriteArraySet<Connection<T>>();
+        this.inboundMessages = new ConcurrentLinkedQueue<Response>();
+        this.outboundMessages = new ConcurrentLinkedQueue<Response>();
     }
 
     /**
@@ -147,8 +146,8 @@ public abstract class BaseHelper<T extends Connector, U extends Message, V exten
      * @return The new connection.
      * @throws IOException
      */
-    protected abstract Connection<T, U, V> createConnection(
-            BaseHelper<T, U, V> helper, Socket socket) throws IOException;
+    protected abstract Connection<T> createConnection(BaseHelper<T> helper,
+            Socket socket) throws IOException;
 
     /**
      * Creates the connector controller service.
@@ -198,7 +197,7 @@ public abstract class BaseHelper<T extends Connector, U extends Message, V exten
      * 
      * @return The set of active connections.
      */
-    protected Set<Connection<T, U, V>> getConnections() {
+    protected Set<Connection<T>> getConnections() {
         return connections;
     }
 
@@ -210,6 +209,15 @@ public abstract class BaseHelper<T extends Connector, U extends Message, V exten
     public int getControllerSleepTimeMs() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
                 "controllerSleepTimeMs", "100"));
+    }
+
+    /**
+     * Returns the queue of inbound messages pending for handling.
+     * 
+     * @return The queue of inbound messages.
+     */
+    protected Queue<Response> getInboundMessages() {
+        return inboundMessages;
     }
 
     /**
@@ -234,16 +242,6 @@ public abstract class BaseHelper<T extends Connector, U extends Message, V exten
     }
 
     /**
-     * Returns the maximum threads that will service requests.
-     * 
-     * @return The maximum threads that will service requests.
-     */
-    public boolean isPersistingConnections() {
-        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
-                "persistingConnections", "true"));
-    }
-
-    /**
      * Returns the maximum number of concurrent connections allowed. By default,
      * it is unbounded.
      * 
@@ -265,21 +263,12 @@ public abstract class BaseHelper<T extends Connector, U extends Message, V exten
     }
 
     /**
-     * Returns the queue of requests pending for handling.
+     * Returns the queue of outbound messages pending for handling.
      * 
-     * @return The queue of requests pending for handling.
+     * @return The queue of outbound messages.
      */
-    protected Queue<Request> getPendingRequests() {
-        return pendingRequests;
-    }
-
-    /**
-     * Returns the queue of responses pending for writing.
-     * 
-     * @return The queue of responses pending for writing.
-     */
-    protected Queue<Response> getPendingResponses() {
-        return pendingResponses;
+    protected Queue<Response> getOutboundMessages() {
+        return outboundMessages;
     }
 
     /**
@@ -304,33 +293,43 @@ public abstract class BaseHelper<T extends Connector, U extends Message, V exten
     }
 
     /**
-     * Handles a request.
-     * 
-     * @param request
-     *            The request to handle.
-     */
-    public abstract void handle(Request request);
-
-    /**
-     * Handles a response.
+     * Handles an inbound message.
      * 
      * @param response
      *            The response to handle.
      */
-    public abstract void handle(Response response);
+    public abstract void handleInbound(Response response);
 
     /**
-     * Handles the next request.
+     * Handles the next inbound message.
      */
-    public void handleNextRequest() {
-        handle(getPendingRequests().poll());
+    public void handleNextInbound() {
+        handleInbound(getInboundMessages().poll());
     }
 
     /**
-     * Handles the next response.
+     * Handles the next outbound message.
      */
-    protected void handleNextResponse() {
-        handle(getPendingResponses().poll());
+    protected void handleNextOutbound() {
+        handleOutbound(getOutboundMessages().poll());
+    }
+
+    /**
+     * Handles an outbound message.
+     * 
+     * @param response
+     *            The response to handle.
+     */
+    public abstract void handleOutbound(Response response);
+
+    /**
+     * Returns the maximum threads that will service requests.
+     * 
+     * @return The maximum threads that will service requests.
+     */
+    public boolean isPersistingConnections() {
+        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
+                "persistingConnections", "true"));
     }
 
     /**
