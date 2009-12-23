@@ -1037,10 +1037,12 @@ public abstract class Connection<T extends Connector> {
                     }
                 }
 
-                writeMessage(message);
+                if (message != null) {
+                    writeMessage(message);
 
-                if (getState() == ConnectionState.CLOSING) {
-                    close(true);
+                    if (getState() == ConnectionState.CLOSING) {
+                        close(true);
+                    }
                 }
             }
         } catch (Exception e) {
