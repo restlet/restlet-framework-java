@@ -30,11 +30,9 @@
 
 package org.restlet.ext.servlet;
 
-import java.io.IOException;
 import java.util.Enumeration;
 
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -178,8 +176,7 @@ public class ServletAdapter extends ServerAdapter {
      * @param response
      *            The HTTP Servlet response.
      */
-    public void service(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    public void service(HttpServletRequest request, HttpServletResponse response) {
         if (getTarget() != null) {
             // Set the current context
             Context.setCurrent(getContext());

@@ -50,8 +50,8 @@ import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.engine.Engine;
 import org.restlet.engine.component.ComponentContext;
-import org.restlet.engine.http.ServerCall;
 import org.restlet.engine.http.HttpServerHelper;
+import org.restlet.engine.http.ServerCall;
 import org.restlet.ext.servlet.internal.ServletCall;
 import org.restlet.ext.servlet.internal.ServletWarClient;
 import org.restlet.routing.TemplateRoute;
@@ -170,7 +170,7 @@ import org.restlet.routing.VirtualHost;
  *                 &lt;!-- Your application class name (Optional - For mode 3) --&gt;
  *                 &lt;init-param&gt;
  *                         &lt;param-name&gt;org.restlet.application&lt;/param-name&gt;
- *                         &lt;param-value&gt;test..MyApplication&lt;/param-value&gt;
+ *                         &lt;param-value&gt;test.MyApplication&lt;/param-value&gt;
  *                 &lt;/init-param&gt;
  * 
  *                 &lt;!-- List of supported client protocols (Optional - Only in mode 3) --&gt;
@@ -294,6 +294,13 @@ public class ServerServlet extends HttpServlet {
 
     /** The default value for the NAME_SERVER_ATTRIBUTE parameter. */
     private static final String NAME_SERVER_ATTRIBUTE_DEFAULT = "org.restlet.ext.servlet.ServerServlet.server";
+
+    /**
+     * The Servlet context initialization parameter's name containing the offset
+     * path used when attaching application when (and only when) the auto wiring
+     * feature is set.
+     */
+    private static final String OFFSET_PATH_ATTRIBUTE = "org.restlet.attribute.offsetPath";
 
     /** Serial version identifier. */
     private static final long serialVersionUID = 1L;
@@ -488,8 +495,8 @@ public class ServerServlet extends HttpServlet {
      *            The Servlet response.
      * @return The new ServletCall instance.
      */
-    protected ServerCall createCall(Server server,
-            HttpServletRequest request, HttpServletResponse response) {
+    protected ServerCall createCall(Server server, HttpServletRequest request,
+            HttpServletResponse response) {
         return new ServletCall(server, request, response);
     }
 
@@ -681,6 +688,11 @@ public class ServerServlet extends HttpServlet {
                             offsetPath = this.getContextPath(request);
                         } else {
                             offsetPath = uriPattern;
+                        }
+
+                        if (offsetPath != null) {
+                            getComponent().getContext().getAttributes().put(
+                                    OFFSET_PATH_ATTRIBUTE, offsetPath);
                         }
 
                         // Shift the default route (if any) of the default host
