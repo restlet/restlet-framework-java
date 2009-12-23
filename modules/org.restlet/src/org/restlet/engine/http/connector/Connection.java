@@ -744,11 +744,9 @@ public abstract class Connection<T extends Connector> {
      */
     public void open() {
         try {
-            getSocket().setReuseAddress(true);
             setState(ConnectionState.OPEN);
-        } catch (IOException ex) {
-            getLogger().log(Level.FINE, "Unable to properly shutdown socket",
-                    ex);
+        } catch (Exception ex) {
+            getLogger().log(Level.FINE, "Unable to properly open socket", ex);
         }
     }
 

@@ -386,7 +386,6 @@ public abstract class BaseHelper<T extends Connector> extends
     @Override
     public void start() throws Exception {
         super.start();
-
         this.controllerService = createControllerService();
         this.workerService = createWorkerService();
         this.controllerService.submit(new ControllerTask(this));

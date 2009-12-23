@@ -34,10 +34,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.SecureRandom;
+import java.util.concurrent.CountDownLatch;
 import java.util.logging.Level;
 
 import javax.net.SocketFactory;
@@ -257,6 +261,34 @@ public class BaseClientHelper extends BaseHelper<Client> {
     }
 
     /**
+     * Creates the socket that will be used to send the request and get the
+     * response.
+     * 
+     * @param hostDomain
+     *            The target host domain name.
+     * @param hostPort
+     *            The target host port.
+     * @return The created socket.
+     * @throws UnknownHostException
+     * @throws IOException
+     */
+    public Socket createSocket(boolean secure, String hostDomain, int hostPort)
+            throws UnknownHostException, IOException {
+        Socket result = null;
+        SocketFactory factory = getSocketFactory(secure);
+
+        if (factory != null) {
+            result = factory.createSocket();
+            InetSocketAddress address = new InetSocketAddress(hostDomain,
+                    hostPort);
+            result.connect(address, getConnectTimeout());
+            result.setTcpNoDelay(getTcpNoDelay());
+        }
+
+        return result;
+    }
+
+    /**
      * Creates a normal or secure socket factory.
      * 
      * @param secure
@@ -442,12 +474,41 @@ public class BaseClientHelper extends BaseHelper<Client> {
     }
 
     @Override
-    public void handleInbound(Response response) {
+    public void handle(Request request, Response response) {
+        try {
+            if (response.getOnReceived() == null) {
+                // Synchronous mode
+                CountDownLatch latch = new CountDownLatch(1);
+                request.getAttributes().put(
+                        "org.restlet.engine.http.connector.latch", latch);
+
+                // Await on the latch
+                latch.await();
+            }
+
+            // Add the message to the outbound queue for processing
+            getOutboundMessages().add(response);
+        } catch (Exception e) {
+            getLogger().log(
+                    Level.INFO,
+                    "Error while handling a " + request.getProtocol().getName()
+                            + " client request", e);
+            response.setStatus(Status.CONNECTOR_ERROR_INTERNAL, e);
+        }
     }
 
     @Override
-    public void handle(Request request, Response response) {
+    public void handleInbound(Response response) {
+        if (response.getOnReceived() != null) {
+            response.getOnReceived().handle(response.getRequest(), response);
+        }
+    }
+
+    @Override
+    public void handleOutbound(Response response) {
         try {
+            Request request = response.getRequest();
+
             // Resolve relative references
             Reference resourceRef = request.getResourceRef().isRelative() ? request
                     .getResourceRef().getTargetRef()
@@ -465,20 +526,57 @@ public class BaseClientHelper extends BaseHelper<Client> {
                 }
             }
 
-            // ...
-            // request.getAttributes().put("org.restlet.", value);
+            // Create the client socket
+            Socket socket = createSocket(request.isConfidential(), hostDomain,
+                    hostPort);
+            InetAddress socketAddress = socket.getInetAddress();
+            int hostConnectionCount = 0;
+            int bestCount = 0;
+            Connection<Client> bestConn = null;
+            boolean foundConn = false;
 
-        } catch (Exception e) {
-            getLogger().log(
-                    Level.INFO,
-                    "Error while handling a " + request.getProtocol().getName()
-                            + " client request", e);
-            response.setStatus(Status.CONNECTOR_ERROR_INTERNAL, e);
+            // Try to reuse an existing connection
+            for (Connection<Client> currConn : getConnections()) {
+                if (currConn.getSocket().getInetAddress().equals(socketAddress)) {
+                    hostConnectionCount++;
+
+                    if (currConn.getState().equals(ConnectionState.OPEN)
+                            && !currConn.isOutboundBusy()) {
+                        bestConn = currConn;
+                        foundConn = true;
+                        continue;
+                    } else {
+                        int currCount = currConn.getOutboundMessages().size();
+
+                        if (bestCount > currCount) {
+                            bestCount = currCount;
+                            bestConn = currConn;
+                        }
+                    }
+                }
+            }
+
+            if (!foundConn
+                    && (hostConnectionCount < getMaxConnectionsPerHost())) {
+                // Create a new connection
+                bestConn = createConnection(this, socket);
+                bestCount = 0;
+            }
+
+            if (bestConn != null) {
+                bestConn.getOutboundMessages().add(response);
+            } else {
+                getLogger().warning(
+                        "Unable to find a connection to send the request");
+            }
+        } catch (IOException ioe) {
+            getLogger()
+                    .log(
+                            Level.FINE,
+                            "An error occured during the communication with the remote server.",
+                            ioe);
+            response.setStatus(Status.CONNECTOR_ERROR_COMMUNICATION, ioe);
         }
-    }
-
-    @Override
-    public void handleOutbound(Response response) {
     }
 
     /**

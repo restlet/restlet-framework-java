@@ -32,11 +32,7 @@ package org.restlet.engine.http.connector;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
-
-import javax.net.SocketFactory;
 
 import org.restlet.Client;
 import org.restlet.Context;
@@ -121,34 +117,6 @@ public class ClientConnection extends Connection<Client> {
             int serverPort) {
         return new ConnectedResponse(context, connection, request, version,
                 statusCode, reasonPhrase, serverAddress, serverPort);
-    }
-
-    /**
-     * Creates the socket that will be used to send the request and get the
-     * response.
-     * 
-     * @param hostDomain
-     *            The target host domain name.
-     * @param hostPort
-     *            The target host port.
-     * @return The created socket.
-     * @throws UnknownHostException
-     * @throws IOException
-     */
-    public Socket createSocket(boolean secure, String hostDomain, int hostPort)
-            throws UnknownHostException, IOException {
-        Socket result = null;
-        SocketFactory factory = getHelper().getSocketFactory(secure);
-
-        if (factory != null) {
-            result = factory.createSocket();
-            InetSocketAddress address = new InetSocketAddress(hostDomain,
-                    hostPort);
-            result.connect(address, getHelper().getConnectTimeout());
-            result.setTcpNoDelay(getHelper().getTcpNoDelay());
-        }
-
-        return result;
     }
 
     @Override
