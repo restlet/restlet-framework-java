@@ -347,7 +347,6 @@ public class HeaderUtils {
         }
     }
 
-    // [ifndef gwt] method
     /**
      * Adds the headers based on the {@link Request} to the given {@link Series}
      * .

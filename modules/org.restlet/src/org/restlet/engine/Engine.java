@@ -44,7 +44,6 @@ import java.util.logging.Logger;
 import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.Response;
-import org.restlet.Server;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
 import org.restlet.engine.log.LoggerFacade;
@@ -290,7 +289,7 @@ public class Engine {
 
     // [ifndef gwt] member
     /** List of available server connectors. */
-    private final List<ConnectorHelper<Server>> registeredServers;
+    private final List<ConnectorHelper<org.restlet.Server>> registeredServers;
 
     /**
      * Constructor that will automatically attempt to discover connectors.
@@ -329,7 +328,7 @@ public class Engine {
         this.registeredClients = new CopyOnWriteArrayList<ConnectorHelper<Client>>();
 
         // [ifndef gwt]
-        this.registeredServers = new CopyOnWriteArrayList<ConnectorHelper<Server>>();
+        this.registeredServers = new CopyOnWriteArrayList<ConnectorHelper<org.restlet.Server>>();
         this.registeredAuthenticators = new CopyOnWriteArrayList<org.restlet.engine.security.AuthenticatorHelper>();
         this.registeredConverters = new CopyOnWriteArrayList<org.restlet.engine.converter.ConverterHelper>();
         // [enddef]
@@ -428,13 +427,13 @@ public class Engine {
      * @return The new helper.
      */
     @SuppressWarnings("unchecked")
-    public ConnectorHelper<Server> createHelper(org.restlet.Server server,
+    public ConnectorHelper<org.restlet.Server> createHelper(org.restlet.Server server,
             String helperClass) {
-        ConnectorHelper<Server> result = null;
+        ConnectorHelper<org.restlet.Server> result = null;
 
         if (server.getProtocols().size() > 0) {
-            ConnectorHelper<Server> connector = null;
-            for (final Iterator<ConnectorHelper<Server>> iter = getRegisteredServers()
+            ConnectorHelper<org.restlet.Server> connector = null;
+            for (final Iterator<ConnectorHelper<org.restlet.Server>> iter = getRegisteredServers()
                     .iterator(); (result == null) && iter.hasNext();) {
                 connector = iter.next();
 
@@ -621,7 +620,7 @@ public class Engine {
      * 
      * @return The list of available server connectors.
      */
-    public List<ConnectorHelper<Server>> getRegisteredServers() {
+    public List<ConnectorHelper<org.restlet.Server>> getRegisteredServers() {
         return this.registeredServers;
     }
 
