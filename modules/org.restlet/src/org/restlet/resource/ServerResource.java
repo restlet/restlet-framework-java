@@ -1438,7 +1438,7 @@ public abstract class ServerResource extends UniformResource {
      * methods should be used. The default implementation lists the annotated
      * methods.
      */
-    protected void updateAllowedMethods() {
+    public void updateAllowedMethods() {
         List<AnnotationInfo> annotations = getAnnotations();
         if (annotations != null) {
             for (AnnotationInfo annotationInfo : annotations) {

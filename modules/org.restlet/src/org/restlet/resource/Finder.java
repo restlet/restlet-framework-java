@@ -237,8 +237,7 @@ public class Finder extends Restlet {
         ServerResource result = null;
 
         if ((getTargetClass() != null)
-                && ServerResource.class
-                        .isAssignableFrom((Class<? extends ServerResource>) getTargetClass())) {
+                && ServerResource.class.isAssignableFrom(getTargetClass())) {
             result = create((Class<? extends ServerResource>) getTargetClass(),
                     request, response);
         }
@@ -322,8 +321,7 @@ public class Finder extends Restlet {
         Handler result = null;
 
         if ((getTargetClass() != null)
-                && Handler.class
-                        .isAssignableFrom((Class<? extends Handler>) getTargetClass())) {
+                && Handler.class.isAssignableFrom(getTargetClass())) {
             result = createTarget((Class<? extends Handler>) getTargetClass(),
                     request, response);
         }
