@@ -154,7 +154,7 @@ public class BaseClientHelper extends BaseHelper<Client> {
      *            The helped client connector.
      */
     public BaseClientHelper(Client connector) {
-        super(connector);
+        super(connector, true);
         this.regularSocketFactory = null;
         this.secureSocketFactory = null;
     }

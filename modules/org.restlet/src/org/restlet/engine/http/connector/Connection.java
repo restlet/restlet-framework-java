@@ -41,7 +41,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -699,15 +698,6 @@ public abstract class Connection<T extends Connector> {
     }
 
     /**
-     * Returns the connection handler service.
-     * 
-     * @return The connection handler service.
-     */
-    protected ExecutorService getWorkerService() {
-        return getHelper().getWorkerService();
-    }
-
-    /**
      * Asks the parent helper to handle the next message.
      */
     protected abstract void handleNextMessage();
@@ -753,7 +743,13 @@ public abstract class Connection<T extends Connector> {
      * {@link ConnectionState#OPEN}.
      */
     public void open() {
-        setState(ConnectionState.OPEN);
+        try {
+            getSocket().setReuseAddress(true);
+            setState(ConnectionState.OPEN);
+        } catch (IOException ex) {
+            getLogger().log(Level.FINE, "Unable to properly shutdown socket",
+                    ex);
+        }
     }
 
     /**

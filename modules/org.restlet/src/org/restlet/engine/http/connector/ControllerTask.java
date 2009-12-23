@@ -30,6 +30,7 @@
 
 package org.restlet.engine.http.connector;
 
+import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 
@@ -60,6 +61,90 @@ public class ControllerTask implements Runnable {
     }
 
     /**
+     * Control each connection for messages to read or write.
+     * 
+     * @throws IOException
+     */
+    protected void controlConnections() throws IOException {
+        for (final Connection<?> conn : getHelper().getConnections()) {
+            if (conn.getState() == ConnectionState.CLOSED) {
+                getHelper().getConnections().remove(conn);
+            }
+
+            if ((isOverloaded() && !getHelper().isClientSide())
+                    || conn.canWrite()) {
+                execute(new Runnable() {
+                    public void run() {
+                        conn.writeMessages();
+                    }
+
+                    @Override
+                    public String toString() {
+                        return "Write connection messages";
+                    }
+                });
+            }
+
+            if ((isOverloaded() && getHelper().isClientSide())
+                    || conn.canRead()) {
+                execute(new Runnable() {
+                    public void run() {
+                        conn.readMessages();
+                    }
+
+                    @Override
+                    public String toString() {
+                        return "Read connection messages";
+                    }
+                });
+            }
+        }
+    }
+
+    /**
+     * Control the helper for inbound or outbound messages to handle.
+     */
+    protected void controlHelper() {
+        // Control if there are some pending requests that could
+        // be processed
+        for (int i = 0; i < getHelper().getInboundMessages().size(); i++) {
+            final Response response = getHelper().getInboundMessages().poll();
+
+            if (response != null) {
+                execute(new Runnable() {
+                    public void run() {
+                        getHelper().handleInbound(response);
+                    }
+
+                    @Override
+                    public String toString() {
+                        return "Handle inbound messages";
+                    }
+                });
+            }
+        }
+
+        // Control if some pending responses that could be moved
+        // to their respective connection queues
+        for (int i = 0; i < getHelper().getOutboundMessages().size(); i++) {
+            final Response response = getHelper().getOutboundMessages().poll();
+
+            if (response != null) {
+                execute(new Runnable() {
+                    public void run() {
+                        getHelper().handleOutbound(response);
+                    }
+
+                    @Override
+                    public String toString() {
+                        return "Handle outbound messages";
+                    }
+                });
+            }
+        }
+    }
+
+    /**
      * Executes the next task in a separate thread provided by the worker
      * service, only if the worker service isn't busy.
      * 
@@ -67,8 +152,13 @@ public class ControllerTask implements Runnable {
      *            The next task to execute.
      */
     protected void execute(Runnable task) {
-        if (!isWorkerServiceBusy()) {
-            getWorkerService().execute(task);
+        try {
+            if (!isOverloaded()) {
+                getWorkerService().execute(task);
+            }
+        } catch (Exception e) {
+            getHelper().getLogger().log(Level.WARNING,
+                    "Unable to execute a controller task", e);
         }
     }
 
@@ -100,13 +190,13 @@ public class ControllerTask implements Runnable {
     }
 
     /**
-     * Indicates if the helper's worker service is busy and can't accept more
-     * tasks.
+     * Indicates if the helper's worker service is fully busy and can't accept
+     * more tasks.
      * 
-     * @return True if the helper's worker service is busy.
+     * @return True if the helper's worker service is fully busy.
      */
-    protected boolean isWorkerServiceBusy() {
-        return getHelper().isWorkerServiceBusy();
+    protected boolean isWorkerServiceFull() {
+        return getHelper().isWorkerServiceFull();
     }
 
     /**
@@ -117,72 +207,25 @@ public class ControllerTask implements Runnable {
         while (true) {
             try {
                 if (isOverloaded()) {
-                    setOverloaded(isWorkerServiceBusy());
+                    if (!isWorkerServiceFull()) {
+                        setOverloaded(false);
+                        getHelper()
+                                .getLogger()
+                                .log(Level.INFO,
+                                        "Accepting new connections and transactions again.");
+                    }
                 } else {
-                    if (isWorkerServiceBusy()) {
+                    if (isWorkerServiceFull()) {
                         setOverloaded(true);
                         getHelper()
                                 .getLogger()
                                 .log(
                                         Level.INFO,
-                                        "Can't submit additional tasks. Consider increasing the maximum number of threads.");
-                    } else {
-                        // Control each connection for messages to read or write
-                        for (final Connection<?> conn : getHelper()
-                                .getConnections()) {
-                            if (conn.canRead()) {
-                                execute(new Runnable() {
-                                    public void run() {
-                                        conn.readMessages();
-                                    }
-                                });
-                            }
-
-                            if (conn.canWrite()) {
-                                execute(new Runnable() {
-                                    public void run() {
-                                        conn.writeMessages();
-                                    }
-                                });
-                            }
-
-                            if (conn.getState() == ConnectionState.CLOSED) {
-                                getHelper().getConnections().remove(conn);
-                            }
-                        }
-
-                        // Control if there are some pending requests that could
-                        // be processed
-                        for (int i = 0; i < getHelper().getInboundMessages()
-                                .size(); i++) {
-                            final Response response = getHelper()
-                                    .getInboundMessages().poll();
-
-                            if (response != null) {
-                                execute(new Runnable() {
-                                    public void run() {
-                                        getHelper().handleInbound(response);
-                                    }
-                                });
-                            }
-                        }
-
-                        // Control if some pending responses that could be moved
-                        // to their respective connection queues
-                        for (int i = 0; i < getHelper().getOutboundMessages()
-                                .size(); i++) {
-                            final Response response = getHelper()
-                                    .getOutboundMessages().poll();
-
-                            if (response != null) {
-                                execute(new Runnable() {
-                                    public void run() {
-                                        getHelper().handleOutbound(response);
-                                    }
-                                });
-                            }
-                        }
+                                        "Stop accepting new connections and transactions. Consider increasing the maximum number of threads.");
                     }
+
+                    controlConnections();
+                    controlHelper();
                 }
 
                 // Sleep a bit

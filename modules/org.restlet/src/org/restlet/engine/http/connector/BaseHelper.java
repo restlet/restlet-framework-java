@@ -124,13 +124,20 @@ public abstract class BaseHelper<T extends Connector> extends
     /** The queue of outbound messages. */
     private final Queue<Response> outboundMessages;
 
+    /** Indicates if it is helping a client connector. */
+    private final boolean clientSide;
+
     /**
      * Constructor.
      * 
      * @param connector
+     *            The helped connector.
+     * @param clientSide
+     *            True if it is helping a client connector.
      */
-    public BaseHelper(T connector) {
+    public BaseHelper(T connector, boolean clientSide) {
         super(connector);
+        this.clientSide = clientSide;
         this.connections = new CopyOnWriteArraySet<Connection<T>>();
         this.inboundMessages = new ConcurrentLinkedQueue<Response>();
         this.outboundMessages = new ConcurrentLinkedQueue<Response>();
@@ -187,6 +194,29 @@ public abstract class BaseHelper<T extends Connector> extends
             public void rejectedExecution(Runnable r,
                     ThreadPoolExecutor executor) {
                 getLogger().warning("Unable to run the following task: " + r);
+                getLogger().info(
+                        "Worker service state: "
+                                + (isWorkerServiceFull() ? "Full" : "Normal"));
+                getLogger().info(
+                        "Worker service tasks: "
+                                + getWorkerService().getActiveCount()
+                                + " active, "
+                                + getWorkerService().getTaskCount()
+                                + " scheduled, "
+                                + getWorkerService().getCompletedTaskCount()
+                                + " queued, "
+                                + getWorkerService().getQueue().size()
+                                + " completed.");
+                getLogger().info(
+                        "Worker service thread pool: "
+                                + getWorkerService().getCorePoolSize()
+                                + " core size, "
+                                + getWorkerService().getLargestPoolSize()
+                                + " largest size, "
+                                + getWorkerService().getMaximumPoolSize()
+                                + " maximum size, "
+                                + getWorkerService().getPoolSize()
+                                + " current size");
             }
         });
         return result;
@@ -323,6 +353,15 @@ public abstract class BaseHelper<T extends Connector> extends
     public abstract void handleOutbound(Response response);
 
     /**
+     * Indicates if it is helping a client connector.
+     * 
+     * @return True if it is helping a client connector.
+     */
+    public boolean isClientSide() {
+        return clientSide;
+    }
+
+    /**
      * Returns the maximum threads that will service requests.
      * 
      * @return The maximum threads that will service requests.
@@ -339,9 +378,9 @@ public abstract class BaseHelper<T extends Connector> extends
      * 
      * @return True if the worker service is busy.
      */
-    protected boolean isWorkerServiceBusy() {
-        return getWorkerService().getActiveCount() >= (getWorkerService()
-                .getMaximumPoolSize() - 1);
+    protected boolean isWorkerServiceFull() {
+        return (getWorkerService().getActiveCount()) >= (getWorkerService()
+                .getMaximumPoolSize());
     }
 
     @Override

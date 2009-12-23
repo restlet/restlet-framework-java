@@ -39,10 +39,6 @@ import org.restlet.Context;
 import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
-import org.restlet.ext.sip.Ack;
-import org.restlet.ext.sip.Bye;
-import org.restlet.ext.sip.Cancel;
-import org.restlet.ext.sip.Invite;
 import org.restlet.ext.sip.SipServerResource;
 import org.restlet.ext.sip.SipStatus;
 
@@ -51,67 +47,50 @@ import org.restlet.ext.sip.SipStatus;
  * 
  * @author Jerome Louvel
  */
-public class UacServerResource extends SipServerResource {
+public class UacServerResource extends SipServerResource implements UacResource {
 
-    /** Sleep time for this resource. */
-    private static int sleepTime = 100;
-    /** Trace or not. */
-    private static boolean TRACE = false;
+    private static boolean TRACE;
+
+    private static long SLEEP_TIME;
 
     // private static AtomicLong TAG = new AtomicLong(1000);
 
     public static void main(String[] args) throws Exception {
         Server server = new Server(new Context(), Protocol.SIP,
                 UacServerResource.class);
-        // Load properties to the server's context.
-        File file = new File("uacServerResource.properties");
+        server.start();
+
+        File file = new File("UacServerResource.properties");
         if (file.exists()) {
             Properties p = new Properties();
             p.load(new FileInputStream(file));
+
             for (Map.Entry<Object, Object> entry : p.entrySet()) {
                 server.getContext().getParameters().add(
                         (String) entry.getKey(), (String) entry.getValue());
             }
+
             // Sets the sleep time of this resource
             String str = p.getProperty("sleepTime", "100");
+
             try {
-                sleepTime = Integer.parseInt(str);
+                SLEEP_TIME = Integer.parseInt(str);
             } catch (Throwable e) {
             }
+
             str = p.getProperty("trace", "false");
+
             try {
                 TRACE = Boolean.parseBoolean(str);
             } catch (Throwable e) {
             }
-
         }
-
-        server.start();
     }
 
-    @Ack
     public void acknowledge() {
         trace();
     }
 
-    @Cancel
-    public void cancel() {
-        trace();
-        setStatus(SipStatus.SUCCESS_OK);
-    }
-
-    /**
-     * Makes the current thread sleep.
-     */
-    private void sleep() {
-        try {
-            Thread.sleep(sleepTime);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Invite
     public void start() {
         trace();
 
@@ -142,10 +121,20 @@ public class UacServerResource extends SipServerResource {
         setStatus(SipStatus.SUCCESS_OK);
     }
 
-    @Bye
     public void stop() {
         trace();
         setStatus(SipStatus.SUCCESS_OK);
+    }
+
+    /**
+     * Makes the current thread sleep.
+     */
+    private void sleep() {
+        try {
+            Thread.sleep(SLEEP_TIME);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     /**

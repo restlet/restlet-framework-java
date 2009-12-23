@@ -88,7 +88,7 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
      *            The server to help.
      */
     public BaseServerHelper(Server server) {
-        super(server);
+        super(server, false);
 
         // Clear the ephemeral port
         getAttributes().put("ephemeralPort", -1);
@@ -112,6 +112,7 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
      */
     protected ServerSocketChannel createServerSocket() throws IOException {
         final ServerSocketChannel server = ServerSocketChannel.open();
+        server.socket().setReuseAddress(true);
         server.socket().bind(createSocketAddress());
         return server;
     }
@@ -184,27 +185,30 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
             ServerConnection connection = (ServerConnection) request
                     .getConnection();
 
-            // Check if the response is indeed the next one
-            // to be written for this connection
-            Response nextResponse = connection.getInboundMessages().peek();
+            if (request.isExpectingResponse()) {
+                // Check if the response is indeed the next one
+                // to be written for this connection
+                Response nextResponse = connection.getInboundMessages().peek();
 
-            if ((nextResponse != null)
-                    && (nextResponse.getRequest() == request)) {
-                // Add the response to the outbound queue
-                connection.getOutboundMessages().add(response);
+                if ((nextResponse != null)
+                        && (nextResponse.getRequest() == request)) {
+                    // Add the response to the outbound queue
+                    connection.getOutboundMessages().add(response);
 
-                // Check if a final response was received for the request
-                if (!response.getStatus().isInformational()) {
-                    // Remove the matching request from the inbound queue
-                    connection.getInboundMessages().remove(nextResponse);
+                    // Check if a final response was received for the request
+                    if (!response.getStatus().isInformational()) {
+                        // Remove the matching request from the inbound queue
+                        connection.getInboundMessages().remove(nextResponse);
+                    }
+
+                    // Attempt to directly write the response, preventing a
+                    // context
+                    // switching
+                    connection.writeMessages();
+                } else {
+                    // Put the response at the end of the queue
+                    getOutboundMessages().add(response);
                 }
-
-                // Attempt to directly write the response, preventing a context
-                // switching
-                connection.writeMessages();
-            } else {
-                // Put the response at the beginning of the queue
-                getOutboundMessages().add(response);
             }
         }
     }
