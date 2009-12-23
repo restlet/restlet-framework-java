@@ -133,7 +133,7 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
 
     @Override
     public void handleInbound(Response response) {
-        if (response.getRequest() != null) {
+        if ((response != null) && (response.getRequest() != null)) {
             ConnectedRequest request = (ConnectedRequest) response.getRequest();
 
             // Effectively handles the request
@@ -186,15 +186,18 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
 
             // Check if the response is indeed the next one
             // to be written for this connection
-            if (connection.getInboundMessages().peek().getRequest() == request) {
+            Response nextResponse = connection.getInboundMessages().peek();
+
+            if ((nextResponse != null)
+                    && (nextResponse.getRequest() == request)) {
+                // Add the response to the outbound queue
+                connection.getOutboundMessages().add(response);
+
                 // Check if a final response was received for the request
                 if (!response.getStatus().isInformational()) {
                     // Remove the matching request from the inbound queue
-                    connection.getInboundMessages().remove(request);
+                    connection.getInboundMessages().remove(nextResponse);
                 }
-
-                // Add the response to the outbound queue
-                connection.getOutboundMessages().add(response);
 
                 // Attempt to directly write the response, preventing a context
                 // switching
