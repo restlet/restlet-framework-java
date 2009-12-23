@@ -1,15 +1,15 @@
-package org.restlet.example.firstResource;
+package org.restlet.example.ext.wadl;
 
 import java.util.concurrent.ConcurrentMap;
 
-import org.restlet.resource.ServerResource;
+import org.restlet.ext.wadl.WadlServerResource;
 
 /**
  * Base resource class that supports common behaviours or attributes shared by
  * all resources.
  * 
  */
-public abstract class BaseResource extends ServerResource {
+public abstract class BaseResource extends WadlServerResource {
 
     /**
      * Returns the map of items managed by this application.

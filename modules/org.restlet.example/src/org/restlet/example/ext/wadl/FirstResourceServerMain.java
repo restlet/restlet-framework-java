@@ -1,4 +1,4 @@
-package org.restlet.example.firstResource;
+package org.restlet.example.ext.wadl;
 
 import org.restlet.Component;
 import org.restlet.data.Protocol;

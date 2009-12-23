@@ -1,10 +1,15 @@
-package org.restlet.example.firstResource;
+package org.restlet.example.ext.wadl;
 
 import java.io.IOException;
 
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
+import org.restlet.ext.wadl.FaultInfo;
+import org.restlet.ext.wadl.MethodInfo;
+import org.restlet.ext.wadl.ParameterInfo;
+import org.restlet.ext.wadl.ParameterStyle;
+import org.restlet.ext.wadl.RepresentationInfo;
 import org.restlet.ext.xml.DomRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Delete;
@@ -23,13 +28,69 @@ public class ItemResource extends BaseResource {
     String itemName;
 
     @Override
+    public Representation describe() {
+        setTitle("Representation of a single item");
+        return super.describe();
+    }
+
+    @Override
+    protected void describeDelete(MethodInfo info) {
+        info.setDocumentation("Delete the current item.");
+
+        RepresentationInfo repInfo = new RepresentationInfo();
+        repInfo.setDocumentation("No representation is returned.");
+        repInfo.getStatuses().add(Status.SUCCESS_NO_CONTENT);
+        info.getResponse().getRepresentations().add(repInfo);
+    }
+
+    @Override
+    protected void describeGet(MethodInfo info) {
+        info.setIdentifier("item");
+        info.setDocumentation("To retrieve details of a specific item");
+
+        RepresentationInfo repInfo = new RepresentationInfo(MediaType.TEXT_XML);
+        repInfo.setXmlElement("item");
+        repInfo.setDocumentation("XML representation of the current item.");
+        info.getResponse().getRepresentations().add(repInfo);
+
+        FaultInfo faultInfo = new FaultInfo(Status.CLIENT_ERROR_NOT_FOUND,
+                "Item not found");
+        faultInfo.setIdentifier("itemError");
+        faultInfo.setMediaType(MediaType.TEXT_HTML);
+        info.getResponse().getFaults().add(faultInfo);
+    }
+
+    @Override
+    protected void describePut(MethodInfo info) {
+        info.setDocumentation("Update or create the current item.");
+
+        RepresentationInfo repInfo = new RepresentationInfo(
+                MediaType.APPLICATION_WWW_FORM);
+        ParameterInfo param = new ParameterInfo("name", ParameterStyle.PLAIN,
+                "Name of the item");
+        repInfo.getParameters().add(param);
+        param = new ParameterInfo("description", ParameterStyle.PLAIN,
+                "Description of the item");
+        repInfo.getParameters().add(param);
+        repInfo.getStatuses().add(Status.SUCCESS_OK);
+        repInfo.getStatuses().add(Status.SUCCESS_CREATED);
+
+        repInfo.setDocumentation("Web form.");
+        info.getRequest().getRepresentations().add(repInfo);
+
+        super.describePut(info);
+    }
+
+    @Override
     protected void doInit() throws ResourceException {
         // Get the "itemName" attribute value taken from the URI template
         // /items/{itemName}.
         this.itemName = (String) getRequest().getAttributes().get("itemName");
 
-        // Get the item directly from the "persistence layer".
-        this.item = getItems().get(itemName);
+        if (itemName != null) {
+            // Get the item directly from the "persistence layer".
+            this.item = getItems().get(itemName);
+        }
 
         setExisting(this.item != null);
     }

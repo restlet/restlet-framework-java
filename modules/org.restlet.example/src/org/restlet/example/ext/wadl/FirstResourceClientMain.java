@@ -1,4 +1,4 @@
-package org.restlet.example.firstResource;
+package org.restlet.example.ext.wadl;
 
 import java.io.IOException;
 
@@ -11,7 +11,10 @@ public class FirstResourceClientMain {
 
     public static void main(String[] args) throws IOException,
             ResourceException {
+
         // Define our Restlet client resources.
+        ClientResource app = new ClientResource(
+                "http://localhost:8182/firstResource");
         ClientResource itemsResource = new ClientResource(
                 "http://localhost:8182/firstResource/items");
         ClientResource itemResource = null;
@@ -22,6 +25,9 @@ public class FirstResourceClientMain {
         if (itemsResource.getStatus().isSuccess()) {
             itemResource = new ClientResource(r.getIdentifier());
         }
+
+        // Displays the WADL documentation of the application
+        app.options().write(System.out);
 
         if (itemResource != null) {
             // Prints the representation of the newly created resource.

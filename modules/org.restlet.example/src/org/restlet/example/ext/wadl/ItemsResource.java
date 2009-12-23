@@ -1,10 +1,15 @@
-package org.restlet.example.firstResource;
+package org.restlet.example.ext.wadl;
 
 import java.io.IOException;
 
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
+import org.restlet.ext.wadl.FaultInfo;
+import org.restlet.ext.wadl.MethodInfo;
+import org.restlet.ext.wadl.ParameterInfo;
+import org.restlet.ext.wadl.ParameterStyle;
+import org.restlet.ext.wadl.RepresentationInfo;
 import org.restlet.ext.xml.DomRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
@@ -50,6 +55,47 @@ public class ItemsResource extends BaseResource {
         }
 
         return result;
+    }
+
+    @Override
+    protected Representation describe() {
+        setTitle("List of items.");
+        return super.describe();
+    }
+
+    @Override
+    protected void describeGet(MethodInfo info) {
+        info.setIdentifier("items");
+        info.setDocumentation("Retrieve the list of current items.");
+
+        RepresentationInfo repInfo = new RepresentationInfo(MediaType.TEXT_XML);
+        repInfo.setXmlElement("items");
+        repInfo.setDocumentation("List of items as XML file");
+        info.getResponse().getRepresentations().add(repInfo);
+    }
+
+    @Override
+    protected void describePost(MethodInfo info) {
+        info.setIdentifier("create_item");
+        info.setDocumentation("To create an item.");
+
+        RepresentationInfo repInfo = new RepresentationInfo(
+                MediaType.APPLICATION_WWW_FORM);
+        ParameterInfo param = new ParameterInfo("name", ParameterStyle.PLAIN,
+                "Name of the item");
+        repInfo.getParameters().add(param);
+        param = new ParameterInfo("description", ParameterStyle.PLAIN,
+                "Description of the item");
+        repInfo.getParameters().add(param);
+        repInfo.getStatuses().add(Status.SUCCESS_CREATED);
+
+        repInfo.setDocumentation("Web form.");
+        info.getRequest().getRepresentations().add(repInfo);
+
+        FaultInfo faultInfo = new FaultInfo(Status.CLIENT_ERROR_NOT_FOUND);
+        faultInfo.setIdentifier("itemError");
+        faultInfo.setMediaType(MediaType.TEXT_HTML);
+        info.getResponse().getFaults().add(faultInfo);
     }
 
     /**
@@ -126,5 +172,4 @@ public class ItemsResource extends BaseResource {
 
         return null;
     }
-
 }
