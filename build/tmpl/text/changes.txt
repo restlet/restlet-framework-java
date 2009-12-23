@@ -66,7 +66,8 @@ Changes log
     - Misc
         - Updated Simple framework library to version 4.1.16.
         - Deprecated Message#getEntityAs* methods.
-
+        - Updated GWT library to version 2.0.
+        
 - 2.0 Milestone 6 (2009-11-20)
     - API changes
         - Renamed ChallengeScheme#HTTP_MS_SHAREDKEY into 
