@@ -43,6 +43,9 @@ Changes log
           to representations in the JDBC extension.
         - Added support of the dataservices extension in Android.
         - Added GWT object serialization.
+        - Added context's attribute: org.restlet.attribute.offsetPath 
+          for the servlet extension.
+          Proposed by Carsten Lohmann.
     - Bugs fixed
         - Fixed issue in DomRepresentation with createTransformer()
           method. Fix contributed by Remi Dewitte. 
