@@ -128,7 +128,8 @@ public abstract class Connection<T extends Connector> {
     public Connection(BaseHelper<T> helper, Socket socket) throws IOException {
         this.helper = helper;
         this.inboundStream = new InboundStream(socket.getInputStream());
-        this.inboundMessages = new ConcurrentLinkedQueue<Response>();
+        this.inboundMessages = helper.isClientSide() ? null
+                : new ConcurrentLinkedQueue<Response>();
         this.outboundStream = new OutboundStream(socket.getOutputStream());
         this.outboundMessages = new ConcurrentLinkedQueue<Response>();
         this.persistent = helper.isPersistingConnections();
@@ -302,8 +303,10 @@ public abstract class Connection<T extends Connector> {
      * @throws IOException
      */
     public boolean canRead() throws IOException {
-        return (getState() == ConnectionState.OPEN) && !isInboundBusy()
-                && (getInboundMessages().size() == 0);
+        return (getState() == ConnectionState.OPEN)
+                && !isInboundBusy()
+                && ((getInboundMessages() == null) || (getInboundMessages()
+                        .size() == 0));
     }
 
     /**
@@ -698,17 +701,6 @@ public abstract class Connection<T extends Connector> {
     }
 
     /**
-     * Asks the parent helper to handle the next message.
-     */
-    protected void handleNextMessage() {
-        if (getHelper().isClientSide()) {
-            getHelper().handleNextOutbound();
-        } else {
-            getHelper().handleNextInbound();
-        }
-    }
-
-    /**
      * Indicates if the connection is busy.
      * 
      * @return True if the connection is busy.
@@ -788,7 +780,7 @@ public abstract class Connection<T extends Connector> {
                 // We want to make sure that messages are read by one thread
                 // at a time without blocking other concurrent threads during
                 // the reading
-                synchronized (getInboundMessages()) {
+                synchronized (this) {
                     if (canRead()) {
                         doRead = true;
                         setInboundBusy(doRead);
@@ -815,7 +807,7 @@ public abstract class Connection<T extends Connector> {
 
         // Immediately attempt to handle the next pending message, trying
         // to prevent a thread context switch.
-        handleNextMessage();
+        getHelper().handleNextInbound();
     }
 
     /**
@@ -938,8 +930,6 @@ public abstract class Connection<T extends Connector> {
                                 "Exception while flushing and closing the entity stream.",
                                 ioe);
             } finally {
-                setOutboundBusy(false);
-
                 if (entity != null) {
                     entity.release();
                 }
@@ -1040,9 +1030,9 @@ public abstract class Connection<T extends Connector> {
 
                 // We want to make sure that responses are written in order
                 // without blocking other concurrent threads during the writing
-                synchronized (getOutboundMessages()) {
+                synchronized (this) {
                     if (canWrite()) {
-                        message = getOutboundMessages().poll();
+                        message = getOutboundMessages().peek();
                         setOutboundBusy((message != null));
                     }
                 }

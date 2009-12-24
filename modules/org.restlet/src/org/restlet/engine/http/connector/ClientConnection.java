@@ -190,11 +190,17 @@ public class ClientConnection extends Connection<Client> {
         response.getServerInfo().setPort(getSocket().getPort());
         response.setEntity(createInboundEntity(headers));
 
-        // Add it to the connection queue
-        getInboundMessages().add(response);
+        if (!response.getStatus().isInformational()) {
+            getOutboundMessages().poll();
+        }
 
         // Add it to the helper queue
         getHelper().getInboundMessages().add(response);
+    }
+
+    @Override
+    public boolean canRead() throws IOException {
+        return super.canRead() && (getOutboundMessages().size() > 0);
     }
 
     /**

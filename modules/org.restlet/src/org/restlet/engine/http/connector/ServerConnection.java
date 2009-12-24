@@ -367,6 +367,10 @@ public class ServerConnection extends Connection<Server> {
             if (response.getOnSent() != null) {
                 response.getOnSent().handle(response.getRequest(), response);
             }
+
+            // Free the connection outbound for next responses
+            getOutboundMessages().remove(response);
+            setOutboundBusy(false);
         }
     }
 

@@ -476,8 +476,6 @@ public class BaseClientHelper extends BaseHelper<Client> {
     @Override
     public void handle(Request request, Response response) {
         try {
-            // Add the message to the outbound queue for processing
-            getOutboundMessages().add(response);
 
             if (response.getOnReceived() == null) {
                 // Synchronous mode
@@ -485,8 +483,14 @@ public class BaseClientHelper extends BaseHelper<Client> {
                 request.getAttributes().put(
                         "org.restlet.engine.http.connector.latch", latch);
 
+                // Add the message to the outbound queue for processing
+                getOutboundMessages().add(response);
+
                 // Await on the latch
                 latch.await();
+            } else {
+                // Add the message to the outbound queue for processing
+                getOutboundMessages().add(response);
             }
         } catch (Exception e) {
             getLogger().log(
@@ -499,15 +503,19 @@ public class BaseClientHelper extends BaseHelper<Client> {
 
     @Override
     public void handleInbound(Response response) {
-        if (response.getOnReceived() != null) {
-            response.getOnReceived().handle(response.getRequest(), response);
-        }
+        if (response != null) {
+            if (response.getOnReceived() != null) {
+                response.getOnReceived()
+                        .handle(response.getRequest(), response);
+            }
 
-        CountDownLatch latch = (CountDownLatch) response.getRequest()
-                .getAttributes().get("org.restlet.engine.http.connector.latch");
+            CountDownLatch latch = (CountDownLatch) response.getRequest()
+                    .getAttributes().get(
+                            "org.restlet.engine.http.connector.latch");
 
-        if (latch != null) {
-            latch.countDown();
+            if (latch != null) {
+                latch.countDown();
+            }
         }
     }
 
