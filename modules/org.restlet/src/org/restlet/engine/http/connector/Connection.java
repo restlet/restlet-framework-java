@@ -709,11 +709,20 @@ public abstract class Connection<T extends Connector> {
     }
 
     /**
+     * Indicates if the connection is busy.
+     * 
+     * @return True if the connection is busy.
+     */
+    public boolean isBusy() {
+        return isInboundBusy() || isOutboundBusy();
+    }
+
+    /**
      * Indicates if the input of the socket is busy.
      * 
      * @return True if the input of the socket is busy.
      */
-    protected boolean isInboundBusy() {
+    public boolean isInboundBusy() {
         return inboundBusy;
     }
 
@@ -722,7 +731,7 @@ public abstract class Connection<T extends Connector> {
      * 
      * @return True if the output of the socket is busy.
      */
-    protected boolean isOutboundBusy() {
+    public boolean isOutboundBusy() {
         return outboundBusy;
     }
 
@@ -760,10 +769,9 @@ public abstract class Connection<T extends Connector> {
      * Reads the next message received via the inbound stream or channel. Note
      * that the optional entity is not fully read.
      * 
-     * @return The next message received if available.
      * @throws IOException
      */
-    protected abstract Response readMessage() throws IOException;
+    protected abstract void readMessage() throws IOException;
 
     /**
      * Reads inbound messages from the socket. Only one message at a time if
@@ -998,6 +1006,8 @@ public abstract class Connection<T extends Connector> {
      * 
      * @param message
      *            The message.
+     * @param headers
+     *            The series of headers to write.
      * @throws IOException
      */
     protected void writeMessageHead(Response message, Series<Parameter> headers)

@@ -713,15 +713,6 @@ public class ConnectedRequest extends Request {
         return result;
     }
 
-    /**
-     * Indicates if an associated response is expected.
-     * 
-     * @return True if an associated response is expected.
-     */
-    protected boolean isExpectingResponse() {
-        return true;
-    }
-
     @Override
     public void setChallengeResponse(ChallengeResponse response) {
         super.setChallengeResponse(response);

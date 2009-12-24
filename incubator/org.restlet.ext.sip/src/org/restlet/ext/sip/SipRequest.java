@@ -121,11 +121,6 @@ public class SipRequest extends ConnectedRequest {
         return via;
     }
 
-    @Override
-    protected boolean isExpectingResponse() {
-        return !SipMethod.ACK.equals(getMethod());
-    }
-
     public void setCallId(String callId) {
         this.callId = callId;
     }

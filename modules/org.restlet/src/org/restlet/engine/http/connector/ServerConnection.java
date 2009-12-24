@@ -143,20 +143,15 @@ public class ServerConnection extends Connection<Server> {
      * Reads the next request sent by the client if available. Note that the
      * optional entity is not fully read.
      * 
-     * @return The next request sent by the client if available.
      * @throws IOException
      */
     @Override
-    protected Response readMessage() throws IOException {
-        Response result = null;
+    protected void readMessage() throws IOException {
         ConnectedRequest request = null;
         String requestMethod = null;
         String requestUri = null;
         String version = null;
         Series<Parameter> headers = null;
-
-        // Mark the inbound as busy
-        setInboundBusy(true);
 
         // Parse the request method
         StringBuilder sb = new StringBuilder();
@@ -234,19 +229,17 @@ public class ServerConnection extends Connection<Server> {
         request = createRequest(getHelper().getContext(), this, requestMethod,
                 requestUri, version, headers, createInboundEntity(headers),
                 false, null);
-        result = getHelper().createResponse(request);
+        Response response = getHelper().createResponse(request);
 
         if (request != null) {
             if (request.isExpectingResponse()) {
                 // Add it to the connection queue
-                getInboundMessages().add(result);
+                getInboundMessages().add(response);
             }
 
             // Add it to the helper queue
-            getHelper().getInboundMessages().add(result);
+            getHelper().getInboundMessages().add(response);
         }
-
-        return result;
     }
 
     /**

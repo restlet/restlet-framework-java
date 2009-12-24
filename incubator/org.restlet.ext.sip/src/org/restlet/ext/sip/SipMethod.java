@@ -49,7 +49,8 @@ public final class SipMethod {
      *      RFC - 17.1.1.3 ACK</a>
      */
     public static final Method ACK = new Method("ACK",
-            "Acknowledgment message", BASE_SIP + "#section-17.1.1.3");
+            "Acknowledgment message", BASE_SIP + "#section-17.1.1.3", false,
+            false, false);
 
     /**
      * Terminates a call and can be sent by either the caller or the callee.

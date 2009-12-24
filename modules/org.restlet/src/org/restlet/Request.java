@@ -462,6 +462,15 @@ public class Request extends Message {
     }
 
     /**
+     * Indicates if an associated response is expected.
+     * 
+     * @return True if an associated response is expected.
+     */
+    public boolean isExpectingResponse() {
+        return (getMethod() == null) ? false : getMethod().isReplying();
+    }
+
+    /**
      * Sets the authentication response sent by a client to an origin server.
      * Note that when used with HTTP connectors, this property maps to the
      * "Authorization" header.

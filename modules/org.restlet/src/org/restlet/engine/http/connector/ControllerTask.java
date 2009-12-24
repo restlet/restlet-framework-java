@@ -69,6 +69,9 @@ public class ControllerTask implements Runnable {
         for (final Connection<?> conn : getHelper().getConnections()) {
             if (conn.getState() == ConnectionState.CLOSED) {
                 getHelper().getConnections().remove(conn);
+            } else if ((conn.getState() == ConnectionState.CLOSING)
+                    && !conn.isBusy()) {
+                conn.close(true);
             }
 
             if ((isOverloaded() && !getHelper().isClientSide())

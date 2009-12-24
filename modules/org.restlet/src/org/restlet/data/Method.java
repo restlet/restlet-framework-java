@@ -290,6 +290,9 @@ public final class Method implements Comparable<Method> {
         return result;
     }
 
+    /** Indicates if the method replies with a response. */
+    private final boolean replying;
+
     /** The description. */
     private final String description;
 
@@ -351,7 +354,7 @@ public final class Method implements Comparable<Method> {
     }
 
     /**
-     * Constructor.
+     * Constructor for methods that reply to requests with responses.
      * 
      * @param name
      *            The technical name.
@@ -367,11 +370,34 @@ public final class Method implements Comparable<Method> {
      */
     public Method(String name, String description, String uri, boolean safe,
             boolean idempotent) {
+        this(name, description, uri, safe, idempotent, true);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param name
+     *            The technical name.
+     * @param description
+     *            The description.
+     * @param uri
+     *            The URI of the specification describing the method.
+     * @param safe
+     *            Indicates if the method is safe.
+     * @param idempotent
+     *            Indicates if the method is idempotent.
+     * @param replying
+     *            Indicates if the method replies with a response.
+     * @see org.restlet.data.Method#valueOf(String)
+     */
+    public Method(String name, String description, String uri, boolean safe,
+            boolean idempotent, boolean replying) {
         this.name = name;
         this.description = description;
         this.uri = uri;
         this.safe = safe;
         this.idempotent = idempotent;
+        this.replying = replying;
     }
 
     /**
@@ -435,6 +461,15 @@ public final class Method implements Comparable<Method> {
      */
     public boolean isIdempotent() {
         return idempotent;
+    }
+
+    /**
+     * Indicates if the method replies with a response.
+     * 
+     * @return True if the method replies with a response.
+     */
+    public boolean isReplying() {
+        return replying;
     }
 
     /**

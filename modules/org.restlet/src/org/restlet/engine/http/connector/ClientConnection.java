@@ -33,14 +33,17 @@ package org.restlet.engine.http.connector;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.logging.Level;
 
 import org.restlet.Client;
-import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
+import org.restlet.data.Status;
+import org.restlet.engine.Engine;
+import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.http.header.HeaderUtils;
 import org.restlet.util.Series;
 
@@ -94,41 +97,13 @@ public class ClientConnection extends Connection<Client> {
         HeaderUtils.addRequestHeaders(request, headers);
     }
 
-    /**
-     * Creates a new response.
-     * 
-     * @param context
-     *            The context of the parent connector.
-     * @param connection
-     *            The parent network connection.
-     * @param request
-     *            The associated request.
-     * @param version
-     *            The protocol version.
-     * @param serverAddress
-     *            The server IP address.
-     * @param serverPort
-     *            The server IP port number.
-     * @return The created response.
-     */
-    protected ConnectedResponse createResponse(Context context,
-            ClientConnection connection, Request request, String version,
-            int statusCode, String reasonPhrase, String serverAddress,
-            int serverPort) {
-        return new ConnectedResponse(context, connection, request, version,
-                statusCode, reasonPhrase, serverAddress, serverPort);
-    }
-
     @Override
-    protected ConnectedResponse readMessage() throws IOException {
-        ConnectedResponse result = null;
+    protected void readMessage() throws IOException {
+        @SuppressWarnings("unused")
         String version = null;
         Series<Parameter> headers = null;
         int statusCode = 0;
         String reasonPhrase = null;
-
-        // Mark the inbound as busy
-        setInboundBusy(true);
 
         // Parse the HTTP version
         StringBuilder sb = new StringBuilder();
@@ -199,52 +174,109 @@ public class ClientConnection extends Connection<Client> {
             setState(ConnectionState.CLOSING);
         }
 
-        // Create the response
-        result = createResponse(getHelper().getContext(), this, null, version,
-                statusCode, reasonPhrase, getSocket().getLocalAddress()
-                        .toString(), getSocket().getPort());
+        // Update the response
+        Response response = getOutboundMessages().peek();
+        response.setStatus(Status.valueOf(statusCode), reasonPhrase);
+        response.getServerInfo().setAddress(
+                getSocket().getLocalAddress().toString());
+        response.getServerInfo().setAgent(Engine.VERSION_HEADER);
+        response.getServerInfo().setPort(getSocket().getPort());
+        response.setEntity(createInboundEntity(headers));
 
-        if (result != null) {
-            if (!result.getStatus().isInformational()) {
-                // Add it to the connection queue
-                getInboundMessages().add(result);
-            }
+        // Add it to the connection queue
+        getInboundMessages().add(response);
 
-            // Add it to the helper queue
-            getHelper().getOutboundMessages().add(result);
-        }
-
-        return result;
+        // Add it to the helper queue
+        getHelper().getInboundMessages().add(response);
     }
 
+    /**
+     * Write the given response on the socket.
+     * 
+     * @param response
+     *            The response to write.
+     */
+    @SuppressWarnings("unchecked")
     @Override
-    protected void writeMessage(Response message) {
-        // Prepare the host header
-        // String host = hostDomain;
-        //
-        // if (resourceRef.getHostPort() != -1) {
-        // host += ":" + resourceRef.getHostPort();
-        // }
-        //
-        // headers.set(HeaderConstants.HEADER_HOST, host, true);
+    protected void writeMessage(Response response) {
+        // Prepare the headers
+        Series<Parameter> headers = new Form();
+        Request request = response.getRequest();
 
-        // TODO may be replaced by an attribute on the Method class
-        // telling that a method requires an entity.
-        // Actually, since such classes are used in the context of
-        // clients and servers, there could be two attributes
-        // if ((request.getEntity() == null || !request.isEntityAvailable() ||
-        // request
-        // .getEntity().getSize() == 0)
-        // && (Method.POST.equals(request.getMethod()) || Method.PUT
-        // .equals(request.getMethod()))) {
-        // HeaderUtils.writeHeader(new Parameter(
-        // HeaderConstants.HEADER_CONTENT_LENGTH, "0"),
-        // getOutboundStream());
-        // }
+        try {
+            try {
+                addTransportHeaders(headers, request.getEntity());
+                addRequestHeaders(request, headers);
 
-        // if (result.equals(Status.CONNECTOR_ERROR_COMMUNICATION)) {
-        // return result;
-        // }
+                // Prepare the host header
+                // String host = hostDomain;
+                //
+                // if (resourceRef.getHostPort() != -1) {
+                // host += ":" + resourceRef.getHostPort();
+                // }
+                //
+                // headers.set(HeaderConstants.HEADER_HOST, host, true);
+
+                // TODO may be replaced by an attribute on the Method class
+                // telling that a method requires an entity.
+                // Actually, since such classes are used in the context of
+                // clients and servers, there could be two attributes
+                // if ((request.getEntity() == null || !request.isEntityAvailable() ||
+                // request
+                // .getEntity().getSize() == 0)
+                // && (Method.POST.equals(request.getMethod()) || Method.PUT
+                // .equals(request.getMethod()))) {
+                // HeaderUtils.writeHeader(new Parameter(
+                // HeaderConstants.HEADER_CONTENT_LENGTH, "0"),
+                // getOutboundStream());
+                // }
+
+                // if (result.equals(Status.CONNECTOR_ERROR_COMMUNICATION)) {
+                // return result;
+                // }
+
+                // Add user-defined extension headers
+                Series<Parameter> additionalHeaders = (Series<Parameter>) request
+                        .getAttributes().get(HeaderConstants.ATTRIBUTE_HEADERS);
+                addAdditionalHeaders(headers, additionalHeaders);
+
+                // Set the server name again
+                headers.add(HeaderConstants.HEADER_USER_AGENT, request
+                        .getClientInfo().getAgent());
+            } catch (Exception e) {
+                getLogger()
+                        .log(
+                                Level.INFO,
+                                "Exception intercepted while adding the response headers",
+                                e);
+                response.setStatus(Status.SERVER_ERROR_INTERNAL);
+            }
+
+            // Write the request to the server
+            writeMessage(response, headers);
+        } catch (Exception e) {
+            getLogger().log(Level.INFO,
+                    "An exception occured writing the request entity", e);
+            response.setStatus(Status.CONNECTOR_ERROR_COMMUNICATION,
+                    "An exception occured writing the request entity");
+            response.setEntity(null);
+
+            try {
+                writeMessage(response, headers);
+            } catch (IOException ioe) {
+                getLogger().log(Level.WARNING, "Unable to send error response",
+                        ioe);
+            }
+        } finally {
+            if (request.getOnSent() != null) {
+                request.getOnSent().handle(request, response);
+            }
+
+            if (!request.isExpectingResponse()) {
+                // Don't wait for a response
+                getOutboundMessages().remove(response);
+            }
+        }
     }
 
     @Override
