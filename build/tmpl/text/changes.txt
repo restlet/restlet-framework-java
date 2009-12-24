@@ -47,6 +47,8 @@ Changes log
           for the servlet extension. Proposed by Carsten Lohmann.
         - Added support for additional marshalling properties to the 
           Jaxb extension.
+        - Added support of Chrome browser when tunneling with user 
+          agent. Suggested by Jonathan Hall.
     - Bugs fixed
         - Fixed issue in DomRepresentation with createTransformer()
           method. Fix contributed by Remi Dewitte. 
