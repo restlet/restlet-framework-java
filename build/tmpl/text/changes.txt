@@ -49,6 +49,8 @@ Changes log
           Jaxb extension.
         - Added support of Chrome browser when tunneling with user 
           agent. Suggested by Jonathan Hall.
+        - Added support connection timeout for Apache HTTP client.
+          Contributed by Sanjay Acharya.
     - Bugs fixed
         - Fixed issue in DomRepresentation with createTransformer()
           method. Fix contributed by Remi Dewitte. 
