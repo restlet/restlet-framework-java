@@ -513,7 +513,7 @@ public class BaseClientHelper extends BaseHelper<Client> {
 
     @Override
     public void handleOutbound(Response response) {
-        try {
+        if ((response != null) && (response.getRequest() != null)) {
             Request request = response.getRequest();
 
             // Resolve relative references
@@ -533,60 +533,64 @@ public class BaseClientHelper extends BaseHelper<Client> {
                 }
             }
 
-            // Create the client socket
-            Socket socket = createSocket(request.isConfidential(), hostDomain,
-                    hostPort);
-            InetAddress socketAddress = socket.getInetAddress();
-            int hostConnectionCount = 0;
-            int bestCount = 0;
-            Connection<Client> bestConn = null;
-            boolean foundConn = false;
+            try {
+                // Create the client socket
+                Socket socket = createSocket(request.isConfidential(),
+                        hostDomain, hostPort);
+                InetAddress socketAddress = socket.getInetAddress();
+                int hostConnectionCount = 0;
+                int bestCount = 0;
+                Connection<Client> bestConn = null;
+                boolean foundConn = false;
 
-            // Try to reuse an existing connection
-            for (Connection<Client> currConn : getConnections()) {
-                if (currConn.getSocket().getInetAddress().equals(socketAddress)) {
-                    hostConnectionCount++;
+                // Try to reuse an existing connection
+                for (Connection<Client> currConn : getConnections()) {
+                    if (currConn.getSocket().getInetAddress().equals(
+                            socketAddress)) {
+                        hostConnectionCount++;
 
-                    if (currConn.getState().equals(ConnectionState.OPEN)
-                            && !currConn.isOutboundBusy()) {
-                        bestConn = currConn;
-                        foundConn = true;
-                        continue;
-                    } else {
-                        int currCount = currConn.getOutboundMessages().size();
-
-                        if (bestCount > currCount) {
-                            bestCount = currCount;
+                        if (currConn.getState().equals(ConnectionState.OPEN)
+                                && !currConn.isOutboundBusy()) {
                             bestConn = currConn;
+                            foundConn = true;
+                            continue;
+                        } else {
+                            int currCount = currConn.getOutboundMessages()
+                                    .size();
+
+                            if (bestCount > currCount) {
+                                bestCount = currCount;
+                                bestConn = currConn;
+                            }
                         }
                     }
                 }
-            }
 
-            if (!foundConn
-                    && ((getMaxTotalConnections() == -1) || (getConnections()
-                            .size() < getMaxTotalConnections()))
-                    && ((getMaxConnectionsPerHost() == -1) || (hostConnectionCount < getMaxConnectionsPerHost()))) {
-                // Create a new connection
-                bestConn = createConnection(this, socket);
-                bestConn.open();
-                bestCount = 0;
-            }
+                if (!foundConn
+                        && ((getMaxTotalConnections() == -1) || (getConnections()
+                                .size() < getMaxTotalConnections()))
+                        && ((getMaxConnectionsPerHost() == -1) || (hostConnectionCount < getMaxConnectionsPerHost()))) {
+                    // Create a new connection
+                    bestConn = createConnection(this, socket);
+                    bestConn.open();
+                    bestCount = 0;
+                }
 
-            if (bestConn != null) {
-                bestConn.getOutboundMessages().add(response);
-                getConnections().add(bestConn);
-            } else {
-                getLogger().warning(
-                        "Unable to find a connection to send the request");
+                if (bestConn != null) {
+                    bestConn.getOutboundMessages().add(response);
+                    getConnections().add(bestConn);
+                } else {
+                    getLogger().warning(
+                            "Unable to find a connection to send the request");
+                }
+            } catch (IOException ioe) {
+                getLogger()
+                        .log(
+                                Level.FINE,
+                                "An error occured during the communication with the remote server.",
+                                ioe);
+                response.setStatus(Status.CONNECTOR_ERROR_COMMUNICATION, ioe);
             }
-        } catch (IOException ioe) {
-            getLogger()
-                    .log(
-                            Level.FINE,
-                            "An error occured during the communication with the remote server.",
-                            ioe);
-            response.setStatus(Status.CONNECTOR_ERROR_COMMUNICATION, ioe);
         }
     }
 

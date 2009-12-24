@@ -62,13 +62,20 @@ public class ClientConnection extends Connection<Client> {
      * @return The absolute request URI.
      */
     private static String getRequestUri(Reference resourceRef) {
+        String result = null;
         Reference absoluteRef = resourceRef.isAbsolute() ? resourceRef
                 : resourceRef.getTargetRef();
         if (absoluteRef.hasQuery()) {
-            return absoluteRef.getPath() + "?" + absoluteRef.getQuery();
+            result = absoluteRef.getPath() + "?" + absoluteRef.getQuery();
         }
 
-        return absoluteRef.getPath();
+        result = absoluteRef.getPath();
+
+        if ((result == null) || (result.equals(""))) {
+            result = "/";
+        }
+
+        return result;
     }
 
     /**
@@ -221,7 +228,8 @@ public class ClientConnection extends Connection<Client> {
                 // telling that a method requires an entity.
                 // Actually, since such classes are used in the context of
                 // clients and servers, there could be two attributes
-                // if ((request.getEntity() == null || !request.isEntityAvailable() ||
+                // if ((request.getEntity() == null ||
+                // !request.isEntityAvailable() ||
                 // request
                 // .getEntity().getSize() == 0)
                 // && (Method.POST.equals(request.getMethod()) || Method.PUT
