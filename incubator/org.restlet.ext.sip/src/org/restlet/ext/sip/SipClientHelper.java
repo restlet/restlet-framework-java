@@ -28,46 +28,51 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.sip.example;
+package org.restlet.ext.sip;
 
-import org.restlet.resource.ClientResource;
+import java.io.IOException;
+import java.net.Socket;
+import java.net.UnknownHostException;
+
+import org.restlet.Client;
+import org.restlet.data.Protocol;
+import org.restlet.engine.http.connector.BaseClientHelper;
 
 /**
- * Example SIP client resource for the UAC test scenario.
+ * SIP client helper based on NIO blocking sockets.
  * 
  * @author Jerome Louvel
  */
-public class UacClientResource implements UacResource {
-
-    public static void main(String[] args) {
-        UacClientResource client = new UacClientResource("sip:bob@biloxi.com");
-        client.start();
-        client.acknowledge();
-        client.stop();
-    }
-
-    /** The internal client resource proxy. */
-    private UacResource proxy;
+public class SipClientHelper extends BaseClientHelper {
 
     /**
      * Constructor.
      * 
-     * @param uri
-     *            Target resource URI.
+     * @param client
+     *            The client to help.
      */
-    public UacClientResource(String uri) {
-        this.proxy = ClientResource.create(uri, UacResource.class);
+    public SipClientHelper(Client client) {
+        super(client);
+        getProtocols().add(Protocol.SIP);
+        getProtocols().add(Protocol.SIPS);
     }
 
-    public void acknowledge() {
-        this.proxy.acknowledge();
+    @Override
+    public Socket createSocket(boolean secure, String hostDomain, int hostPort)
+            throws UnknownHostException, IOException {
+        // TODO: parameterize the SIP proxy !
+        return super.createSocket(secure, "localhost", 5060);
     }
 
-    public void start() {
-        this.proxy.start();
+    @Override
+    public synchronized void start() throws Exception {
+        getLogger().info("Starting the SIP client");
+        super.start();
     }
 
-    public void stop() {
-        this.proxy.stop();
+    @Override
+    public synchronized void stop() throws Exception {
+        getLogger().info("Stopping the SIP client");
+        super.stop();
     }
 }

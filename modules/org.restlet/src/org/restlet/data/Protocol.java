@@ -194,6 +194,10 @@ public final class Protocol {
                 result = SMTP;
             } else if (name.equalsIgnoreCase(SMTPS.getSchemeName())) {
                 result = SMTPS;
+            } else if (name.equalsIgnoreCase(SIP.getSchemeName())) {
+                result = SIP;
+            } else if (name.equalsIgnoreCase(SIPS.getSchemeName())) {
+                result = SIPS;
             } else if (name.equalsIgnoreCase(WAR.getSchemeName())) {
                 result = WAR;
             } else if (name.equalsIgnoreCase(ZIP.getSchemeName())) {

@@ -596,8 +596,9 @@ public class ClientResource extends UniformResource {
             // }
             // [enddef]
 
-            Protocol protocol = (getReference() == null) ? null
-                    : getReference().getSchemeProtocol();
+            Protocol protocol = (getProtocol() != null) ? getProtocol()
+                    : (getReference() != null) ? getReference()
+                            .getSchemeProtocol() : null;
 
             if (protocol != null) {
                 setNext(new Client(protocol));
@@ -1274,6 +1275,16 @@ public class ClientResource extends UniformResource {
      */
     public void setOriginalRef(Reference originalRef) {
         getRequest().setOriginalRef(originalRef);
+    }
+
+    /**
+     * Sets the protocol used or to be used.
+     * 
+     * @param protocol
+     *            The protocol used or to be used.
+     */
+    public void setProtocol(Protocol protocol) {
+        getRequest().setProtocol(protocol);
     }
 
     /**
