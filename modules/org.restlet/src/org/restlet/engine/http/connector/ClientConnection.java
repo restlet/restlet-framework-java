@@ -297,6 +297,8 @@ public class ClientConnection extends Connection<Client> {
         headStream.write(' ');
         headStream.write(getRequestUri(request.getResourceRef()).getBytes());
         headStream.write(' ');
+        headStream.write(request.getProtocol().getName().getBytes());
+        headStream.write('/');
         headStream.write(request.getProtocol().getVersion().getBytes());
         HeaderUtils.writeCRLF(getOutboundStream());
     }
