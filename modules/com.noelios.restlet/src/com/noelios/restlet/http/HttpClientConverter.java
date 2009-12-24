@@ -32,7 +32,6 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import org.restlet.Context;
-import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
@@ -92,9 +91,9 @@ public class HttpClientConverter extends HttpConverter {
                 }
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_WWW_AUTHENTICATE)) {
-                final ChallengeRequest request = AuthenticationUtils
-                        .parseAuthenticateHeader(header.getValue());
-                response.getChallengeRequests().add(request);
+                response.getChallengeRequests().add(
+                        AuthenticationUtils.parseAuthenticateHeader(header
+                                .getValue()));
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_SERVER)) {
                 response.getServerInfo().setAgent(header.getValue());
