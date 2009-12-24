@@ -5,11 +5,11 @@ import java.io.IOException;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
-import org.restlet.ext.wadl.FaultInfo;
 import org.restlet.ext.wadl.MethodInfo;
 import org.restlet.ext.wadl.ParameterInfo;
 import org.restlet.ext.wadl.ParameterStyle;
 import org.restlet.ext.wadl.RepresentationInfo;
+import org.restlet.ext.wadl.ResponseInfo;
 import org.restlet.ext.xml.DomRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Delete;
@@ -37,10 +37,10 @@ public class ItemResource extends BaseResource {
     protected void describeDelete(MethodInfo info) {
         info.setDocumentation("Delete the current item.");
 
-        RepresentationInfo repInfo = new RepresentationInfo();
-        repInfo.setDocumentation("No representation is returned.");
-        repInfo.getStatuses().add(Status.SUCCESS_NO_CONTENT);
-        info.getResponse().getRepresentations().add(repInfo);
+        ResponseInfo response = new ResponseInfo(
+                "No representation is returned.");
+        response.getStatuses().add(Status.SUCCESS_NO_CONTENT);
+        info.getResponses().add(response);
     }
 
     @Override
@@ -48,16 +48,20 @@ public class ItemResource extends BaseResource {
         info.setIdentifier("item");
         info.setDocumentation("To retrieve details of a specific item");
 
+        ResponseInfo response = new ResponseInfo();
         RepresentationInfo repInfo = new RepresentationInfo(MediaType.TEXT_XML);
         repInfo.setXmlElement("item");
         repInfo.setDocumentation("XML representation of the current item.");
-        info.getResponse().getRepresentations().add(repInfo);
+        response.getRepresentations().add(repInfo);
 
-        FaultInfo faultInfo = new FaultInfo(Status.CLIENT_ERROR_NOT_FOUND,
-                "Item not found");
-        faultInfo.setIdentifier("itemError");
-        faultInfo.setMediaType(MediaType.TEXT_HTML);
-        info.getResponse().getFaults().add(faultInfo);
+        info.getResponses().add(response);
+
+        response = new ResponseInfo("Item not found");
+        repInfo = new RepresentationInfo(MediaType.TEXT_HTML);
+        repInfo.setIdentifier("itemError");
+        response.getStatuses().add(Status.CLIENT_ERROR_NOT_FOUND);
+        response.getRepresentations().add(repInfo);
+        info.getResponses().add(response);
     }
 
     @Override
@@ -72,11 +76,18 @@ public class ItemResource extends BaseResource {
         param = new ParameterInfo("description", ParameterStyle.PLAIN,
                 "Description of the item");
         repInfo.getParameters().add(param);
-        repInfo.getStatuses().add(Status.SUCCESS_OK);
-        repInfo.getStatuses().add(Status.SUCCESS_CREATED);
-
         repInfo.setDocumentation("Web form.");
         info.getRequest().getRepresentations().add(repInfo);
+
+        ResponseInfo response = new ResponseInfo();
+        response.getStatuses().add(Status.SUCCESS_OK);
+        response.getStatuses().add(Status.SUCCESS_CREATED);
+        info.getResponses().add(response);
+
+        response = new ResponseInfo();
+        response.getStatuses().add(Status.SUCCESS_OK);
+        response.getStatuses().add(Status.SUCCESS_CREATED);
+        info.getResponses().add(response);
 
         super.describePut(info);
     }

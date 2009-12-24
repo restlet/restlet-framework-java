@@ -19,6 +19,9 @@ public class FirstResourceClientMain {
                 "http://localhost:8182/firstResource/items");
         ClientResource itemResource = null;
 
+        // Displays the WADL documentation of the application
+        app.options().write(System.out);
+
         // Create a new item
         Item item = new Item("item1", "this is an item.");
         Representation r = itemsResource.post(getRepresentation(item));
@@ -26,8 +29,6 @@ public class FirstResourceClientMain {
             itemResource = new ClientResource(r.getIdentifier());
         }
 
-        // Displays the WADL documentation of the application
-        app.options().write(System.out);
 
         if (itemResource != null) {
             // Prints the representation of the newly created resource.

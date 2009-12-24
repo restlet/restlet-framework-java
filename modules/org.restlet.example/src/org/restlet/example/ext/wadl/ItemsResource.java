@@ -10,10 +10,10 @@ import org.restlet.ext.wadl.MethodInfo;
 import org.restlet.ext.wadl.ParameterInfo;
 import org.restlet.ext.wadl.ParameterStyle;
 import org.restlet.ext.wadl.RepresentationInfo;
+import org.restlet.ext.wadl.ResponseInfo;
 import org.restlet.ext.xml.DomRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
-import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -68,10 +68,16 @@ public class ItemsResource extends BaseResource {
         info.setIdentifier("items");
         info.setDocumentation("Retrieve the list of current items.");
 
+        ResponseInfo response = new ResponseInfo();
         RepresentationInfo repInfo = new RepresentationInfo(MediaType.TEXT_XML);
         repInfo.setXmlElement("items");
         repInfo.setDocumentation("List of items as XML file");
-        info.getResponse().getRepresentations().add(repInfo);
+        response.getRepresentations().add(repInfo);
+
+        response.getFaults().add(
+                new FaultInfo(Status.CLIENT_ERROR_BAD_REQUEST,
+                        "Pas bien du tout"));
+        info.getResponses().add(response);
     }
 
     @Override
@@ -87,15 +93,20 @@ public class ItemsResource extends BaseResource {
         param = new ParameterInfo("description", ParameterStyle.PLAIN,
                 "Description of the item");
         repInfo.getParameters().add(param);
-        repInfo.getStatuses().add(Status.SUCCESS_CREATED);
-
         repInfo.setDocumentation("Web form.");
         info.getRequest().getRepresentations().add(repInfo);
 
-        FaultInfo faultInfo = new FaultInfo(Status.CLIENT_ERROR_NOT_FOUND);
-        faultInfo.setIdentifier("itemError");
-        faultInfo.setMediaType(MediaType.TEXT_HTML);
-        info.getResponse().getFaults().add(faultInfo);
+        ResponseInfo response = new ResponseInfo();
+        response.getStatuses().add(Status.SUCCESS_CREATED);
+        info.getResponses().add(response);
+
+        response = new ResponseInfo();
+        response.getStatuses().add(Status.CLIENT_ERROR_NOT_FOUND);
+        info.getResponses().add(response);
+
+        repInfo = new RepresentationInfo(MediaType.TEXT_HTML);
+        repInfo.setIdentifier("itemError");
+        response.getRepresentations().add(repInfo);
     }
 
     /**
@@ -136,7 +147,6 @@ public class ItemsResource extends BaseResource {
     /**
      * Returns a listing of all registered items.
      */
-    @Get("xml")
     public Representation toXml() {
         // Generate the right representation according to its media type.
         try {
