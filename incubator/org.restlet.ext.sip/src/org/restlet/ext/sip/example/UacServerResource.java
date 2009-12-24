@@ -30,8 +30,7 @@
 
 package org.restlet.ext.sip.example;
 
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.Map;
 import java.util.Properties;
 
@@ -49,21 +48,19 @@ import org.restlet.ext.sip.SipStatus;
  */
 public class UacServerResource extends SipServerResource implements UacResource {
 
-    private static boolean TRACE;
-
     private static long SLEEP_TIME;
 
-    // private static AtomicLong TAG = new AtomicLong(1000);
+    private static boolean TRACE;
 
     public static void main(String[] args) throws Exception {
         Server server = new Server(new Context(), Protocol.SIP,
                 UacServerResource.class);
-        server.start();
 
-        File file = new File("UacServerResource.properties");
-        if (file.exists()) {
+        ClassLoader cl = UacServerResource.class.getClassLoader();
+        InputStream is = cl.getResourceAsStream("UacServerResource.properties");
+        if (is != null) {
             Properties p = new Properties();
-            p.load(new FileInputStream(file));
+            p.load(is);
 
             for (Map.Entry<Object, Object> entry : p.entrySet()) {
                 server.getContext().getParameters().add(
@@ -85,10 +82,30 @@ public class UacServerResource extends SipServerResource implements UacResource 
             } catch (Throwable e) {
             }
         }
+        
+        server.start();
     }
+
+    // private static AtomicLong TAG = new AtomicLong(1000);
 
     public void acknowledge() {
         trace();
+    }
+
+    public void cancel() {
+        trace();
+        setStatus(SipStatus.SUCCESS_OK);
+    }
+
+    /**
+     * Makes the current thread sleep.
+     */
+    private void sleep() {
+        try {
+            Thread.sleep(SLEEP_TIME);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public void start() {
@@ -124,17 +141,6 @@ public class UacServerResource extends SipServerResource implements UacResource 
     public void stop() {
         trace();
         setStatus(SipStatus.SUCCESS_OK);
-    }
-
-    /**
-     * Makes the current thread sleep.
-     */
-    private void sleep() {
-        try {
-            Thread.sleep(SLEEP_TIME);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 
     /**
