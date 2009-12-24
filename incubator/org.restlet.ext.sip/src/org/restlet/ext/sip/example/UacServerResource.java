@@ -92,11 +92,6 @@ public class UacServerResource extends SipServerResource implements UacResource 
         trace();
     }
 
-    public void cancel() {
-        trace();
-        setStatus(SipStatus.SUCCESS_OK);
-    }
-
     /**
      * Makes the current thread sleep.
      */
