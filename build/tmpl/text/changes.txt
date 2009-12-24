@@ -32,6 +32,8 @@ Changes log
           logic. Reported by Arjohn Kampman.
         - Fixed bug that generates WADL documentation with wrong base 
           ref. Reported by Carsten Lohmann.
+        - Updated the response with all ChallengeRequests sent by the 
+          server. Reported by Murugesh Krishnamurthy.
     - Misc
         - Updated license file to mention distribution under EPL 1.0 in
           addition to other licenses, like for Restlet 2.0.
