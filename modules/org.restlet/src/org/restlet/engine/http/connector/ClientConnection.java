@@ -120,16 +120,6 @@ public class ClientConnection extends Connection<Client> {
     }
 
     @Override
-    public BaseClientHelper getHelper() {
-        return (BaseClientHelper) super.getHelper();
-    }
-
-    @Override
-    protected void handleNextMessage() {
-        getHelper().handleNextOutbound();
-    }
-
-    @Override
     protected ConnectedResponse readMessage() throws IOException {
         ConnectedResponse result = null;
         String version = null;

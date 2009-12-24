@@ -700,7 +700,13 @@ public abstract class Connection<T extends Connector> {
     /**
      * Asks the parent helper to handle the next message.
      */
-    protected abstract void handleNextMessage();
+    protected void handleNextMessage() {
+        if (getHelper().isClientSide()) {
+            getHelper().handleNextOutbound();
+        } else {
+            getHelper().handleNextInbound();
+        }
+    }
 
     /**
      * Indicates if the input of the socket is busy.

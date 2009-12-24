@@ -139,11 +139,6 @@ public class ServerConnection extends Connection<Server> {
                 false, null);
     }
 
-    @Override
-    protected void handleNextMessage() {
-        getHelper().handleNextInbound();
-    }
-
     /**
      * Reads the next request sent by the client if available. Note that the
      * optional entity is not fully read.

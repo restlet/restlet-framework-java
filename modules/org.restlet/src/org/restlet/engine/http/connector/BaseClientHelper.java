@@ -476,6 +476,9 @@ public class BaseClientHelper extends BaseHelper<Client> {
     @Override
     public void handle(Request request, Response response) {
         try {
+            // Add the message to the outbound queue for processing
+            getOutboundMessages().add(response);
+
             if (response.getOnReceived() == null) {
                 // Synchronous mode
                 CountDownLatch latch = new CountDownLatch(1);
@@ -485,9 +488,6 @@ public class BaseClientHelper extends BaseHelper<Client> {
                 // Await on the latch
                 latch.await();
             }
-
-            // Add the message to the outbound queue for processing
-            getOutboundMessages().add(response);
         } catch (Exception e) {
             getLogger().log(
                     Level.INFO,
@@ -501,6 +501,13 @@ public class BaseClientHelper extends BaseHelper<Client> {
     public void handleInbound(Response response) {
         if (response.getOnReceived() != null) {
             response.getOnReceived().handle(response.getRequest(), response);
+        }
+
+        CountDownLatch latch = (CountDownLatch) response.getRequest()
+                .getAttributes().get("org.restlet.engine.http.connector.latch");
+
+        if (latch != null) {
+            latch.countDown();
         }
     }
 
@@ -557,14 +564,18 @@ public class BaseClientHelper extends BaseHelper<Client> {
             }
 
             if (!foundConn
-                    && (hostConnectionCount < getMaxConnectionsPerHost())) {
+                    && ((getMaxTotalConnections() == -1) || (getConnections()
+                            .size() < getMaxTotalConnections()))
+                    && ((getMaxConnectionsPerHost() == -1) || (hostConnectionCount < getMaxConnectionsPerHost()))) {
                 // Create a new connection
                 bestConn = createConnection(this, socket);
+                bestConn.open();
                 bestCount = 0;
             }
 
             if (bestConn != null) {
                 bestConn.getOutboundMessages().add(response);
+                getConnections().add(bestConn);
             } else {
                 getLogger().warning(
                         "Unable to find a connection to send the request");
