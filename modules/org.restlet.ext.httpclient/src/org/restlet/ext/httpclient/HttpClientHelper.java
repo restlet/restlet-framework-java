@@ -59,8 +59,9 @@ import org.restlet.Request;
 import org.restlet.data.Protocol;
 import org.restlet.engine.Engine;
 import org.restlet.engine.http.ClientCall;
-import org.restlet.engine.security.SslUtils;
 import org.restlet.engine.security.SslContextFactory;
+import org.restlet.engine.security.SslUtils;
+import org.restlet.ext.httpclient.internal.HttpIdleConnectionReaper;
 import org.restlet.ext.httpclient.internal.HttpMethodCall;
 
 /**
@@ -150,6 +151,9 @@ import org.restlet.ext.httpclient.internal.HttpMethodCall;
  */
 public class HttpClientHelper extends org.restlet.engine.http.HttpClientHelper {
     private volatile DefaultHttpClient httpClient;
+
+    /** the idle connection reaper. */
+    private volatile HttpIdleConnectionReaper idleConnectionReaper;
 
     /**
      * Constructor.
@@ -283,12 +287,34 @@ public class HttpClientHelper extends org.restlet.engine.http.HttpClientHelper {
     }
 
     /**
+     * Returns the idle connections reaper.
+     * 
+     * @return The idle connections reaper.
+     */
+    public HttpIdleConnectionReaper getIdleConnectionReaper() {
+        return idleConnectionReaper;
+    }
+
+    /**
      * Returns the wrapped Apache HTTP Client.
      * 
      * @return The wrapped Apache HTTP Client.
      */
     public HttpClient getHttpClient() {
         return this.httpClient;
+    }
+
+    /**
+     * Time between checks for idle and expired connections. Note that only if
+     * this property is set to a value greater than 0 will idle connection
+     * reaping occur.
+     * 
+     * @return A value indicating the idle connection check interval or 0 if a
+     *         value has not been provided
+     */
+    public long getIdleConnectionCheckIntervalMillis() {
+        return Long.parseLong(getHelpedParameters().getFirstValue(
+                "idleConnectionCheckIntervalMillis", "0"));
     }
 
     /**
@@ -331,6 +357,18 @@ public class HttpClientHelper extends org.restlet.engine.http.HttpClientHelper {
     public int getProxyPort() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
                 "proxyPort", System.getProperty("http.proxyPort", "3128")));
+    }
+
+    /**
+     * @return The time in millis beyond which connections idle are eligible for
+     *         reaping. If no value is specified, 10000L is the interval. In
+     *         addition, unless the property idleConnectionCheckIntervalMillis
+     *         has been set to a value greater than 0, this property is of no
+     *         consequence as reaping will not occur.
+     */
+    public long getReapConnectionsOlderThanMillis() {
+        return Long.parseLong(getHelpedParameters().getFirstValue(
+                "reapConnectionOlderThanMillis", "10000"));
     }
 
     /**
@@ -389,6 +427,16 @@ public class HttpClientHelper extends org.restlet.engine.http.HttpClientHelper {
                 "followRedirects", "false"));
     }
 
+    /**
+     * Sets the idle connections reaper.
+     * 
+     * @param connectionReaper
+     *            The idle connections reaper.
+     */
+    public void setIdleConnectionReaper(HttpIdleConnectionReaper connectionReaper) {
+        this.idleConnectionReaper = connectionReaper;
+    }
+
     @Override
     public void start() throws Exception {
         super.start();
@@ -409,11 +457,21 @@ public class HttpClientHelper extends org.restlet.engine.http.HttpClientHelper {
         this.httpClient = new DefaultHttpClient(connectionManager, params);
         configure(this.httpClient);
 
+        if (this.idleConnectionReaper != null) {
+            // If a previous reaper is present, stop it
+            this.idleConnectionReaper.stop();
+        }
+
+        this.idleConnectionReaper = new HttpIdleConnectionReaper(httpClient,
+                getIdleConnectionCheckIntervalMillis(),
+                getReapConnectionsOlderThanMillis());
+
         getLogger().info("Starting the HTTP client");
     }
 
     @Override
     public void stop() throws Exception {
+        getIdleConnectionReaper().stop();
         getHttpClient().getConnectionManager().closeExpiredConnections();
         getHttpClient().getConnectionManager().closeIdleConnections(
                 getStopIdleTimeout(), TimeUnit.MILLISECONDS);
