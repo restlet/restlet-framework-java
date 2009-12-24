@@ -32,6 +32,7 @@ package org.restlet.ext.wadl;
 
 import static org.restlet.ext.wadl.WadlRepresentation.APP_NAMESPACE;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -61,7 +62,7 @@ public class MethodInfo extends DocumentedInfo {
     private RequestInfo request;
 
     /** Describes the output of the method. */
-    private ResponseInfo response;
+    private List<ResponseInfo> responses;
 
     /** Reference to a method definition element. */
     private Reference targetRef;
@@ -113,11 +114,16 @@ public class MethodInfo extends DocumentedInfo {
      * @param documentation
      *            A single documentation element.
      * @return The created fault description.
+     * @deprecated Use the {@link ResponseInfo#getRepresentations()} method
+     *             instead.
      */
-    public FaultInfo addFault(Status status, MediaType mediaType,
+    @Deprecated
+    public RepresentationInfo addFault(Status status, MediaType mediaType,
             String documentation) {
-        FaultInfo result = new FaultInfo(status, mediaType, documentation);
-        getResponse().getFaults().add(result);
+        RepresentationInfo result = new RepresentationInfo(documentation);
+        result.setMediaType(mediaType);
+        getResponse().getStatuses().add(status);
+        getResponse().getRepresentations().add(result);
         return result;
     }
 
@@ -163,7 +169,7 @@ public class MethodInfo extends DocumentedInfo {
      * @param name
      *            The name of the parameter.
      * @param required
-     *            True if thes parameter is required.
+     *            True if the parameter is required.
      * @param type
      *            The type of the parameter.
      * @param style
@@ -171,7 +177,9 @@ public class MethodInfo extends DocumentedInfo {
      * @param documentation
      *            A single documentation element.
      * @return The created parameter description.
+     * @deprecated Use the {@link ResponseInfo#getParameters()} method instead.
      */
+    @Deprecated
     public ParameterInfo addResponseParameter(String name, boolean required,
             String type, ParameterStyle style, String documentation) {
         ParameterInfo result = new ParameterInfo(name, required, type, style,
@@ -186,7 +194,10 @@ public class MethodInfo extends DocumentedInfo {
      * @param variant
      *            The variant to describe.
      * @return The created representation description.
+     * @deprecated Use the {@link ResponseInfo#getRepresentations()} method
+     *             instead.
      */
+    @Deprecated
     public RepresentationInfo addResponseRepresentation(Variant variant) {
         RepresentationInfo result = new RepresentationInfo(variant);
         getResponse().getRepresentations().add(result);
@@ -222,12 +233,34 @@ public class MethodInfo extends DocumentedInfo {
     }
 
     /**
+     * Returns the last added response of the method.
+     * 
+     * @return The last added response of the method.
+     */
+    public ResponseInfo getResponse() {
+        if (getResponses().isEmpty()) {
+            getResponses().add(new ResponseInfo());
+        }
+        return getResponses().get(getResponses().size() - 1);
+    }
+
+    /**
      * Returns the output of the method.
      * 
      * @return The output of the method.
      */
-    public ResponseInfo getResponse() {
-        return this.response;
+    public List<ResponseInfo> getResponses() {
+        // Lazy initialization with double-check.
+        List<ResponseInfo> r = this.responses;
+        if (r == null) {
+            synchronized (this) {
+                r = this.responses;
+                if (r == null) {
+                    this.responses = r = new ArrayList<ResponseInfo>();
+                }
+            }
+        }
+        return r;
     }
 
     /**
@@ -274,9 +307,23 @@ public class MethodInfo extends DocumentedInfo {
      * 
      * @param response
      *            The output of the method.
+     * @deprecated Use the {@link #getResponses()} or {@link #setResponses()}
+     *             methods instead.
      */
-    public void setResponse(ResponseInfo response) {
-        this.response = response;
+    @Deprecated
+    public void setResponsee(ResponseInfo response) {
+        setResponses(new ArrayList<ResponseInfo>());
+        getResponses().add(response);
+    }
+
+    /**
+     * Sets the output of the method.
+     * 
+     * @param responses
+     *            The output of the method.
+     */
+    public void setResponses(List<ResponseInfo> responses) {
+        this.responses = responses;
     }
 
     /**
@@ -325,7 +372,7 @@ public class MethodInfo extends DocumentedInfo {
         }
 
         if (getDocumentations().isEmpty() && (getRequest() == null)
-                && (getResponse() == null)) {
+                && (getResponses().isEmpty())) {
             writer.emptyElement(APP_NAMESPACE, "method", null, attributes);
         } else {
             writer.startElement(APP_NAMESPACE, "method", null, attributes);
@@ -338,8 +385,25 @@ public class MethodInfo extends DocumentedInfo {
                 getRequest().writeElement(writer);
             }
 
-            if (getResponse() != null) {
-                getResponse().writeElement(writer);
+            if (!getResponses().isEmpty()) {
+                for (ResponseInfo response : getResponses()) {
+                    response.writeElement(writer);
+                    // TODO to be removed with the FaultInfo class
+                    // Each response's fault generates a new Response
+                    if (!response.getFaults().isEmpty()) {
+                        for (FaultInfo faultInfo : response.getFaults()) {
+                            ResponseInfo r = new ResponseInfo();
+                            // Get the statuses from the faults
+                            for (Status status : faultInfo.getStatuses()) {
+                                if (!r.getStatuses().contains(status)) {
+                                    r.getStatuses().add(status);
+                                }
+                            }
+                            r.getRepresentations().add(faultInfo);
+                            r.writeElement(writer);
+                        }
+                    }
+                }
             }
 
             writer.endElement(APP_NAMESPACE, "method");

@@ -66,7 +66,11 @@ public class RepresentationInfo extends DocumentedInfo {
 
     /**
      * List of statuses associated with this response representation.
+     * 
+     * @deprecated According to new WADL specification, this attribute has been
+     *             moved to the {@link ResponseInfo} class.
      */
+    @Deprecated
     private List<Status> statuses;
 
     /** Qualified name of the root element for this XML-based representation. */
@@ -191,7 +195,10 @@ public class RepresentationInfo extends DocumentedInfo {
      * 
      * @return The list of statuses associated with this response
      *         representation.
+     * @deprecated According to new WADL specification, this method has been
+     *             moved to the {@link ResponseInfo} class.
      */
+    @Deprecated
     public List<Status> getStatuses() {
         // Lazy initialization with double-check.
         List<Status> s = this.statuses;
@@ -263,7 +270,10 @@ public class RepresentationInfo extends DocumentedInfo {
      * @param statuses
      *            The list of statuses associated with this response
      *            representation.
+     * @deprecated According to new WADL specification, this method has been
+     *             moved to the {@link ResponseInfo} class.
      */
+    @Deprecated
     public void setStatuses(List<Status> statuses) {
         this.statuses = statuses;
     }
@@ -316,19 +326,6 @@ public class RepresentationInfo extends DocumentedInfo {
                 }
             }
             attributes.addAttribute("", "profile", null, "xs:string", builder
-                    .toString());
-        }
-        if ((getStatuses() != null) && !getStatuses().isEmpty()) {
-            final StringBuilder builder = new StringBuilder();
-            for (final Iterator<Status> iterator = getStatuses().iterator(); iterator
-                    .hasNext();) {
-                final Status status = iterator.next();
-                builder.append(status.getCode());
-                if (iterator.hasNext()) {
-                    builder.append(" ");
-                }
-            }
-            attributes.addAttribute("", "status", null, "xs:string", builder
                     .toString());
         }
         if ((getXmlElement() != null) && !getXmlElement().equals("")) {

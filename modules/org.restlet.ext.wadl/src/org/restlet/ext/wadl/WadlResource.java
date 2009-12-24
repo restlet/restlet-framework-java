@@ -240,7 +240,7 @@ public class WadlResource extends Resource {
     protected void describeMethod(Method method, MethodInfo info) {
         info.setName(method);
         info.setRequest(new RequestInfo());
-        info.setResponse(new ResponseInfo());
+        info.getResponses().add(new ResponseInfo());
 
         if (Method.GET.equals(method)) {
             describeGet(info);

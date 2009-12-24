@@ -230,7 +230,6 @@ public class WadlServerResource extends ServerResource {
     protected void describeMethod(Method method, MethodInfo info) {
         info.setName(method);
         info.setRequest(new RequestInfo());
-        info.setResponse(new ResponseInfo());
 
         if (Method.GET.equals(method)) {
             describeGet(info);
@@ -291,6 +290,8 @@ public class WadlServerResource extends ServerResource {
      */
     @SuppressWarnings("unchecked")
     private void discoverAnnotations(MethodInfo info) {
+        ResponseInfo response = info.getResponse();
+
         // Loop over the annotated Java methods
         MetadataService metadataService = getMetadataService();
         List<AnnotationInfo> annotations = getAnnotations();
@@ -318,8 +319,8 @@ public class WadlServerResource extends ServerResource {
                                         null);
                         if (variants != null) {
                             for (Variant variant : variants) {
-                                if (!info.getResponse().getRepresentations()
-                                        .contains(variant)) {
+                                if (!response.getRepresentations().contains(
+                                        variant)) {
                                     info.addResponseRepresentation(variant);
                                 }
                             }

@@ -86,9 +86,6 @@ public class WadlRepresentation extends SaxRepresentation {
         /** The current parsed "documentation" tag. */
         private DocumentationInfo currentDocumentation;
 
-        /** The current parsed "fault" tag. */
-        private FaultInfo currentFault;
-
         /** The current parsed "grammars" tag. */
         private GrammarsInfo currentGrammars;
 
@@ -166,7 +163,6 @@ public class WadlRepresentation extends SaxRepresentation {
             this.mixedContentStates.add(MixedContentState.NONE);
             this.currentApplication = null;
             this.currentDocumentation = null;
-            this.currentFault = null;
             this.currentGrammars = null;
             this.currentInclude = null;
             this.currentLink = null;
@@ -488,9 +484,6 @@ public class WadlRepresentation extends SaxRepresentation {
                     if (getState() == State.APPLICATION) {
                         this.currentApplication.getDocumentations().add(
                                 this.currentDocumentation);
-                    } else if (getState() == State.FAULT) {
-                        this.currentFault.getDocumentations().add(
-                                this.currentDocumentation);
                     } else if (getState() == State.GRAMMARS) {
                         this.currentGrammars.getDocumentations().add(
                                 this.currentDocumentation);
@@ -529,44 +522,6 @@ public class WadlRepresentation extends SaxRepresentation {
                                 this.currentDocumentation);
                     }
                     pushState(State.DOCUMENTATION);
-                } else if (localName.equals("fault")) {
-                    this.currentFault = new FaultInfo(null);
-
-                    if (attrs.getIndex("id") != -1) {
-                        this.currentFault.setIdentifier(attrs.getValue("id"));
-                    }
-                    if (attrs.getIndex("mediaType") != -1) {
-                        this.currentFault.setMediaType(MediaType.valueOf(attrs
-                                .getValue("mediaType")));
-                    }
-                    if (attrs.getIndex("element") != -1) {
-                        this.currentFault.setXmlElement(attrs
-                                .getValue("element"));
-                    }
-                    if (attrs.getIndex("profile") != -1) {
-                        final String[] profiles = attrs.getValue("profile")
-                                .split(" ");
-                        for (final String string : profiles) {
-                            this.currentFault.getProfiles().add(
-                                    new Reference(string));
-                        }
-                    }
-                    if (attrs.getIndex("status") != -1) {
-                        final String[] statuses = attrs.getValue("status")
-                                .split(" ");
-                        for (final String string : statuses) {
-                            this.currentFault.getStatuses().add(
-                                    Status.valueOf(Integer.parseInt(string)));
-                        }
-                    }
-
-                    if (getState() == State.APPLICATION) {
-                        this.currentApplication.getFaults().add(
-                                this.currentFault);
-                    } else if (getState() == State.RESPONSE) {
-                        this.currentResponse.getFaults().add(this.currentFault);
-                    }
-                    pushState(State.FAULT);
                 } else if (localName.equals("grammars")) {
                     this.currentGrammars = new GrammarsInfo();
                     if (getState() == State.APPLICATION) {
@@ -673,10 +628,7 @@ public class WadlRepresentation extends SaxRepresentation {
                                 .parseBoolean(attrs.getValue("required")));
                     }
 
-                    if (getState() == State.FAULT) {
-                        this.currentFault.getParameters().add(
-                                this.currentParameter);
-                    } else if (getState() == State.REPRESENTATION) {
+                    if (getState() == State.REPRESENTATION) {
                         this.currentRepresentation.getParameters().add(
                                 this.currentParameter);
                     } else if (getState() == State.REQUEST) {
@@ -714,14 +666,6 @@ public class WadlRepresentation extends SaxRepresentation {
                         for (final String string : profiles) {
                             this.currentRepresentation.getProfiles().add(
                                     new Reference(string));
-                        }
-                    }
-                    if (attrs.getIndex("status") != -1) {
-                        final String[] statuses = attrs.getValue("status")
-                                .split(" ");
-                        for (final String string : statuses) {
-                            this.currentRepresentation.getStatuses().add(
-                                    Status.valueOf(Integer.parseInt(string)));
                         }
                     }
 
@@ -795,8 +739,18 @@ public class WadlRepresentation extends SaxRepresentation {
                     pushState(State.RESOURCETYPE);
                 } else if (localName.equals("response")) {
                     this.currentResponse = new ResponseInfo();
+                    if (attrs.getIndex("status") != -1) {
+                        final String[] statuses = attrs.getValue("status")
+                                .split(" ");
+                        for (final String string : statuses) {
+                            this.currentResponse.getStatuses().add(
+                                    Status.valueOf(Integer.parseInt(string)));
+                        }
+                    }
+
                     if (getState() == State.METHOD) {
-                        this.currentMethod.setResponse(this.currentResponse);
+                        this.currentMethod.getResponses().add(
+                                this.currentResponse);
                     }
                     pushState(State.RESPONSE);
                 }
@@ -855,7 +809,7 @@ public class WadlRepresentation extends SaxRepresentation {
     }
 
     /** Web Application Description Language namespace. */
-    public static final String APP_NAMESPACE = "http://research.sun.com/wadl/2006/10";
+    public static final String APP_NAMESPACE = "http://wadl.dev.java.net/2009/02";
 
     /** The root element of the WADL document. */
     private ApplicationInfo application;

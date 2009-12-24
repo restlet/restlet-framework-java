@@ -30,23 +30,18 @@
 
 package org.restlet.ext.wadl;
 
-import static org.restlet.ext.wadl.WadlRepresentation.APP_NAMESPACE;
-
-import java.util.Iterator;
 import java.util.List;
 
 import org.restlet.data.MediaType;
-import org.restlet.data.Reference;
 import org.restlet.data.Status;
-import org.restlet.ext.xml.XmlWriter;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.AttributesImpl;
 
 /**
  * Describes an error condition for response descriptions.
  * 
  * @author Jerome Louvel
+ * @deprecated This element has been removed from the WADL specification.
  */
+@Deprecated
 public class FaultInfo extends RepresentationInfo {
 
     /**
@@ -112,69 +107,4 @@ public class FaultInfo extends RepresentationInfo {
         this(status, new DocumentationInfo(documentation));
         setMediaType(mediaType);
     }
-
-    /**
-     * Writes the current object as an XML element using the given SAX writer.
-     * 
-     * @param writer
-     *            The SAX writer.
-     * @throws SAXException
-     */
-    @Override
-    public void writeElement(XmlWriter writer) throws SAXException {
-        final AttributesImpl attributes = new AttributesImpl();
-        if ((getIdentifier() != null) && !getIdentifier().equals("")) {
-            attributes.addAttribute("", "id", null, "xs:ID", getIdentifier());
-        }
-        if (getMediaType() != null) {
-            attributes.addAttribute("", "mediaType", null, "xs:string",
-                    getMediaType().toString());
-        }
-        if ((getProfiles() != null) && !getProfiles().isEmpty()) {
-            final StringBuilder builder = new StringBuilder();
-            for (final Iterator<Reference> iterator = getProfiles().iterator(); iterator
-                    .hasNext();) {
-                final Reference reference = iterator.next();
-                builder.append(reference.toString());
-                if (iterator.hasNext()) {
-                    builder.append(" ");
-                }
-            }
-            attributes.addAttribute("", "profile", null, "xs:string", builder
-                    .toString());
-        }
-        if ((getStatuses() != null) && !getStatuses().isEmpty()) {
-            final StringBuilder builder = new StringBuilder();
-            for (final Iterator<Status> iterator = getStatuses().iterator(); iterator
-                    .hasNext();) {
-                final Status status = iterator.next();
-                builder.append(status.getCode());
-                if (iterator.hasNext()) {
-                    builder.append(" ");
-                }
-            }
-            attributes.addAttribute("", "status", null, "xs:string", builder
-                    .toString());
-        }
-        if ((getXmlElement() != null) && !getXmlElement().equals("")) {
-            attributes.addAttribute("", "element", null, "xs:QName",
-                    getXmlElement());
-        }
-
-        if (getDocumentations().isEmpty() && getParameters().isEmpty()) {
-            writer.emptyElement(APP_NAMESPACE, "fault", null, attributes);
-        } else {
-            writer.startElement(APP_NAMESPACE, "fault", null, attributes);
-
-            for (final DocumentationInfo documentationInfo : getDocumentations()) {
-                documentationInfo.writeElement(writer);
-            }
-            for (final ParameterInfo parameterInfo : getParameters()) {
-                parameterInfo.writeElement(writer);
-            }
-
-            writer.endElement(APP_NAMESPACE, "fault");
-        }
-    }
-
 }

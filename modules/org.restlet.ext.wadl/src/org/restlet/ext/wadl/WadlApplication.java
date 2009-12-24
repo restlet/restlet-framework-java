@@ -554,7 +554,7 @@ public class WadlApplication extends Application {
                             responseInfo.getRepresentations().add(
                                     representationInfo);
                         }
-                        methodInfo.setResponse(responseInfo);
+                        methodInfo.getResponses().add(responseInfo);
                     }
 
                     result.getMethods().add(methodInfo);
@@ -575,7 +575,7 @@ public class WadlApplication extends Application {
                             responseInfo.getRepresentations().add(
                                     representationInfo);
                         }
-                        methodInfo.setResponse(responseInfo);
+                        methodInfo.getResponses().add(responseInfo);
                     }
 
                     result.getMethods().add(methodInfo);

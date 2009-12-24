@@ -33,11 +33,14 @@ package org.restlet.ext.wadl;
 import static org.restlet.ext.wadl.WadlRepresentation.APP_NAMESPACE;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.restlet.data.Status;
 import org.restlet.ext.xml.XmlWriter;
 import org.xml.sax.SAXException;
+import org.xml.sax.helpers.AttributesImpl;
 
 /**
  * Describes the properties of a response associated to a parent method.
@@ -46,7 +49,13 @@ import org.xml.sax.SAXException;
  */
 public class ResponseInfo extends DocumentedInfo {
 
-    /** List of faults (representations that denote an error condition). */
+    /**
+     * List of faults (representations that denote an error condition).
+     * 
+     * @deprecated According to new WADL specification, the fault element has
+     *             been removed.
+     */
+    @Deprecated
     private List<FaultInfo> faults;
 
     /** List of parameters. */
@@ -54,6 +63,11 @@ public class ResponseInfo extends DocumentedInfo {
 
     /** List of representations. */
     private List<RepresentationInfo> representations;
+
+    /**
+     * List of statuses associated with this response representation.
+     */
+    private List<Status> statuses;
 
     /**
      * Constructor.
@@ -98,7 +112,10 @@ public class ResponseInfo extends DocumentedInfo {
      * 
      * @return The list of faults (representations that denote an error
      *         condition).
+     * @deprecated According to new WADL specification, the fault element has
+     *             been removed.
      */
+    @Deprecated
     public List<FaultInfo> getFaults() {
         // Lazy initialization with double-check.
         List<FaultInfo> f = this.faults;
@@ -152,12 +169,36 @@ public class ResponseInfo extends DocumentedInfo {
     }
 
     /**
+     * Returns the list of statuses associated with this response
+     * representation.
+     * 
+     * @return The list of statuses associated with this response
+     *         representation.
+     */
+    public List<Status> getStatuses() {
+        // Lazy initialization with double-check.
+        List<Status> s = this.statuses;
+        if (s == null) {
+            synchronized (this) {
+                s = this.statuses;
+                if (s == null) {
+                    this.statuses = s = new ArrayList<Status>();
+                }
+            }
+        }
+        return s;
+    }
+
+    /**
      * Sets the list of faults (representations that denote an error condition).
      * 
      * @param faults
      *            The list of faults (representations that denote an error
      *            condition).
+     * @deprecated According to new WADL specification, the fault element has
+     *             been removed.
      */
+    @Deprecated
     public void setFaults(List<FaultInfo> faults) {
         this.faults = faults;
     }
@@ -182,6 +223,17 @@ public class ResponseInfo extends DocumentedInfo {
         this.representations = representations;
     }
 
+    /**
+     * Sets the list of statuses associated with this response representation.
+     * 
+     * @param statuses
+     *            The list of statuses associated with this response
+     *            representation.
+     */
+    public void setStatuses(List<Status> statuses) {
+        this.statuses = statuses;
+    }
+
     @Override
     public void updateNamespaces(Map<String, String> namespaces) {
         namespaces.putAll(resolveNamespaces());
@@ -190,7 +242,7 @@ public class ResponseInfo extends DocumentedInfo {
             representationInfo.updateNamespaces(namespaces);
         }
 
-        for (final FaultInfo faultInfo : getFaults()) {
+        for (final RepresentationInfo faultInfo : getFaults()) {
             faultInfo.updateNamespaces(namespaces);
         }
 
@@ -207,27 +259,37 @@ public class ResponseInfo extends DocumentedInfo {
      * @throws SAXException
      */
     public void writeElement(XmlWriter writer) throws SAXException {
+        AttributesImpl attributes = new AttributesImpl();
+        if ((getStatuses() != null) && !getStatuses().isEmpty()) {
+            StringBuilder builder = new StringBuilder();
+            for (Iterator<Status> iterator = getStatuses().iterator(); iterator
+                    .hasNext();) {
+                Status status = iterator.next();
+                builder.append(status.getCode());
+                if (iterator.hasNext()) {
+                    builder.append(" ");
+                }
+            }
+            attributes.addAttribute("", "status", null, "xs:string", builder
+                    .toString());
+        }
 
-        if (getDocumentations().isEmpty() && getFaults().isEmpty()
-                && getParameters().isEmpty() && getRepresentations().isEmpty()) {
-            writer.emptyElement(APP_NAMESPACE, "response");
+        if (getDocumentations().isEmpty() && getParameters().isEmpty()
+                && getRepresentations().isEmpty()) {
+            writer.emptyElement(APP_NAMESPACE, "response", null, attributes);
         } else {
-            writer.startElement(APP_NAMESPACE, "response");
+            writer.startElement(APP_NAMESPACE, "response", null, attributes);
 
-            for (final DocumentationInfo documentationInfo : getDocumentations()) {
+            for (DocumentationInfo documentationInfo : getDocumentations()) {
                 documentationInfo.writeElement(writer);
             }
 
-            for (final ParameterInfo parameterInfo : getParameters()) {
+            for (ParameterInfo parameterInfo : getParameters()) {
                 parameterInfo.writeElement(writer);
             }
 
-            for (final RepresentationInfo representationInfo : getRepresentations()) {
+            for (RepresentationInfo representationInfo : getRepresentations()) {
                 representationInfo.writeElement(writer);
-            }
-
-            for (final FaultInfo faultInfo : getFaults()) {
-                faultInfo.writeElement(writer);
             }
 
             writer.endElement(APP_NAMESPACE, "response");
