@@ -563,14 +563,13 @@ public class BaseClientHelper extends BaseHelper<Client> {
                             bestConn = currConn;
                             foundConn = true;
                             continue;
-                        } else {
-                            int currCount = currConn.getOutboundMessages()
-                                    .size();
+                        }
 
-                            if (bestCount > currCount) {
-                                bestCount = currCount;
-                                bestConn = currConn;
-                            }
+                        int currCount = currConn.getOutboundMessages().size();
+
+                        if (bestCount > currCount) {
+                            bestCount = currCount;
+                            bestConn = currConn;
                         }
                     }
                 }

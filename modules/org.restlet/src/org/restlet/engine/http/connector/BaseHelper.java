@@ -202,14 +202,14 @@ public abstract class BaseHelper<T extends Connector> extends
                                 + (isWorkerServiceFull() ? "Full" : "Normal"));
                 getLogger().info(
                         "Worker service tasks: "
+                                + getWorkerService().getQueue().size()
+                                + " queued, "
                                 + getWorkerService().getActiveCount()
                                 + " active, "
-                                + getWorkerService().getTaskCount()
-                                + " scheduled, "
                                 + getWorkerService().getCompletedTaskCount()
-                                + " queued, "
-                                + getWorkerService().getQueue().size()
-                                + " completed.");
+                                + " completed, "
+                                + getWorkerService().getTaskCount()
+                                + " scheduled.");
                 getLogger().info(
                         "Worker service thread pool: "
                                 + getWorkerService().getCorePoolSize()

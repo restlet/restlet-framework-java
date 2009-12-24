@@ -140,14 +140,13 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
             // Effectively handles the request
             handle(request, response);
 
-            if ((response != null) && !response.isCommitted()
-                    && response.isAutoCommitting()) {
+            if (!response.isCommitted() && response.isAutoCommitting()) {
                 getOutboundMessages().add(response);
                 response.setCommitted(true);
             }
 
             if ((request.getEntity() != null)
-                    && (!request.isExpectingResponse() || ((response != null) && response
+                    && (!request.isExpectingResponse() || (response
                             .isCommitted()))) {
                 try {
                     request.getEntity().exhaust();
@@ -182,8 +181,7 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
     public void handleOutbound(Response response) {
         if (response != null) {
             ConnectedRequest request = (ConnectedRequest) response.getRequest();
-            ServerConnection connection = (ServerConnection) request
-                    .getConnection();
+            ServerConnection connection = request.getConnection();
 
             if (request.isExpectingResponse()) {
                 // Check if the response is indeed the next one
