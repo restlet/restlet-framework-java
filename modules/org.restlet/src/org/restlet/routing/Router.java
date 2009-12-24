@@ -409,10 +409,6 @@ public class Router extends Restlet {
      */
     @SuppressWarnings("deprecation")
     protected Route createRoute(String uriPattern, Restlet target) {
-        if (target instanceof Directory) {
-            return createRoute(uriPattern, target, Template.MODE_STARTS_WITH);
-        }
-
         return createRoute(uriPattern, target, getDefaultMatchingMode());
     }
 
@@ -434,7 +430,11 @@ public class Router extends Restlet {
     protected Route createRoute(String uriPattern, Restlet target,
             int matchingMode) {
         Route result = new Route(this, uriPattern, target);
-        result.getTemplate().setMatchingMode(matchingMode);
+        if (target instanceof Directory) {
+            result.getTemplate().setMatchingMode(Template.MODE_STARTS_WITH);
+        } else {
+            result.getTemplate().setMatchingMode(matchingMode);
+        }
         result.setMatchingQuery(getDefaultMatchingQuery());
 
         return result;
