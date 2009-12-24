@@ -45,6 +45,8 @@ Changes log
         - Added GWT object serialization.
         - Added context's attribute: org.restlet.attribute.offsetPath 
           for the servlet extension. Proposed by Carsten Lohmann.
+        - Added support for additional marshalling properties to the 
+          Jaxb extension.
     - Bugs fixed
         - Fixed issue in DomRepresentation with createTransformer()
           method. Fix contributed by Remi Dewitte. 
