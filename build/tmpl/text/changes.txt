@@ -44,8 +44,7 @@ Changes log
         - Added support of the dataservices extension in Android.
         - Added GWT object serialization.
         - Added context's attribute: org.restlet.attribute.offsetPath 
-          for the servlet extension.
-          Proposed by Carsten Lohmann.
+          for the servlet extension. Proposed by Carsten Lohmann.
     - Bugs fixed
         - Fixed issue in DomRepresentation with createTransformer()
           method. Fix contributed by Remi Dewitte. 
@@ -70,6 +69,7 @@ Changes log
         - Updated Simple framework library to version 4.1.16.
         - Deprecated Message#getEntityAs* methods.
         - Updated GWT library to version 2.0.
+        - Updated WADL extension according to new WADL specification.
         
 - 2.0 Milestone 6 (2009-11-20)
     - API changes
