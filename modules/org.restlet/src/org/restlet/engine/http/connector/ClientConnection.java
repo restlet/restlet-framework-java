@@ -253,10 +253,6 @@ public class ClientConnection extends Connection<Client> {
                 Series<Parameter> additionalHeaders = (Series<Parameter>) request
                         .getAttributes().get(HeaderConstants.ATTRIBUTE_HEADERS);
                 addAdditionalHeaders(headers, additionalHeaders);
-
-                // Set the server name again
-                headers.add(HeaderConstants.HEADER_USER_AGENT, request
-                        .getClientInfo().getAgent());
             } catch (Exception e) {
                 getLogger()
                         .log(

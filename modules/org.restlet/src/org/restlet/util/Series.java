@@ -507,6 +507,21 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
 
     /**
      * Replaces the value of the first parameter with the given name and removes
+     * all other parameters with the same name. The name matching is case
+     * sensitive.
+     * 
+     * @param name
+     *            The parameter name.
+     * @param value
+     *            The value to set.
+     * @return The parameter set or added.
+     */
+    public E set(String name, String value) {
+        return set(name, value, false);
+    }
+
+    /**
+     * Replaces the value of the first parameter with the given name and removes
      * all other parameters with the same name.
      * 
      * @param name
