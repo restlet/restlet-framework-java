@@ -35,6 +35,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.SocketChannel;
 import java.nio.channels.WritableByteChannel;
 import java.security.cert.Certificate;
 import java.util.Arrays;
@@ -89,10 +90,10 @@ public abstract class Connection<T extends Connector> {
     /** Indicates if the output of the socket is busy. */
     private volatile boolean outboundBusy;
 
-    /** The inbound stream. */
+    /** The inbound BIO stream. */
     private final InputStream inboundStream;
 
-    /** The outbound stream. */
+    /** The outbound BIO stream. */
     private final OutputStream outboundStream;
 
     /** Indicates if the connection should be persisted across calls. */
@@ -104,8 +105,11 @@ public abstract class Connection<T extends Connector> {
     /** The state of the connection. */
     private volatile ConnectionState state;
 
-    /** The underlying socket. */
+    /** The underlying BIO socket. */
     private final Socket socket;
+
+    /** The underlying NIO socket channel. */
+    private final SocketChannel socketChannel;
 
     /** The parent connector helper. */
     private final BaseHelper<T> helper;
@@ -122,20 +126,24 @@ public abstract class Connection<T extends Connector> {
      * @param helper
      *            The parent connector helper.
      * @param socket
-     *            The underlying socket.
+     *            The underlying BIO socket.
+     * @param socketChannel
+     *            The underlying NIO socket channel.
      * @throws IOException
      */
-    public Connection(BaseHelper<T> helper, Socket socket) throws IOException {
+    public Connection(BaseHelper<T> helper, Socket socket,
+            SocketChannel socketChannel) throws IOException {
         this.helper = helper;
-        this.inboundStream = new InboundStream(socket.getInputStream());
         this.inboundMessages = helper.isClientSide() ? null
                 : new ConcurrentLinkedQueue<Response>();
-        this.outboundStream = new OutboundStream(socket.getOutputStream());
         this.outboundMessages = new ConcurrentLinkedQueue<Response>();
         this.persistent = helper.isPersistingConnections();
         this.pipelining = false;
         this.state = ConnectionState.OPENING;
         this.socket = socket;
+        this.socketChannel = socketChannel;
+        this.inboundStream = new InboundStream(getSocket().getInputStream());
+        this.outboundStream = new OutboundStream(getSocket().getOutputStream());
         this.inboundBusy = false;
         this.outboundBusy = false;
     }
@@ -503,24 +511,6 @@ public abstract class Connection<T extends Connector> {
     }
 
     /**
-     * Returns the inbound message head channel if it exists.
-     * 
-     * @return The inbound message head channel if it exists.
-     */
-    public ReadableByteChannel getInboundHeadChannel() {
-        return null;
-    }
-
-    /**
-     * Returns the inbound message head stream if it exists.
-     * 
-     * @return The inbound message head stream if it exists.
-     */
-    public InputStream getInboundHeadStream() {
-        return getInboundStream();
-    }
-
-    /**
      * Returns the queue of inbound messages.
      * 
      * @return The queue of inbound messages.
@@ -630,6 +620,15 @@ public abstract class Connection<T extends Connector> {
      */
     public Socket getSocket() {
         return socket;
+    }
+
+    /**
+     * Returns the underlying NIO socket channel.
+     * 
+     * @return The underlying NIO socket channel.
+     */
+    public SocketChannel getSocketChannel() {
+        return socketChannel;
     }
 
     /**

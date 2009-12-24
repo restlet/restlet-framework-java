@@ -38,6 +38,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.nio.channels.SocketChannel;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.SecureRandom;
@@ -165,8 +166,8 @@ public class BaseClientHelper extends BaseHelper<Client> {
 
     @Override
     protected Connection<Client> createConnection(BaseHelper<Client> helper,
-            Socket socket) throws IOException {
-        return new ClientConnection(helper, socket);
+            Socket socket, SocketChannel socketChannel) throws IOException {
+        return new ClientConnection(helper, socket, socketChannel);
     }
 
     /**
@@ -579,7 +580,7 @@ public class BaseClientHelper extends BaseHelper<Client> {
                                 .size() < getMaxTotalConnections()))
                         && ((getMaxConnectionsPerHost() == -1) || (hostConnectionCount < getMaxConnectionsPerHost()))) {
                     // Create a new connection
-                    bestConn = createConnection(this, socket);
+                    bestConn = createConnection(this, socket, null);
                     bestConn.open();
                     bestCount = 0;
                 }

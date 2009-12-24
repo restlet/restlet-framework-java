@@ -31,14 +31,14 @@
 package org.restlet.test.engine;
 
 import org.restlet.Application;
+import org.restlet.Client;
 import org.restlet.Component;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
-import org.restlet.engine.ClientHelper;
+import org.restlet.engine.ConnectorHelper;
 import org.restlet.engine.Engine;
-import org.restlet.engine.ServerHelper;
-import org.restlet.engine.http.stream.StreamClientHelper;
-import org.restlet.engine.http.stream.StreamServerHelper;
+import org.restlet.engine.http.connector.HttpClientHelper;
+import org.restlet.engine.http.connector.HttpServerHelper;
 import org.restlet.test.RestletTestCase;
 
 /**
@@ -54,7 +54,7 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
     private Component component;
 
     private final boolean grizzlyServerEnabled = true;
-    
+
     private final boolean internalClientEnabled = true;
 
     private final boolean internalServerEnabled = true;
@@ -72,8 +72,8 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
     protected abstract Application createApplication(Component component);
 
     // Helper methods
-    private void runTest(ServerHelper server, ClientHelper client)
-            throws Exception {
+    private void runTest(ConnectorHelper<Server> server,
+            ConnectorHelper<Client> client) throws Exception {
         final Engine nre = new Engine(false);
         nre.getRegisteredServers().add(server);
         nre.getRegisteredClients().add(client);
@@ -124,7 +124,7 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
     public void testGrizzlyAndInternal() throws Exception {
         if (this.grizzlyServerEnabled && this.internalClientEnabled) {
             runTest(new org.restlet.ext.grizzly.HttpServerHelper(null),
-                    new StreamClientHelper(null));
+                    new HttpClientHelper(null));
         }
     }
 
@@ -134,23 +134,23 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
                     new org.restlet.ext.net.HttpClientHelper(null));
         }
     }
-    
+
     public void testInternalAndApache() throws Exception {
         if (this.internalServerEnabled && this.apacheClientEnabled) {
-            runTest(new StreamServerHelper(null),
+            runTest(new HttpServerHelper(null),
                     new org.restlet.ext.httpclient.HttpClientHelper(null));
         }
     }
-    
+
     public void testInternalAndInternal() throws Exception {
         if (this.internalServerEnabled && this.internalClientEnabled) {
-            runTest(new StreamServerHelper(null), new StreamClientHelper(null));
+            runTest(new HttpServerHelper(null), new HttpClientHelper(null));
         }
     }
-    
+
     public void testInternalAndJdkNet() throws Exception {
         if (this.internalServerEnabled && this.jdkNetClientEnabled) {
-            runTest(new StreamServerHelper(null),
+            runTest(new HttpServerHelper(null),
                     new org.restlet.ext.net.HttpClientHelper(null));
         }
     }
@@ -165,7 +165,7 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
     public void testJettyAndInternal() throws Exception {
         if (this.jettyServerEnabled && this.internalClientEnabled) {
             runTest(new org.restlet.ext.jetty.HttpServerHelper(null),
-                    new StreamClientHelper(null));
+                    new HttpClientHelper(null));
         }
     }
 
@@ -185,8 +185,8 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
 
     public void testNettyAndInternal() throws Exception {
         if (this.nettyServerEnabled && this.internalClientEnabled) {
-            runTest(new  org.restlet.ext.netty.HttpServerHelper(null),
-                    new StreamClientHelper(null));
+            runTest(new org.restlet.ext.netty.HttpServerHelper(null),
+                    new HttpClientHelper(null));
         }
     }
 
@@ -207,7 +207,7 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
     public void testSimpleAndInternal() throws Exception {
         if (this.simpleServerEnabled && this.internalClientEnabled) {
             runTest(new org.restlet.ext.simple.HttpServerHelper(null),
-                    new StreamClientHelper(null));
+                    new HttpClientHelper(null));
         }
     }
 

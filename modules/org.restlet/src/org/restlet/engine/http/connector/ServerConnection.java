@@ -33,6 +33,7 @@ package org.restlet.engine.http.connector;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.nio.channels.SocketChannel;
 import java.security.Principal;
 import java.util.logging.Level;
 
@@ -62,12 +63,14 @@ public class ServerConnection extends Connection<Server> {
      * @param helper
      *            The parent connector helper.
      * @param socket
-     *            The underlying socket.
+     *            The underlying BIO socket.
+     * @param socketChannel
+     *            The underlying NIO socket channel.
      * @throws IOException
      */
-    public ServerConnection(BaseHelper<Server> helper, Socket socket)
-            throws IOException {
-        super(helper, socket);
+    public ServerConnection(BaseHelper<Server> helper, Socket socket,
+            SocketChannel socketChannel) throws IOException {
+        super(helper, socket, socketChannel);
     }
 
     /**

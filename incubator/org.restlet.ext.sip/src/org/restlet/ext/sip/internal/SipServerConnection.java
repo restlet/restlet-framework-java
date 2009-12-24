@@ -32,6 +32,7 @@ package org.restlet.ext.sip.internal;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.nio.channels.SocketChannel;
 import java.security.Principal;
 
 import org.restlet.Context;
@@ -60,12 +61,14 @@ public class SipServerConnection extends ServerConnection {
      * @param helper
      *            The parent helper.
      * @param socket
-     *            The associated socket.
+     *            The underlying BIO socket.
+     * @param socketChannel
+     *            The underlying NIO socket channel.
      * @throws IOException
      */
-    public SipServerConnection(BaseHelper<Server> helper, Socket socket)
-            throws IOException {
-        super(helper, socket);
+    public SipServerConnection(BaseHelper<Server> helper, Socket socket,
+            SocketChannel socketChannel) throws IOException {
+        super(helper, socket, socketChannel);
     }
 
     @Override

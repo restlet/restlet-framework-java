@@ -32,6 +32,7 @@ package org.restlet.engine.http.connector;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.nio.channels.SocketChannel;
 
 import org.restlet.Server;
 import org.restlet.data.Protocol;
@@ -56,8 +57,8 @@ public class HttpServerHelper extends BaseServerHelper {
 
     @Override
     protected Connection<Server> createConnection(BaseHelper<Server> helper,
-            Socket socket) throws IOException {
-        return new ServerConnection(helper, socket);
+            Socket socket, SocketChannel socketChannel) throws IOException {
+        return new ServerConnection(helper, socket, socketChannel);
     }
 
     @Override
@@ -71,4 +72,5 @@ public class HttpServerHelper extends BaseServerHelper {
         getLogger().info("Stopping the default HTTP server");
         super.stop();
     }
+
 }

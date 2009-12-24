@@ -95,19 +95,20 @@ public class AcceptorTask implements Runnable {
 
         while (true) {
             try {
-                SocketChannel client = this.serverSocket.accept();
+                SocketChannel socketChannel = this.serverSocket.accept();
                 int connectionsCount = getHelper().getConnections().size();
 
                 if ((getHelper().getMaxTotalConnections() == -1)
                         || (connectionsCount <= getHelper()
                                 .getMaxTotalConnections())) {
                     Connection<Server> connection = getHelper()
-                            .createConnection(getHelper(), client.socket());
+                            .createConnection(getHelper(),
+                                    socketChannel.socket(), socketChannel);
                     connection.open();
                     getHelper().getConnections().add(connection);
                 } else {
                     // Rejection connection
-                    client.close();
+                    socketChannel.close();
                     getHelper()
                             .getLogger()
                             .info(

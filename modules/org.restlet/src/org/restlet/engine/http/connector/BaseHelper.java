@@ -32,6 +32,7 @@ package org.restlet.engine.http.connector;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.nio.channels.SocketChannel;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -149,12 +150,14 @@ public abstract class BaseHelper<T extends Connector> extends
      * @param helper
      *            The parent helper.
      * @param socket
-     *            The associated socket.
+     *            The underlying BIO socket.
+     * @param socketChannel
+     *            The underlying NIO socket channel.
      * @return The new connection.
      * @throws IOException
      */
     protected abstract Connection<T> createConnection(BaseHelper<T> helper,
-            Socket socket) throws IOException;
+            Socket socket, SocketChannel socketChannel) throws IOException;
 
     /**
      * Creates the connector controller service.

@@ -32,6 +32,7 @@ package org.restlet.ext.sip;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.nio.channels.SocketChannel;
 
 import org.restlet.Request;
 import org.restlet.Response;
@@ -67,8 +68,8 @@ public class SipServerHelper extends BaseServerHelper {
 
     @Override
     protected Connection<Server> createConnection(BaseHelper<Server> helper,
-            Socket socket) throws IOException {
-        return new SipServerConnection(helper, socket);
+            Socket socket, SocketChannel socketChannel) throws IOException {
+        return new SipServerConnection(helper, socket, socketChannel);
     }
 
     @Override
