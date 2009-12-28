@@ -375,6 +375,15 @@ public abstract class BaseHelper<T extends Connector> extends
     }
 
     /**
+     * Indicates if it is helping a server connector.
+     * 
+     * @return True if it is helping a server connector.
+     */
+    public boolean isServerSide() {
+        return !isClientSide();
+    }
+
+    /**
      * Indicates if the worker service is busy. This state is detected by
      * checking if the number of active task running is superior or equal to the
      * maximum pool size.

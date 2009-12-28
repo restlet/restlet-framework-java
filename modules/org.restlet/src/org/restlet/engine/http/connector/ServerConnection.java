@@ -74,17 +74,6 @@ public class ServerConnection extends Connection<Server> {
     }
 
     /**
-     * Adds the entity headers for the given response.
-     * 
-     * @param entity
-     *            The entity to inspect.
-     */
-    protected void addEntityHeaders(Representation entity,
-            Series<Parameter> headers) {
-        HeaderUtils.addEntityHeaders(entity, headers);
-    }
-
-    /**
      * Adds the response headers.
      * 
      * @param response

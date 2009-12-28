@@ -47,16 +47,17 @@ import org.restlet.representation.Representation;
  * @author Jerome Louvel
  */
 public class PostPutTestCase extends BaseConnectorsTestCase {
+
     @Override
     protected void call(String uri) throws Exception {
-        final Client client = new Client(Protocol.HTTP);
+        Client client = new Client(Protocol.HTTP);
         testCall(client, Method.POST, uri);
         testCall(client, Method.PUT, uri);
     }
 
     @Override
     protected Application createApplication(final Component component) {
-        final Application application = new Application() {
+        Application application = new Application() {
             @Override
             public Restlet createInboundRoot() {
                 final Restlet trace = new Restlet(getContext()) {
@@ -80,18 +81,18 @@ public class PostPutTestCase extends BaseConnectorsTestCase {
 
     private void testCall(Client client, Method method, String uri)
             throws Exception {
-        final Form inputForm = new Form();
+        Form inputForm = new Form();
         inputForm.add("a", "a");
         inputForm.add("b", "b");
 
-        final Request request = new Request(method, uri);
+        Request request = new Request(method, uri);
         request.setEntity(inputForm.getWebRepresentation());
 
-        final Response response = client.handle(request);
+        Response response = client.handle(request);
         assertNotNull(response.getEntity());
 
-        final Representation entity = response.getEntity();
-        final Form outputForm = new Form(entity);
+        Representation entity = response.getEntity();
+        Form outputForm = new Form(entity);
         assertEquals(2, outputForm.size());
         assertEquals("a", outputForm.getFirstValue("a"));
         assertEquals("b", outputForm.getFirstValue("b"));

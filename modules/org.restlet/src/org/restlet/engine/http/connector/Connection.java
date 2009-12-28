@@ -134,7 +134,7 @@ public abstract class Connection<T extends Connector> {
     public Connection(BaseHelper<T> helper, Socket socket,
             SocketChannel socketChannel) throws IOException {
         this.helper = helper;
-        this.inboundMessages = helper.isClientSide() ? null
+        this.inboundMessages = isClientSide() ? null
                 : new ConcurrentLinkedQueue<Response>();
         this.outboundMessages = new ConcurrentLinkedQueue<Response>();
         this.persistent = helper.isPersistingConnections();
@@ -156,7 +156,7 @@ public abstract class Connection<T extends Connector> {
      * @param additionalHeaders
      *            The headers to add.
      */
-    public void addAdditionalHeaders(Series<Parameter> existingHeaders,
+    protected void addAdditionalHeaders(Series<Parameter> existingHeaders,
             Series<Parameter> additionalHeaders) {
         if (additionalHeaders != null) {
             for (final Parameter param : additionalHeaders) {
@@ -283,6 +283,17 @@ public abstract class Connection<T extends Connector> {
     }
 
     /**
+     * Adds the entity headers for the given response.
+     * 
+     * @param entity
+     *            The entity to inspect.
+     */
+    protected void addEntityHeaders(Representation entity,
+            Series<Parameter> headers) {
+        HeaderUtils.addEntityHeaders(entity, headers);
+    }
+
+    /**
      * Adds the transport headers related to persistent connections and chunked
      * encoding.
      * 
@@ -291,7 +302,7 @@ public abstract class Connection<T extends Connector> {
      * @param entity
      *            The optional entity sent.
      */
-    public void addTransportHeaders(Series<Parameter> headers,
+    protected void addTransportHeaders(Series<Parameter> headers,
             Representation entity) {
 
         if (!isPersistent()) {
@@ -709,6 +720,15 @@ public abstract class Connection<T extends Connector> {
     }
 
     /**
+     * Indicates if it is a client-side connection.
+     * 
+     * @return True if it is a client-side connection.
+     */
+    public boolean isClientSide() {
+        return getHelper().isClientSide();
+    }
+
+    /**
      * Indicates if the input of the socket is busy.
      * 
      * @return True if the input of the socket is busy.
@@ -742,6 +762,15 @@ public abstract class Connection<T extends Connector> {
      */
     public boolean isPipelining() {
         return pipelining;
+    }
+
+    /**
+     * Indicates if it is a server-side connection.
+     * 
+     * @return True if it is a server-side connection.
+     */
+    public boolean isServerSide() {
+        return getHelper().isServerSide();
     }
 
     /**
@@ -891,8 +920,13 @@ public abstract class Connection<T extends Connector> {
             throws IOException {
         if (message != null) {
             // Get the connector service to callback
-            Representation entity = message.isEntityAvailable() ? message
-                    .getEntity() : null;
+            Representation entity = isClientSide() ? message.getRequest()
+                    .getEntity() : message.getEntity();
+
+            if (entity != null) {
+                entity = entity.isAvailable() ? entity : null;
+            }
+
             ConnectorService connectorService = ConnectorHelper
                     .getConnectorService();
 

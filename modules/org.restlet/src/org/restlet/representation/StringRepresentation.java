@@ -121,14 +121,13 @@ public class StringRepresentation extends StreamRepresentation {
     public StringRepresentation(CharSequence text, MediaType mediaType,
             Language language, CharacterSet characterSet) {
         super(mediaType);
-        setText(text);
         setMediaType(mediaType);
         if (language != null) {
             getLanguages().add(language);
         }
 
         setCharacterSet(characterSet);
-        updateSize();
+        setText(text);
     }
 
     @Override

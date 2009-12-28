@@ -221,6 +221,7 @@ public class ClientConnection extends Connection<Client> {
 
         try {
             try {
+                addEntityHeaders(request.getEntity(), headers);
                 addTransportHeaders(headers, request.getEntity());
                 addRequestHeaders(request, headers);
 
