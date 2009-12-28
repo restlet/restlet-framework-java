@@ -74,7 +74,7 @@ Changes log
           the fileupload which did not return the character set.
           Reported by Carsten Lohmann.
     - Misc
-        - Updated Simple framework library to version 4.1.16.
+        - Updated Simple framework library to version 4.1.17.
         - Deprecated Message#getEntityAs* methods.
         - Updated GWT library to version 2.0.
         - Updated WADL extension according to new WADL specification.

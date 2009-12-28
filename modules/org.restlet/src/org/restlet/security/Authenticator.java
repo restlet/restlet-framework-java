@@ -109,16 +109,17 @@ public abstract class Authenticator extends Filter {
     /**
      * Handles the authentication by first invoking the
      * {@link #authenticate(Request, Response)} method. Then, depending on the
-     * result and the mode set, it either skips or invoke the (optionally)
-     * attached Restlet.
+     * result and the mode set, it invokes the
+     * {@link #authenticated(Request, Response)} or the
+     * {@link #unauthenticated(Request, Response)} method.
      */
     @Override
     protected int beforeHandle(Request request, Response response) {
         if (authenticate(request, response)) {
             return authenticated(request, response);
+        } else {
+            return unauthenticated(request, response);
         }
-
-        return unauthenticated(request, response);
     }
 
     /**

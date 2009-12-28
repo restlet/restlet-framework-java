@@ -145,11 +145,6 @@ public class ChallengeAuthenticator extends Authenticator {
      * At the end of the process, the
      * {@link ChallengeResponse#setAuthenticated(boolean)} and
      * {@link ClientInfo#setAuthenticated(boolean)} methods are invoked.
-     * 
-     * @param request
-     *            The request sent.
-     * @param response
-     *            The response to update.
      */
     @Override
     protected boolean authenticate(Request request, Response response) {
@@ -220,7 +215,7 @@ public class ChallengeAuthenticator extends Authenticator {
 
     /**
      * Challenges the client by adding a challenge request to the response and
-     * by setting the status to CLIENT_ERROR_UNAUTHORIZED.
+     * by setting the status to {@link Status#CLIENT_ERROR_UNAUTHORIZED}.
      * 
      * @param response
      *            The response to update.

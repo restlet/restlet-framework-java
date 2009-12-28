@@ -7,7 +7,7 @@
 	<name>Simple framework</name>
 	<description>Simple framework.</description>
 	<version>4.1</version>
-	<release>16</release>
+	<release>17</release>
 	<distributions>
 		<distribution id="classic" />
 	</distributions>
