@@ -48,6 +48,7 @@ import org.xml.sax.SAXException;
 public class ApplicationInfo extends DocumentedInfo {
 
     /** List of faults (representations that denote an error condition). */
+    @SuppressWarnings("deprecation")
     private List<FaultInfo> faults;
 
     /** Container for definitions of the format of data exchanged. */
@@ -116,6 +117,7 @@ public class ApplicationInfo extends DocumentedInfo {
      * 
      * @return The list of fault elements.
      */
+    @SuppressWarnings("deprecation")
     public List<FaultInfo> getFaults() {
         // Lazy initialization with double-check.
         List<FaultInfo> f = this.faults;
@@ -240,6 +242,7 @@ public class ApplicationInfo extends DocumentedInfo {
      * @param faults
      *            The list of documentation elements.
      */
+    @SuppressWarnings("deprecation")
     public void setFaults(List<FaultInfo> faults) {
         this.faults = faults;
     }
@@ -305,6 +308,7 @@ public class ApplicationInfo extends DocumentedInfo {
         this.resourceTypes = resourceTypes;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void updateNamespaces(Map<String, String> namespaces) {
         namespaces.putAll(resolveNamespaces());
@@ -341,6 +345,7 @@ public class ApplicationInfo extends DocumentedInfo {
      *            The SAX writer.
      * @throws SAXException
      */
+    @SuppressWarnings("deprecation")
     public void writeElement(XmlWriter writer) throws SAXException {
         updateNamespaces(getNamespaces());
 

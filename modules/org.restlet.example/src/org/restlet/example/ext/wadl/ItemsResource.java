@@ -5,7 +5,6 @@ import java.io.IOException;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
-import org.restlet.ext.wadl.FaultInfo;
 import org.restlet.ext.wadl.MethodInfo;
 import org.restlet.ext.wadl.ParameterInfo;
 import org.restlet.ext.wadl.ParameterStyle;
@@ -63,6 +62,7 @@ public class ItemsResource extends BaseResource {
         return super.describe();
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     protected void describeGet(MethodInfo info) {
         info.setIdentifier("items");
@@ -75,8 +75,8 @@ public class ItemsResource extends BaseResource {
         response.getRepresentations().add(repInfo);
 
         response.getFaults().add(
-                new FaultInfo(Status.CLIENT_ERROR_BAD_REQUEST,
-                        "Pas bien du tout"));
+                new org.restlet.ext.wadl.FaultInfo(
+                        Status.CLIENT_ERROR_BAD_REQUEST, "Not good at all"));
         info.getResponses().add(response);
     }
 

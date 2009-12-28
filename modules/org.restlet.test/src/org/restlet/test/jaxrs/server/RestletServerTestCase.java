@@ -167,8 +167,8 @@ public abstract class RestletServerTestCase extends TestCase {
         realm.getUsers().add(new User("alice", "alicesSecret".toCharArray()));
         realm.getUsers().add(new User("bob", "bobsSecret".toCharArray()));
 
-        context.setEnroler(realm.getEnroler());
-        context.setVerifier(realm.getVerifier());
+        context.setDefaultEnroler(realm.getEnroler());
+        context.setDefaultVerifier(realm.getVerifier());
 
         return new ChallengeAuthenticator(context, challengeScheme, "");
     }

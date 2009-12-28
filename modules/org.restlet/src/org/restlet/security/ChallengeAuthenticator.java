@@ -67,6 +67,27 @@ public class ChallengeAuthenticator extends Authenticator {
     private volatile Verifier verifier;
 
     /**
+     * Constructor using the context's default verifier.
+     * 
+     * @param context
+     *            The context.
+     * @param optional
+     *            Indicates if the authentication success is optional.
+     * @param challengeScheme
+     *            The authentication scheme to use.
+     * @param realm
+     *            The authentication realm.
+     * 
+     * @see #ChallengeAuthenticator(Context, boolean, ChallengeScheme, String,
+     *      Verifier)
+     */
+    public ChallengeAuthenticator(Context context, boolean optional,
+            ChallengeScheme challengeScheme, String realm) {
+        this(context, optional, challengeScheme, realm,
+                (context != null) ? context.getDefaultVerifier() : null);
+    }
+
+    /**
      * Constructor.
      * 
      * @param context
@@ -77,18 +98,20 @@ public class ChallengeAuthenticator extends Authenticator {
      *            The authentication scheme to use.
      * @param realm
      *            The authentication realm.
+     * @param verifier
+     *            The credentials verifier.
      */
     public ChallengeAuthenticator(Context context, boolean optional,
-            ChallengeScheme challengeScheme, String realm) {
+            ChallengeScheme challengeScheme, String realm, Verifier verifier) {
         super(context, optional);
         this.realm = realm;
         this.rechallenging = true;
         this.scheme = challengeScheme;
-        this.verifier = (context != null) ? context.getVerifier() : null;
+        this.verifier = verifier;
     }
 
     /**
-     * Constructor.
+     * Constructor setting the optional property to false.
      * 
      * @param context
      *            The context.
@@ -96,6 +119,8 @@ public class ChallengeAuthenticator extends Authenticator {
      *            The authentication scheme to use.
      * @param realm
      *            The authentication realm.
+     * @see #ChallengeAuthenticator(Context, boolean, ChallengeScheme, String,
+     *      Verifier)
      */
     public ChallengeAuthenticator(Context context,
             ChallengeScheme challengeScheme, String realm) {

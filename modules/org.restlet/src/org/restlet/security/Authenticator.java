@@ -55,25 +55,35 @@ public abstract class Authenticator extends Filter {
     private volatile Enroler enroler;
 
     /**
-     * Default constructor setting the mode to "required".
+     * Constructor setting the mode to "required".
+     * 
+     * @param context
+     *            The context.
+     * @see #Authenticator(Context, boolean)
      */
     public Authenticator(Context context) {
         this(context, false);
     }
 
     /**
-     * Constructor. Use the context's enroler by default.
+     * Constructor using the context's default enroler.
      * 
+     * @param context
+     *            The context.
      * @param optional
      *            The authentication mode.
+     * @see #Authenticator(Context, boolean, Enroler)
      */
     public Authenticator(Context context, boolean optional) {
-        this(context, optional, (context != null) ? context.getEnroler() : null);
+        this(context, optional, (context != null) ? context.getDefaultEnroler()
+                : null);
     }
 
     /**
      * Constructor.
      * 
+     * @param context
+     *            The context.
      * @param optional
      *            The authentication mode.
      * @param enroler

@@ -193,11 +193,12 @@ public class WadlServerResource extends ServerResource {
      * Describes the GET method.<br>
      * By default, it describes the response with the available variants based
      * on the {@link #getVariants()} method. Thus in the majority of cases, the
-     * method of the super class must be called when overriden.
+     * method of the super class must be called when overridden.
      * 
      * @param info
      *            The method description to update.
      */
+    @SuppressWarnings("deprecation")
     protected void describeGet(MethodInfo info) {
         if (getVariants() != null) {
             // Describe each variant
@@ -252,6 +253,7 @@ public class WadlServerResource extends ServerResource {
      * @param info
      *            The method description to update.
      */
+    @SuppressWarnings("deprecation")
     protected void describeOptions(MethodInfo info) {
         // Describe each variant
         for (final Variant variant : getWadlVariants()) {
@@ -288,7 +290,7 @@ public class WadlServerResource extends ServerResource {
      * @param method
      *            The Method to document
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "deprecation" })
     private void discoverAnnotations(MethodInfo info) {
         ResponseInfo response = info.getResponse();
 

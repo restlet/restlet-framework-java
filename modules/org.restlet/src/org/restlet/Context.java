@@ -128,14 +128,14 @@ public class Context {
      * The enroler that can add the user roles based on Restlet default
      * authorization model.
      */
-    private volatile org.restlet.security.Enroler enroler;
+    private volatile org.restlet.security.Enroler defaultEnroler;
 
     // [ifndef gwt] member
     /**
      * The verifier that can check the validity of user/secret couples based on
      * Restlet default authorization model.
      */
-    private volatile org.restlet.security.Verifier verifier;
+    private volatile org.restlet.security.Verifier defaultVerifier;
 
     /**
      * Constructor. Writes log messages to "org.restlet".
@@ -157,9 +157,9 @@ public class Context {
         this.clientDispatcher = null;
 
         // [ifndef gwt]
-        this.enroler = null;
+        this.defaultEnroler = null;
         this.serverDispatcher = null;
-        this.verifier = null;
+        this.defaultVerifier = null;
         // [enddef]
     }
 
@@ -236,8 +236,19 @@ public class Context {
      * 
      * @return An enroler.
      */
-    public org.restlet.security.Enroler getEnroler() {
-        return enroler;
+    public org.restlet.security.Enroler getDefaultEnroler() {
+        return defaultEnroler;
+    }
+
+    // [ifndef gwt] method
+    /**
+     * Returns a verifier that can check the validity of the credentials
+     * associated to a request.
+     * 
+     * @return A verifier.
+     */
+    public org.restlet.security.Verifier getDefaultVerifier() {
+        return this.defaultVerifier;
     }
 
     /**
@@ -278,17 +289,6 @@ public class Context {
         return this.serverDispatcher;
     }
 
-    // [ifndef gwt] method
-    /**
-     * Returns a verifier that can check the validity of the credentials
-     * associated to a request.
-     * 
-     * @return A verifier.
-     */
-    public org.restlet.security.Verifier getVerifier() {
-        return this.verifier;
-    }
-
     /**
      * Sets the modifiable map of attributes.
      * 
@@ -318,8 +318,20 @@ public class Context {
      * @param enroler
      *            An enroler.
      */
-    public void setEnroler(org.restlet.security.Enroler enroler) {
-        this.enroler = enroler;
+    public void setDefaultEnroler(org.restlet.security.Enroler enroler) {
+        this.defaultEnroler = enroler;
+    }
+
+    // [ifndef gwt] method
+    /**
+     * Sets a local verifier that can check the validity of user/secret couples
+     * based on Restlet default authorization model.
+     * 
+     * @param verifier
+     *            A local verifier.
+     */
+    public void setDefaultVerifier(org.restlet.security.Verifier verifier) {
+        this.defaultVerifier = verifier;
     }
 
     /**
@@ -365,18 +377,6 @@ public class Context {
      */
     public void setServerDispatcher(Client serverDispatcher) {
         this.serverDispatcher = serverDispatcher;
-    }
-
-    // [ifndef gwt] method
-    /**
-     * Sets a local verifier that can check the validity of user/secret couples
-     * based on Restlet default authorization model.
-     * 
-     * @param verifier
-     *            A local verifier.
-     */
-    public void setVerifier(org.restlet.security.Verifier verifier) {
-        this.verifier = verifier;
     }
 
 }

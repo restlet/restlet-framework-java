@@ -20,6 +20,8 @@ Changes log
           name used on the wire, such as "HTTP" for Protocol#HTTPS.
         - Added Request#maxForwards property mapping to the HTTP header
           "Max-Forwards".
+        - Renamed Context#verifier and enroler to defaultVerifier and
+          defaultEnroler.
      - Enhancements
         - Added a new Jackson extension, with transparent conversion
           between JSON representations and objects.

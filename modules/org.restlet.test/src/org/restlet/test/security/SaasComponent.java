@@ -50,8 +50,8 @@ public class SaasComponent extends Component {
         SaasApplication app = new SaasApplication(context);
 
         MemoryRealm realm = new MemoryRealm();
-        context.setEnroler(realm.getEnroler());
-        context.setVerifier(realm.getVerifier());
+        context.setDefaultEnroler(realm.getEnroler());
+        context.setDefaultVerifier(realm.getVerifier());
 
         // Add users
         User stiger = new User("stiger", "pwd", "Scott", "Tiger",

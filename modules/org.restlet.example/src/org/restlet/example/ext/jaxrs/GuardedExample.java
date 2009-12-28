@@ -110,8 +110,8 @@ public class GuardedExample {
 
         // set valid users and their passwords.
         MemoryRealm realm = new MemoryRealm();
-        application.getContext().setEnroler(realm.getEnroler());
-        application.getContext().setVerifier(realm.getVerifier());
+        application.getContext().setDefaultEnroler(realm.getEnroler());
+        application.getContext().setDefaultVerifier(realm.getVerifier());
 
         realm.getUsers().add(new User("admin", "adminPW".toCharArray()));
         realm.getUsers().add(new User("alice", "alicesSecret".toCharArray()));

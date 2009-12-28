@@ -356,6 +356,7 @@ public class MethodInfo extends DocumentedInfo {
      *            The SAX writer.
      * @throws SAXException
      */
+    @SuppressWarnings("deprecation")
     public void writeElement(XmlWriter writer) throws SAXException {
         final AttributesImpl attributes = new AttributesImpl();
         if ((getIdentifier() != null) && !getIdentifier().equals("")) {
