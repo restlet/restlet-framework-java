@@ -78,6 +78,8 @@ Changes log
         - Deprecated Message#getEntityAs* methods.
         - Updated GWT library to version 2.0.
         - Updated WADL extension according to new WADL specification.
+        - Improved thread safety of MapVerifier.
+          Reported by Tim Peierls.
         
 - 2.0 Milestone 6 (2009-11-20)
     - API changes

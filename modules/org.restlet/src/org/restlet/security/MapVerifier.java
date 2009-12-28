@@ -30,19 +30,20 @@
 
 package org.restlet.security;
 
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
  * Verifier that stores its local secrets in a map indexed by the identifier.
- * Note that this verifier isn't very secure by itself. 
+ * Note that this verifier isn't very secure by itself.
  * 
  * @author Jerome Louvel
  */
 public class MapVerifier extends LocalVerifier {
 
     /** The map of local secrets. */
-    private volatile ConcurrentMap<String, char[]> localSecrets;
+    private final ConcurrentMap<String, char[]> localSecrets;
 
     /**
      * Constructor.
@@ -63,9 +64,7 @@ public class MapVerifier extends LocalVerifier {
 
     @Override
     public char[] getLocalSecret(String identifier) {
-        return (identifier == null) ? null
-                : (getLocalSecrets() != null) ? getLocalSecrets().get(
-                        identifier) : null;
+        return (identifier == null) ? null : getLocalSecrets().get(identifier);
     }
 
     /**
@@ -83,8 +82,11 @@ public class MapVerifier extends LocalVerifier {
      * @param secrets
      *            The map of local secrets.
      */
-    public void setLocalSecrets(ConcurrentMap<String, char[]> secrets) {
-        this.localSecrets = secrets;
+    public void setLocalSecrets(Map<String, char[]> secrets) {
+        synchronized (localSecrets) {
+            this.localSecrets.clear();
+            this.localSecrets.putAll(secrets);
+        }
     }
 
 }
