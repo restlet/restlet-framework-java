@@ -269,11 +269,8 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
 
     @Override
     public synchronized void stop() throws Exception {
-        super.stop();
 
-        // Clear the ephemeral port
-        getAttributes().put("ephemeralPort", -1);
-
+        // Stop accepting connections
         if (this.acceptorService != null) {
             // This must be forcefully interrupted because the thread
             // is most likely blocked on channel.accept()
@@ -287,9 +284,14 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
             }
         }
 
+        super.stop();
+
         // Close the server socket
         if (this.serverSocketChannel != null) {
             this.serverSocketChannel.close();
         }
+
+        // Clear the ephemeral port
+        getAttributes().put("ephemeralPort", -1);
     }
 }

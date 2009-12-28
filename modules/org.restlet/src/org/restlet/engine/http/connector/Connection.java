@@ -66,6 +66,8 @@ import org.restlet.engine.http.io.ChunkedOutputStream;
 import org.restlet.engine.http.io.InboundStream;
 import org.restlet.engine.http.io.InputEntityStream;
 import org.restlet.engine.http.io.OutboundStream;
+import org.restlet.engine.io.TraceInputStream;
+import org.restlet.engine.io.TraceOutputStream;
 import org.restlet.engine.security.SslUtils;
 import org.restlet.engine.util.Base64;
 import org.restlet.representation.EmptyRepresentation;
@@ -142,10 +144,19 @@ public abstract class Connection<T extends Connector> {
         this.state = ConnectionState.OPENING;
         this.socket = socket;
         this.socketChannel = socketChannel;
-        this.inboundStream = new InboundStream(getSocket().getInputStream());
-        this.outboundStream = new OutboundStream(getSocket().getOutputStream());
         this.inboundBusy = false;
         this.outboundBusy = false;
+
+        if (getHelper().isTracing()) {
+            this.inboundStream = new TraceInputStream(new InboundStream(
+                    getSocket().getInputStream()));
+            this.outboundStream = new TraceOutputStream(new OutboundStream(
+                    getSocket().getOutputStream()));
+        } else {
+            this.inboundStream = new InboundStream(getSocket().getInputStream());
+            this.outboundStream = new OutboundStream(getSocket()
+                    .getOutputStream());
+        }
     }
 
     /**
@@ -400,6 +411,12 @@ public abstract class Connection<T extends Connector> {
                         contentLength) {
                     @Override
                     public void release() {
+                        if (getHelper().isTracing()) {
+                            synchronized (System.out) {
+                                System.out.println("\n");
+                            }
+                        }
+
                         super.release();
                         setInboundBusy(false);
                     }
@@ -995,6 +1012,12 @@ public abstract class Connection<T extends Connector> {
         } else if (entityStream != null) {
             entity.write(entityStream);
             entityStream.flush();
+
+            if (getHelper().isTracing()) {
+                synchronized (System.out) {
+                    System.out.println("\n");
+                }
+            }
         }
     }
 

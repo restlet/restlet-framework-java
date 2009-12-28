@@ -103,6 +103,12 @@ import org.restlet.engine.log.LoggingThreadFactory;
  * <td>100</td>
  * <td>Time for the controller thread to sleep between each control.</td>
  * </tr>
+ * <tr>
+ * <td>tracing</td>
+ * <td>boolean</td>
+ * <td>false</td>
+ * <td>Indicates if all messages should be printed on the standard console.</td>
+ * </tr>
  * </table>
  * 
  * @author Jerome Louvel
@@ -365,9 +371,9 @@ public abstract class BaseHelper<T extends Connector> extends
     }
 
     /**
-     * Returns the maximum threads that will service requests.
+     * Indicates if persistent connections should be used if possible.
      * 
-     * @return The maximum threads that will service requests.
+     * @return True if persistent connections should be used if possible.
      */
     public boolean isPersistingConnections() {
         return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
@@ -381,6 +387,16 @@ public abstract class BaseHelper<T extends Connector> extends
      */
     public boolean isServerSide() {
         return !isClientSide();
+    }
+
+    /**
+     * Indicates if console tracing is enabled.
+     * 
+     * @return True if console tracing is enabled.
+     */
+    public boolean isTracing() {
+        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
+                "tracing", "false"));
     }
 
     /**
@@ -417,6 +433,11 @@ public abstract class BaseHelper<T extends Connector> extends
                 getLogger().log(Level.FINE,
                         "Interruption while shutting down internal server", ex);
             }
+        }
+
+        // Close the open connections
+        for (Connection<T> connection : getConnections()) {
+            connection.close(true);
         }
     }
 
