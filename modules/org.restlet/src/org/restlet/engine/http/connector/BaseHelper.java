@@ -39,6 +39,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -133,6 +134,9 @@ public abstract class BaseHelper<T extends Connector> extends
 
     /** Indicates if it is helping a client connector. */
     private final boolean clientSide;
+
+    /** Future of the controller task. */
+    private volatile Future<?> controllerFuture;
 
     /**
      * Constructor.
@@ -416,28 +420,47 @@ public abstract class BaseHelper<T extends Connector> extends
         super.start();
         this.controllerService = createControllerService();
         this.workerService = createWorkerService();
-        this.controllerService.submit(new ControllerTask(this));
+        this.controllerFuture = this.controllerService
+                .submit(new ControllerTask(this));
     }
 
     @Override
     public void stop() throws Exception {
+        // Stop accepting connections
         super.stop();
 
+        // Gracefully shutdown the workers
         if (this.workerService != null) {
-            // Gracefully shutdown the handlers, they should complete
-            // in a timely fashion
             this.workerService.shutdown();
+
             try {
                 this.workerService.awaitTermination(30, TimeUnit.SECONDS);
             } catch (InterruptedException ex) {
                 getLogger().log(Level.FINE,
-                        "Interruption while shutting down internal server", ex);
+                        "Interruption while shutting down the worker service",
+                        ex);
             }
         }
 
         // Close the open connections
         for (Connection<T> connection : getConnections()) {
-            connection.close(true);
+            connection.setState(ConnectionState.CLOSING);
+        }
+
+        // Finally, stops the controller
+        if (this.controllerService != null) {
+            this.controllerFuture.cancel(true);
+            this.controllerService.shutdown();
+
+            try {
+                this.controllerService.awaitTermination(30, TimeUnit.SECONDS);
+            } catch (InterruptedException ex) {
+                getLogger()
+                        .log(
+                                Level.FINE,
+                                "Interruption while shutting down the controller service",
+                                ex);
+            }
         }
     }
 

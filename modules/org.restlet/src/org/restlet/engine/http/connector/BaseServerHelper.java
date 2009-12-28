@@ -38,6 +38,7 @@ import java.nio.channels.ServerSocketChannel;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
@@ -80,6 +81,9 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
 
     /** The synchronization aid between listener and handler service. */
     private volatile CountDownLatch latch;
+
+    /** Future of the acceptor task. */
+    private volatile Future<?> acceptorFuture;
 
     /**
      * Constructor.
@@ -250,8 +254,8 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
 
         // Start the socket listener service
         this.latch = new CountDownLatch(1);
-        this.acceptorService.submit(new AcceptorTask(this,
-                this.serverSocketChannel, this.latch));
+        this.acceptorFuture = this.acceptorService.submit(new AcceptorTask(
+                this, this.serverSocketChannel, this.latch));
 
         // Wait for the listener to start up and count down the latch
         // This blocks until the server is ready to receive connections
@@ -274,13 +278,17 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
         if (this.acceptorService != null) {
             // This must be forcefully interrupted because the thread
             // is most likely blocked on channel.accept()
-            this.acceptorService.shutdownNow();
+            this.acceptorFuture.cancel(true);
+            this.acceptorService.shutdown();
 
             try {
                 this.acceptorService.awaitTermination(30, TimeUnit.SECONDS);
             } catch (Exception ex) {
-                getLogger().log(Level.FINE,
-                        "Interruption while shutting down internal server", ex);
+                getLogger()
+                        .log(
+                                Level.FINE,
+                                "Interruption while shutting down the acceptor service",
+                                ex);
             }
         }
 
