@@ -40,6 +40,7 @@ import org.restlet.data.Dimension;
 import org.restlet.data.Parameter;
 import org.restlet.data.ReferenceList;
 import org.restlet.data.Status;
+import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.util.Series;
@@ -551,7 +552,7 @@ public class Resource extends Handler {
             // Check the Content-Range HTTP Header
             // in order to prevent usage of partial PUTs
             Object oHeaders = getRequest().getAttributes().get(
-                    "org.restlet.http.headers");
+                    HeaderConstants.ATTRIBUTE_HEADERS);
             if (oHeaders != null) {
                 Series<Parameter> headers = (Series<Parameter>) oHeaders;
 

@@ -301,9 +301,11 @@ public class ClientAdapter extends Adapter {
     protected void readResponseHeaders(ClientCall httpCall, Response response) {
         try {
             Series<Parameter> responseHeaders = httpCall.getResponseHeaders();
+
             // Put the response headers in the call's attributes map
             response.getAttributes().put(HeaderConstants.ATTRIBUTE_HEADERS,
                     responseHeaders);
+
             copyResponseTransportHeaders(responseHeaders, response);
         } catch (Exception e) {
             getLogger()

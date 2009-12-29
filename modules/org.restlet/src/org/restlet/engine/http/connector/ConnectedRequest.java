@@ -166,6 +166,8 @@ public class ConnectedRequest extends Request {
         // Set the properties
         setMethod(Method.valueOf(methodName));
         setEntity(entity);
+
+        // Put the headers in the request's attributes map
         getAttributes().put(HeaderConstants.ATTRIBUTE_HEADERS, headers);
 
         if (version != null) {

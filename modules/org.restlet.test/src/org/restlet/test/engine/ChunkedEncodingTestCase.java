@@ -125,7 +125,7 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
 
     static void checkForChunkedHeader(Message message) {
         final Form parameters = (Form) message.getAttributes().get(
-                "org.restlet.http.headers");
+                HeaderConstants.ATTRIBUTE_HEADERS);
         final Parameter p = parameters
                 .getFirst(HeaderConstants.HEADER_TRANSFER_ENCODING);
         assertFalse(p == null);

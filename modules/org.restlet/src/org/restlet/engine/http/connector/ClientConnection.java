@@ -193,6 +193,10 @@ public class ClientConnection extends Connection<Client> {
         response.getServerInfo().setPort(getSocket().getPort());
         response.setEntity(createInboundEntity(headers));
 
+        // Put the headers in the response's attributes map
+        response.getAttributes()
+                .put(HeaderConstants.ATTRIBUTE_HEADERS, headers);
+
         if (!response.getStatus().isInformational()) {
             getOutboundMessages().poll();
         }

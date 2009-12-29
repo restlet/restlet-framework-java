@@ -39,6 +39,7 @@ import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
+import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.representation.Representation;
 
 /**
@@ -320,12 +321,12 @@ public class Redirector extends Restlet {
 
         // Update the request to cleanly go to the target URI
         request.setResourceRef(targetRef);
-        request.getAttributes().remove("org.restlet.http.headers");
+        request.getAttributes().remove(HeaderConstants.ATTRIBUTE_HEADERS);
         dispatcher.handle(request, response);
 
         // Allow for response rewriting and clean the headers
         response.setEntity(rewrite(response.getEntity()));
-        response.getAttributes().remove("org.restlet.http.headers");
+        response.getAttributes().remove(HeaderConstants.ATTRIBUTE_HEADERS);
 
         // In case of redirection, we may have to rewrite the redirect URI
         if (response.getLocationRef() != null) {
