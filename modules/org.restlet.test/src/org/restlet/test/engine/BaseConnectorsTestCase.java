@@ -92,6 +92,7 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
     private String start() throws Exception {
         this.component = new Component();
         final Server server = this.component.getServers().add(Protocol.HTTP, 0);
+        server.getContext().getParameters().add("tracing", "true");
         final Application application = createApplication(this.component);
 
         this.component.getDefaultHost().attach(application);

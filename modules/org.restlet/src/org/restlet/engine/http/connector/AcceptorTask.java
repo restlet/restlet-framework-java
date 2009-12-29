@@ -88,6 +88,14 @@ public class AcceptorTask implements Runnable {
     }
 
     /**
+     * Returns the server socket channel to listen on.
+     * @return The server socket channel to listen on.
+     */
+    public ServerSocketChannel getServerSocket() {
+        return serverSocket;
+    }
+
+    /**
      * Listens on the given server socket for incoming connections.
      */
     public void run() {

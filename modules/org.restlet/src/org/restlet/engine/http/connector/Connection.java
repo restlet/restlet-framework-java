@@ -332,7 +332,7 @@ public abstract class Connection<T extends Connector> {
      * @return True if the connection's socket can be read for inbound data.
      * @throws IOException
      */
-    public boolean canRead() throws IOException {
+    public boolean canRead() {
         return (getState() == ConnectionState.OPEN)
                 && !isInboundBusy()
                 && ((getInboundMessages() == null) || (getInboundMessages()
@@ -345,7 +345,7 @@ public abstract class Connection<T extends Connector> {
      * @return True if the connection's socket can be written for outbound data.
      * @throws IOException
      */
-    public boolean canWrite() throws IOException {
+    public boolean canWrite() {
         return (getState() == ConnectionState.OPEN) && !isOutboundBusy()
                 && (getOutboundMessages().size() > 0);
     }

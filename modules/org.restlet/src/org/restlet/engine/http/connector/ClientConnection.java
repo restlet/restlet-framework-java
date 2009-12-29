@@ -202,7 +202,7 @@ public class ClientConnection extends Connection<Client> {
     }
 
     @Override
-    public boolean canRead() throws IOException {
+    public boolean canRead() {
         return super.canRead() && (getOutboundMessages().size() > 0);
     }
 

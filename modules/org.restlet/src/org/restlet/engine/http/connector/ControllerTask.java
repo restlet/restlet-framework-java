@@ -72,34 +72,35 @@ public class ControllerTask implements Runnable {
             } else if ((conn.getState() == ConnectionState.CLOSING)
                     && !conn.isBusy()) {
                 conn.close(true);
-            }
+            } else {
+                if ((isOverloaded() && !getHelper().isClientSide())
+                        || conn.canWrite()) {
+                    execute(new Runnable() {
+                        public void run() {
+                            conn.writeMessages();
+                        }
 
-            if ((isOverloaded() && !getHelper().isClientSide())
-                    || conn.canWrite()) {
-                execute(new Runnable() {
-                    public void run() {
-                        conn.writeMessages();
-                    }
+                        @Override
+                        public String toString() {
+                            return "Write connection messages";
+                        }
+                    });
+                }
 
-                    @Override
-                    public String toString() {
-                        return "Write connection messages";
-                    }
-                });
-            }
+                if ((isOverloaded() && getHelper().isClientSide())
+                        || conn.canRead()) {
+                    execute(new Runnable() {
+                        public void run() {
+                            conn.readMessages();
+                        }
 
-            if ((isOverloaded() && getHelper().isClientSide())
-                    || conn.canRead()) {
-                execute(new Runnable() {
-                    public void run() {
-                        conn.readMessages();
-                    }
-
-                    @Override
-                    public String toString() {
-                        return "Read connection messages";
-                    }
-                });
+                        @Override
+                        public String toString() {
+                            return "Read connection messages: "
+                                    + conn.canRead();
+                        }
+                    });
+                }
             }
         }
     }
@@ -234,8 +235,8 @@ public class ControllerTask implements Runnable {
                 // Sleep a bit
                 Thread.sleep(getHelper().getControllerSleepTimeMs());
             } catch (Exception ex) {
-                this.helper.getLogger().log(Level.WARNING,
-                        "Unexpected error while controlling connections", ex);
+                this.helper.getLogger().log(Level.FINE,
+                        "Unexpected error while controlling connector", ex);
             }
         }
     }
@@ -249,6 +250,5 @@ public class ControllerTask implements Runnable {
     public void setOverloaded(boolean overloaded) {
         this.overloaded = overloaded;
     }
-    
-    
+
 }
