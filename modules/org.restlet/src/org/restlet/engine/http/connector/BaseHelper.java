@@ -39,7 +39,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -135,8 +134,8 @@ public abstract class BaseHelper<T extends Connector> extends
     /** Indicates if it is helping a client connector. */
     private final boolean clientSide;
 
-    /** Future of the controller task. */
-    private volatile Future<?> controllerFuture;
+    /** The controller task. */
+    private final ControllerTask controllerTask;
 
     /**
      * Constructor.
@@ -152,6 +151,7 @@ public abstract class BaseHelper<T extends Connector> extends
         this.connections = new CopyOnWriteArraySet<Connection<T>>();
         this.inboundMessages = new ConcurrentLinkedQueue<Response>();
         this.outboundMessages = new ConcurrentLinkedQueue<Response>();
+        this.controllerTask = new ControllerTask(this);
     }
 
     /**
@@ -206,7 +206,10 @@ public abstract class BaseHelper<T extends Connector> extends
         result.setRejectedExecutionHandler(new RejectedExecutionHandler() {
             public void rejectedExecution(Runnable r,
                     ThreadPoolExecutor executor) {
-                getLogger().warning("Unable to run the following task: " + r);
+                getLogger().warning(
+                        "Unable to run the following "
+                                + (isClientSide() ? "client-side"
+                                        : "server-side") + " task: " + r);
                 getLogger().info(
                         "Worker service state: "
                                 + (isWorkerServiceFull() ? "Full" : "Normal"));
@@ -420,8 +423,7 @@ public abstract class BaseHelper<T extends Connector> extends
         super.start();
         this.controllerService = createControllerService();
         this.workerService = createWorkerService();
-        this.controllerFuture = this.controllerService
-                .submit(new ControllerTask(this));
+        this.controllerService.submit(this.controllerTask);
     }
 
     @Override
@@ -432,8 +434,20 @@ public abstract class BaseHelper<T extends Connector> extends
         // Gracefully shutdown the workers
         if (this.workerService != null) {
             this.workerService.shutdown();
+        }
 
+        // Close the open connections
+        for (Connection<T> connection : getConnections()) {
+            connection.setState(ConnectionState.CLOSING);
+        }
+
+        // Await for completion of pending workers
+        if (this.workerService != null) {
             try {
+                getLogger().log(
+                        Level.INFO,
+                        "Worker service queue: "
+                                + this.workerService.getActiveCount());
                 this.workerService.awaitTermination(30, TimeUnit.SECONDS);
             } catch (InterruptedException ex) {
                 getLogger().log(Level.FINE,
@@ -442,18 +456,13 @@ public abstract class BaseHelper<T extends Connector> extends
             }
         }
 
-        // Close the open connections
-        for (Connection<T> connection : getConnections()) {
-            connection.setState(ConnectionState.CLOSING);
-        }
-
-        // Finally, stops the controller
+        // Stops the controller
         if (this.controllerService != null) {
-            this.controllerFuture.cancel(true);
+            this.controllerTask.setRunning(false);
             this.controllerService.shutdown();
 
             try {
-                this.controllerService.awaitTermination(30, TimeUnit.SECONDS);
+                this.controllerService.awaitTermination(10, TimeUnit.SECONDS);
             } catch (InterruptedException ex) {
                 getLogger()
                         .log(

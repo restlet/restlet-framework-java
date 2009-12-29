@@ -38,7 +38,6 @@ import java.nio.channels.ServerSocketChannel;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
@@ -82,8 +81,8 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
     /** The synchronization aid between listener and handler service. */
     private volatile CountDownLatch latch;
 
-    /** Future of the acceptor task. */
-    private volatile Future<?> acceptorFuture;
+    /** The acceptor task. */
+    private volatile AcceptorTask acceptorTask;
 
     /**
      * Constructor.
@@ -254,8 +253,9 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
 
         // Start the socket listener service
         this.latch = new CountDownLatch(1);
-        this.acceptorFuture = this.acceptorService.submit(new AcceptorTask(
-                this, this.serverSocketChannel, this.latch));
+        this.acceptorTask = new AcceptorTask(this, this.serverSocketChannel,
+                this.latch);
+        this.acceptorService.submit(this.acceptorTask);
 
         // Wait for the listener to start up and count down the latch
         // This blocks until the server is ready to receive connections
@@ -278,7 +278,8 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
         if (this.acceptorService != null) {
             // This must be forcefully interrupted because the thread
             // is most likely blocked on channel.accept()
-            this.acceptorFuture.cancel(true);
+            this.acceptorTask.setRunning(false);
+            this.acceptorTask.getServerSocket().close();
             this.acceptorService.shutdown();
 
             try {
@@ -292,12 +293,12 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
             }
         }
 
-        super.stop();
-
         // Close the server socket
         if (this.serverSocketChannel != null) {
             this.serverSocketChannel.close();
         }
+
+        super.stop();
 
         // Clear the ephemeral port
         getAttributes().put("ephemeralPort", -1);

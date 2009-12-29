@@ -41,7 +41,7 @@ import org.restlet.Response;
  * 
  * @author Jerome Louvel
  */
-public class ControllerTask implements Runnable {
+public class ControllerTask extends BaseTask {
 
     /** The parent server helper. */
     private final BaseHelper<?> helper;
@@ -69,8 +69,7 @@ public class ControllerTask implements Runnable {
         for (final Connection<?> conn : getHelper().getConnections()) {
             if (conn.getState() == ConnectionState.CLOSED) {
                 getHelper().getConnections().remove(conn);
-            } else if ((conn.getState() == ConnectionState.CLOSING)
-                    && !conn.isBusy()) {
+            } else if ((conn.getState() == ConnectionState.CLOSING)) {
                 conn.close(true);
             } else {
                 if ((isOverloaded() && !getHelper().isClientSide())
@@ -157,12 +156,16 @@ public class ControllerTask implements Runnable {
      */
     protected void execute(Runnable task) {
         try {
-            if (!isOverloaded()) {
+            if (!isOverloaded() && !getWorkerService().isShutdown()
+                    && isRunning()) {
                 getWorkerService().execute(task);
             }
         } catch (Exception e) {
-            getHelper().getLogger().log(Level.WARNING,
-                    "Unable to execute a controller task", e);
+            getHelper().getLogger().log(
+                    Level.WARNING,
+                    "Unable to execute a "
+                            + (getHelper().isClientSide() ? "client-side"
+                                    : "server-side") + " controller task", e);
         }
     }
 
@@ -207,8 +210,9 @@ public class ControllerTask implements Runnable {
      * Listens on the given server socket for incoming connections.
      */
     public void run() {
+        setRunning(true);
 
-        while (true) {
+        while (isRunning()) {
             try {
                 if (isOverloaded()) {
                     if (!isWorkerServiceFull()) {

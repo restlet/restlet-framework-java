@@ -31,6 +31,7 @@
 package org.restlet.engine.http.connector;
 
 import java.io.IOException;
+import java.nio.channels.AsynchronousCloseException;
 import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
@@ -45,7 +46,7 @@ import org.restlet.Server;
  * 
  * @author Jerome Louvel
  */
-public class AcceptorTask implements Runnable {
+public class AcceptorTask extends BaseTask {
 
     /** The parent server helper. */
     private final BaseServerHelper helper;
@@ -89,6 +90,7 @@ public class AcceptorTask implements Runnable {
 
     /**
      * Returns the server socket channel to listen on.
+     * 
      * @return The server socket channel to listen on.
      */
     public ServerSocketChannel getServerSocket() {
@@ -100,8 +102,9 @@ public class AcceptorTask implements Runnable {
      */
     public void run() {
         this.latch.countDown();
+        setRunning(true);
 
-        while (true) {
+        while (isRunning()) {
             try {
                 SocketChannel socketChannel = this.serverSocket.accept();
                 int connectionsCount = getHelper().getConnections().size();
@@ -126,6 +129,9 @@ public class AcceptorTask implements Runnable {
                 this.helper.getLogger().log(Level.FINE,
                         "ServerSocket channel was closed by interrupt", ex);
                 break;
+            } catch (AsynchronousCloseException ace) {
+                this.helper.getLogger().log(Level.FINE,
+                        "The server socket was closed", ace);
             } catch (IOException ex) {
                 this.helper.getLogger().log(Level.WARNING,
                         "Unexpected error while accepting new connection", ex);

@@ -375,9 +375,6 @@ public abstract class Connection<T extends Connector> {
 
         try {
             if (!getSocket().isClosed()) {
-                // As we don't support persistent connections,
-                // we must call this method to make sure sockets
-                // are properly released.
                 getSocket().close();
             }
         } catch (IOException ex) {

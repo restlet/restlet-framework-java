@@ -30,11 +30,35 @@
 
 package org.restlet.engine.http.connector;
 
-public class BaseTask implements Runnable {
+public abstract class BaseTask implements Runnable {
 
-    public void run() {
-        // TODO Auto-generated method stub
+    /** Indicates if the task is running. */
+    private volatile boolean running;
 
+    /**
+     * Constructor.
+     */
+    public BaseTask() {
+        this.running = false;
+    }
+
+    /**
+     * Indicates if the task is running.
+     * 
+     * @return True if the task is running.
+     */
+    public boolean isRunning() {
+        return running;
+    }
+
+    /**
+     * Indicates if the task is running.
+     * 
+     * @param running
+     *            True if the task is running.
+     */
+    public void setRunning(boolean running) {
+        this.running = running;
     }
 
 }

@@ -327,10 +327,6 @@ public class ServerConnection extends Connection<Server> {
                 Series<Parameter> additionalHeaders = (Series<Parameter>) response
                         .getAttributes().get(HeaderConstants.ATTRIBUTE_HEADERS);
                 addAdditionalHeaders(headers, additionalHeaders);
-
-                // Set the server name again
-                headers.add(HeaderConstants.HEADER_SERVER, response
-                        .getServerInfo().getAgent());
             } catch (Exception e) {
                 getLogger()
                         .log(
