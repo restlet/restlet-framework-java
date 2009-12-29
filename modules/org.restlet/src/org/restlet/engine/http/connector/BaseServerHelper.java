@@ -148,18 +148,18 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
                 response.setCommitted(true);
             }
 
-            if ((request.getEntity() != null)
-                    && (!request.isExpectingResponse() || (response
-                            .isCommitted()))) {
-                try {
-                    request.getEntity().exhaust();
-                } catch (IOException e) {
-                    getLogger().log(Level.INFO,
-                            "Unable to exhaust request entity", e);
-                } finally {
-                    request.getEntity().release();
-                }
-            }
+            // if ((request.getEntity() != null)
+            // && (!request.isExpectingResponse() || (response
+            // .isCommitted()))) {
+            // try {
+            // request.getEntity().exhaust();
+            // } catch (IOException e) {
+            // getLogger().log(Level.INFO,
+            // "Unable to exhaust request entity", e);
+            // } finally {
+            // request.getEntity().release();
+            // }
+            // }
         }
 
         handleNextOutbound();
