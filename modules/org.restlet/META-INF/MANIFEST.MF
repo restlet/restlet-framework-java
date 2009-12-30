@@ -78,12 +78,6 @@ Export-Package: org.restlet;
    org.restlet.engine.security,
    org.restlet.util,
    org.restlet",
- org.restlet.engine.http.stream;
-  uses:="javax.net,
-   org.restlet.data,
-   org.restlet.engine.http,
-   org.restlet.representation,
-   org.restlet",
  org.restlet.engine.internal;uses:="org.osgi.framework",
  org.restlet.engine.io;uses:="org.restlet.data,org.restlet.representation",
  org.restlet.engine.local;
