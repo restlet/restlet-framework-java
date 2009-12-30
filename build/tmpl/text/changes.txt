@@ -82,6 +82,7 @@ Changes log
         - Updated WADL extension according to new WADL specification.
         - Improved thread safety of MapVerifier.
           Reported by Tim Peierls.
+        - Updated Apache HTTP Client to version 4.0.1.
         
 - 2.0 Milestone 6 (2009-11-20)
     - API changes
