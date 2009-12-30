@@ -62,6 +62,19 @@ import org.restlet.engine.log.LoggingThreadFactory;
  * <th>Description</th>
  * </tr>
  * <tr>
+ * <td>controllerDaemon</td>
+ * <td>boolean</td>
+ * <td>true</td>
+ * <td>Indicates if the controller thread should be a daemon (not blocking JVM
+ * exit).</td>
+ * </tr>
+ * <tr>
+ * <td>controllerSleepTimeMs</td>
+ * <td>int</td>
+ * <td>100</td>
+ * <td>Time for the controller thread to sleep between each control.</td>
+ * </tr>
+ * <tr>
  * <td>minThreads</td>
  * <td>int</td>
  * <td>1</td>
@@ -74,16 +87,16 @@ import org.restlet.engine.log.LoggingThreadFactory;
  * <td>Maximum threads that will service requests.</td>
  * </tr>
  * <tr>
- * <td>maxTotalConnections</td>
- * <td>int</td>
- * <td>-1</td>
- * <td>Maximum number of concurrent connections in total.</td>
- * </tr>
- * <tr>
  * <td>maxConnectionsPerHost</td>
  * <td>int</td>
  * <td>-1</td>
  * <td>Maximum number of concurrent connections per host (IP address).</td>
+ * </tr>
+ * <tr>
+ * <td>maxTotalConnections</td>
+ * <td>int</td>
+ * <td>-1</td>
+ * <td>Maximum number of concurrent connections in total.</td>
  * </tr>
  * <tr>
  * <td>persistingConnections</td>
@@ -96,12 +109,6 @@ import org.restlet.engine.log.LoggingThreadFactory;
  * <td>int</td>
  * <td>60000</td>
  * <td>Time for an idle thread to wait for an operation before being collected.</td>
- * </tr>
- * <tr>
- * <td>controllerSleepTimeMs</td>
- * <td>int</td>
- * <td>100</td>
- * <td>Time for the controller thread to sleep between each control.</td>
  * </tr>
  * <tr>
  * <td>tracing</td>
@@ -176,7 +183,7 @@ public abstract class BaseHelper<T extends Connector> extends
      */
     protected ExecutorService createControllerService() {
         return Executors.newSingleThreadExecutor(new LoggingThreadFactory(
-                getLogger()));
+                getLogger(), isControllerDaemon()));
     }
 
     /**
@@ -202,7 +209,7 @@ public abstract class BaseHelper<T extends Connector> extends
         ThreadPoolExecutor result = new ThreadPoolExecutor(minThreads,
                 maxThreads, getThreadMaxIdleTimeMs(), TimeUnit.MILLISECONDS,
                 new SynchronousQueue<Runnable>(), new LoggingThreadFactory(
-                        getLogger()));
+                        getLogger(), true));
         result.setRejectedExecutionHandler(new RejectedExecutionHandler() {
             public void rejectedExecution(Runnable r,
                     ThreadPoolExecutor executor) {
@@ -378,6 +385,18 @@ public abstract class BaseHelper<T extends Connector> extends
     }
 
     /**
+     * Indicates if the controller thread should be a daemon (not blocking JVM
+     * exit).
+     * 
+     * @return True if the controller thread should be a daemon (not blocking
+     *         JVM exit).
+     */
+    public boolean isControllerDaemon() {
+        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
+                "controllerDaemon", "true"));
+    }
+
+    /**
      * Indicates if persistent connections should be used if possible.
      * 
      * @return True if persistent connections should be used if possible.
@@ -444,10 +463,6 @@ public abstract class BaseHelper<T extends Connector> extends
         // Await for completion of pending workers
         if (this.workerService != null) {
             try {
-                getLogger().log(
-                        Level.INFO,
-                        "Worker service queue: "
-                                + this.workerService.getActiveCount());
                 this.workerService.awaitTermination(30, TimeUnit.SECONDS);
             } catch (InterruptedException ex) {
                 getLogger().log(Level.FINE,

@@ -104,7 +104,7 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
      */
     protected ExecutorService createAcceptorService() {
         return Executors.newSingleThreadExecutor(new LoggingThreadFactory(
-                getLogger()));
+                getLogger(), false));
     }
 
     /**

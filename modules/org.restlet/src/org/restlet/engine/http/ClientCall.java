@@ -511,7 +511,7 @@ public abstract class ClientCall extends Call {
     public void sendRequest(Request request, Response response,
             org.restlet.Uniform callback) throws Exception {
         Context.getCurrentLogger().warning(
-                "Currently callbacks are only implemented in the GWT edition.");
+                "Currently callbacks are not available for this connector.");
     }
 
     /**

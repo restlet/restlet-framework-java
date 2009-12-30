@@ -56,6 +56,9 @@ public class LoggingThreadFactory implements ThreadFactory {
     /** The associated logger. */
     private final Logger logger;
 
+    /** Indicates if threads should be created as daemons. */
+    private final boolean daemon;
+
     /**
      * Constructor.
      * 
@@ -63,7 +66,20 @@ public class LoggingThreadFactory implements ThreadFactory {
      *            The associated logger.
      */
     public LoggingThreadFactory(Logger logger) {
+        this(logger, false);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param logger
+     *            The associated logger.
+     * @param daemon
+     *            Indicates if threads should be created as daemons.
+     */
+    public LoggingThreadFactory(Logger logger, boolean daemon) {
         this.logger = logger;
+        this.daemon = daemon;
     }
 
     /**
@@ -76,6 +92,7 @@ public class LoggingThreadFactory implements ThreadFactory {
         Thread result = new Thread(r);
         result.setName("Restlet-" + result.hashCode());
         result.setUncaughtExceptionHandler(new LoggingExceptionHandler());
+        result.setDaemon(this.daemon);
         return result;
     }
 }
