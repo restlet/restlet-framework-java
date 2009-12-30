@@ -84,11 +84,15 @@ public class LogFilter extends Filter {
 
             if (logService.getLoggerName() != null) {
                 this.logLogger = Engine.getLogger(logService.getLoggerName());
-            } else {
+            } else if ((context != null)
+                    && (context.getLogger().getParent() != null)) {
                 this.logLogger = Engine.getLogger(context.getLogger()
                         .getParent().getName()
                         + "."
                         + ChildContext.getBestClassName(logService.getClass()));
+            } else {
+                this.logLogger = Engine.getLogger(ChildContext
+                        .getBestClassName(logService.getClass()));
             }
         }
     }

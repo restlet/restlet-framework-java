@@ -119,9 +119,9 @@ public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
     }
 
     private void sendPut(String uri, int size) throws Exception {
-        final Request request = new Request(Method.PUT, uri,
+        Request request = new Request(Method.PUT, uri,
                 createChunckedRepresentation(size));
-        final Response r = new Client(Protocol.HTTP).handle(request);
+        Response r = new Client(Protocol.HTTP).handle(request);
 
         try {
             if (!r.getStatus().isSuccess()) {
@@ -135,81 +135,6 @@ public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
             r.release();
         }
 
-    }
-
-    @Override
-    public void testGrizzlyAndApache() throws Exception {
-        super.testGrizzlyAndApache();
-    }
-
-    @Override
-    public void testGrizzlyAndInternal() throws Exception {
-        super.testGrizzlyAndInternal();
-    }
-
-    @Override
-    public void testGrizzlyAndJdkNet() throws Exception {
-        super.testGrizzlyAndJdkNet();
-    }
-
-    @Override
-    public void testNettyAndApache() throws Exception {
-        super.testNettyAndApache();
-    }
-
-    @Override
-    public void testNettyAndInternal() throws Exception {
-        super.testNettyAndInternal();
-    }
-
-    @Override
-    public void testNettyAndJdkNet() throws Exception {
-        super.testNettyAndJdkNet();
-    }
-
-    @Override
-    public void testInternalAndApache() throws Exception {
-        super.testInternalAndApache();
-    }
-
-    @Override
-    public void testInternalAndInternal() throws Exception {
-        super.testInternalAndInternal();
-    }
-
-    @Override
-    public void testInternalAndJdkNet() throws Exception {
-        super.testInternalAndJdkNet();
-    }
-
-    @Override
-    public void testJettyAndApache() throws Exception {
-        super.testJettyAndApache();
-    }
-
-    @Override
-    public void testJettyAndInternal() throws Exception {
-        super.testJettyAndInternal();
-    }
-
-    @Override
-    public void testJettyAndJdkNet() throws Exception {
-        super.testJettyAndJdkNet();
-    }
-
-    @Override
-    public void testSimpleAndApache() throws Exception {
-        super.testSimpleAndApache();
-    }
-
-    @Override
-    public void testSimpleAndInternal() throws Exception {
-        super.testSimpleAndInternal();
-    }
-
-    @Override
-    public void testSimpleAndJdkNet() throws Exception {
-        super.testSimpleAndJdkNet();
     }
 
 }

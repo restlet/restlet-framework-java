@@ -73,6 +73,8 @@ Changes log
         - Fixed RepresentationContext#getCharacterEncoding method in 
           the fileupload which did not return the character set.
           Reported by Carsten Lohmann.
+        - Fixed potential NPE in engine's LogFilter class.
+          Reported by Jeff Ramsdale.
     - Misc
         - Updated Simple framework library to version 4.1.17.
         - Deprecated Message#getEntityAs* methods.
