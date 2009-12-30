@@ -147,19 +147,6 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
                 getOutboundMessages().add(response);
                 response.setCommitted(true);
             }
-
-            // if ((request.getEntity() != null)
-            // && (!request.isExpectingResponse() || (response
-            // .isCommitted()))) {
-            // try {
-            // request.getEntity().exhaust();
-            // } catch (IOException e) {
-            // getLogger().log(Level.INFO,
-            // "Unable to exhaust request entity", e);
-            // } finally {
-            // request.getEntity().release();
-            // }
-            // }
         }
 
         handleNextOutbound();

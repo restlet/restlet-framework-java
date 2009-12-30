@@ -65,8 +65,8 @@ public class PostPutTestCase extends BaseConnectorsTestCase {
                     public void handle(Request request, Response response) {
                         Representation entity = request.getEntity();
                         if (entity != null) {
-                            response.setEntity(new Form(entity)
-                                    .getWebRepresentation());
+                            Form form = new Form(entity);
+                            response.setEntity(form.getWebRepresentation());
                         }
 
                     }

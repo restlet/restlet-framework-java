@@ -229,9 +229,13 @@ import org.restlet.routing.VirtualHost;
  * "war:///WEB-INF/web.xml". In order to use it, just call the
  * {@link Context#getClientDispatcher()} in your application.<br>
  * <br>
- * Finally, the ServletContext is copied into an
+ * Also, the ServletContext is copied into an
  * "org.restlet.ext.servlet.ServletContext" attribute of the Restlet application
- * in case you need access to it.
+ * in case you need access to it.<br>
+ * <br>
+ * Finally, an "org.restlet.ext.servlet.offsetPath" attribute, containing the
+ * computed offset path used to attach applications when (and only when) the
+ * auto-wiring feature is set, is added to the component's context.
  * 
  * @see <a href="http://java.sun.com/j2ee/">J2EE home page</a>
  * @author Jerome Louvel
@@ -286,9 +290,9 @@ public class ServerServlet extends HttpServlet {
     private static final String NAME_COMPONENT_ATTRIBUTE_DEFAULT = "org.restlet.ext.servlet.ServerServlet.component";
 
     /**
-     * The Component context parameter's name containing the computed offset
-     * path used when attaching application when (and only when) the auto wiring
-     * feature is set.
+     * Name of the attribute containing the computed offset path used to attach
+     * applications when (and only when) the auto-wiring feature is set, is
+     * added to the component's context.
      */
     private static final String NAME_OFFSET_PATH_ATTRIBUTE = "org.restlet.ext.servlet.offsetPath";
 

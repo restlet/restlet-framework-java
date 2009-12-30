@@ -51,14 +51,12 @@ Export-Package: org.restlet;
   uses:="org.restlet.representation,
    org.restlet,
    org.restlet.util,
-   org.restlet.engine,
    org.restlet.engine.http.adapter,
-   org.restlet.service,
+   org.restlet.engine,
    org.restlet.data",
  org.restlet.engine.http.adapter;
   uses:="org.restlet.data,
    org.restlet.engine.http,
-   org.restlet.representation,
    org.restlet,
    org.restlet.util",
  org.restlet.engine.http.connector;
@@ -66,9 +64,13 @@ Export-Package: org.restlet;
    org.restlet,
    org.restlet.util,
    org.restlet.engine,
-   org.restlet.data,
-   org.restlet.engine.http",
- org.restlet.engine.http.header;uses:="org.restlet.data,org.restlet.representation,org.restlet.util",
+   javax.net,
+   org.restlet.data",
+ org.restlet.engine.http.header;
+  uses:="org.restlet.data,
+   org.restlet.representation,
+   org.restlet,
+   org.restlet.util",
  org.restlet.engine.http.io;uses:="org.restlet.representation,org.restlet.util",
  org.restlet.engine.http.security;
   uses:="org.restlet.data,

@@ -220,11 +220,11 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
     }
 
     @Override
-    public void testJettyAndInternal() throws Exception {
+    public void testJettyAndDefault() throws Exception {
         // Jetty will not send a chunked response when a client sends
         // Connection: close, which the default client helper does
         this.checkedForChunkedResponse = false;
-        super.testJettyAndInternal();
+        super.testJettyAndDefault();
     }
 
     @Override
@@ -234,9 +234,9 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
     }
 
     @Override
-    public void testNettyAndInternal() throws Exception {
+    public void testNettyAndDefault() throws Exception {
         this.checkedForChunkedResponse = false;
-        super.testNettyAndInternal();
+        super.testNettyAndDefault();
     }
 
     @Override
@@ -246,11 +246,11 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
     }
 
     @Override
-    public void testSimpleAndInternal() throws Exception {
+    public void testSimpleAndDefault() throws Exception {
         // Simple will not send a chunked response when a client sends
         // Connection: close, which the default client helper does
         this.checkedForChunkedResponse = false;
-        super.testSimpleAndInternal();
+        super.testSimpleAndDefault();
     }
 
     @Override

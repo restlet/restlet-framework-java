@@ -369,6 +369,7 @@ public class ClientAdapter extends Adapter {
 
         // Set the entity
         response.setEntity(httpCall.getResponseEntity(response));
+
         // Release the representation's content for some obvious cases
         if (response.getEntity() != null) {
             if (response.getEntity().getSize() == 0) {

@@ -245,21 +245,21 @@ public class ServerConnection extends Connection<Server> {
     protected void writeMessage(Response response) {
         // Prepare the headers
         Series<Parameter> headers = new Form();
+        ConnectedRequest request = (ConnectedRequest) response.getRequest();
 
         try {
-            if ((response.getRequest().getMethod() != null)
-                    && response.getRequest().getMethod().equals(Method.HEAD)) {
+            if ((request.getMethod() != null)
+                    && request.getMethod().equals(Method.HEAD)) {
                 addEntityHeaders(response.getEntity(), headers);
                 response.setEntity(null);
-            } else if (Method.GET.equals(response.getRequest().getMethod())
+            } else if (Method.GET.equals(request.getMethod())
                     && Status.SUCCESS_OK.equals(response.getStatus())
                     && (!response.isEntityAvailable())) {
                 addEntityHeaders(response.getEntity(), headers);
                 getLogger()
                         .warning(
                                 "A response with a 200 (Ok) status should have an entity. Make sure that resource \""
-                                        + response.getRequest()
-                                                .getResourceRef()
+                                        + request.getResourceRef()
                                         + "\" returns one or sets the status to 204 (No content).");
             } else if (response.getStatus().equals(Status.SUCCESS_NO_CONTENT)) {
                 addEntityHeaders(response.getEntity(), headers);
@@ -268,8 +268,7 @@ public class ServerConnection extends Connection<Server> {
                     getLogger()
                             .fine(
                                     "Responses with a 204 (No content) status generally don't have an entity. Only adding entity headers for resource \""
-                                            + response.getRequest()
-                                                    .getResourceRef() + "\".");
+                                            + request.getResourceRef() + "\".");
                     response.setEntity(null);
                 }
             } else if (response.getStatus()
@@ -278,8 +277,7 @@ public class ServerConnection extends Connection<Server> {
                     getLogger()
                             .warning(
                                     "Responses with a 205 (Reset content) status can't have an entity. Ignoring the entity for resource \""
-                                            + response.getRequest()
-                                                    .getResourceRef() + "\".");
+                                            + request.getResourceRef() + "\".");
                     response.setEntity(null);
                 }
             } else if (response.getStatus().equals(
@@ -290,8 +288,7 @@ public class ServerConnection extends Connection<Server> {
                     getLogger()
                             .warning(
                                     "Responses with a 304 (Not modified) status can't have an entity. Only adding entity headers for resource \""
-                                            + response.getRequest()
-                                                    .getResourceRef() + "\".");
+                                            + request.getResourceRef() + "\".");
                     response.setEntity(null);
                 }
             } else if (response.getStatus().isInformational()) {
@@ -299,8 +296,7 @@ public class ServerConnection extends Connection<Server> {
                     getLogger()
                             .warning(
                                     "Responses with an informational (1xx) status can't have an entity. Ignoring the entity for resource \""
-                                            + response.getRequest()
-                                                    .getResourceRef() + "\".");
+                                            + request.getResourceRef() + "\".");
                     response.setEntity(null);
                 }
             } else {
@@ -312,8 +308,7 @@ public class ServerConnection extends Connection<Server> {
                     getLogger()
                             .warning(
                                     "A response with an unavailable entity was returned. Ignoring the entity for resource \""
-                                            + response.getRequest()
-                                                    .getResourceRef() + "\".");
+                                            + request.getResourceRef() + "\".");
                     response.setEntity(null);
                 }
             }
@@ -338,6 +333,19 @@ public class ServerConnection extends Connection<Server> {
 
             // Write the response to the client
             writeMessage(response, headers);
+
+            // Make sure that the optional request entity is released
+            if (!response.getStatus().isInformational()
+                    && (request.getEntity() != null)) {
+                try {
+                    request.getEntity().exhaust();
+                } catch (IOException e) {
+                    getLogger().log(Level.INFO,
+                            "Unable to exhaust request entity", e);
+                } finally {
+                    request.getEntity().release();
+                }
+            }
         } catch (Exception e) {
             getLogger().log(Level.INFO,
                     "An exception occured writing the response entity", e);
@@ -353,7 +361,7 @@ public class ServerConnection extends Connection<Server> {
             }
         } finally {
             if (response.getOnSent() != null) {
-                response.getOnSent().handle(response.getRequest(), response);
+                response.getOnSent().handle(request, response);
             }
 
             // Free the connection outbound for next responses
