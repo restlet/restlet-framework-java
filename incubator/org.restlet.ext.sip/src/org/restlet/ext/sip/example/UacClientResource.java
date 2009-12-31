@@ -49,6 +49,9 @@ public class UacClientResource implements UacResource {
     /** The internal client resource proxy. */
     private UacResource proxy;
 
+    /** The internal client resource. */
+    private ClientResource clientResource;
+
     /**
      * Constructor.
      * 
@@ -56,7 +59,8 @@ public class UacClientResource implements UacResource {
      *            Target resource URI.
      */
     public UacClientResource(String uri) {
-        this.proxy = ClientResource.create(uri, UacResource.class);
+        this.clientResource = new ClientResource(uri);
+        this.proxy = this.clientResource.wrap(UacResource.class);
     }
 
     public void acknowledge() {
@@ -70,4 +74,5 @@ public class UacClientResource implements UacResource {
     public void stop() {
         this.proxy.stop();
     }
+
 }

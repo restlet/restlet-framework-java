@@ -190,8 +190,7 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
                     }
 
                     // Attempt to directly write the response, preventing a
-                    // context
-                    // switching
+                    // thread context switch
                     connection.writeMessages();
                 } else {
                     // Put the response at the end of the queue

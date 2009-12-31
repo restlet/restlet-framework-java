@@ -58,6 +58,12 @@ public class UacServerResource extends SipServerResource implements UacResource 
 
         ClassLoader cl = UacServerResource.class.getClassLoader();
         InputStream is = cl.getResourceAsStream("UacServerResource.properties");
+
+        if (is == null) {
+            is = cl
+                    .getResourceAsStream("org/restlet/ext/sip/example/UacServerResource.properties");
+        }
+
         if (is != null) {
             Properties p = new Properties();
             p.load(is);
@@ -82,7 +88,7 @@ public class UacServerResource extends SipServerResource implements UacResource 
             } catch (Throwable e) {
             }
         }
-        
+
         server.start();
     }
 
