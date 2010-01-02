@@ -67,7 +67,7 @@ public abstract class Restlet implements Uniform {
     /** The owner(s). */
     private volatile String owner;
 
-    /** Indicates if the restlet was started. */
+    /** Indicates if the Restlet was started. */
     private volatile boolean started;
 
     /**

@@ -42,7 +42,8 @@ import org.restlet.data.ClientInfo;
 import org.restlet.data.Status;
 
 /**
- * Authenticator based on the challenge schemes.
+ * Authenticator based on a challenge scheme. This is typically used to support
+ * the HTTP BASIC and DIGEST challenge schemes.
  * 
  * @see ChallengeScheme
  * @see ChallengeRequest

@@ -60,6 +60,9 @@ public abstract class Realm {
      */
     private volatile Verifier verifier;
 
+    /** Indicates if the realm was started. */
+    private volatile boolean started;
+
     /**
      * Constructor.
      */
@@ -82,6 +85,7 @@ public abstract class Realm {
         this.enroler = enroler;
         this.verifier = verifier;
         this.parameters = new Form(new CopyOnWriteArrayList<Parameter>());
+        this.started = false;
     }
 
     /**
@@ -122,6 +126,24 @@ public abstract class Realm {
      */
     public Verifier getVerifier() {
         return this.verifier;
+    }
+
+    /**
+     * Indicates if the realm is started.
+     * 
+     * @return True if the realm is started.
+     */
+    public boolean isStarted() {
+        return this.started;
+    }
+
+    /**
+     * Indicates if the realm is stopped.
+     * 
+     * @return True if the realm is stopped.
+     */
+    public boolean isStopped() {
+        return !this.started;
     }
 
     /**
@@ -167,6 +189,16 @@ public abstract class Realm {
      */
     public void setVerifier(Verifier verifier) {
         this.verifier = verifier;
+    }
+
+    /** Starts the realm. */
+    public synchronized void start() throws Exception {
+        this.started = true;
+    }
+
+    /** Stops the realm. */
+    public synchronized void stop() throws Exception {
+        this.started = false;
     }
 
     @Override

@@ -23,6 +23,7 @@ Changes log
           "Max-Forwards".
         - Renamed Context#verifier and enroler to defaultVerifier and
           defaultEnroler.
+        - Added lifecycle support to Realm and Component#realms.
      - Enhancements
         - Added a new Jackson extension, with transparent conversion
           between JSON representations and objects.

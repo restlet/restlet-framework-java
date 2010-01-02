@@ -310,7 +310,7 @@ public class Component extends Restlet {
     }
 
     /**
-     * Returns the private internal router were Restlets like Applications can
+     * Returns the private internal router where Restlets like Applications can
      * be attached. Those Restlets can be addressed via the
      * {@link org.restlet.data.Protocol#RIAP} (Restlet Internal Access Protocol)
      * client connector. This is used to manage private, internal and optimized
@@ -488,11 +488,14 @@ public class Component extends Restlet {
 
     /**
      * Starts the component. First it starts all the connectors (clients then
-     * servers) and then starts the component's internal helper. Finally it
-     * calls the start method of the super class.
+     * servers), the routers, the services, the realms and then the component's
+     * internal helper. Finally it calls the start method of the super class.
      * 
      * @see #startClients()
      * @see #startServers()
+     * @see #startRouters()
+     * @see #startServices()
+     * @see #startRealms()
      * @see #startHelper()
      */
     @Override
@@ -500,9 +503,10 @@ public class Component extends Restlet {
         if (isStopped()) {
             startClients();
             startServers();
-            startHelper();
-            startServices();
             startRouters();
+            startServices();
+            startRealms();
+            startHelper();
             super.start();
         }
     }
@@ -528,6 +532,19 @@ public class Component extends Restlet {
     protected synchronized void startHelper() throws Exception {
         if (getHelper() != null) {
             getHelper().start();
+        }
+    }
+
+    /**
+     * Starts the realms.
+     * 
+     * @throws Exception
+     */
+    protected synchronized void startRealms() throws Exception {
+        if (this.realms != null) {
+            for (Realm realm : this.realms) {
+                realm.start();
+            }
         }
     }
 
@@ -579,21 +596,26 @@ public class Component extends Restlet {
     }
 
     /**
-     * Stops the component. First it stops the component's internal helper and
-     * then stops all the connectors (servers then clients). Finally it calls
-     * the stop method of the super class.
+     * Stops the component. First it stops the component's internal helper, the
+     * realms, the services, the routers and then stops all the connectors
+     * (servers then clients) Finally it calls the stop method of the super
+     * class.
      * 
      * @see #stopHelper()
+     * @see #stopRealms()
+     * @see #stopServices()
+     * @see #stopRouters()
      * @see #stopServers()
      * @see #stopClients()
      */
     @Override
     public synchronized void stop() throws Exception {
         stopHelper();
-        stopServers();
-        stopClients();
+        stopRealms();
         stopServices();
         stopRouters();
+        stopServers();
+        stopClients();
         super.stop();
     }
 
@@ -618,6 +640,19 @@ public class Component extends Restlet {
     protected synchronized void stopHelper() throws Exception {
         if (getHelper() != null) {
             getHelper().stop();
+        }
+    }
+
+    /**
+     * Stops the realms.
+     * 
+     * @throws Exception
+     */
+    protected synchronized void stopRealms() throws Exception {
+        if (this.realms != null) {
+            for (Realm realm : this.realms) {
+                realm.stop();
+            }
         }
     }
 
