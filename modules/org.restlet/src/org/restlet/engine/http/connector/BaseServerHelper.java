@@ -174,8 +174,8 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
             ServerConnection connection = request.getConnection();
 
             if (request.isExpectingResponse()) {
-                // Check if the response is indeed the next one
-                // to be written for this connection
+                // Check if the response is indeed the next one to be written
+                // for this connection
                 Response nextResponse = connection.getInboundMessages().peek();
 
                 if ((nextResponse != null)
