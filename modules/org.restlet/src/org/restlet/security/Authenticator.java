@@ -117,9 +117,9 @@ public abstract class Authenticator extends Filter {
     protected int beforeHandle(Request request, Response response) {
         if (authenticate(request, response)) {
             return authenticated(request, response);
-        } else {
-            return unauthenticated(request, response);
         }
+
+        return unauthenticated(request, response);
     }
 
     /**
