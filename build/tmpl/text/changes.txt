@@ -24,6 +24,8 @@ Changes log
         - Renamed Context#verifier and enroler to defaultVerifier and
           defaultEnroler.
         - Added lifecycle support to Realm and Component#realms.
+        - Refactored Component with an extensible "services" property
+          and added a new ServiceList class for factorization purpose.
      - Enhancements
         - Added a new Jackson extension, with transparent conversion
           between JSON representations and objects.

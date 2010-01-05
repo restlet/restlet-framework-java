@@ -32,7 +32,6 @@ package org.restlet;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.logging.Level;
 
 import org.restlet.engine.Engine;
 import org.restlet.engine.RestletHelper;
@@ -45,9 +44,9 @@ import org.restlet.service.ConverterService;
 import org.restlet.service.DecoderService;
 import org.restlet.service.MetadataService;
 import org.restlet.service.RangeService;
-import org.restlet.service.Service;
 import org.restlet.service.StatusService;
 import org.restlet.service.TunnelService;
+import org.restlet.util.ServiceList;
 
 /**
  * Restlet managing a coherent set of Resources and Services. Applications are
@@ -121,7 +120,7 @@ public class Application extends Restlet {
     private volatile Restlet outboundRoot;
 
     /** The list of services. */
-    private final List<Service> services;
+    private final ServiceList services;
 
     /**
      * Constructor. Note this constructor is convenient because you don't have
@@ -154,7 +153,7 @@ public class Application extends Restlet {
 
         this.outboundRoot = null;
         this.inboundRoot = null;
-        this.services = new CopyOnWriteArrayList<Service>();
+        this.services = new ServiceList();
         this.services.add(new TunnelService(true, true));
         this.services.add(new StatusService());
         this.services.add(new DecoderService());
@@ -231,7 +230,7 @@ public class Application extends Restlet {
      * @return The connector service.
      */
     public ConnectorService getConnectorService() {
-        return getService(ConnectorService.class);
+        return getServices().get(ConnectorService.class);
     }
 
     /**
@@ -240,7 +239,7 @@ public class Application extends Restlet {
      * @return The converter service.
      */
     public ConverterService getConverterService() {
-        return getService(ConverterService.class);
+        return getServices().get(ConverterService.class);
     }
 
     /**
@@ -249,7 +248,7 @@ public class Application extends Restlet {
      * @return The decoder service.
      */
     public DecoderService getDecoderService() {
-        return getService(DecoderService.class);
+        return getServices().get(DecoderService.class);
     }
 
     /**
@@ -290,7 +289,7 @@ public class Application extends Restlet {
      * @return The metadata service.
      */
     public MetadataService getMetadataService() {
-        return getService(MetadataService.class);
+        return getServices().get(MetadataService.class);
     }
 
     /**
@@ -312,7 +311,7 @@ public class Application extends Restlet {
      * @return The range service.
      */
     public RangeService getRangeService() {
-        return getService(RangeService.class);
+        return getServices().get(RangeService.class);
     }
 
     /**
@@ -338,31 +337,11 @@ public class Application extends Restlet {
     }
 
     /**
-     * Returns a service matching a given service class.
-     * 
-     * @param <T>
-     *            The service type.
-     * @param clazz
-     *            The service class to match.
-     * @return The matched service instance.
-     */
-    @SuppressWarnings("unchecked")
-    public <T extends Service> T getService(Class<T> clazz) {
-        for (Service service : getServices()) {
-            if (clazz.isAssignableFrom(service.getClass())) {
-                return (T) service;
-            }
-        }
-
-        return null;
-    }
-
-    /**
      * Returns the modifiable list of services.
      * 
      * @return The modifiable list of services.
      */
-    public List<Service> getServices() {
+    public ServiceList getServices() {
         return services;
     }
 
@@ -372,7 +351,7 @@ public class Application extends Restlet {
      * @return The status service.
      */
     public StatusService getStatusService() {
-        return getService(StatusService.class);
+        return getServices().get(StatusService.class);
     }
 
     /**
@@ -383,7 +362,7 @@ public class Application extends Restlet {
      */
     // [ifndef gae] method
     public org.restlet.service.TaskService getTaskService() {
-        return getService(org.restlet.service.TaskService.class);
+        return getServices().get(org.restlet.service.TaskService.class);
     }
 
     /**
@@ -392,7 +371,7 @@ public class Application extends Restlet {
      * @return The tunnel service.
      */
     public TunnelService getTunnelService() {
-        return getService(TunnelService.class);
+        return getServices().get(TunnelService.class);
     }
 
     @Override
@@ -422,7 +401,7 @@ public class Application extends Restlet {
      *            The connector service.
      */
     public void setConnectorService(ConnectorService connectorService) {
-        setService(connectorService);
+        getServices().set(connectorService);
     }
 
     /**
@@ -432,7 +411,7 @@ public class Application extends Restlet {
      *            The converter service.
      */
     public void setConverterService(ConverterService converterService) {
-        setService(converterService);
+        getServices().set(converterService);
     }
 
     /**
@@ -442,7 +421,7 @@ public class Application extends Restlet {
      *            The decoder service.
      */
     public void setDecoderService(DecoderService decoderService) {
-        setService(decoderService);
+        getServices().set(decoderService);
     }
 
     /**
@@ -487,7 +466,7 @@ public class Application extends Restlet {
      *            The metadata service.
      */
     public void setMetadataService(MetadataService metadataService) {
-        setService(metadataService);
+        getServices().set(metadataService);
     }
 
     /**
@@ -511,7 +490,7 @@ public class Application extends Restlet {
      *            The range service.
      */
     public void setRangeService(RangeService rangeService) {
-        setService(rangeService);
+        getServices().set(rangeService);
     }
 
     /**
@@ -553,66 +532,13 @@ public class Application extends Restlet {
     }
 
     /**
-     * Replaces or adds a service. The replacement is based on the service
-     * class.
-     * 
-     * @param newService
-     *            The new service to set.
-     */
-    protected synchronized void setService(Service newService) {
-        List<Service> services = new CopyOnWriteArrayList<Service>();
-        Service service;
-        boolean replaced = false;
-
-        for (int i = 0; (i < this.services.size()); i++) {
-            service = this.services.get(i);
-
-            if (service != null) {
-                if (service.getClass().isAssignableFrom(newService.getClass())) {
-                    try {
-                        service.stop();
-                    } catch (Exception e) {
-                        getLogger().log(Level.WARNING,
-                                "Unable to stop service replaced", e);
-                    }
-
-                    services.add(newService);
-                    replaced = true;
-                } else {
-                    services.add(service);
-                }
-            }
-        }
-
-        if (!replaced) {
-            services.add(newService);
-        }
-
-        setServices(services);
-    }
-
-    /**
-     * Sets the list of services.
-     * 
-     * @param services
-     *            The list of services.
-     */
-    public synchronized void setServices(List<Service> services) {
-        this.services.clear();
-
-        if (services != null) {
-            this.services.addAll(services);
-        }
-    }
-
-    /**
      * Sets the status service.
      * 
      * @param statusService
      *            The status service.
      */
     public void setStatusService(StatusService statusService) {
-        setService(statusService);
+        getServices().set(statusService);
     }
 
     /**
@@ -623,7 +549,7 @@ public class Application extends Restlet {
      */
     // [ifndef gae] method
     public void setTaskService(org.restlet.service.TaskService taskService) {
-        setService(taskService);
+        getServices().set(taskService);
     }
 
     /**
@@ -633,7 +559,7 @@ public class Application extends Restlet {
      *            The tunnel service.
      */
     public void setTunnelService(TunnelService tunnelService) {
-        setService(tunnelService);
+        getServices().set(tunnelService);
     }
 
     /**
@@ -649,9 +575,7 @@ public class Application extends Restlet {
                 getHelper().start();
             }
 
-            for (Service service : getServices()) {
-                service.start();
-            }
+            getServices().start();
 
             if (getInboundRoot() != null) {
                 getInboundRoot().start();
@@ -664,8 +588,9 @@ public class Application extends Restlet {
     }
 
     /**
-     * Starts the application, the inbound and outbound roots then all the
-     * enabled associated services.
+     * Stops the application, the inbound and outbound roots then all the
+     * enabled associated services. Finally, it clears the internal cache of
+     * annotations.
      */
     @Override
     public synchronized void stop() throws Exception {
@@ -678,9 +603,7 @@ public class Application extends Restlet {
                 getInboundRoot().stop();
             }
 
-            for (Service service : getServices()) {
-                service.stop();
-            }
+            getServices().stop();
 
             if (getHelper() != null) {
                 getHelper().stop();

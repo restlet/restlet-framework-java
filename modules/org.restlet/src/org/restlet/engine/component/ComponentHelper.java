@@ -39,8 +39,10 @@ import org.restlet.Restlet;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.engine.ChainHelper;
+import org.restlet.routing.Filter;
 import org.restlet.routing.TemplateRoute;
 import org.restlet.routing.VirtualHost;
+import org.restlet.service.Service;
 
 /**
  * Component helper.
@@ -205,16 +207,17 @@ public class ComponentHelper extends ChainHelper<Component> {
         if (!success) {
             getHelped().stop();
         } else {
-            // Logging of calls
-            if (getHelped().getLogService().isEnabled()) {
-                addFilter(getHelped().getLogService().createInboundFilter(
-                        getContext().createChildContext()));
-            }
+            // Attach the service inbound filters
+            Filter inboundFilter = null;
 
-            // Addition of status pages
-            if (getHelped().getStatusService().isEnabled()) {
-                addFilter(getHelped().getStatusService().createInboundFilter(
-                        getContext().createChildContext()));
+            for (Service service : getHelped().getServices()) {
+                if (service.isEnabled()) {
+                    inboundFilter = service.createInboundFilter(getContext().createChildContext());
+
+                    if (inboundFilter != null) {
+                        addFilter(inboundFilter);
+                    }
+                }
             }
 
             // Re-attach the original filter's attached Restlet
@@ -228,10 +231,10 @@ public class ComponentHelper extends ChainHelper<Component> {
         getServerRouter().stop();
 
         // Stop all applications
-        stopVirtualHostApplications(getHelped().getDefaultHost());
+        stopHostApplications(getHelped().getDefaultHost());
 
         for (VirtualHost host : getHelped().getHosts()) {
-            stopVirtualHostApplications(host);
+            stopHostApplications(host);
         }
     }
 
@@ -241,7 +244,7 @@ public class ComponentHelper extends ChainHelper<Component> {
      * @param host
      * @throws Exception
      */
-    private void stopVirtualHostApplications(VirtualHost host) throws Exception {
+    private void stopHostApplications(VirtualHost host) throws Exception {
         for (TemplateRoute route : host.getRoutes()) {
             if (route.getNext().isStarted()) {
                 route.getNext().stop();

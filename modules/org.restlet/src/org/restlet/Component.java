@@ -52,6 +52,7 @@ import org.restlet.service.LogService;
 import org.restlet.service.StatusService;
 import org.restlet.util.ClientList;
 import org.restlet.util.ServerList;
+import org.restlet.util.ServiceList;
 
 /**
  * Restlet managing a set of Connectors, VirtualHosts, Services and
@@ -159,14 +160,11 @@ public class Component extends Restlet {
      */
     private volatile Router internalRouter;
 
-    /** The log service. */
-    private volatile LogService logService;
-
     /** The modifiable list of server connectors. */
     private final ServerList servers;
 
-    /** The status service. */
-    private volatile StatusService statusService;
+    /** The list of services. */
+    private final ServiceList services;
 
     /** The modifiable list of security realms. */
     private final List<Realm> realms;
@@ -179,6 +177,7 @@ public class Component extends Restlet {
         this.clients = new ClientList(null);
         this.servers = new ServerList(null, this);
         this.realms = new CopyOnWriteArrayList<Realm>();
+        this.services = new ServiceList();
 
         if (Engine.getInstance() != null) {
             this.helper = new ComponentHelper(this);
@@ -188,8 +187,8 @@ public class Component extends Restlet {
                         .createChildContext());
                 this.internalRouter = new InternalRouter(getContext()
                         .createChildContext());
-                this.logService = new LogService();
-                this.statusService = new StatusService();
+                this.services.add(new LogService());
+                this.services.add(new StatusService());
                 this.clients.setContext(getContext());
                 this.servers.setContext(getContext());
             }
@@ -344,7 +343,7 @@ public class Component extends Restlet {
      * @return The global log service.
      */
     public LogService getLogService() {
-        return this.logService;
+        return getServices().get(LogService.class);
     }
 
     /**
@@ -366,12 +365,21 @@ public class Component extends Restlet {
     }
 
     /**
+     * Returns the modifiable list of services.
+     * 
+     * @return The modifiable list of services.
+     */
+    public ServiceList getServices() {
+        return services;
+    }
+
+    /**
      * Returns the status service, enabled by default.
      * 
      * @return The status service.
      */
     public StatusService getStatusService() {
-        return this.statusService;
+        return getServices().get(StatusService.class);
     }
 
     @Override
@@ -444,7 +452,7 @@ public class Component extends Restlet {
      *            The global log service.
      */
     public void setLogService(LogService logService) {
-        this.logService = logService;
+        getServices().set(logService);
     }
 
     /**
@@ -483,7 +491,7 @@ public class Component extends Restlet {
      *            The status service.
      */
     public void setStatusService(StatusService statusService) {
-        this.statusService = statusService;
+        getServices().set(statusService);
     }
 
     /**
@@ -586,13 +594,7 @@ public class Component extends Restlet {
      * @throws Exception
      */
     protected synchronized void startServices() throws Exception {
-        if (getLogService() != null) {
-            getLogService().start();
-        }
-
-        if (getStatusService() != null) {
-            getStatusService().start();
-        }
+        getServices().start();
     }
 
     /**
@@ -694,13 +696,7 @@ public class Component extends Restlet {
      * @throws Exception
      */
     protected synchronized void stopServices() throws Exception {
-        if (getLogService() != null) {
-            getLogService().stop();
-        }
-
-        if (getStatusService() != null) {
-            getStatusService().stop();
-        }
+        getServices().stop();
     }
 
     /**

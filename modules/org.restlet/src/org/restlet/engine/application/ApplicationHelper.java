@@ -75,6 +75,7 @@ public class ApplicationHelper extends ChainHelper<Application> {
     /** Start hook. */
     @Override
     public synchronized void start() throws Exception {
+        // Attach the service inbound filters
         Filter inboundFilter = null;
 
         for (Service service : getHelped().getServices()) {
