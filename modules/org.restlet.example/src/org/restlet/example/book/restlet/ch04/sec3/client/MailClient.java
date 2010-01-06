@@ -41,8 +41,6 @@ public class MailClient {
                 "http://localhost:8182/accounts/1");
         mailAccount.remove();
         System.out.println(mailAccounts.represent());
-
-        //
     }
 
 }
