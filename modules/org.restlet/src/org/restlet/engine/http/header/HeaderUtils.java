@@ -83,7 +83,7 @@ public class HeaderUtils {
      */
     public static void addEntityHeaders(Representation entity,
             Series<Parameter> headers) {
-        if (entity == null) {
+        if (entity == null || !entity.isAvailable()) {
             headers.add(HeaderConstants.HEADER_CONTENT_LENGTH, "0");
         } else {
             if (!entity.getEncodings().isEmpty()) {
