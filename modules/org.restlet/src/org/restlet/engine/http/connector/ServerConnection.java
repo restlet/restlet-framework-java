@@ -340,7 +340,7 @@ public class ServerConnection extends Connection<Server> {
                 try {
                     request.getEntity().exhaust();
                 } catch (IOException e) {
-                    getLogger().log(Level.INFO,
+                    getLogger().log(Level.FINE,
                             "Unable to exhaust request entity", e);
                 } finally {
                     request.getEntity().release();

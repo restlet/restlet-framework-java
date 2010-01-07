@@ -1,5 +1,7 @@
 package org.restlet.example.book.restlet.ch04.sec3.client;
 
+import org.restlet.Client;
+import org.restlet.data.Protocol;
 import org.restlet.example.book.restlet.ch04.sec3.common.AccountResource;
 import org.restlet.example.book.restlet.ch04.sec3.common.AccountsResource;
 import org.restlet.example.book.restlet.ch04.sec3.common.RootResource;
@@ -10,37 +12,45 @@ import org.restlet.example.book.restlet.ch04.sec3.common.RootResource;
 public class MailClient {
 
     public static void main(String[] args) throws Exception {
-        // 1) Display the root resource
-        RootResource mailRoot = new RootClientResource("http://localhost:8182/");
+        System.out.println("\n1) Set-up the client connector\n");
+        Client client = new Client(Protocol.HTTP);
+        client.start();
+
+        System.out.println("\n2) Display the root resource\n");
+        RootResource mailRoot = new RootClientResource(client,
+                "http://localhost:8182/");
         System.out.println(mailRoot.represent());
 
-        // 2) Display the initial list of accounts
-        AccountsResource mailAccounts = new AccountsClientResource(
+        System.out.println("\n3) Display the initial list of accounts\n");
+        AccountsResource mailAccounts = new AccountsClientResource(client,
                 "http://localhost:8182/accounts/");
-        System.out.println(mailAccounts.represent());
+        String list = mailAccounts.represent();
+        System.out.println(list == null ? "<empty>\n" : list);
 
-        // 3) Adds new accounts
+        System.out.println("4) Adds new accounts\n");
         mailAccounts.add("Tim Berners-Lee");
         mailAccounts.add("Roy Fielding");
         mailAccounts.add("Mark Baker");
+        System.out.println("Three accounts added !");
 
-        // 4) Display the updated list of accounts
+        System.out.println("\n5) Display the updated list of accounts\n");
         System.out.println(mailAccounts.represent());
 
-        // 5) Display an individual account
-        AccountResource mailAccount = new AccountClientResource(
+        System.out.println("6) Display the second account\n");
+        AccountResource mailAccount = new AccountClientResource(client,
                 "http://localhost:8182/accounts/2");
         System.out.println(mailAccount.represent());
 
-        // 6) Update the individual account and display it again
+        System.out
+                .println("\n7) Update the individual account and display it again\n");
         mailAccount.store("Roy T. Fielding");
         System.out.println(mailAccount.represent());
 
-        // 7) Delete the first account and display the list again
-        mailAccount = new AccountClientResource(
+        System.out
+                .println("\n8) Delete the first account and display the list again\n");
+        mailAccount = new AccountClientResource(client,
                 "http://localhost:8182/accounts/1");
         mailAccount.remove();
         System.out.println(mailAccounts.represent());
     }
-
 }

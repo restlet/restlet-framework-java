@@ -1,5 +1,6 @@
 package org.restlet.example.book.restlet.ch04.sec3.client;
 
+import org.restlet.Client;
 import org.restlet.example.book.restlet.ch04.sec3.common.RootResource;
 import org.restlet.resource.ClientResource;
 
@@ -14,11 +15,14 @@ public class RootClientResource extends ClientResource implements RootResource {
     /**
      * Constructor.
      * 
+     * @param client
+     *            The client connector to reuse.
      * @param uri
      *            The target root URI.
      */
-    public RootClientResource(String uri) {
+    public RootClientResource(Client client, String uri) {
         super(uri);
+        setNext(client);
 
         // Creates the dynamic proxy
         this.proxy = wrap(RootResource.class);

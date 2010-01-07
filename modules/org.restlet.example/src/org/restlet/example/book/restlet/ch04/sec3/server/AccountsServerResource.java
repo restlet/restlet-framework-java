@@ -22,6 +22,6 @@ public class AccountsServerResource extends ServerResource implements
     public String add(String account) {
         MailServerApplication.getAccounts().add(account);
         return Integer.toString(MailServerApplication.getAccounts().indexOf(
-                account));
+                account) + 1);
     }
 }

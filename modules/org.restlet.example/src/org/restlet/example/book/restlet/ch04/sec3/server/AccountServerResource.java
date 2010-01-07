@@ -25,14 +25,14 @@ public class AccountServerResource extends ServerResource implements
     }
 
     public String represent() {
-        return MailServerApplication.getAccounts().get(this.accountId);
+        return MailServerApplication.getAccounts().get(this.accountId - 1);
     }
 
     public void store(String account) {
-        MailServerApplication.getAccounts().set(accountId, account);
+        MailServerApplication.getAccounts().set(this.accountId - 1, account);
     }
 
     public void remove() {
-        MailServerApplication.getAccounts().remove(accountId);
+        MailServerApplication.getAccounts().remove(this.accountId - 1);
     }
 }
