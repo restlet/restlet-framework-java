@@ -11,4 +11,5 @@ public class RootServerResource extends ServerResource implements RootResource {
     public String represent() {
         return "Welcome to the " + getApplication().getName() + " !";
     }
+
 }

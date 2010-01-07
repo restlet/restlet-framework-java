@@ -12,13 +12,14 @@ import org.restlet.routing.Router;
  */
 public class MailServerApplication extends Application {
 
-    /** List of accounts stored in memory. */
-    private static final List<String> accounts = new CopyOnWriteArrayList<String>();
+    /** Static list of accounts stored in memory. */
+    private static final List<String> accounts = 
+        new CopyOnWriteArrayList<String>();
 
     /**
-     * Returns the list of accounts stored in memory.
+     * Returns the static list of accounts stored in memory.
      * 
-     * @return The list of accounts.
+     * @return The static list of accounts.
      */
     public static List<String> getAccounts() {
         return accounts;
