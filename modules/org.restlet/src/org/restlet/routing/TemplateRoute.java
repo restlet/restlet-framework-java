@@ -327,7 +327,9 @@ public class TemplateRoute extends Filter {
 
     @Override
     public String toString() {
-        return (getTemplate() == null) ? super.toString() : getTemplate()
-                .getPattern();
+        return "\""
+                + ((getTemplate() == null) ? super.toString() : getTemplate()
+                        .getPattern()) + "\" -> "
+                + ((getNext() == null) ? "null" : getNext().toString());
     }
 }

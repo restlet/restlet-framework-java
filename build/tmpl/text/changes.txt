@@ -67,7 +67,10 @@ Changes log
           asynchronous request and response handling (via the 
           Response#commit(), Request#onReceived() and Message#on*() 
           callback methods). Significant feed-back from NetDev and 
-          especially John Logdson. 
+          especially John Logdson.
+        - Improved routing log by also displaying the next Restlet
+          of the selected route in addition to the URI template.
+          Suggested by John Logdson. 
     - Bugs fixed
         - Fixed issue in DomRepresentation with createTransformer()
           method. Fix contributed by Remi Dewitte. 

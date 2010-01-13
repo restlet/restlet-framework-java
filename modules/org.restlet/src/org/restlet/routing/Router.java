@@ -703,7 +703,7 @@ public class Router extends Restlet {
             if (getDefaultRoute() == route) {
                 getLogger().fine("The default route was selected.");
             } else {
-                getLogger().fine("This route was selected: \"" + route + "\"");
+                getLogger().fine("This route was selected: " + route);
             }
         }
     }
