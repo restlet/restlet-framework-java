@@ -1,7 +1,6 @@
 package org.restlet.example.book.restlet.ch04.sec3.server;
 
 import org.restlet.Component;
-import org.restlet.Server;
 import org.restlet.data.Protocol;
 
 /**
@@ -10,16 +9,14 @@ import org.restlet.data.Protocol;
 public class MailServerComponent extends Component {
 
     /**
-     * Launches the application with an HTTP server.
+     * Launches the mail server component.
      * 
      * @param args
      *            The arguments.
      * @throws Exception
      */
     public static void main(String[] args) throws Exception {
-        Server mailServer = new Server(Protocol.HTTP, 8182);
-        mailServer.setNext(new MailServerComponent());
-        mailServer.start();
+        new MailServerComponent().start();
     }
 
     /**
@@ -30,6 +27,9 @@ public class MailServerComponent extends Component {
         setDescription("Example for 'Restlet in Action' book");
         setOwner("Noelios Technologies");
         setAuthor("The Restlet Team");
+
+        // Adds a HTTP server connector
+        getServers().add(Protocol.HTTP, 8182);
 
         // Attach the application to the default (local) host
         getDefaultHost().attachDefault(new MailServerApplication());

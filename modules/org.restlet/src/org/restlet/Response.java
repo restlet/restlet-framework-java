@@ -41,6 +41,7 @@ import org.restlet.data.ChallengeRequest;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Dimension;
 import org.restlet.data.Method;
+import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.ServerInfo;
 import org.restlet.data.Status;
@@ -758,5 +759,23 @@ public class Response extends Message {
      */
     public void setStatus(Status status, Throwable throwable, String message) {
         setStatus(new Status(status, throwable, message));
+    }
+
+    /**
+     * Displays a synthesis of the response like an HTTP status line.
+     * 
+     * @return A synthesis of the response like an HTTP status line.
+     */
+    public String toString() {
+        Protocol protocol = getRequest().getProtocol();
+
+        return ((protocol == null) ? "null"
+                : (protocol.getName() + "/" + protocol.getVersion()))
+                + " "
+                + ((getStatus() == null) ? "null" : String.valueOf(getStatus()
+                        .getCode())
+                        + " "
+                        + ((getStatus() == null) ? "null" : String
+                                .valueOf(getStatus().getDescription())));
     }
 }

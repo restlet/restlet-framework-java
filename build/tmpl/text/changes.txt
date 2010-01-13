@@ -71,7 +71,10 @@ Changes log
           especially John Logdson.
         - Improved routing log by also displaying the next Restlet
           of the selected route in addition to the URI template.
-          Suggested by John Logdson. 
+          Suggested by John Logdson.
+        - Implemented Request#toString() and Response#toString() to
+          display something similar to HTTP request and status lines.
+          Suggested by John Logdson.
     - Bugs fixed
         - Fixed issue in DomRepresentation with createTransformer()
           method. Fix contributed by Remi Dewitte. 

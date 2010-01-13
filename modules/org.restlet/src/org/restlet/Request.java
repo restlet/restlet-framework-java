@@ -194,7 +194,6 @@ public class Request extends Message {
         this(method, new Reference(resourceUri), entity);
     }
 
-
     /**
      * Constructor.
      * 
@@ -721,6 +720,21 @@ public class Request extends Message {
      */
     public void setRootRef(Reference rootRef) {
         this.rootRef = rootRef;
+    }
+
+    /**
+     * Displays a synthesis of the request like an HTTP request line.
+     * 
+     * @return A synthesis of the request like an HTTP request line.
+     */
+    public String toString() {
+        return ((getMethod() == null) ? "null" : getMethod().toString())
+                + " "
+                + ((getResourceRef() == null) ? "null" : getResourceRef()
+                        .toString())
+                + " "
+                + ((getProtocol() == null) ? "null" : (getProtocol().getName()
+                        + "/" + getProtocol().getVersion()));
     }
 
 }
