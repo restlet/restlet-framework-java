@@ -55,7 +55,7 @@ import org.restlet.util.Series;
  * @see org.restlet.Uniform
  * @author Jerome Louvel
  */
-public class Request extends Message {
+public class Request extends Message implements Cloneable {
 
     // [ifndef gwt] method
     /**
@@ -201,20 +201,25 @@ public class Request extends Message {
      *            The request to copy.
      */
     public Request(Request request) {
-        this(request.getMethod(), request.getResourceRef(), request.getEntity());
+        this(request.getMethod(), new Reference(request.getResourceRef()),
+                request.getEntity());
         this.challengeResponse = request.getChallengeResponse();
         this.clientInfo = request.getClientInfo();
         this.conditions = request.getConditions();
         this.cookies = request.getCookies();
         this.hostRef = request.getHostRef();
         this.maxForwards = request.getMaxForwards();
-        this.originalRef = request.getOriginalRef();
+        this.originalRef = (request.getOriginalRef() == null) ? null
+                : new Reference(request.getOriginalRef());
+        this.onResponse = request.getOnResponse();
         // [ifndef gwt] instruction
         this.proxyChallengeResponse = request.getProxyChallengeResponse();
         this.protocol = request.getProtocol();
         this.ranges = request.getRanges();
-        this.referrerRef = request.getReferrerRef();
-        this.rootRef = request.getRootRef();
+        this.referrerRef = (request.getReferrerRef() == null) ? null
+                : new Reference(request.getReferrerRef());
+        this.rootRef = (request.getRootRef() == null) ? null : request
+                .getRootRef();
     }
 
     /**
