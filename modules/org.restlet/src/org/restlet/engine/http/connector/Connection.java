@@ -828,7 +828,6 @@ public abstract class Connection<T extends Connector> {
                         setInboundBusy(doRead);
                     }
                 }
-
                 if (doRead) {
                     readMessage();
                 }

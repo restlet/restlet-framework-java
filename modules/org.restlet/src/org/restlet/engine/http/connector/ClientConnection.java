@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.channels.SocketChannel;
+import java.util.concurrent.CountDownLatch;
 import java.util.logging.Level;
 
 import org.restlet.Client;
@@ -293,6 +294,13 @@ public class ClientConnection extends Connection<Client> {
             if (!request.isExpectingResponse()) {
                 // Don't wait for a response
                 getOutboundMessages().remove(response);
+                // unblock the possibly waiting thread.
+                CountDownLatch latch = (CountDownLatch) response.getRequest()
+                        .getAttributes().get(
+                                "org.restlet.engine.http.connector.latch");
+                if (latch != null) {
+                    latch.countDown();
+                }
             }
         }
     }

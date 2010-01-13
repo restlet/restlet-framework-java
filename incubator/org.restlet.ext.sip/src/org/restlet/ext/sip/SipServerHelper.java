@@ -37,6 +37,7 @@ import java.nio.channels.SocketChannel;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Server;
+import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.engine.http.connector.BaseHelper;
 import org.restlet.engine.http.connector.BaseServerHelper;
@@ -62,14 +63,19 @@ public class SipServerHelper extends BaseServerHelper {
     }
 
     @Override
+    protected Connection<Server> createConnection(BaseHelper<Server> helper,
+            Socket socket, SocketChannel socketChannel) throws IOException {
+        return new SipServerConnection(helper, socket, socketChannel);
+    }
+
+    @Override
     protected Response createResponse(Request request) {
         return new SipResponse(request);
     }
 
     @Override
-    protected Connection<Server> createConnection(BaseHelper<Server> helper,
-            Socket socket, SocketChannel socketChannel) throws IOException {
-        return new SipServerConnection(helper, socket, socketChannel);
+    public Method parseMethod(String methodName) {
+        return SipMethod.valueOf(methodName);
     }
 
     @Override
@@ -83,4 +89,5 @@ public class SipServerHelper extends BaseServerHelper {
         getLogger().info("Stopping the SIP server");
         super.stop();
     }
+
 }

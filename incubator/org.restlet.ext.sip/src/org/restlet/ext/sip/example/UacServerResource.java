@@ -149,14 +149,14 @@ public class UacServerResource extends SipServerResource implements UacResource 
      */
     private void trace() {
         if (TRACE) {
+            System.out.println("--------------start trace--------------------");
             System.out.println("Method: " + getMethod());
             System.out.println("Call ID: " + getCallId());
             System.out.println("Call Sequence: " + getCallSeq());
             System.out.println("To: " + getTo());
             System.out.println("From: " + getFrom());
             System.out.println("Max Forwards: " + getMaxForwards());
-            System.out
-                    .println("-------------------------------------------------");
+            System.out.println("---------------------------------------------");
         }
     }
 }

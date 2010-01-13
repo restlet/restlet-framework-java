@@ -105,8 +105,8 @@ public class SipServerConnection extends ServerConnection {
             ServerConnection connection, String methodName, String resourceUri,
             String version, Series<Parameter> headers, Representation entity,
             boolean confidential, Principal userPrincipal) {
-        return new SipRequest(getHelper().getContext(), this, methodName,
-                resourceUri, version, headers, createInboundEntity(headers),
-                false, null);
+        return new SipRequest(getHelper().getContext(), this, getHelper()
+                .parseMethod(methodName), resourceUri, version, headers,
+                createInboundEntity(headers), false, null);
     }
 }

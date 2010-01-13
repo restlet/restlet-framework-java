@@ -148,7 +148,7 @@ public class ConnectedRequest extends Request {
      *            The user principal.
      */
     public ConnectedRequest(Context context, ServerConnection connection,
-            String methodName, String resourceUri, String version,
+            Method method, String resourceUri, String version,
             Series<Parameter> headers, Representation entity,
             boolean confidential, Principal userPrincipal) {
         super();
@@ -164,7 +164,7 @@ public class ConnectedRequest extends Request {
         this.warningsAdded = false;
 
         // Set the properties
-        setMethod(Method.valueOf(methodName));
+        setMethod(method);
         setEntity(entity);
 
         // Put the headers in the request's attributes map

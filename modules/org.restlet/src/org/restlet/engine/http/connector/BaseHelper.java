@@ -48,6 +48,7 @@ import java.util.logging.Level;
 import org.restlet.Connector;
 import org.restlet.Request;
 import org.restlet.Response;
+import org.restlet.data.Method;
 import org.restlet.engine.ConnectorHelper;
 import org.restlet.engine.log.LoggingThreadFactory;
 
@@ -123,14 +124,17 @@ import org.restlet.engine.log.LoggingThreadFactory;
 public abstract class BaseHelper<T extends Connector> extends
         ConnectorHelper<T> {
 
-    /** The controller service. */
-    private volatile ExecutorService controllerService;
-
-    /** The worker service. */
-    private volatile ThreadPoolExecutor workerService;
+    /** Indicates if it is helping a client connector. */
+    private final boolean clientSide;
 
     /** The set of active connections. */
     private final Set<Connection<T>> connections;
+
+    /** The controller service. */
+    private volatile ExecutorService controllerService;
+
+    /** The controller task. */
+    private final ControllerTask controllerTask;
 
     /** The queue of inbound messages. */
     private final Queue<Response> inboundMessages;
@@ -138,11 +142,8 @@ public abstract class BaseHelper<T extends Connector> extends
     /** The queue of outbound messages. */
     private final Queue<Response> outboundMessages;
 
-    /** Indicates if it is helping a client connector. */
-    private final boolean clientSide;
-
-    /** The controller task. */
-    private final ControllerTask controllerTask;
+    /** The worker service. */
+    private volatile ThreadPoolExecutor workerService;
 
     /**
      * Constructor.
@@ -435,6 +436,19 @@ public abstract class BaseHelper<T extends Connector> extends
     protected boolean isWorkerServiceFull() {
         return (getWorkerService().getActiveCount()) >= (getWorkerService()
                 .getMaximumPoolSize());
+    }
+
+    /**
+     * Returns the method corresponding to a method name. By default, this
+     * method calls {@link Method#valueOf(String)}. This behaviour can be
+     * overriden to return methods that are not declared in the Method class.
+     * 
+     * @param methodName
+     *            The method name.
+     * @return The method corresponding to a method name.
+     */
+    public Method parseMethod(String methodName) {
+        return Method.valueOf(methodName);
     }
 
     @Override

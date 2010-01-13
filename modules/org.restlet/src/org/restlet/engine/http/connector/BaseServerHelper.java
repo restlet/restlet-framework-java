@@ -140,7 +140,7 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
         if ((response != null) && (response.getRequest() != null)) {
             ConnectedRequest request = (ConnectedRequest) response.getRequest();
 
-            // Effectively handles the request
+            // Effectively handle the request
             handle(request, response);
 
             if (!response.isCommitted() && response.isAutoCommitting()) {
@@ -196,6 +196,10 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
                     // Put the response at the end of the queue
                     getOutboundMessages().add(response);
                 }
+            } else {
+                // The request expects no response, the connection is free to
+                // read.
+                connection.setInboundBusy(false);
             }
         }
     }

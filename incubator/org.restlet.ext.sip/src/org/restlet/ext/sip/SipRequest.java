@@ -33,6 +33,7 @@ package org.restlet.ext.sip;
 import java.security.Principal;
 
 import org.restlet.Context;
+import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.engine.http.connector.ConnectedRequest;
 import org.restlet.engine.http.connector.ServerConnection;
@@ -58,10 +59,10 @@ public class SipRequest extends ConnectedRequest {
     private volatile String via;
 
     public SipRequest(Context context, ServerConnection connection,
-            String methodName, String resourceUri, String version,
+            Method method, String resourceUri, String version,
             Series<Parameter> headers, Representation entity,
             boolean confidential, Principal userPrincipal) {
-        super(context, connection, methodName, resourceUri, version, headers,
+        super(context, connection, method, resourceUri, version, headers,
                 entity, confidential, userPrincipal);
 
         // Set the "via" property

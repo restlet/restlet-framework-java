@@ -583,7 +583,7 @@ public abstract class UniformResource {
     public boolean isConfidential() {
         return getRequest() == null ? null : getRequest().isConfidential();
     }
-
+    
     /**
      * Releases the resource. First calls the {@link #doRelease()} method then
      * {@link Request#release()} and finally {@link Response#release()}.
@@ -598,6 +598,26 @@ public abstract class UniformResource {
         } catch (Throwable t) {
             doCatch(t);
         }
+    }
+
+    /**
+     * Sets the handled request.
+     * 
+     * @param request
+     *            The handled request.
+     */
+    public void setRequest(Request request) {
+        this.request = request;
+    }
+
+    /**
+     * Sets the handled response.
+     * 
+     * @param response
+     *            The handled response.
+     */
+    public void setResponse(Response response) {
+        this.response = response;
     }
 
 }
