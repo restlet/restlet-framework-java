@@ -63,6 +63,9 @@ public class EmfConverter extends ConverterHelper {
     private static final VariantInfo VARIANT_TEXT_XML = new VariantInfo(
             MediaType.TEXT_XML);
 
+    private static final VariantInfo VARIANT_TEXT_HTML = new VariantInfo(
+            MediaType.TEXT_HTML);
+
     /**
      * Creates the marshaling {@link EmfRepresentation}.
      * 
@@ -113,6 +116,7 @@ public class EmfConverter extends ConverterHelper {
             result = addVariant(result, VARIANT_APPLICATION_XML);
             result = addVariant(result, VARIANT_APPLICATION_XMI);
             result = addVariant(result, VARIANT_TEXT_XML);
+            result = addVariant(result, VARIANT_TEXT_HTML);
         }
 
         return result;
@@ -201,6 +205,7 @@ public class EmfConverter extends ConverterHelper {
         return VARIANT_APPLICATION_ALL_XML.isCompatible(variant)
                 || VARIANT_APPLICATION_XML.isCompatible(variant)
                 || VARIANT_APPLICATION_XMI.isCompatible(variant)
+                || VARIANT_TEXT_HTML.isCompatible(variant)
                 || VARIANT_TEXT_XML.isCompatible(variant);
     }
 }

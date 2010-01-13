@@ -32,6 +32,7 @@ package org.restlet.ext.emf;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -44,6 +45,7 @@ import org.eclipse.emf.ecore.xmi.impl.XMLResourceImpl;
 import org.restlet.Context;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
+import org.restlet.ext.emf.internal.EmfHtmlWriter;
 import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
 
@@ -176,9 +178,16 @@ public class EmfRepresentation<T extends EObject> extends OutputRepresentation {
         if (this.representation != null) {
             this.representation.write(outputStream);
         } else if (object != null) {
-            Resource emfResource = createEmfResource();
-            emfResource.getContents().add((EObject) this.object);
-            emfResource.save(outputStream, getSaveOptions());
+            if (getMediaType().isCompatible(MediaType.APPLICATION_ALL_XML)) {
+                Resource emfResource = createEmfResource();
+                emfResource.getContents().add((EObject) this.object);
+                emfResource.save(outputStream, getSaveOptions());
+            } else if (getMediaType().isCompatible(MediaType.TEXT_HTML)) {
+                EmfHtmlWriter htmlWriter = new EmfHtmlWriter(getObject());
+                htmlWriter.write(new OutputStreamWriter(outputStream,
+                        ((getCharacterSet() == null) ? "UTF-8"
+                                : getCharacterSet().getName())));
+            }
         }
     }
 }
