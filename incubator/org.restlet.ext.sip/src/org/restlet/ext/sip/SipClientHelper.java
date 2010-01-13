@@ -35,7 +35,6 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 import org.restlet.Client;
-import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.engine.http.connector.BaseClientHelper;
 
@@ -63,11 +62,6 @@ public class SipClientHelper extends BaseClientHelper {
             throws UnknownHostException, IOException {
         // TODO: parameterize the SIP proxy !
         return super.createSocket(secure, "localhost", 5060);
-    }
-
-    @Override
-    public Method parseMethod(String methodName) {
-        return SipMethod.valueOf(methodName);
     }
 
     @Override

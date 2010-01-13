@@ -48,7 +48,6 @@ import java.util.logging.Level;
 import org.restlet.Connector;
 import org.restlet.Request;
 import org.restlet.Response;
-import org.restlet.data.Method;
 import org.restlet.engine.ConnectorHelper;
 import org.restlet.engine.log.LoggingThreadFactory;
 
@@ -436,19 +435,6 @@ public abstract class BaseHelper<T extends Connector> extends
     protected boolean isWorkerServiceFull() {
         return (getWorkerService().getActiveCount()) >= (getWorkerService()
                 .getMaximumPoolSize());
-    }
-
-    /**
-     * Returns the method corresponding to a method name. By default, this
-     * method calls {@link Method#valueOf(String)}. This behaviour can be
-     * overriden to return methods that are not declared in the Method class.
-     * 
-     * @param methodName
-     *            The method name.
-     * @return The method corresponding to a method name.
-     */
-    public Method parseMethod(String methodName) {
-        return Method.valueOf(methodName);
     }
 
     @Override

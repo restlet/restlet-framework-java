@@ -30,12 +30,21 @@
 
 package org.restlet.data;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.restlet.engine.Engine;
+
 /**
  * Method to execute when handling a call.
  * 
  * @author Jerome Louvel
  */
 public final class Method implements Comparable<Method> {
+
+    /** Map of registered methods. */
+    private static final Map<String, Method> _methods = new ConcurrentHashMap<String, Method>();
+
     /**
      * Pseudo-method use to match all methods.
      */
@@ -103,7 +112,7 @@ public final class Method implements Comparable<Method> {
      * 
      * @see <a
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.4">HTTP
-     *      RFC - 9.4 GET</a>
+     *      RFC - 9.4 HEAD</a>
      */
     public static final Method HEAD = new Method(
             "HEAD",
@@ -241,6 +250,19 @@ public final class Method implements Comparable<Method> {
             BASE_WEBDAV + "#METHOD_UNLOCK", true, false);
 
     /**
+     * Adds a new Method to the list of registered methods.
+     * 
+     * @param method
+     *            The method to register.
+     */
+    public static void register(Method method) {
+        String name = (method == null) ? null : method.getName();
+        if ((name != null) && !name.equals("")) {
+            _methods.put(name, method);
+        }
+    }
+
+    /**
      * Returns the method associated to a given method name. If an existing
      * constant exists then it is returned, otherwise a new instance is created.
      * 
@@ -252,36 +274,8 @@ public final class Method implements Comparable<Method> {
         Method result = null;
 
         if ((name != null) && !name.equals("")) {
-            if (name.equalsIgnoreCase(GET.getName())) {
-                result = GET;
-            } else if (name.equalsIgnoreCase(POST.getName())) {
-                result = POST;
-            } else if (name.equalsIgnoreCase(HEAD.getName())) {
-                result = HEAD;
-            } else if (name.equalsIgnoreCase(OPTIONS.getName())) {
-                result = OPTIONS;
-            } else if (name.equalsIgnoreCase(PUT.getName())) {
-                result = PUT;
-            } else if (name.equalsIgnoreCase(DELETE.getName())) {
-                result = DELETE;
-            } else if (name.equalsIgnoreCase(CONNECT.getName())) {
-                result = CONNECT;
-            } else if (name.equalsIgnoreCase(COPY.getName())) {
-                result = COPY;
-            } else if (name.equalsIgnoreCase(LOCK.getName())) {
-                result = LOCK;
-            } else if (name.equalsIgnoreCase(MKCOL.getName())) {
-                result = MKCOL;
-            } else if (name.equalsIgnoreCase(MOVE.getName())) {
-                result = MOVE;
-            } else if (name.equalsIgnoreCase(PROPFIND.getName())) {
-                result = PROPFIND;
-            } else if (name.equalsIgnoreCase(PROPPATCH.getName())) {
-                result = PROPPATCH;
-            } else if (name.equalsIgnoreCase(TRACE.getName())) {
-                result = TRACE;
-            } else if (name.equalsIgnoreCase(UNLOCK.getName())) {
-                result = UNLOCK;
+            if (Method._methods.containsKey(name)) {
+                result = Method._methods.get(name);
             } else {
                 result = new Method(name);
             }
@@ -289,9 +283,6 @@ public final class Method implements Comparable<Method> {
 
         return result;
     }
-
-    /** Indicates if the method replies with a response. */
-    private final boolean replying;
 
     /** The description. */
     private final String description;
@@ -305,6 +296,9 @@ public final class Method implements Comparable<Method> {
     /** The name. */
     private volatile String name;
 
+    /** Indicates if the method replies with a response. */
+    private final boolean replying;
+
     /**
      * Indicates if it should have the significance of taking an action other
      * than retrieval.
@@ -313,6 +307,13 @@ public final class Method implements Comparable<Method> {
 
     /** The URI of the specification describing the method. */
     private volatile String uri;
+
+    {
+        // Let the engine register all methods (the default ones and the ones to
+        // be discovered) as soon as the Method class is loaded or at least
+        // used.
+        Engine.getInstance();
+    }
 
     /**
      * Constructor for unsafe and non idempotent methods.

@@ -27,6 +27,7 @@ Changes log
         - Refactored Component with an extensible "services" property
           and added a new ServiceList class for factorization purpose.
         - Moved Response#onReceived to Request#onResponse.
+        - Added protocol helpers that registers protocols's methods.
      - Enhancements
         - Added a new Jackson extension, with transparent conversion
           between JSON representations and objects.

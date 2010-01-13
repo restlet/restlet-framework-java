@@ -46,6 +46,8 @@ import org.restlet.Context;
 import org.restlet.Response;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
+import org.restlet.engine.http.HttpProtocolHelper;
+import org.restlet.engine.http.WebdavProtocolHelper;
 import org.restlet.engine.log.LoggerFacade;
 
 /**
@@ -84,6 +86,11 @@ public class Engine {
 
     public static final String DESCRIPTOR_CONVERTER_PATH = DESCRIPTOR + "/"
             + DESCRIPTOR_CONVERTER;
+
+    public static final String DESCRIPTOR_PROTOCOL = "org.restlet.engine.ProtocolHelper";
+
+    public static final String DESCRIPTOR_PROTOCOL_PATH = DESCRIPTOR + "/"
+            + DESCRIPTOR_PROTOCOL;
 
     public static final String DESCRIPTOR_SERVER = "org.restlet.engine.ServerHelper";
 
@@ -287,6 +294,9 @@ public class Engine {
     /** List of available converter helpers. */
     private final List<org.restlet.engine.converter.ConverterHelper> registeredConverters;
 
+    /** List of available protocol helpers. */
+    private final List<org.restlet.engine.ProtocolHelper> registeredProtocols;
+
     // [ifndef gwt] member
     /** List of available server connectors. */
     private final List<ConnectorHelper<org.restlet.Server>> registeredServers;
@@ -326,6 +336,7 @@ public class Engine {
         }
 
         this.registeredClients = new CopyOnWriteArrayList<ConnectorHelper<Client>>();
+        this.registeredProtocols = new CopyOnWriteArrayList<ProtocolHelper>();
 
         // [ifndef gwt]
         this.registeredServers = new CopyOnWriteArrayList<ConnectorHelper<org.restlet.Server>>();
@@ -336,7 +347,8 @@ public class Engine {
         if (discoverHelpers) {
             try {
                 discoverConnectors();
-
+                discoverProtocols();
+                
                 // [ifndef gwt]
                 discoverAuthenticators();
                 discoverConverters();
@@ -427,8 +439,8 @@ public class Engine {
      * @return The new helper.
      */
     @SuppressWarnings("unchecked")
-    public ConnectorHelper<org.restlet.Server> createHelper(org.restlet.Server server,
-            String helperClass) {
+    public ConnectorHelper<org.restlet.Server> createHelper(
+            org.restlet.Server server, String helperClass) {
         ConnectorHelper<org.restlet.Server> result = null;
 
         if (server.getProtocols().size() > 0) {
@@ -516,6 +528,17 @@ public class Engine {
         registerHelpers(DESCRIPTOR_CONVERTER_PATH, getRegisteredConverters(),
                 null);
         registerDefaultConverters();
+    }
+
+    /**
+     * Discovers the protocol helpers and register the default helpers.
+     * 
+     * @throws IOException
+     */
+    private void discoverProtocols() throws IOException {
+        registerHelpers(DESCRIPTOR_PROTOCOL_PATH, getRegisteredProtocols(),
+                null);
+        registerDefaultProtocols();
     }
 
     // [ifndef gwt] method
@@ -614,6 +637,15 @@ public class Engine {
         return registeredConverters;
     }
 
+    /**
+     * Returns the list of available protocol connectors.
+     * 
+     * @return The list of available protocol connectors.
+     */
+    public List<ProtocolHelper> getRegisteredProtocols() {
+        return this.registeredProtocols;
+    }
+
     // [ifndef gwt] method
     /**
      * Returns the list of available server connectors.
@@ -672,6 +704,14 @@ public class Engine {
     public void registerDefaultConverters() {
         getRegisteredConverters().add(
                 new org.restlet.engine.converter.DefaultConverter());
+    }
+
+    /**
+     * Registers the default protocols.
+     */
+    public void registerDefaultProtocols() {
+        getRegisteredProtocols().add(new HttpProtocolHelper());
+        getRegisteredProtocols().add(new WebdavProtocolHelper());
     }
 
     // [ifndef gwt] method
@@ -901,6 +941,22 @@ public class Engine {
 
             if (registeredConverters != null) {
                 this.registeredConverters.addAll(registeredConverters);
+            }
+        }
+    }
+
+    /**
+     * Sets the list of available protocol helpers.
+     * 
+     * @param registeredProtocols
+     *            The list of available protocol helpers.
+     */
+    public void setRegisteredProtocols(List<ProtocolHelper> registeredProtocols) {
+        synchronized (this.registeredProtocols) {
+            this.registeredProtocols.clear();
+
+            if (registeredProtocols != null) {
+                this.registeredProtocols.addAll(registeredProtocols);
             }
         }
     }

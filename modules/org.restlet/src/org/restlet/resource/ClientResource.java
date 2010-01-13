@@ -53,11 +53,22 @@ import org.restlet.data.Range;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
 import org.restlet.util.Series;
 
 /**
  * Client-side resource. Acts like a proxy of a target resource.<br>
- * <br>
+ * This class changes the semantics of the {@link UniformResource#getRequest()}
+ * and {@link UniformResource#getResponse()} methods. Since a clientResource may
+ * receive severals responses for a single request (in case of interim
+ * response), the {@link #getResponse()} method returns the last received
+ * response object. The Request object returned by the {@link #getRequest()} is
+ * actually a prototype which is cloned (except the representation) just before
+ * the {@link #handle()} method is called.<br>
+ * Users must be aware that by most representations can only be read or written
+ * once. Some others, such as {@link StringRepresentation} stored the entity in
+ * memory which can be read several times but has the drawback to consume
+ * memory.<br>
  * Concurrency note: instances of the class are not designed to be shared among
  * several threads. If thread-safety is necessary, consider using the
  * lower-level {@link Client} class instead.

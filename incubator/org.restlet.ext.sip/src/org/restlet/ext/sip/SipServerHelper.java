@@ -37,7 +37,6 @@ import java.nio.channels.SocketChannel;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Server;
-import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.engine.http.connector.BaseHelper;
 import org.restlet.engine.http.connector.BaseServerHelper;
@@ -71,11 +70,6 @@ public class SipServerHelper extends BaseServerHelper {
     @Override
     protected Response createResponse(Request request) {
         return new SipResponse(request);
-    }
-
-    @Override
-    public Method parseMethod(String methodName) {
-        return SipMethod.valueOf(methodName);
     }
 
     @Override
