@@ -225,7 +225,7 @@ public class Conneg {
      *      href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache
      *      content negotiation algorithm</a>
      */
-    public Variant getPreferredVariant(List<Variant> variants) {
+    public Variant getPreferredVariant(List<? extends Variant> variants) {
         Variant result = null;
 
         if ((variants != null) && !variants.isEmpty()) {

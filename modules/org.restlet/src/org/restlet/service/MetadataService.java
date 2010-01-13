@@ -197,6 +197,7 @@ public class MetadataService extends Service {
      * <li>xlsx: Microsoft Office Excel 2007 workbook</li>
      * <li>xltm: Office Excel 2007 macro-enabled workbook template</li>
      * <li>xltx: Office Excel 2007 template</li>
+     * <li>xmi: XMI document</li>
      * <li>xml: XML document</li>
      * <li>xsd: W3C XML Schema document</li>
      * <li>xsl, xslt: XSL Transform file</li>
@@ -336,6 +337,7 @@ public class MetadataService extends Service {
         ext(dm, "xltm", MediaType.APPLICATION_MSOFFICE_XLTM);
         ext(dm, "xlsb", MediaType.APPLICATION_MSOFFICE_XLSB);
         ext(dm, "xlam", MediaType.APPLICATION_MSOFFICE_XLAM);
+        ext(dm, "xmi", MediaType.APPLICATION_XMI_XML);
         ext(dm, "xml", MediaType.TEXT_XML);
         ext(dm, "xml", MediaType.APPLICATION_XML);
         ext(dm, "xsd", MediaType.APPLICATION_W3C_SCHEMA);

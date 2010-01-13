@@ -90,7 +90,7 @@ public class ConnegUtils {
      *      content negotiation algorithm</a>
      */
     public static Variant getPreferredVariant(ClientInfo clientInfo,
-            List<Variant> variants, MetadataService metadataService) {
+            List<? extends Variant> variants, MetadataService metadataService) {
         return new Conneg(clientInfo, metadataService)
                 .getPreferredVariant(variants);
     }

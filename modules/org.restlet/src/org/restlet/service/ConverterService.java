@@ -217,7 +217,8 @@ public class ConverterService extends Service {
                             .getClass());
 
                     if ((variants != null) && !variants.isEmpty()) {
-                        target = variants.get(0);
+                        target = resource.getClientInfo().getPreferredVariant(
+                                variants, resource.getMetadataService());
                     } else {
                         target = new Variant();
                     }

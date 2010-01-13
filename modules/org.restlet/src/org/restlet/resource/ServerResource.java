@@ -427,11 +427,7 @@ public abstract class ServerResource extends UniformResource {
         }
 
         if (resultObject != null) {
-            if (variant != null) {
-                result = cs.toRepresentation(resultObject, variant, this);
-            } else {
-                result = cs.toRepresentation(resultObject);
-            }
+            result = cs.toRepresentation(resultObject, variant, this);
         }
 
         return result;

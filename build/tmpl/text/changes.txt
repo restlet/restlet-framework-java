@@ -28,6 +28,10 @@ Changes log
           and added a new ServiceList class for factorization purpose.
         - Moved Response#onReceived to Request#onResponse.
         - Added protocol helpers that registers protocols's methods.
+        - Added MediaType.APPLICATION_XMI_XML constant and "xmi" extension
+          into MetadataService.
+        - Client preferences were not taken into account with annotated
+          methods returning beans with multiple variants available.
      - Enhancements
         - Added a new Jackson extension, with transparent conversion
           between JSON representations and objects.

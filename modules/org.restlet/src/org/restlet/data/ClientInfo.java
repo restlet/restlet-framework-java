@@ -657,7 +657,7 @@ public final class ClientInfo {
      *      href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache
      *      content negotiation algorithm</a>
      */
-    public Variant getPreferredVariant(List<Variant> variants,
+    public Variant getPreferredVariant(List<? extends Variant> variants,
             org.restlet.service.MetadataService metadataService) {
         return org.restlet.engine.util.ConnegUtils.getPreferredVariant(this,
                 variants, metadataService);
