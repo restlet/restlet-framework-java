@@ -47,7 +47,7 @@ import org.restlet.Response;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
 import org.restlet.engine.http.HttpProtocolHelper;
-import org.restlet.engine.http.WebdavProtocolHelper;
+import org.restlet.engine.http.WebDavProtocolHelper;
 import org.restlet.engine.log.LoggerFacade;
 
 /**
@@ -711,7 +711,7 @@ public class Engine {
      */
     public void registerDefaultProtocols() {
         getRegisteredProtocols().add(new HttpProtocolHelper());
-        getRegisteredProtocols().add(new WebdavProtocolHelper());
+        getRegisteredProtocols().add(new WebDavProtocolHelper());
     }
 
     // [ifndef gwt] method

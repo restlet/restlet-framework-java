@@ -39,7 +39,7 @@ import org.restlet.engine.ProtocolHelper;
  * @author Thierry Boileau
  * 
  */
-public class WebdavProtocolHelper extends ProtocolHelper {
+public class WebDavProtocolHelper extends ProtocolHelper {
 
     @Override
     public void registerMethods() {
