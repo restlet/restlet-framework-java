@@ -301,12 +301,12 @@ public class Client extends Connector {
      *            The request to handle.
      * @param response
      *            The response to update.
-     * @param onReceivedCallback
-     *            The callback invoked upon request reception.
+     * @param onResponseCallback
+     *            The callback invoked upon response reception.
      */
     public void handle(Request request, Response response,
-            Uniform onReceivedCallback) {
-        response.setOnReceived(onReceivedCallback);
+            Uniform onResponseCallback) {
+        request.setOnResponse(onResponseCallback);
         handle(request, response);
     }
 

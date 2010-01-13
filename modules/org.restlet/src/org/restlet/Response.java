@@ -133,9 +133,6 @@ public class Response extends Message {
      */
     private volatile AuthenticationInfo authenticationInfo;
 
-    /** Callback invoked on response reception. */
-    private volatile Uniform onReceived;
-
     /**
      * Indicates how long the service is expected to be unavailable to the
      * requesting client.
@@ -162,7 +159,6 @@ public class Response extends Message {
         this.retryAfter = null;
         this.serverInfo = null;
         this.status = Status.SUCCESS_OK;
-        this.onReceived = null;
     }
 
     /**
@@ -309,16 +305,6 @@ public class Response extends Message {
      */
     public Reference getLocationRef() {
         return this.locationRef;
-    }
-
-    /**
-     * Returns the callback invoked on response reception. If the value is not
-     * null, then the associated request will be executed asynchronously.
-     * 
-     * @return The callback invoked on response reception.
-     */
-    public Uniform getOnReceived() {
-        return onReceived;
     }
 
     /**
@@ -674,17 +660,6 @@ public class Response extends Message {
         }
 
         setLocationRef(new Reference(baseRef, locationUri).getTargetRef());
-    }
-
-    /**
-     * Sets the callback invoked on response reception. If the value is not
-     * null, then the associated request will be executed asynchronously.
-     * 
-     * @param onReceivedCallback
-     *            The callback invoked on response reception.
-     */
-    public void setOnReceived(Uniform onReceivedCallback) {
-        this.onReceived = onReceivedCallback;
     }
 
     /**

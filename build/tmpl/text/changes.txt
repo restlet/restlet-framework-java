@@ -26,6 +26,7 @@ Changes log
         - Added lifecycle support to Realm and Component#realms.
         - Refactored Component with an extensible "services" property
           and added a new ServiceList class for factorization purpose.
+        - Moved Response#onReceived to Request#onResponse.
      - Enhancements
         - Added a new Jackson extension, with transparent conversion
           between JSON representations and objects.

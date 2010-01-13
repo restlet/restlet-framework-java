@@ -477,8 +477,7 @@ public class BaseClientHelper extends BaseHelper<Client> {
     @Override
     public void handle(Request request, Response response) {
         try {
-
-            if (response.getOnReceived() == null) {
+            if (request.getOnResponse() == null) {
                 // Synchronous mode
                 CountDownLatch latch = new CountDownLatch(1);
                 request.getAttributes().put(
@@ -505,15 +504,14 @@ public class BaseClientHelper extends BaseHelper<Client> {
     @Override
     public void handleInbound(Response response) {
         if (response != null) {
-            if (response.getOnReceived() != null) {
-                response.getOnReceived()
-                        .handle(response.getRequest(), response);
+            if (response.getRequest().getOnResponse() != null) {
+                response.getRequest().getOnResponse().handle(
+                        response.getRequest(), response);
             }
 
             CountDownLatch latch = (CountDownLatch) response.getRequest()
                     .getAttributes().get(
                             "org.restlet.engine.http.connector.latch");
-
             if (latch != null) {
                 latch.countDown();
             }

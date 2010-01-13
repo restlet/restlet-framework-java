@@ -523,8 +523,8 @@ public class ClientResource extends UniformResource {
      * 
      * @return The callback invoked on response reception.
      */
-    public Uniform getOnReceived() {
-        return getResponse().getOnReceived();
+    public Uniform getOnResponse() {
+        return getRequest().getOnResponse();
     }
 
     /**
@@ -606,7 +606,12 @@ public class ClientResource extends UniformResource {
         }
 
         if (hasNext()) {
-            handle(getRequest(), getResponse(), null, 0);
+            // Create the request and response from the prototype.
+            Request request = new Request(getRequest());
+            Response response = new Response(request);
+            handle(request, response, null, 0);
+            // Update the last received response.
+            setResponse(response);
             result = getResponse().getEntity();
         } else {
             getLogger()
@@ -1252,8 +1257,8 @@ public class ClientResource extends UniformResource {
      * @param onReceivedCallback
      *            The callback invoked on response reception.
      */
-    public void setOnReceived(Uniform onReceivedCallback) {
-        getResponse().setOnReceived(onReceivedCallback);
+    public void setOnResponse(Uniform onResponseCallback) {
+        getRequest().setOnResponse(onResponseCallback);
     }
 
     /**

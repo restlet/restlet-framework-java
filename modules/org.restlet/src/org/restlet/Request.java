@@ -76,10 +76,6 @@ public class Request extends Message {
     /** The authentication response sent by a client to an origin server. */
     private volatile ChallengeResponse challengeResponse;
 
-    // [ifndef gwt] member
-    /** The authentication response sent by a client to a proxy. */
-    private volatile ChallengeResponse proxyChallengeResponse;
-
     /** The client-specific information. */
     private volatile ClientInfo clientInfo;
 
@@ -95,14 +91,21 @@ public class Request extends Message {
     /** The maximum number of intermediaries. */
     private volatile int maxForwards;
 
-    /** The protocol. */
-    private volatile Protocol protocol;
-
     /** The method. */
     private volatile Method method;
 
+    /** Callback invoked on response reception. */
+    private volatile Uniform onResponse;
+
     /** The original reference. */
     private volatile Reference originalRef;
+
+    /** The protocol. */
+    private volatile Protocol protocol;
+
+    // [ifndef gwt] member
+    /** The authentication response sent by a client to a proxy. */
+    private volatile ChallengeResponse proxyChallengeResponse;
 
     /** The ranges to return from the target resource's representation. */
     private volatile List<Range> ranges;
@@ -156,6 +159,7 @@ public class Request extends Message {
         this.method = method;
         this.originalRef = null;
         // [ifndef gwt] instruction
+        this.onResponse = null;
         this.proxyChallengeResponse = null;
         this.protocol = null;
         this.ranges = null;
@@ -188,6 +192,30 @@ public class Request extends Message {
      */
     public Request(Method method, String resourceUri, Representation entity) {
         this(method, new Reference(resourceUri), entity);
+    }
+
+
+    /**
+     * Constructor.
+     * 
+     * @param request
+     *            The request to copy.
+     */
+    public Request(Request request) {
+        this(request.getMethod(), request.getResourceRef(), request.getEntity());
+        this.challengeResponse = request.getChallengeResponse();
+        this.clientInfo = request.getClientInfo();
+        this.conditions = request.getConditions();
+        this.cookies = request.getCookies();
+        this.hostRef = request.getHostRef();
+        this.maxForwards = request.getMaxForwards();
+        this.originalRef = request.getOriginalRef();
+        // [ifndef gwt] instruction
+        this.proxyChallengeResponse = request.getProxyChallengeResponse();
+        this.protocol = request.getProtocol();
+        this.ranges = request.getRanges();
+        this.referrerRef = request.getReferrerRef();
+        this.rootRef = request.getRootRef();
     }
 
     /**
@@ -310,6 +338,16 @@ public class Request extends Message {
      */
     public Method getMethod() {
         return this.method;
+    }
+
+    /**
+     * Returns the callback invoked on response reception. If the value is not
+     * null, then the associated request will be executed asynchronously.
+     * 
+     * @return The callback invoked on response reception.
+     */
+    public Uniform getOnResponse() {
+        return onResponse;
     }
 
     /**
@@ -554,6 +592,17 @@ public class Request extends Message {
      */
     public void setMethod(Method method) {
         this.method = method;
+    }
+
+    /**
+     * Sets the callback invoked on response reception. If the value is not
+     * null, then the associated request will be executed asynchronously.
+     * 
+     * @param onResponseCallback
+     *            The callback invoked on response reception.
+     */
+    public void setOnResponse(Uniform onResponseCallback) {
+        this.onResponse = onResponseCallback;
     }
 
     /**
