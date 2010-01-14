@@ -458,6 +458,8 @@ public abstract class BaseHelper<T extends Connector> extends
         // Close the open connections
         for (Connection<T> connection : getConnections()) {
             connection.setState(ConnectionState.CLOSING);
+            connection.setInboundBusy(false);
+            connection.setOutboundBusy(false);
         }
 
         // Await for completion of pending workers
