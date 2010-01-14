@@ -121,7 +121,8 @@ public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
     private void sendPut(String uri, int size) throws Exception {
         Request request = new Request(Method.PUT, uri,
                 createChunckedRepresentation(size));
-        Response r = new Client(Protocol.HTTP).handle(request);
+        Client c = new Client(Protocol.HTTP);
+        Response r = c.handle(request);
 
         try {
             if (!r.getStatus().isSuccess()) {
@@ -133,8 +134,8 @@ public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
                     .getEntity().getText());
         } finally {
             r.release();
+            c.stop();
         }
-
     }
 
 }
