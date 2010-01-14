@@ -217,8 +217,13 @@ public class ConverterService extends Service {
                             .getClass());
 
                     if ((variants != null) && !variants.isEmpty()) {
-                        target = resource.getClientInfo().getPreferredVariant(
-                                variants, resource.getMetadataService());
+                        if (resource != null) {
+                            target = resource.getClientInfo()
+                                    .getPreferredVariant(variants,
+                                            resource.getMetadataService());
+                        } else {
+                            target = variants.get(0);
+                        }
                     } else {
                         target = new Variant();
                     }
