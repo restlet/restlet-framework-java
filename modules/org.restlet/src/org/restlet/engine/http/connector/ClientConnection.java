@@ -201,7 +201,6 @@ public class ClientConnection extends Connection<Client> {
             getOutboundMessages().poll();
             // Allows the connection to write another request
             setOutboundBusy(false);
-            setInboundBusy(false);
         }
 
         // Add it to the helper queue

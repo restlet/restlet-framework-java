@@ -69,7 +69,7 @@ public class ControllerTask extends BaseTask {
         for (final Connection<?> conn : getHelper().getConnections()) {
             if (conn.getState() == ConnectionState.CLOSED) {
                 getHelper().getConnections().remove(conn);
-            } else if ((conn.getState() == ConnectionState.CLOSING)) {
+            } else if ((conn.getState() == ConnectionState.CLOSING) && !conn.isBusy()) {
                 conn.close(true);
             } else {
                 if ((isOverloaded() && !getHelper().isClientSide())
