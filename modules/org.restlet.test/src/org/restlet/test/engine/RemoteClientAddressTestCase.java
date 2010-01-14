@@ -74,9 +74,11 @@ public class RemoteClientAddressTestCase extends BaseConnectorsTestCase {
     @Override
     protected void call(String uri) throws Exception {
         final Request request = new Request(Method.GET, uri);
-        final Response r = new Client(Protocol.HTTP).handle(request);
+        Client c = new Client(Protocol.HTTP);
+        final Response r = c.handle(request);
 
         assertEquals(Status.SUCCESS_OK, r.getStatus());
+        c.stop();
     }
 
     @Override
