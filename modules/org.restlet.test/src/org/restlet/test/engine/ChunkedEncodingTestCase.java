@@ -181,20 +181,23 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
 
     private void sendGet(String uri) throws Exception {
         final Request request = new Request(Method.GET, uri);
-        final Response r = new Client(Protocol.HTTP).handle(request);
+        Client c = new Client(Protocol.HTTP);
+        final Response r = c.handle(request);
         try {
             assertEquals(r.getStatus().getDescription(), Status.SUCCESS_OK, r
                     .getStatus());
             assertXML(new DomRepresentation(r.getEntity()));
         } finally {
             r.release();
+            c.stop();
         }
 
     }
 
     private void sendPut(String uri) throws Exception {
         final Request request = new Request(Method.PUT, uri, createTestXml());
-        final Response r = new Client(Protocol.HTTP).handle(request);
+        Client c = new Client(Protocol.HTTP);
+        final Response r = c.handle(request);
 
         try {
             if (this.checkedForChunkedResponse) {
@@ -205,6 +208,7 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
             assertXML(new DomRepresentation(r.getEntity()));
         } finally {
             r.release();
+            c.stop();
         }
 
     }
