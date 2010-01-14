@@ -509,11 +509,13 @@ public class BaseClientHelper extends BaseHelper<Client> {
                         response.getRequest(), response);
             }
 
-            CountDownLatch latch = (CountDownLatch) response.getRequest()
-                    .getAttributes().get(
-                            "org.restlet.engine.http.connector.latch");
-            if (latch != null) {
-                latch.countDown();
+            if (!response.getStatus().isInformational()) {
+                CountDownLatch latch = (CountDownLatch) response.getRequest()
+                        .getAttributes().get(
+                                "org.restlet.engine.http.connector.latch");
+                if (latch != null) {
+                    latch.countDown();
+                }
             }
         }
     }
@@ -585,6 +587,19 @@ public class BaseClientHelper extends BaseHelper<Client> {
                 if (bestConn != null) {
                     bestConn.getOutboundMessages().add(response);
                     getConnections().add(bestConn);
+                    if (!request.isExpectingResponse()) {
+                        // Attempt to directly write the response, preventing a
+                        // thread context switch
+                        bestConn.writeMessages();
+                        // Unblock the possibly waiting thread.
+                        // NB : the request may not be written at this time.
+                        CountDownLatch latch = (CountDownLatch) response
+                                .getRequest().getAttributes()
+                                .get("org.restlet.engine.http.connector.latch");
+                        if (latch != null) {
+                            latch.countDown();
+                        }
+                    }
                 } else {
                     getLogger().warning(
                             "Unable to find a connection to send the request");
