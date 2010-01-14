@@ -101,7 +101,8 @@ Changes log
           Reported by Carsten Lohmann.
         - Fixed potential NPE in engine's LogFilter class.
           Reported by Jeff Ramsdale.
-        - Fixed potential BufferOverflowException in NbChannelOutputStream.
+        - Fixed potential BufferOverflowException in 
+          NbChannelOutputStream.
           Reported by David Fogel and Iestyn Evans.
           
     - Misc
