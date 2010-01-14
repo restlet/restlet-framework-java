@@ -106,7 +106,7 @@ public class EmfHtmlWriter {
                 if (annotation != null) {
                     label = (String) annotation.getDetails().get("label");
                     hyperlink = Boolean.parseBoolean(annotation.getDetails()
-                            .get("hyperlink"));
+                            .get("linked"));
                 }
 
                 label = (label == null) ? sf.getName() : label;
