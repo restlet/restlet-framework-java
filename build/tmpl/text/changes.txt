@@ -101,6 +101,9 @@ Changes log
           Reported by Carsten Lohmann.
         - Fixed potential NPE in engine's LogFilter class.
           Reported by Jeff Ramsdale.
+        - Fixed potential BufferOverflowException in NbChannelOutputStream.
+          Reported by David Fogel and Iestyn Evans.
+          
     - Misc
         - Updated Simple framework library to version 4.1.17.
         - Deprecated Message#getEntityAs* methods.
