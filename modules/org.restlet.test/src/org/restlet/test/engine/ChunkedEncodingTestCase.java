@@ -51,6 +51,7 @@ import org.restlet.data.Status;
 import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.ext.xml.DomRepresentation;
 import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
@@ -153,7 +154,15 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
             root.appendChild(e);
         }
 
-        return new DomRepresentation(MediaType.TEXT_XML, doc);
+        Representation rep = null;
+        try {
+            rep = new StringRepresentation(new DomRepresentation(MediaType.TEXT_XML, doc).getText());
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        rep.setSize(-1);
+        return rep;
     }
 
     boolean checkedForChunkedResponse;
