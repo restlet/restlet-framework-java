@@ -397,7 +397,8 @@ public abstract class Connection<T extends Connector> {
         boolean chunkedEncoding = HeaderUtils.isChunkedEncoding(headers);
 
         // Create the representation
-        if ((contentLength != Representation.UNKNOWN_SIZE) || chunkedEncoding) {
+        if ((contentLength != Representation.UNKNOWN_SIZE && contentLength != 0)
+                || chunkedEncoding) {
             InputStream inboundEntityStream = getInboundEntityStream(
                     contentLength, chunkedEncoding);
             ReadableByteChannel inboundEntityChannel = getInboundEntityChannel(
