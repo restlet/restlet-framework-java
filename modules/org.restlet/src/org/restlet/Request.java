@@ -55,7 +55,7 @@ import org.restlet.util.Series;
  * @see org.restlet.Uniform
  * @author Jerome Louvel
  */
-public class Request extends Message implements Cloneable {
+public class Request extends Message {
 
     // [ifndef gwt] method
     /**
@@ -220,6 +220,12 @@ public class Request extends Message implements Cloneable {
                 : new Reference(request.getReferrerRef());
         this.rootRef = (request.getRootRef() == null) ? null : request
                 .getRootRef();
+
+        this.setAttributes(request.getAttributes());
+        this.setCacheDirectives(request.getCacheDirectives());
+        this.setOnSent(request.getOnSent());
+        this.setWarnings(request.getWarnings());
+        this.setDate(request.getDate());
     }
 
     /**
