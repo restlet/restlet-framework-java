@@ -97,6 +97,7 @@ public class PostPutTestCase extends BaseConnectorsTestCase {
         assertEquals(2, outputForm.size());
         assertEquals("a", outputForm.getFirstValue("a"));
         assertEquals("b", outputForm.getFirstValue("b"));
+        entity.release();
     }
 
 }
