@@ -109,9 +109,14 @@ public class AnnotationUtils {
                 int startIndex = annotation.annotationType().getCanonicalName()
                         .length() + 8;
                 int endIndex = toString.length() - 1;
-                String value = toString.substring(startIndex, endIndex);
-                if ("".equals(value)) {
-                    value = null;
+                String value = null;
+
+                if (endIndex > startIndex) {
+                    value = toString.substring(startIndex, endIndex);
+
+                    if ("".equals(value)) {
+                        value = null;
+                    }
                 }
 
                 result

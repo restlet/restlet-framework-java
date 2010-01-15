@@ -119,7 +119,8 @@ public class EmfHtmlWriter {
                         writeRow(writer, label, item.toString(), hyperlink);
                     }
                 } else {
-                    writeRow(writer, label, value.toString(), hyperlink);
+                    writeRow(writer, label, (value == null) ? "null" : value
+                            .toString(), hyperlink);
                 }
             }
         }
