@@ -1049,7 +1049,8 @@ public abstract class Connection<T extends Connector> {
                 if (message != null) {
                     writeMessage(message);
 
-                    if (getState() == ConnectionState.CLOSING) {
+                    // Try to close the connection immediately.
+                    if ((getState() == ConnectionState.CLOSING) && !isBusy()) {
                         close(true);
                     }
                 }
