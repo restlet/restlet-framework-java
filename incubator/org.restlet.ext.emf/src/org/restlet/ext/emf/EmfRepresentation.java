@@ -53,7 +53,7 @@ import org.restlet.representation.Representation;
  * Representation based on the EMF library. It can serialize and deserialize
  * automatically in either XML or XMI.
  * 
- * @see <a href="http://xstream.codehaus.org/">XStream project</a>
+ * @see <a href="http://www.eclipse.org/modeling/emf/">EMF project</a>
  * @author Jerome Louvel
  * @param <T>
  *            The type to wrap.
@@ -178,11 +178,12 @@ public class EmfRepresentation<T extends EObject> extends OutputRepresentation {
         if (this.representation != null) {
             this.representation.write(outputStream);
         } else if (object != null) {
-            if (getMediaType().isCompatible(MediaType.APPLICATION_ALL_XML)) {
+            if (MediaType.APPLICATION_ALL_XML.isCompatible(getMediaType())
+                    || MediaType.TEXT_XML.isCompatible(getMediaType())) {
                 Resource emfResource = createEmfResource();
                 emfResource.getContents().add((EObject) this.object);
                 emfResource.save(outputStream, getSaveOptions());
-            } else if (getMediaType().isCompatible(MediaType.TEXT_HTML)) {
+            } else if (MediaType.TEXT_HTML.isCompatible(getMediaType())) {
                 EmfHtmlWriter htmlWriter = new EmfHtmlWriter(getObject());
                 htmlWriter.write(new OutputStreamWriter(outputStream,
                         ((getCharacterSet() == null) ? "UTF-8"

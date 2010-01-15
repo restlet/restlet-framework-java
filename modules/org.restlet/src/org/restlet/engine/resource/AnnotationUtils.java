@@ -96,7 +96,6 @@ public class AnnotationUtils {
         }
 
         for (Annotation annotation : javaMethod.getAnnotations()) {
-
             Annotation methodAnnotation = annotation.annotationType()
                     .getAnnotation(org.restlet.engine.Method.class);
 
