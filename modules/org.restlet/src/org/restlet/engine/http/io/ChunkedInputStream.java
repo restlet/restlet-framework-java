@@ -100,7 +100,7 @@ public class ChunkedInputStream extends InputStream {
     }
 
     /**
-     * Checkes if the source stream will return a CR+LF sequence next, without
+     * Checks if the source stream will return a CR+LF sequence next, without
      * actually reading it.
      * 
      * @throws IOException
@@ -127,7 +127,7 @@ public class ChunkedInputStream extends InputStream {
     }
 
     /**
-     * Close this input stream but do not close the underlying stream.
+     * Closes this input stream but do not close the underlying stream.
      */
     @Override
     public void close() throws IOException {
