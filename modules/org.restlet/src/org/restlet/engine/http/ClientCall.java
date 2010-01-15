@@ -38,20 +38,13 @@ import java.util.logging.Level;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
-import org.restlet.data.Encoding;
-import org.restlet.data.Language;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Status;
-import org.restlet.data.Tag;
 import org.restlet.engine.ConnectorHelper;
-import org.restlet.engine.http.adapter.ClientAdapter;
-import org.restlet.engine.http.header.ContentType;
 import org.restlet.engine.http.header.DispositionReader;
 import org.restlet.engine.http.header.HeaderConstants;
-import org.restlet.engine.http.header.HeaderReader;
 import org.restlet.engine.http.header.HeaderUtils;
-import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 
@@ -61,122 +54,6 @@ import org.restlet.util.Series;
  * @author Jerome Louvel
  */
 public abstract class ClientCall extends Call {
-    /**
-     * Copies entity headers into a response and ensures that a non null
-     * representation is returned when at least one entity header is present.
-     * 
-     * @param responseHeaders
-     *            The headers to copy.
-     * @param representation
-     *            The Representation to update.
-     * @return a representation with the entity headers of the response or null
-     *         if no representation has been provided and the response has not
-     *         sent any entity header.
-     * @throws NumberFormatException
-     * @see {@link ClientAdapter#copyResponseTransportHeaders(Series, Response)}
-     */
-    public static Representation copyResponseEntityHeaders(
-            Iterable<Parameter> responseHeaders, Representation representation)
-            throws NumberFormatException {
-        Representation result = (representation == null) ? new EmptyRepresentation()
-                : representation;
-        boolean entityHeaderFound = false;
-
-        for (Parameter header : responseHeaders) {
-            if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_CONTENT_TYPE)) {
-                ContentType contentType = new ContentType(header.getValue());
-                result.setMediaType(contentType.getMediaType());
-
-                if ((result.getCharacterSet() == null)
-                        || (contentType.getCharacterSet() != null)) {
-                    result.setCharacterSet(contentType.getCharacterSet());
-                }
-
-                entityHeaderFound = true;
-            } else if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_CONTENT_LENGTH)) {
-                entityHeaderFound = true;
-            } else if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_EXPIRES)) {
-                result.setExpirationDate(HeaderUtils.parseDate(header
-                        .getValue(), false));
-                entityHeaderFound = true;
-            } else if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_CONTENT_ENCODING)) {
-                HeaderReader hr = new HeaderReader(header.getValue());
-                String value = hr.readValue();
-                while (value != null) {
-                    Encoding encoding = new Encoding(value);
-                    if (!encoding.equals(Encoding.IDENTITY)) {
-                        result.getEncodings().add(encoding);
-                    }
-                    value = hr.readValue();
-                }
-                entityHeaderFound = true;
-            } else if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_CONTENT_LANGUAGE)) {
-                HeaderReader hr = new HeaderReader(header.getValue());
-                String value = hr.readValue();
-                while (value != null) {
-                    result.getLanguages().add(new Language(value));
-                    value = hr.readValue();
-                }
-                entityHeaderFound = true;
-            } else if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_LAST_MODIFIED)) {
-                result.setModificationDate(HeaderUtils.parseDate(header
-                        .getValue(), false));
-                entityHeaderFound = true;
-            } else if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_ETAG)) {
-                result.setTag(Tag.parse(header.getValue()));
-                entityHeaderFound = true;
-            } else if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_CONTENT_LOCATION)) {
-                result.setIdentifier(header.getValue());
-                entityHeaderFound = true;
-            } else if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_CONTENT_DISPOSITION)) {
-                try {
-                    DispositionReader r = new DispositionReader(header
-                            .getValue());
-                    result.setDisposition(r.readDisposition());
-                    entityHeaderFound = true;
-                } catch (IOException ioe) {
-                    Context.getCurrentLogger().log(
-                            Level.WARNING,
-                            "Error during Content-Disposition header parsing. Header: "
-                                    + header.getValue(), ioe);
-                }
-            } else if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_CONTENT_RANGE)) {
-                // [ifndef gwt]
-                org.restlet.engine.http.header.RangeUtils.parseContentRange(
-                        header.getValue(), result);
-                entityHeaderFound = true;
-                // [enddef]
-            } else if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_CONTENT_MD5)) {
-                // [ifndef gwt]
-                result.setDigest(new org.restlet.data.Digest(
-                        org.restlet.data.Digest.ALGORITHM_MD5,
-                        org.restlet.engine.util.Base64
-                                .decode(header.getValue())));
-                entityHeaderFound = true;
-                // [enddef]
-            }
-
-        }
-
-        // If no representation was initially expected and no entity header
-        // is found, then do not return any representation
-        if ((representation == null) && !entityHeaderFound) {
-            result = null;
-        }
-
-        return result;
-    }
 
     /**
      * Returns the local IP address or 127.0.0.1 if the resolution fails.
@@ -341,7 +218,7 @@ public abstract class ClientCall extends Call {
             }
         }
 
-        result = copyResponseEntityHeaders(responseHeaders, result);
+        result = HeaderUtils.copyResponseEntityHeaders(responseHeaders, result);
         if (result != null) {
             result.setSize(size);
 

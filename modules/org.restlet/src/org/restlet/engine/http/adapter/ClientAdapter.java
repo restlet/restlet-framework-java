@@ -31,30 +31,20 @@
 package org.restlet.engine.http.adapter;
 
 import java.io.IOException;
-import java.util.Date;
-import java.util.Set;
 import java.util.logging.Level;
 
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Uniform;
-import org.restlet.data.AuthenticationInfo;
-import org.restlet.data.ChallengeRequest;
-import org.restlet.data.Dimension;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Status;
 import org.restlet.engine.Edition;
 import org.restlet.engine.http.ClientCall;
 import org.restlet.engine.http.HttpClientHelper;
-import org.restlet.engine.http.header.CacheControlReader;
-import org.restlet.engine.http.header.CookieReader;
 import org.restlet.engine.http.header.HeaderConstants;
-import org.restlet.engine.http.header.HeaderReader;
 import org.restlet.engine.http.header.HeaderUtils;
-import org.restlet.engine.http.header.WarningReader;
-import org.restlet.engine.util.DateUtils;
 import org.restlet.util.Series;
 
 /**
@@ -63,167 +53,6 @@ import org.restlet.util.Series;
  * @author Jerome Louvel
  */
 public class ClientAdapter extends Adapter {
-    /**
-     * Copies headers into a response.
-     * 
-     * @param headers
-     *            The headers to copy.
-     * @param response
-     *            The response to update.
-     */
-    public static void copyResponseTransportHeaders(Series<Parameter> headers,
-            Response response) {
-        // Read info from headers
-        for (Parameter header : headers) {
-            if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_LOCATION)) {
-                response.setLocationRef(header.getValue());
-            } else if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_AGE)) {
-                try {
-                    response.setAge(Integer.parseInt(header.getValue()));
-                } catch (NumberFormatException nfe) {
-                    Context.getCurrentLogger().log(
-                            Level.WARNING,
-                            "Error during Age header parsing. Header: "
-                                    + header.getValue(), nfe);
-                }
-            } else if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_DATE)) {
-                Date date = DateUtils.parse(header.getValue());
-
-                if (date == null) {
-                    date = new Date();
-                }
-
-                response.setDate(date);
-            } else if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_RETRY_AFTER)) {
-                // [ifndef gwt]
-                Date retryAfter = DateUtils.parse(header.getValue());
-
-                if (retryAfter == null) {
-                    // The date might be expressed as a number of seconds
-                    try {
-                        int retryAfterSecs = Integer
-                                .parseInt(header.getValue());
-                        java.util.Calendar calendar = java.util.Calendar
-                                .getInstance();
-                        calendar.add(java.util.Calendar.SECOND, retryAfterSecs);
-                        retryAfter = calendar.getTime();
-                    } catch (NumberFormatException nfe) {
-                        Context.getCurrentLogger().log(
-                                Level.WARNING,
-                                "Error during Retry-After header parsing. Header: "
-                                        + header.getValue(), nfe);
-                    }
-                }
-
-                response.setRetryAfter(retryAfter);
-                // [enddef]
-            } else if ((header.getName()
-                    .equalsIgnoreCase(HeaderConstants.HEADER_SET_COOKIE))
-                    || (header.getName()
-                            .equalsIgnoreCase(HeaderConstants.HEADER_SET_COOKIE2))) {
-                try {
-                    CookieReader cr = new CookieReader(header.getValue());
-                    response.getCookieSettings().add(cr.readCookieSetting());
-                } catch (Exception e) {
-                    Context.getCurrentLogger().log(
-                            Level.WARNING,
-                            "Error during cookie setting parsing. Header: "
-                                    + header.getValue(), e);
-                }
-            } else if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_WWW_AUTHENTICATE)) {
-                // [ifndef gwt]
-                ChallengeRequest request = org.restlet.engine.security.AuthenticatorUtils
-                        .parseRequest(response, header.getValue(), headers);
-                response.getChallengeRequests().add(request);
-                // [enddef]
-            } else if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_PROXY_AUTHENTICATE)) {
-                // [ifndef gwt]
-                ChallengeRequest request = org.restlet.engine.security.AuthenticatorUtils
-                        .parseRequest(response, header.getValue(), headers);
-                response.getProxyChallengeRequests().add(request);
-                // [enddef]
-            } else if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_AUTHENTICATION_INFO)) {
-                // [ifndef gwt]
-                AuthenticationInfo authenticationInfo = org.restlet.engine.security.AuthenticatorUtils
-                        .parseAuthenticationInfo(header.getValue());
-                response.setAuthenticationInfo(authenticationInfo);
-                // [enddef]
-            } else if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_SERVER)) {
-                response.getServerInfo().setAgent(header.getValue());
-            } else if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_ALLOW)) {
-                HeaderReader hr = new HeaderReader(header.getValue());
-                String value = hr.readValue();
-                Set<Method> allowedMethods = response.getAllowedMethods();
-
-                while (value != null) {
-                    allowedMethods.add(Method.valueOf(value));
-                    value = hr.readValue();
-                }
-            } else if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_VARY)) {
-                HeaderReader hr = new HeaderReader(header.getValue());
-                String value = hr.readValue();
-                Set<Dimension> dimensions = response.getDimensions();
-
-                while (value != null) {
-                    if (value.equalsIgnoreCase(HeaderConstants.HEADER_ACCEPT)) {
-                        dimensions.add(Dimension.MEDIA_TYPE);
-                    } else if (value
-                            .equalsIgnoreCase(HeaderConstants.HEADER_ACCEPT_CHARSET)) {
-                        dimensions.add(Dimension.CHARACTER_SET);
-                    } else if (value
-                            .equalsIgnoreCase(HeaderConstants.HEADER_ACCEPT_ENCODING)) {
-                        dimensions.add(Dimension.ENCODING);
-                    } else if (value
-                            .equalsIgnoreCase(HeaderConstants.HEADER_ACCEPT_LANGUAGE)) {
-                        dimensions.add(Dimension.LANGUAGE);
-                    } else if (value
-                            .equalsIgnoreCase(HeaderConstants.HEADER_AUTHORIZATION)) {
-                        dimensions.add(Dimension.AUTHORIZATION);
-                    } else if (value
-                            .equalsIgnoreCase(HeaderConstants.HEADER_USER_AGENT)) {
-                        dimensions.add(Dimension.CLIENT_AGENT);
-                    } else if (value.equals("*")) {
-                        dimensions.add(Dimension.UNSPECIFIED);
-                    }
-
-                    value = hr.readValue();
-                }
-            } else if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_WARNING)) {
-                WarningReader hr = new WarningReader(header.getValue());
-                try {
-                    response.getWarnings().add(hr.readWarning());
-                } catch (Exception e) {
-                    Context.getCurrentLogger().log(
-                            Level.WARNING,
-                            "Error during warning parsing. Header: "
-                                    + header.getValue(), e);
-                }
-            } else if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_CACHE_CONTROL)) {
-                CacheControlReader ccr = new CacheControlReader(header
-                        .getValue());
-                try {
-                    response.getCacheDirectives().addAll(ccr.readDirectives());
-                } catch (Exception e) {
-                    Context.getCurrentLogger().log(
-                            Level.WARNING,
-                            "Error during cache control parsing. Header: "
-                                    + header.getValue(), e);
-                }
-            }
-        }
-    }
 
     /**
      * Constructor.
@@ -306,7 +135,7 @@ public class ClientAdapter extends Adapter {
             response.getAttributes().put(HeaderConstants.ATTRIBUTE_HEADERS,
                     responseHeaders);
 
-            copyResponseTransportHeaders(responseHeaders, response);
+            HeaderUtils.copyResponseTransportHeaders(responseHeaders, response);
         } catch (Exception e) {
             getLogger()
                     .log(

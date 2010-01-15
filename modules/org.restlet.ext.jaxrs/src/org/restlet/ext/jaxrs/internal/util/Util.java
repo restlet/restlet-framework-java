@@ -76,8 +76,6 @@ import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
 import org.restlet.data.Parameter;
-import org.restlet.engine.http.ClientCall;
-import org.restlet.engine.http.adapter.ClientAdapter;
 import org.restlet.engine.http.header.ContentType;
 import org.restlet.engine.http.header.HeaderUtils;
 import org.restlet.engine.util.DateUtils;
@@ -309,8 +307,8 @@ public class Util {
             restletResponse.setEntity(new EmptyRepresentation());
         }
 
-        ClientAdapter.copyResponseTransportHeaders(headers, restletResponse);
-        ClientCall.copyResponseEntityHeaders(headers, restletResponse
+        HeaderUtils.copyResponseTransportHeaders(headers, restletResponse);
+        HeaderUtils.copyResponseEntityHeaders(headers, restletResponse
                 .getEntity());
     }
 

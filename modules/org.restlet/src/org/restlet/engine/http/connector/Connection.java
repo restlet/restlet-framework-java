@@ -51,16 +51,10 @@ import javax.net.ssl.SSLSocket;
 
 import org.restlet.Connector;
 import org.restlet.Response;
-import org.restlet.data.Digest;
-import org.restlet.data.Encoding;
-import org.restlet.data.Language;
 import org.restlet.data.Parameter;
 import org.restlet.engine.ConnectorHelper;
-import org.restlet.engine.http.header.ContentType;
 import org.restlet.engine.http.header.HeaderConstants;
-import org.restlet.engine.http.header.HeaderReader;
 import org.restlet.engine.http.header.HeaderUtils;
-import org.restlet.engine.http.header.RangeUtils;
 import org.restlet.engine.http.io.ChunkedInputStream;
 import org.restlet.engine.http.io.ChunkedOutputStream;
 import org.restlet.engine.http.io.InboundStream;
@@ -69,7 +63,6 @@ import org.restlet.engine.http.io.OutboundStream;
 import org.restlet.engine.io.TraceInputStream;
 import org.restlet.engine.io.TraceOutputStream;
 import org.restlet.engine.security.SslUtils;
-import org.restlet.engine.util.Base64;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.ReadableRepresentation;
@@ -439,44 +432,7 @@ public abstract class Connection<T extends Connector> {
         }
 
         if (headers != null) {
-            // Extract some interesting header values
-            for (Parameter header : headers) {
-                if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_CONTENT_ENCODING)) {
-                    HeaderReader hr = new HeaderReader(header.getValue());
-                    String value = hr.readValue();
-
-                    while (value != null) {
-                        Encoding encoding = Encoding.valueOf(value);
-
-                        if (!encoding.equals(Encoding.IDENTITY)) {
-                            result.getEncodings().add(encoding);
-                        }
-                        value = hr.readValue();
-                    }
-                } else if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_CONTENT_LANGUAGE)) {
-                    HeaderReader hr = new HeaderReader(header.getValue());
-                    String value = hr.readValue();
-
-                    while (value != null) {
-                        result.getLanguages().add(Language.valueOf(value));
-                        value = hr.readValue();
-                    }
-                } else if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_CONTENT_TYPE)) {
-                    ContentType contentType = new ContentType(header.getValue());
-                    result.setMediaType(contentType.getMediaType());
-                    result.setCharacterSet(contentType.getCharacterSet());
-                } else if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_CONTENT_RANGE)) {
-                    RangeUtils.parseContentRange(header.getValue(), result);
-                } else if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_CONTENT_MD5)) {
-                    result.setDigest(new Digest(Digest.ALGORITHM_MD5, Base64
-                            .decode(header.getValue())));
-                }
-            }
+            result = HeaderUtils.copyResponseEntityHeaders(headers, result);
         }
 
         return result;
