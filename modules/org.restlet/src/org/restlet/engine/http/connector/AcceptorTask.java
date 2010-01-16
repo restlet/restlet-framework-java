@@ -31,10 +31,10 @@
 package org.restlet.engine.http.connector;
 
 import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.nio.channels.AsynchronousCloseException;
 import java.nio.channels.ClosedByInterruptException;
-import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
 import java.util.concurrent.CountDownLatch;
 import java.util.logging.Level;
 
@@ -51,8 +51,8 @@ public class AcceptorTask extends BaseTask {
     /** The parent server helper. */
     private final BaseServerHelper helper;
 
-    /** The server socket channel to listen on. */
-    private final ServerSocketChannel serverSocket;
+    /** The server socket to listen on. */
+    private final ServerSocket serverSocket;
 
     /**
      * The latch to countdown when the socket is ready to accept connections.
@@ -65,15 +65,15 @@ public class AcceptorTask extends BaseTask {
      * @param helper
      *            The target server helper.
      * @param serverSocket
-     *            The server socket channel to listen on.
+     *            The server socket to listen on.
      * @param latch
      *            The latch to countdown when the socket is ready to accept
      *            connections.
      * @param handlerService
      *            The handler service.
      */
-    public AcceptorTask(BaseServerHelper helper,
-            ServerSocketChannel serverSocket, CountDownLatch latch) {
+    public AcceptorTask(BaseServerHelper helper, ServerSocket serverSocket,
+            CountDownLatch latch) {
         this.helper = helper;
         this.serverSocket = serverSocket;
         this.latch = latch;
@@ -93,7 +93,7 @@ public class AcceptorTask extends BaseTask {
      * 
      * @return The server socket channel to listen on.
      */
-    public ServerSocketChannel getServerSocket() {
+    public ServerSocket getServerSocket() {
         return serverSocket;
     }
 
@@ -106,20 +106,19 @@ public class AcceptorTask extends BaseTask {
 
         while (isRunning()) {
             try {
-                SocketChannel socketChannel = this.serverSocket.accept();
+                Socket socket = this.serverSocket.accept();
                 int connectionsCount = getHelper().getConnections().size();
 
                 if ((getHelper().getMaxTotalConnections() == -1)
                         || (connectionsCount <= getHelper()
                                 .getMaxTotalConnections())) {
                     Connection<Server> connection = getHelper()
-                            .createConnection(getHelper(),
-                                    socketChannel.socket(), socketChannel);
+                            .createConnection(getHelper(), socket, null);
                     connection.open();
                     getHelper().getConnections().add(connection);
                 } else {
                     // Rejection connection
-                    socketChannel.close();
+                    socket.close();
                     getHelper()
                             .getLogger()
                             .info(

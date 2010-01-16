@@ -4,7 +4,14 @@ Bundle-Name: Restlet Extension - EMF
 Bundle-SymbolicName: org.restlet.ext.emf
 Bundle-Version: 2.0
 Bundle-Vendor: Noelios Technologies
-Import-Package: org.restlet,
+Import-Package: org.eclipse.emf.common,
+ org.eclipse.emf.common.notify,
+ org.eclipse.emf.common.util,
+ org.eclipse.emf.ecore,
+ org.eclipse.emf.ecore.resource,
+ org.eclipse.emf.ecore.xmi,
+ org.eclipse.emf.ecore.xmi.impl,
+ org.restlet,
  org.restlet.data,
  org.restlet.engine,
  org.restlet.engine.application,

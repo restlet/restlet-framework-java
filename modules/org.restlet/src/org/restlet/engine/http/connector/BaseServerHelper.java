@@ -34,7 +34,6 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.SocketAddress;
-import java.nio.channels.ServerSocketChannel;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -75,8 +74,8 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
     /** The connection acceptor service. */
     private volatile ExecutorService acceptorService;
 
-    /** The server socket channel. */
-    private volatile ServerSocketChannel serverSocketChannel;
+    /** The server socket. */
+    private volatile ServerSocket serverSocket;
 
     /** The synchronization aid between listener and handler service. */
     private volatile CountDownLatch latch;
@@ -113,10 +112,10 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
      * @return Bound server socket channel.
      * @throws IOException
      */
-    protected ServerSocketChannel createServerSocket() throws IOException {
-        final ServerSocketChannel server = ServerSocketChannel.open();
-        server.socket().setReuseAddress(true);
-        server.socket().bind(createSocketAddress());
+    protected ServerSocket createServerSocket() throws IOException {
+        final ServerSocket server = new ServerSocket();
+        server.setReuseAddress(true);
+        server.bind(createSocketAddress());
         return server;
     }
 
@@ -236,14 +235,14 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
         this.acceptorService = createAcceptorService();
 
         // Create the server socket
-        this.serverSocketChannel = createServerSocket();
+        this.serverSocket = createServerSocket();
 
         // Sets the ephemeral port is necessary
-        setEphemeralPort(this.serverSocketChannel.socket());
+        setEphemeralPort(this.serverSocket);
 
         // Start the socket listener service
         this.latch = new CountDownLatch(1);
-        this.acceptorTask = new AcceptorTask(this, this.serverSocketChannel,
+        this.acceptorTask = new AcceptorTask(this, this.serverSocket,
                 this.latch);
         this.acceptorService.submit(this.acceptorTask);
 
@@ -284,8 +283,8 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
         }
 
         // Close the server socket
-        if (this.serverSocketChannel != null) {
-            this.serverSocketChannel.close();
+        if (this.serverSocket != null) {
+            this.serverSocket.close();
         }
 
         super.stop();
