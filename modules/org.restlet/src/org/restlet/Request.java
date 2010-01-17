@@ -158,8 +158,8 @@ public class Request extends Message {
         this.maxForwards = -1;
         this.method = method;
         this.originalRef = null;
-        // [ifndef gwt] instruction
         this.onResponse = null;
+        // [ifndef gwt] instruction
         this.proxyChallengeResponse = null;
         this.protocol = null;
         this.ranges = null;

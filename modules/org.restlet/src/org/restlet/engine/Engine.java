@@ -536,7 +536,8 @@ public class Engine {
      * @throws IOException
      */
     private void discoverProtocols() throws IOException {
-        registerHelpers(DESCRIPTOR_PROTOCOL_PATH, getRegisteredProtocols(),
+        // [ifndef gwt] instruction
+    	registerHelpers(DESCRIPTOR_PROTOCOL_PATH, getRegisteredProtocols(),
                 null);
         registerDefaultProtocols();
     }
