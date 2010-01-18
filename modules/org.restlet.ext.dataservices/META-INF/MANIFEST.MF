@@ -1,5 +1,6 @@
 Manifest-Version: 1.0
 Main-Class: org.restlet.ext.dataservices.Generator
+Class-Path: org.restlet.jar org.restlet.ext.xml.jar org.restlet.ext.atom.jar org.restlet.ext.freemarker.jar org.restlet.ext.dataservices.jar org.freemarker.jar
 Bundle-ManifestVersion: 2
 Bundle-Name: Restlet Extension - ADO.NET Data Services
 Bundle-SymbolicName: org.restlet.ext.dataservices
