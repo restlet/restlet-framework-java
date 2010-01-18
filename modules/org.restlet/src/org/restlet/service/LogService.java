@@ -71,8 +71,7 @@ import org.restlet.routing.Filter;
  * @see <a
  *      href="http://www.restlet.org/documentation/2.0/tutorial#part07">Tutorial:
  *      Access logging</a>
- * @see <a
- *      href="http://wiki.restlet.org/docs_1.2/g1/13-restlet/29-restlet/98-restlet/101-restlet.html">Wiki:
+ * @see <a href="http://wiki.restlet.org/docs_2.0/101-restlet.html">Wiki:
  *      Logging</a>
  * @see <a
  *      href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/logging/package-summary.html">java.util.logging</a>

@@ -79,6 +79,9 @@ Changes log
         - Implemented Request#toString() and Response#toString() to
           display something similar to HTTP request and status lines.
           Suggested by John Logdson.
+        - In the default access logs, the identifier of the user
+          attempting to authenticate is now logged.
+          Suggested by John Logdson.
     - Bugs fixed
         - Fixed issue in DomRepresentation with createTransformer()
           method. Fix contributed by Remi Dewitte. 

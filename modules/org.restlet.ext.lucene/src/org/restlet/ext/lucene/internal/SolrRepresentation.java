@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.lucene;
+package org.restlet.ext.lucene.internal;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -47,7 +47,7 @@ import org.restlet.representation.OutputRepresentation;
  * Representation wrapping a Solr query and exposing its response either as XML
  * or JSON.
  * 
- * @author Rémi Dewitte <remi@gide.net>
+ * @author Remi Dewitte <remi@gide.net>
  */
 public class SolrRepresentation extends OutputRepresentation {
 

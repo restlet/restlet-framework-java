@@ -45,7 +45,7 @@ public class DefaultAccessLogFormatter extends AccessLogFormatter {
     @Override
     public String getHead(Handler h) {
         final StringBuilder sb = new StringBuilder();
-        sb.append("#Software: Noelios Restlet Engine ").append(Engine.VERSION)
+        sb.append("#Software: Restlet Framework ").append(Engine.VERSION)
                 .append('\n');
         sb.append("#Version: 1.0\n");
         sb.append("#Date: ");

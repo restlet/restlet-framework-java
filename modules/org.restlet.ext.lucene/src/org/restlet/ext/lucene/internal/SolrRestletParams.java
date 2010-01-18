@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.lucene;
+package org.restlet.ext.lucene.internal;
 
 import java.util.Iterator;
 
@@ -39,12 +39,13 @@ import org.restlet.data.Form;
 /**
  * Wrap Restlet query parameters as Solr params.
  * 
- * @author Rémi Dewitte <remi@gide.net>
+ * @author Remi Dewitte <remi@gide.net>
  */
 public class SolrRestletParams extends SolrParams {
 
     private static final long serialVersionUID = 1L;
 
+    /** The wrapped Restlet request. */
     private final Request request;
 
     /**

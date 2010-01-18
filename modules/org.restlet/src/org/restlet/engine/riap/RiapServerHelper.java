@@ -24,6 +24,7 @@ public class RiapServerHelper extends ServerHelper {
     public RiapServerHelper(Server server) {
         super(server);
         getProtocols().add(Protocol.RIAP);
+
         // Lazy initialization with double-check.
         if (server != null && RiapServerHelper.instance == null) {
             synchronized (this.getClass()) {

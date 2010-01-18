@@ -48,25 +48,32 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.engine.ClientHelper;
+import org.restlet.ext.lucene.internal.SolrRepresentation;
+import org.restlet.ext.lucene.internal.SolrRestletQueryRequest;
 
 /**
  * Solr client connector.
  * 
  * There are two ways of initializing the helped core container. <br>
  * First one : <br>
- * <code>
+ * 
+ * <pre>
  * Client solrClient = component.getClients().add(SolrClientHelper.SOLR_PROTOCOL);
  * solrClient.getContext().getAttributes().put("CoreContainer", new CoreContainer(...));
- * </code> <br>
+ * </pre>
+ * 
+ * <br>
  * Second one : <br>
- * <code>
+ * 
+ * <pre>
  * Client solrClient = component.getClients().add(SolrClientHelper.SOLR_PROTOCOL);
- * solrClient.getContext().getParameters().add("directory","...");
- * solrClient.getContext().getParameters().add("configFile","...");
- * </code> <br>
- * The helper handles "solr://" requests. <br>
- * There is one additionnal parameter : "DefaultCore" which gives default core
- * for "solr:///..." requests.
+ * solrClient.getContext().getParameters().add(&quot;directory&quot;, &quot;...&quot;);
+ * solrClient.getContext().getParameters().add(&quot;configFile&quot;, &quot;...&quot;);
+ * </pre>
+ * 
+ * <br>
+ * The helper handles "solr://" requests. There is one additional parameter :
+ * "DefaultCore" which gives default core for "solr:///..." requests.
  * 
  * @author Remi Dewitte <remi@gide.net>
  */
@@ -75,59 +82,40 @@ public class SolrClientHelper extends ClientHelper {
     public static Protocol SOLR_PROTOCOL = new Protocol("solr", "Solr",
             "Solr indexer helper", Protocol.UNKNOWN_PORT);
 
+    /** The core Solr container. */
     protected CoreContainer coreContainer;
 
+    /**
+     * Constructor.
+     * 
+     * @param client
+     *            The client connector.
+     */
     public SolrClientHelper(Client client) {
         super(client);
         getProtocols().add(SOLR_PROTOCOL);
     }
 
     @Override
-    public void start() {
-        try {
-            coreContainer = (CoreContainer) getHelped().getContext()
-                    .getAttributes().get("CoreContainer");
-            if (coreContainer == null) {
-                String directory = getHelped().getContext().getParameters()
-                        .getFirstValue("directory");
-                String configFile = getHelped().getContext().getParameters()
-                        .getFirstValue("configFile");
-                if (directory != null && configFile != null) {
-                    File config = new File(configFile);
-                    if (!config.exists()) {
-                        config = new File(new URI(configFile));
-                    }
-                    coreContainer = new CoreContainer(directory, config);
-                }
-            }
-            if (coreContainer == null) {
-                throw new RuntimeException(
-                        "Could not initialize core container");
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("Could not initialize core container", e);
-        }
-    }
-
-    @Override
-    public void stop() throws Exception {
-        super.stop();
-    }
-
-    @Override
     public void handle(Request request, Response response) {
         super.handle(request, response);
+
         Reference resRef = request.getResourceRef();
         String path = resRef.getPath();
+
         if (path != null) {
             path = resRef.getPath(true);
         }
+
         String coreName = request.getResourceRef().getHostDomain();
+
         if (coreName == null || "".equals(coreName)) {
             coreName = getContext().getParameters()
                     .getFirstValue("DefaultCore");
         }
+
         SolrCore core = coreContainer.getCore(coreName);
+
         if (core == null) {
             response.setStatus(Status.SERVER_ERROR_INTERNAL, "No such core: "
                     + coreName);
@@ -136,6 +124,7 @@ public class SolrClientHelper extends ClientHelper {
 
         // Extract the handler from the path or params
         SolrRequestHandler handler = core.getRequestHandler(path);
+
         if (handler == null) {
             if ("/select".equals(path) || "/select/".equalsIgnoreCase(path)) {
                 String qt = request.getResourceRef().getQueryAsForm()
@@ -153,6 +142,7 @@ public class SolrClientHelper extends ClientHelper {
                 handler = coreContainer.getMultiCoreHandler();
             }
         }
+
         if (handler == null) {
             core.close();
             response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST,
@@ -165,6 +155,7 @@ public class SolrClientHelper extends ClientHelper {
                     core);
             SolrQueryResponse solrResp = new SolrQueryResponse();
             core.execute(handler, solrReq, solrResp);
+
             if (solrResp.getException() != null) {
                 response.setStatus(Status.SERVER_ERROR_INTERNAL, solrResp
                         .getException());
@@ -180,6 +171,41 @@ public class SolrClientHelper extends ClientHelper {
         } finally {
             core.close();
         }
+    }
+
+    @Override
+    public void start() {
+        try {
+            coreContainer = (CoreContainer) getHelped().getContext()
+                    .getAttributes().get("CoreContainer");
+
+            if (coreContainer == null) {
+                String directory = getHelped().getContext().getParameters()
+                        .getFirstValue("directory");
+                String configFile = getHelped().getContext().getParameters()
+                        .getFirstValue("configFile");
+
+                if (directory != null && configFile != null) {
+                    File config = new File(configFile);
+                    if (!config.exists()) {
+                        config = new File(new URI(configFile));
+                    }
+                    coreContainer = new CoreContainer(directory, config);
+                }
+            }
+
+            if (coreContainer == null) {
+                throw new RuntimeException(
+                        "Could not initialize core container");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Could not initialize core container", e);
+        }
+    }
+
+    @Override
+    public void stop() throws Exception {
+        super.stop();
     }
 
 }

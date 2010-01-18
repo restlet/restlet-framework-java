@@ -52,8 +52,8 @@ import org.restlet.service.MetadataService;
  * Connector to the resources accessed via class loaders. Note that if you use
  * the class authority for your CLAP URIs, you can provide a custom classloader
  * instead of the one of the connector. For this, your requests need to have a
- * "org.restlet.clap.classloader" attribute set with the instance of your
- * classloader.
+ * "org.restlet.clap.classLoader" attribute set with the instance of your
+ * classloader and use the {@link LocalReference#CLAP_CLASS} authority.
  * 
  * @author Jerome Louvel
  */
@@ -79,7 +79,7 @@ public class ClapClientHelper extends LocalClientHelper {
      */
     protected void handleClassLoader(Request request, Response response,
             ClassLoader classLoader) {
-        final MetadataService metadataService = getMetadataService();
+        MetadataService metadataService = getMetadataService();
 
         if (request.getMethod().equals(Method.GET)
                 || request.getMethod().equals(Method.HEAD)) {
@@ -108,7 +108,7 @@ public class ClapClientHelper extends LocalClientHelper {
             // of the CLAP client, so we have to ignore them.
             if (url != null) {
                 if (url.getProtocol().equals("file")) {
-                    final File file = new File(url.getFile());
+                    File file = new File(url.getFile());
                     modificationDate = new Date(file.lastModified());
 
                     if (file.isDirectory()) {
@@ -119,7 +119,7 @@ public class ClapClientHelper extends LocalClientHelper {
 
             if (url != null) {
                 try {
-                    final Representation output = new InputRepresentation(url
+                    Representation output = new InputRepresentation(url
                             .openStream(), metadataService
                             .getDefaultMediaType());
                     output.setIdentifier(request.getResourceRef());
@@ -127,6 +127,7 @@ public class ClapClientHelper extends LocalClientHelper {
 
                     // Update the expiration date
                     long timeToLive = getTimeToLive();
+
                     if (timeToLive == 0) {
                         output.setExpirationDate(new Date());
                     } else if (timeToLive > 0) {
@@ -136,8 +137,7 @@ public class ClapClientHelper extends LocalClientHelper {
                     }
 
                     // Update the metadata based on file extensions
-                    final String name = path
-                            .substring(path.lastIndexOf('/') + 1);
+                    String name = path.substring(path.lastIndexOf('/') + 1);
                     Entity.updateMetadata(name, output, true,
                             getMetadataService());
 
@@ -166,19 +166,27 @@ public class ClapClientHelper extends LocalClientHelper {
         String scheme = request.getResourceRef().getScheme();
 
         if (scheme.equalsIgnoreCase(Protocol.CLAP.getSchemeName())) {
-            final LocalReference cr = new LocalReference(request
-                    .getResourceRef());
+            LocalReference cr = new LocalReference(request.getResourceRef());
             ClassLoader classLoader = null;
 
             if (cr.getClapAuthorityType() == LocalReference.CLAP_CLASS) {
                 // Sometimes, a specific class loader needs to be used,
                 // make sure that it can be provided as a request's attribute
-                final Object classLoaderAttribute = request.getAttributes()
-                        .get("org.restlet.clap.classloader");
+                Object classLoaderAttribute = request.getAttributes().get(
+                        "org.restlet.clap.classLoader");
+
                 if (classLoaderAttribute != null) {
                     classLoader = (ClassLoader) classLoaderAttribute;
                 } else {
-                    classLoader = getClass().getClassLoader();
+                    // Old name to be deprecated
+                    classLoaderAttribute = request.getAttributes().get(
+                            "org.restlet.clap.classloader");
+
+                    if (classLoaderAttribute != null) {
+                        classLoader = (ClassLoader) classLoaderAttribute;
+                    } else {
+                        classLoader = getClass().getClassLoader();
+                    }
                 }
             } else if (cr.getClapAuthorityType() == LocalReference.CLAP_SYSTEM) {
                 classLoader = ClassLoader.getSystemClassLoader();

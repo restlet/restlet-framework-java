@@ -165,8 +165,8 @@ public class LogFilter extends Filter {
      */
     protected String formatDefault(Request request, Response response,
             int duration) {
-        final StringBuilder sb = new StringBuilder();
-        final long currentTime = System.currentTimeMillis();
+        StringBuilder sb = new StringBuilder();
+        long currentTime = System.currentTimeMillis();
 
         // Append the date of the request
         sb.append(String.format("%tF", currentTime));
@@ -177,19 +177,21 @@ public class LogFilter extends Filter {
         sb.append('\t');
 
         // Append the client IP address
-        final String clientAddress = request.getClientInfo()
-                .getUpstreamAddress();
+        String clientAddress = request.getClientInfo().getUpstreamAddress();
         sb.append((clientAddress == null) ? "-" : clientAddress);
         sb.append('\t');
 
         // Append the user name (via IDENT protocol)
         if (this.logService.isIdentityCheck()) {
             // [ifndef gae]
-            final IdentClient ic = new IdentClient(request.getClientInfo()
+            IdentClient ic = new IdentClient(request.getClientInfo()
                     .getUpstreamAddress(), request.getClientInfo().getPort(),
                     response.getServerInfo().getPort());
             sb.append((ic.getUserIdentifier() == null) ? "-" : ic
                     .getUserIdentifier());
+        } else if ((request.getChallengeResponse() != null)
+                && (request.getChallengeResponse().getIdentifier() != null)) {
+            sb.append(request.getChallengeResponse().getIdentifier());
         } else {
             // [enddef]
             sb.append('-');
@@ -197,29 +199,29 @@ public class LogFilter extends Filter {
         sb.append('\t');
 
         // Append the server IP address
-        final String serverAddress = response.getServerInfo().getAddress();
+        String serverAddress = response.getServerInfo().getAddress();
         sb.append((serverAddress == null) ? "-" : serverAddress);
         sb.append('\t');
 
         // Append the server port
-        final Integer serverport = response.getServerInfo().getPort();
+        Integer serverport = response.getServerInfo().getPort();
         sb.append((serverport == null) ? "-" : serverport.toString());
         sb.append('\t');
 
         // Append the method name
-        final String methodName = (request.getMethod() == null) ? "-" : request
+        String methodName = (request.getMethod() == null) ? "-" : request
                 .getMethod().getName();
         sb.append((methodName == null) ? "-" : methodName);
 
         // Append the resource path
         sb.append('\t');
-        final String resourcePath = (request.getResourceRef() == null) ? "-"
+        String resourcePath = (request.getResourceRef() == null) ? "-"
                 : request.getResourceRef().getPath();
         sb.append((resourcePath == null) ? "-" : resourcePath);
 
         // Append the resource query
         sb.append('\t');
-        final String resourceQuery = (request.getResourceRef() == null) ? "-"
+        String resourceQuery = (request.getResourceRef() == null) ? "-"
                 : request.getResourceRef().getQuery();
         sb.append((resourceQuery == null) ? "-" : resourceQuery);
 
@@ -230,6 +232,7 @@ public class LogFilter extends Filter {
 
         // Append the returned size
         sb.append('\t');
+
         if (response.getEntity() == null) {
             sb.append('0');
         } else {
@@ -239,6 +242,7 @@ public class LogFilter extends Filter {
 
         // Append the received size
         sb.append('\t');
+
         if (request.getEntity() == null) {
             sb.append('0');
         } else {
@@ -257,7 +261,7 @@ public class LogFilter extends Filter {
 
         // Append the agent name
         sb.append('\t');
-        final String agentName = request.getClientInfo().getAgent();
+        String agentName = request.getClientInfo().getAgent();
         sb.append((agentName == null) ? "-" : agentName);
 
         // Append the referrer
