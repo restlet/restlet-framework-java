@@ -143,6 +143,24 @@ public class ClientResource extends UniformResource {
     /** Indicates if idempotent requests should be retried on error. */
     private volatile boolean retryOnError;
 
+    /**
+     * Constructor.
+     * 
+     * @param resource
+     *            The client resource to copy.
+     */
+    public ClientResource(ClientResource resource) {
+        Request request = new Request(resource.getRequest());
+        Response response = new Response(request);
+
+        this.next = resource.getNext();
+        this.followingRedirects = resource.isFollowingRedirects();
+        this.retryOnError = resource.isRetryOnError();
+        this.retryDelay = resource.getRetryDelay();
+        this.retryAttempts = resource.getRetryAttempts();
+        init(resource.getContext(), request, response);
+    }
+
     // [ifndef gwt] method
     /**
      * Constructor.
@@ -519,6 +537,63 @@ public class ClientResource extends UniformResource {
     }
 
     /**
+     * Returns the child resource defined by its URI relatively to the current
+     * resource. The child resource is defined in the sense of hierarchical
+     * URIs. If the resource URI is not hierarchical, then an exception is
+     * thrown.
+     * 
+     * @param relativeUri
+     *            The URI of the child resource relatively to the current
+     *            resource seen as the parent resource.
+     * @return The child resource.
+     * @throws ResourceException
+     */
+    public ClientResource getChild(String relativeUri) throws ResourceException {
+        ClientResource result = null;
+
+        if (getReference().isHierarchical()) {
+            result = new ClientResource(this);
+            if(!getReference().getIdentifier().endsWith("/")){
+                Reference parentRef = getReference().getTargetRef();
+                parentRef.setIdentifier(parentRef.getIdentifier()+ "/");
+                result.setReference(new Reference(parentRef, relativeUri));                
+            }
+        } else {
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST,
+                    "The resource URI is not hierarchical.");
+        }
+
+        return result;
+    }
+
+    // [ifndef gwt] method
+    /**
+     * Wraps the child client resource to proxy calls to the given Java
+     * interface into Restlet method calls. The child resource is defined in
+     * the sense of hierarchical URIs. If the resource URI is not hierarchical,
+     * then an exception is thrown.
+     * 
+     * @param <T>
+     * @param relativeUri
+     *            The URI of the child resource relatively to the current
+     *            resource seen as the parent resource.
+     * @param resourceInterface
+     *            The annotated resource interface class to proxy.
+     * @return The proxy instance.
+     */
+    public <T> T getChild(String relativeUri, Class<? extends T> resourceInterface)
+            throws ResourceException {
+        T result = null;
+
+        ClientResource childResource = getChild(relativeUri);
+        if (childResource != null) {
+            result = childResource.wrap(resourceInterface);
+        }
+
+        return result;
+    }
+
+    /**
      * Returns the next Restlet. By default, it is the client dispatcher if a
      * context is available.
      * 
@@ -546,7 +621,6 @@ public class ClientResource extends UniformResource {
     public Uniform getOnSent() {
         return getRequest().getOnSent();
     }
-
     /**
      * Returns the parent resource. The parent resource is defined in the sense
      * of hierarchical URIs. If the resource URI is not hierarchical, then an
@@ -558,11 +632,35 @@ public class ClientResource extends UniformResource {
         ClientResource result = null;
 
         if (getReference().isHierarchical()) {
-            Reference parentRef = getReference().getParentRef();
-            result = new ClientResource(parentRef);
+            result = new ClientResource(this);
+            result.setReference(getReference().getParentRef());
         } else {
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST,
                     "The resource URI is not hierarchical.");
+        }
+
+        return result;
+    }
+
+    // [ifndef gwt] method
+    /**
+     * Wraps the parent client resource to proxy calls to the given Java
+     * interface into Restlet method calls. The parent resource is defined in
+     * the sense of hierarchical URIs. If the resource URI is not hierarchical,
+     * then an exception is thrown.
+     * 
+     * @param <T>
+     * @param resourceInterface
+     *            The annotated resource interface class to proxy.
+     * @return The proxy instance.
+     */
+    public <T> T getParent(Class<? extends T> resourceInterface)
+            throws ResourceException {
+        T result = null;
+
+        ClientResource parentResource = getParent();
+        if (parentResource != null) {
+            result = parentResource.wrap(resourceInterface);
         }
 
         return result;
