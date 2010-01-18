@@ -110,6 +110,7 @@ Changes log
         - Fixed internal client connector which didn't refresh entity 
           properties from headers values.
           Reported by Taylor Cowan.
+        - Allowed to set the DATE header.
     - Misc
         - Updated Simple framework library to version 4.1.17.
         - Deprecated Message#getEntityAs* methods.
