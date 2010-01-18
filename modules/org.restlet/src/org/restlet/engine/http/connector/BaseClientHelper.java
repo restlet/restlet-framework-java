@@ -587,6 +587,7 @@ public class BaseClientHelper extends BaseHelper<Client> {
                 if (bestConn != null) {
                     bestConn.getOutboundMessages().add(response);
                     getConnections().add(bestConn);
+
                     if (!request.isExpectingResponse()) {
                         // Attempt to directly write the response, preventing a
                         // thread context switch

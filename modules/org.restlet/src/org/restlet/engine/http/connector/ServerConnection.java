@@ -86,6 +86,12 @@ public class ServerConnection extends Connection<Server> {
         HeaderUtils.addResponseHeaders(response, headers);
     }
 
+    @Override
+    public boolean canRead() {
+        // TODO: adapt to take into account pipelining
+        return super.canRead() && (getInboundMessages().size() == 0);
+    }
+
     /**
      * Asks the server connector to immediately commit the given response
      * associated to this request, making it ready to be sent back to the
@@ -365,7 +371,7 @@ public class ServerConnection extends Connection<Server> {
             }
 
             // Free the connection outbound for next responses
-            getOutboundMessages().remove(response);
+            getOutboundMessages().poll();
             setOutboundBusy(false);
         }
     }

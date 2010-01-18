@@ -129,8 +129,7 @@ public abstract class Connection<T extends Connector> {
     public Connection(BaseHelper<T> helper, Socket socket,
             SocketChannel socketChannel) throws IOException {
         this.helper = helper;
-        this.inboundMessages = isClientSide() ? null
-                : new ConcurrentLinkedQueue<Response>();
+        this.inboundMessages = new ConcurrentLinkedQueue<Response>();
         this.outboundMessages = new ConcurrentLinkedQueue<Response>();
         this.persistent = helper.isPersistingConnections();
         this.pipelining = false;
@@ -326,10 +325,8 @@ public abstract class Connection<T extends Connector> {
      * @throws IOException
      */
     public boolean canRead() {
-        return (getState() == ConnectionState.OPEN)
-                && !isInboundBusy()
-                && ((getInboundMessages() == null) || (getInboundMessages()
-                        .size() == 0));
+        return (getState() == ConnectionState.OPEN) && !isInboundBusy()
+                && (getInboundMessages().size() > 0);
     }
 
     /**
@@ -782,14 +779,16 @@ public abstract class Connection<T extends Connector> {
                 synchronized (this) {
                     if (canRead()) {
                         doRead = true;
-                        setInboundBusy(doRead);
+                        setInboundBusy(true);
                     }
                 }
+
                 if (doRead) {
                     readMessage();
                 }
             }
         } catch (Exception e) {
+            e.printStackTrace();
             getLogger()
                     .log(
                             Level.FINE,

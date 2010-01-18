@@ -132,30 +132,29 @@ public class ChunkedOutputStream extends OutputStream {
     }
 
     /**
-     * Write the buffer contents.
-     * 
-     * @throws IOException
-     */
-    private void writeBuffer() throws IOException {
-        this.destination.write(this.buffer, 0, this.bytesWritten);
-        HeaderUtils.writeCRLF(this.destination);
-    }
-
-    /**
-     * Write a chunk.
+     * Write a chunk, starting with its size in hexadecimal, followed by CRLF
+     * and the actual content.
      * 
      * @throws IOException
      */
     private void writeChunk() throws IOException {
         if (this.bytesWritten > 0) {
-            writePosition();
-            writeBuffer();
+            // Write the current position in hexadecimal format followed by CRLF
+            this.destination.write(Integer.toHexString(this.bytesWritten)
+                    .getBytes());
+            HeaderUtils.writeCRLF(this.destination);
+
+            // Write the chunk content
+            this.destination.write(this.buffer, 0, this.bytesWritten);
+            HeaderUtils.writeCRLF(this.destination);
+
+            // Reset the position
             reset();
         }
     }
 
     /**
-     * Write the closing chunk: A zero followed by crlf and another crlf.
+     * Write the closing chunk: A zero followed by two CRLF.
      * 
      * @throws IOException
      */
@@ -165,14 +164,4 @@ public class ChunkedOutputStream extends OutputStream {
         HeaderUtils.writeCRLF(this.destination);
     }
 
-    /**
-     * Write the current position in hexadecimal format followed by CRLF.
-     * 
-     * @throws IOException
-     */
-    private void writePosition() throws IOException {
-        this.destination.write(Integer.toHexString(this.bytesWritten)
-                .getBytes());
-        HeaderUtils.writeCRLF(this.destination);
-    }
 }

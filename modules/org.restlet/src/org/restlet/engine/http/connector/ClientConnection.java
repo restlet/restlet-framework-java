@@ -184,9 +184,19 @@ public class ClientConnection extends Connection<Client> {
             setState(ConnectionState.CLOSING);
         }
 
+        // Prepare the response
+        Response finalResponse = getInboundMessages().peek();
+        Response response = null;
+        Status status = Status.valueOf(statusCode);
+
+        if (status.isInformational()) {
+            response = new Response(finalResponse.getRequest());
+        } else {
+            response = finalResponse;
+        }
+
         // Update the response
-        Response response = getOutboundMessages().peek();
-        response.setStatus(Status.valueOf(statusCode), reasonPhrase);
+        response.setStatus(status, reasonPhrase);
         response.getServerInfo().setAddress(
                 getSocket().getLocalAddress().toString());
         response.getServerInfo().setAgent(Engine.VERSION_HEADER);
@@ -198,9 +208,7 @@ public class ClientConnection extends Connection<Client> {
                 .put(HeaderConstants.ATTRIBUTE_HEADERS, headers);
 
         if (!response.getStatus().isInformational()) {
-            getOutboundMessages().poll();
-            // Allows the connection to write another request
-            setOutboundBusy(false);
+            getInboundMessages().poll();
         }
 
         // Add it to the helper queue
@@ -209,8 +217,8 @@ public class ClientConnection extends Connection<Client> {
 
     @Override
     public boolean canRead() {
-        // There should be at least one request
-        return super.canRead() && (getOutboundMessages().size() > 0);
+        // There should be at least one call to read/update
+        return super.canRead() && (getInboundMessages().size() > 0);
     }
 
     /**
@@ -293,14 +301,17 @@ public class ClientConnection extends Connection<Client> {
                 request.getOnSent().handle(request, response);
             }
 
-            if (!request.isExpectingResponse()) {
-                // The request has been written, don't wait for a response
-                getOutboundMessages().remove(response);
-                setOutboundBusy(false);
+            // The request has been written
+            getOutboundMessages().poll();
+
+            if (request.isExpectingResponse()) {
+                getInboundMessages().add(response);
             }
+
+            // Indicate that we are done with writing the request
+            setOutboundBusy(false);
         }
     }
-
 
     @Override
     protected void writeMessageHeadLine(Response message,
