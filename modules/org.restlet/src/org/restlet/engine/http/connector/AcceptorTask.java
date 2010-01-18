@@ -33,6 +33,7 @@ package org.restlet.engine.http.connector;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.nio.channels.AsynchronousCloseException;
 import java.nio.channels.ClosedByInterruptException;
 import java.util.concurrent.CountDownLatch;
@@ -131,6 +132,9 @@ public class AcceptorTask extends BaseTask {
             } catch (AsynchronousCloseException ace) {
                 this.helper.getLogger().log(Level.FINE,
                         "The server socket was closed", ace);
+            } catch (SocketException se) {
+                this.helper.getLogger().log(Level.FINE,
+                        "The server socket was closed", se);
             } catch (IOException ex) {
                 this.helper.getLogger().log(Level.WARNING,
                         "Unexpected error while accepting new connection", ex);
