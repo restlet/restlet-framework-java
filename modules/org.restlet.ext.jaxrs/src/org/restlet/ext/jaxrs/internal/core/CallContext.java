@@ -1154,7 +1154,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
             return roleChecker.isInRole(getUserPrincipal(), roleName);
         }
 
-        Role role = Application.getCurrent().findRole(roleName);
+        Role role = Application.getCurrent().getRole(roleName);
         return (role != null)
                 && this.request.getClientInfo().getRoles().contains(role);
     }

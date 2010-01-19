@@ -85,7 +85,7 @@ public class SaasApplication extends Application {
 
         // Attach test 4
         RoleAuthorizer roleAuthorizer = new RoleAuthorizer();
-        roleAuthorizer.getAuthorizedRoles().add(findRole("admin"));
+        roleAuthorizer.getAuthorizedRoles().add(getRole("admin"));
         roleAuthorizer.setNext(new HelloWorldRestlet());
 
         authenticator = new ChallengeAuthenticator(getContext(),
@@ -95,7 +95,7 @@ public class SaasApplication extends Application {
 
         // Attach test 5
         roleAuthorizer = new RoleAuthorizer();
-        roleAuthorizer.getForbiddenRoles().add(findRole("admin"));
+        roleAuthorizer.getForbiddenRoles().add(getRole("admin"));
         roleAuthorizer.setNext(new HelloWorldRestlet());
 
         authenticator = new ChallengeAuthenticator(getContext(),

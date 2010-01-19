@@ -33,6 +33,7 @@ Changes log
         - Client preferences were not taken into account with annotated
           methods returning beans with multiple variants available.
         - Added new Server(Protocol) constructor.
+        - Renamed Application#findRole(String) into getRole(String).
      - Enhancements
         - Added a new Jackson extension, with transparent conversion
           between JSON representations and objects.
