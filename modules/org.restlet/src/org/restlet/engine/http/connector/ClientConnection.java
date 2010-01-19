@@ -108,6 +108,12 @@ public class ClientConnection extends Connection<Client> {
     }
 
     @Override
+    public boolean canRead() {
+        // There should be at least one call to read/update
+        return super.canRead() && (getInboundMessages().size() > 0);
+    }
+
+    @Override
     protected void readMessage() throws IOException {
         @SuppressWarnings("unused")
         String version = null;
@@ -213,12 +219,6 @@ public class ClientConnection extends Connection<Client> {
 
         // Add it to the helper queue
         getHelper().getInboundMessages().add(response);
-    }
-
-    @Override
-    public boolean canRead() {
-        // There should be at least one call to read/update
-        return super.canRead() && (getInboundMessages().size() > 0);
     }
 
     /**

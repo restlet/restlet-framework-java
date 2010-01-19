@@ -74,14 +74,14 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
     /** The connection acceptor service. */
     private volatile ExecutorService acceptorService;
 
-    /** The server socket. */
-    private volatile ServerSocket serverSocket;
+    /** The acceptor task. */
+    private volatile AcceptorTask acceptorTask;
 
     /** The synchronization aid between listener and handler service. */
     private volatile CountDownLatch latch;
 
-    /** The acceptor task. */
-    private volatile AcceptorTask acceptorTask;
+    /** The server socket. */
+    private volatile ServerSocket serverSocket;
 
     /**
      * Constructor.
@@ -134,6 +134,21 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
                 .getPort());
     }
 
+    /**
+     * Handles a call by invoking the helped Server's
+     * {@link Server#handle(Request, Response)} method.
+     * 
+     * @param request
+     *            The request to handle.
+     * @param response
+     *            The response to update.
+     */
+    @Override
+    public void handle(Request request, Response response) {
+        super.handle(request, response);
+        getHelped().handle(request, response);
+    }
+
     @Override
     public void handleInbound(Response response) {
         if ((response != null) && (response.getRequest() != null)) {
@@ -149,21 +164,6 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
         }
 
         handleNextOutbound();
-    }
-
-    /**
-     * Handles a call by invoking the helped Server's
-     * {@link Server#handle(Request, Response)} method.
-     * 
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The response to update.
-     */
-    @Override
-    public void handle(Request request, Response response) {
-        super.handle(request, response);
-        getHelped().handle(request, response);
     }
 
     @Override
