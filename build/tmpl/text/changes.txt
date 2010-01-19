@@ -84,6 +84,9 @@ Changes log
         - In the default access logs, the identifier of the user
           attempting to authenticate is now logged.
           Suggested by John Logdson.
+        - VirtualHost#serverPort is now matched against the request's
+          protocol default port if the ServerInfo#port value is 
+          unspecified (-1).
     - Bugs fixed
         - Fixed issue in DomRepresentation with createTransformer()
           method. Fix contributed by Remi Dewitte. 

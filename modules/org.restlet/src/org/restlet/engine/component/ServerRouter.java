@@ -52,6 +52,7 @@ import org.restlet.routing.VirtualHost;
  * @author Jerome Louvel
  */
 public class ServerRouter extends Router {
+
     /** The parent component. */
     private volatile Component component;
 
@@ -104,7 +105,7 @@ public class ServerRouter extends Router {
     @Override
     public synchronized void start() throws Exception {
         // Attach all virtual hosts
-        for (final VirtualHost host : getComponent().getHosts()) {
+        for (VirtualHost host : getComponent().getHosts()) {
             getRoutes().add(new HostRoute(this, host));
         }
 
