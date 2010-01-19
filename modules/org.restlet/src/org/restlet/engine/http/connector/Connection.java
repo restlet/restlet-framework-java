@@ -325,8 +325,7 @@ public abstract class Connection<T extends Connector> {
      * @throws IOException
      */
     public boolean canRead() {
-        return (getState() == ConnectionState.OPEN) && !isInboundBusy()
-                && (getInboundMessages().size() > 0);
+        return (getState() == ConnectionState.OPEN) && !isInboundBusy();
     }
 
     /**
@@ -788,7 +787,6 @@ public abstract class Connection<T extends Connector> {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
             getLogger()
                     .log(
                             Level.FINE,
