@@ -159,7 +159,7 @@ public class HostRoute extends Route {
                 resourcePortValue = request.getResourceRef()
                         .getSchemeProtocol().getDefaultPort();
             }
-            final String resourcePort = Integer.toString(resourcePortValue);
+            String resourcePort = Integer.toString(resourcePortValue);
 
             String resourceScheme = request.getResourceRef().getScheme();
             if (resourceScheme == null) {
@@ -171,11 +171,12 @@ public class HostRoute extends Route {
                 serverAddress = "";
             }
 
-            String serverPort = "";
-            if (response.getServerInfo().getPort() != -1) {
-                serverPort = Integer.toString(response.getServerInfo()
-                        .getPort());
+            int serverPortValue = response.getServerInfo().getPort();
+            if (serverPortValue == -1) {
+                serverPortValue = request.getProtocol().getDefaultPort();
             }
+            String serverPort = Integer.toString(response.getServerInfo()
+                    .getPort());
 
             // Check if all the criteria match
             if (matches(getVirtualHost().getHostDomain(), hostDomain)
