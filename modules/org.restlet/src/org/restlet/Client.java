@@ -178,18 +178,6 @@ public class Client extends Connector {
         return handle(new Request(Method.DELETE, resourceUri));
     }
 
-    /**
-     * Deletes the identified resource.
-     * 
-     * @param resourceUri
-     *            The URI of the resource to delete.
-     * @param onReceivedCallback
-     *            The callback invoked upon request reception.
-     */
-    public final void delete(String resourceUri, Uniform onReceivedCallback) {
-        handle(new Request(Method.DELETE, resourceUri), onReceivedCallback);
-    }
-
     // [ifndef gwt] method
     /**
      * Gets the identified resource.
@@ -205,18 +193,6 @@ public class Client extends Connector {
         return handle(new Request(Method.GET, resourceRef));
     }
 
-    /**
-     * Gets the identified resource.
-     * 
-     * @param resourceRef
-     *            The reference of the resource to get.
-     * @param onReceivedCallback
-     *            The callback invoked upon request reception.
-     */
-    public final void get(Reference resourceRef, Uniform onReceivedCallback) {
-        handle(new Request(Method.GET, resourceRef), onReceivedCallback);
-    }
-
     // [ifndef gwt] method
     /**
      * Gets the identified resource.
@@ -230,18 +206,6 @@ public class Client extends Connector {
      */
     public final Response get(String resourceUri) {
         return handle(new Request(Method.GET, resourceUri));
-    }
-
-    /**
-     * Gets the identified resource.
-     * 
-     * @param resourceUri
-     *            The URI of the resource to get.
-     * @param onReceivedCallback
-     *            The callback invoked upon request reception.
-     */
-    public final void get(String resourceUri, Uniform onReceivedCallback) {
-        handle(new Request(Method.GET, resourceUri), onReceivedCallback);
     }
 
     /**
@@ -323,60 +287,6 @@ public class Client extends Connector {
         handle(request, response, onReceivedCallback);
     }
 
-    // [ifndef gwt] method
-    /**
-     * Gets the identified resource without its representation's content.
-     * 
-     * @param resourceRef
-     *            The reference of the resource to get.
-     * @return The response.
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.4">HTTP
-     *      HEAD method</a>
-     */
-    public final Response head(Reference resourceRef) {
-        return handle(new Request(Method.HEAD, resourceRef));
-    }
-
-    /**
-     * Gets the identified resource without its representation's content.
-     * 
-     * @param resourceRef
-     *            The reference of the resource to get.
-     * @param onReceivedCallback
-     *            The callback invoked upon request reception.
-     */
-    public final void head(Reference resourceRef, Uniform onReceivedCallback) {
-        handle(new Request(Method.HEAD, resourceRef), onReceivedCallback);
-    }
-
-    // [ifndef gwt] method
-    /**
-     * Gets the identified resource without its representation's content.
-     * 
-     * @param resourceUri
-     *            The URI of the resource to get.
-     * @return The response.
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.4">HTTP
-     *      HEAD method</a>
-     */
-    public final Response head(String resourceUri) {
-        return handle(new Request(Method.HEAD, resourceUri));
-    }
-
-    /**
-     * Gets the identified resource without its representation's content.
-     * 
-     * @param resourceUri
-     *            The URI of the resource to get.
-     * @param onReceivedCallback
-     *            The callback invoked upon request reception.
-     */
-    public final void head(String resourceUri, Uniform onReceivedCallback) {
-        handle(new Request(Method.HEAD, resourceUri), onReceivedCallback);
-    }
-
     /**
      * Indicates the underlying connector helper is available.
      * 
@@ -385,96 +295,6 @@ public class Client extends Connector {
     @Override
     public boolean isAvailable() {
         return getHelper() != null;
-    }
-
-    // [ifndef gwt] method
-    /**
-     * Gets the options for the identified resource.
-     * 
-     * @param resourceRef
-     *            The reference of the resource to get.
-     * @return The response.
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.2">HTTP
-     *      OPTIONS method</a>
-     */
-    public final Response options(Reference resourceRef) {
-        return handle(new Request(Method.OPTIONS, resourceRef));
-    }
-
-    /**
-     * Gets the options for the identified resource.
-     * 
-     * @param resourceRef
-     *            The reference of the resource to get.
-     * @param onReceivedCallback
-     *            The callback invoked upon request reception.
-     */
-    public final void options(Reference resourceRef, Uniform onReceivedCallback) {
-        handle(new Request(Method.OPTIONS, resourceRef), onReceivedCallback);
-    }
-
-    // [ifndef gwt] method
-    /**
-     * Gets the options for the identified resource.
-     * 
-     * @param resourceUri
-     *            The URI of the resource to get.
-     * @return The response.
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.2">HTTP
-     *      OPTIONS method</a>
-     */
-    public final Response options(String resourceUri) {
-        return handle(new Request(Method.OPTIONS, resourceUri));
-    }
-
-    /**
-     * Gets the options for the identified resource.
-     * 
-     * @param resourceUri
-     *            The URI of the resource to get.
-     * @param onReceivedCallback
-     *            The callback invoked upon request reception.
-     */
-    public final void options(String resourceUri, Uniform onReceivedCallback) {
-        handle(new Request(Method.OPTIONS, resourceUri), onReceivedCallback);
-    }
-
-    // [ifndef gwt] method
-    /**
-     * Posts a representation to the resource at the target URI reference.
-     * 
-     * @param resourceRef
-     *            The reference of the resource to post to.
-     * @param entity
-     *            The posted entity.
-     * @return The response.
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.5">HTTP
-     *      POST method</a>
-     */
-    public final Response post(Reference resourceRef, Representation entity) {
-        return handle(new Request(Method.POST, resourceRef, entity));
-    }
-
-    /**
-     * Posts a representation to the resource at the target URI reference.
-     * 
-     * @param resourceRef
-     *            The reference of the resource to post to.
-     * @param entity
-     *            The posted entity.
-     * @param onReceivedCallback
-     *            The callback invoked upon request reception.
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.5">HTTP
-     *      POST method</a>
-     */
-    public final void post(Reference resourceRef, Representation entity,
-            Uniform onReceivedCallback) {
-        handle(new Request(Method.POST, resourceRef, entity),
-                onReceivedCallback);
     }
 
     // [ifndef gwt] method
@@ -492,25 +312,6 @@ public class Client extends Connector {
      */
     public final Response post(String resourceUri, Representation entity) {
         return handle(new Request(Method.POST, resourceUri, entity));
-    }
-
-    /**
-     * Posts a representation to the resource at the target URI.
-     * 
-     * @param resourceUri
-     *            The URI of the resource to post to.
-     * @param entity
-     *            The entity to post.
-     * @param onReceivedCallback
-     *            The callback invoked upon request reception.
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.5">HTTP
-     *      POST method</a>
-     */
-    public final void post(String resourceUri, Representation entity,
-            Uniform onReceivedCallback) {
-        handle(new Request(Method.POST, resourceUri, entity),
-                onReceivedCallback);
     }
 
     // [ifndef gwt] method
@@ -532,26 +333,6 @@ public class Client extends Connector {
         return handle(new Request(Method.PUT, resourceRef, representation));
     }
 
-    /**
-     * Creates or updates a resource at the target URI reference with the given
-     * representation as new state to be stored.
-     * 
-     * @param resourceRef
-     *            The reference of the resource to modify.
-     * @param representation
-     *            The representation to store.
-     * @param onReceivedCallback
-     *            The callback invoked upon request reception.
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6">HTTP
-     *      PUT method</a>
-     */
-    public final void put(Reference resourceRef, Representation representation,
-            Uniform onReceivedCallback) {
-        handle(new Request(Method.PUT, resourceRef, representation),
-                onReceivedCallback);
-    }
-
     // [ifndef gwt] method
     /**
      * Creates or updates a resource at the target URI with the given
@@ -568,26 +349,6 @@ public class Client extends Connector {
      */
     public final Response put(String resourceUri, Representation representation) {
         return handle(new Request(Method.PUT, resourceUri, representation));
-    }
-
-    /**
-     * Creates or updates a resource at the target URI with the given
-     * representation as new state to be stored.
-     * 
-     * @param resourceUri
-     *            The URI of the resource to modify.
-     * @param representation
-     *            The representation to store.
-     * @param onReceivedCallback
-     *            The callback invoked upon request reception.
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6">HTTP
-     *      PUT method</a>
-     */
-    public final void put(String resourceUri, Representation representation,
-            Uniform onReceivedCallback) {
-        handle(new Request(Method.PUT, resourceUri, representation),
-                onReceivedCallback);
     }
 
     /**
