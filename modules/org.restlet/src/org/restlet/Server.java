@@ -228,7 +228,7 @@ public class Server extends Connector {
      *            The next Restlet.
      */
     public Server(List<Protocol> protocols, int port, Restlet next) {
-        this(null, protocols, port, next);
+        this((Context) null, protocols, port, next);
     }
 
     /**
@@ -247,7 +247,17 @@ public class Server extends Connector {
      */
     public Server(List<Protocol> protocols, String address, int port,
             Restlet next) {
-        this(null, protocols, address, port, next);
+        this((Context) null, protocols, address, port, next);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param protocol
+     *            The connector protocol.
+     */
+    public Server(Protocol protocol) {
+        this((Context) null, protocol, (Restlet) null);
     }
 
     /**
@@ -259,7 +269,7 @@ public class Server extends Connector {
      *            The listening port.
      */
     public Server(Protocol protocol, int port) {
-        this(null, protocol, port, (Restlet) null);
+        this((Context) null, protocol, port, (Restlet) null);
     }
 
     /**
@@ -273,7 +283,8 @@ public class Server extends Connector {
      *            The next server resource.
      */
     public Server(Protocol protocol, int port, Class<?> nextClass) {
-        this(null, protocol, port, new Finder(Context.getCurrent(), nextClass));
+        this((Context) null, protocol, port, new Finder(Context.getCurrent(),
+                nextClass));
     }
 
     /**
@@ -285,7 +296,8 @@ public class Server extends Connector {
      *            The next server resource.
      */
     public Server(Protocol protocol, Class<?> nextClass) {
-        this(null, protocol, new Finder(Context.getCurrent(), nextClass));
+        this((Context) null, protocol, new Finder(Context.getCurrent(),
+                nextClass));
     }
 
     /**
@@ -299,7 +311,7 @@ public class Server extends Connector {
      *            The next Restlet.
      */
     public Server(Protocol protocol, int port, Restlet next) {
-        this(null, protocol, port, next);
+        this((Context) null, protocol, port, next);
     }
 
     /**
@@ -311,7 +323,7 @@ public class Server extends Connector {
      *            The next Restlet.
      */
     public Server(Protocol protocol, Restlet next) {
-        this(null, protocol, next);
+        this((Context) null, protocol, next);
     }
 
     /**
@@ -325,7 +337,7 @@ public class Server extends Connector {
      *            IP address to listen to.
      */
     public Server(Protocol protocol, String address) {
-        this(null, protocol, address, protocol.getDefaultPort(), null);
+        this((Context) null, protocol, address, protocol.getDefaultPort(), null);
     }
 
     /**
@@ -341,7 +353,7 @@ public class Server extends Connector {
      *            The listening port.
      */
     public Server(Protocol protocol, String address, int port) {
-        this(null, protocol, address, port, null);
+        this((Context) null, protocol, address, port, null);
     }
 
     /**
@@ -359,7 +371,7 @@ public class Server extends Connector {
      *            The next Restlet.
      */
     public Server(Protocol protocol, String address, int port, Restlet next) {
-        this(null, protocol, address, port, next);
+        this((Context) null, protocol, address, port, next);
     }
 
     /**
@@ -375,7 +387,7 @@ public class Server extends Connector {
      *            The next Restlet.
      */
     public Server(Protocol protocol, String address, Restlet next) {
-        this(null, protocol, address, protocol.getDefaultPort(), next);
+        this((Context) null, protocol, address, protocol.getDefaultPort(), next);
     }
 
     /**
@@ -391,8 +403,8 @@ public class Server extends Connector {
      *            The next server resource.
      */
     public Server(Protocol protocol, String address, Class<?> nextClass) {
-        this(null, protocol, address, protocol.getDefaultPort(), new Finder(
-                Context.getCurrent(), nextClass));
+        this((Context) null, protocol, address, protocol.getDefaultPort(),
+                new Finder(Context.getCurrent(), nextClass));
     }
 
     /**
