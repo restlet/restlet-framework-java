@@ -34,7 +34,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -543,19 +542,18 @@ public class BaseClientHelper extends BaseHelper<Client> {
             }
 
             try {
-                // Create the client socket
-                Socket socket = createSocket(request.isConfidential(),
+                // Try to reuse an existing connection
+                InetSocketAddress socketAddress = new InetSocketAddress(
                         hostDomain, hostPort);
-                InetAddress socketAddress = socket.getInetAddress();
                 int hostConnectionCount = 0;
                 int bestCount = 0;
                 Connection<Client> bestConn = null;
                 boolean foundConn = false;
-
-                // Try to reuse an existing connection
                 for (Connection<Client> currConn : getConnections()) {
-                    if (currConn.getSocket().getInetAddress().equals(
-                            socketAddress)) {
+                    if (socketAddress.getAddress().equals(
+                            currConn.getSocket().getInetAddress())
+                            && socketAddress.getPort() == currConn.getSocket()
+                                    .getPort()) {
                         hostConnectionCount++;
 
                         if (currConn.getState().equals(ConnectionState.OPEN)
@@ -579,7 +577,8 @@ public class BaseClientHelper extends BaseHelper<Client> {
                                 .size() < getMaxTotalConnections()))
                         && ((getMaxConnectionsPerHost() == -1) || (hostConnectionCount < getMaxConnectionsPerHost()))) {
                     // Create a new connection
-                    bestConn = createConnection(this, socket, null);
+                    bestConn = createConnection(this, createSocket(request
+                            .isConfidential(), hostDomain, hostPort), null);
                     bestConn.open();
                     bestCount = 0;
                 }
@@ -607,9 +606,9 @@ public class BaseClientHelper extends BaseHelper<Client> {
             } finally {
                 // Unblock the possibly waiting thread.
                 // NB : the request may not be written at this time.
-                CountDownLatch latch = (CountDownLatch) response
-                        .getRequest().getAttributes()
-                        .get("org.restlet.engine.http.connector.latch");
+                CountDownLatch latch = (CountDownLatch) response.getRequest()
+                        .getAttributes().get(
+                                "org.restlet.engine.http.connector.latch");
                 if (latch != null) {
                     latch.countDown();
                 }
