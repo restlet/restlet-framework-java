@@ -1,6 +1,7 @@
 package org.restlet.example.book.restlet.ch04.sec3.client;
 
 import org.restlet.Client;
+import org.restlet.Context;
 import org.restlet.data.Protocol;
 import org.restlet.example.book.restlet.ch04.sec3.common.AccountResource;
 import org.restlet.example.book.restlet.ch04.sec3.common.AccountsResource;
@@ -21,60 +22,22 @@ public class MailClient {
         new MailClient().start();
     }
 
-    /** The prototype client resource. */
-    private ClientResource prototypeResource;
-
-    /**
-     * 
-     * @param <T>
-     * @param uri
-     * @param resourceInterface
-     * @return
-     */
-    public <T> T create(String uri, Class<? extends T> resourceInterface) {
-        ClientResource cr = getPrototypeResource(); // CLONE
-        cr.setReference(uri);
-        return cr.wrap(resourceInterface);
-    }
-
-    /**
-     * Returns the prototype client resource.
-     * 
-     * @return The prototype client resource.
-     */
-    public ClientResource getPrototypeResource() {
-        return prototypeResource;
-    }
-
-    /**
-     * Sets the prototype client resource.
-     * 
-     * @param prototypeResource
-     *            The prototype client resource.
-     */
-    public void setPrototypeResource(ClientResource prototypeResource) {
-        this.prototypeResource = prototypeResource;
-    }
-
     /**
      * @throws Exception
      */
     public void start() throws Exception {
-        System.out.println("\n1) Set-up the client connector\n");
-        Client client = new Client(Protocol.HTTP);
-        client.start();
-
-        setPrototypeResource(new ClientResource((String) null));
-        getPrototypeResource().setNext(client);
+        System.out.println("\n1) Set-up the service client resource\n");
+        Client client = new Client(new Context(), Protocol.HTTP);
+        ClientResource service = new ClientResource("http://localhost:8182");
+        service.setNext(client);
 
         System.out.println("\n2) Display the root resource\n");
-        RootResource mailRoot = create("http://localhost:8182/",
-                RootResource.class);
+        RootResource mailRoot = service.getChild("/", RootResource.class);
         System.out.println(mailRoot.represent());
 
         System.out.println("\n3) Display the initial list of accounts\n");
-        AccountsResource mailAccounts = create(
-                "http://localhost:8182/accounts/", AccountsResource.class);
+        AccountsResource mailAccounts = service.getChild("/accounts/",
+                AccountsResource.class);
         String list = mailAccounts.represent();
         System.out.println(list == null ? "<empty>\n" : list);
 
@@ -88,8 +51,8 @@ public class MailClient {
         System.out.println(mailAccounts.represent());
 
         System.out.println("6) Display the second account\n");
-        AccountResource mailAccount = create(
-                "http://localhost:8182/accounts/2", AccountResource.class);
+        AccountResource mailAccount = service.getChild("/accounts/2",
+                AccountResource.class);
         System.out.println(mailAccount.represent());
 
         System.out
@@ -99,8 +62,7 @@ public class MailClient {
 
         System.out
                 .println("\n8) Delete the first account and display the list again\n");
-        mailAccount = create("http://localhost:8182/accounts/1",
-                AccountResource.class);
+        mailAccount = service.getChild("/accounts/1", AccountResource.class);
         mailAccount.remove();
         System.out.println(mailAccounts.represent());
     }

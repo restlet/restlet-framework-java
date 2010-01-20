@@ -542,6 +542,34 @@ public class ClientResource extends UniformResource {
      * URIs. If the resource URI is not hierarchical, then an exception is
      * thrown.
      * 
+     * @param relativeRef
+     *            The URI reference of the child resource relatively to the
+     *            current resource seen as the parent resource.
+     * @return The child resource.
+     * @throws ResourceException
+     */
+    public ClientResource getChild(Reference relativeRef)
+            throws ResourceException {
+        ClientResource result = null;
+
+        if ((relativeRef != null) && relativeRef.isRelative()) {
+            result = new ClientResource(this);
+            result.setReference(new Reference(getReference().getTargetRef(),
+                    relativeRef).getTargetRef());
+        } else {
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST,
+                    "The child URI is not relative.");
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the child resource defined by its URI relatively to the current
+     * resource. The child resource is defined in the sense of hierarchical
+     * URIs. If the resource URI is not hierarchical, then an exception is
+     * thrown.
+     * 
      * @param relativeUri
      *            The URI of the child resource relatively to the current
      *            resource seen as the parent resource.
@@ -549,29 +577,15 @@ public class ClientResource extends UniformResource {
      * @throws ResourceException
      */
     public ClientResource getChild(String relativeUri) throws ResourceException {
-        ClientResource result = null;
-
-        if (getReference().isHierarchical()) {
-            result = new ClientResource(this);
-            if(!getReference().getIdentifier().endsWith("/")){
-                Reference parentRef = getReference().getTargetRef();
-                parentRef.setIdentifier(parentRef.getIdentifier()+ "/");
-                result.setReference(new Reference(parentRef, relativeUri));                
-            }
-        } else {
-            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST,
-                    "The resource URI is not hierarchical.");
-        }
-
-        return result;
+        return getChild(new Reference(relativeUri));
     }
 
     // [ifndef gwt] method
     /**
      * Wraps the child client resource to proxy calls to the given Java
-     * interface into Restlet method calls. The child resource is defined in
-     * the sense of hierarchical URIs. If the resource URI is not hierarchical,
-     * then an exception is thrown.
+     * interface into Restlet method calls. The child resource is defined in the
+     * sense of hierarchical URIs. If the resource URI is not hierarchical, then
+     * an exception is thrown.
      * 
      * @param <T>
      * @param relativeUri
@@ -581,11 +595,31 @@ public class ClientResource extends UniformResource {
      *            The annotated resource interface class to proxy.
      * @return The proxy instance.
      */
-    public <T> T getChild(String relativeUri, Class<? extends T> resourceInterface)
-            throws ResourceException {
-        T result = null;
+    public <T> T getChild(String relativeUri,
+            Class<? extends T> resourceInterface) throws ResourceException {
+        return getChild(new Reference(relativeUri), resourceInterface);
+    }
 
-        ClientResource childResource = getChild(relativeUri);
+    // [ifndef gwt] method
+    /**
+     * Wraps the child client resource to proxy calls to the given Java
+     * interface into Restlet method calls. The child resource is defined in the
+     * sense of hierarchical URIs. If the resource URI is not hierarchical, then
+     * an exception is thrown.
+     * 
+     * @param <T>
+     * @param relativeRef
+     *            The URI reference of the child resource relatively to the
+     *            current resource seen as the parent resource.
+     * @param resourceInterface
+     *            The annotated resource interface class to proxy.
+     * @return The proxy instance.
+     */
+    public <T> T getChild(Reference relativeRef,
+            Class<? extends T> resourceInterface) throws ResourceException {
+        T result = null;
+        ClientResource childResource = getChild(relativeRef);
+
         if (childResource != null) {
             result = childResource.wrap(resourceInterface);
         }
@@ -621,6 +655,7 @@ public class ClientResource extends UniformResource {
     public Uniform getOnSent() {
         return getRequest().getOnSent();
     }
+
     /**
      * Returns the parent resource. The parent resource is defined in the sense
      * of hierarchical URIs. If the resource URI is not hierarchical, then an
@@ -719,6 +754,7 @@ public class ClientResource extends UniformResource {
             Request request = new Request(getRequest());
             Response response = new Response(request);
             handle(request, response, null, 0);
+
             // Update the last received response.
             setResponse(response);
             result = getResponse().getEntity();
