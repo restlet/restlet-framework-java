@@ -124,8 +124,10 @@ public abstract class RestletHelper<T extends Restlet> extends Helper {
      * @return The helped Restlet logger.
      */
     public Logger getLogger() {
-        return (getHelped().getContext() != null) ? getHelped().getContext()
-                .getLogger() : Context.getCurrentLogger();
+        if (getHelped() != null && getHelped().getContext() != null) {
+            return getHelped().getContext().getLogger();
+        }
+        return Context.getCurrentLogger();
     }
 
     /**
