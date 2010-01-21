@@ -105,6 +105,12 @@ import org.restlet.engine.log.LoggingThreadFactory;
  * <td>Indicates if connections should be kept alive after a call.</td>
  * </tr>
  * <tr>
+ * <td>pipeliningConnections</td>
+ * <td>boolean</td>
+ * <td>false</td>
+ * <td>Indicates if pipelining connections are supported.</td>
+ * </tr>
+ * <tr>
  * <td>threadMaxIdleTimeMs</td>
  * <td>int</td>
  * <td>60000</td>
@@ -404,6 +410,16 @@ public abstract class BaseHelper<T extends Connector> extends
     public boolean isPersistingConnections() {
         return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
                 "persistingConnections", "true"));
+    }
+
+    /**
+     * Indicates if pipelining connections are supported.
+     * 
+     * @return True if pipelining connections are supported.
+     */
+    public boolean isPipeliningConnections() {
+        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
+                "pipeliningConnections", "false"));
     }
 
     /**
