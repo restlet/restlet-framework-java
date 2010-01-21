@@ -30,6 +30,7 @@
 
 package org.restlet.util;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
@@ -44,11 +45,52 @@ import org.restlet.service.Service;
  */
 public final class ServiceList extends WrapperList<Service> {
 
+    /** The context. */
+    private volatile Context context;
+
     /**
      * Constructor.
+     * 
+     * @param context
+     *            The context.
      */
-    public ServiceList() {
+    public ServiceList(Context context) {
         super(new CopyOnWriteArrayList<Service>());
+        this.context = context;
+    }
+
+    @Override
+    public void add(int index, Service service) {
+        service.setContext(getContext());
+        super.add(index, service);
+    }
+
+    @Override
+    public boolean add(Service service) {
+        service.setContext(getContext());
+        return super.add(service);
+    }
+
+    @Override
+    public boolean addAll(Collection<? extends Service> services) {
+        if (services != null) {
+            for (Service service : services) {
+                service.setContext(getContext());
+            }
+        }
+
+        return super.addAll(services);
+    }
+
+    @Override
+    public boolean addAll(int index, Collection<? extends Service> services) {
+        if (services != null) {
+            for (Service service : services) {
+                service.setContext(getContext());
+            }
+        }
+
+        return super.addAll(index, services);
     }
 
     /**
@@ -69,6 +111,15 @@ public final class ServiceList extends WrapperList<Service> {
         }
 
         return null;
+    }
+
+    /**
+     * Returns the context.
+     * 
+     * @return The context.
+     */
+    public Context getContext() {
+        return this.context;
     }
 
     /**
@@ -122,6 +173,16 @@ public final class ServiceList extends WrapperList<Service> {
         }
 
         set(services);
+    }
+
+    /**
+     * Sets the context.
+     * 
+     * @param context
+     *            The context.
+     */
+    public void setContext(Context context) {
+        this.context = context;
     }
 
     /**

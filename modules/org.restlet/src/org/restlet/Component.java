@@ -173,11 +173,12 @@ public class Component extends Restlet {
      * Constructor.
      */
     public Component() {
+        super();
         this.hosts = new CopyOnWriteArrayList<VirtualHost>();
         this.clients = new ClientList(null);
         this.servers = new ServerList(null, this);
         this.realms = new CopyOnWriteArrayList<Realm>();
-        this.services = new ServiceList();
+        this.services = new ServiceList(getContext());
 
         if (Engine.getInstance() != null) {
             this.helper = new ComponentHelper(this);
@@ -198,25 +199,24 @@ public class Component extends Restlet {
     /**
      * Constructor with the reference to the XML configuration file.
      * 
-     * @param xmlConfigReference
-     *            The reference to the XML configuration file.
+     * @param xmlConfigRef
+     *            The URI reference to the XML configuration file.
      */
-    public Component(Reference xmlConfigReference) {
+    public Component(Reference xmlConfigRef) {
         this();
 
         // Get the representation of the configuration file.
         Representation xmlConfigRepresentation = null;
-        if (xmlConfigReference != null) {
-            Protocol protocol = xmlConfigReference.getSchemeProtocol();
+        if (xmlConfigRef != null) {
+            Protocol protocol = xmlConfigRef.getSchemeProtocol();
             if (Protocol.FILE.equals(protocol)) {
                 // Get directly the FileRepresentation.
                 xmlConfigRepresentation = new FileRepresentation(
-                        new LocalReference(xmlConfigReference).getFile(),
+                        new LocalReference(xmlConfigRef).getFile(),
                         MediaType.TEXT_XML);
             } else {
                 // e.g. for WAR or CLAP protocols.
-                Response response = new Client(protocol)
-                        .get(xmlConfigReference);
+                Response response = new Client(protocol).get(xmlConfigRef);
                 if (response.getStatus().isSuccess()
                         && response.isEntityAvailable()) {
                     xmlConfigRepresentation = response.getEntity();
@@ -230,7 +230,7 @@ public class Component extends Restlet {
             getLogger().log(
                     Level.WARNING,
                     "Unable to get the Component XML configuration located at this URI: "
-                            + xmlConfigReference);
+                            + xmlConfigRef);
         }
     }
 
@@ -252,22 +252,13 @@ public class Component extends Restlet {
     }
 
     /**
-     * Finds the realm with the given name.
+     * Constructor with the reference to the XML configuration file.
      * 
-     * @param name
-     *            The name.
-     * @return The realm found or null.
+     * @param xmlConfigUri
+     *            The URI reference to the XML configuration file.
      */
-    public Realm getRealm(String name) {
-        if (name != null) {
-            for (Realm realm : getRealms()) {
-                if (name.equals(realm.getName())) {
-                    return realm;
-                }
-            }
-        }
-
-        return null;
+    public Component(String xmlConfigUri) {
+        this((xmlConfigUri == null) ? null : new Reference(xmlConfigUri));
     }
 
     /**
@@ -344,6 +335,25 @@ public class Component extends Restlet {
      */
     public LogService getLogService() {
         return getServices().get(LogService.class);
+    }
+
+    /**
+     * Finds the realm with the given name.
+     * 
+     * @param name
+     *            The name.
+     * @return The realm found or null.
+     */
+    public Realm getRealm(String name) {
+        if (name != null) {
+            for (Realm realm : getRealms()) {
+                if (name.equals(realm.getName())) {
+                    return realm;
+                }
+            }
+        }
+
+        return null;
     }
 
     /**

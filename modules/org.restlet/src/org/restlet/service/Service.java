@@ -30,6 +30,8 @@
 
 package org.restlet.service;
 
+import org.restlet.Context;
+
 /**
  * Generic service associated to a component or an application. The life cycle
  * of a service is tightly related to the one of the associated component or
@@ -41,6 +43,10 @@ package org.restlet.service;
  * @author Jerome Louvel
  */
 public abstract class Service {
+
+    /** The context. */
+    private volatile Context context;
+
     /** Indicates if the service has been enabled. */
     private volatile boolean enabled;
 
@@ -61,6 +67,7 @@ public abstract class Service {
      *            True if the service has been enabled.
      */
     public Service(boolean enabled) {
+        this.context = null;
         this.enabled = enabled;
     }
 
@@ -92,6 +99,15 @@ public abstract class Service {
     }
 
     /**
+     * Returns the context.
+     * 
+     * @return The context.
+     */
+    public Context getContext() {
+        return this.context;
+    }
+
+    /**
      * Indicates if the service should be enabled.
      * 
      * @return True if the service should be enabled.
@@ -116,6 +132,16 @@ public abstract class Service {
      */
     public boolean isStopped() {
         return !this.started;
+    }
+
+    /**
+     * Sets the context.
+     * 
+     * @param context
+     *            The context.
+     */
+    public void setContext(Context context) {
+        this.context = context;
     }
 
     /**

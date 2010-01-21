@@ -153,7 +153,7 @@ public class Application extends Restlet {
 
         this.outboundRoot = null;
         this.inboundRoot = null;
-        this.services = new ServiceList();
+        this.services = new ServiceList(context);
         this.services.add(new TunnelService(true, true));
         this.services.add(new StatusService());
         this.services.add(new DecoderService());
@@ -402,6 +402,12 @@ public class Application extends Restlet {
      */
     public void setConnectorService(ConnectorService connectorService) {
         getServices().set(connectorService);
+    }
+
+    @Override
+    public void setContext(Context context) {
+        super.setContext(context);
+        getServices().setContext(context);
     }
 
     /**

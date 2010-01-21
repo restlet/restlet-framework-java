@@ -95,6 +95,10 @@ Changes log
           and can therefore retrieve the underlying ClientResource
           instance if needed. Based on feed-back from John Logdson.
         - Added support of requests pipelining.
+        - Added Service#context property.
+        - Added Component(String) constructor for XML configuration.
+        - Completed XML configuration XSD scheme to match more of Restlet API.
+        - Added LogService#logPropertiesRef to easily read log properties from a URI at start time.
     - Bugs fixed
         - Fixed issue in DomRepresentation with createTransformer()
           method. Fix contributed by Remi Dewitte. 

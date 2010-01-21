@@ -30,8 +30,13 @@
 
 package org.restlet.service;
 
+import java.util.logging.LogManager;
+
 import org.restlet.Context;
+import org.restlet.data.Reference;
 import org.restlet.engine.log.LogFilter;
+import org.restlet.representation.Representation;
+import org.restlet.resource.ClientResource;
 import org.restlet.routing.Filter;
 
 /**
@@ -84,6 +89,9 @@ public class LogService extends Service {
     /** The log entry format. */
     private volatile String logFormat;
 
+    /** The URI reference of the log properties. */
+    private volatile Reference logPropertiesRef;
+
     /** Indicates if the identity check (as specified by RFC1413) is enabled. */
     private volatile boolean identityCheck;
 
@@ -104,6 +112,7 @@ public class LogService extends Service {
         super(enabled);
         this.loggerName = null;
         this.logFormat = null;
+        this.logPropertiesRef = null;
         this.identityCheck = false;
     }
 
@@ -133,6 +142,15 @@ public class LogService extends Service {
      */
     public String getLoggerName() {
         return this.loggerName;
+    }
+
+    /**
+     * Returns the URI reference of the log properties.
+     * 
+     * @return The URI reference of the log properties.
+     */
+    public Reference getLogPropertiesRef() {
+        return logPropertiesRef;
     }
 
     /**
@@ -177,4 +195,42 @@ public class LogService extends Service {
         this.loggerName = name;
     }
 
+    /**
+     * Sets the URI reference of the log properties.
+     * 
+     * @param logPropertiesRef
+     *            The URI reference of the log properties.
+     */
+    public void setLogPropertiesRef(Reference logPropertiesRef) {
+        this.logPropertiesRef = logPropertiesRef;
+    }
+
+    /**
+     * Sets the URI reference of the log properties.
+     * 
+     * @param logPropertiesUri
+     *            The URI reference of the log properties.
+     */
+    public void setLogPropertiesRef(String logPropertiesUri) {
+        setLogPropertiesRef(new Reference(logPropertiesUri));
+    }
+
+    /**
+     * Starts the log service by attempting to read the log properties if the
+     * {@link #getLogPropertiesRef()} returns a non null URI reference.
+     */
+    @Override
+    public synchronized void start() throws Exception {
+        super.start();
+
+        if (getLogPropertiesRef() != null) {
+            Representation logProperties = new ClientResource(getContext(),
+                    getLogPropertiesRef()).get();
+
+            if (logProperties != null) {
+                LogManager.getLogManager().readConfiguration(
+                        logProperties.getStream());
+            }
+        }
+    }
 }
