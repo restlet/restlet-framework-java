@@ -542,7 +542,8 @@ public class BaseClientHelper extends BaseHelper<Client> {
             }
 
             try {
-                // Try to reuse an existing connection for the same host and port
+                // Try to reuse an existing connection for the same host and
+                // port
                 InetSocketAddress socketAddress = new InetSocketAddress(
                         hostDomain, hostPort);
                 int hostConnectionCount = 0;
@@ -592,6 +593,14 @@ public class BaseClientHelper extends BaseHelper<Client> {
                         // Attempt to directly write the response, preventing a
                         // thread context switch
                         bestConn.writeMessages();
+                        // Unblock the possibly waiting thread.
+                        // NB : the request may not be written at this time.
+                        CountDownLatch latch = (CountDownLatch) response
+                                .getRequest().getAttributes()
+                                .get("org.restlet.engine.http.connector.latch");
+                        if (latch != null) {
+                            latch.countDown();
+                        }
                     }
                 } else {
                     getLogger().warning(
@@ -604,7 +613,6 @@ public class BaseClientHelper extends BaseHelper<Client> {
                                 "An error occured during the communication with the remote server.",
                                 ioe);
                 response.setStatus(Status.CONNECTOR_ERROR_COMMUNICATION, ioe);
-            } finally {
                 // Unblock the possibly waiting thread.
                 // NB : the request may not be written at this time.
                 CountDownLatch latch = (CountDownLatch) response.getRequest()
