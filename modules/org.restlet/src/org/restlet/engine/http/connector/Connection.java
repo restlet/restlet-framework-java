@@ -132,7 +132,7 @@ public abstract class Connection<T extends Connector> {
         this.inboundMessages = new ConcurrentLinkedQueue<Response>();
         this.outboundMessages = new ConcurrentLinkedQueue<Response>();
         this.persistent = helper.isPersistingConnections();
-        this.pipelining = false;
+        this.pipelining = helper.isPipeliningConnections();
         this.state = ConnectionState.OPENING;
         this.socket = socket;
         this.socketChannel = socketChannel;
@@ -766,25 +766,19 @@ public abstract class Connection<T extends Connector> {
      */
     public void readMessages() {
         try {
-            if (isPipelining()) {
-                // TODO
-                // boolean idempotentSequence = true;
-            } else {
-                boolean doRead = false;
+            boolean doRead = false;
 
-                // We want to make sure that messages are read by one thread
-                // at a time without blocking other concurrent threads during
-                // the reading
-                synchronized (this) {
-                    if (canRead()) {
-                        doRead = true;
-                        setInboundBusy(true);
-                    }
+            // We want to make sure that messages are read by one thread at a
+            // time without blocking other concurrent threads during the reading
+            synchronized (this) {
+                if (canRead()) {
+                    doRead = true;
+                    setInboundBusy(true);
                 }
+            }
 
-                if (doRead) {
-                    readMessage();
-                }
+            if (doRead) {
+                readMessage();
             }
         } catch (Exception e) {
             getLogger()
@@ -800,8 +794,8 @@ public abstract class Connection<T extends Connector> {
             close(false);
         }
 
-        // Immediately attempt to handle the next pending message, trying
-        // to prevent a thread context switch.
+        // Immediately attempt to handle the next pending message, trying to
+        // prevent a thread context switch.
         getHelper().handleNextInbound();
     }
 
@@ -1029,27 +1023,23 @@ public abstract class Connection<T extends Connector> {
      */
     public void writeMessages() {
         try {
-            if (isPipelining()) {
-                // TODO
-            } else {
-                Response message = null;
+            Response message = null;
 
-                // We want to make sure that responses are written in order
-                // without blocking other concurrent threads during the writing
-                synchronized (this) {
-                    if (canWrite()) {
-                        message = getOutboundMessages().peek();
-                        setOutboundBusy((message != null));
-                    }
+            // We want to make sure that responses are written in order without
+            // blocking other concurrent threads during the writing
+            synchronized (this) {
+                if (canWrite()) {
+                    message = getOutboundMessages().peek();
+                    setOutboundBusy((message != null));
                 }
+            }
 
-                if (message != null) {
-                    writeMessage(message);
+            if (message != null) {
+                writeMessage(message);
 
-                    // Try to close the connection immediately.
-                    if ((getState() == ConnectionState.CLOSING) && !isBusy()) {
-                        close(true);
-                    }
+                // Try to close the connection immediately.
+                if ((getState() == ConnectionState.CLOSING) && !isBusy()) {
+                    close(true);
                 }
             }
         } catch (Exception e) {

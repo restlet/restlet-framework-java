@@ -88,8 +88,8 @@ public class ServerConnection extends Connection<Server> {
 
     @Override
     public boolean canRead() {
-        // TODO: adapt to take into account pipelining
-        return super.canRead() && (getInboundMessages().size() == 0);
+        return super.canRead()
+                && ((getInboundMessages().size() == 0) || isPipelining());
     }
 
     /**
@@ -379,7 +379,6 @@ public class ServerConnection extends Connection<Server> {
     @Override
     protected void writeMessageHeadLine(Response response,
             OutputStream headStream) throws IOException {
-
         Protocol protocol = response.getRequest().getProtocol();
         String protocolVersion = protocol.getVersion();
         String version = protocol.getTechnicalName() + '/'
