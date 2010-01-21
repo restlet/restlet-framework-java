@@ -1,8 +1,11 @@
 package org.restlet.example.book.restlet.ch04.sec3.server;
 
+import java.util.logging.LogManager;
+
 import org.restlet.Component;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
+import org.restlet.resource.ClientResource;
 
 /**
  * RESTful component containing the mail server application.
@@ -22,8 +25,10 @@ public class MailServerComponent extends Component {
 
     /**
      * Constructor.
+     * 
+     * @throws Exception
      */
-    public MailServerComponent() {
+    public MailServerComponent() throws Exception {
         setName("RESTful Mail Server component");
         setDescription("Example for 'Restlet in Action' book");
         setOwner("Noelios Technologies");
@@ -40,6 +45,13 @@ public class MailServerComponent extends Component {
 
         // Attach the application to the default virtual host
         getDefaultHost().attachDefault(new MailServerApplication());
-    }
 
+        // Configure the log service
+        ClientResource logProperties = new ClientResource(
+                "clap://system/org/restlet/example/book/restlet/ch04/sec3/server/log.properties");
+        LogManager.getLogManager().readConfiguration(
+                logProperties.get().getStream());
+        getLogService().setLoggerName("MailServer.AccessLog");
+
+    }
 }

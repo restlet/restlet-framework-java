@@ -14,8 +14,10 @@ public class MailClientTestCase extends TestCase {
 
     /**
      * Unit test for virtual hosts.
+     * 
+     * @throws Exception
      */
-    public void testVirtualHost() {
+    public void testVirtualHost() throws Exception {
 
         // Instantiate our Restlet component
         MailServerComponent component = new MailServerComponent();
