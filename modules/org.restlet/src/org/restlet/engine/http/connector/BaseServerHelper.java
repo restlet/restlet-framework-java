@@ -113,7 +113,7 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
      * @throws IOException
      */
     protected ServerSocket createServerSocket() throws IOException {
-        final ServerSocket server = new ServerSocket();
+        ServerSocket server = new ServerSocket();
         server.setReuseAddress(true);
         server.bind(createSocketAddress());
         return server;
@@ -156,7 +156,6 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
 
             // Effectively handle the request
             handle(request, response);
-
             if (!response.isCommitted() && response.isAutoCommitting()) {
                 getOutboundMessages().add(response);
                 response.setCommitted(true);
