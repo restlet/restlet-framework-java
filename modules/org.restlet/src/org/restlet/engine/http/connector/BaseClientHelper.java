@@ -542,13 +542,14 @@ public class BaseClientHelper extends BaseHelper<Client> {
             }
 
             try {
-                // Try to reuse an existing connection
+                // Try to reuse an existing connection for the same host and port
                 InetSocketAddress socketAddress = new InetSocketAddress(
                         hostDomain, hostPort);
                 int hostConnectionCount = 0;
                 int bestCount = 0;
                 Connection<Client> bestConn = null;
                 boolean foundConn = false;
+
                 for (Connection<Client> currConn : getConnections()) {
                     if (socketAddress.getAddress().equals(
                             currConn.getSocket().getInetAddress())
