@@ -209,6 +209,7 @@ public class ClientConnection extends Connection<Client> {
         response.getServerInfo().setPort(getSocket().getPort());
         response.setEntity(createInboundEntity(headers));
 
+        HeaderUtils.copyResponseTransportHeaders(headers, response);
         // Put the headers in the response's attributes map
         response.getAttributes()
                 .put(HeaderConstants.ATTRIBUTE_HEADERS, headers);
