@@ -81,7 +81,7 @@ public class Part10 extends Application {
         // will be routed to
         // http://www.google.com/search?q=site:mysite.org+myKeyword1%20myKeyword2
         Extractor extractor = new Extractor(getContext(), redirector);
-        extractor.extractQuery("keywords", "kwd", true);
+        extractor.extractFromQuery("keywords", "kwd", true);
 
         // Attach the extractor to the router
         router.attach("/search", extractor);

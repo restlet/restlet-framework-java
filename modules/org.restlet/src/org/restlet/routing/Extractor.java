@@ -200,7 +200,7 @@ public class Extractor extends Filter {
      *            Indicates if only the first cookie should be set. Otherwise as
      *            a List instance might be set in the attribute value.
      */
-    public void extractCookie(String attribute, String cookieName, boolean first) {
+    public void extractFromCookie(String attribute, String cookieName, boolean first) {
         getCookieExtracts().add(new ExtractInfo(attribute, cookieName, first));
     }
 
@@ -215,7 +215,7 @@ public class Extractor extends Filter {
      *            Indicates if only the first cookie should be set. Otherwise as
      *            a List instance might be set in the attribute value.
      */
-    public void extractEntity(String attribute, String parameter, boolean first) {
+    public void extractFromEntity(String attribute, String parameter, boolean first) {
         getEntityExtracts().add(new ExtractInfo(attribute, parameter, first));
     }
 
@@ -230,7 +230,7 @@ public class Extractor extends Filter {
      *            Indicates if only the first cookie should be set. Otherwise as
      *            a List instance might be set in the attribute value.
      */
-    public void extractQuery(String attribute, String parameter, boolean first) {
+    public void extractFromQuery(String attribute, String parameter, boolean first) {
         getQueryExtracts().add(new ExtractInfo(attribute, parameter, first));
     }
 
