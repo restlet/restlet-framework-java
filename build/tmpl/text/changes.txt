@@ -34,6 +34,7 @@ Changes log
           methods returning beans with multiple variants available.
         - Added new Server(Protocol) constructor.
         - Renamed Application#findRole(String) into getRole(String).
+        - Renamed Component#findRealm(String) into getRealm(String).
      - Enhancements
         - Added a new Jackson extension, with transparent conversion
           between JSON representations and objects.
@@ -87,6 +88,11 @@ Changes log
         - VirtualHost#serverPort is now matched against the request's
           protocol default port if the ServerInfo#port value is 
           unspecified (-1).
+        - Dynamic client proxies created from ClientResource#wrap(Class)
+          or create(Class) or getChild(Class) or getParent(Class) 
+          methods now automatically implement the ClientProxy interface
+          and can therefore retrieve the underlying ClientResource
+          instance if needed. Based on feed-back from John Logdson.
     - Bugs fixed
         - Fixed issue in DomRepresentation with createTransformer()
           method. Fix contributed by Remi Dewitte. 

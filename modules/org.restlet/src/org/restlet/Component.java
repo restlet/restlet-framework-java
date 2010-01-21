@@ -258,7 +258,7 @@ public class Component extends Restlet {
      *            The name.
      * @return The realm found or null.
      */
-    public Realm findRealm(String name) {
+    public Realm getRealm(String name) {
         if (name != null) {
             for (Realm realm : getRealms()) {
                 if (name.equals(realm.getName())) {

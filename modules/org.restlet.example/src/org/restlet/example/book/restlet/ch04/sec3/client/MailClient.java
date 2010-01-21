@@ -14,18 +14,13 @@ import org.restlet.resource.ClientResource;
 public class MailClient {
 
     /**
+     * Mail client interacting with the RESTful mail server.
      * 
      * @param args
+     *            The optional arguments.
      * @throws Exception
      */
     public static void main(String[] args) throws Exception {
-        new MailClient().start();
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void start() throws Exception {
         System.out.println("\n1) Set-up the service client resource\n");
         Client client = new Client(new Context(), Protocol.HTTP);
         ClientResource service = new ClientResource("http://localhost:8182");
@@ -66,4 +61,5 @@ public class MailClient {
         mailAccount.remove();
         System.out.println(mailAccounts.represent());
     }
+
 }

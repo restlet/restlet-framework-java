@@ -1628,6 +1628,7 @@ public class ClientResource extends UniformResource {
         // Introspect the interface for Restlet annotations
         final List<org.restlet.engine.resource.AnnotationInfo> annotations = org.restlet.engine.resource.AnnotationUtils
                 .getAnnotations(resourceInterface);
+        final ClientResource clientResource = this;
 
         // Create the client resource proxy
         java.lang.reflect.InvocationHandler h = new java.lang.reflect.InvocationHandler() {
@@ -1636,45 +1637,53 @@ public class ClientResource extends UniformResource {
                     java.lang.reflect.Method javaMethod, Object[] args)
                     throws Throwable {
                 Object result = null;
-                org.restlet.engine.resource.AnnotationInfo annotation = org.restlet.engine.resource.AnnotationUtils
-                        .getAnnotation(annotations, javaMethod);
 
-                if (annotation != null) {
-                    // Save the current client info
-                    ClientInfo currentClientInfo = getClientInfo();
+                if (javaMethod.equals(Object.class.getMethod("toString"))) {
+                    result = "ClientProxy for resource: " + clientResource;
+                } else if (javaMethod.equals(ClientProxy.class
+                        .getMethod("getClientResource"))) {
+                    result = clientResource;
+                } else {
+                    org.restlet.engine.resource.AnnotationInfo annotation = org.restlet.engine.resource.AnnotationUtils
+                            .getAnnotation(annotations, javaMethod);
 
-                    try {
-                        Representation requestEntity = null;
-                        if ((args != null) && args.length > 0) {
-                            requestEntity = toRepresentation(args[0]);
-                            getRequest().setEntity(requestEntity);
+                    if (annotation != null) {
+                        // Save the current client info
+                        ClientInfo currentClientInfo = getClientInfo();
+
+                        try {
+                            Representation requestEntity = null;
+                            if ((args != null) && args.length > 0) {
+                                requestEntity = toRepresentation(args[0]);
+                                getRequest().setEntity(requestEntity);
+                            }
+
+                            List<org.restlet.representation.Variant> responseVariants = annotation
+                                    .getResponseVariants(requestEntity,
+                                            getMetadataService(),
+                                            getConverterService());
+
+                            if (responseVariants != null) {
+                                updateClientInfo(responseVariants);
+                            }
+
+                            // The Java method was annotated
+                            setMethod(annotation.getRestletMethod());
+
+                            handle();
+
+                            if (getStatus().isError()) {
+                                throw new ResourceException(getStatus());
+                            }
+
+                            if (annotation.getJavaOutputType() != null) {
+                                result = toObject(getResponseEntity(),
+                                        annotation.getJavaOutputType());
+                            }
+                        } finally {
+                            // Restore the current client info
+                            setClientInfo(currentClientInfo);
                         }
-
-                        List<org.restlet.representation.Variant> responseVariants = annotation
-                                .getResponseVariants(requestEntity,
-                                        getMetadataService(),
-                                        getConverterService());
-
-                        if (responseVariants != null) {
-                            updateClientInfo(responseVariants);
-                        }
-
-                        // The Java method was annotated
-                        setMethod(annotation.getRestletMethod());
-
-                        handle();
-
-                        if (getStatus().isError()) {
-                            throw new ResourceException(getStatus());
-                        }
-
-                        if (annotation.getJavaOutputType() != null) {
-                            result = toObject(getResponseEntity(), annotation
-                                    .getJavaOutputType());
-                        }
-                    } finally {
-                        // Restore the current client info
-                        setClientInfo(currentClientInfo);
                     }
                 }
 
@@ -1685,8 +1694,8 @@ public class ClientResource extends UniformResource {
 
         // Instantiate our dynamic proxy
         result = (T) java.lang.reflect.Proxy.newProxyInstance(
-                org.restlet.engine.Engine.getClassLoader(),
-                new Class<?>[] { resourceInterface }, h);
+                org.restlet.engine.Engine.getClassLoader(), new Class<?>[] {
+                        ClientProxy.class, resourceInterface }, h);
 
         return result;
     }

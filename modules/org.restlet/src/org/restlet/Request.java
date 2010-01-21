@@ -195,7 +195,7 @@ public class Request extends Message {
     }
 
     /**
-     * Constructor.
+     * Copy constructor.
      * 
      * @param request
      *            The request to copy.
