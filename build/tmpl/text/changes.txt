@@ -93,6 +93,7 @@ Changes log
           methods now automatically implement the ClientProxy interface
           and can therefore retrieve the underlying ClientResource
           instance if needed. Based on feed-back from John Logdson.
+        - Added support of requests pipelining.
     - Bugs fixed
         - Fixed issue in DomRepresentation with createTransformer()
           method. Fix contributed by Remi Dewitte. 
