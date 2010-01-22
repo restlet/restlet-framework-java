@@ -29,10 +29,10 @@ package org.restlet.ext.atom;
 
 import static org.restlet.ext.atom.Feed.ATOM_NAMESPACE;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.restlet.data.MediaType;
+import org.restlet.util.DateUtils;
 import org.restlet.util.XmlWriter;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
@@ -58,15 +58,14 @@ public class Text {
      */
     public static void writeElement(XmlWriter writer, Date date,
             String namespace, String localName) throws SAXException {
-        writer.startElement(namespace, localName);
-
         if (date != null) {
-            final SimpleDateFormat dateFormat = new SimpleDateFormat(
-                    "yyyy-MM-dd'T'HH:mm:ssZ");
-            writer.characters(dateFormat.format(date));
+            writer.startElement(namespace, localName);
+            writer.characters(DateUtils.format(date, DateUtils.FORMAT_RFC_3339
+                    .get(0)));
+            writer.endElement(namespace, localName);
+        } else {
+            writer.emptyElement(namespace, localName);
         }
-
-        writer.endElement(namespace, localName);
     }
 
     /**

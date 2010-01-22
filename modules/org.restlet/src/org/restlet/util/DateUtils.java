@@ -28,12 +28,10 @@
 package org.restlet.util;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.TimeZone;
 import java.util.WeakHashMap;
 
@@ -54,7 +52,8 @@ public final class DateUtils {
      * 
      * @author Piyush Purang (ppurang@gmail.com)
      * @see java.util.Date
-     * @see <a href="http://discuss.fogcreek.com/joelonsoftware3/default.asp?cmd=show&ixPost=73959&ixReplies=24"
+     * @see <a
+     *      href="http://discuss.fogcreek.com/joelonsoftware3/default.asp?cmd=show&ixPost=73959&ixReplies=24"
      *      >Immutable Date</a>
      */
     private static final class ImmutableDate extends Date {
@@ -262,9 +261,15 @@ public final class DateUtils {
             throw new IllegalArgumentException("Date is null");
         }
 
-        final SimpleDateFormat formatter = new SimpleDateFormat(format,
-                Locale.US);
-        formatter.setTimeZone(TIMEZONE_GMT);
+        java.text.DateFormat formatter = null;
+        if (FORMAT_RFC_3339.get(0).equals(format)) {
+            formatter = new InternetDateFormat(TIMEZONE_GMT);
+        } else {
+            formatter = new java.text.SimpleDateFormat(format,
+                    java.util.Locale.US);
+            formatter.setTimeZone(TIMEZONE_GMT);
+        }
+
         return formatter.format(date);
     }
 
@@ -288,9 +293,16 @@ public final class DateUtils {
         final int formatsSize = formats.size();
         for (int i = 0; (result == null) && (i < formatsSize); i++) {
             format = formats.get(i);
-            final SimpleDateFormat parser = new SimpleDateFormat(format,
-                    Locale.US);
-            parser.setTimeZone(TIMEZONE_GMT);
+
+            java.text.DateFormat parser = null;
+
+            if (FORMAT_RFC_3339.get(0).equals(format)) {
+                parser = new InternetDateFormat(TIMEZONE_GMT);
+            } else {
+                parser = new java.text.SimpleDateFormat(format,
+                        java.util.Locale.US);
+                parser.setTimeZone(TIMEZONE_GMT);
+            }
 
             try {
                 result = parser.parse(date);
