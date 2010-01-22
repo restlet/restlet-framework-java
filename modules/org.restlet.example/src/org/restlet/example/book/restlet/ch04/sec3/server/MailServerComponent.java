@@ -43,9 +43,12 @@ public class MailServerComponent extends Component {
         // Attach the application to the default virtual host
         getDefaultHost().attachDefault(new MailServerApplication());
 
+        // Add a CLAP client connector (for log configuration)
+        getClients().add(Protocol.CLAP);
         // Configure the log service
         getLogService().setLoggerName("MailServer.AccessLog");
-        getLogService().setLogPropertiesRef(
-            "clap://system/org/restlet/example/book/restlet/ch04/sec3/server/log.properties");
+        getLogService()
+                .setLogPropertiesRef(
+                        "clap://system/org/restlet/example/book/restlet/ch04/sec3/server/log.properties");
     }
 }
