@@ -396,6 +396,18 @@ public abstract class Connection<T extends Connector> {
             if (inboundEntityStream != null) {
                 result = new InputRepresentation(inboundEntityStream, null,
                         contentLength) {
+
+                    @Override
+                    public String getText() throws IOException {
+                        try {
+                            return super.getText();
+                        } catch (IOException ioe) {
+                            throw ioe;
+                        } finally {
+                            release();
+                        }
+                    }
+
                     @Override
                     public void release() {
                         if (getHelper().isTracing()) {
