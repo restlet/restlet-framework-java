@@ -26,10 +26,14 @@ public class MailServerComponent extends Component {
      * @throws Exception
      */
     public MailServerComponent() throws Exception {
+        // Set basic properties
         setName("RESTful Mail Server component");
         setDescription("Example for 'Restlet in Action' book");
         setOwner("Noelios Technologies");
         setAuthor("The Restlet Team");
+
+        // Add a CLAP client connector
+        getClients().add(Protocol.CLAP);
 
         // Adds a HTTP server connector
         Server server = getServers().add(Protocol.HTTP, 8182);
@@ -43,8 +47,6 @@ public class MailServerComponent extends Component {
         // Attach the application to the default virtual host
         getDefaultHost().attachDefault(new MailServerApplication());
 
-        // Add a CLAP client connector (for log configuration)
-        getClients().add(Protocol.CLAP);
         // Configure the log service
         getLogService().setLoggerName("MailServer.AccessLog");
         getLogService()

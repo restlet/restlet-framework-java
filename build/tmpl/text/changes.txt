@@ -36,6 +36,8 @@ Changes log
         - Renamed Application#findRole(String) into getRole(String).
         - Renamed Component#findRealm(String) into getRealm(String).
         - Renamed Extractor#extract*() into extractFrom*().
+        - Component#main() now expects a full URI reference instead of
+          a local file path for more flexibility (CLAP and HTTP URIs). 
      - Enhancements
         - Added a new Jackson extension, with transparent conversion
           between JSON representations and objects.

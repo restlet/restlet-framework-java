@@ -34,17 +34,14 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 
-import org.restlet.data.LocalReference;
-import org.restlet.data.MediaType;
-import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.engine.Engine;
 import org.restlet.engine.RestletHelper;
 import org.restlet.engine.component.ComponentHelper;
 import org.restlet.engine.component.ComponentXmlParser;
 import org.restlet.engine.component.InternalRouter;
-import org.restlet.representation.FileRepresentation;
 import org.restlet.representation.Representation;
+import org.restlet.resource.ClientResource;
 import org.restlet.routing.Router;
 import org.restlet.routing.VirtualHost;
 import org.restlet.security.Realm;
@@ -118,8 +115,7 @@ public class Component extends Restlet {
 
     /**
      * Used as bootstrap for configuring and running a component in command
-     * line. Just provide as first and unique parameter the path to the XML
-     * file.
+     * line. Just provide as first and unique parameter the URI to the XML file.
      * 
      * @param args
      *            The list of in-line parameters.
@@ -132,8 +128,7 @@ public class Component extends Restlet {
                         .println("Can't launch the component. Requires the path to an XML configuration file.\n");
             } else {
                 // Create and start the component
-                new Component(LocalReference.createFileReference(args[0]))
-                        .start();
+                new Component(args[0]).start();
             }
         } catch (Exception e) {
             System.err
@@ -207,30 +202,19 @@ public class Component extends Restlet {
 
         // Get the representation of the configuration file.
         Representation xmlConfigRepresentation = null;
-        if (xmlConfigRef != null) {
-            Protocol protocol = xmlConfigRef.getSchemeProtocol();
-            if (Protocol.FILE.equals(protocol)) {
-                // Get directly the FileRepresentation.
-                xmlConfigRepresentation = new FileRepresentation(
-                        new LocalReference(xmlConfigRef).getFile(),
-                        MediaType.TEXT_XML);
-            } else {
-                // e.g. for WAR or CLAP protocols.
-                Response response = new Client(protocol).get(xmlConfigRef);
-                if (response.getStatus().isSuccess()
-                        && response.isEntityAvailable()) {
-                    xmlConfigRepresentation = response.getEntity();
-                }
-            }
-        }
 
-        if (xmlConfigRepresentation != null) {
-            new ComponentXmlParser(this, xmlConfigRepresentation).parse();
-        } else {
-            getLogger().log(
-                    Level.WARNING,
-                    "Unable to get the Component XML configuration located at this URI: "
-                            + xmlConfigRef);
+        if (xmlConfigRef != null) {
+            ClientResource cr = new ClientResource(xmlConfigRef);
+            xmlConfigRepresentation = cr.get();
+
+            if (xmlConfigRepresentation != null) {
+                new ComponentXmlParser(this, xmlConfigRepresentation).parse();
+            } else {
+                getLogger().log(
+                        Level.WARNING,
+                        "Unable to get the Component XML configuration located at this URI: "
+                                + xmlConfigRef);
+            }
         }
     }
 
@@ -252,13 +236,14 @@ public class Component extends Restlet {
     }
 
     /**
-     * Constructor with the reference to the XML configuration file.
+     * Constructor with the URI reference to the XML configuration file.
      * 
-     * @param xmlConfigUri
+     * @param xmlConfigurationRef
      *            The URI reference to the XML configuration file.
      */
-    public Component(String xmlConfigUri) {
-        this((xmlConfigUri == null) ? null : new Reference(xmlConfigUri));
+    public Component(String xmlConfigurationRef) {
+        this((xmlConfigurationRef == null) ? null : new Reference(
+                xmlConfigurationRef));
     }
 
     /**

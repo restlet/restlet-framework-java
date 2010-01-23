@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.restlet.Application;
-import org.restlet.Component;
 import org.restlet.Restlet;
 import org.restlet.routing.Router;
 
@@ -23,20 +22,6 @@ public class MailServerApplication extends Application {
      */
     public static List<String> getAccounts() {
         return accounts;
-    }
-
-    /**
-     * Launch the mail server application using a component configured by an XML
-     * file store in the classpath.
-     * 
-     * @param args
-     *            The arguments.
-     * @throws Exception
-     */
-    public static void main(String[] args) throws Exception {
-        Component component = new Component(
-                "clap://system/org/restlet/example/book/restlet/ch04/sec3/server/component.xml");
-        component.start();
     }
 
     /**

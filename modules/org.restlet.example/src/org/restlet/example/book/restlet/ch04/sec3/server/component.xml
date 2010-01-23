@@ -3,14 +3,25 @@
 	name="RESTful Mail Server component" description="Example for 'Restlet in Action' book"
 	owner="Noelios Technologies" author="The Restlet Team">
 
+	<client protocol="CLAP" />
+
 	<server protocol="HTTP">
 		<parameter name="tracing" value="true" />
 	</server>
 
-	<defaultHost hostDomain="www.rmep.com|www.rmep.net|www.rmep.org"
-		serverAddress="1.2.3.10|1.2.3.20" serverPort="80">
-		<attach uriPattern=""
+	<!--
+		<defaultHost hostDomain="www.rmep.com|www.rmep.net|www.rmep.org"
+		serverAddress="1.2.3.10|1.2.3.20" serverPort="80"> <attachDefault
+		targetClass="org.restlet.example.book.restlet.ch04.sec3.server.MailServerApplication"
+		/> </defaultHost>
+	-->
+
+	<defaultHost>
+		<attachDefault
 			targetClass="org.restlet.example.book.restlet.ch04.sec3.server.MailServerApplication" />
 	</defaultHost>
+
+	<logService loggerName=""
+		lopPropertiesRef="clap://system/org/restlet/example/book/restlet/ch04/sec3/server/log.properties" />
 
 </component>

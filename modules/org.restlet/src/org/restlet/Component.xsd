@@ -22,7 +22,7 @@
       * 
       * You can obtain a copy of the EPL 1.0 license at
       * http://www.opensource.org/licenses/eclipse-1.0.php
-      *
+      * 
       * See the Licenses for the specific language governing permissions and
       * limitations under the Licenses.
       * 
@@ -50,7 +50,8 @@
 		<attribute name="targetClass" type="string" use="optional" />
 		<attribute name="targetDescriptor" type="string" use="optional" />
 		<attribute name="default" type="boolean" use="optional" />
-		<attribute name="matchingMode" type="int" use="optional" default="1" />
+		<attribute name="matchingMode" type="int" use="optional"
+			default="1" />
 		<attribute name="defaultVariableType" type="int" use="optional" />
 	</complexType>
 
@@ -120,12 +121,14 @@
 
 	<complexType name="RouterType">
 		<complexContent>
-			<extension base="tns:ConnectorType">
+			<extension base="tns:RestletType">
 				<sequence>
 					<element name="parameter" type="tns:ParameterType"
 						minOccurs="0" maxOccurs="unbounded" />
-					<element name="attach" type="tns:AttachType" minOccurs="1"
+					<element name="attach" type="tns:AttachType" minOccurs="0"
 						maxOccurs="unbounded" />
+					<element name="attachDefault" type="tns:AttachType"
+						minOccurs="0" maxOccurs="1" />
 				</sequence>
 				<attribute name="defaultMatchingMode" type="int" use="optional"
 					default="1" />
