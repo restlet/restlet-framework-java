@@ -1,4 +1,4 @@
-<module id="simple" includes="jee, jse" type="connector" package="org.restlet.ext.simple">
+<module id="simple" includes="jse" type="connector" package="org.restlet.ext.simple">
    <name>Restlet Extension - Simple</name>
    <description>
       Integration with Simple framework.

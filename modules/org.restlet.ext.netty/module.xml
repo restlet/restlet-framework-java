@@ -1,4 +1,4 @@
-<module id="netty" includes="jee,jse" type="connector" package="org.restlet.ext.netty">
+<module id="netty" includes="jse" type="connector" package="org.restlet.ext.netty">
    <name>Restlet Extension - Netty</name>
    <description>
       Integration with Netty.

@@ -37,7 +37,9 @@ Changes log
         - Renamed Component#findRealm(String) into getRealm(String).
         - Renamed Extractor#extract*() into extractFrom*().
         - Component#main() now expects a full URI reference instead of
-          a local file path for more flexibility (CLAP and HTTP URIs). 
+          a local file path for more flexibility (CLAP and HTTP URIs).
+        - Removed the Simple, Jetty, Netty extensions from the Java EE
+          edition of Restlet. 
      - Enhancements
         - Added a new Jackson extension, with transparent conversion
           between JSON representations and objects.

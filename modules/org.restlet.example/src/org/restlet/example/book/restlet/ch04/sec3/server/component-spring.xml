@@ -4,6 +4,10 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
 
 	<bean id="component" class="org.restlet.ext.spring.SpringComponent">
+		<property name="name" value="RESTful Mail Server component" />
+		<property name="description" value="Example for 'Restlet in Action' book" />
+		<property name="owner" value="Noelios Technologies" />
+		<property name="author" value="The Restlet Team" />
 		<property name="client" value="clap" />
 		<property name="server" ref="server" />
 		<property name="defaultHost" ref="defaultHost" />
