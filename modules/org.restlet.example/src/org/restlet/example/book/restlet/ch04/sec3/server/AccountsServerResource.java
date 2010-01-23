@@ -1,5 +1,8 @@
 package org.restlet.example.book.restlet.ch04.sec3.server;
 
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import org.restlet.example.book.restlet.ch04.sec3.common.AccountsResource;
 import org.restlet.resource.ServerResource;
 
@@ -9,10 +12,22 @@ import org.restlet.resource.ServerResource;
 public class AccountsServerResource extends ServerResource implements
         AccountsResource {
 
+    /** Static list of accounts stored in memory. */
+    private static final List<String> accounts = new CopyOnWriteArrayList<String>();
+
+    /**
+     * Returns the static list of accounts stored in memory.
+     * 
+     * @return The static list of accounts.
+     */
+    public static List<String> getAccounts() {
+        return accounts;
+    }
+
     public String represent() {
         StringBuilder result = new StringBuilder();
 
-        for (String account : MailServerApplication.getAccounts()) {
+        for (String account : getAccounts()) {
             result.append((account == null) ? "" : account).append('\n');
         }
 
@@ -20,8 +35,7 @@ public class AccountsServerResource extends ServerResource implements
     }
 
     public String add(String account) {
-        MailServerApplication.getAccounts().add(account);
-        return Integer.toString(MailServerApplication.getAccounts().indexOf(
-                account) + 1);
+        getAccounts().add(account);
+        return Integer.toString(getAccounts().indexOf(account) + 1);
     }
 }

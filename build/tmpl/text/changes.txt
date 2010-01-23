@@ -100,7 +100,9 @@ Changes log
         - Added Service#context property.
         - Added Component(String) constructor for XML configuration.
         - Completed XML configuration XSD scheme to match more of Restlet API.
-        - Added LogService#logPropertiesRef to easily read log properties from a URI at start time.
+        - Added LogService#logPropertiesRef to easily read log properties from 
+		  a URI at start time.
+		- Added setDefaultAttachment() method to SpringHost and SpringRouter.
     - Bugs fixed
         - Fixed issue in DomRepresentation with createTransformer()
           method. Fix contributed by Remi Dewitte. 
