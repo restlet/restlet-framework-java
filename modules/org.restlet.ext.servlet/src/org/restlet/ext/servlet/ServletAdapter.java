@@ -44,12 +44,13 @@ import org.restlet.engine.http.HttpResponse;
 import org.restlet.engine.http.adapter.ServerAdapter;
 import org.restlet.ext.servlet.internal.ServletCall;
 import org.restlet.ext.servlet.internal.ServletLogger;
+import org.restlet.routing.Router;
 
 /**
  * HTTP adapter from Servlet calls to Restlet calls. This class can be used in
  * any Servlet, just create a new instance and override the service() method in
  * your Servlet to delegate all those calls to this class's service() method.
- * Remember to set the target Restlet, for example using a Restlet Router
+ * Remember to set the next {@link Restlet}, for example using a {@link Router}
  * instance. You can get the Restlet context directly on instances of this
  * class, it will be based on the parent Servlet's context for logging purpose.<br>
  * <br>
@@ -71,7 +72,7 @@ import org.restlet.ext.servlet.internal.ServletLogger;
  *             }
  *         };
  * 
- *         this.adapter.setTarget(trace);
+ *         this.adapter.setNext(trace);
  *     }
  * 
  *     protected void service(HttpServletRequest req, HttpServletResponse res)
@@ -84,8 +85,9 @@ import org.restlet.ext.servlet.internal.ServletLogger;
  * @author Jerome Louvel
  */
 public class ServletAdapter extends ServerAdapter {
-    /** The target Restlet. */
-    private volatile Restlet target;
+
+    /** The next Restlet. */
+    private volatile Restlet next;
 
     /**
      * Constructor. Remember to manually set the "target" property before
@@ -103,12 +105,12 @@ public class ServletAdapter extends ServerAdapter {
      * 
      * @param context
      *            The Servlet context.
-     * @param target
-     *            The target Restlet.
+     * @param next
+     *            The next Restlet.
      */
-    public ServletAdapter(ServletContext context, Restlet target) {
+    public ServletAdapter(ServletContext context, Restlet next) {
         super(new Context(new ServletLogger(context)));
-        this.target = target;
+        this.next = next;
     }
 
     /**
@@ -147,6 +149,15 @@ public class ServletAdapter extends ServerAdapter {
     }
 
     /**
+     * Returns the next Restlet.
+     * 
+     * @return The next Restlet.
+     */
+    public Restlet getNext() {
+        return this.next;
+    }
+
+    /**
      * Returns the root reference of new Restlet requests. By default it returns
      * the result of getBaseRef().
      * 
@@ -159,15 +170,6 @@ public class ServletAdapter extends ServerAdapter {
     }
 
     /**
-     * Returns the target Restlet.
-     * 
-     * @return The target Restlet.
-     */
-    public Restlet getTarget() {
-        return this.target;
-    }
-
-    /**
      * Services a HTTP Servlet request as a Restlet request handled by the
      * "target" Restlet.
      * 
@@ -177,7 +179,7 @@ public class ServletAdapter extends ServerAdapter {
      *            The HTTP Servlet response.
      */
     public void service(HttpServletRequest request, HttpServletResponse response) {
-        if (getTarget() != null) {
+        if (getNext() != null) {
             // Set the current context
             Context.setCurrent(getContext());
 
@@ -195,7 +197,7 @@ public class ServletAdapter extends ServerAdapter {
             httpRequest.setRootRef(getRootRef(request));
 
             // Handle the request and commit the response
-            getTarget().handle(httpRequest, httpResponse);
+            getNext().handle(httpRequest, httpResponse);
             commit(httpResponse);
         } else {
             getLogger().warning("Unable to find the Restlet target");
@@ -203,13 +205,13 @@ public class ServletAdapter extends ServerAdapter {
     }
 
     /**
-     * Sets the target Restlet.
+     * Sets the next Restlet.
      * 
-     * @param target
-     *            The target Restlet.
+     * @param next
+     *            The next Restlet.
      */
-    public void setTarget(Restlet target) {
-        this.target = target;
+    public void setNext(Restlet next) {
+        this.next = next;
     }
 
     /**

@@ -172,16 +172,19 @@ public class RestletFrameworkServlet extends FrameworkServlet {
         this.adapter = new ServletAdapter(getServletContext());
 
         org.restlet.Application application;
+
         if (getTargetRestlet() instanceof Application) {
             application = (Application) getTargetRestlet();
         } else {
             application = new Application();
             application.setInboundRoot(getTargetRestlet());
         }
+
         if (application.getContext() == null) {
             application.setContext(createContext());
         }
-        this.adapter.setTarget(application);
+
+        this.adapter.setNext(application);
     }
 
     /**

@@ -39,7 +39,8 @@ Changes log
         - Component#main() now expects a full URI reference instead of
           a local file path for more flexibility (CLAP and HTTP URIs).
         - Removed the Simple, Jetty, Netty extensions from the Java EE
-          edition of Restlet. 
+          edition of Restlet.
+        - Renamed ServletAdapter#target property into "next".
      - Enhancements
         - Added a new Jackson extension, with transparent conversion
           between JSON representations and objects.
