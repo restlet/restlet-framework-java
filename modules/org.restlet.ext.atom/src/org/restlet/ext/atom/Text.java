@@ -61,14 +61,14 @@ public class Text {
      */
     public static void writeElement(XmlWriter writer, Date date,
             String namespace, String localName) throws SAXException {
-        writer.startElement(namespace, localName);
-
         if (date != null) {
+            writer.startElement(namespace, localName);
             writer.characters(DateUtils.format(date, DateUtils.FORMAT_RFC_3339
                     .get(0)));
+            writer.endElement(namespace, localName);
+        } else {
+            writer.emptyElement(namespace, localName);
         }
-
-        writer.endElement(namespace, localName);
     }
 
     /**
