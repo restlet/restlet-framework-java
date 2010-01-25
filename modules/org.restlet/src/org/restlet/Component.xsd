@@ -163,7 +163,6 @@
 				<attribute name="hostDomain" type="string" use="optional" />
 				<attribute name="hostPort" type="string" use="optional" />
 				<attribute name="hostScheme" type="string" use="optional" />
-				<attribute name="name" type="string" use="optional" />
 				<attribute name="resourceDomain" type="string" use="optional" />
 				<attribute name="resourcePort" type="string" use="optional" />
 				<attribute name="resourceScheme" type="string" use="optional" />
