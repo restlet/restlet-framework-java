@@ -173,6 +173,7 @@
          <exclude name="src/org/restlet/util/RouteList.java" />
          <exclude name="src/org/restlet/util/ServerHelper.java" />
          <exclude name="src/org/restlet/util/ServerList.java" />
+         <exclude name="src/org/restlet/util/ServiceList.java" />
          <exclude name="src/org/restlet/util/Template.java" />
          <exclude name="src/org/restlet/util/TemplateDispatcher.java" />
          <exclude name="src/org/restlet/util/Variable.java" />
