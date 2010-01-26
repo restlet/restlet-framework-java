@@ -60,6 +60,7 @@ import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Parameter;
 import org.restlet.engine.http.ServerCall;
+import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.http.io.ChunkedInputStream;
 import org.restlet.engine.http.io.ChunkedOutputStream;
 import org.restlet.util.Series;
@@ -108,7 +109,12 @@ public class NettyServerCall extends ServerCall {
         this.request = request;
         this.sslEngine = sslEngine;
         this.remoteAddress = clientAddress;
+    }
 
+    @Override
+    public void complete() {
+        content.clear();
+        super.complete();
     }
 
     @Override
@@ -236,6 +242,11 @@ public class NettyServerCall extends ServerCall {
                             .getStatus().getDescription());
             this.response = new DefaultHttpResponse(HttpVersion.HTTP_1_1,
                     status);
+        }
+        // Check if 'Transfer-Encoding' header should be set
+        if (shouldResponseBeChunked(restletResponse)) {
+            getResponseHeaders().add(HeaderConstants.HEADER_TRANSFER_ENCODING,
+                    "chunked");
         }
         for (final Parameter header : getResponseHeaders()) {
             this.response.addHeader(header.getName(), header.getValue());

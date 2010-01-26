@@ -135,6 +135,8 @@ Changes log
           properties from headers values.
           Reported by Taylor Cowan.
         - Allowed to set the DATE header.
+        - Fixed support of chunked response in the Netty connector.
+          Reported by Laurent Rustuel.
     - Misc
         - Updated Simple framework library to version 4.1.17.
         - Deprecated Message#getEntityAs* methods.
