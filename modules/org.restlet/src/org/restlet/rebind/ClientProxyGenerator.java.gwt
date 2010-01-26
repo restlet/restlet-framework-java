@@ -284,7 +284,7 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
 
             println("getClientResource().setMethod(Method."
                     + info.getRestletMethod().toString() + ");");
-            println("getClientResource().setOnReceived(new Uniform() {");
+            println("getClientResource().setOnResponse(new Uniform() {");
             indent();
             println("public void handle(Request request, Response response) {");
             indent();
