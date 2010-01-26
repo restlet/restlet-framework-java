@@ -112,12 +112,6 @@ public class NettyServerCall extends ServerCall {
     }
 
     @Override
-    public void complete() {
-        content.clear();
-        super.complete();
-    }
-
-    @Override
     public String getClientAddress() {
         return this.remoteAddress.getAddress().getHostAddress();
     }
