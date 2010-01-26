@@ -75,7 +75,6 @@
          <exclude name="src/com/**" />
          <exclude name="src/org/restlet/engine/internal/Activator.java" />
          <exclude name="src/org/restlet/engine/http/connector/**" />
-         <exclude name="src/org/restlet/engine/http/stream/**" />
          <exclude name="src/org/restlet/engine/log/IdentClient.java" />
          <exclude name="src/org/restlet/service/TaskService.java" />
 ]]>
