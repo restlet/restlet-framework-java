@@ -323,11 +323,6 @@ public class ServerConnection extends Connection<Server> {
             try {
                 addTransportHeaders(headers, response.getEntity());
                 addResponseHeaders(response, headers);
-
-                // Add user-defined extension headers
-                Series<Parameter> additionalHeaders = (Series<Parameter>) response
-                        .getAttributes().get(HeaderConstants.ATTRIBUTE_HEADERS);
-                addAdditionalHeaders(headers, additionalHeaders);
             } catch (Exception e) {
                 getLogger()
                         .log(

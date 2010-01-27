@@ -268,11 +268,6 @@ public class ClientConnection extends Connection<Client> {
                 // if (result.equals(Status.CONNECTOR_ERROR_COMMUNICATION)) {
                 // return result;
                 // }
-
-                // Add user-defined extension headers
-                Series<Parameter> additionalHeaders = (Series<Parameter>) request
-                        .getAttributes().get(HeaderConstants.ATTRIBUTE_HEADERS);
-                addAdditionalHeaders(headers, additionalHeaders);
             } catch (Exception e) {
                 getLogger()
                         .log(
