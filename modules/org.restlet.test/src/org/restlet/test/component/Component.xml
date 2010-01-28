@@ -3,9 +3,9 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.restlet.org/schemas/2.0/Component">
 
-	<client protocol="FILE" />
-	<client protocols="HTTP HTTPS" />
-	<server protocols="HTTP HTTPS" />
+	<client protocol="FILE" name="file client" />
+	<client protocols="HTTP HTTPS" name="http client" />
+	<server protocols="HTTP HTTPS" name="http server" />
 
 	<defaultHost>
 		<attach uriPattern="/abcd/{xyz}"
