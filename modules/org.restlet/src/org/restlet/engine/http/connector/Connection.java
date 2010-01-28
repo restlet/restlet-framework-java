@@ -384,10 +384,12 @@ public abstract class Connection<T extends Connector> {
         Representation result = null;
         long contentLength = HeaderUtils.getContentLength(headers);
         boolean chunkedEncoding = HeaderUtils.isChunkedEncoding(headers);
+        // In some cases there is an entity without a content-length header
+        boolean connectionClosed = HeaderUtils.isConnectionClose(headers);
 
         // Create the representation
         if ((contentLength != Representation.UNKNOWN_SIZE && contentLength != 0)
-                || chunkedEncoding) {
+                || chunkedEncoding || connectionClosed) {
             InputStream inboundEntityStream = getInboundEntityStream(
                     contentLength, chunkedEncoding);
             ReadableByteChannel inboundEntityChannel = getInboundEntityChannel(
