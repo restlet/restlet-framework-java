@@ -109,7 +109,10 @@ public class ServletConverter extends ServerAdapter {
      *            The target Restlet.
      */
     public ServletConverter(ServletContext context, Restlet target) {
+        // [ifndef gae] instruction
         super(new Context(new ServletLogger(context)));
+        // [ifdef gae] instruction uncomment
+        // super(new Context());
         this.target = target;
     }
 

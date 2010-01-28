@@ -12,4 +12,13 @@
       <dependency type="library" id="servlet" maven-scope="provided" primary="true" />
       <dependency type="module" id="core" />
    </dependencies>
+
+	<source edition="gae">
+		<files-sets>
+<![CDATA[
+         <exclude name="src/org/restlet/engine/internal/ServletLogger.java" />
+]]>
+		</files-sets>
+	</source>
+   
 </module>

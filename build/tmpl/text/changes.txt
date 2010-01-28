@@ -138,6 +138,9 @@ Changes log
         - Allowed to set the DATE header.
         - Fixed support of chunked response in the Netty connector.
           Reported by Laurent Rustuel.
+        - Removed ServletLogger adapter for the GAE edition due to the
+          fact that the Logger class cannot be inherited.
+          Reported by Cedric Hurst.
     - Misc
         - Updated Simple framework library to version 4.1.17.
         - Deprecated Message#getEntityAs* methods.

@@ -109,7 +109,10 @@ public class ServletAdapter extends ServerAdapter {
      *            The next Restlet.
      */
     public ServletAdapter(ServletContext context, Restlet next) {
+        // [ifndef gae] instruction
         super(new Context(new ServletLogger(context)));
+        // [ifdef gae] instruction uncomment
+        // super(new Context());
         this.next = next;
     }
 
