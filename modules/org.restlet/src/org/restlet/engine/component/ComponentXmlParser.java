@@ -519,6 +519,8 @@ public class ComponentXmlParser {
                         if (client != null) {
                             getComponent().getClients().add(client);
 
+                            // Look for Restlet's attributes
+                            parseRestlet(client, childNode);
                             // Look for parameters
                             for (int j = 0; j < childNode.getChildNodes()
                                     .getLength(); j++) {
@@ -582,6 +584,9 @@ public class ComponentXmlParser {
                         }
 
                         if (server != null) {
+                            // Look for Restlet's attributes
+                            parseRestlet(server, childNode);
+                            
                             if (addressNode != null) {
                                 final String address = addressNode
                                         .getNodeValue();
@@ -723,10 +728,6 @@ public class ComponentXmlParser {
         if ((item != null) && (item.getNodeValue() != null)) {
             host.setHostScheme(item.getNodeValue());
         }
-        item = hostNode.getAttributes().getNamedItem("name");
-        if ((item != null) && (item.getNodeValue() != null)) {
-            host.setName(item.getNodeValue());
-        }
         item = hostNode.getAttributes().getNamedItem("resourceDomain");
         if ((item != null) && (item.getNodeValue() != null)) {
             host.setResourceDomain(item.getNodeValue());
@@ -750,6 +751,34 @@ public class ComponentXmlParser {
     }
 
     /**
+     * Parse the attributes of a DOM node and update the given restlet.
+     * 
+     * @param restlet
+     *            the restlet to update.
+     * @param restletNode
+     *            the DOM node.
+     */
+    private void parseRestlet(Restlet restlet, Node restletNode) {
+        // Parse the "RestletType" attributes and elements.
+        Node item = restletNode.getAttributes().getNamedItem("name");
+        if ((item != null) && (item.getNodeValue() != null)) {
+            restlet.setName(item.getNodeValue());
+        }
+        item = restletNode.getAttributes().getNamedItem("description");
+        if ((item != null) && (item.getNodeValue() != null)) {
+            restlet.setDescription(item.getNodeValue());
+        }
+        item = restletNode.getAttributes().getNamedItem("owner");
+        if ((item != null) && (item.getNodeValue() != null)) {
+            restlet.setOwner(item.getNodeValue());
+        }
+        item = restletNode.getAttributes().getNamedItem("author");
+        if ((item != null) && (item.getNodeValue() != null)) {
+            restlet.setOwner(item.getNodeValue());
+        }
+    }
+
+    /**
      * Parse the attributes of a DOM node and update the given router.
      * 
      * @param router
@@ -758,6 +787,8 @@ public class ComponentXmlParser {
      *            the DOM node.
      */
     private void parseRouter(Router router, Node routerNode) {
+        parseRestlet(router, routerNode);
+
         Node item = routerNode.getAttributes().getNamedItem(
                 "defaultMatchingMode");
         if (item != null) {
@@ -818,7 +849,8 @@ public class ComponentXmlParser {
                 if (p != null) {
                     router.getContext().getParameters().add(p);
                 }
-            } else if ("attach".equals(childNode.getNodeName())) {
+            } else if ("attach".equals(childNode.getNodeName())
+                    || "attachDefault".equals(childNode.getNodeName())) {
                 String uriPattern = null;
                 Node item = childNode.getAttributes()
                         .getNamedItem("uriPattern");
@@ -829,7 +861,7 @@ public class ComponentXmlParser {
                 }
 
                 item = childNode.getAttributes().getNamedItem("default");
-                final boolean bDefault = getBoolean(item, false);
+                final boolean bDefault = getBoolean(item, false) || "attachDefault".equals(childNode.getNodeName());
 
                 // Attaches a new route.
                 // save the old router context so new routes do not inherit it
@@ -859,8 +891,8 @@ public class ComponentXmlParser {
                     final Template template = route.getTemplate();
                     item = childNode.getAttributes().getNamedItem(
                             "matchingMode");
-                    template.setMatchingMode(getInt(item,
-                            Template.MODE_STARTS_WITH));
+                    template
+                            .setMatchingMode(getInt(item, Template.MODE_EQUALS));
                     item = childNode.getAttributes().getNamedItem(
                             "defaultVariableType");
                     template.getDefaultVariable().setType(

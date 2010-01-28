@@ -106,6 +106,7 @@ Changes log
         - Added LogService#logPropertiesRef to easily read log properties from 
 		  a URI at start time.
 		- Added setDefaultAttachment() method to SpringHost and SpringRouter.
+		- Updated component configuration parsing logic.
     - Bugs fixed
         - Fixed issue in DomRepresentation with createTransformer()
           method. Fix contributed by Remi Dewitte. 
