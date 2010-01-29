@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5"/>
+	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="C:/Tools/Aduna/sesame/lib/standard-1.1.2.jar"/>
+	<classpathentry kind="lib" path="C:/Tools/Aduna/sesame/lib/sesame-sail-api-2.3-pr1.jar"/>
+	<classpathentry kind="lib" path="C:/Tools/Aduna/sesame/lib/sesame-sail-inferencer-2.3-pr1.jar"/>
+	<classpathentry kind="lib" path="C:/Tools/Aduna/sesame/lib/sesame-sail-memory-2.3-pr1.jar"/>
+	<classpathentry kind="lib" path="C:/Tools/Aduna/sesame/lib/sesame-sail-nativerdf-2.3-pr1.jar"/>
+	<classpathentry kind="lib" path="C:/Tools/Aduna/sesame/lib/sesame-sail-rdbms-2.3-pr1.jar"/>
+	<classpathentry kind="lib" path="C:/Tools/Aduna/sesame/lib/slf4j-api-1.5.6.jar"/>
+	<classpathentry kind="lib" path="C:/Tools/Aduna/sesame/lib/slf4j-jdk14-1.5.6.jar"/>
+	<classpathentry kind="lib" path="C:/Tools/Aduna/sesame/lib/spring-aop-2.5.6.jar"/>
+	<classpathentry kind="lib" path="C:/Tools/Aduna/sesame/lib/spring-beans-2.5.6.jar"/>
+	<classpathentry kind="lib" path="C:/Tools/Aduna/sesame/lib/spring-context-2.5.6.jar"/>
+	<classpathentry kind="lib" path="C:/Tools/Aduna/sesame/lib/spring-context-support-2.5.6.jar"/>
+	<classpathentry kind="lib" path="C:/Tools/Aduna/sesame/lib/spring-core-2.5.6.jar"/>
+	<classpathentry kind="lib" path="C:/Tools/Aduna/sesame/lib/spring-web-2.5.6.jar"/>
+	<classpathentry kind="lib" path="C:/Tools/Aduna/sesame/lib/spring-webmvc-2.5.6.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

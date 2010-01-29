@@ -1,0 +1,54 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Java bytecode optimizer and class rewriter
+Bundle-SymbolicName: edu.purdue.cs.bloat
+Bundle-Version: 1.0
+Bundle-ClassPath: edu.purdue.cs.bloat.jar
+Bundle-Vendor: Purdue University
+Export-Package: 
+ EDU.purdue.cs.bloat.benchmark;uses:="EDU.purdue.cs.bloat.editor",
+ EDU.purdue.cs.bloat.cfg;
+  uses:="EDU.purdue.cs.bloat.util,
+   EDU.purdue.cs.bloat.tree,
+   EDU.purdue.cs.bloat.editor,
+   new EDU.purdue.cs.bloat.cfg",
+ EDU.purdue.cs.bloat.codegen;
+  uses:="EDU.purdue.cs.bloat.util,
+   EDU.purdue.cs.bloat.tree,
+   EDU.purdue.cs.bloat.editor,
+   EDU.purdue.cs.bloat.cfg,
+   new EDU.purdue.cs.bloat.codegen",
+ EDU.purdue.cs.bloat.context;uses:="EDU.purdue.cs.bloat.inline,EDU.purdue.cs.bloat.editor,EDU.purdue.cs.bloat.reflect",
+ EDU.purdue.cs.bloat.decorate;uses:="EDU.purdue.cs.bloat.editor",
+ EDU.purdue.cs.bloat.diva;
+  uses:="EDU.purdue.cs.bloat.tree,
+   EDU.purdue.cs.bloat.file,
+   EDU.purdue.cs.bloat.cfg,
+   EDU.purdue.cs.bloat.ssa,
+   EDU.purdue.cs.bloat.context,
+   new EDU.purdue.cs.bloat.diva",
+ EDU.purdue.cs.bloat.dump;uses:="EDU.purdue.cs.bloat.editor",
+ EDU.purdue.cs.bloat.editor;uses:="EDU.purdue.cs.bloat.util,EDU.purdue.cs.bloat.tree,EDU.purdue.cs.bloat.reflect",
+ EDU.purdue.cs.bloat.file;uses:="EDU.purdue.cs.bloat.reflect",
+ EDU.purdue.cs.bloat.inline;uses:="EDU.purdue.cs.bloat.editor",
+ EDU.purdue.cs.bloat.optimize;uses:="EDU.purdue.cs.bloat.editor,EDU.purdue.cs.bloat.file,EDU.purdue.cs.bloat.context",
+ EDU.purdue.cs.bloat.reflect,
+ EDU.purdue.cs.bloat.shrink;uses:="EDU.purdue.cs.bloat.editor",
+ EDU.purdue.cs.bloat.ssa;uses:="EDU.purdue.cs.bloat.tree,EDU.purdue.cs.bloat.cfg,new EDU.purdue.cs.bloat.ssa",
+ EDU.purdue.cs.bloat.strip;uses:="EDU.purdue.cs.bloat.editor",
+ EDU.purdue.cs.bloat.tbaa;
+  uses:="EDU.purdue.cs.bloat.tree,
+   EDU.purdue.cs.bloat.editor,
+   EDU.purdue.cs.bloat.cfg,
+   EDU.purdue.cs.bloat.ssa",
+ EDU.purdue.cs.bloat.tools;uses:="EDU.purdue.cs.bloat.context",
+ EDU.purdue.cs.bloat.trans;
+  uses:="EDU.purdue.cs.bloat.util,
+   EDU.purdue.cs.bloat.tree,
+   EDU.purdue.cs.bloat.editor,
+   EDU.purdue.cs.bloat.cfg,
+   new EDU.purdue.cs.bloat.trans,
+   EDU.purdue.cs.bloat.ssa",
+ EDU.purdue.cs.bloat.tree;uses:="EDU.purdue.cs.bloat.editor,EDU.purdue.cs.bloat.cfg",
+ EDU.purdue.cs.bloat.util;uses:="new EDU.purdue.cs.bloat.util"
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

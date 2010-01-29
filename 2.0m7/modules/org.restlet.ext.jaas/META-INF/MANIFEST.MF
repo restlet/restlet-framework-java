@@ -1,0 +1,24 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Restlet Extension - JAAS
+Bundle-SymbolicName: org.restlet.ext.jaas
+Bundle-Version: 2.0
+Bundle-Vendor: Noelios Technologies
+Import-Package: javax.security.auth,
+ javax.security.auth.callback,
+ javax.security.auth.kerberos,
+ javax.security.auth.login,
+ javax.security.auth.spi,
+ javax.security.auth.x500,
+ org.restlet,
+ org.restlet.data,
+ org.restlet.engine.converter,
+ org.restlet.engine.resource,
+ org.restlet.engine.util,
+ org.restlet.representation,
+ org.restlet.resource,
+ org.restlet.routing,
+ org.restlet.service,
+ org.restlet.util
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Require-Bundle: org.restlet

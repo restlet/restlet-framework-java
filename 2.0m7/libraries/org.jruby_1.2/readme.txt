@@ -1,0 +1,14 @@
+----------------------------------------
+JRuby - Java powered Ruby implementation
+----------------------------------------
+
+"JRuby is an 100% pure-Java implementation of the Ruby programming language.
+Features
+ * A 1.8.6 compatible Ruby interpreter written in 100% pure Java
+ * Most builtin Ruby classes provided
+ * Support for interacting with and defining java classes from within ruby
+ * Bean Scripting Framework (BSF) support
+ * Distributed under a tri-license (CPL/GPL/LGPL)"
+
+For more information:
+http://jruby.codehaus.org/
