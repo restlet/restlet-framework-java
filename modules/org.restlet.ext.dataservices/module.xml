@@ -1,8 +1,8 @@
 <module id="dataservices" excludes="gwt" type="integration"
 	package="org.restlet.ext.dataservices">
-	<name>Restlet Extension - ADO.NET Data Services</name>
+	<name>Restlet Extension - WCF Data Services</name>
 	<description>
-		Integration with ADO.NET Data Services 1.0.
+		Integration with WCF Data Services 1.0.
    </description>
 	<distributions>
 		<distribution id="classic" />
