@@ -75,6 +75,10 @@
          <exclude name="src/com/**" />
          <exclude name="src/org/restlet/engine/internal/Activator.java" />
          <exclude name="src/org/restlet/engine/http/connector/**" />
+         <exclude name="src/org/restlet/engine/http/io/ChunkedInputStream.java" />
+         <exclude name="src/org/restlet/engine/http/io/ClosingInputStream.java" />
+         <exclude name="src/org/restlet/engine/http/io/InputEntityStream.java" />
+         <exclude name="src/org/restlet/engine/http/io/SizedInputStream.java" />
          <exclude name="src/org/restlet/engine/log/IdentClient.java" />
          <exclude name="src/org/restlet/service/TaskService.java" />
 ]]>
