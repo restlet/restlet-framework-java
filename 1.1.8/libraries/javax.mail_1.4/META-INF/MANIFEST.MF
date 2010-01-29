@@ -1,0 +1,33 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: JavaMail API and RI
+Bundle-SymbolicName: javax.mail
+Bundle-Version: 1.4.2
+Bundle-ClassPath: javax.mail.jar
+Bundle-Vendor: Sun Microsystems Inc.
+Export-Package: com.sun.mail.handlers;uses:="javax.activation",
+ com.sun.mail.iap,
+ com.sun.mail.imap;
+  uses:="javax.activation,
+   com.sun.mail.iap,
+   javax.mail.search,
+   javax.mail.internet,
+   javax.mail,
+   javax.mail.event,
+   com.sun.mail.imap.protocol",
+ com.sun.mail.imap.protocol;
+  uses:="com.sun.mail.iap,
+   javax.security.auth.callback,
+   javax.mail.search,
+   com.sun.mail.imap,
+   javax.mail.internet,
+   javax.mail",
+ com.sun.mail.pop3;uses:="javax.mail.internet,javax.mail",
+ com.sun.mail.smtp;uses:="com.sun.mail.util,javax.mail.internet,javax.mail",
+ com.sun.mail.util;uses:="javax.mail,javax.net.ssl",
+ javax.mail;uses:="javax.activation,javax.mail.search,javax.mail.event",
+ javax.mail.event;uses:="javax.mail",
+ javax.mail.internet;uses:="javax.activation,javax.mail",
+ javax.mail.search;uses:="javax.mail",
+ javax.mail.util;uses:="javax.activation,javax.mail.internet"
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

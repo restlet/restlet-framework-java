@@ -1,0 +1,9 @@
+<project>
+   <modelVersion>4.0.0</modelVersion>
+   <groupId>@group-id@</groupId>
+   <artifactId>@artifact-id@</artifactId>
+   <version>@version@</version>
+
+   <name>JSON framework</name>
+   <description>JSON framework.</description>
+</project>
