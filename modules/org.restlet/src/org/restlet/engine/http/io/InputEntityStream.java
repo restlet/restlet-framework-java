@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2009 Noelios Technologies.
+ * Copyright 2005-2010 Noelios Technologies.
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL 1.0 (the
@@ -30,103 +30,79 @@
 
 package org.restlet.engine.http.io;
 
-import java.io.FilterInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 
-// [excludes gwt]
+import org.restlet.Connector;
+import org.restlet.engine.http.connector.Connection;
+import org.restlet.engine.http.connector.ConnectionState;
+
 /**
- * Input stream based on a source stream that must only be partially read.
- * 
- * @author Jerome Louvel
+ * Input stream that synchronizes the state of a {@link Connection} instance and
+ * an input stream.
  */
-public class InputEntityStream extends FilterInputStream {
+public abstract class InputEntityStream extends InputStream {
 
-    /** The total size that should be read from the source stream. */
-    private volatile long availableSize;
+    /** The connection. */
+    private volatile Connection<? extends Connector> connection;
 
-    /** The total size when the {@link #mark(int)} method was called. */
-    private volatile long markedAvailableSize;
+    /** The inbound stream. */
+    private InputStream inboundStream;
 
     /**
      * Constructor.
      * 
-     * @param source
-     *            The source stream.
-     * @param size
-     *            The total size that should be read from the source stream.
+     * @param connection
+     *            The connection with its own inbound stream.
      */
-    public InputEntityStream(InputStream source, long size) {
-        super(source);
-        this.availableSize = size;
-        this.markedAvailableSize = -1;
-    }
-
-    @Override
-    public int available() throws IOException {
-        return Math.min((int) this.availableSize, super.available());
-    }
-
-    @Override
-    public void close() throws IOException {
-        // Don't close it directly
-    }
-
-    @Override
-    public synchronized void mark(int readlimit) {
-        if (markSupported()) {
-            this.markedAvailableSize = availableSize;
-        }
-
-        super.mark(readlimit);
+    public InputEntityStream(Connection<? extends Connector> connection) {
+        this(connection, connection.getInboundStream());
     }
 
     /**
-     * Reads a byte from the underlying stream.
+     * Constructor.
      * 
-     * @return The byte read, or -1 if the end of the stream has been reached.
+     * @param connection
+     *            The underlying connection.
+     * @param inboundStream
+     *            The inbound stream.
      */
-    @Override
-    public int read() throws IOException {
-        int result = -1;
-
-        if (this.availableSize > 0) {
-            result = super.in.read();
-
-            if (result != -1) {
-                this.availableSize--;
-            }
-        }
-
-        return result;
+    public InputEntityStream(Connection<? extends Connector> connection,
+            InputStream inboundStream) {
+        super();
+        this.connection = connection;
+        this.inboundStream = inboundStream;
     }
 
-    @Override
-    public int read(byte b[], int off, int len) throws IOException {
-        int result = -1;
-
-        if (this.availableSize > 0) {
-            result = super.in.read(b, off, Math.min(len,
-                    (int) this.availableSize));
-
-            if (result > 0) {
-                this.availableSize -= result;
-            }
-        }
-
-        return result;
+    /**
+     * Returns the inbound stream.
+     * 
+     * @return The inbound stream.
+     */
+    protected InputStream getInboundStream() {
+        return this.inboundStream;
     }
 
-    @Override
-    public synchronized void reset() throws IOException {
-        if (markSupported()) {
-            if (this.markedAvailableSize != -1) {
-                this.availableSize = markedAvailableSize;
-                this.markedAvailableSize = -1;
-            }
+    /**
+     * To be called when the end of the stream is reached. By default, it
+     * updates the state of the connection ({@link
+     * Connection#setInboundBusy(false)}) .
+     */
+    protected void onEndReached() {
+        if (connection != null) {
+            connection.setInboundBusy(false);
         }
+    }
 
-        super.reset();
+    /**
+     * To be called when there is an error when handling the stream. By default
+     * it calls {@link #onEndReached()} and set the state of the connection to
+     * {@link ConnectionState#CLOSING} in order to release this stream.
+     */
+    protected void onError() {
+        onEndReached();
+        if (connection != null) {
+            connection.setState(ConnectionState.CLOSING);
+        }
     }
 
 }

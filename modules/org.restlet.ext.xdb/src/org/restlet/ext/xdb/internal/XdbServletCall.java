@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2009 Noelios Technologies.
+ * Copyright 2005-2010 Noelios Technologies.
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL 1.0 (the
@@ -54,7 +54,7 @@ import org.restlet.data.Status;
 import org.restlet.engine.http.ServerCall;
 import org.restlet.engine.http.io.ChunkedInputStream;
 import org.restlet.engine.http.io.ChunkedOutputStream;
-import org.restlet.engine.http.io.InputEntityStream;
+import org.restlet.engine.http.io.SizedInputStream;
 import org.restlet.util.Series;
 
 /**
@@ -146,10 +146,10 @@ public class XdbServletCall extends ServerCall {
         if (this.requestEntityStream == null) {
             try {
                 if (isRequestChunked()) {
-                    this.requestEntityStream = new ChunkedInputStream(
+                    this.requestEntityStream = new ChunkedInputStream(null,
                             getRequest().getInputStream());
                 } else {
-                    this.requestEntityStream = new InputEntityStream(
+                    this.requestEntityStream = new SizedInputStream(null,
                             getRequest().getInputStream(), size);
                 }
             } catch (IOException e) {

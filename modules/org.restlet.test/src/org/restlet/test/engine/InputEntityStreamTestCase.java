@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2009 Noelios Technologies.
+ * Copyright 2005-2010 Noelios Technologies.
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL 1.0 (the
@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.restlet.engine.http.io.InputEntityStream;
+import org.restlet.engine.http.io.SizedInputStream;
 import org.restlet.engine.io.BioUtils;
 import org.restlet.test.RestletTestCase;
 
@@ -50,13 +51,13 @@ public class InputEntityStreamTestCase extends RestletTestCase {
         String data = "test data";
         InputStream input = new ByteArrayInputStream(data.getBytes());
         assertEquals("test", BioUtils
-                .toString(new InputEntityStream(input, 4)));
+                .toString(new SizedInputStream(null, input, 4)));
     }
 
     public void testReset() throws IOException {
         String data = "12345678";
         InputStream input = new ByteArrayInputStream(data.getBytes());
-        InputEntityStream ies = new InputEntityStream(input, 4);
+        InputEntityStream ies = new SizedInputStream(null, input, 4);
 
         assertEquals(true, ies.markSupported());
 

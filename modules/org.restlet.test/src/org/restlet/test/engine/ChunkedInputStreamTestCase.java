@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2009 Noelios Technologies.
+ * Copyright 2005-2010 Noelios Technologies.
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL 1.0 (the
@@ -40,7 +40,6 @@ import org.restlet.engine.http.io.ChunkedInputStream;
 import org.restlet.engine.http.io.ChunkedOutputStream;
 import org.restlet.test.RestletTestCase;
 
-
 /**
  * Test cases for the chunked decoding.
  * 
@@ -63,14 +62,14 @@ public class ChunkedInputStreamTestCase extends RestletTestCase {
     public void testClose() throws IOException {
         final String data = "test data";
         InputStream input = write(data);
-        InputStream chunked = new ChunkedInputStream(input);
+        InputStream chunked = new ChunkedInputStream(null, input);
 
         assertEquals('t', chunked.read());
         chunked.close();
         assertEquals(-1, chunked.read());
 
         input = write(data);
-        chunked = new ChunkedInputStream(input);
+        chunked = new ChunkedInputStream(null, input);
 
         chunked.close();
         assertEquals(-1, chunked.read());
@@ -79,14 +78,14 @@ public class ChunkedInputStreamTestCase extends RestletTestCase {
     public void testRead() throws IOException {
         String data = "test data";
         InputStream input = write(data);
-        InputStream chunked = new ChunkedInputStream(input);
+        InputStream chunked = new ChunkedInputStream(null, input);
 
         assertEquals(data, read(chunked));
 
         input = new ByteArrayInputStream(
                 "1a; ignore-stuff-here\r\nabcdefghijklmnopqrstuvwxyz\r\n10; other stuff\r\n1234567890abcdef\r\n0\r\n\r\n"
                         .getBytes());
-        chunked = new ChunkedInputStream(input);
+        chunked = new ChunkedInputStream(null, input);
 
         assertEquals("abcdefghijklmnopqrstuvwxyz1234567890abcdef",
                 read(chunked));
@@ -94,20 +93,20 @@ public class ChunkedInputStreamTestCase extends RestletTestCase {
         input = new ByteArrayInputStream(
                 "\r\n1a; ignore-stuff-here\r\nabcdefghijklmnopqrstuvwxyz\r\n10; other stuff\r\n1234567890abcdef\r\n0\r\n\r\n"
                         .getBytes());
-        chunked = new ChunkedInputStream(input);
+        chunked = new ChunkedInputStream(null, input);
 
         assertEquals("abcdefghijklmnopqrstuvwxyz1234567890abcdef",
                 read(chunked));
 
         data = "";
         input = write(data);
-        chunked = new ChunkedInputStream(input);
+        chunked = new ChunkedInputStream(null, input);
 
         assertEquals(data, read(chunked));
 
         data = "\r\n";
         input = write(data);
-        chunked = new ChunkedInputStream(input);
+        chunked = new ChunkedInputStream(null, input);
 
         assertEquals(data, read(chunked));
     }
@@ -115,20 +114,20 @@ public class ChunkedInputStreamTestCase extends RestletTestCase {
     public void testReadWithChunkSizeComments() throws IOException {
         InputStream input = new ByteArrayInputStream(
                 "9; comment\r\ntest data\r\n0\r\n\r\n".getBytes());
-        InputStream chunked = new ChunkedInputStream(input);
+        InputStream chunked = new ChunkedInputStream(null, input);
 
         assertEquals("test data", read(chunked));
 
         input = new ByteArrayInputStream(
                 "9 ; comment\r\ntest data\r\n0\r\n\r\n".getBytes());
-        chunked = new ChunkedInputStream(input);
+        chunked = new ChunkedInputStream(null, input);
 
         assertEquals("test data", read(chunked));
 
         input = new ByteArrayInputStream(
                 "4; comment\r\ntest\r\n5; another comment\r\n data\r\n0\r\n\r\n"
                         .getBytes());
-        chunked = new ChunkedInputStream(input);
+        chunked = new ChunkedInputStream(null, input);
 
         assertEquals("test data", read(chunked));
     }

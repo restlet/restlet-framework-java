@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2009 Noelios Technologies.
+ * Copyright 2005-2010 Noelios Technologies.
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL 1.0 (the
@@ -35,6 +35,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
 
+import org.restlet.Connector;
+import org.restlet.engine.http.connector.Connection;
+
 /**
  * {@link InputStream} to wrap a source {@link InputStream} that has been
  * chunked. See section 3.6.1 of HTTP Protocol for more information on chunked
@@ -44,7 +47,7 @@ import java.io.PushbackInputStream;
  * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html">HTTP/1.1
  *      Protocol</a>
  */
-public class ChunkedInputStream extends InputStream {
+public class ChunkedInputStream extends InputEntityStream {
 
     /** Size of the push back buffer. */
     private static final int PUSHBBACK_BUFFER_SIZE = 2;
@@ -67,15 +70,30 @@ public class ChunkedInputStream extends InputStream {
     /**
      * Constructor.
      * 
-     * @param source
-     *            Source InputStream to read from
+     * @param connection
+     *            The underlying connection.
+     * @param inboundStream
+     *            The inbound stream.
      */
-    public ChunkedInputStream(InputStream source) {
-        this.source = new PushbackInputStream(source, PUSHBBACK_BUFFER_SIZE);
+    public ChunkedInputStream(Connection<? extends Connector> connection,
+            InputStream inboundStream) {
+        super(connection, inboundStream);
+        this.source = new PushbackInputStream(inboundStream,
+                PUSHBBACK_BUFFER_SIZE);
         this.initialized = false;
         this.endReached = false;
         this.position = 0;
         this.chunkSize = 0;
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param connection
+     *            The connection with its own inbound stream.
+     */
+    public ChunkedInputStream(Connection<? extends Connector> connection) {
+        this(connection, connection.getInboundStream());
     }
 
     /**
@@ -133,7 +151,7 @@ public class ChunkedInputStream extends InputStream {
     public void close() throws IOException {
         super.close();
         this.initialized = true;
-        this.endReached = true;
+        onEndReached();
     }
 
     /**
@@ -158,11 +176,17 @@ public class ChunkedInputStream extends InputStream {
         this.position = 0;
 
         if (this.chunkSize == 0) {
-            this.endReached = true;
+            onEndReached();
 
             // Read the new line after the optional (unsupported) trailer
             checkCRLF();
         }
+    }
+
+    @Override
+    protected void onEndReached() {
+        super.onEndReached();
+        this.endReached = true;
     }
 
     @Override
@@ -172,7 +196,9 @@ public class ChunkedInputStream extends InputStream {
         if (canRead()) {
             result = this.source.read();
             this.position++;
-            this.endReached = (result == -1);
+            if ((result == -1)) {
+                onEndReached();
+            }
         }
 
         return result;
@@ -193,6 +219,9 @@ public class ChunkedInputStream extends InputStream {
                 if (nextResult > 0) {
                     result += nextResult;
                 }
+            }
+            if (result == -1) {
+                onEndReached();
             }
         }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2009 Noelios Technologies.
+ * Copyright 2005-2010 Noelios Technologies.
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL 1.0 (the
@@ -57,8 +57,9 @@ import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.http.header.HeaderUtils;
 import org.restlet.engine.http.io.ChunkedInputStream;
 import org.restlet.engine.http.io.ChunkedOutputStream;
+import org.restlet.engine.http.io.ClosingInputStream;
 import org.restlet.engine.http.io.InboundStream;
-import org.restlet.engine.http.io.InputEntityStream;
+import org.restlet.engine.http.io.SizedInputStream;
 import org.restlet.engine.http.io.OutboundStream;
 import org.restlet.engine.io.TraceInputStream;
 import org.restlet.engine.io.TraceOutputStream;
@@ -492,11 +493,11 @@ public abstract class Connection<T extends Connector> {
         InputStream result = null;
 
         if (chunked) {
-            result = new ChunkedInputStream(getInboundStream());
+            result = new ChunkedInputStream(this);
         } else if (size >= 0) {
-            result = new InputEntityStream(getInboundStream(), size);
+            result = new SizedInputStream(this, size);
         } else {
-            result = getInboundStream();
+            result = new ClosingInputStream(this);
         }
 
         return result;
@@ -819,7 +820,7 @@ public abstract class Connection<T extends Connector> {
      * @param inboundBusy
      *            True if the input of the socket is busy.
      */
-    protected void setInboundBusy(boolean inboundBusy) {
+    public void setInboundBusy(boolean inboundBusy) {
         this.inboundBusy = inboundBusy;
     }
 
@@ -829,7 +830,7 @@ public abstract class Connection<T extends Connector> {
      * @param outboundBusy
      *            True if the output of the socket is busy.
      */
-    protected void setOutboundBusy(boolean outboundBusy) {
+    public void setOutboundBusy(boolean outboundBusy) {
         this.outboundBusy = outboundBusy;
     }
 

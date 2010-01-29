@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2009 Noelios Technologies.
+ * Copyright 2005-2010 Noelios Technologies.
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL 1.0 (the
@@ -30,6 +30,7 @@
 
 package org.restlet.resource;
 
+import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -1644,7 +1645,7 @@ public class ClientResource extends UniformResource {
                         .getMethod("getClientResource"))) {
                     result = clientResource;
                 } else {
-                    org.restlet.engine.resource.AnnotationInfo annotation = org.restlet.engine.resource.AnnotationUtils
+                    final org.restlet.engine.resource.AnnotationInfo annotation = org.restlet.engine.resource.AnnotationUtils
                             .getAnnotation(annotations, javaMethod);
 
                     if (annotation != null) {
@@ -1653,9 +1654,61 @@ public class ClientResource extends UniformResource {
 
                         try {
                             Representation requestEntity = null;
+                            boolean isSynchrone = true;
                             if ((args != null) && args.length > 0) {
-                                requestEntity = toRepresentation(args[0]);
-                                getRequest().setEntity(requestEntity);
+                                // Checks if the user has defined its own
+                                // callback.
+                                for (int i = 0; i < args.length; i++) {
+                                    Object o = args[i];
+                                    if (Result.class.isAssignableFrom(o
+                                            .getClass())) {
+                                        // Asynchronous mode where a callback
+                                        // object is to be called.
+                                        isSynchrone = false;
+
+                                        // Get the kind of result expected.
+                                        final Result rCallback = (Result) o;
+                                        java.lang.reflect.Type[] genericParameterTypes = javaMethod
+                                                .getGenericParameterTypes();
+                                        java.lang.reflect.Type genericParameterType = genericParameterTypes[i];
+                                        ParameterizedType parameterizedType = (genericParameterType instanceof ParameterizedType) ? (ParameterizedType) genericParameterType
+                                                : null;
+                                        final Class<?> actualType = (parameterizedType
+                                                .getActualTypeArguments()[0] instanceof Class<?>) ? (Class<?>) parameterizedType
+                                                .getActualTypeArguments()[0]
+                                                : null;
+
+                                        // Define the callback
+                                        Uniform callback = new Uniform() {
+                                            public void handle(Request request,
+                                                    Response response) {
+                                                if (response.getStatus()
+                                                        .isError()) {
+                                                    rCallback
+                                                            .onFailure(new ResourceException(
+                                                                    response
+                                                                            .getStatus()));
+                                                } else {
+                                                    if (actualType != null) {
+                                                        rCallback
+                                                                .onSuccess(toObject(
+                                                                        response
+                                                                                .getEntity(),
+                                                                        actualType
+                                                                                .getClass()));
+                                                    } else {
+                                                        rCallback
+                                                                .onSuccess(null);
+                                                    }
+                                                }
+                                            }
+                                        };
+                                        setOnResponse(callback);
+                                    } else {
+                                        requestEntity = toRepresentation(args[i]);
+                                        getRequest().setEntity(requestEntity);
+                                    }
+                                }
                             }
 
                             List<org.restlet.representation.Variant> responseVariants = annotation
@@ -1672,13 +1725,15 @@ public class ClientResource extends UniformResource {
 
                             handle();
 
-                            if (getStatus().isError()) {
-                                throw new ResourceException(getStatus());
-                            }
+                            if (isSynchrone) {
+                                if (getStatus().isError()) {
+                                    throw new ResourceException(getStatus());
+                                }
 
-                            if (annotation.getJavaOutputType() != null) {
-                                result = toObject(getResponseEntity(),
-                                        annotation.getJavaOutputType());
+                                if (annotation.getJavaOutputType() != null) {
+                                    result = toObject(getResponseEntity(),
+                                            annotation.getJavaOutputType());
+                                }
                             }
                         } finally {
                             // Restore the current client info
