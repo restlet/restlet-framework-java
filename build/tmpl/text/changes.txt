@@ -3,6 +3,8 @@
 Changes log  
 ===========
 
+- @version-full@ (@release-date@)
+
 - 2.0 Milestone 7 (2010-01-29)
     - API changes
         - Added more specific Validator#validatePresence and 
