@@ -3,7 +3,7 @@
 Changes log  
 ===========
 
-- @version-full@ (@release-date@)
+- 1.1.8 (2010-01-29)
     - Bugs fixed
         - Fixed generation of Atom document.
           Reported by Bedwyr Humphreys.
