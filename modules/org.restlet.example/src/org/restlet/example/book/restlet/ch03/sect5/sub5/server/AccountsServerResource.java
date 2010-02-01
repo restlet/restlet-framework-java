@@ -1,4 +1,4 @@
-package org.restlet.example.book.restlet.ch04.sec3.server;
+package org.restlet.example.book.restlet.ch03.sect5.sub5.server;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
