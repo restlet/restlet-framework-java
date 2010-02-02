@@ -62,7 +62,7 @@ public class FileEntity extends Entity {
 
     @Override
     public boolean exists() {
-        // [ifndef gae] uncomment
+        // [ifndef gae] instruction
         return getFile().exists();
         // [ifdef gae] uncomment
         // boolean result = false;
