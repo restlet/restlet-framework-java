@@ -62,7 +62,18 @@ public class FileEntity extends Entity {
 
     @Override
     public boolean exists() {
+        // [ifndef gae] uncomment
         return getFile().exists();
+        // [ifdef gae] uncomment
+        // boolean result = false;
+        //
+        // try {
+        // result = getFile().exists();
+        // } catch (AccessControlException ace) {
+        // result = false;
+        // }
+        // return result;
+        // [enddif]
     }
 
     @Override
