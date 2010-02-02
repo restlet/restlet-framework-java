@@ -69,7 +69,7 @@ public class FileEntity extends Entity {
         //
         // try {
         // result = getFile().exists();
-        // } catch (AccessControlException ace) {
+        // } catch (java.security.AccessControlException ace) {
         // result = false;
         // }
         // return result;
