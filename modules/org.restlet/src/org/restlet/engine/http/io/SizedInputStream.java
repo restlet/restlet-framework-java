@@ -122,6 +122,8 @@ public class SizedInputStream extends InputEntityStream {
             } else {
                 onEndReached();
             }
+        } else {
+            onEndReached();
         }
 
         return result;
@@ -140,6 +142,8 @@ public class SizedInputStream extends InputEntityStream {
             } else if (result == -1) {
                 onEndReached();
             }
+        } else {
+            onEndReached();
         }
 
         return result;
