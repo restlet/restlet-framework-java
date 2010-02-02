@@ -4,6 +4,8 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+        - Fixed compilation issue in the ClientResource class for the
+          GWT edition. Reported by Laszlo Megyer. 
 
 - 2.0 Milestone 7 (2010-01-29)
     - API changes

@@ -30,7 +30,6 @@
 
 package org.restlet.resource;
 
-import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -1671,7 +1670,7 @@ public class ClientResource extends UniformResource {
                                         java.lang.reflect.Type[] genericParameterTypes = javaMethod
                                                 .getGenericParameterTypes();
                                         java.lang.reflect.Type genericParameterType = genericParameterTypes[i];
-                                        ParameterizedType parameterizedType = (genericParameterType instanceof ParameterizedType) ? (ParameterizedType) genericParameterType
+                                        java.lang.reflect.ParameterizedType parameterizedType = (genericParameterType instanceof java.lang.reflect.ParameterizedType) ? (java.lang.reflect.ParameterizedType) genericParameterType
                                                 : null;
                                         final Class<?> actualType = (parameterizedType
                                                 .getActualTypeArguments()[0] instanceof Class<?>) ? (Class<?>) parameterizedType
