@@ -68,9 +68,9 @@ public class ClientConnection extends Connection<Client> {
                 : resourceRef.getTargetRef();
         if (absoluteRef.hasQuery()) {
             result = absoluteRef.getPath() + "?" + absoluteRef.getQuery();
+        } else {
+            result = absoluteRef.getPath();            
         }
-
-        result = absoluteRef.getPath();
 
         if ((result == null) || (result.equals(""))) {
             result = "/";
