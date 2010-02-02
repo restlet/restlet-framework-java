@@ -146,11 +146,6 @@ public class SizedInputStream extends InputEntityStream {
     }
 
     @Override
-    public int read(byte[] b) throws IOException {
-        return getInboundStream().read(b);
-    }
-
-    @Override
     public synchronized void reset() throws IOException {
         if (markSupported()) {
             if (this.markedAvailableSize != -1) {
