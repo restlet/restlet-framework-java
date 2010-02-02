@@ -73,7 +73,7 @@ public class FileEntity extends Entity {
         // result = false;
         // }
         // return result;
-        // [enddif]
+        // [enddef]
     }
 
     @Override

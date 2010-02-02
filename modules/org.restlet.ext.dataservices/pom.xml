@@ -9,8 +9,8 @@
 	</parent>
 
 	<artifactId>org.restlet.ext.dataservices</artifactId>
-	<name>Restlet Extension - ADO.NET Data Services</name>
-	<description>Integration with ADO.NET Data Services 1.0.</description>
+	<name>Restlet Extension - WCF Data Services</name>
+	<description>Integration with WCF Data Services 1.0.</description>
 
 	<dependencies>
 		<dependency>
