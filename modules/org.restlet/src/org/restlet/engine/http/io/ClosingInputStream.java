@@ -36,7 +36,10 @@ import org.restlet.Connector;
 import org.restlet.engine.http.connector.Connection;
 
 /**
+ * Input stream based on a source stream that must only be totally read before
+ * closing.
  * 
+ * @author Jerome Louvel
  */
 public class ClosingInputStream extends InputEntityStream {
 
