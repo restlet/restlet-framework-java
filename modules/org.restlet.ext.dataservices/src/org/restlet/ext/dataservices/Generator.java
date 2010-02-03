@@ -50,7 +50,7 @@ import org.restlet.resource.ClientResource;
 import freemarker.template.Configuration;
 
 /**
- * Code generator for WCF data services.
+ * Code generator for WCF Data Services.
  * 
  * @author Thierry Boileau
  */
@@ -59,7 +59,7 @@ public class Generator {
     /**
      * Takes two parameters :<br>
      * <ol>
-     * <li>the URI of the WCF data service</li>
+     * <li>the URI of the WCF Data Service</li>
      * <li>the output directory</li>
      * </ol>
      * 
@@ -135,7 +135,7 @@ public class Generator {
      * Constructor.
      * 
      * @param dataServiceRef
-     *            The URI of the WCF data service.
+     *            The URI of the WCF Data Service.
      * @param metadata
      *            The metadata descriptor.
      */

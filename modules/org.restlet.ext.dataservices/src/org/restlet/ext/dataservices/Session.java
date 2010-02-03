@@ -61,7 +61,7 @@ import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 /**
- * Acts as a manager for a specific remote WCF data service. WCF Data
+ * Acts as a manager for a specific remote WCF Data Service. WCF Data
  * Services are stateless, but the Service is not. State on the client is
  * maintained between interactions in order to support features such as update
  * management.<br>

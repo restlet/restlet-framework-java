@@ -44,7 +44,7 @@ public class EntityContainer extends NamedObject {
     /** The list of associations. */
     private List<AssociationSet> associations;
 
-    /** Is this container the default one for a WCF data service? */
+    /** Is this container the default one for a WCF Data Service? */
     private boolean defaultEntityContainer;
 
     /** The list of entities. */
