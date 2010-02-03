@@ -91,3 +91,15 @@ Export-Package: org.apache.http.auth;uses:="org.apache.http.params,org.apache.ht
    org.apache.http.params,
    org.apache.http.util,
    org.apache.http"
+Import-Package: org.apache.commons.logging,
+ org.apache.commons.logging.impl,
+ org.apache.http,
+ org.apache.http.entity,
+ org.apache.http.impl,
+ org.apache.http.impl.entity,
+ org.apache.http.impl.io,
+ org.apache.http.io,
+ org.apache.http.message,
+ org.apache.http.params,
+ org.apache.http.protocol,
+ org.apache.http.util
