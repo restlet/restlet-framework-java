@@ -45,7 +45,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
-import org.restlet.engine.http.header.HeaderConstants;
+import org.restlet.engine.Engine;
 import org.restlet.engine.http.header.HeaderUtils;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
@@ -223,11 +223,16 @@ public class ServerConnection extends Connection<Server> {
             setState(ConnectionState.CLOSING);
         }
 
-        // Create the request
+        // Create the request and the associated response
         request = createRequest(getHelper().getContext(), this, requestMethod,
                 requestUri, version, headers, createInboundEntity(headers),
                 false, null);
         Response response = getHelper().createResponse(request);
+        // Update the response
+        response.getServerInfo().setAddress(
+                getHelper().getHelped().getAddress());
+        response.getServerInfo().setAgent(Engine.VERSION_HEADER);
+        response.getServerInfo().setPort(getHelper().getHelped().getPort());
 
         if (request != null) {
             if (request.isExpectingResponse()) {
