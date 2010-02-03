@@ -231,7 +231,6 @@ public class ServerConnection extends Connection<Server> {
         // Update the response
         response.getServerInfo().setAddress(
                 getHelper().getHelped().getAddress());
-        response.getServerInfo().setAgent(Engine.VERSION_HEADER);
         response.getServerInfo().setPort(getHelper().getHelped().getPort());
 
         if (request != null) {
