@@ -41,7 +41,7 @@ import org.restlet.Context;
 import org.restlet.engine.util.DateUtils;
 
 /**
- * Type resolver. Able to handle ADO.NET <=> Java types conversions.
+ * Type resolver. Able to handle WCF <=> Java types conversions.
  * 
  * @author Thierry Boileau
  * @see <a href="http://msdn.microsoft.com/en-us/library/bb399213.aspx">Simple
@@ -71,13 +71,13 @@ public class Type {
             .getIntegerInstance(Locale.US);
 
     /**
-     * Converts the String representation of the target ADO.NET type to its
+     * Converts the String representation of the target WCF type to its
      * corresponding value.
      * 
      * @param value
      *            The value to convert.
      * @param adoNetType
-     *            The target ADO.NET type.
+     *            The target WCF type.
      * @return The converted value.
      */
     public static Object fromEdm(String value, String adoNetType) {
@@ -214,12 +214,12 @@ public class Type {
     }
 
     /**
-     * Converts a value to the String representation of the target ADO.NET type.
+     * Converts a value to the String representation of the target WCF type.
      * 
      * @param value
      *            The value to convert.
      * @param type
-     *            The target ADO.NET type.
+     *            The target WCF type.
      * @return The converted value.
      */
     public static String toEdm(Object value, Type type) {
@@ -398,13 +398,13 @@ public class Type {
     }
 
     /**
-     * Converts a value to the String representation of the target ADO.NET type
+     * Converts a value to the String representation of the target WCF type
      * when used a key in the URIs.
      * 
      * @param value
      *            The value to convert.
      * @param type
-     *            The target ADO.NET type.
+     *            The target WCF type.
      * @return The converted value.
      */
     public static String toEdmKey(Object value, Type type) {

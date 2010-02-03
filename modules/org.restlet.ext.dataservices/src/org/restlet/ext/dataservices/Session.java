@@ -61,12 +61,12 @@ import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 /**
- * Acts as a manager for a specific remote ADO.NET data service. ADO.NET Data
+ * Acts as a manager for a specific remote WCF data service. WCF Data
  * Services are stateless, but the Service is not. State on the client is
  * maintained between interactions in order to support features such as update
  * management.<br>
  * <br>
- * This Java class is more or less equivalent to the ADO.NET DataServiceContext
+ * This Java class is more or less equivalent to the WCF DataServiceContext
  * class.
  * 
  * @author Jerome Louvel
@@ -88,17 +88,17 @@ public class Session {
     /** The internal logger. */
     private Logger logger;
 
-    /** The metadata of the ADO.NET service. */
+    /** The metadata of the WCF service. */
     private Metadata metadata;
 
-    /** The reference of the ADO.NET service. */
+    /** The reference of the WCF service. */
     private Reference serviceRef;
 
     /**
      * Constructor.
      * 
      * @param serviceRef
-     *            The reference to the ADO.NET service.
+     *            The reference to the WCF service.
      */
     public Session(Reference serviceRef) {
         this.serviceRef = serviceRef;
@@ -108,7 +108,7 @@ public class Session {
      * Constructor.
      * 
      * @param serviceUri
-     *            The URI of the ADO.NET service.
+     *            The URI of the WCF service.
      */
     public Session(String serviceUri) {
         this(new Reference(serviceUri));
@@ -315,9 +315,9 @@ public class Session {
     }
 
     /**
-     * Returns the reference to the ADO.NET service.
+     * Returns the reference to the WCF service.
      * 
-     * @return The reference to the ADO.NET service.
+     * @return The reference to the WCF service.
      */
     public Reference getServiceRef() {
         return serviceRef;
@@ -421,11 +421,11 @@ public class Session {
 
     /**
      * According to the metadata of the service, returns the path of the given
-     * entity relatively to the current ADO.NET service.
+     * entity relatively to the current WCF service.
      * 
      * @param entity
      *            The entity.
-     * @return The path of the given entity relatively to the current ADO.NET
+     * @return The path of the given entity relatively to the current WCF
      *         service.
      */
     private String getSubpath(Object entity) {
@@ -434,14 +434,14 @@ public class Session {
 
     /**
      * According to the metadata of the service, returns the path of the given
-     * entity's property relatively to the current ADO.NET service.
+     * entity's property relatively to the current WCF service.
      * 
      * @param entity
      *            The entity.
      * @param propertyName
      *            The name of the property.
      * @return The path of the given entity's property relatively to the current
-     *         ADO.NET service.
+     *         WCF service.
      */
     private String getSubpath(Object entity, String propertyName) {
         return getMetadata().getSubpath(entity, propertyName);

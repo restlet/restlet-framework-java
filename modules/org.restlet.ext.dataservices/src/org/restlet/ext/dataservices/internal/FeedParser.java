@@ -70,7 +70,7 @@ public class FeedParser<T> {
     /** The internal logger. */
     private Logger logger;
 
-    /** The metadata of the ADO.NET service. */
+    /** The metadata of the WCF service. */
     private Metadata metadata;
 
     /**
@@ -81,7 +81,7 @@ public class FeedParser<T> {
      * @param entityClass
      *            The class of the target entities.
      * @param metadata
-     *            The metadata of the ADO.NET service.
+     *            The metadata of the WCF service.
      */
     public FeedParser(Feed feed, Class<?> entityClass, Metadata metadata) {
         super();
@@ -100,7 +100,7 @@ public class FeedParser<T> {
      * @param entityClass
      *            The target class of the entity.
      * @param metadata
-     *            The metadata of the ADO.NET service.
+     *            The metadata of the WCF service.
      * @return A feed parser instance.
      */
     public <E> FeedParser<E> createFeedParser(Feed feed, Class<E> entityClass,

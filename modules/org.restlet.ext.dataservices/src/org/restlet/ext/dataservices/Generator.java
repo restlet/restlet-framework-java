@@ -50,7 +50,7 @@ import org.restlet.resource.ClientResource;
 import freemarker.template.Configuration;
 
 /**
- * Code generator for ADO.NET data services.
+ * Code generator for WCF data services.
  * 
  * @author Thierry Boileau
  */
@@ -59,7 +59,7 @@ public class Generator {
     /**
      * Takes two parameters :<br>
      * <ol>
-     * <li>the URI of the ADO.NET data service</li>
+     * <li>the URI of the WCF data service</li>
      * <li>the output directory</li>
      * </ol>
      * 
@@ -112,7 +112,7 @@ public class Generator {
         }
 
         if (error) {
-            System.out.println("ADO.NET Data Services code generation tool");
+            System.out.println("WCF Data Services code generation tool");
             System.out.println("******************************************");
             System.out.println("Error encountered at this step: ");
             System.out.println(step);
@@ -125,7 +125,7 @@ public class Generator {
         }
     }
 
-    /** The ADO.NET Data Services metadata. */
+    /** The WCF Data Services metadata. */
     private Metadata metadata;
 
     /** The URI of the target data service. */
@@ -135,7 +135,7 @@ public class Generator {
      * Constructor.
      * 
      * @param dataServiceRef
-     *            The URI of the ADO.NET data service.
+     *            The URI of the WCF data service.
      * @param metadata
      *            The metadata descriptor.
      */
