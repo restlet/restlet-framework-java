@@ -102,7 +102,8 @@ import org.restlet.routing.Filter;
  * <br>
  * The client preferences can also be updated according to the user agent
  * properties (its name, version, operating system, or other) available via the
- * {@link ClientInfo#getAgentAttributes()} method.<br>
+ * {@link ClientInfo#getAgentAttributes()} method. Check the
+ * {@link #isUserAgentTunnel()} method.<br>
  * <br>
  * The list of new media type preferences is loaded from a property file called
  * "accept.properties" located in the classpath in the sub directory
