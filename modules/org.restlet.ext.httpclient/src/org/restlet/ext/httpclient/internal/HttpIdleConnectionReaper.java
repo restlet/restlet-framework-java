@@ -7,8 +7,8 @@ import org.apache.http.client.HttpClient;
 
 /**
  * Class that embodies a Reaper thread that reaps idle connections. Note that
- * the reaper thread won't be started if the value of the
- * sleepBetweenChecksMillis parameter is equals to 0.
+ * the thread won't be started if the value of the idleCheckInterval parameter
+ * is equal to 0.
  * 
  * @author Sanjay Acharya
  */
@@ -35,14 +35,14 @@ public class HttpIdleConnectionReaper {
                 // been interrupted do the following.
                 while (!shutdown && !isInterrupted()) {
                     try {
-                        Thread.sleep(sleepBetweenChecksMillis);
+                        Thread.sleep(idleCheckInterval);
                     } catch (InterruptedException interrupted) {
                         continue;
                     }
 
                     httpClient.getConnectionManager().closeExpiredConnections();
                     httpClient.getConnectionManager().closeIdleConnections(
-                            reapConnectionIdleMillis, TimeUnit.MILLISECONDS);
+                            idleTimeOut, TimeUnit.MILLISECONDS);
                 }
             } finally {
                 shutdownLatch.countDown();
@@ -77,38 +77,37 @@ public class HttpIdleConnectionReaper {
     /** The HttpClient for which this is the reaper. */
     private final HttpClient httpClient;
 
+    /** The time to sleep between checks for idle connections. */
+    private final long idleCheckInterval;
+
     /** The age of connections to reap. */
-    private final long reapConnectionIdleMillis;
+    private final long idleTimeOut;
 
     /** The thread that gleans the idle connections. */
     private final ReaperThread reaperThread;
-
-    /** The time to sleep between checks for idle connections. */
-    private final long sleepBetweenChecksMillis;
 
     /**
      * Constructor.
      * 
      * @param httpClient
      *            The HttpClient for which this is the reaper.
-     * @param sleepBetweenChecksMillis
-     *            The time to sleep between checks for idle connections. Note if
-     *            this is 0L, then reaping won't occur.
-     * @param reapConnectionIdleMillis
+     * @param idleCheckInterval
+     *            The time to sleep between checks for idle connections. Note
+     *            that if this is 0, then reaping won't occur.
+     * @param idleTimeout
      *            The age of connections to reap.
      */
     public HttpIdleConnectionReaper(HttpClient httpClient,
-            long sleepBetweenChecksMillis, long reapConnectionIdleMillis) {
+            long idleCheckInterval, long idleTimeout) {
         if (httpClient == null) {
             throw new IllegalArgumentException(
                     "HttpClient is a required parameter");
         }
         this.httpClient = httpClient;
-        this.sleepBetweenChecksMillis = sleepBetweenChecksMillis;
-        this.reapConnectionIdleMillis = reapConnectionIdleMillis;
+        this.idleCheckInterval = idleCheckInterval;
+        this.idleTimeOut = idleTimeout;
 
-        this.reaperThread = sleepBetweenChecksMillis > 0L ? new ReaperThread()
-                : null;
+        this.reaperThread = idleCheckInterval > 0L ? new ReaperThread() : null;
 
         if (reaperThread != null) {
             reaperThread.start();
