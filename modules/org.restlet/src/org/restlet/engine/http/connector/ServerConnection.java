@@ -45,7 +45,6 @@ import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
-import org.restlet.engine.Engine;
 import org.restlet.engine.http.header.HeaderUtils;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
@@ -250,7 +249,6 @@ public class ServerConnection extends Connection<Server> {
      * @param response
      *            The response to write.
      */
-    @SuppressWarnings("unchecked")
     @Override
     protected void writeMessage(Response response) {
         // Prepare the headers

@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2009 Noelios Technologies.
+ * Copyright 2005-2010 Noelios Technologies.
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL 1.0 (the
@@ -37,6 +37,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.restlet.engine.Method;
+import org.restlet.service.MetadataService;
 
 /**
  * Annotation for methods that for register contact information. Its semantics
@@ -51,9 +52,17 @@ import org.restlet.engine.Method;
 public @interface Register {
 
     /**
+     * Specifies the media type extension of the response entity. If several
+     * media types are supported, their extension can be specified separated by
+     * "|" characters. Note that this isn't the full MIME type value, just the
+     * extension name declared in {@link MetadataService}. For a list of all
+     * predefined extensions, please check
+     * {@link MetadataService#addCommonExtensions()}. New extension can be
+     * registered using
+     * {@link MetadataService#addExtension(String, org.restlet.data.Metadata)}
+     * method.
      * 
-     * 
-     * @return xxx.
+     * @return The result media types.
      */
     String value() default "";
 

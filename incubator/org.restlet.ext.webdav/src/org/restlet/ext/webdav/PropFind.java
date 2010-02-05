@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.sip;
+package org.restlet.ext.webdav;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -40,16 +40,16 @@ import org.restlet.engine.Method;
 import org.restlet.service.MetadataService;
 
 /**
- * Annotation for methods that set up sessions. Its semantics is equivalent to a
- * SIP ACK method.
+ * Annotation for methods that retrieve properties. Its semantics is equivalent
+ * to a WebDAV PROPFIND method.
  * 
  * @author Jerome Louvel
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-@Method("ACK")
-public @interface Ack {
+@Method("PROPFIND")
+public @interface PropFind {
 
     /**
      * Specifies the media type extension of the response entity. If several

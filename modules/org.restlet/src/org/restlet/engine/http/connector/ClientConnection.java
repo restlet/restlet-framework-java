@@ -228,7 +228,6 @@ public class ClientConnection extends Connection<Client> {
      * @param response
      *            The response to write.
      */
-    @SuppressWarnings("unchecked")
     @Override
     protected void writeMessage(Response response) {
         // Prepare the headers
