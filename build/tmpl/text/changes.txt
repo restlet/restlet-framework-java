@@ -4,6 +4,11 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - API changes
+    - Enhancements
+        - UniformResource#doCatch now extract the cause exception from
+          caught ResourceException instance for easier debugging.
+    - Bugs fixed
         - Fixed compilation issue in the ClientResource class for the
           GWT edition. Reported by Laszlo Megyer. 
         - Fixed internal client connector that removes the query part 
@@ -11,6 +16,8 @@ Changes log
           Reported by Laurent Rustuel.
         - Fixed internal connector that was not setting properly the 
           ServerInfo. Reported by Laurent Rustuel.
+    - Misc
+        
 - 2.0 Milestone 7 (2010-01-29)
     - API changes
         - Added more specific Validator#validatePresence and 

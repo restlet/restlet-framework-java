@@ -136,6 +136,11 @@ public abstract class UniformResource {
             } else if (re.getStatus().isClientError()) {
                 level = Level.FINE;
             }
+
+            if (re.getCause() != null) {
+                // What is most interesting is the embedded cause
+                throwable = re.getCause();
+            }
         }
 
         getLogger().log(level, "Exception or error caught in resource",
@@ -583,7 +588,7 @@ public abstract class UniformResource {
     public boolean isConfidential() {
         return getRequest() == null ? null : getRequest().isConfidential();
     }
-    
+
     /**
      * Releases the resource. First calls the {@link #doRelease()} method then
      * {@link Request#release()} and finally {@link Response#release()}.
