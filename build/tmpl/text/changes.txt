@@ -16,6 +16,8 @@ Changes log
           Reported by Laurent Rustuel.
         - Fixed internal connector that was not setting properly the 
           ServerInfo. Reported by Laurent Rustuel.
+        - Fixed regression when tunnelling user agent properties.
+          Reported by Fabian Mandelbaum.
     - Misc
         
 - 2.0 Milestone 7 (2010-01-29)
