@@ -521,18 +521,20 @@ public class TunnelFilter extends Filter {
                     for (String key : acceptReplacer.getAgentAttributes()
                             .keySet()) {
                         final String attribute = agentAttributes.get(key);
+                        // Check that the agent properties match the properties
+                        // set by the rule.
                         checked = checked
                                 && (attribute != null && attribute
                                         .equalsIgnoreCase(acceptReplacer
                                                 .getAgentAttributes().get(key)));
-
                     }
                     if (checked) {
-                        if (acceptOld == null) {
-                            checked = acceptReplacer.getAcceptOld() == null;
-                        } else {
-                            checked = acceptOld.equals(acceptReplacer
-                                    .getAcceptOld());
+                        // If the rule defines an acceptOld value, check that it
+                        // is the same than the user agent's "accept" header
+                        // value.
+                        if (acceptReplacer.getAcceptOld() != null) {
+                            checked = acceptReplacer.getAcceptOld().equals(
+                                    acceptOld);
                         }
                         if (checked) {
                             final ClientInfo clientInfo = new ClientInfo();
