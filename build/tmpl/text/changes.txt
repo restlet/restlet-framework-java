@@ -18,6 +18,9 @@ Changes log
           ServerInfo. Reported by Laurent Rustuel.
         - Fixed regression when tunnelling user agent properties.
           Reported by Fabian Mandelbaum.
+        - The 0 value of the "TimeToLive" parameter for the client 
+          connectors was badly taken into account when setting the 
+          expiration date. Reported by Fabian Mandelbaum.
     - Misc
         
 - 2.0 Milestone 7 (2010-01-29)

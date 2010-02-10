@@ -116,7 +116,7 @@ public class FileRepresentation extends Representation {
         setModificationDate(new Date(file.lastModified()));
 
         if (timeToLive == 0) {
-            setExpirationDate(new Date());
+            setExpirationDate(null);
         } else if (timeToLive > 0) {
             setExpirationDate(new Date(System.currentTimeMillis()
                     + (1000L * timeToLive)));
