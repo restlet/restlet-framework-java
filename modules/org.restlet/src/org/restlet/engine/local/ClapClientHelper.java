@@ -129,7 +129,7 @@ public class ClapClientHelper extends LocalClientHelper {
                     long timeToLive = getTimeToLive();
 
                     if (timeToLive == 0) {
-                        output.setExpirationDate(new Date());
+                        output.setExpirationDate(null);
                     } else if (timeToLive > 0) {
                         output.setExpirationDate(new Date(System
                                 .currentTimeMillis()
