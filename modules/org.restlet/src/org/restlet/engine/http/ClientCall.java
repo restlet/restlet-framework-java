@@ -337,15 +337,11 @@ public abstract class ClientCall extends Call {
 
                 if (requestChannel != null) {
                     entity.write(requestChannel);
+                    requestChannel.close();
                 } else if (requestStream != null) {
                     entity.write(requestStream);
                     requestStream.flush();
-                }
-
-                if (requestStream != null) {
                     requestStream.close();
-                } else if (requestChannel != null) {
-                    requestChannel.close();
                 }
             }
 
