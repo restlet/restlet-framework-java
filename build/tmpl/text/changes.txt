@@ -21,7 +21,10 @@ Changes log
         - The 0 value of the "TimeToLive" parameter for the client 
           connectors was badly taken into account when setting the 
           expiration date. Reported by Fabian Mandelbaum.
+        - Fixed issue with line breaks that were removed when PUTting 
+          a file. Contributed by Daniel Truemper.
     - Misc
+        - 
         
 - 2.0 Milestone 7 (2010-01-29)
     - API changes

@@ -30,15 +30,14 @@
 
 package org.restlet.engine.local;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -412,18 +411,11 @@ public class FileClientHelper extends EntityClientHelper {
 
                         if (!tmp.exists()) {
                             // Copy the target file.
-                            BufferedReader br = new BufferedReader(
-                                    new FileReader(file));
-                            BufferedWriter wr = new BufferedWriter(
-                                    new FileWriter(tmp));
-                            String s;
-                            while ((s = br.readLine()) != null) {
-                                wr.append(s);
-                            }
-
-                            br.close();
-                            wr.flush();
-                            wr.close();
+                            InputStream in = new FileInputStream(file);
+                            OutputStream out = new FileOutputStream(tmp);
+                            BioUtils.write(in, out);
+                            out.flush();
+                            out.close();
                         }
                         raf = new RandomAccessFile(tmp, "rwd");
 
@@ -440,8 +432,8 @@ public class FileClientHelper extends EntityClientHelper {
 
                         // Write the entity to the temporary file.
                         if (request.isEntityAvailable()) {
-                            BioUtils.write(request.getEntity().getStream(),
-                                    raf);
+                            BioUtils
+                                    .write(request.getEntity().getStream(), raf);
                         }
                     } catch (IOException ioe) {
                         getLogger().log(Level.WARNING,
@@ -473,8 +465,8 @@ public class FileClientHelper extends EntityClientHelper {
                         tmp = File.createTempFile("restlet-upload", "bin");
                         if (request.isEntityAvailable()) {
                             fos = new FileOutputStream(tmp);
-                            BioUtils.write(request.getEntity().getStream(),
-                                    fos);
+                            BioUtils
+                                    .write(request.getEntity().getStream(), fos);
                         }
                     } catch (IOException ioe) {
                         getLogger().log(Level.WARNING,
@@ -524,18 +516,11 @@ public class FileClientHelper extends EntityClientHelper {
                         // file system to another.
                         if (tmp.exists()) {
                             try {
-                                BufferedReader br = new BufferedReader(
-                                        new FileReader(tmp));
-                                BufferedWriter wr = new BufferedWriter(
-                                        new FileWriter(file));
-                                String s;
-                                while ((s = br.readLine()) != null) {
-                                    wr.append(s);
-                                }
-
-                                br.close();
-                                wr.flush();
-                                wr.close();
+                                InputStream in = new FileInputStream(tmp);
+                                OutputStream out = new FileOutputStream(file);
+                                BioUtils.write(in, out);
+                                out.flush();
+                                out.close();
                                 renameSuccessfull = true;
                                 tmp.delete();
                             } catch (Exception e) {
@@ -595,8 +580,8 @@ public class FileClientHelper extends EntityClientHelper {
                         }
                         // Write the entity to the file.
                         if (request.isEntityAvailable()) {
-                            BioUtils.write(request.getEntity().getStream(),
-                                    raf);
+                            BioUtils
+                                    .write(request.getEntity().getStream(), raf);
                         }
                     } catch (FileNotFoundException fnfe) {
                         getLogger().log(Level.WARNING,
@@ -632,8 +617,8 @@ public class FileClientHelper extends EntityClientHelper {
                                 response.setStatus(Status.SUCCESS_NO_CONTENT);
                             } else {
                                 fos = new FileOutputStream(file);
-                                BioUtils.write(
-                                        request.getEntity().getStream(), fos);
+                                BioUtils.write(request.getEntity().getStream(),
+                                        fos);
                                 response.setStatus(Status.SUCCESS_CREATED);
                             }
                         } else {

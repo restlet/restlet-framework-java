@@ -9,7 +9,7 @@
 	<packaging>pom</packaging>
 
 	<name>Restlet project</name>
-	<description>Lightweight REST framework</description>
+	<description>RESTful web framework for Java</description>
 	<url>http://www.restlet.org</url>
 	<inceptionYear>2005</inceptionYear>
 
