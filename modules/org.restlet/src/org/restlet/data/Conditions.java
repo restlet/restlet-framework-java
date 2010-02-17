@@ -236,7 +236,7 @@ public final class Conditions {
         if ((this.match != null) && !this.match.isEmpty()) {
             boolean matched = false;
             boolean failed = false;
-            final boolean all = getMatch().get(0).equals(Tag.ALL);
+            boolean all = getMatch().get(0).equals(Tag.ALL);
 
             if (entityExists) {
                 // If a tag exists
@@ -245,7 +245,7 @@ public final class Conditions {
                     // cached by the client
                     Tag matchTag;
 
-                    for (final Iterator<Tag> iter = getMatch().iterator(); !matched
+                    for (Iterator<Tag> iter = getMatch().iterator(); !matched
                             && iter.hasNext();) {
                         matchTag = iter.next();
                         matched = matchTag.equals(tag, false);
@@ -281,7 +281,7 @@ public final class Conditions {
                     // already cached by the client
                     Tag noneMatchTag;
 
-                    for (final Iterator<Tag> iter = getNoneMatch().iterator(); !matched
+                    for (Iterator<Tag> iter = getNoneMatch().iterator(); !matched
                             && iter.hasNext();) {
                         noneMatchTag = iter.next();
                         matched = noneMatchTag.equals(tag, (Method.GET
@@ -294,8 +294,8 @@ public final class Conditions {
                         // Check if the current representation has been updated
                         // since the "if-modified-since" date. In this case, the
                         // rule is followed.
-                        final Date modifiedSince = getModifiedSince();
-                        final boolean isModifiedSince = (modifiedSince != null)
+                        Date modifiedSince = getModifiedSince();
+                        boolean isModifiedSince = (modifiedSince != null)
                                 && (DateUtils.after(new Date(), modifiedSince)
                                         || (modificationDate == null) || DateUtils
                                         .after(modifiedSince, modificationDate));
@@ -317,8 +317,8 @@ public final class Conditions {
 
         // Is the "if-Modified-Since" rule followed or not?
         if ((result == null) && (getModifiedSince() != null)) {
-            final Date modifiedSince = getModifiedSince();
-            final boolean isModifiedSince = (DateUtils.after(new Date(),
+            Date modifiedSince = getModifiedSince();
+            boolean isModifiedSince = (DateUtils.after(new Date(),
                     modifiedSince)
                     || (modificationDate == null) || DateUtils.after(
                     modifiedSince, modificationDate));
@@ -334,9 +334,9 @@ public final class Conditions {
 
         // Is the "if-Unmodified-Since" rule followed or not?
         if ((result == null) && (getUnmodifiedSince() != null)) {
-            final Date unModifiedSince = getUnmodifiedSince();
-            final boolean isUnModifiedSince = ((unModifiedSince == null)
-                    || (modificationDate == null) || DateUtils.after(
+            Date unModifiedSince = getUnmodifiedSince();
+            boolean isUnModifiedSince = ((unModifiedSince == null)
+                    || (modificationDate == null) || !DateUtils.before(
                     modificationDate, unModifiedSince));
 
             if (!isUnModifiedSince) {
