@@ -168,7 +168,7 @@ public class ConverterService extends Service {
                             source.getLanguages());
                 }
             } else {
-                Context.getCurrentLogger().info(
+                Context.getCurrentLogger().warning(
                         "Unable to find a converter for this representation : "
                                 + source);
             }
