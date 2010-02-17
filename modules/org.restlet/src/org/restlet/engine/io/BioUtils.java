@@ -69,7 +69,7 @@ public final class BioUtils {
         long result = -1L;
 
         if (input != null) {
-            byte[] buf = new byte[4096];
+            byte[] buf = new byte[2048];
             int read = input.read(buf);
             result = (read == -1) ? -1 : 0;
 
@@ -367,7 +367,7 @@ public final class BioUtils {
                 StringBuilder sb = new StringBuilder();
                 BufferedReader br = (reader instanceof BufferedReader) ? (BufferedReader) reader
                         : new BufferedReader(reader);
-                char[] buffer = new char[8192];
+                char[] buffer = new char[2048];
                 int charsRead = br.read(buffer);
 
                 while (charsRead != -1) {
@@ -398,7 +398,7 @@ public final class BioUtils {
     public static void write(InputStream inputStream, OutputStream outputStream)
             throws IOException {
         int bytesRead;
-        byte[] buffer = new byte[4096];
+        byte[] buffer = new byte[2048];
 
         while ((bytesRead = inputStream.read(buffer)) > 0) {
             outputStream.write(buffer, 0, bytesRead);

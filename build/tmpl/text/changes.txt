@@ -5,6 +5,11 @@ Changes log
 
 - @version-full@ (@release-date@)
     - API changes
+        - Added a Router#getMatchingMode(Restlet) method which returns
+          the default matching mode for the Router, except for target 
+          that are instances of Directory or Router, where the 
+          MODE_STARTS_WITH value is returned.
+          Reported by Rhett Sutphin and Masaki Sudo.
     - Enhancements
         - UniformResource#doCatch now extract the cause exception from
           caught ResourceException instance for easier debugging.

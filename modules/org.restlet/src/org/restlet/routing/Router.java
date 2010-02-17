@@ -244,8 +244,9 @@ public class Router extends Restlet {
 
     /**
      * Attaches a target Restlet to this router with an empty URI pattern. A new
-     * route using the default matching mode ({@link #getDefaultMatchingMode()}
-     * ) will be added routing to the target when any call is received.
+     * route using the matching mode returned by
+     * {@link #getMatchingMode(Restlet))} will be added routing to the target
+     * when any call is received.
      * 
      * @param target
      *            The target Restlet to attach.
@@ -253,7 +254,7 @@ public class Router extends Restlet {
      */
     @SuppressWarnings("deprecation")
     public Route attach(Restlet target) {
-        return attach(target, defaultMatchingMode);
+        return attach(target, getMatchingMode(target));
     }
 
     /**
@@ -273,8 +274,8 @@ public class Router extends Restlet {
 
     /**
      * Attaches a target Resource class to this router based on a given URI
-     * pattern. A new route using the default matching mode (
-     * {@link #getDefaultMatchingMode()}) will be added routing to the target
+     * pattern. A new route using the matching mode returned by
+     * {@link #getMatchingMode(Restlet)} will be added routing to the target
      * when calls with a URI matching the pattern will be received.
      * 
      * @param pathTemplate
@@ -286,8 +287,7 @@ public class Router extends Restlet {
      */
     @SuppressWarnings("deprecation")
     public Route attach(String pathTemplate, Class<?> targetClass) {
-        return attach(pathTemplate, createFinder(targetClass),
-                getDefaultMatchingMode());
+        return attach(pathTemplate, createFinder(targetClass));
     }
 
     /**
@@ -312,8 +312,8 @@ public class Router extends Restlet {
 
     /**
      * Attaches a target Restlet to this router based on a given URI pattern. A
-     * new route using the default matching mode (
-     * {@link #getDefaultMatchingMode()}) will be added routing to the target
+     * new route using the matching mode returned by
+     * {@link #getMatchingMode(Restlet)} will be added routing to the target
      * when calls with a URI matching the pattern will be received.
      * 
      * @param pathTemplate
@@ -325,7 +325,7 @@ public class Router extends Restlet {
      */
     @SuppressWarnings("deprecation")
     public Route attach(String pathTemplate, Restlet target) {
-        return attach(pathTemplate, target, getDefaultMatchingMode());
+        return attach(pathTemplate, target, getMatchingMode(target));
     }
 
     /**
@@ -393,12 +393,10 @@ public class Router extends Restlet {
     }
 
     /**
-     * Creates a new route for the given URI pattern and target. If the target
-     * is a {@link Directory}, then the matching mode of the created
-     * {@link Route} is set to {@link Template#MODE_STARTS_WITH}, otherwise it
-     * uses the {@link #getDefaultMatchingMode()} result. The route will match
-     * the URI query string depending on the result of
-     * {@link #getDefaultMatchingQuery()}.
+     * Creates a new route for the given URI pattern and target. The route will
+     * match the URI query string depending on the result of
+     * {@link #getDefaultMatchingQuery()} and the matching mode will be given by
+     * {@link #getMatchingMode(Restlet)}.
      * 
      * @param uriPattern
      *            The URI pattern that must match the relative part of the
@@ -409,7 +407,7 @@ public class Router extends Restlet {
      */
     @SuppressWarnings("deprecation")
     protected Route createRoute(String uriPattern, Restlet target) {
-        return createRoute(uriPattern, target, getDefaultMatchingMode());
+        return createRoute(uriPattern, target, getMatchingMode(target));
     }
 
     /**
@@ -430,13 +428,8 @@ public class Router extends Restlet {
     protected Route createRoute(String uriPattern, Restlet target,
             int matchingMode) {
         Route result = new Route(this, uriPattern, target);
-        if (target instanceof Directory) {
-            result.getTemplate().setMatchingMode(Template.MODE_STARTS_WITH);
-        } else {
-            result.getTemplate().setMatchingMode(matchingMode);
-        }
+        result.getTemplate().setMatchingMode(matchingMode);
         result.setMatchingQuery(getDefaultMatchingQuery());
-
         return result;
     }
 
@@ -542,6 +535,30 @@ public class Router extends Restlet {
      */
     public Class<? extends Finder> getFinderClass() {
         return this.finderClass;
+    }
+
+    /**
+     * Returns the matching mode for the target Restlet. By default it returns
+     * {@link #getDefaultMatchingMode()}. If the target is an instance of
+     * {@link Directory} or {@link Router} then the mode returned is
+     * {@link Template#MODE_STARTS_WITH} to allow further routing by those
+     * objects. If the target is an instance of {@link Filter}, then it returns
+     * the matching mode for the {@link Filter#getNext()} Restlet recursively.
+     * 
+     * @param target
+     *            The target Restlet.
+     * @return The preferred matching mode.
+     */
+    protected int getMatchingMode(Restlet target) {
+        int result = getDefaultMatchingMode();
+
+        if ((target instanceof Directory) || (target instanceof Router)) {
+            result = Template.MODE_STARTS_WITH;
+        } else if (target instanceof Filter) {
+            result = getMatchingMode(((Filter) target).getNext());
+        }
+
+        return result;
     }
 
     /**
