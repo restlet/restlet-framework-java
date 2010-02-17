@@ -28,10 +28,11 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.sip;
+package org.restlet.ext.sip.internal;
 
 import org.restlet.data.Method;
 import org.restlet.engine.ProtocolHelper;
+import org.restlet.ext.sip.SipMethod;
 
 /**
  * Protocol helper for the SIP protocol.

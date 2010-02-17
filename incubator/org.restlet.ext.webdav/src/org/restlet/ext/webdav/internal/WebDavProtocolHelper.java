@@ -28,10 +28,11 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.webdav;
+package org.restlet.ext.webdav.internal;
 
 import org.restlet.data.Method;
 import org.restlet.engine.ProtocolHelper;
+import org.restlet.ext.webdav.WebDavMethod;
 
 /**
  * Protocol helper for the WebDAV protocol.
