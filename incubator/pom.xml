@@ -8,7 +8,7 @@
 	<version>2.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
-	<name>Restlet incubator</name>
+	<name>Restlet Incubator</name>
 	<description>Incubator for the Restlet framework</description>
 	<url>http://www.restlet.org</url>
 	<inceptionYear>2005</inceptionYear>

@@ -8,7 +8,7 @@
 	<version>2.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
-	<name>Restlet project</name>
+	<name>Restlet Framework</name>
 	<description>RESTful web framework for Java</description>
 	<url>http://www.restlet.org</url>
 	<inceptionYear>2005</inceptionYear>
