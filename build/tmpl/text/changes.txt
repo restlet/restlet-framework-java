@@ -7,8 +7,10 @@ Changes log
     - Bugs fixed
         - Fixed generation of Atom document.
           Reported by Bedwyr Humphreys.
-        - Fixed issue with line breaks that were removed when PUTting 
+        - Issue with line breaks that were removed when PUTting 
           a file. Contributed by Daniel Truemper.
+        - Precondition check was wrong for 'if-unmodified-since' if
+          dates were equals. Reported by Andreas Schneider.
 
 - 1.1.7 (2009-11-20)
     - Bugs fixed

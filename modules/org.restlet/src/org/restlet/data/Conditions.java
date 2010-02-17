@@ -247,8 +247,8 @@ public final class Conditions {
             if (representation != null) {
                 final Date unModifiedSince = getUnmodifiedSince();
                 final boolean isUnModifiedSince = ((unModifiedSince == null)
-                        || (representation.getModificationDate() == null) || DateUtils
-                        .after(representation.getModificationDate(),
+                        || (representation.getModificationDate() == null) || !DateUtils
+                        .before(representation.getModificationDate(),
                                 unModifiedSince));
 
                 if (!isUnModifiedSince) {
