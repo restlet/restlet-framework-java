@@ -27,14 +27,13 @@
 
 package com.noelios.restlet.local;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -436,18 +435,11 @@ public class FileClientHelper extends EntityClientHelper {
 
                                 if (!tmp.exists()) {
                                     // Copy the target file.
-                                    final BufferedReader br = new BufferedReader(
-                                            new FileReader(file));
-                                    final BufferedWriter wr = new BufferedWriter(
-                                            new FileWriter(tmp));
-                                    String s;
-                                    while ((s = br.readLine()) != null) {
-                                        wr.append(s);
-                                    }
-
-                                    br.close();
-                                    wr.flush();
-                                    wr.close();
+                                    InputStream in = new FileInputStream(file);
+                                    OutputStream out = new FileOutputStream(tmp);
+                                    ByteUtils.write(in, out);
+                                    out.flush();
+                                    out.close();
                                 }
                                 raf = new RandomAccessFile(tmp, "rwd");
 
@@ -560,18 +552,13 @@ public class FileClientHelper extends EntityClientHelper {
                                 // move a file from one filesystem to another.
                                 if (tmp.exists()) {
                                     try {
-                                        final BufferedReader br = new BufferedReader(
-                                                new FileReader(tmp));
-                                        final BufferedWriter wr = new BufferedWriter(
-                                                new FileWriter(file));
-                                        String s;
-                                        while ((s = br.readLine()) != null) {
-                                            wr.append(s);
-                                        }
-
-                                        br.close();
-                                        wr.flush();
-                                        wr.close();
+                                        InputStream in = new FileInputStream(
+                                                tmp);
+                                        OutputStream out = new FileOutputStream(
+                                                file);
+                                        ByteUtils.write(in, out);
+                                        out.flush();
+                                        out.close();
                                         renameSuccessfull = true;
                                         tmp.delete();
                                     } catch (Exception e) {

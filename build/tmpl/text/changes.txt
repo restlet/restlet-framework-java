@@ -7,6 +7,8 @@ Changes log
     - Bugs fixed
         - Fixed generation of Atom document.
           Reported by Bedwyr Humphreys.
+        - Fixed issue with line breaks that were removed when PUTting 
+          a file. Contributed by Daniel Truemper.
 
 - 1.1.7 (2009-11-20)
     - Bugs fixed
