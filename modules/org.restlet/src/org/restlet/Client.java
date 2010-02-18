@@ -299,6 +299,23 @@ public class Client extends Connector {
 
     // [ifndef gwt] method
     /**
+     * Posts a representation to the resource at the target reference.
+     * 
+     * @param resourceRef
+     *            The reference of the resource to post to.
+     * @param entity
+     *            The entity to post.
+     * @return The response.
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.5">HTTP
+     *      POST method</a>
+     */
+    public final Response post(Reference resourceRef, Representation entity) {
+        return handle(new Request(Method.POST, resourceRef, entity));
+    }
+
+    // [ifndef gwt] method
+    /**
      * Posts a representation to the resource at the target URI.
      * 
      * @param resourceUri
