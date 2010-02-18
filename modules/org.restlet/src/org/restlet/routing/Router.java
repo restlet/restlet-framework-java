@@ -438,6 +438,36 @@ public class Router extends Restlet {
      * Restlet are removed from the list of routes and the default route is set
      * to null.
      * 
+     * @param targetClass
+     *            The target class to detach.
+     */
+    public void detach(Class<?> targetClass) {
+        for (int i = getRoutes().size() - 1; i >= 0; i--) {
+            Restlet target = getRoutes().get(i).getNext();
+            if (target != null && Finder.class.isAssignableFrom(target.getClass())) {
+                Finder finder = (Finder) target;
+                if(finder.getTargetClass().equals(targetClass)){
+                    getRoutes().remove(i);
+                }
+            }
+        }
+        
+        if (getDefaultRoute() != null) {
+            Restlet target = getDefaultRoute().getNext();
+            if (target != null && Finder.class.isAssignableFrom(target.getClass())) {
+                Finder finder = (Finder) target;
+                if(finder.getTargetClass().equals(targetClass)){
+                    setDefaultRoute(null);
+                }
+            }
+        }
+    }
+    
+    /**
+     * Detaches the target from this router. All routes routing to this target
+     * Restlet are removed from the list of routes and the default route is set
+     * to null.
+     * 
      * @param target
      *            The target Restlet to detach.
      */

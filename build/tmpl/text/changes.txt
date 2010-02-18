@@ -10,6 +10,8 @@ Changes log
           that are instances of Directory or Router, where the 
           MODE_STARTS_WITH value is returned.
           Reported by Rhett Sutphin and Masaki Sudo.
+        - Added Router#detach(Class) method.
+          Suggested by Martin Kubincanek.
     - Enhancements
         - UniformResource#doCatch now extract the cause exception from
           caught ResourceException instance for easier debugging.
