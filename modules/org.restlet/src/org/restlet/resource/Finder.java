@@ -426,7 +426,7 @@ public class Finder extends Restlet {
     }
 
     /**
-     * Returns the target Handler class. It will be either a subclass of
+     * Returns the target handler class which must be either a subclass of
      * {@link Handler} or of {@link ServerResource}.
      * 
      * @return the target Handler class.
@@ -555,10 +555,11 @@ public class Finder extends Restlet {
     }
 
     /**
-     * Sets the target Handler class.
+     * Sets the target handler class which must be either a subclass of
+     * {@link Handler} or of {@link ServerResource}.
      * 
      * @param targetClass
-     *            The target Handler class. It must be either a subclass of
+     *            The target handler class. It must be either a subclass of
      *            {@link Handler} or of {@link ServerResource}.
      */
     public void setTargetClass(Class<?> targetClass) {
