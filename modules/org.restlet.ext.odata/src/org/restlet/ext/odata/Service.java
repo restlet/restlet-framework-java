@@ -74,6 +74,14 @@ import org.xml.sax.SAXException;
  *      Class on MSDN</a>
  */
 public class Service {
+    /** WCF data services namespace. */
+    public final static String WCF_DATASERVICES_NAMESPACE = "http://schemas.microsoft.com/ado/2007/08/dataservices";
+
+    /** WCF data services metadata namespace. */
+    public final static String WCF_DATASERVICES_METADATA_NAMESPACE = "http://schemas.microsoft.com/ado/2007/08/dataservices/metadata";
+
+    /** WCF data services scheme namespace. */
+    public final static String WCF_DATASERVICES_SCHEME_NAMESPACE = "http://schemas.microsoft.com/ado/2007/08/dataservices/scheme";
 
     /** The credentials used to authenticate requests. */
     private ChallengeResponse credentials;

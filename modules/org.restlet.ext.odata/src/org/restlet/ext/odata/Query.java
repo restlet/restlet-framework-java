@@ -37,8 +37,13 @@ import java.util.logging.Logger;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
+import org.restlet.data.Reference;
 import org.restlet.ext.atom.Entry;
 import org.restlet.ext.atom.Feed;
+import org.restlet.ext.atom.Link;
+import org.restlet.ext.atom.Relation;
+import org.restlet.ext.odata.internal.EntryContentHandler;
+import org.restlet.ext.odata.internal.FeedContentHandler;
 import org.restlet.ext.odata.internal.FeedParser;
 import org.restlet.ext.odata.internal.edm.Metadata;
 import org.restlet.representation.Representation;
@@ -59,6 +64,84 @@ import org.restlet.util.Series;
  * @param <T>
  */
 public class Query<T> implements Iterable<T> {
+
+    /**
+     * Iterator that transparently supports sever-side paging.
+     * 
+     * @author Thierry Boileau
+     * 
+     * @param <T>
+     */
+    private class EntryIterator<E> implements Iterator<E> {
+
+        /** The class of the listed objects. */
+        private Class<?> entityClass;
+
+        /** The inner iterator. */
+        private Iterator<E> iterator;
+
+        /** The reference to the next page. */
+        private Reference nextPage;
+
+        /** The underlying service. */
+        private Service service;
+
+        /**
+         * Constructor.
+         * 
+         * @param service
+         * @param iterator
+         * @param nextPageRef
+         * @param entityClass
+         */
+        public EntryIterator(Service service, Iterator<E> iterator,
+                Reference nextPageRef, Class<?> entityClass) {
+            super();
+            this.iterator = iterator;
+            this.nextPage = nextPageRef;
+            this.service = service;
+            this.entityClass = entityClass;
+        }
+
+        @SuppressWarnings("unchecked")
+        public boolean hasNext() {
+            boolean result = false;
+
+            if (iterator != null) {
+                result = iterator.hasNext();
+            }
+
+            if (!result && nextPage != null) {
+                // Get the next page.
+                Query<E> query = service.createQuery(nextPage.toString(),
+                        (Class<E>) entityClass);
+                iterator = query.iterator();
+                if (iterator != null) {
+                    result = iterator.hasNext();
+                }
+                // Get the next page
+                nextPage = query.getNextPage();
+            }
+
+            return result;
+        }
+
+        public E next() {
+            E result = null;
+            if (iterator != null) {
+                if (iterator.hasNext()) {
+                    result = iterator.next();
+                }
+            }
+            return result;
+        }
+
+        public void remove() {
+            if (iterator != null) {
+                iterator.remove();
+            }
+        }
+    }
 
     // Defines the type of the current query. It has an impact on how to parse
     // the result.
@@ -86,6 +169,9 @@ public class Query<T> implements Iterable<T> {
     /** Type of query: unknown. */
     public static final int TYPE_UNKNOWN = 0;
 
+    /** The number of entities. */
+    protected int count;
+
     /** Class of the entity targeted by this query. */
     private Class<?> entityClass;
 
@@ -95,8 +181,14 @@ public class Query<T> implements Iterable<T> {
     /** The atom feed object that wraps the data. */
     private Feed feed;
 
+    /** Is the inline asked for? */
+    private boolean inlineCount;
+
     /** Internal logger. */
     private Logger logger;
+
+    /** The reference to the next page (used in server-paging mode). */
+    private Reference nextPage;
 
     /** The query string. */
     private String query;
@@ -120,9 +212,17 @@ public class Query<T> implements Iterable<T> {
      */
     public Query(Service service, String subpath, Class<T> entityClass) {
         this.service = service;
-        this.subpath = subpath;
+        Reference ref = new Reference(subpath);
+        if (ref.isAbsolute()) {
+            this.subpath = ref.getRelativeRef(service.getServiceRef())
+                    .toString(true, true);
+        } else {
+            this.subpath = subpath;
+        }
+
         this.executed = false;
         this.entityClass = entityClass;
+        this.count = -1;
     }
 
     /**
@@ -235,7 +335,12 @@ public class Query<T> implements Iterable<T> {
                 // Guess the type of query based on the URI structure
                 switch (guessType(targetUri)) {
                 case TYPE_ENTITY_SET:
-                    setFeed(new Feed(result));
+                    FeedContentHandler feedContentHandler = new FeedContentHandler();
+                    EntryContentHandler<T> entryContentHandler = new EntryContentHandler<T>(
+                            (Metadata) service.getMetadata(), this.entityClass);
+                    setFeed(new Feed(result, feedContentHandler,
+                            entryContentHandler));
+                    this.count = feedContentHandler.getCount();
                     break;
                 case TYPE_ENTITY:
                     Feed feed = new Feed();
@@ -243,9 +348,12 @@ public class Query<T> implements Iterable<T> {
                     setFeed(feed);
                     break;
                 case TYPE_UNKNOWN:
+                    // Guess the type of query based on the returned
+                    // representation
                     Representation rep = new StringRepresentation(result
                             .getText());
-                    String string = rep.getText().substring(0, 100);
+                    String string = rep.getText().substring(0,
+                            Math.min(100, rep.getText().length()));
                     if (string.contains("<feed")) {
                         setFeed(new Feed(rep));
                     } else if (string.contains("<entry")) {
@@ -297,43 +405,34 @@ public class Query<T> implements Iterable<T> {
     }
 
     /**
-     * Creates a new Query<T> with the $orderby option set in the URI generated
-     * by the returned query.
+     * Returns the total number of elements in the entity set.
      * 
-     * @param criteria
-     *            A string value that contains the criteria used to order the
-     *            results.
-     * @return A new Query<T> with the $orderby option set in the URI generated
-     *         by the returned query.
+     * @return The total number of elements in the entity set.
+     * @throws Exception
      */
-    public Query<T> orderby(String criteria) {
-        return addParameter("$orderby", criteria);
-    }
+    public int getCount() throws Exception {
+        if (!isExecuted()) {
+            if (inlineCount) {
+                execute();
+            } else {
+                String targetUri = createTargetUri();
 
-    /**
-     * Creates a new Query<T> with the $skip option set in the URI generated by
-     * the returned query.
-     * 
-     * @param rowsCount
-     *            A number of rows to skip.
-     * @return A new Query<T> with the $skip option set in the URI generated by
-     *         the returned query.
-     */
-    public Query<T> skip(int rowsCount) {
-        return addParameter("$skip", Integer.toString(rowsCount));
-    }
+                if (guessType(targetUri) == TYPE_ENTITY) {
+                    targetUri = targetUri.substring(0, targetUri
+                            .lastIndexOf("("));
+                }
+                targetUri += "/$count";
 
-    /**
-     * Creates a new Query<T> with the $top option set in the URI generated by
-     * the returned query.
-     * 
-     * @param rowsCount
-     *            A number of rows used to limit the number of results.
-     * @return A new Query<T> with the $top option set in the URI generated by
-     *         the returned query.
-     */
-    public Query<T> top(int rowsCount) {
-        return addParameter("$top", Integer.toString(rowsCount));
+                ClientResource resource = new ClientResource(targetUri);
+                resource.setChallengeResponse(service.getCredentials());
+                Representation result = resource.get();
+                if (resource.getStatus().isSuccess()) {
+                    count = Integer.parseInt(result.getText());
+                }
+            }
+        }
+
+        return count;
     }
 
     /**
@@ -355,6 +454,15 @@ public class Query<T> implements Iterable<T> {
             logger = Context.getCurrentLogger();
         }
         return logger;
+    }
+
+    /**
+     * Return the reference to the next page (used in server-paging mode).
+     * 
+     * @return The reference to the next page (used in server-paging mode).
+     */
+    private Reference getNextPage() {
+        return nextPage;
     }
 
     /**
@@ -431,6 +539,28 @@ public class Query<T> implements Iterable<T> {
     }
 
     /**
+     * Creates a new Query<T> with the $inlinecount option set in the URI
+     * generated by the returned query.
+     * 
+     * @param inlineCount
+     *            True if the total number of entities in the entity set must be
+     *            returned.
+     * @return A new Query<T> with the $inlinecount option set in the URI
+     *         generated by the returned query.
+     */
+    public Query<T> inlineCount(boolean inlineCount) {
+        Query<T> result = null;
+        if (inlineCount) {
+            result = addParameter("$inlinecount", "allpages");
+        } else {
+            result = addParameter("$inlinecount", "none");
+        }
+        result.inlineCount = inlineCount;
+
+        return result;
+    }
+
+    /**
      * Returns true if the query has been executed.
      * 
      * @return true if the query has been executed.
@@ -452,12 +582,51 @@ public class Query<T> implements Iterable<T> {
             execute();
             result = new FeedParser<T>(getFeed(), this.entityClass,
                     ((Metadata) getService().getMetadata())).parse();
+            // Detect server-paging mode.
+            nextPage = null;
+            for (Link link : getFeed().getLinks()) {
+                if (Relation.NEXT.equals(link.getRel())) {
+                    nextPage = link.getHref();
+                    break;
+                }
+            }
+            if (nextPage != null) {
+                result = new EntryIterator<T>(this.service, result, nextPage,
+                        entityClass);
+            }
         } catch (Exception e) {
             getLogger().log(Level.WARNING,
                     "Can't parse the content of " + createTargetUri(), e);
         }
 
         return result;
+    }
+
+    /**
+     * Creates a new Query<T> with the $orderby option set in the URI generated
+     * by the returned query.
+     * 
+     * @param criteria
+     *            A string value that contains the criteria used to order the
+     *            results.
+     * @return A new Query<T> with the $orderby option set in the URI generated
+     *         by the returned query.
+     */
+    public Query<T> orderby(String criteria) {
+        return addParameter("$orderby", criteria);
+    }
+
+    /**
+     * Creates a new Query<T> with the $select option set in the URI generated
+     * by the returned query.
+     * 
+     * @param select
+     *            A string value that contains the requesting URI.
+     * @return A new Query<T> with the $select option set in the URI generated
+     *         by the returned query.
+     */
+    public Query<T> select(String select) {
+        return addParameter("$select", select);
     }
 
     /**
@@ -488,5 +657,44 @@ public class Query<T> implements Iterable<T> {
      */
     public void setQuery(String query) {
         this.query = query;
+    }
+
+    /**
+     * Creates a new Query<T> with the $skip option set in the URI generated by
+     * the returned query.
+     * 
+     * @param rowsCount
+     *            A number of rows to skip.
+     * @return A new Query<T> with the $skip option set in the URI generated by
+     *         the returned query.
+     */
+    public Query<T> skip(int rowsCount) {
+        return addParameter("$skip", Integer.toString(rowsCount));
+    }
+
+    /**
+     * Creates a new Query<T> with the $skiptoken option set in the URI
+     * generated by the returned query.
+     * 
+     * @param token
+     *            A string value that contains the requesting URI.
+     * @return A new Query<T> with the $skiptoken option set in the URI
+     *         generated by the returned query.
+     */
+    public Query<T> skiptoken(String token) {
+        return addParameter("$skiptoken", token);
+    }
+
+    /**
+     * Creates a new Query<T> with the $top option set in the URI generated by
+     * the returned query.
+     * 
+     * @param rowsCount
+     *            A number of rows used to limit the number of results.
+     * @return A new Query<T> with the $top option set in the URI generated by
+     *         the returned query.
+     */
+    public Query<T> top(int rowsCount) {
+        return addParameter("$top", Integer.toString(rowsCount));
     }
 }

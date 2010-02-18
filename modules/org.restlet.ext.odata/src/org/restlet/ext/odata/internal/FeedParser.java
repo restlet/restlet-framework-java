@@ -40,8 +40,10 @@ import org.restlet.Context;
 import org.restlet.ext.atom.Entry;
 import org.restlet.ext.atom.Feed;
 import org.restlet.ext.atom.Link;
+import org.restlet.ext.atom.Person;
 import org.restlet.ext.odata.internal.edm.AssociationEnd;
 import org.restlet.ext.odata.internal.edm.EntityType;
+import org.restlet.ext.odata.internal.edm.Mapping;
 import org.restlet.ext.odata.internal.edm.Metadata;
 import org.restlet.ext.odata.internal.edm.Property;
 import org.restlet.ext.odata.internal.reflect.ReflectUtils;
@@ -241,6 +243,87 @@ public class FeedParser<T> {
                                         Level.WARNING,
                                         "Can't retrieve associated property "
                                                 + propertyName, e);
+                            }
+                        }
+                    }
+                }
+
+                // Examine the mappings.
+                if (!metadata.getMappings().isEmpty()) {
+                    DomRepresentation inlineContent = null;
+
+                    for (Mapping mapping : metadata.getMappings()) {
+                        if (entityType != null
+                                && entityType.equals(mapping.getType())) {
+                            Object value = null;
+                            if (mapping.getNsPrefix() == null
+                                    && mapping.getNsUri() == null) {
+                                // mapping atom
+                                Person author = (entry.getAuthors().isEmpty()) ? null
+                                        : entry.getAuthors().get(0);
+                                Person contributor = (entry.getContributors()
+                                        .isEmpty()) ? null : entry
+                                        .getContributors().get(0);
+                                if ("SyndicationAuthorEmail".equals(mapping
+                                        .getValuePath())) {
+                                    value = (author != null) ? author
+                                            .getEmail() : null;
+                                } else if ("SyndicationAuthorName"
+                                        .equals(mapping.getValuePath())) {
+                                    value = (author != null) ? author.getName()
+                                            : null;
+                                } else if ("SyndicationAuthorUri"
+                                        .equals(mapping.getValuePath())) {
+                                    value = (author != null) ? author.getUri()
+                                            .toString() : null;
+                                } else if ("SyndicationContributorEmail"
+                                        .equals(mapping.getValuePath())) {
+                                    value = (contributor != null) ? contributor
+                                            .getEmail() : null;
+                                } else if ("SyndicationContributorName"
+                                        .equals(mapping.getValuePath())) {
+                                    value = (contributor != null) ? contributor
+                                            .getName() : null;
+                                } else if ("SyndicationContributorUri"
+                                        .equals(mapping.getValuePath())) {
+                                    value = (contributor != null) ? contributor
+                                            .getUri().toString() : null;
+                                } else if ("SyndicationPublished"
+                                        .equals(mapping.getValuePath())) {
+                                    value = entry.getPublished();
+                                } else if ("SyndicationRights".equals(mapping
+                                        .getValuePath())) {
+                                    value = (entry.getRights() != null) ? entry
+                                            .getRights().getContent() : null;
+                                } else if ("SyndicationSummary".equals(mapping
+                                        .getValuePath())) {
+                                    value = entry.getSummary();
+                                } else if ("SyndicationTitle".equals(mapping
+                                        .getValuePath())) {
+                                    value = (entry.getTitle() != null) ? entry
+                                            .getTitle().getContent() : null;
+                                } else if ("SyndicationUpdated".equals(mapping
+                                        .getValuePath())) {
+                                    value = entry.getUpdated();
+                                }
+                            } else if (entry.getInlineContent() != null) {
+                                if (inlineContent == null) {
+                                    inlineContent = new DomRepresentation(entry
+                                            .getInlineContent());
+                                }
+                                Node node = inlineContent.getNode(mapping
+                                        .getValuePath());
+                                if (node != null) {
+                                    value = node.getTextContent();
+                                }
+                            }
+
+                            try {
+                                if (value != null) {
+                                    ReflectUtils.invokeSetter(entity, mapping
+                                            .getPropertyPath(), value);
+                                }
+                            } catch (Exception e) {
                             }
                         }
                     }

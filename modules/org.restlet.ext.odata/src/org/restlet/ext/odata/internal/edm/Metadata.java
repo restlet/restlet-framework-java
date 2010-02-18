@@ -50,6 +50,9 @@ public class Metadata extends SaxRepresentation {
     /** The list of entity containers. */
     private List<EntityContainer> containers;
 
+    /** The list of declared property mappings. */
+    private List<Mapping> mappings;
+
     /** The URI of the metadata resource. */
     private Reference metadataRef;
 
@@ -255,6 +258,18 @@ public class Metadata extends SaxRepresentation {
     }
 
     /**
+     * Returns the list of declared property mappings.
+     * 
+     * @return The list of declared property mappings.
+     */
+    public List<Mapping> getMappings() {
+        if (mappings == null) {
+            mappings = new ArrayList<Mapping>();
+        }
+        return mappings;
+    }
+
+    /**
      * Returns the URI of the metadata resource.
      * 
      * @return The URI of the metadata resource.
@@ -292,9 +307,9 @@ public class Metadata extends SaxRepresentation {
     }
 
     /**
-     * Returns the data service schema
+     * Returns the data service schema.
      * 
-     * @return The data service schema
+     * @return The data service schema.
      */
     public List<Schema> getSchemas() {
         if (schemas == null) {

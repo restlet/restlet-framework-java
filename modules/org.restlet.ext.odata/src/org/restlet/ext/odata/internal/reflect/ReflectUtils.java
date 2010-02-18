@@ -127,6 +127,60 @@ public class ReflectUtils {
     }
 
     /**
+     * Returns the value of a property on an entity based on its name.
+     * 
+     * @param entity
+     *            The entity.
+     * @param propertyName
+     *            The property name.
+     * @return The value of a property for an entity.
+     * @throws Exception
+     */
+    public static Object invokeGetter(Object entity, String propertyName)
+            throws Exception {
+        Object result = null;
+
+        if (propertyName != null && entity != null) {
+            propertyName = propertyName.replaceAll("/", ".");
+            Object o = entity;
+            String pty = propertyName;
+            int index = propertyName.indexOf(".");
+            if (index != -1) {
+                o = invokeGetter(entity, propertyName.substring(0, index));
+                pty = propertyName.substring(index + 1);
+
+                result = invokeGetter(o, pty);
+            } else {
+                String getterName = null;
+                char firstLetter = propertyName.charAt(0);
+                if (Character.isLowerCase(firstLetter)) {
+                    getterName = "get" + Character.toUpperCase(firstLetter)
+                            + pty.substring(1);
+                } else {
+                    getterName = "get" + pty;
+                }
+
+                Method getter = null;
+                Method method;
+                for (int i = 0; (getter == null)
+                        && (i < entity.getClass().getDeclaredMethods().length); i++) {
+                    method = entity.getClass().getDeclaredMethods()[i];
+
+                    if (method.getName().equals(getterName)) {
+                        getter = method;
+                    }
+                }
+
+                if (getter != null) {
+                    result = getter.invoke(o);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
      * Sets a property on an entity based on its name.
      * 
      * @param entity
@@ -139,31 +193,56 @@ public class ReflectUtils {
      */
     public static void invokeSetter(Object entity, String propertyName,
             Object propertyValue) throws Exception {
-        String setterName = null;
-        char firstLetter = propertyName.charAt(0);
-        if (Character.isLowerCase(firstLetter)) {
-            setterName = "set" + Character.toUpperCase(firstLetter)
-                    + propertyName.substring(1);
-        } else {
-            setterName = "set" + propertyName;
-        }
+        if (propertyName != null && entity != null) {
+            propertyName = propertyName.replaceAll("/", ".");
+            Object o = entity;
+            String pty = propertyName;
+            String[] strings = propertyName.split("\\.");
+            if (strings.length > 1) {
+                for (int i = 0; i < strings.length - 1; i++) {
+                    String string = strings[i];
+                    Object p = invokeGetter(o, string);
+                    if (p == null) {
+                        // Try to instantiate it
+                        Field[] fields = o.getClass().getDeclaredFields();
+                        for (Field field : fields) {
+                            if (field.getName().equalsIgnoreCase(string)) {
+                                o = field.getClass().newInstance();
+                                break;
+                            }
+                        }
+                    }
+                    o = p;
+                }
+                pty = strings[strings.length - 1];
+            }
 
-        Method setter = null;
-        Method method;
-        for (int i = 0; (setter == null)
-                && (i < entity.getClass().getDeclaredMethods().length); i++) {
-            method = entity.getClass().getDeclaredMethods()[i];
+            String setterName = null;
+            char firstLetter = pty.charAt(0);
+            if (Character.isLowerCase(firstLetter)) {
+                setterName = "set" + Character.toUpperCase(firstLetter)
+                        + pty.substring(1);
+            } else {
+                setterName = "set" + pty;
+            }
 
-            if (method.getName().equals(setterName)) {
-                if ((method.getParameterTypes() != null)
-                        && (method.getParameterTypes().length == 1)) {
-                    setter = method;
+            Method setter = null;
+            Method method;
+            for (int i = 0; (setter == null)
+                    && (i < o.getClass().getDeclaredMethods().length); i++) {
+                method = o.getClass().getDeclaredMethods()[i];
+
+                if (method.getName().equals(setterName)) {
+                    if ((method.getParameterTypes() != null)
+                            && (method.getParameterTypes().length == 1)) {
+                        setter = method;
+                    }
                 }
             }
-        }
 
-        if (setter != null) {
-            setter.invoke(entity, propertyValue);
+            if (setter != null) {
+                setter.invoke(o, propertyValue);
+            }
         }
     }
 
@@ -182,43 +261,70 @@ public class ReflectUtils {
      */
     public static void invokeSetter(Object entity, String propertyName,
             String propertyValue, String propertyType) throws Exception {
-        String setterName = null;
-        char firstLetter = propertyName.charAt(0);
-        if (Character.isLowerCase(firstLetter)) {
-            setterName = "set" + Character.toUpperCase(firstLetter)
-                    + propertyName.substring(1);
-        } else {
-            setterName = "set" + propertyName;
-        }
 
-        Method setter = null;
-        Object setterParameter = null;
-        Method method;
-        for (int i = 0; (setter == null)
-                && (i < entity.getClass().getDeclaredMethods().length); i++) {
-            method = entity.getClass().getDeclaredMethods()[i];
+        if (propertyName != null) {
+            propertyName = propertyName.replaceAll("/", ".");
+            Object o = entity;
+            String pty = propertyName;
 
-            if (method.getName().equals(setterName)) {
-                if ((method.getParameterTypes() != null)
-                        && (method.getParameterTypes().length == 1)) {
-                    Class<?> parameterType = method.getParameterTypes()[0];
+            String[] strings = propertyName.split("\\.");
+            if (strings.length > 1) {
+                for (int i = 0; i < strings.length - 1; i++) {
+                    String string = strings[i];
+                    Object p = invokeGetter(o, string);
+                    if (p == null) {
+                        // Try to instantiate it
+                        Field[] fields = o.getClass().getDeclaredFields();
+                        for (Field field : fields) {
+                            if (field.getName().equalsIgnoreCase(string)) {
+                                o = field.getClass().newInstance();
+                                break;
+                            }
+                        }
+                    }
+                    o = p;
+                }
+                pty = strings[strings.length - 1];
+            }
 
-                    if (String.class.equals(parameterType)) {
-                        setterParameter = propertyValue;
-                        setter = method;
-                    } else if (Integer.class.equals(parameterType)) {
-                        setterParameter = Integer.valueOf(propertyValue);
-                        setter = method;
-                    } else if (int.class.equals(parameterType)) {
-                        setterParameter = Integer.valueOf(propertyValue);
-                        setter = method;
+            String setterName = null;
+            char firstLetter = propertyName.charAt(0);
+            if (Character.isLowerCase(firstLetter)) {
+                setterName = "set" + Character.toUpperCase(firstLetter)
+                        + pty.substring(1);
+            } else {
+                setterName = "set" + pty;
+            }
+
+            Method setter = null;
+            Object setterParameter = null;
+            Method method;
+            for (int i = 0; (setter == null)
+                    && (i < o.getClass().getDeclaredMethods().length); i++) {
+                method = o.getClass().getDeclaredMethods()[i];
+
+                if (method.getName().equals(setterName)) {
+                    if ((method.getParameterTypes() != null)
+                            && (method.getParameterTypes().length == 1)) {
+                        Class<?> parameterType = method.getParameterTypes()[0];
+
+                        if (String.class.equals(parameterType)) {
+                            setterParameter = propertyValue;
+                            setter = method;
+                        } else if (Integer.class.equals(parameterType)) {
+                            setterParameter = Integer.valueOf(propertyValue);
+                            setter = method;
+                        } else if (int.class.equals(parameterType)) {
+                            setterParameter = Integer.valueOf(propertyValue);
+                            setter = method;
+                        }
                     }
                 }
             }
-        }
 
-        if (setter != null) {
-            setter.invoke(entity, setterParameter);
+            if (setter != null) {
+                setter.invoke(o, setterParameter);
+            }
         }
     }
 

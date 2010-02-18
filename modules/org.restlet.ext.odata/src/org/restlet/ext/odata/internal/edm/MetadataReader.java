@@ -35,13 +35,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.restlet.ext.odata.Service;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
- * Used to parse a metadata descriptor of a given WCF Data Service and
- * generate the associated object's tree.
+ * Used to parse a metadata descriptor of a given WCF Data Service and generate
+ * the associated object's tree.
  * 
  * @author Thierry Boileau
  */
@@ -98,6 +99,71 @@ public class MetadataReader extends DefaultHandler {
         this.states = new ArrayList<State>();
         pushState(State.NONE);
         this.currentMetadata = metadata;
+    }
+
+    /**
+     * Explores the given attributes in order to get a declared property
+     * mapping.
+     * 
+     * @param type
+     *            The type of the mapped property.
+     * @param property
+     *            The property that declares the mapping (is null if the mapping
+     *            is declared on the entity type tag).
+     * @param metadata
+     *            The metadata instance to update.
+     * @param attributes
+     *            The XML attributes to parse.
+     */
+    private void discoverMapping(EntityType type, Property property,
+            Metadata metadata, Attributes attributes) {
+        String atomContentKind = null;
+        String nsPrefix = null;
+        String nsUri = null;
+        String propertyPath = null;
+        String valuePath = null;
+        boolean keepInContent = false;
+
+        atomContentKind = attributes.getValue(
+                Service.WCF_DATASERVICES_METADATA_NAMESPACE, "FC_ContentKind");
+        nsPrefix = attributes.getValue(
+                Service.WCF_DATASERVICES_METADATA_NAMESPACE, "FC_NsPrefix");
+        nsUri = attributes.getValue(
+                Service.WCF_DATASERVICES_METADATA_NAMESPACE, "FC_NsUri");
+
+        String str = attributes
+                .getValue(Service.WCF_DATASERVICES_METADATA_NAMESPACE,
+                        "FC_KeepInContent");
+        if (str != null) {
+            keepInContent = Boolean.parseBoolean(str);
+        }
+
+        if (property == null) {
+            // mapping declared on the entity type, the "FC_SourcePath"
+            // attribute is mandatory.
+            propertyPath = attributes.getValue(
+                    Service.WCF_DATASERVICES_METADATA_NAMESPACE,
+                    "FC_SourcePath");
+        } else {
+            propertyPath = property.getName();
+        }
+
+        valuePath = attributes.getValue(Service.WCF_DATASERVICES_METADATA_NAMESPACE,
+                "FC_TargetPath");
+
+        if (propertyPath != null && valuePath != null && !keepInContent) {
+            // The mapping is really defined between a property and an XML
+            // element, and the value is only available in a customized part of
+            // the feed.
+            if ((atomContentKind != null && nsUri == null && nsPrefix == null)
+                    || (atomContentKind == null && nsUri != null && nsPrefix != null)) {
+                // The mapping is correctly declared (either in an ATOM or a
+                // customized XML element).
+                metadata.getMappings().add(
+                        new Mapping(type, nsPrefix, nsUri, propertyPath,
+                                valuePath));
+            }
+        }
     }
 
     @Override
@@ -342,9 +408,14 @@ public class MetadataReader extends DefaultHandler {
                 currentEntityType.setBaseType(new EntityType(value));
             }
             this.currentSchema.getTypes().add(currentEntityType);
+
+            // Check the declaration of a property mapping.
+            discoverMapping(currentEntityType, null, currentMetadata,
+                    attributes);
             // register the new type.
             registeredEntityTypes.put(currentSchema.getNamespace().getName()
                     + "." + currentEntityType.getName(), currentEntityType);
+
         } else if ("key".equalsIgnoreCase(localName)) {
             pushState(State.ENTITY_TYPE_KEY);
         } else if ("propertyRef".equalsIgnoreCase(localName)) {
@@ -368,6 +439,10 @@ public class MetadataReader extends DefaultHandler {
                 pushState(State.COMPLEX_TYPE_PROPERTY);
                 this.currentComplexType.getProperties().add(property);
             }
+
+            // Check the declaration of a property mapping.
+            discoverMapping(this.currentEntityType, property, currentMetadata,
+                    attributes);
         } else if ("navigationProperty".equalsIgnoreCase(localName)) {
             pushState(State.NAVIGATION_PROPERTY);
             NavigationProperty property = new NavigationProperty(attr
@@ -434,5 +509,4 @@ public class MetadataReader extends DefaultHandler {
             currentEntityContainer.getAssociations().add(currentAssociationSet);
         }
     }
-
 }
