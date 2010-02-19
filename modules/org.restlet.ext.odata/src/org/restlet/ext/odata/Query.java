@@ -328,10 +328,8 @@ public class Query<T> implements Iterable<T> {
             ClientResource resource = new ClientResource(targetUri);
             resource.setChallengeResponse(service.getCredentials());
 
-            Representation result = new StringRepresentation(resource.get(
-                    MediaType.APPLICATION_ATOM).getText());
-            System.out.println(targetUri);
-            System.out.println(result.getText());
+            Representation result = resource.get(MediaType.APPLICATION_ATOM);
+
             service.setLatestRequest(resource.getRequest());
             service.setLatestResponse(resource.getResponse());
 
