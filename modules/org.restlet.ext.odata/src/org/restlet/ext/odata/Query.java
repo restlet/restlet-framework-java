@@ -404,17 +404,24 @@ public class Query<T> implements Iterable<T> {
     }
 
     /**
-     * Returns the total number of elements in the entity set.
+     * Returns the total number of elements in the entity set, or -1 if it is
+     * available.
      * 
      * @return The total number of elements in the entity set.
      * @throws Exception
      */
-    public int getCount() throws Exception {
+    public int getCount() {
         if (!isExecuted()) {
             if (inlineCount) {
                 // Execute the query which sets the count retrieved from the
                 // Atom document.
-                execute();
+                try {
+                    execute();
+                } catch (Exception e) {
+                    getLogger().warning(
+                            "Cannot retrieve inline count value due to: "
+                                    + e.getMessage());
+                }
             } else {
                 // Send a request to a specific URI.
                 String targetUri = createTargetUri();
@@ -429,7 +436,14 @@ public class Query<T> implements Iterable<T> {
                 resource.setChallengeResponse(service.getCredentials());
                 Representation result = resource.get();
                 if (resource.getStatus().isSuccess()) {
-                    count = Integer.parseInt(result.getText());
+                    try {
+                        count = Integer.parseInt(result.getText());
+                    } catch (Exception e) {
+                        getLogger().warning(
+                                "Cannot parse count value due to: "
+                                        + e.getMessage());
+                    }
+
                 }
             }
         }
