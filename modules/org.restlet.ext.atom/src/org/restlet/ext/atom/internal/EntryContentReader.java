@@ -74,6 +74,7 @@ public class EntryContentReader extends DefaultHandler {
 
     /** The currently parsed Content. */
     private Content currentContent;
+
     /** The currently parsed XML content writer. */
     private XmlWriter currentContentWriter;
 
@@ -270,7 +271,21 @@ public class EntryContentReader extends DefaultHandler {
                 }
                 this.currentContentWriter = null;
             }
-
+        } else if (this.state == State.FEED_ENTRY) {
+            // Set the inline content, if any
+            if (this.currentContentWriter != null) {
+                this.currentContentWriter.endElement(uri, localName, qName);
+                String content = this.currentContentWriter.getWriter()
+                        .toString().trim();
+                contentDepth = -1;
+                if ("".equals(content)) {
+                    this.currentEntry.setInlineContent(null);
+                } else {
+                    this.currentEntry
+                            .setInlineContent(new StringRepresentation(content));
+                }
+                this.currentContentWriter = null;
+            }
         }
 
         this.currentText = null;
@@ -387,9 +402,9 @@ public class EntryContentReader extends DefaultHandler {
                         "href")));
                 this.currentLink.setRel(Relation.valueOf(attrs.getValue("",
                         "rel")));
-                if ("".equals(attrs.getValue("", "type"))) {
-                    this.currentLink.setType(new MediaType(attrs
-                            .getValue("type")));
+                String type = attrs.getValue("", "type");
+                if (type != null && type.length() > 0) {
+                    this.currentLink.setType(new MediaType(type));
                 }
                 this.currentLink.setHrefLang(new Language(attrs.getValue("",
                         "hreflang")));
@@ -443,6 +458,11 @@ public class EntryContentReader extends DefaultHandler {
                     this.state = State.FEED_ENTRY_CONTENT;
                 }
             }
+        } else if (this.state == State.FEED_ENTRY) {
+            // Content available inline
+            initiateInlineMixedContent();
+            this.currentContentWriter
+                    .startElement(uri, localName, qName, attrs);
         }
     }
 

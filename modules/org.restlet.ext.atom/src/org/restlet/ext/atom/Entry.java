@@ -72,6 +72,9 @@ public class Entry extends SaxRepresentation {
     /** Permanent, universally unique identifier for the entry. */
     private volatile String id;
 
+    /** Representation for inline content. */
+    private volatile Representation inlineContent;
+
     /** The references from the entry to Web resources. */
     private volatile List<Link> links;
 
@@ -92,7 +95,7 @@ public class Entry extends SaxRepresentation {
 
     /** Most recent moment when the entry was modified in a significant way. */
     private volatile Date updated;
-
+    
     /**
      * Constructor.
      */
@@ -111,7 +114,18 @@ public class Entry extends SaxRepresentation {
         this.title = null;
         this.updated = null;
     }
-
+    /**
+     * Constructor.
+     * 
+     * @param clientDispatcher
+     *            The client HTTP dispatcher.
+     * @param entryUri
+     *            The entry URI.
+     * @throws IOException
+     */
+    public Entry(Client clientDispatcher, String entryUri) throws IOException {
+        this(clientDispatcher.get(entryUri).getEntity());
+    }
     /**
      * Constructor.
      * 
@@ -147,19 +161,6 @@ public class Entry extends SaxRepresentation {
      */
     public Entry(String entryUri) throws IOException {
         this(new Client(new Reference(entryUri).getSchemeProtocol()), entryUri);
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param clientDispatcher
-     *            The client HTTP dispatcher.
-     * @param entryUri
-     *            The entry URI.
-     * @throws IOException
-     */
-    public Entry(Client clientDispatcher, String entryUri) throws IOException {
-        this(clientDispatcher.get(entryUri).getEntity());
     }
 
     /**
@@ -235,6 +236,15 @@ public class Entry extends SaxRepresentation {
      */
     public String getId() {
         return this.id;
+    }
+
+    /**
+     * Returns the representation for inline content.
+     * 
+     * @return The representation for inline content.
+     */
+    public Representation getInlineContent() {
+        return this.inlineContent;
     }
 
     /**
@@ -357,6 +367,16 @@ public class Entry extends SaxRepresentation {
      */
     public void setId(String id) {
         this.id = id;
+    }
+
+    /**
+     * Sets the representation for inline content.
+     * 
+     * @param inlineContent
+     *            The representation for inline content.
+     */
+    public void setInlineContent(Representation inlineContent) {
+        this.inlineContent = inlineContent;
     }
 
     /**

@@ -46,6 +46,7 @@ import org.restlet.ext.xml.XmlWriter;
 import org.restlet.representation.Representation;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
+import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * Atom Feed Document, acting as a component for metadata and data associated
@@ -74,6 +75,7 @@ public class Feed extends SaxRepresentation {
 
     /** The contributors to the feed. */
     private volatile List<Person> contributors;
+
     /**
      * Individual entries, acting as a components for associated metadata and
      * data.
@@ -164,6 +166,19 @@ public class Feed extends SaxRepresentation {
     public Feed(Representation xmlFeed) throws IOException {
         super(xmlFeed);
         parse(new FeedContentReader(this));
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param xmlFeed
+     *            The XML feed document.
+     * @throws IOException
+     */
+    public Feed(Representation xmlFeed, DefaultHandler extraFeedHandler,
+            DefaultHandler extraEntryHandler) throws IOException {
+        super(xmlFeed);
+        parse(new FeedContentReader(this, extraFeedHandler, extraEntryHandler));
     }
 
     /**

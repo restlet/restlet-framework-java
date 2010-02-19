@@ -96,6 +96,15 @@ public class FeedContentReader extends DefaultHandler {
     /** The currently parsed Text. */
     private Text currentText;
 
+    /** Extra content handler that will be notified of Entry events. */
+    private DefaultHandler extraEntryHandler;
+
+    /** Extra content handler that will be notified of Feed events. */
+    private DefaultHandler extraFeedHandler;
+
+    /** Indicates if the current event is dedicated to an entry or a feed. */
+    private boolean parsingEntry = false;
+
     /** The current list of prefix mappings. */
     private Map<String, String> prefixMappings;
 
@@ -123,6 +132,19 @@ public class FeedContentReader extends DefaultHandler {
         this.contentDepth = -1;
     }
 
+    /**
+     * Constructor.
+     * 
+     * @param feed
+     *            The feed object to update during the parsing.
+     */
+    public FeedContentReader(Feed feed, DefaultHandler extraFeedHandler,
+            DefaultHandler extraEntryHandler) {
+        this(feed);
+        this.extraFeedHandler = extraFeedHandler;
+        this.extraEntryHandler = extraEntryHandler;
+    }
+
     @Override
     public void characters(char[] ch, int start, int length)
             throws SAXException {
@@ -134,6 +156,17 @@ public class FeedContentReader extends DefaultHandler {
         } else {
             this.contentBuffer.append(ch, start, length);
         }
+
+        // Send the event to the right extra handler.
+        if (parsingEntry) {
+            if (this.extraEntryHandler != null) {
+                this.extraEntryHandler.characters(ch, start, length);
+            }
+        } else {
+            if (this.extraFeedHandler != null) {
+                this.extraFeedHandler.characters(ch, start, length);
+            }
+        }
     }
 
     @Override
@@ -141,6 +174,14 @@ public class FeedContentReader extends DefaultHandler {
         this.state = State.NONE;
         this.currentEntry = null;
         this.contentBuffer = null;
+
+        // Send the event to the extra handlers.
+        if (this.extraEntryHandler != null) {
+            this.extraEntryHandler.endDocument();
+        }
+        if (this.extraFeedHandler != null) {
+            this.extraFeedHandler.endDocument();
+        }
     }
 
     @Override
@@ -268,6 +309,7 @@ public class FeedContentReader extends DefaultHandler {
                 if (this.state == State.FEED_ENTRY) {
                     this.currentFeed.getEntries().add(this.currentEntry);
                     this.state = State.FEED;
+                    this.parsingEntry = false;
                 }
             } else if (localName.equals("category")) {
                 if (this.state == State.FEED_CATEGORY) {
@@ -300,15 +342,52 @@ public class FeedContentReader extends DefaultHandler {
                 }
                 this.currentContentWriter = null;
             }
+        } else if (this.state == State.FEED_ENTRY) {
+            // Set the inline content, if any
+            if (this.currentContentWriter != null) {
+                this.currentContentWriter.endElement(uri, localName, qName);
+                String content = this.currentContentWriter.getWriter()
+                        .toString().trim();
+                contentDepth = -1;
+                if ("".equals(content)) {
+                    this.currentEntry.setInlineContent(null);
+                } else {
+                    this.currentEntry
+                            .setInlineContent(new StringRepresentation(content));
+                }
+                this.currentContentWriter = null;
+            }
         }
 
         this.currentText = null;
         this.currentDate = null;
+
+        // Send the event to the right extra handler.
+        if (parsingEntry) {
+            if (this.extraEntryHandler != null) {
+                this.extraEntryHandler.endElement(uri, localName, qName);
+            }
+        } else {
+            if (this.extraFeedHandler != null) {
+                this.extraFeedHandler.endElement(uri, localName, qName);
+            }
+        }
     }
 
     @Override
     public void endPrefixMapping(String prefix) throws SAXException {
         this.prefixMappings.remove(prefix);
+
+        // Send the event to the right extra handler.
+        if (parsingEntry) {
+            if (this.extraEntryHandler != null) {
+                this.extraEntryHandler.endPrefixMapping(prefix);
+            }
+        } else {
+            if (this.extraFeedHandler != null) {
+                this.extraFeedHandler.endPrefixMapping(prefix);
+            }
+        }
     }
 
     /**
@@ -353,6 +432,14 @@ public class FeedContentReader extends DefaultHandler {
     @Override
     public void startDocument() throws SAXException {
         this.contentBuffer = new StringBuilder();
+
+        // Send the event to the extra handlers.
+        if (this.extraEntryHandler != null) {
+            this.extraEntryHandler.startDocument();
+        }
+        if (this.extraFeedHandler != null) {
+            this.extraFeedHandler.startDocument();
+        }
     }
 
     @Override
@@ -432,10 +519,11 @@ public class FeedContentReader extends DefaultHandler {
                         "href")));
                 this.currentLink.setRel(Relation.valueOf(attrs.getValue("",
                         "rel")));
-                if ("".equals(attrs.getValue("", "type"))) {
-                    this.currentLink.setType(new MediaType(attrs
-                            .getValue("type")));
+                String type = attrs.getValue("", "type");
+                if (type != null && type.length() > 0) {
+                    this.currentLink.setType(new MediaType(type));
                 }
+
                 this.currentLink.setHrefLang(new Language(attrs.getValue("",
                         "hreflang")));
                 this.currentLink.setTitle(attrs.getValue("", "title"));
@@ -459,6 +547,7 @@ public class FeedContentReader extends DefaultHandler {
                 if (this.state == State.FEED) {
                     this.currentEntry = new Entry();
                     this.state = State.FEED_ENTRY;
+                    this.parsingEntry = true;
                 }
             } else if (localName.equals("category")) {
                 this.currentCategory = new Category();
@@ -495,6 +584,24 @@ public class FeedContentReader extends DefaultHandler {
                     this.state = State.FEED_ENTRY_CONTENT;
                 }
             }
+        } else if (this.state == State.FEED_ENTRY) {
+            // Content available inline
+            initiateInlineMixedContent();
+            this.currentContentWriter
+                    .startElement(uri, localName, qName, attrs);
+        }
+
+        // Send the event to the right extra handler.
+        if (parsingEntry) {
+            if (this.extraEntryHandler != null) {
+                this.extraEntryHandler.startElement(uri, localName, qName,
+                        attrs);
+            }
+        } else {
+            if (this.extraFeedHandler != null) {
+                this.extraFeedHandler
+                        .startElement(uri, localName, qName, attrs);
+            }
         }
     }
 
@@ -502,10 +609,21 @@ public class FeedContentReader extends DefaultHandler {
     public void startPrefixMapping(String prefix, String uri)
             throws SAXException {
         this.prefixMappings.put(prefix, uri);
+
+        // Send the event to the right extra handler.
+        if (parsingEntry) {
+            if (this.extraEntryHandler != null) {
+                this.extraEntryHandler.startPrefixMapping(prefix, uri);
+            }
+        } else {
+            if (this.extraFeedHandler != null) {
+                this.extraFeedHandler.startPrefixMapping(prefix, uri);
+            }
+        }
     }
 
     /**
-     * Receive notification of the beginning of a text element.
+     * Receives notification of the beginning of a text element.
      * 
      * @param attrs
      *            The attributes attached to the element.
