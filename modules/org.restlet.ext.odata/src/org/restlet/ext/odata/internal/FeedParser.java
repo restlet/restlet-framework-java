@@ -37,6 +37,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.Context;
+import org.restlet.ext.atom.Content;
 import org.restlet.ext.atom.Entry;
 import org.restlet.ext.atom.Feed;
 import org.restlet.ext.atom.Link;
@@ -49,7 +50,6 @@ import org.restlet.ext.odata.internal.edm.Property;
 import org.restlet.ext.odata.internal.reflect.ReflectUtils;
 import org.restlet.ext.xml.DomRepresentation;
 import org.restlet.ext.xml.NodeSet;
-import org.restlet.representation.Representation;
 import org.w3c.dom.Node;
 
 /**
@@ -146,189 +146,22 @@ public class FeedParser<T> {
 
         for (Entry entry : feed.getEntries()) {
             try {
+                // instanciate the entity
                 Object entity = entityClass.newInstance();
-                Representation content = entry.getContent().getInlineContent();
 
-                // Recreate the bean
-                DomRepresentation dr = new DomRepresentation(content);
-
-                // [ifndef android] instruction
-                NodeSet propertyNodes = dr.getNodes("/properties/*");
-
-                // [ifdef android] uncomment
-                // List<Node> propertyNodes = new ArrayList<Node>();
-                // try {
-                // org.w3c.dom.NodeList nl = dr.getDocument().getChildNodes();
-                // if (nl != null && nl.getLength() > 0) {
-                // Node properties = nl.item(0);
-                // boolean found = false;
-                // int index = properties.getNodeName().indexOf(":");
-                // if (index != -1) {
-                // found = properties.getNodeName().endsWith(
-                // ":properties");
-                // } else {
-                // found = properties.getNodeName().equals(
-                // "properties");
-                // }
-                // if (found) {
-                // for (int i = 0; i < properties.getChildNodes()
-                // .getLength(); i++) {
-                // Node n = properties.getChildNodes().item(i);
-                // if (n.getNodeType() == Node.ELEMENT_NODE) {
-                // propertyNodes.add(n);
-                // }
-                // }
-                // }
-                // }
-                // } catch (java.io.IOException e1) {
-                // }
-                // [enddef]
-
-                for (Node node : propertyNodes) {
-                    String nodeName = node.getNodeName();
-                    int index = nodeName.indexOf(":");
-                    if (index != -1) {
-                        nodeName = nodeName.substring(index + 1);
-                    }
-
-                    Property property = metadata.getProperty(entity, nodeName);
-                    try {
-                        // [ifndef android] instruction
-                        ReflectUtils.setProperty(entity, property, node
-                                .getTextContent());
-                        // [ifdef android] instruction uncomment
-                        // ReflectUtils.setProperty(entity, property,
-                        // org.restlet.ext.xml.XmlRepresentation
-                        // .getTextContent(node));
-                    } catch (Exception e) {
-                        getLogger().log(
-                                Level.WARNING,
-                                "Can't set the property " + nodeName + " of "
-                                        + entity.getClass(), e);
-                    }
-                }
+                // Update it with the entry content.
+                updateWithContent(entity, entry.getContent());
 
                 // Examines the links
                 for (Link link : entry.getLinks()) {
-                    // Try to get inline content denoting the full content of a
-                    // property of the current entity
-                    if (link.getContent() != null && link.getTitle() != null) {
-                        String propertyName = ReflectUtils.normalize(link
-                                .getTitle());
-                        // Get the associated entity
-                        AssociationEnd association = metadata.getAssociation(
-                                entityType, propertyName);
-                        if (association != null) {
-                            try {
-                                Feed linkFeed = null;
-                                if (association.isToMany()) {
-                                    linkFeed = new Feed(link.getContent()
-                                            .getInlineContent());
-                                } else {
-                                    linkFeed = new Feed();
-                                    linkFeed.getEntries().add(
-                                            new Entry(link.getContent()
-                                                    .getInlineContent()));
-                                }
-
-                                Class<?> linkClass = ReflectUtils
-                                        .getEntryClass(linkFeed);
-                                Iterator<?> iterator = createFeedParser(
-                                        linkFeed, linkClass, metadata).parse();
-                                ReflectUtils.setProperty(entity, propertyName,
-                                        association.isToMany(), iterator,
-                                        linkClass);
-                            } catch (Exception e) {
-                                getLogger().log(
-                                        Level.WARNING,
-                                        "Can't retrieve associated property "
-                                                + propertyName, e);
-                            }
-                        }
-                    }
+                    updateWithLink(entity, link, entityType);
                 }
 
-                // Examine the mappings.
-                if (!metadata.getMappings().isEmpty()) {
-                    DomRepresentation inlineContent = null;
-
-                    for (Mapping mapping : metadata.getMappings()) {
-                        if (entityType != null
-                                && entityType.equals(mapping.getType())) {
-                            Object value = null;
-                            if (mapping.getNsPrefix() == null
-                                    && mapping.getNsUri() == null) {
-                                // mapping atom
-                                Person author = (entry.getAuthors().isEmpty()) ? null
-                                        : entry.getAuthors().get(0);
-                                Person contributor = (entry.getContributors()
-                                        .isEmpty()) ? null : entry
-                                        .getContributors().get(0);
-                                if ("SyndicationAuthorEmail".equals(mapping
-                                        .getValuePath())) {
-                                    value = (author != null) ? author
-                                            .getEmail() : null;
-                                } else if ("SyndicationAuthorName"
-                                        .equals(mapping.getValuePath())) {
-                                    value = (author != null) ? author.getName()
-                                            : null;
-                                } else if ("SyndicationAuthorUri"
-                                        .equals(mapping.getValuePath())) {
-                                    value = (author != null) ? author.getUri()
-                                            .toString() : null;
-                                } else if ("SyndicationContributorEmail"
-                                        .equals(mapping.getValuePath())) {
-                                    value = (contributor != null) ? contributor
-                                            .getEmail() : null;
-                                } else if ("SyndicationContributorName"
-                                        .equals(mapping.getValuePath())) {
-                                    value = (contributor != null) ? contributor
-                                            .getName() : null;
-                                } else if ("SyndicationContributorUri"
-                                        .equals(mapping.getValuePath())) {
-                                    value = (contributor != null) ? contributor
-                                            .getUri().toString() : null;
-                                } else if ("SyndicationPublished"
-                                        .equals(mapping.getValuePath())) {
-                                    value = entry.getPublished();
-                                } else if ("SyndicationRights".equals(mapping
-                                        .getValuePath())) {
-                                    value = (entry.getRights() != null) ? entry
-                                            .getRights().getContent() : null;
-                                } else if ("SyndicationSummary".equals(mapping
-                                        .getValuePath())) {
-                                    value = entry.getSummary();
-                                } else if ("SyndicationTitle".equals(mapping
-                                        .getValuePath())) {
-                                    value = (entry.getTitle() != null) ? entry
-                                            .getTitle().getContent() : null;
-                                } else if ("SyndicationUpdated".equals(mapping
-                                        .getValuePath())) {
-                                    value = entry.getUpdated();
-                                }
-                            } else if (entry.getInlineContent() != null) {
-                                if (inlineContent == null) {
-                                    inlineContent = new DomRepresentation(entry
-                                            .getInlineContent());
-                                }
-                                Node node = inlineContent.getNode(mapping
-                                        .getValuePath());
-                                if (node != null) {
-                                    value = node.getTextContent();
-                                }
-                            }
-
-                            try {
-                                if (value != null) {
-                                    ReflectUtils.invokeSetter(entity, mapping
-                                            .getPropertyPath(), value);
-                                }
-                            } catch (Exception e) {
-                            }
-                        }
-                    }
+                // Examines the mappings
+                for (Mapping mapping : metadata.getMappings()) {
+                    updateWithMapping(entity, mapping, entry, entityType);
                 }
-
+                // Add the entity to the list of discovered entities.
                 list.add((T) entity);
             } catch (InstantiationException e) {
                 getLogger().log(
@@ -346,4 +179,208 @@ public class FeedParser<T> {
 
         return result;
     }
+
+    /**
+     * Updates the given object according to the given {@link Content} instance
+     * taken from the Atom feed representation.
+     * 
+     * @param entity
+     *            The entity to update.
+     * @param content
+     *            The instance of {@link Content} that contains the values of
+     *            the entity attributes.
+     */
+    private void updateWithContent(Object entity, Content content) {
+        if (content != null && content.getInlineContent() != null) {
+            // Recreate the bean
+            DomRepresentation dr = new DomRepresentation(content
+                    .getInlineContent());
+
+            // [ifndef android] instruction
+            NodeSet propertyNodes = dr.getNodes("/properties/*");
+
+            // [ifdef android] uncomment
+            // List<Node> propertyNodes = new ArrayList<Node>();
+            // try {
+            // org.w3c.dom.NodeList nl = dr.getDocument().getChildNodes();
+            // if (nl != null && nl.getLength() > 0) {
+            // Node properties = nl.item(0);
+            // boolean found = false;
+            // int index = properties.getNodeName().indexOf(":");
+            // if (index != -1) {
+            // found = properties.getNodeName()
+            // .endsWith(":properties");
+            // } else {
+            // found = properties.getNodeName().equals("properties");
+            // }
+            // if (found) {
+            // for (int i = 0; i < properties.getChildNodes()
+            // .getLength(); i++) {
+            // Node n = properties.getChildNodes().item(i);
+            // if (n.getNodeType() == Node.ELEMENT_NODE) {
+            // propertyNodes.add(n);
+            // }
+            // }
+            // }
+            // }
+            // } catch (java.io.IOException e1) {
+            // }
+            // [enddef]
+
+            for (Node node : propertyNodes) {
+                String nodeName = node.getNodeName();
+                int index = nodeName.indexOf(":");
+                if (index != -1) {
+                    nodeName = nodeName.substring(index + 1);
+                }
+
+                Property property = metadata.getProperty(entity, nodeName);
+                try {
+                    // [ifndef android] instruction
+                    ReflectUtils.setProperty(entity, property, node
+                            .getTextContent());
+                    // [ifdef android] instruction uncomment
+                    // ReflectUtils.setProperty(entity, property,
+                    // org.restlet.ext.xml.XmlRepresentation
+                    // .getTextContent(node));
+                } catch (Exception e) {
+                    getLogger().log(
+                            Level.WARNING,
+                            "Can't set the property " + nodeName + " of "
+                                    + entity.getClass(), e);
+                }
+            }
+        }
+    }
+
+    /**
+     * Updates one association property of the given object according to the
+     * given {@link Link} instance taken from the Atom feed representation.
+     * 
+     * @param entity
+     *            The entity to update.
+     * @param link
+     *            The instance of {@link Link} that contains the values of the
+     *            entity attribute.
+     * @param entityType
+     *            The descriptor of the given entity's type.
+     */
+    private void updateWithLink(Object entity, Link link, EntityType entityType) {
+        // Try to get inline content denoting the full content of a property of
+        // the current entity
+        if (link.getContent() != null && link.getTitle() != null) {
+            String propertyName = ReflectUtils.normalize(link.getTitle());
+            // Get the associated entity
+            AssociationEnd association = metadata.getAssociation(entityType,
+                    propertyName);
+            if (association != null) {
+                try {
+                    Feed linkFeed = null;
+                    if (association.isToMany()) {
+                        linkFeed = new Feed(link.getContent()
+                                .getInlineContent());
+                    } else {
+                        linkFeed = new Feed();
+                        linkFeed.getEntries()
+                                .add(
+                                        new Entry(link.getContent()
+                                                .getInlineContent()));
+                    }
+
+                    Class<?> linkClass = ReflectUtils.getEntryClass(linkFeed);
+                    Iterator<?> iterator = createFeedParser(linkFeed,
+                            linkClass, metadata).parse();
+                    ReflectUtils.setProperty(entity, propertyName, association
+                            .isToMany(), iterator, linkClass);
+                } catch (Exception e) {
+                    getLogger().log(
+                            Level.WARNING,
+                            "Can't retrieve associated property "
+                                    + propertyName, e);
+                }
+            }
+        }
+    }
+
+    /**
+     * Updates the given object according to the given {@link Content} instance
+     * taken from the Atom feed representation.
+     * 
+     * @param entity
+     *            The entity to update.
+     * @param mapping
+     *            The instance of {@link Mapping} that describes the entity
+     *            attribute to update and the location of its value.
+     * @param entry
+     *            The current Atom entry, where could be located the value.
+     * @param entityType
+     *            The descriptor of the given entity's type.
+     */
+    private void updateWithMapping(Object entity, Mapping mapping, Entry entry,
+            EntityType entityType) {
+        DomRepresentation inlineContent = null;
+        if (entityType != null && entityType.equals(mapping.getType())) {
+            Object value = null;
+            if (mapping.getNsPrefix() == null && mapping.getNsUri() == null) {
+                // mapping atom
+                Person author = (entry.getAuthors().isEmpty()) ? null : entry
+                        .getAuthors().get(0);
+                Person contributor = (entry.getContributors().isEmpty()) ? null
+                        : entry.getContributors().get(0);
+                if ("SyndicationAuthorEmail".equals(mapping.getValuePath())) {
+                    value = (author != null) ? author.getEmail() : null;
+                } else if ("SyndicationAuthorName".equals(mapping
+                        .getValuePath())) {
+                    value = (author != null) ? author.getName() : null;
+                } else if ("SyndicationAuthorUri"
+                        .equals(mapping.getValuePath())) {
+                    value = (author != null) ? author.getUri().toString()
+                            : null;
+                } else if ("SyndicationContributorEmail".equals(mapping
+                        .getValuePath())) {
+                    value = (contributor != null) ? contributor.getEmail()
+                            : null;
+                } else if ("SyndicationContributorName".equals(mapping
+                        .getValuePath())) {
+                    value = (contributor != null) ? contributor.getName()
+                            : null;
+                } else if ("SyndicationContributorUri".equals(mapping
+                        .getValuePath())) {
+                    value = (contributor != null) ? contributor.getUri()
+                            .toString() : null;
+                } else if ("SyndicationPublished"
+                        .equals(mapping.getValuePath())) {
+                    value = entry.getPublished();
+                } else if ("SyndicationRights".equals(mapping.getValuePath())) {
+                    value = (entry.getRights() != null) ? entry.getRights()
+                            .getContent() : null;
+                } else if ("SyndicationSummary".equals(mapping.getValuePath())) {
+                    value = entry.getSummary();
+                } else if ("SyndicationTitle".equals(mapping.getValuePath())) {
+                    value = (entry.getTitle() != null) ? entry.getTitle()
+                            .getContent() : null;
+                } else if ("SyndicationUpdated".equals(mapping.getValuePath())) {
+                    value = entry.getUpdated();
+                }
+            } else if (entry.getInlineContent() != null) {
+                if (inlineContent == null) {
+                    inlineContent = new DomRepresentation(entry
+                            .getInlineContent());
+                }
+                Node node = inlineContent.getNode(mapping.getValuePath());
+                if (node != null) {
+                    value = node.getTextContent();
+                }
+            }
+
+            try {
+                if (value != null) {
+                    ReflectUtils.invokeSetter(entity,
+                            mapping.getPropertyPath(), value);
+                }
+            } catch (Exception e) {
+            }
+        }
+    }
+
 }

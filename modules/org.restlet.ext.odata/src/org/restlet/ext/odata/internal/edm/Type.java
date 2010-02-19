@@ -39,6 +39,7 @@ import java.util.Locale;
 
 import org.restlet.Context;
 import org.restlet.engine.util.DateUtils;
+import org.restlet.ext.odata.internal.reflect.ReflectUtils;
 
 /**
  * Type resolver. Able to handle WCF <=> Java types conversions.
@@ -136,19 +137,11 @@ public class Type {
     public static String getFullClassName(String name) {
         StringBuilder builder = new StringBuilder();
 
-        String[] tab = name.split("\\.");
-        if (tab.length > 1) {
-            int i = 0;
-            for (; i < tab.length - 1; i++) {
-                String string = tab[i];
-                if (i > 0) {
-                    builder.append(".");
-                }
-                builder.append(string.substring(0, 1).toLowerCase());
-                builder.append(string.substring(1));
-            }
-            builder.append(".");
-            builder.append(tab[i]);
+        int index = name.lastIndexOf(".");
+        if (index > -1) {
+            builder.append(getPackageName(ReflectUtils.normalize(name
+                    .substring(0, index))));
+            builder.append(name.substring(index));
         } else {
             builder.append(name);
         }
@@ -398,8 +391,8 @@ public class Type {
     }
 
     /**
-     * Converts a value to the String representation of the target WCF type
-     * when used a key in the URIs.
+     * Converts a value to the String representation of the target WCF type when
+     * used a key in the URIs.
      * 
      * @param value
      *            The value to convert.

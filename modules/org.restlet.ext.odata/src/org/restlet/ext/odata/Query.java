@@ -42,7 +42,6 @@ import org.restlet.ext.atom.Entry;
 import org.restlet.ext.atom.Feed;
 import org.restlet.ext.atom.Link;
 import org.restlet.ext.atom.Relation;
-import org.restlet.ext.odata.internal.EntryContentHandler;
 import org.restlet.ext.odata.internal.FeedContentHandler;
 import org.restlet.ext.odata.internal.FeedParser;
 import org.restlet.ext.odata.internal.edm.Metadata;
@@ -90,15 +89,19 @@ public class Query<T> implements Iterable<T> {
          * Constructor.
          * 
          * @param service
+         *            The underlying service.
          * @param iterator
-         * @param nextPageRef
+         *            The inner iterator.
+         * @param nextPage
+         *            The reference to the next page.
          * @param entityClass
+         *            The class of the listed objects.
          */
         public EntryIterator(Service service, Iterator<E> iterator,
-                Reference nextPageRef, Class<?> entityClass) {
+                Reference nextPage, Class<?> entityClass) {
             super();
             this.iterator = iterator;
-            this.nextPage = nextPageRef;
+            this.nextPage = nextPage;
             this.service = service;
             this.entityClass = entityClass;
         }
@@ -119,7 +122,7 @@ public class Query<T> implements Iterable<T> {
                 if (iterator != null) {
                     result = iterator.hasNext();
                 }
-                // Get the next page
+                // Set the reference to the next page
                 nextPage = query.getNextPage();
             }
 
@@ -327,7 +330,8 @@ public class Query<T> implements Iterable<T> {
 
             Representation result = new StringRepresentation(resource.get(
                     MediaType.APPLICATION_ATOM).getText());
-            getLogger().fine(result.getText());
+            System.out.println(targetUri);
+            System.out.println(result.getText());
             service.setLatestRequest(resource.getRequest());
             service.setLatestResponse(resource.getResponse());
 
@@ -336,10 +340,7 @@ public class Query<T> implements Iterable<T> {
                 switch (guessType(targetUri)) {
                 case TYPE_ENTITY_SET:
                     FeedContentHandler feedContentHandler = new FeedContentHandler();
-                    EntryContentHandler<T> entryContentHandler = new EntryContentHandler<T>(
-                            (Metadata) service.getMetadata(), this.entityClass);
-                    setFeed(new Feed(result, feedContentHandler,
-                            entryContentHandler));
+                    setFeed(new Feed(result, feedContentHandler, null));
                     this.count = feedContentHandler.getCount();
                     break;
                 case TYPE_ENTITY:
@@ -413,8 +414,11 @@ public class Query<T> implements Iterable<T> {
     public int getCount() throws Exception {
         if (!isExecuted()) {
             if (inlineCount) {
+                // Execute the query which sets the count retrieved from the
+                // Atom document.
                 execute();
             } else {
+                // Send a request to a specific URI.
                 String targetUri = createTargetUri();
 
                 if (guessType(targetUri) == TYPE_ENTITY) {
@@ -498,7 +502,7 @@ public class Query<T> implements Iterable<T> {
 
     /**
      * Tries to deduce the type of the query based on the analysis of the target
-     * URI, and return it.
+     * URI, and returns it.
      * 
      * @param targetUri
      *            The target URI to analyse.
