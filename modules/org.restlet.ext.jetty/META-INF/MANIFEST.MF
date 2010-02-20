@@ -4,14 +4,8 @@ Bundle-Name: Restlet Extension - Jetty 6
 Bundle-SymbolicName: org.restlet.ext.jetty
 Bundle-Version: 2.0
 Bundle-Vendor: Noelios Technologies
-Export-Package: org.restlet.ext.jetty;
-  uses:="javax.servlet.http,
-   org.restlet.engine.http,
-   org.restlet.util,
-   org.restlet,
-   org.restlet.data,
-   org.mortbay.jetty.handler,
-   org.mortbay.jetty"
+Export-Package: org.restlet.ext.jetty,
+ org.restlet.ext.jetty.internal
 Import-Package: javax.servlet,
  javax.servlet.http,
  javax.servlet.resources,

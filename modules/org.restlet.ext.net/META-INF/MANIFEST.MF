@@ -4,13 +4,8 @@ Bundle-Name: Restlet Extension - Net
 Bundle-SymbolicName: org.restlet.ext.net
 Bundle-Version: 2.0
 Bundle-Vendor: Noelios Technologies
-Export-Package: org.restlet.ext.net;
-  uses:="org.restlet.engine.http,
-   org.restlet.util,
-   org.restlet.resource,
-   org.restlet,
-   org.restlet.data,
-   javax.net.ssl"
+Export-Package: org.restlet.ext.net,
+ org.restlet.ext.net.internal
 Import-Package: org.restlet,
  org.restlet.data,
  org.restlet.engine,

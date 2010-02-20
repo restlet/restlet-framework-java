@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Restlet Extension - Sesame
-Bundle-SymbolicName: org.restlet.ext.sesame
+Bundle-Name: Restlet Extension - FOAF
+Bundle-SymbolicName: org.restlet.ext.foaf
 Bundle-Version: 2.0
 Bundle-Vendor: Noelios Technologies
 Bundle-RequiredExecutionEnvironment: J2SE-1.5

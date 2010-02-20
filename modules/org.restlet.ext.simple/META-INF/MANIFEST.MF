@@ -4,16 +4,8 @@ Bundle-Name: Restlet Extension - Simple
 Bundle-SymbolicName: org.restlet.ext.simple
 Bundle-Version: 2.0
 Bundle-Vendor: Noelios Technologies
-Export-Package: org.restlet.ext.simple;
-  uses:="org.restlet.data,
-   org.simpleframework.http.core,
-   org.restlet,
-   org.restlet.util,
-   org.simpleframework.transport.connect,
-   org.simpleframework.transport,
-   org.restlet.engine.http,
-   javax.net.ssl,
-   org.simpleframework.http"
+Export-Package: org.restlet.ext.simple,
+ org.restlet.ext.simple.internal
 Import-Package: org.restlet,
  org.restlet.data,
  org.restlet.engine,

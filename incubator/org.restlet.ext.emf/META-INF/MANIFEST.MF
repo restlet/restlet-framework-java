@@ -27,12 +27,8 @@ Import-Package: org.eclipse.emf.common,
  org.restlet.service,
  org.restlet.util
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Export-Package: org.restlet.ext.emf;
-  uses:="org.eclipse.emf.ecore.resource,
-   org.restlet.data,
-   org.restlet.resource,
-   org.restlet.engine.converter,
-   org.restlet.representation"
+Export-Package: org.restlet.ext.emf,
+ org.restlet.ext.emf.internal
 Bundle-ClassPath: .,
  lib/org.eclipse.emf.common.jar,
  lib/org.eclipse.emf.ecore.jar,

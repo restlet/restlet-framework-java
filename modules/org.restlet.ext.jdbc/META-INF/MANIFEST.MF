@@ -4,14 +4,8 @@ Bundle-Name: Restlet Extension - JDBC
 Bundle-SymbolicName: org.restlet.ext.jdbc
 Bundle-Version: 2.0
 Bundle-Vendor: Noelios Technologies
-Export-Package: org.restlet.ext.jdbc;
-  uses:="org.restlet.resource,
-   org.apache.commons.pool,
-   org.restlet.engine.converter,
-   org.restlet.representation,
-   org.restlet,
-   org.restlet.engine,
-   javax.sql.rowset"
+Export-Package: org.restlet.ext.jdbc,
+ org.restlet.ext.jdbc.internal
 Import-Package: com.sun.rowset,
  com.sun.rowset.internal,
  com.sun.rowset.providers,

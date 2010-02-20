@@ -5,40 +5,18 @@ Bundle-Name: Restlet API
 Bundle-SymbolicName: org.restlet
 Bundle-Version: 2.0
 Bundle-Vendor: Noelios Technologies
-Export-Package: org.restlet;uses:="org.restlet.data,org.restlet.util,org.restlet.representation",
- org.restlet.data;uses:="org.restlet.util,org.restlet.representation",
- org.restlet.engine;
-  uses:="org.restlet.service,
-   org.restlet.util,
-   org.restlet,
-   org.restlet.representation,
-   org.restlet.engine.log",
- org.restlet.engine.application;uses:="org.restlet.data",
- org.restlet.engine.http;
-  uses:="org.restlet.data,
-   org.restlet.util,
-   org.restlet.engine,
-   org.restlet,
-   org.restlet.representation,
-   com.google.gwt.http.client",
- org.restlet.engine.io;uses:="org.restlet.data",
+Export-Package: org.restlet,
+ org.restlet.data,
+ org.restlet.engine,
+ org.restlet.engine.application,
+ org.restlet.engine.http,
+ org.restlet.engine.io,
  org.restlet.engine.log,
- org.restlet.engine.util;uses:="org.restlet.data,org.restlet.util,org.restlet.representation",
- org.restlet.representation;uses:="org.restlet.resource,org.restlet.data,com.google.gwt.user.client.rpc",
- org.restlet.resource;
-  uses:="com.google.gwt.user.client.rpc.impl,
-   org.restlet.data,
-   org.restlet.service,
-   org.restlet.util,
-   org.restlet.representation,
-   org.restlet,
-   com.google.gwt.user.client.rpc",
- org.restlet.service;
-  uses:="org.restlet.resource,
-   org.restlet.data,
-   org.restlet.representation,
-   org.restlet",
- org.restlet.util;uses:="org.restlet.data,org.restlet.representation,org.restlet"
+ org.restlet.engine.util,
+ org.restlet.representation,
+ org.restlet.resource,
+ org.restlet.service,
+ org.restlet.util
 Import-Package: com.google.gwt.core.client,
  com.google.gwt.http.client,
  com.google.gwt.i18n.client,

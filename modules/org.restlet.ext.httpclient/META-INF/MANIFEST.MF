@@ -4,12 +4,8 @@ Bundle-Name: Restlet Extension - Apache HTTP Client
 Bundle-SymbolicName: org.restlet.ext.httpclient
 Bundle-Version: 2.0
 Bundle-Vendor: Noelios Technologies
-Export-Package: org.restlet.ext.httpclient;
-  uses:="org.apache.commons.httpclient,
-   org.restlet.engine.http,
-   org.restlet,
-   org.restlet.util,
-   org.restlet.data"
+Export-Package: org.restlet.ext.httpclient,
+ org.restlet.ext.httpclient.internal
 Import-Package: org.apache.commons.codec,
  org.apache.commons.logging,
  org.apache.http,
