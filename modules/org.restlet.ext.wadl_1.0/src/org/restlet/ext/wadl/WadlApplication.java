@@ -616,6 +616,14 @@ public class WadlApplication extends Application {
             }
         }
 
+        if (router.getDefaultRoute() != null) {
+            ResourceInfo resourceInfo = getResourceInfo(router
+                    .getDefaultRoute(), "/", request, response);
+            if (resourceInfo != null) {
+                result.add(resourceInfo);
+            }
+        }
+
         return result;
     }
 
@@ -704,7 +712,7 @@ public class WadlApplication extends Application {
     public void handle(Request request, Response response) {
         // Preserve the resource reference.
         Reference rr = request.getResourceRef().clone();
-        
+
         super.handle(request, response);
 
         // Restore the resource reference

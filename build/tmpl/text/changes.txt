@@ -11,6 +11,8 @@ Changes log
           a file. Contributed by Daniel Truemper.
         - Precondition check was wrong for 'if-unmodified-since' if
           dates were equals. Reported by Andreas Schneider.
+        - WadlApplication wasn't exposing the default route of routers.
+          Reported by John Wismar.
 
 - 1.1.7 (2009-11-20)
     - Bugs fixed
