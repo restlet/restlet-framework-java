@@ -14,6 +14,8 @@ Changes log
           Suggested by Martin Kubincanek.
         - Added conveniency constructors to Atom classes.
         - Added new Relation constants in the Atom extension.
+        - MediaType#getParent() now returns the same media type without
+          parameters if some parameters are present. 
     - Enhancements
         - UniformResource#doCatch now extract the cause exception from
           caught ResourceException instance for easier debugging.
@@ -36,7 +38,9 @@ Changes log
           dates were equals. Reported by Andreas Schneider.
         - Updated MANIFEST.MF files to not declare the "Uses" fields
           for the exported packages. Reported by Bryan Hunt.
+        - Fixed MediaType#toString(). Reported by Carsten Lohmann.
     - Misc
+        - 
         
 - 2.0 Milestone 7 (2010-01-29)
     - API changes

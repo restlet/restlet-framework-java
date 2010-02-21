@@ -267,6 +267,12 @@ public class MediaTypeTestCase extends RestletTestCase {
                 .valueOf("application/x-restlet-test"));
         assertSame(registeredType, MediaType
                 .valueOf("application/x-restlet-test"));
+
+        // Test toString() equivalence
+        MediaType mediaType = MediaType
+                .valueOf("application/atom+xml; name=value");
+        assertEquals("application/atom+xml; name=value", mediaType.toString());
+        assertEquals(MediaType.APPLICATION_ATOM, mediaType.getParent());
     }
 
     @SuppressWarnings("unchecked")

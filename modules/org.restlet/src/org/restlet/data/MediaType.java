@@ -888,10 +888,14 @@ public final class MediaType extends Metadata {
     public MediaType getParent() {
         MediaType result = null;
 
-        if (getSubType().equals("*")) {
-            result = equals(ALL) ? null : ALL;
+        if (getParameters().size() > 0) {
+            result = MediaType.valueOf(getMainType() + "/" + getSubType());
         } else {
-            result = MediaType.valueOf(getMainType() + "/*");
+            if (getSubType().equals("*")) {
+                result = equals(ALL) ? null : ALL;
+            } else {
+                result = MediaType.valueOf(getMainType() + "/*");
+            }
         }
 
         return result;
@@ -983,16 +987,6 @@ public final class MediaType extends Metadata {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder();
-
-        if (getName() != null) {
-            sb.append(getName());
-
-            for (final Parameter param : getParameters()) {
-                sb.append("; ").append(param.getName()).append('=').append(
-                        param.getValue());
-            }
-        }
-        return sb.toString();
+        return getName();
     }
 }
