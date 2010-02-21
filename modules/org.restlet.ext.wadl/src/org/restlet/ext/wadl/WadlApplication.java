@@ -677,6 +677,14 @@ public class WadlApplication extends Application {
             }
         }
 
+        if (router.getDefaultRoute() != null) {
+            ResourceInfo resourceInfo = getResourceInfo(router
+                    .getDefaultRoute(), "/", request, response);
+            if (resourceInfo != null) {
+                result.add(resourceInfo);
+            }
+        }
+
         return result;
     }
 

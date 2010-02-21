@@ -39,6 +39,8 @@ Changes log
         - Updated MANIFEST.MF files to not declare the "Uses" fields
           for the exported packages. Reported by Bryan Hunt.
         - Fixed MediaType#toString(). Reported by Carsten Lohmann.
+        - WadlApplication wasn't exposing the default route of routers.
+          Reported by John Wismar.
     - Misc
         - 
         
