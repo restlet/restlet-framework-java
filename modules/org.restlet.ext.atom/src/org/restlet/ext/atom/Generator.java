@@ -58,9 +58,23 @@ public class Generator {
      * Constructor.
      */
     public Generator() {
-        this.uri = null;
-        this.version = null;
-        this.name = null;
+        this(null, null, null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param name
+     *            Human-readable name for the generating agent.
+     * @param uri
+     *            Reference of the generating agent.
+     * @param version
+     *            Version of the generating agent.
+     */
+    public Generator(String name, Reference uri, String version) {
+        this.uri = uri;
+        this.version = version;
+        this.name = name;
     }
 
     /**

@@ -105,6 +105,16 @@ public class Text {
     }
 
     /**
+     * Constructor.
+     * 
+     * @param content
+     *            The content.
+     */
+    public Text(String content) {
+        this(null, content);
+    }
+
+    /**
      * Returns the content.
      * 
      * @return The content.

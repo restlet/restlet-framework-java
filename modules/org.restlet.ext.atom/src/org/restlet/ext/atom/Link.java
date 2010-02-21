@@ -49,7 +49,7 @@ public class Link {
     /** Contains or links to the content of the entry. */
     private volatile Content content;
 
-    /** Contains the link's IRI. */
+    /** The link's IRI. */
     private volatile Reference href;
 
     /** Language of the resource pointed to by the href attribute. */
@@ -58,7 +58,7 @@ public class Link {
     /** Advisory length of the linked content in octets. */
     private volatile long length;
 
-    /** Indicates the link's relation type */
+    /** The link's relation type. */
     private volatile Relation rel;
 
     /** Human-readable information about the link. */
@@ -78,6 +78,23 @@ public class Link {
         this.hrefLang = null;
         this.title = null;
         this.length = -1;
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param href
+     *            The link's IRI.
+     * @param rel
+     *            The link's relation type.
+     * @param type
+     *            Advisory media type.
+     */
+    public Link(Reference href, Relation rel, MediaType type) {
+        super();
+        this.href = href;
+        this.rel = rel;
+        this.type = type;
     }
 
     /**

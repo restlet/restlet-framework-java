@@ -375,6 +375,18 @@ public class Feed extends SaxRepresentation {
     }
 
     /**
+     * Sets the base URI used to resolve relative references found within the
+     * scope of the xml:base attribute.
+     * 
+     * @param baseUri
+     *            The base URI used to resolve relative references found within
+     *            the scope of the xml:base attribute.
+     */
+    public void setBaseReference(String baseUri) {
+        setBaseReference(new Reference(baseUri));
+    }
+
+    /**
      * Sets the base reference used to resolve relative references found within
      * the scope of the xml:base attribute.
      * 

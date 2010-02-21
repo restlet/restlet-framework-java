@@ -12,6 +12,8 @@ Changes log
           Reported by Rhett Sutphin and Masaki Sudo.
         - Added Router#detach(Class) method.
           Suggested by Martin Kubincanek.
+        - Added conveniency constructors to Atom classes.
+        - Added new Relation constants in the Atom extension.
     - Enhancements
         - UniformResource#doCatch now extract the cause exception from
           caught ResourceException instance for easier debugging.
