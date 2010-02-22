@@ -317,7 +317,9 @@ public class Redirector extends Restlet {
     private void redirectDispatcher(Client dispatcher, Reference targetRef,
             Request request, Response response) {
         // Save the base URI if it exists as we might need it for redirections
-        final Reference baseRef = request.getResourceRef().getBaseRef();
+        Reference baseRef = request.getResourceRef().getBaseRef();
+        // Reset the protocol and let the dispatcher handle the protocol
+        request.setProtocol(null);
 
         // Update the request to cleanly go to the target URI
         request.setResourceRef(targetRef);
