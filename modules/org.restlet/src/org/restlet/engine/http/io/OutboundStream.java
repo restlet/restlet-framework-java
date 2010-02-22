@@ -36,7 +36,7 @@ import java.io.OutputStream;
 
 // [excludes gwt]
 /**
- * Buffered output stream that prevent the underlying stream from being closed.
+ * Buffered output stream that prevents the underlying stream from being closed.
  * 
  * @author Jerome Louvel
  */
