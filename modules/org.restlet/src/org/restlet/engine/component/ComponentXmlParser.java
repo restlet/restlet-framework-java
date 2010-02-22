@@ -892,7 +892,7 @@ public class ComponentXmlParser {
                     item = childNode.getAttributes().getNamedItem(
                             "matchingMode");
                     template
-                            .setMatchingMode(getInt(item, Template.MODE_EQUALS));
+                            .setMatchingMode(getInt(item, router.getDefaultMatchingMode()));
                     item = childNode.getAttributes().getNamedItem(
                             "defaultVariableType");
                     template.getDefaultVariable().setType(

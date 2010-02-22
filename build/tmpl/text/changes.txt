@@ -41,6 +41,10 @@ Changes log
         - Fixed MediaType#toString(). Reported by Carsten Lohmann.
         - WadlApplication wasn't exposing the default route of routers.
           Reported by John Wismar.
+        - WadlApplication wasn't exposing the default route of routers.
+          Reported by John Wismar.
+        - Fixed usage of Component configured by XML inside servlet 
+          containers. Reported by Zsolt Czinkos.
     - Misc
         - 
         
