@@ -47,6 +47,7 @@ Changes log
           containers. Reported by Zsolt Czinkos.
         - Allowed Redirector to plug to another protocol.
           Reported by Tal Liron.
+        - Fixed if-none-match conditions ("*" value).
     - Misc
         - 
         

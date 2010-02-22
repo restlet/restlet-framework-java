@@ -237,6 +237,7 @@ public final class Conditions {
             boolean matched = false;
             boolean failed = false;
             boolean all = getMatch().get(0).equals(Tag.ALL);
+            String statusMessage = null;
 
             if (entityExists) {
                 // If a tag exists
@@ -260,12 +261,16 @@ public final class Conditions {
                 // current entity exists, the server MUST NOT perform the
                 // requested method
                 failed = all;
+                statusMessage = "A non existing resource can't match any tag.";
             }
 
             failed = failed || !matched;
 
             if (failed) {
                 result = Status.CLIENT_ERROR_PRECONDITION_FAILED;
+                if (statusMessage != null) {
+                    result = new Status(result, statusMessage);
+                }
             }
         }
 
@@ -301,9 +306,9 @@ public final class Conditions {
                                         .after(modifiedSince, modificationDate));
                         matched = !isModifiedSince;
                     }
+                } else {
+                    matched = getNoneMatch().get(0).equals(Tag.ALL);
                 }
-            } else {
-                matched = getNoneMatch().get(0).equals(Tag.ALL);
             }
 
             if (matched) {

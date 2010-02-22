@@ -51,7 +51,6 @@ import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.ServerInfo;
 import org.restlet.data.Status;
-import org.restlet.data.Tag;
 import org.restlet.engine.resource.AnnotationInfo;
 import org.restlet.engine.resource.AnnotationUtils;
 import org.restlet.engine.resource.VariantInfo;
@@ -205,12 +204,9 @@ public abstract class ServerResource extends UniformResource {
         Representation result = null;
 
         if (getConditions().hasSome()) {
-            if (!isExisting() && getConditions().getMatch().contains(Tag.ALL)) {
-                setStatus(Status.CLIENT_ERROR_PRECONDITION_FAILED,
-                        "A non existing resource can't match any tag.");
-            } else {
-                RepresentationInfo resultInfo = null;
+            RepresentationInfo resultInfo = null;
 
+            if (existing) {
                 if (isNegotiated()) {
                     resultInfo = doGetInfo(getPreferredVariant(getVariants()));
                 } else {
@@ -234,22 +230,29 @@ public abstract class ServerResource extends UniformResource {
                         setStatus(status);
                     }
                 }
+            } else {
+                Status status = getConditions().getStatus(getMethod(),
+                        resultInfo);
 
-                if ((getStatus() != null) && getStatus().isSuccess()) {
-                    // Conditions were passed successfully, continue the normal
-                    // processing. If the representation info obtained to test
-                    // the conditions is in fact a full representation, return
-                    // it immediately for optimization purpose
-                    if ((Method.GET.equals(getMethod()) || Method.HEAD
-                            .equals(getMethod()))
-                            && resultInfo instanceof Representation) {
-                        result = (Representation) resultInfo;
+                if (status != null) {
+                    setStatus(status);
+                }
+            }
+
+            if ((getStatus() != null) && getStatus().isSuccess()) {
+                // Conditions were passed successfully, continue the normal
+                // processing. If the representation info obtained to test
+                // the conditions is in fact a full representation, return
+                // it immediately for optimization purpose
+                if ((Method.GET.equals(getMethod()) || Method.HEAD
+                        .equals(getMethod()))
+                        && resultInfo instanceof Representation) {
+                    result = (Representation) resultInfo;
+                } else {
+                    if (isNegotiated()) {
+                        result = doNegotiatedHandle();
                     } else {
-                        if (isNegotiated()) {
-                            result = doNegotiatedHandle();
-                        } else {
-                            result = doHandle();
-                        }
+                        result = doHandle();
                     }
                 }
             }
