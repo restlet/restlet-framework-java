@@ -48,7 +48,7 @@ Changes log
         - Allowed Redirector to plug to another protocol.
           Reported by Tal Liron.
         - Fixed if-none-match conditions ("*" value).
-        - Fixed computation of the ServerResource#rootRef.
+        - Fixed computation of the ServerResource#rootRef member.
           Reported by Nirav Shah.
     - Misc
         - 
