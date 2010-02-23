@@ -15,7 +15,13 @@ Changes log
         - Added conveniency constructors to Atom classes.
         - Added new Relation constants in the Atom extension.
         - MediaType#getParent() now returns the same media type without
-          parameters if some parameters are present. 
+          parameters if some parameters are present.
+        - Refactored Redirector. Renamed MODE_CLIENT_DISPATCHER into
+          MODE_SERVER_OUTBOUND and MODE_SERVER_DISPATCHER into
+          MODE_SERVER_INBOUND. Renamed redirectClientDispatcher() into
+          outboundServerRedirect(). Renamed redirectServerDispatcher()
+          into inboundServerRedirect(). Expose serverRedirect() method
+          as protected.
     - Enhancements
         - UniformResource#doCatch now extract the cause exception from
           caught ResourceException instance for easier debugging.

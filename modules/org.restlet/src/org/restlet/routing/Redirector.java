@@ -32,7 +32,8 @@ package org.restlet.routing;
 
 import java.util.logging.Level;
 
-import org.restlet.Client;
+import org.restlet.Application;
+import org.restlet.Component;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -48,7 +49,7 @@ import org.restlet.representation.Representation;
  * redirections ({@link #MODE_CLIENT_FOUND}, {@link #MODE_CLIENT_PERMANENT},
  * {@link #MODE_CLIENT_SEE_OTHER}, {@link #MODE_CLIENT_TEMPORARY}) or
  * server-side redirections, similar to a reverse proxy (
- * {@link #MODE_CLIENT_DISPATCHER} and {@link #MODE_SERVER_DISPATCHER}).<br>
+ * {@link #MODE_SERVER_OUTBOUND} and {@link #MODE_SERVER_INBOUND}).<br>
  * <br>
  * Concurrency note: instances of this class or its subclasses can be invoked by
  * several threads at the same time and therefore must be thread-safe. You
@@ -107,28 +108,30 @@ public class Redirector extends Restlet {
      * request's attributes, are removed before dispatching. Also, when a HTTP
      * response comes back the headers are also removed.
      * 
-     * @deprecated Use the {@link Redirector#MODE_CLIENT_DISPATCHER} instead.
+     * @deprecated Use the {@link Redirector#MODE_SERVER_OUTBOUND} instead.
      */
     @Deprecated
     public static final int MODE_DISPATCHER = 5;
 
     /**
-     * In this mode, the call is sent to the context's client dispatcher. Once
-     * the selected client connector has completed the request handling, the
-     * response is normally returned to the client. In this case, you can view
-     * the Redirector as acting as a transparent proxy Restlet.<br>
+     * In this mode, the call is sent to the application's outboundRoot or if
+     * null to the context's client dispatcher. Once the selected client
+     * connector has completed the request handling, the response is normally
+     * returned to the client. In this case, you can view the {@link Redirector}
+     * as acting as a transparent server-side proxy Restlet.<br>
      * <br>
-     * Remember to add the required connectors to the parent Component and to
-     * declare them in the list of required connectors on the
-     * Application.connectorService property.<br>
+     * Remember to add the required connectors to the parent {@link Component}
+     * and to declare them in the list of required connectors on the
+     * {@link Application#getConnectorService()} property.<br>
      * <br>
      * Note that in this mode, the headers of HTTP requests, stored in the
      * request's attributes, are removed before dispatching. Also, when a HTTP
      * response comes back the headers are also removed.
      * 
+     * @see Application#getOutboundRoot()
      * @see Context#getClientDispatcher()
      */
-    public static final int MODE_CLIENT_DISPATCHER = 6;
+    public static final int MODE_SERVER_OUTBOUND = 6;
 
     /**
      * In this mode, the call is sent to the context's server dispatcher. Once
@@ -136,9 +139,9 @@ public class Redirector extends Restlet {
      * response is normally returned to the client. In this case, you can view
      * the Redirector as acting as a transparent proxy Restlet.<br>
      * <br>
-     * Remember to add the required connectors to the parent Component and to
-     * declare them in the list of required connectors on the
-     * Application.connectorService property.<br>
+     * Remember to add the required connectors to the parent {@link Component}
+     * and to declare them in the list of required connectors on the
+     * {@link Application#getConnectorService()} property.<br>
      * <br>
      * Note that in this mode, the headers of HTTP requests, stored in the
      * request's attributes, are removed before dispatching. Also, when a HTTP
@@ -146,7 +149,7 @@ public class Redirector extends Restlet {
      * 
      * @see Context#getServerDispatcher()
      */
-    public static final int MODE_SERVER_DISPATCHER = 7;
+    public static final int MODE_SERVER_INBOUND = 7;
 
     /** The target URI pattern. */
     protected volatile String targetTemplate;
@@ -164,7 +167,7 @@ public class Redirector extends Restlet {
      * @see org.restlet.routing.Template
      */
     public Redirector(Context context, String targetTemplate) {
-        this(context, targetTemplate, MODE_CLIENT_DISPATCHER);
+        this(context, targetTemplate, MODE_SERVER_OUTBOUND);
     }
 
     /**
@@ -231,7 +234,7 @@ public class Redirector extends Restlet {
     @Override
     public void handle(Request request, Response response) {
         // Generate the target reference
-        final Reference targetRef = getTargetRef(request, response);
+        Reference targetRef = getTargetRef(request, response);
 
         switch (this.mode) {
         case MODE_CLIENT_PERMANENT:
@@ -250,8 +253,7 @@ public class Redirector extends Restlet {
         case MODE_CLIENT_SEE_OTHER:
             getLogger().log(Level.INFO,
                     "Redirecting client to another location: " + targetRef);
-            response.setLocationRef(targetRef);
-            response.setStatus(Status.REDIRECTION_SEE_OTHER);
+            response.redirectSeeOther(targetRef);
             break;
 
         case MODE_CLIENT_TEMPORARY:
@@ -266,16 +268,16 @@ public class Redirector extends Restlet {
             redirectDispatcher(targetRef, request, response);
             break;
 
-        case MODE_CLIENT_DISPATCHER:
+        case MODE_SERVER_OUTBOUND:
             getLogger().log(Level.INFO,
                     "Redirecting via client dispatcher to: " + targetRef);
-            redirectClientDispatcher(targetRef, request, response);
+            outboundServerRedirect(targetRef, request, response);
             break;
 
-        case MODE_SERVER_DISPATCHER:
+        case MODE_SERVER_INBOUND:
             getLogger().log(Level.INFO,
                     "Redirecting via server dispatcher to: " + targetRef);
-            redirectServerDispatcher(targetRef, request, response);
+            inboundServerRedirect(targetRef, request, response);
             break;
         }
     }
@@ -294,10 +296,10 @@ public class Redirector extends Restlet {
      * @param response
      *            The response to update.
      */
-    protected void redirectClientDispatcher(Reference targetRef,
-            Request request, Response response) {
-        redirectDispatcher(getContext().getClientDispatcher(), targetRef,
-                request, response);
+    protected void inboundServerRedirect(Reference targetRef, Request request,
+            Response response) {
+        serverRedirect(getContext().getServerDispatcher(), targetRef, request,
+                response);
     }
 
     /**
@@ -314,38 +316,16 @@ public class Redirector extends Restlet {
      * @param response
      *            The response to update.
      */
-    private void redirectDispatcher(Client dispatcher, Reference targetRef,
-            Request request, Response response) {
-        // Save the base URI if it exists as we might need it for redirections
-        Reference baseRef = request.getResourceRef().getBaseRef();
-        // Reset the protocol and let the dispatcher handle the protocol
-        request.setProtocol(null);
+    protected void outboundServerRedirect(Reference targetRef, Request request,
+            Response response) {
+        Restlet next = (getApplication() == null) ? null : getApplication()
+                .getOutboundRoot();
 
-        // Update the request to cleanly go to the target URI
-        request.setResourceRef(targetRef);
-        request.getAttributes().remove(HeaderConstants.ATTRIBUTE_HEADERS);
-        dispatcher.handle(request, response);
-
-        // Allow for response rewriting and clean the headers
-        response.setEntity(rewrite(response.getEntity()));
-        response.getAttributes().remove(HeaderConstants.ATTRIBUTE_HEADERS);
-
-        // In case of redirection, we may have to rewrite the redirect URI
-        if (response.getLocationRef() != null) {
-            final Template rt = new Template(this.targetTemplate);
-            rt.setLogger(getLogger());
-            final int matched = rt.parse(response.getLocationRef().toString(),
-                    request);
-
-            if (matched > 0) {
-                final String remainingPart = (String) request.getAttributes()
-                        .get("rr");
-
-                if (remainingPart != null) {
-                    response.setLocationRef(baseRef.toString() + remainingPart);
-                }
-            }
+        if (next == null) {
+            next = getContext().getClientDispatcher();
         }
+
+        serverRedirect(next, targetRef, request, response);
     }
 
     /**
@@ -362,39 +342,19 @@ public class Redirector extends Restlet {
      * @param response
      *            The response to update.
      * @deprecated Use
-     *             {@link #redirectClientDispatcher(Reference, Request, Response)}
+     *             {@link #outboundServerRedirect(Reference, Request, Response)}
      *             instead.
      */
     @Deprecated
     protected void redirectDispatcher(Reference targetRef, Request request,
             Response response) {
-        redirectClientDispatcher(targetRef, request, response);
+        outboundServerRedirect(targetRef, request, response);
     }
 
     /**
-     * Redirects a given call to a target reference. In the default
-     * implementation, the request HTTP headers, stored in the request's
-     * attributes, are removed before dispatching. After dispatching, the
-     * response HTTP headers are also removed to prevent conflicts with the main
-     * call.
-     * 
-     * @param targetRef
-     *            The target reference with URI variables resolved.
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The response to update.
-     */
-    protected void redirectServerDispatcher(Reference targetRef,
-            Request request, Response response) {
-        redirectDispatcher(getContext().getServerDispatcher(), targetRef,
-                request, response);
-    }
-
-    /**
-     * Optionally rewrites the response entity returned in the MODE_CONNECTOR
-     * mode. By default, it just returns the initial entity without any
-     * modification.
+     * Optionally rewrites the response entity returned in the
+     * {@link #MODE_SERVER_INBOUND} and {@value #MODE_SERVER_OUTBOUND} modes. By
+     * default, it just returns the initial entity without any modification.
      * 
      * @param initialEntity
      *            The initial entity returned.
@@ -402,6 +362,57 @@ public class Redirector extends Restlet {
      */
     protected Representation rewrite(Representation initialEntity) {
         return initialEntity;
+    }
+
+    /**
+     * Redirects a given call on the server-side to a next Restlet with a given
+     * target reference. In the default implementation, the request HTTP
+     * headers, stored in the request's attributes, are removed before
+     * dispatching. After dispatching, the response HTTP headers are also
+     * removed to prevent conflicts with the main call.
+     * 
+     * @param next
+     *            The next Restlet to forward the call to.
+     * @param targetRef
+     *            The target reference with URI variables resolved.
+     * @param request
+     *            The request to handle.
+     * @param response
+     *            The response to update.
+     */
+    protected void serverRedirect(Restlet next, Reference targetRef,
+            Request request, Response response) {
+        // Save the base URI if it exists as we might need it for redirections
+        Reference baseRef = request.getResourceRef().getBaseRef();
+
+        // Reset the protocol and let the dispatcher handle the protocol
+        request.setProtocol(null);
+
+        // Update the request to cleanly go to the target URI
+        request.setResourceRef(targetRef);
+        request.getAttributes().remove(HeaderConstants.ATTRIBUTE_HEADERS);
+        next.handle(request, response);
+
+        // Allow for response rewriting and clean the headers
+        response.setEntity(rewrite(response.getEntity()));
+        response.getAttributes().remove(HeaderConstants.ATTRIBUTE_HEADERS);
+
+        // In case of redirection, we may have to rewrite the redirect URI
+        if (response.getLocationRef() != null) {
+            Template rt = new Template(this.targetTemplate);
+            rt.setLogger(getLogger());
+            int matched = rt.parse(response.getLocationRef().toString(),
+                    request);
+
+            if (matched > 0) {
+                String remainingPart = (String) request.getAttributes().get(
+                        "rr");
+
+                if (remainingPart != null) {
+                    response.setLocationRef(baseRef.toString() + remainingPart);
+                }
+            }
+        }
     }
 
     /**
