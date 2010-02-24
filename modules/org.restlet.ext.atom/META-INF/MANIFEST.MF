@@ -11,8 +11,7 @@ Export-Package: org.restlet.ext.atom;
    org.restlet.engine.converter,
    org.restlet.representation,
    org.restlet.ext.atom.contentHandler,
-   org.restlet",
- org.restlet.ext.atom.contentHandler;uses:="org.restlet.ext.atom,org.xml.sax.helpers,org.xml.sax"
+   org.restlet"
 Import-Package: org.restlet,
  org.restlet.data,
  org.restlet.engine.converter,

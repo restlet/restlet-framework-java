@@ -43,7 +43,6 @@ import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.engine.util.DateUtils;
-import org.restlet.ext.atom.contentHandler.EntryReader;
 import org.restlet.ext.atom.internal.EntryContentReader;
 import org.restlet.ext.xml.SaxRepresentation;
 import org.restlet.ext.xml.XmlWriter;
