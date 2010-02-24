@@ -429,11 +429,19 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
                         JType parameterType = parameter.getType();
                         JParameterizedType parameterizedType = parameterType
                                 .isParameterized();
-
-                        if ((parameterizedType == null)
-                                || ((parameterizedType.getBaseType() != asyncType) && (parameterizedType
-                                        .getBaseType() != cbType))) {
+                        if (parameterizedType == null) {
+                            // Non generic type.
                             getStob().addRootType(getLogger(), parameterType);
+                        } else if (((parameterizedType.getBaseType() != asyncType) && (parameterizedType
+                                .getBaseType() != cbType))) {
+                            // Generic type but not a callback.
+                            getStob().addRootType(getLogger(), parameterType);
+                        } else {
+                            // Callback type, inspect the "inner" type.
+                            if (parameterizedType.getTypeArgs().length > 0) {
+                                getStob().addRootType(getLogger(),
+                                        parameterizedType.getTypeArgs()[0]);
+                            }
                         }
                     }
 

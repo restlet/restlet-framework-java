@@ -56,6 +56,8 @@ Changes log
         - Fixed if-none-match conditions ("*" value).
         - Fixed computation of the ServerResource#rootRef member.
           Reported by Nirav Shah.
+        - Fixed bug using annotated interfaces declaring simply a "GET"
+          method in GWT client. Reported by Xavier Mehaut.
     - Misc
         - 
         
