@@ -47,18 +47,18 @@ import org.restlet.ext.atom.Link;
 import org.restlet.ext.atom.Person;
 import org.restlet.ext.atom.Relation;
 import org.restlet.ext.atom.Text;
+import org.restlet.ext.atom.contentHandler.FeedReader;
 import org.restlet.ext.xml.XmlWriter;
 import org.restlet.representation.StringRepresentation;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * Content reader for feeds.
  * 
  * @author Thierry Boileau
  */
-public class FeedContentReader extends DefaultHandler {
+public class FeedContentReader extends FeedReader {
     private enum State {
         FEED, FEED_AUTHOR, FEED_AUTHOR_EMAIL, FEED_AUTHOR_NAME, FEED_AUTHOR_URI, FEED_CATEGORY, FEED_CONTRIBUTOR, FEED_CONTRIBUTOR_EMAIL, FEED_CONTRIBUTOR_NAME, FEED_CONTRIBUTOR_URI, FEED_ENTRY, FEED_ENTRY_AUTHOR, FEED_ENTRY_AUTHOR_EMAIL, FEED_ENTRY_AUTHOR_NAME, FEED_ENTRY_AUTHOR_URI, FEED_ENTRY_CATEGORY, FEED_ENTRY_CONTENT, FEED_ENTRY_CONTRIBUTOR, FEED_ENTRY_ID, FEED_ENTRY_LINK, FEED_ENTRY_PUBLISHED, FEED_ENTRY_RIGHTS, FEED_ENTRY_SOURCE, FEED_ENTRY_SOURCE_AUTHOR, FEED_ENTRY_SOURCE_AUTHOR_EMAIL, FEED_ENTRY_SOURCE_AUTHOR_NAME, FEED_ENTRY_SOURCE_AUTHOR_URI, FEED_ENTRY_SOURCE_CATEGORY, FEED_ENTRY_SOURCE_CONTRIBUTOR, FEED_ENTRY_SOURCE_GENERATOR, FEED_ENTRY_SOURCE_ICON, FEED_ENTRY_SOURCE_ID, FEED_ENTRY_SOURCE_LINK, FEED_ENTRY_SOURCE_LOGO, FEED_ENTRY_SOURCE_RIGHTS, FEED_ENTRY_SOURCE_SUBTITLE, FEED_ENTRY_SOURCE_TITLE, FEED_ENTRY_SOURCE_UPDATED, FEED_ENTRY_SUMMARY, FEED_ENTRY_TITLE, FEED_ENTRY_UPDATED, FEED_GENERATOR, FEED_ICON, FEED_ID, FEED_LINK, FEED_LOGO, FEED_RIGHTS, FEED_SUBTITLE, FEED_TITLE, FEED_UPDATED, NONE
     }
@@ -96,15 +96,6 @@ public class FeedContentReader extends DefaultHandler {
     /** The currently parsed Text. */
     private Text currentText;
 
-    /** Extra content handler that will be notified of Entry events. */
-    private DefaultHandler extraEntryHandler;
-
-    /** Extra content handler that will be notified of Feed events. */
-    private DefaultHandler extraFeedHandler;
-
-    /** Indicates if the current event is dedicated to an entry or a feed. */
-    private boolean parsingEntry = false;
-
     /** The current list of prefix mappings. */
     private Map<String, String> prefixMappings;
 
@@ -118,6 +109,19 @@ public class FeedContentReader extends DefaultHandler {
      *            The feed object to update during the parsing.
      */
     public FeedContentReader(Feed feed) {
+        this(feed, null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param feed
+     *            The feed object to update during the parsing.
+     * @param extraFeedReader
+     *            Custom handler of all events.
+     */
+    public FeedContentReader(Feed feed, FeedReader extraFeedReader) {
+        super(extraFeedReader);
         this.state = State.NONE;
         this.currentFeed = feed;
         this.currentEntry = null;
@@ -132,19 +136,6 @@ public class FeedContentReader extends DefaultHandler {
         this.contentDepth = -1;
     }
 
-    /**
-     * Constructor.
-     * 
-     * @param feed
-     *            The feed object to update during the parsing.
-     */
-    public FeedContentReader(Feed feed, DefaultHandler extraFeedHandler,
-            DefaultHandler extraEntryHandler) {
-        this(feed);
-        this.extraFeedHandler = extraFeedHandler;
-        this.extraEntryHandler = extraEntryHandler;
-    }
-
     @Override
     public void characters(char[] ch, int start, int length)
             throws SAXException {
@@ -156,17 +147,7 @@ public class FeedContentReader extends DefaultHandler {
         } else {
             this.contentBuffer.append(ch, start, length);
         }
-
-        // Send the event to the right extra handler.
-        if (parsingEntry) {
-            if (this.extraEntryHandler != null) {
-                this.extraEntryHandler.characters(ch, start, length);
-            }
-        } else {
-            if (this.extraFeedHandler != null) {
-                this.extraFeedHandler.characters(ch, start, length);
-            }
-        }
+        super.characters(ch, start, length);
     }
 
     @Override
@@ -175,13 +156,7 @@ public class FeedContentReader extends DefaultHandler {
         this.currentEntry = null;
         this.contentBuffer = null;
 
-        // Send the event to the extra handlers.
-        if (this.extraEntryHandler != null) {
-            this.extraEntryHandler.endDocument();
-        }
-        if (this.extraFeedHandler != null) {
-            this.extraFeedHandler.endDocument();
-        }
+        super.endDocument();
     }
 
     @Override
@@ -212,6 +187,7 @@ public class FeedContentReader extends DefaultHandler {
         } else if (uri.equalsIgnoreCase(Feed.ATOM_NAMESPACE)) {
             if (localName.equals("feed")) {
                 this.state = State.NONE;
+                endFeed(this.currentFeed);
             } else if (localName.equals("title")) {
                 if (this.state == State.FEED_TITLE) {
                     this.currentFeed.setTitle(this.currentText);
@@ -305,12 +281,13 @@ public class FeedContentReader extends DefaultHandler {
                     }
                     this.currentContentWriter = null;
                 }
+                endLink(this.currentLink);
             } else if (localName.equalsIgnoreCase("entry")) {
                 if (this.state == State.FEED_ENTRY) {
                     this.currentFeed.getEntries().add(this.currentEntry);
                     this.state = State.FEED;
-                    this.parsingEntry = false;
                 }
+                endEntry(this.currentEntry);
             } else if (localName.equals("category")) {
                 if (this.state == State.FEED_CATEGORY) {
                     this.currentFeed.getCategories().add(this.currentCategory);
@@ -341,37 +318,13 @@ public class FeedContentReader extends DefaultHandler {
                     this.state = State.FEED_ENTRY;
                 }
                 this.currentContentWriter = null;
-            }
-        } else if (this.state == State.FEED_ENTRY) {
-            // Set the inline content, if any
-            if (this.currentContentWriter != null) {
-                this.currentContentWriter.endElement(uri, localName, qName);
-                String content = this.currentContentWriter.getWriter()
-                        .toString().trim();
-                contentDepth = -1;
-                if ("".equals(content)) {
-                    this.currentEntry.setInlineContent(null);
-                } else {
-                    this.currentEntry
-                            .setInlineContent(new StringRepresentation(content));
-                }
-                this.currentContentWriter = null;
+                endContent(this.currentContent);
             }
         }
 
         this.currentText = null;
         this.currentDate = null;
-
-        // Send the event to the right extra handler.
-        if (parsingEntry) {
-            if (this.extraEntryHandler != null) {
-                this.extraEntryHandler.endElement(uri, localName, qName);
-            }
-        } else {
-            if (this.extraFeedHandler != null) {
-                this.extraFeedHandler.endElement(uri, localName, qName);
-            }
-        }
+        super.endElement(uri, localName, qName);
     }
 
     @Override
@@ -379,15 +332,7 @@ public class FeedContentReader extends DefaultHandler {
         this.prefixMappings.remove(prefix);
 
         // Send the event to the right extra handler.
-        if (parsingEntry) {
-            if (this.extraEntryHandler != null) {
-                this.extraEntryHandler.endPrefixMapping(prefix);
-            }
-        } else {
-            if (this.extraFeedHandler != null) {
-                this.extraFeedHandler.endPrefixMapping(prefix);
-            }
-        }
+        super.endPrefixMapping(prefix);
     }
 
     /**
@@ -432,14 +377,7 @@ public class FeedContentReader extends DefaultHandler {
     @Override
     public void startDocument() throws SAXException {
         this.contentBuffer = new StringBuilder();
-
-        // Send the event to the extra handlers.
-        if (this.extraEntryHandler != null) {
-            this.extraEntryHandler.startDocument();
-        }
-        if (this.extraFeedHandler != null) {
-            this.extraFeedHandler.startDocument();
-        }
+        super.startDocument();
     }
 
     @Override
@@ -461,6 +399,7 @@ public class FeedContentReader extends DefaultHandler {
                     this.currentFeed.setBaseReference(new Reference(attr));
                 }
                 this.state = State.FEED;
+                startFeed(this.currentFeed);
             } else if (localName.equals("title")) {
                 startTextElement(attrs);
 
@@ -543,12 +482,13 @@ public class FeedContentReader extends DefaultHandler {
                 // Content available inline
                 initiateInlineMixedContent();
                 this.currentLink.setContent(currentContent);
+                startLink(this.currentLink);
             } else if (localName.equalsIgnoreCase("entry")) {
                 if (this.state == State.FEED) {
                     this.currentEntry = new Entry();
                     this.state = State.FEED_ENTRY;
-                    this.parsingEntry = true;
                 }
+                startEntry(this.currentEntry);
             } else if (localName.equals("category")) {
                 this.currentCategory = new Category();
                 this.currentCategory.setTerm(attrs.getValue("", "term"));
@@ -583,26 +523,11 @@ public class FeedContentReader extends DefaultHandler {
                     this.currentEntry.setContent(currentContent);
                     this.state = State.FEED_ENTRY_CONTENT;
                 }
+                startContent(this.currentContent);
             }
-        } else if (this.state == State.FEED_ENTRY) {
-            // Content available inline
-            initiateInlineMixedContent();
-            this.currentContentWriter
-                    .startElement(uri, localName, qName, attrs);
         }
 
-        // Send the event to the right extra handler.
-        if (parsingEntry) {
-            if (this.extraEntryHandler != null) {
-                this.extraEntryHandler.startElement(uri, localName, qName,
-                        attrs);
-            }
-        } else {
-            if (this.extraFeedHandler != null) {
-                this.extraFeedHandler
-                        .startElement(uri, localName, qName, attrs);
-            }
-        }
+        super.startElement(uri, localName, qName, attrs);
     }
 
     @Override
@@ -610,16 +535,7 @@ public class FeedContentReader extends DefaultHandler {
             throws SAXException {
         this.prefixMappings.put(prefix, uri);
 
-        // Send the event to the right extra handler.
-        if (parsingEntry) {
-            if (this.extraEntryHandler != null) {
-                this.extraEntryHandler.startPrefixMapping(prefix, uri);
-            }
-        } else {
-            if (this.extraFeedHandler != null) {
-                this.extraFeedHandler.startPrefixMapping(prefix, uri);
-            }
-        }
+        super.startPrefixMapping(prefix, uri);
     }
 
     /**
@@ -631,4 +547,5 @@ public class FeedContentReader extends DefaultHandler {
     public void startTextElement(Attributes attrs) {
         this.currentText = new Text(getMediaType(attrs.getValue("", "type")));
     }
+
 }

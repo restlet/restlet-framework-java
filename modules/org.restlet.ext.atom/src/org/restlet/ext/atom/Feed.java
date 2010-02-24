@@ -40,13 +40,13 @@ import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.engine.util.DateUtils;
+import org.restlet.ext.atom.contentHandler.FeedReader;
 import org.restlet.ext.atom.internal.FeedContentReader;
 import org.restlet.ext.xml.SaxRepresentation;
 import org.restlet.ext.xml.XmlWriter;
 import org.restlet.representation.Representation;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
-import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * Atom Feed Document, acting as a component for metadata and data associated
@@ -173,12 +173,14 @@ public class Feed extends SaxRepresentation {
      * 
      * @param xmlFeed
      *            The XML feed document.
+     * @param feedReader
+     *            Custom feed reader.
      * @throws IOException
      */
-    public Feed(Representation xmlFeed, DefaultHandler extraFeedHandler,
-            DefaultHandler extraEntryHandler) throws IOException {
+    public Feed(Representation xmlFeed, FeedReader feedReader)
+            throws IOException {
         super(xmlFeed);
-        parse(new FeedContentReader(this, extraFeedHandler, extraEntryHandler));
+        parse(new FeedContentReader(this, feedReader));
     }
 
     /**
@@ -375,18 +377,6 @@ public class Feed extends SaxRepresentation {
     }
 
     /**
-     * Sets the base URI used to resolve relative references found within the
-     * scope of the xml:base attribute.
-     * 
-     * @param baseUri
-     *            The base URI used to resolve relative references found within
-     *            the scope of the xml:base attribute.
-     */
-    public void setBaseReference(String baseUri) {
-        setBaseReference(new Reference(baseUri));
-    }
-
-    /**
      * Sets the base reference used to resolve relative references found within
      * the scope of the xml:base attribute.
      * 
@@ -396,6 +386,18 @@ public class Feed extends SaxRepresentation {
      */
     public void setBaseReference(Reference baseReference) {
         this.baseReference = baseReference;
+    }
+
+    /**
+     * Sets the base URI used to resolve relative references found within the
+     * scope of the xml:base attribute.
+     * 
+     * @param baseUri
+     *            The base URI used to resolve relative references found within
+     *            the scope of the xml:base attribute.
+     */
+    public void setBaseReference(String baseUri) {
+        setBaseReference(new Reference(baseUri));
     }
 
     /**

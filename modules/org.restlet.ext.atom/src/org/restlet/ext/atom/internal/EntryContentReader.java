@@ -47,18 +47,18 @@ import org.restlet.ext.atom.Link;
 import org.restlet.ext.atom.Person;
 import org.restlet.ext.atom.Relation;
 import org.restlet.ext.atom.Text;
+import org.restlet.ext.atom.contentHandler.EntryReader;
 import org.restlet.ext.xml.XmlWriter;
 import org.restlet.representation.StringRepresentation;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * Content reader for entries.
  * 
  * @author Jerome Louvel
  */
-public class EntryContentReader extends DefaultHandler {
+public class EntryContentReader extends EntryReader {
     private enum State {
         FEED_ENTRY, FEED_ENTRY_AUTHOR, FEED_ENTRY_AUTHOR_EMAIL, FEED_ENTRY_AUTHOR_NAME, FEED_ENTRY_AUTHOR_URI, FEED_ENTRY_CATEGORY, FEED_ENTRY_CONTENT, FEED_ENTRY_CONTRIBUTOR, FEED_ENTRY_ID, FEED_ENTRY_LINK, FEED_ENTRY_PUBLISHED, FEED_ENTRY_RIGHTS, FEED_ENTRY_SOURCE, FEED_ENTRY_SOURCE_AUTHOR, FEED_ENTRY_SOURCE_AUTHOR_EMAIL, FEED_ENTRY_SOURCE_AUTHOR_NAME, FEED_ENTRY_SOURCE_AUTHOR_URI, FEED_ENTRY_SOURCE_CATEGORY, FEED_ENTRY_SOURCE_CONTRIBUTOR, FEED_ENTRY_SOURCE_GENERATOR, FEED_ENTRY_SOURCE_ICON, FEED_ENTRY_SOURCE_ID, FEED_ENTRY_SOURCE_LINK, FEED_ENTRY_SOURCE_LOGO, FEED_ENTRY_SOURCE_RIGHTS, FEED_ENTRY_SOURCE_SUBTITLE, FEED_ENTRY_SOURCE_TITLE, FEED_ENTRY_SOURCE_UPDATED, FEED_ENTRY_SUMMARY, FEED_ENTRY_TITLE, FEED_ENTRY_UPDATED, NONE
     }
@@ -106,6 +106,16 @@ public class EntryContentReader extends DefaultHandler {
      *            The entry object to update during the parsing.
      */
     public EntryContentReader(Entry entry) {
+        this(entry, null);
+    }
+
+    /**
+     * Constructor.
+     * @param entry The entry object to update during the parsing.
+     * @param extraEntryHandler Custom handler of all events.
+     */
+    public EntryContentReader(Entry entry, EntryReader extraEntryHandler) {
+        super(extraEntryHandler);
         this.state = State.NONE;
         this.contentDepth = -1;
         this.currentEntry = entry;
@@ -130,12 +140,16 @@ public class EntryContentReader extends DefaultHandler {
         } else {
             this.contentBuffer.append(ch, start, length);
         }
+        
+        super.characters(ch, start, length);
     }
 
     @Override
     public void endDocument() throws SAXException {
         this.state = State.NONE;
         this.contentBuffer = null;
+        
+        super.endDocument();
     }
 
     @Override
@@ -243,6 +257,10 @@ public class EntryContentReader extends DefaultHandler {
                     }
                     this.currentContentWriter = null;
                 }
+                endLink(this.currentLink);
+            } else if (localName.equalsIgnoreCase("entry")) {
+                this.state = State.NONE;
+                endEntry(this.currentEntry);
             } else if (localName.equals("category")) {
                 if (this.state == State.FEED_ENTRY_CATEGORY) {
                     this.currentEntry.getCategories().add(this.currentCategory);
@@ -270,45 +288,19 @@ public class EntryContentReader extends DefaultHandler {
                     this.state = State.FEED_ENTRY;
                 }
                 this.currentContentWriter = null;
-            }
-        } else if (this.state == State.FEED_ENTRY) {
-            // Set the inline content, if any
-            if (this.currentContentWriter != null) {
-                this.currentContentWriter.endElement(uri, localName, qName);
-                String content = this.currentContentWriter.getWriter()
-                        .toString().trim();
-                contentDepth = -1;
-                if ("".equals(content)) {
-                    this.currentEntry.setInlineContent(null);
-                } else {
-                    this.currentEntry
-                            .setInlineContent(new StringRepresentation(content));
-                }
-                this.currentContentWriter = null;
+                endContent(this.currentContent);
             }
         }
 
         this.currentText = null;
         this.currentDate = null;
-    }
-
-    /**
-     * Initiates the parsing of a mixed content part of the current document.
-     */
-    private void initiateInlineMixedContent() {
-        this.contentDepth = 0;
-        StringWriter sw = new StringWriter();
-        currentContentWriter = new XmlWriter(sw);
-
-        for (String prefix : this.prefixMappings.keySet()) {
-            currentContentWriter.forceNSDecl(this.prefixMappings.get(prefix),
-                    prefix);
-        }
+        super.endElement(uri, localName, qName);
     }
 
     @Override
     public void endPrefixMapping(String prefix) throws SAXException {
         this.prefixMappings.remove(prefix);
+        super.endPrefixMapping(prefix);
     }
 
     /**
@@ -336,9 +328,24 @@ public class EntryContentReader extends DefaultHandler {
         return result;
     }
 
+    /**
+     * Initiates the parsing of a mixed content part of the current document.
+     */
+    private void initiateInlineMixedContent() {
+        this.contentDepth = 0;
+        StringWriter sw = new StringWriter();
+        currentContentWriter = new XmlWriter(sw);
+
+        for (String prefix : this.prefixMappings.keySet()) {
+            currentContentWriter.forceNSDecl(this.prefixMappings.get(prefix),
+                    prefix);
+        }
+    }
+
     @Override
     public void startDocument() throws SAXException {
         this.contentBuffer = new StringBuilder();
+        super.startDocument();
     }
 
     @Override
@@ -423,8 +430,10 @@ public class EntryContentReader extends DefaultHandler {
                 // Content available inline
                 initiateInlineMixedContent();
                 this.currentLink.setContent(currentContent);
+                startLink(this.currentLink);
             } else if (localName.equalsIgnoreCase("entry")) {
                 this.state = State.FEED_ENTRY;
+                startEntry(this.currentEntry);
             } else if (localName.equals("category")) {
                 this.currentCategory = new Category();
                 this.currentCategory.setTerm(attrs.getValue("", "term"));
@@ -457,19 +466,19 @@ public class EntryContentReader extends DefaultHandler {
                     this.currentEntry.setContent(currentContent);
                     this.state = State.FEED_ENTRY_CONTENT;
                 }
+                startContent(this.currentContent);
             }
-        } else if (this.state == State.FEED_ENTRY) {
-            // Content available inline
-            initiateInlineMixedContent();
-            this.currentContentWriter
-                    .startElement(uri, localName, qName, attrs);
         }
+        
+        super.startElement(uri, localName, qName, attrs);
     }
 
     @Override
     public void startPrefixMapping(String prefix, String uri)
             throws SAXException {
         this.prefixMappings.put(prefix, uri);
+        
+        super.startPrefixMapping(prefix, uri);
     }
 
     /**
