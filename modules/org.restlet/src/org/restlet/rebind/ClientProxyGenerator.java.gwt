@@ -314,6 +314,7 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
                 println("} catch (IOException ioe) {");
                 indent();
                 println("callback.onFailure(ioe);");
+                outdent();
                 println("}");
             }
             outdent();
@@ -362,7 +363,6 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
 
             this.sourceWriter = composer.createSourceWriter(getContext(),
                     printWriter);
-            indent();
             println();
             generateFields(getSto());
             println();
