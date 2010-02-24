@@ -30,7 +30,9 @@
 
 package org.restlet.ext.odata;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -42,8 +44,8 @@ import org.restlet.ext.atom.Entry;
 import org.restlet.ext.atom.Feed;
 import org.restlet.ext.atom.Link;
 import org.restlet.ext.atom.Relation;
+import org.restlet.ext.odata.internal.EntryContentHandler;
 import org.restlet.ext.odata.internal.FeedContentHandler;
-import org.restlet.ext.odata.internal.FeedParser;
 import org.restlet.ext.odata.internal.edm.Metadata;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
@@ -202,6 +204,8 @@ public class Query<T> implements Iterable<T> {
     /** The path of the targeted entity relatively to the data service URI. */
     private String subpath;
 
+    private List<T> entities;
+
     /**
      * Constructor.
      * 
@@ -337,14 +341,25 @@ public class Query<T> implements Iterable<T> {
                 // Guess the type of query based on the URI structure
                 switch (guessType(targetUri)) {
                 case TYPE_ENTITY_SET:
-                    FeedContentHandler feedContentHandler = new FeedContentHandler();
-                    setFeed(new Feed(result, feedContentHandler, null));
+                    FeedContentHandler<T> feedContentHandler = new FeedContentHandler<T>(
+                            entityClass, (Metadata) service.getMetadata(),
+                            getLogger());
+                    setFeed(new Feed(result, feedContentHandler));
                     this.count = feedContentHandler.getCount();
+                    this.entities = feedContentHandler.getEntities();
                     break;
                 case TYPE_ENTITY:
+                    EntryContentHandler<T> entryContentHandler = new EntryContentHandler<T>(
+                            entityClass, (Metadata) service.getMetadata(),
+                            getLogger());
                     Feed feed = new Feed();
-                    feed.getEntries().add(new Entry(result));
+                    feed.getEntries().add(
+                            new Entry(result, entryContentHandler));
                     setFeed(feed);
+                    entities = new ArrayList<T>();
+                    if (entryContentHandler.getEntity() != null) {
+                        entities.add(entryContentHandler.getEntity());
+                    }
                     break;
                 case TYPE_UNKNOWN:
                     // Guess the type of query based on the returned
@@ -596,8 +611,10 @@ public class Query<T> implements Iterable<T> {
 
         try {
             execute();
-            result = new FeedParser<T>(getFeed(), this.entityClass,
-                    ((Metadata) getService().getMetadata())).parse();
+            result = entities.iterator();
+
+            // result = new FeedParser<T>(getFeed(), this.entityClass,
+            // ((Metadata) getService().getMetadata())).parse();
             // Detect server-paging mode.
             nextPage = null;
             for (Link link : getFeed().getLinks()) {

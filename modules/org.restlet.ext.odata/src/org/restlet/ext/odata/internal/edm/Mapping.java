@@ -40,6 +40,9 @@ package org.restlet.ext.odata.internal.edm;
  */
 public class Mapping {
 
+    /** Is the value taken from an attribute or not. */
+    private boolean attributeValue;
+
     /** The namespace prefix of the feed's XML element that stores the value. */
     private String nsPrefix;
 
@@ -80,6 +83,13 @@ public class Mapping {
         this.nsUri = nsUri;
         this.propertyPath = propertyPath;
         this.valuePath = valuePath;
+        this.attributeValue = false;
+        if (this.valuePath != null) {
+            int index = valuePath.lastIndexOf("/");
+            if (index != -1 && valuePath.length() > index) {
+                attributeValue = ('@' == valuePath.charAt(index + 1));
+            }
+        }
     }
 
     /**
@@ -131,5 +141,40 @@ public class Mapping {
      */
     public String getValuePath() {
         return valuePath;
+    }
+
+    /**
+     * Returns the name of the attribute that stores the value to set, if
+     * pertinent, and null otherwise.
+     * 
+     * @return The he name of the attribute that stores the value to set.
+     */
+    public String getValueAttributeName() {
+        String result = null;
+        if (isAttributeValue()) {
+            int index = valuePath.lastIndexOf("/");
+            result = valuePath.substring(index + 2, valuePath.length());
+        }
+        return result;
+    }
+
+    /**
+     * Returns the name of the attribute that stores the value to set, if
+     * pertinent, and null otherwise.
+     * 
+     * @return The he name of the attribute that stores the value to set.
+     */
+    public String getValueNodePath() {
+        return (isAttributeValue()) ? valuePath.substring(0, valuePath
+                .lastIndexOf("/")) : valuePath;
+    }
+
+    /**
+     * Returns true if the value is taken from an attribute.
+     * 
+     * @return True if the value is taken from an attribute.
+     */
+    public boolean isAttributeValue() {
+        return attributeValue;
     }
 }

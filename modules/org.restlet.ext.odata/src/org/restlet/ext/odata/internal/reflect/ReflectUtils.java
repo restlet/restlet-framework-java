@@ -116,6 +116,8 @@ public class ReflectUtils {
                     if (fieldArgTypes.length == 1) {
                         result = (Class<?>) fieldArgTypes[0];
                     }
+                } else {
+                    result = field.getType();
                 }
             }
         } catch (Exception e) {

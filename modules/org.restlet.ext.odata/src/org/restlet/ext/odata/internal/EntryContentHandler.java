@@ -35,18 +35,11 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.restlet.Context;
-import org.restlet.data.Language;
-import org.restlet.data.MediaType;
-import org.restlet.data.Reference;
 import org.restlet.ext.atom.Content;
 import org.restlet.ext.atom.Entry;
-import org.restlet.ext.atom.Feed;
-import org.restlet.ext.atom.FeedReader;
-import org.restlet.ext.atom.Link;
+import org.restlet.ext.atom.EntryReader;
 import org.restlet.ext.atom.Person;
-import org.restlet.ext.atom.Relation;
 import org.restlet.ext.odata.Service;
-import org.restlet.ext.odata.internal.edm.AssociationEnd;
 import org.restlet.ext.odata.internal.edm.EntityType;
 import org.restlet.ext.odata.internal.edm.Mapping;
 import org.restlet.ext.odata.internal.edm.Metadata;
@@ -56,48 +49,33 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 /**
- * Generic Content handler for Atom Feed that takes care of odata specific
- * needs, such as parsing XML content from other namespaces than Atom. It
- * generates entities based on the values discovered in the feed.
+ * Content handler for Atom Feed that takes care of odata specific needs, such
+ * as parsing XML content from other namespaces than Atom. It generates an
+ * entity based on the values discovered in the entry.
  * 
  * @author Thierry Boileau
  * @param <T>
- *            The type of the parsed entities.
+ *            The type of the parsed entity.
  */
-public class FeedContentHandler<T> extends FeedReader {
+public class EntryContentHandler<T> extends EntryReader {
 
-    /** The currently parsed association. */
-    private AssociationEnd association;
+    /** The currently parsed odata mapping. */
+    private Mapping mapping;
 
-    /** The value retrieved from the "count" tag. */
-    private int count = -1;
+    /** The entity targeted by this entry. */
+    private T entity;
 
-    /** The path of the current XML element relatively to an Entry. */
-    List<String> eltPath;
-
-    /** The list of entities to complete. */
-    List<T> entities;
-
-    /** The current entity. */
-    Object entity;
-
-    /** The class of the entity targeted by this feed. */
+    /** The class of the entity targeted by this entry. */
     private Class<?> entityClass;
 
-    /** The odata type of the parsed entities. */
+    /** The odata type of the parsed entity. */
     private EntityType entityType;
-
-    /** Used to parsed Atom link elements that contains entries. */
-    EntryContentHandler<T> extraEntryHandler;
-
-    /** Used to parsed Atom link elements that contains feeds. */
-    FeedContentHandler<T> extraFeedHandler;
 
     /** Internal logger. */
     private Logger logger;
 
-    /** The currently parsed odata mapping. */
-    private Mapping mapping;
+    /** The path of the current XML element relatively to an Entry. */
+    List<String> eltPath;
 
     /** The metadata of the WCF service. */
     private Metadata metadata;
@@ -108,16 +86,13 @@ public class FeedContentHandler<T> extends FeedReader {
     /** Are we parsing an entry content element? */
     private boolean parseContent;
 
-    /** Are we parsing the count tag? */
-    private boolean parseCount;
-
     /** Are we parsing an entry? */
     private boolean parseEntry;
 
     /** Are we parsing an entity property? */
     private boolean parseProperty;
 
-    /** Used to glean text content. */
+    /** Gleans text content. */
     StringBuilder sb = null;
 
     /**
@@ -130,26 +105,19 @@ public class FeedContentHandler<T> extends FeedReader {
      * @param logger
      *            The logger.
      */
-    public FeedContentHandler(Class<?> entityClass, Metadata metadata,
+    public EntryContentHandler(Class<?> entityClass, Metadata metadata,
             Logger logger) {
         super();
-        this.entities = new ArrayList<T>();
         this.entityClass = entityClass;
         this.metadata = metadata;
-        this.eltPath = new ArrayList<String>();
+        entityType = metadata.getEntityType(entityClass);
         this.logger = logger;
     }
 
     @Override
     public void characters(char[] ch, int start, int length)
             throws SAXException {
-        if (parseAssociation) {
-            if (extraFeedHandler != null) {
-                extraFeedHandler.characters(ch, start, length);
-            } else {
-                extraEntryHandler.characters(ch, start, length);
-            }
-        } else if (parseCount || parseProperty || (mapping != null)) {
+        if (parseProperty || mapping != null) {
             sb.append(ch, start, length);
         }
     }
@@ -162,36 +130,7 @@ public class FeedContentHandler<T> extends FeedReader {
     @Override
     public void endElement(String uri, String localName, String qName)
             throws SAXException {
-        if (parseAssociation) {
-            // Relay the events to the extra handlers
-            if (extraFeedHandler != null) {
-                extraFeedHandler.endElement(uri, localName, qName);
-            } else {
-                extraEntryHandler.endElement(uri, localName, qName);
-            }
-            if (localName.equals("entry")) {
-                if (extraFeedHandler != null) {
-                    extraFeedHandler.endEntry(null);
-                } else {
-                    extraEntryHandler.endEntry(null);
-                }
-            } else if (localName.equals("link")) {
-                if (extraFeedHandler != null) {
-                    extraFeedHandler.endLink(null);
-                } else {
-                    extraEntryHandler.endLink(null);
-                }
-            } else if (localName.equals("content")) {
-                if (extraFeedHandler != null) {
-                    extraFeedHandler.endContent(null);
-                } else {
-                    extraEntryHandler.endContent(null);
-                }
-            }
-        } else if (parseCount) {
-            this.count = Integer.parseInt(sb.toString());
-            parseCount = false;
-        } else if (parseProperty) {
+        if (parseProperty) {
             parseProperty = false;
             Property property = metadata.getProperty(entity, localName);
             try {
@@ -200,26 +139,26 @@ public class FeedContentHandler<T> extends FeedReader {
                 getLogger().warning(
                         "Cannot set " + localName + " property on " + entity
                                 + " with value " + sb.toString());
-            }
-        } else if (parseEntry) {
-            if (mapping != null) {
-                if (sb != null) {
-                    try {
-                        ReflectUtils.invokeSetter(entity, mapping
-                                .getPropertyPath(), sb.toString());
-                    } catch (Exception e) {
-                        getLogger().warning(
-                                "Cannot set " + mapping.getPropertyPath()
-                                        + " property on " + entity
-                                        + " with value " + sb.toString());
-                    }
-                }
-                mapping = null;
-            }
 
-            if (!eltPath.isEmpty()) {
-                eltPath.remove(eltPath.size() - 1);
             }
+        } else if (mapping != null) {
+            if (sb != null) {
+                try {
+                    ReflectUtils.invokeSetter(entity,
+                            mapping.getPropertyPath(), sb.toString());
+                } catch (Exception e) {
+                    getLogger().warning(
+                            "Cannot set " + mapping.getPropertyPath()
+                                    + " property on " + entity + " with value "
+                                    + sb.toString());
+
+                }
+            }
+            mapping = null;
+        }
+
+        if (!eltPath.isEmpty()) {
+            eltPath.remove(eltPath.size() - 1);
         }
     }
 
@@ -279,62 +218,14 @@ public class FeedContentHandler<T> extends FeedReader {
                             "Cannot set " + m.getPropertyPath()
                                     + " property on " + entity + " with value "
                                     + value);
+
                 }
             }
         }
-
-        entity = null;
     }
 
-    @Override
-    public void endLink(Link link) {
-        parseAssociation = false;
-
-        if (parseAssociation) {
-            String propertyName = ReflectUtils.normalize(link.getTitle());
-            if (extraFeedHandler != null) {
-                try {
-                    ReflectUtils.setProperty(entity, propertyName, association
-                            .isToMany(), extraFeedHandler.getEntities()
-                            .iterator(), ReflectUtils.getSimpleClass(entity,
-                            propertyName));
-                } catch (Exception e) {
-                    getLogger().warning(
-                            "Cannot set " + propertyName + " property on "
-                                    + entity + " from link");
-                }
-            } else {
-                try {
-                    ReflectUtils.invokeSetter(entity, propertyName,
-                            extraEntryHandler.getEntity());
-                } catch (Exception e) {
-                    getLogger().warning(
-                            "Cannot set " + propertyName + " property on "
-                                    + entity + " from link");
-                }
-            }
-        }
-        association = null;
-    }
-
-    /**
-     * Returns the value of the "count" tag, that is to say the size of the
-     * current entity set.
-     * 
-     * @return The size of the current entity set, as specified by the Atom
-     *         document.
-     */
-    public int getCount() {
-        return count;
-    }
-
-    /**
-     * Returns the list of discovered entities.
-     * 
-     * @return The list of discovered entities.
-     */
-    public List<T> getEntities() {
-        return entities;
+    public T getEntity() {
+        return entity;
     }
 
     /**
@@ -358,55 +249,11 @@ public class FeedContentHandler<T> extends FeedReader {
     public void startElement(String uri, String localName, String qName,
             Attributes attrs) throws SAXException {
         if (parseAssociation) {
-            // relays event to the extra handler
-            if (extraFeedHandler != null) {
-                extraFeedHandler.startElement(uri, localName, qName, attrs);
-            } else {
-                extraEntryHandler.startElement(uri, localName, qName, attrs);
-            }
-
-            if (localName.equals("entry")) {
-                Entry entry = new Entry();
-                if (extraFeedHandler != null) {
-                    extraFeedHandler.startEntry(entry);
-                } else {
-                    extraEntryHandler.startEntry(entry);
-                }
-            } else if (localName.equals("link")) {
-                Link link = new Link();
-                link.setHref(new Reference(attrs.getValue("", "href")));
-                link.setRel(Relation.valueOf(attrs.getValue("", "rel")));
-                String type = attrs.getValue("", "type");
-                if (type != null && type.length() > 0) {
-                    link.setType(new MediaType(type));
-                }
-
-                link.setHrefLang(new Language(attrs.getValue("", "hreflang")));
-                link.setTitle(attrs.getValue("", "title"));
-                final String attr = attrs.getValue("", "length");
-                link.setLength((attr == null) ? -1L : Long.parseLong(attr));
-                if (extraFeedHandler != null) {
-                    extraFeedHandler.startLink(link);
-                } else {
-                    extraEntryHandler.startLink(link);
-                }
-            } else if (localName.equals("content")) {
-                Content content = new Content();
-                if (extraFeedHandler != null) {
-                    extraFeedHandler.startContent(content);
-                } else {
-                    extraEntryHandler.startContent(content);
-                }
-            }
         } else if (parseContent) {
             if (Service.WCF_DATASERVICES_NAMESPACE.equals(uri)) {
                 sb = new StringBuilder();
                 parseProperty = true;
             }
-        } else if (Service.WCF_DATASERVICES_METADATA_NAMESPACE.equals(uri)
-                && "count".equals(localName)) {
-            sb = new StringBuilder();
-            parseCount = true;
         } else if (parseEntry) {
             // Could be mapped value
             eltPath.add(localName);
@@ -425,8 +272,8 @@ public class FeedContentHandler<T> extends FeedReader {
                         && m.getNsUri() != null && m.getNsUri().equals(uri)
                         && str.equals(m.getValueNodePath())) {
                     if (m.isAttributeValue()) {
-                        String value = attrs.getValue(uri, m
-                                .getValueAttributeName());
+                        String value = attrs
+                                .getValue(m.getValueAttributeName());
                         if (value != null) {
                             try {
                                 ReflectUtils.invokeSetter(entity, m
@@ -455,40 +302,11 @@ public class FeedContentHandler<T> extends FeedReader {
         eltPath = new ArrayList<String>();
         // Instantiate the entity
         try {
-            entity = entityClass.newInstance();
+            entity = (T) entityClass.newInstance();
         } catch (Exception e) {
             getLogger().warning(
                     "Error when instantiating  class " + entityClass);
         }
-        entities.add((T) entity);
     }
 
-    @Override
-    public void startFeed(Feed feed) {
-        if (this.entityClass == null) {
-            this.entityClass = ReflectUtils.getEntryClass(feed);
-        }
-        entityType = metadata.getEntityType(entityClass);
-    }
-
-    @Override
-    public void startLink(Link link) {
-        if (link.getTitle() != null && entityType != null) {
-            String propertyName = ReflectUtils.normalize(link.getTitle());
-            // Get the associated entity
-            association = metadata.getAssociation(entityType, propertyName);
-            parseAssociation = association != null;
-            if (parseAssociation) {
-                if (association.isToMany()) {
-                    extraFeedHandler = new FeedContentHandler<T>(ReflectUtils
-                            .getSimpleClass(entity, propertyName), metadata,
-                            getLogger());
-                } else {
-                    extraEntryHandler = new EntryContentHandler<T>(ReflectUtils
-                            .getSimpleClass(entity, propertyName), metadata,
-                            getLogger());
-                }
-            }
-        }
-    }
 }
