@@ -166,7 +166,7 @@ public class EntryContentHandler<T> extends EntryReader {
     public void endEntry(Entry entry) {
         parseEntry = false;
 
-        // Handle mapped values.
+        // Handle Atom mapped values.
         for (Mapping m : metadata.getMappings()) {
             if (entityType != null && entityType.equals(m.getType())
                     && m.getNsUri() == null && m.getNsPrefix() == null) {
@@ -248,8 +248,7 @@ public class EntryContentHandler<T> extends EntryReader {
     @Override
     public void startElement(String uri, String localName, String qName,
             Attributes attrs) throws SAXException {
-        if (parseAssociation) {
-        } else if (parseContent) {
+        if (parseContent) {
             if (Service.WCF_DATASERVICES_NAMESPACE.equals(uri)) {
                 sb = new StringBuilder();
                 parseProperty = true;

@@ -288,9 +288,9 @@ public class FeedContentHandler<T> extends FeedReader {
 
     @Override
     public void endLink(Link link) {
-        parseAssociation = false;
-
         if (parseAssociation) {
+            parseAssociation = false;
+
             String propertyName = ReflectUtils.normalize(link.getTitle());
             if (extraFeedHandler != null) {
                 try {
