@@ -103,7 +103,7 @@ public class HttpRequest extends Request {
     private volatile boolean entityAdded;
 
     /** The low-level HTTP call. */
-    private volatile Call call;
+    private volatile ServerCall httpCall;
 
     /** Indicates if the proxy security data was parsed and added. */
     private volatile boolean proxySecurityAdded;
@@ -138,7 +138,7 @@ public class HttpRequest extends Request {
         this.securityAdded = false;
         this.proxySecurityAdded = false;
         this.warningsAdded = false;
-        this.call = httpCall;
+        this.httpCall = httpCall;
 
         // Set the properties
         setMethod(Method.valueOf(httpCall.getMethod()));
@@ -185,6 +185,11 @@ public class HttpRequest extends Request {
         }
 
         setDate(date);
+    }
+
+    @Override
+    public boolean abort() {
+        return getHttpCall().abort();
     }
 
     @Override
@@ -238,13 +243,13 @@ public class HttpRequest extends Request {
 
         if (!this.clientAdded) {
             // Extract the header values
-            final String acceptCharset = getHttpCall().getRequestHeaders()
-                    .getValues(HeaderConstants.HEADER_ACCEPT_CHARSET);
-            final String acceptEncoding = getHttpCall().getRequestHeaders()
+            String acceptCharset = getHttpCall().getRequestHeaders().getValues(
+                    HeaderConstants.HEADER_ACCEPT_CHARSET);
+            String acceptEncoding = getHttpCall().getRequestHeaders()
                     .getValues(HeaderConstants.HEADER_ACCEPT_ENCODING);
-            final String acceptLanguage = getHttpCall().getRequestHeaders()
+            String acceptLanguage = getHttpCall().getRequestHeaders()
                     .getValues(HeaderConstants.HEADER_ACCEPT_LANGUAGE);
-            final String acceptMediaType = getHttpCall().getRequestHeaders()
+            String acceptMediaType = getHttpCall().getRequestHeaders()
                     .getValues(HeaderConstants.HEADER_ACCEPT);
 
             // Parse the headers and update the call preferences
@@ -495,8 +500,8 @@ public class HttpRequest extends Request {
      * 
      * @return The low-level HTTP call.
      */
-    public Call getHttpCall() {
-        return this.call;
+    public ServerCall getHttpCall() {
+        return this.httpCall;
     }
 
     @Override

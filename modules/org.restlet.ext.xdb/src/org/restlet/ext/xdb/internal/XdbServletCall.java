@@ -83,6 +83,23 @@ public class XdbServletCall extends ServerCall {
     /**
      * Constructor.
      * 
+     * @param server
+     *            The parent server.
+     * @param request
+     *            The HTTP Servlet request to wrap.
+     * @param response
+     *            The HTTP Servlet response to wrap.
+     */
+    public XdbServletCall(Server server, HttpServletRequest request,
+            HttpServletResponse response) {
+        super(server);
+        this.request = request;
+        this.response = response;
+    }
+
+    /**
+     * Constructor.
+     * 
      * @param serverAddress
      *            The server IP address.
      * @param serverPort
@@ -100,20 +117,11 @@ public class XdbServletCall extends ServerCall {
     }
 
     /**
-     * Constructor.
-     * 
-     * @param server
-     *            The parent server.
-     * @param request
-     *            The HTTP Servlet request to wrap.
-     * @param response
-     *            The HTTP Servlet response to wrap.
+     * Not supported. Always returns false.
      */
-    public XdbServletCall(Server server, HttpServletRequest request,
-            HttpServletResponse response) {
-        super(server);
-        this.request = request;
-        this.response = response;
+    @Override
+    public boolean abort() {
+        return false;
     }
 
     @Override

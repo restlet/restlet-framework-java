@@ -139,7 +139,7 @@ public class InputRepresentation extends StreamRepresentation {
     // [ifndef gwt] method
     @Override
     public void write(OutputStream outputStream) throws IOException {
-        BioUtils.write(getStream(), outputStream);
+        BioUtils.copy(getStream(), outputStream);
     }
 
 }

@@ -71,9 +71,7 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler {
      */
     static final byte CR = 13;
 
-    /**
-     * Line feed character
-     */
+    /** Line feed character. */
     static final byte LF = 10;
 
     /** The server helper. */
@@ -118,17 +116,17 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler {
     }
 
     @Override
-    public void messageReceived(ChannelHandlerContext ctx, MessageEvent e)
-            throws Exception {
+    public void messageReceived(ChannelHandlerContext ctx,
+            MessageEvent messageEvent) throws Exception {
 
         if (clientAddress == null) {
-            clientAddress = (InetSocketAddress) e.getRemoteAddress();
+            clientAddress = (InetSocketAddress) messageEvent.getRemoteAddress();
         }
 
         boolean isLastChunk = false;
 
         if (!readingChunks) {
-            request = (HttpRequest) e.getMessage();
+            request = (HttpRequest) messageEvent.getMessage();
 
             if (request.isChunked()) {
                 readingChunks = true;
@@ -136,7 +134,7 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler {
                 content = request.getContent();
             }
         } else {
-            HttpChunk chunk = (HttpChunk) e.getMessage();
+            HttpChunk chunk = (HttpChunk) messageEvent.getMessage();
             if (chunk.isLast()) {
                 readingChunks = false;
                 isLastChunk = true;
@@ -160,23 +158,22 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler {
 
         HttpResponse response = null;
 
-        // let restlet engine to handle this call only after last chunk has been
-        // read.
+        // Let the Restlet engine handle this call only after last chunk has
+        // been read.
         if ((!request.isChunked()) || isLastChunk) {
-
             SslHandler sslHandler = ctx.getPipeline().get(SslHandler.class);
             SSLEngine sslEngine = sslHandler == null ? null : sslHandler
                     .getEngine();
 
             NettyServerCall httpCall = new NettyServerCall(this.helper
-                    .getHelped(), content, request, clientAddress,
-                    (this.helper instanceof HttpsServerHelper), sslEngine);
+                    .getHelped(), messageEvent, content, request,
+                    clientAddress, (this.helper instanceof HttpsServerHelper),
+                    sslEngine);
             this.helper.handle(httpCall);
             response = httpCall.getResponse();
-
         }
 
-        Channel ch = e.getChannel();
+        Channel ch = messageEvent.getChannel();
 
         // Close the connection after the write operation is done.
         if (request.isChunked()) {
@@ -188,7 +185,9 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler {
 
         } else {
             ChannelFuture future = ch.write(response);
-            if (shouldCloseConnection() || (request.getMethod() == HttpMethod.GET)) {
+
+            if (shouldCloseConnection()
+                    || (request.getMethod() == HttpMethod.GET)) {
                 future.addListener(ChannelFutureListener.CLOSE);
             }
 

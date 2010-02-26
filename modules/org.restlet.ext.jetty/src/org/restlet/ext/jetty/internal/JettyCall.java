@@ -77,6 +77,19 @@ public class JettyCall extends ServerCall {
         this.requestHeadersAdded = false;
     }
 
+    /**
+     * Closes the end point.
+     */
+    @Override
+    public boolean abort() {
+        try {
+            getConnection().getEndPoint().close();
+        } catch (IOException e) {
+        }
+
+        return true;
+    }
+
     @Override
     public void complete() {
         // Flush the response

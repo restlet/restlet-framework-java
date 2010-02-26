@@ -22,9 +22,14 @@ Changes log
           outboundServerRedirect(). Renamed redirectServerDispatcher()
           into inboundServerRedirect(). Expose serverRedirect() method
           as protected.
+        - Engine's BioUtils#write(InputStream, OutputStream) method was 
+          renamed to copy(...).
     - Enhancements
         - UniformResource#doCatch now extract the cause exception from
           caught ResourceException instance for easier debugging.
+        - The Request#abort() method is now supported by the Simple,
+          Grizzly, Netty, Jetty and the internal HTTP server.
+          Reported by Nicolas Rinaudo.
     - Bugs fixed
         - Fixed compilation issue in the ClientResource class for the
           GWT edition. Reported by Laszlo Megyer. 

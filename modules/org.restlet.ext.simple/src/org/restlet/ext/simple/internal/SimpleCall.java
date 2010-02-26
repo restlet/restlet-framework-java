@@ -101,14 +101,17 @@ public class SimpleCall extends ServerCall {
         this.requestHeadersAdded = false;
     }
 
+    /**
+     * Closes the socket.
+     */
     @Override
-    protected boolean isClientKeepAlive() {
-        return request.isKeepAlive();
-    }
+    public boolean abort() {
+        try {
+            getSocket().close();
+        } catch (IOException e) {
+        }
 
-    @Override
-    protected long getContentLength() {
-        return request.getContentLength();
+        return true;
     }
 
     @Override
@@ -122,11 +125,6 @@ public class SimpleCall extends ServerCall {
     }
 
     @Override
-    public String getHostDomain() {
-        return super.getHostDomain(); // FIXME
-    }
-
-    @Override
     public String getClientAddress() {
         return this.request.getClientAddress().getAddress().getHostAddress();
     }
@@ -135,6 +133,16 @@ public class SimpleCall extends ServerCall {
     public int getClientPort() {
         final SocketChannel socket = getSocket();
         return (socket != null) ? socket.socket().getPort() : -1;
+    }
+
+    @Override
+    protected long getContentLength() {
+        return request.getContentLength();
+    }
+
+    @Override
+    public String getHostDomain() {
+        return super.getHostDomain(); // FIXME
     }
 
     /**
@@ -259,16 +267,6 @@ public class SimpleCall extends ServerCall {
                 .getAttribute(SimpleServer.PROPERTY_SOCKET);
     }
 
-    /**
-     * Returns the SSL engine.
-     * 
-     * @return the SSL engine
-     */
-    private SSLEngine getSslEngine() {
-        return (SSLEngine) this.request
-                .getAttribute(SimpleServer.PROPERTY_ENGINE);
-    }
-
     @Override
     public String getSslCipherSuite() {
         final SSLEngine sslEngine = getSslEngine();
@@ -301,9 +299,24 @@ public class SimpleCall extends ServerCall {
         return null;
     }
 
+    /**
+     * Returns the SSL engine.
+     * 
+     * @return the SSL engine
+     */
+    private SSLEngine getSslEngine() {
+        return (SSLEngine) this.request
+                .getAttribute(SimpleServer.PROPERTY_ENGINE);
+    }
+
     @Override
     public String getVersion() {
         return version;
+    }
+
+    @Override
+    protected boolean isClientKeepAlive() {
+        return request.isKeepAlive();
     }
 
     @Override

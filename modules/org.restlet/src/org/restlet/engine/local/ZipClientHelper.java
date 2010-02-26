@@ -287,7 +287,7 @@ public class ZipClientHelper extends LocalClientHelper {
                                 replaced = true;
                             } else {
                                 zipOut.putNextEntry(e);
-                                BioUtils.write(new BufferedInputStream(zipFile
+                                BioUtils.copy(new BufferedInputStream(zipFile
                                         .getInputStream(e)), zipOut);
                                 zipOut.closeEntry();
                             }
@@ -317,7 +317,7 @@ public class ZipClientHelper extends LocalClientHelper {
                             fos = new FileOutputStream(file);
                             // ByteUtils.write(fis.getChannel(),
                             // fos.getChannel());
-                            BioUtils.write(fis, fos);
+                            BioUtils.copy(fis, fos);
                             response.setStatus(Status.SUCCESS_OK);
                         } finally {
                             try {
@@ -362,7 +362,7 @@ public class ZipClientHelper extends LocalClientHelper {
                 entry.setTime(System.currentTimeMillis());
             }
             out.putNextEntry(entry);
-            BioUtils.write(new BufferedInputStream(entity.getStream()), out);
+            BioUtils.copy(new BufferedInputStream(entity.getStream()), out);
             out.closeEntry();
             return true;
         }

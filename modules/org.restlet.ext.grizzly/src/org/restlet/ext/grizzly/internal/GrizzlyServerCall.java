@@ -278,4 +278,17 @@ public class GrizzlyServerCall extends ServerCall {
 
         buffer.clear();
     }
+
+    /**
+     * Closes the socket.
+     */
+    @Override
+    public boolean abort() {
+        try {
+            getSocket().close();
+        } catch (IOException e) {
+        }
+
+        return true;
+    }
 }

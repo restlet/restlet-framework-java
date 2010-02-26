@@ -84,7 +84,7 @@ public class RangeRepresentation extends WrapperRepresentation {
 
     @Override
     public void write(OutputStream outputStream) throws IOException {
-        BioUtils.write(getStream(), outputStream);
+        BioUtils.copy(getStream(), outputStream);
     }
 
     @Override

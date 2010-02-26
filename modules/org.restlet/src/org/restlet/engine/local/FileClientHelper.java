@@ -413,7 +413,7 @@ public class FileClientHelper extends EntityClientHelper {
                             // Copy the target file.
                             InputStream in = new FileInputStream(file);
                             OutputStream out = new FileOutputStream(tmp);
-                            BioUtils.write(in, out);
+                            BioUtils.copy(in, out);
                             out.flush();
                             out.close();
                         }
@@ -433,7 +433,7 @@ public class FileClientHelper extends EntityClientHelper {
                         // Write the entity to the temporary file.
                         if (request.isEntityAvailable()) {
                             BioUtils
-                                    .write(request.getEntity().getStream(), raf);
+                                    .copy(request.getEntity().getStream(), raf);
                         }
                     } catch (IOException ioe) {
                         getLogger().log(Level.WARNING,
@@ -466,7 +466,7 @@ public class FileClientHelper extends EntityClientHelper {
                         if (request.isEntityAvailable()) {
                             fos = new FileOutputStream(tmp);
                             BioUtils
-                                    .write(request.getEntity().getStream(), fos);
+                                    .copy(request.getEntity().getStream(), fos);
                         }
                     } catch (IOException ioe) {
                         getLogger().log(Level.WARNING,
@@ -518,7 +518,7 @@ public class FileClientHelper extends EntityClientHelper {
                             try {
                                 InputStream in = new FileInputStream(tmp);
                                 OutputStream out = new FileOutputStream(file);
-                                BioUtils.write(in, out);
+                                BioUtils.copy(in, out);
                                 out.flush();
                                 out.close();
                                 renameSuccessfull = true;
@@ -581,7 +581,7 @@ public class FileClientHelper extends EntityClientHelper {
                         // Write the entity to the file.
                         if (request.isEntityAvailable()) {
                             BioUtils
-                                    .write(request.getEntity().getStream(), raf);
+                                    .copy(request.getEntity().getStream(), raf);
                         }
                     } catch (FileNotFoundException fnfe) {
                         getLogger().log(Level.WARNING,
@@ -617,7 +617,7 @@ public class FileClientHelper extends EntityClientHelper {
                                 response.setStatus(Status.SUCCESS_NO_CONTENT);
                             } else {
                                 fos = new FileOutputStream(file);
-                                BioUtils.write(request.getEntity().getStream(),
+                                BioUtils.copy(request.getEntity().getStream(),
                                         fos);
                                 response.setStatus(Status.SUCCESS_CREATED);
                             }

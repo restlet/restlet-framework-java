@@ -51,6 +51,7 @@ import javax.net.ssl.SSLSession;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBufferInputStream;
 import org.jboss.netty.buffer.ChannelBufferOutputStream;
+import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
@@ -72,16 +73,25 @@ import org.restlet.util.Series;
  */
 public class NettyServerCall extends ServerCall {
 
+    /** The Netty HTTP request. */
     private final HttpRequest request;
 
+    /** The Netty HTTP response. */
     private HttpResponse response;
 
-    private final ChannelBuffer content;
+    /** The content buffer. */
+    private final ChannelBuffer contentBuffer;
 
+    /** The Netty message event. */
+    private final MessageEvent messageEvent;
+
+    /** Indicates if HTTP request headers were added. */
     private volatile boolean requestHeadersAdded;
 
+    /** The underlying SSL engine. */
     private final SSLEngine sslEngine;
 
+    /** The remote client IP address. */
     private final InetSocketAddress remoteAddress;
 
     /**
@@ -89,7 +99,9 @@ public class NettyServerCall extends ServerCall {
      * 
      * @param server
      *            The helped server.
-     * @param buffer
+     * @param messageEvent
+     *            The message event received.
+     * @param contentBuffer
      *            The content buffer.
      * @param request
      *            The Netty request.
@@ -100,15 +112,26 @@ public class NettyServerCall extends ServerCall {
      * @param sslEngine
      *            The SSL engine.
      */
-    public NettyServerCall(Server server, ChannelBuffer buffer,
-            HttpRequest request, InetSocketAddress clientAddress,
-            boolean isConfidential, SSLEngine sslEngine) {
+    public NettyServerCall(Server server, MessageEvent messageEvent,
+            ChannelBuffer contentBuffer, HttpRequest request,
+            InetSocketAddress clientAddress, boolean isConfidential,
+            SSLEngine sslEngine) {
         super(server);
         setConfidential(isConfidential);
-        this.content = buffer;
+        this.contentBuffer = contentBuffer;
+        this.messageEvent = messageEvent;
         this.request = request;
         this.sslEngine = sslEngine;
         this.remoteAddress = clientAddress;
+    }
+
+    /**
+     * Closes the socket.
+     */
+    @Override
+    public boolean abort() {
+        messageEvent.getChannel().close();
+        return true;
     }
 
     @Override
@@ -127,13 +150,23 @@ public class NettyServerCall extends ServerCall {
     }
 
     @Override
+    public ReadableByteChannel getRequestEntityChannel(long size) {
+        return null;
+    }
+
+    @Override
     public InputStream getRequestEntityStream(long size) {
-        InputStream stream = new ChannelBufferInputStream(content);
+        InputStream stream = new ChannelBufferInputStream(contentBuffer);
         if (isRequestChunked()) {
             return new ChunkedInputStream(null, stream);
         }
 
         return stream;
+    }
+
+    @Override
+    public ReadableByteChannel getRequestHeadChannel() {
+        return null;
     }
 
     @Override
@@ -160,6 +193,20 @@ public class NettyServerCall extends ServerCall {
     @Override
     public String getRequestUri() {
         return request.getUri();
+    }
+
+    /**
+     * Get response.
+     * 
+     * @return the response
+     */
+    public HttpResponse getResponse() {
+        return response;
+    }
+
+    @Override
+    public WritableByteChannel getResponseEntityChannel() {
+        return null;
     }
 
     @Override
@@ -246,30 +293,6 @@ public class NettyServerCall extends ServerCall {
             this.response.addHeader(header.getName(), header.getValue());
         }
 
-    }
-
-    /**
-     * Get response.
-     * 
-     * @return the response
-     */
-    public HttpResponse getResponse() {
-        return response;
-    }
-
-    @Override
-    public ReadableByteChannel getRequestEntityChannel(long size) {
-        return null;
-    }
-
-    @Override
-    public ReadableByteChannel getRequestHeadChannel() {
-        return null;
-    }
-
-    @Override
-    public WritableByteChannel getResponseEntityChannel() {
-        return null;
     }
 
 }

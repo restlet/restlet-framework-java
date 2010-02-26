@@ -68,7 +68,7 @@ public abstract class CharacterRepresentation extends Representation {
 
     @Override
     public void write(OutputStream outputStream) throws IOException {
-        BioUtils.write(getStream(), outputStream);
+        BioUtils.copy(getStream(), outputStream);
     }
 
     @Override

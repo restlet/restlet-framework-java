@@ -132,6 +132,6 @@ public class ReaderRepresentation extends CharacterRepresentation {
 
     @Override
     public void write(Writer writer) throws IOException {
-        BioUtils.write(getReader(), writer);
+        BioUtils.copy(getReader(), writer);
     }
 }

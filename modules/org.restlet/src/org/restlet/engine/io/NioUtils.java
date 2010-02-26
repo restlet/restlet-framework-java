@@ -265,7 +265,7 @@ public class NioUtils {
     public static void write(ReadableByteChannel readableChannel,
             WritableByteChannel writableChannel) throws IOException {
         if ((readableChannel != null) && (writableChannel != null)) {
-            BioUtils.write(new NbChannelInputStream(readableChannel),
+            BioUtils.copy(new NbChannelInputStream(readableChannel),
                     new NbChannelOutputStream(writableChannel));
         }
     }

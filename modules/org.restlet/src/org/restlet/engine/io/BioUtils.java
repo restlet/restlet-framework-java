@@ -58,6 +58,73 @@ import org.restlet.representation.WriterRepresentation;
 public final class BioUtils {
 
     /**
+     * Copies an input stream to an output stream. When the reading is done, the
+     * input stream is closed.
+     * 
+     * @param inputStream
+     *            The input stream.
+     * @param outputStream
+     *            The output stream.
+     * @throws IOException
+     */
+    public static void copy(InputStream inputStream, OutputStream outputStream)
+            throws IOException {
+        int bytesRead;
+        byte[] buffer = new byte[2048];
+
+        while ((bytesRead = inputStream.read(buffer)) > 0) {
+            outputStream.write(buffer, 0, bytesRead);
+        }
+
+        outputStream.flush();
+        inputStream.close();
+    }
+
+    /**
+     * Copies an input stream to a random access file. When the reading is done,
+     * the input stream is closed.
+     * 
+     * @param inputStream
+     *            The input stream.
+     * @param randomAccessFile
+     *            The random access file.
+     * @throws IOException
+     */
+    public static void copy(InputStream inputStream,
+            RandomAccessFile randomAccessFile) throws IOException {
+        int bytesRead;
+        byte[] buffer = new byte[2048];
+
+        while ((bytesRead = inputStream.read(buffer)) > 0) {
+            randomAccessFile.write(buffer, 0, bytesRead);
+        }
+
+        inputStream.close();
+    }
+
+    /**
+     * Copies characters from a reader to a writer. When the reading is done,
+     * the reader is closed.
+     * 
+     * @param reader
+     *            The reader.
+     * @param writer
+     *            The writer.
+     * @throws IOException
+     */
+    public static void copy(Reader reader, Writer writer) throws IOException {
+        int charsRead;
+        char[] buffer = new char[2048];
+
+        while ((charsRead = reader.read(buffer)) > 0) {
+            writer.write(buffer, 0, charsRead);
+        }
+
+        writer.flush();
+        reader.close();
+    }
+
+    /**
      * Exhaust the content of the representation by reading it and silently
      * discarding anything read.
      * 
@@ -383,71 +450,6 @@ public final class BioUtils {
         }
 
         return result;
-    }
-
-    /**
-     * Writes an input stream to an output stream. When the reading is done, the
-     * input stream is closed.
-     * 
-     * @param inputStream
-     *            The input stream.
-     * @param outputStream
-     *            The output stream.
-     * @throws IOException
-     */
-    public static void write(InputStream inputStream, OutputStream outputStream)
-            throws IOException {
-        int bytesRead;
-        byte[] buffer = new byte[2048];
-
-        while ((bytesRead = inputStream.read(buffer)) > 0) {
-            outputStream.write(buffer, 0, bytesRead);
-        }
-
-        inputStream.close();
-    }
-
-    /**
-     * Writes an input stream to a random access file. When the reading is done,
-     * the input stream is closed.
-     * 
-     * @param inputStream
-     *            The input stream.
-     * @param randomAccessFile
-     *            The random access file.
-     * @throws IOException
-     */
-    public static void write(InputStream inputStream,
-            RandomAccessFile randomAccessFile) throws IOException {
-        int bytesRead;
-        byte[] buffer = new byte[2048];
-
-        while ((bytesRead = inputStream.read(buffer)) > 0) {
-            randomAccessFile.write(buffer, 0, bytesRead);
-        }
-
-        inputStream.close();
-    }
-
-    /**
-     * Writes characters from a reader to a writer. When the reading is done,
-     * the reader is closed.
-     * 
-     * @param reader
-     *            The reader.
-     * @param writer
-     *            The writer.
-     * @throws IOException
-     */
-    public static void write(Reader reader, Writer writer) throws IOException {
-        int charsRead;
-        char[] buffer = new char[2048];
-
-        while ((charsRead = reader.read(buffer)) > 0) {
-            writer.write(buffer, 0, charsRead);
-        }
-
-        reader.close();
     }
 
     /**

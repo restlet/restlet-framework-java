@@ -288,7 +288,7 @@ public class FileRepresentation extends Representation {
 
     @Override
     public void write(OutputStream outputStream) throws IOException {
-        BioUtils.write(getStream(), outputStream);
+        BioUtils.copy(getStream(), outputStream);
     }
 
     /**
@@ -305,7 +305,7 @@ public class FileRepresentation extends Representation {
 
     @Override
     public void write(Writer writer) throws IOException {
-        BioUtils.write(getReader(), writer);
+        BioUtils.copy(getReader(), writer);
     }
 
 }

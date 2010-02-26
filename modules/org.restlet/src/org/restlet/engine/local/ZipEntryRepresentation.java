@@ -95,7 +95,7 @@ public class ZipEntryRepresentation extends StreamRepresentation {
 
     @Override
     public void write(OutputStream outputStream) throws IOException {
-        BioUtils.write(getStream(), outputStream);
+        BioUtils.copy(getStream(), outputStream);
     }
 
 }

@@ -133,6 +133,14 @@ public class ServletCall extends ServerCall {
         this.response = response;
     }
 
+    /**
+     * Not supported. Always returns false.
+     */
+    @Override
+    public boolean abort() {
+        return false;
+    }
+
     @Override
     public String getClientAddress() {
         return getRequest().getRemoteAddr();
@@ -412,8 +420,8 @@ public class ServletCall extends ServerCall {
                     .hasNext();) {
                 header = iter.next();
 
-                if (header.getName()
-                        .equals(HeaderConstants.HEADER_CONTENT_LENGTH)) {
+                if (header.getName().equals(
+                        HeaderConstants.HEADER_CONTENT_LENGTH)) {
                     contentLengthHeader = header;
                 } else {
                     getResponse()

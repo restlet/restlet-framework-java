@@ -247,7 +247,7 @@ public class DecodeRepresentation extends WrapperRepresentation {
     @Override
     public void write(OutputStream outputStream) throws IOException {
         if (isDecoding()) {
-            BioUtils.write(getStream(), outputStream);
+            BioUtils.copy(getStream(), outputStream);
         } else {
             getWrappedRepresentation().write(outputStream);
         }

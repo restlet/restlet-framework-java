@@ -229,10 +229,13 @@ public class Request extends Message {
     }
 
     /**
-     * Ask the connector to abort the related network connection, for example
-     * immediately closing the socket.
+     * Ask the connector to attempt to abort the related network connection, for
+     * example immediately closing the socket.
+     * 
+     * @return True if the request was aborted.
      */
-    public void abort() {
+    public boolean abort() {
+        return false;
     }
 
     /**
