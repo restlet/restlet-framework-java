@@ -30,6 +30,8 @@ Changes log
         - The Request#abort() method is now supported by the Simple,
           Grizzly, Netty, Jetty and the internal HTTP server.
           Reported by Nicolas Rinaudo.
+        - Response#onSent callback now called by other HTTP server than
+          the internal one.
     - Bugs fixed
         - Fixed compilation issue in the ClientResource class for the
           GWT edition. Reported by Laszlo Megyer. 

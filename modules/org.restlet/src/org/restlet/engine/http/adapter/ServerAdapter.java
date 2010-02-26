@@ -222,6 +222,10 @@ public class ServerAdapter extends Adapter {
             }
         } finally {
             response.getHttpCall().complete();
+
+            if (response.getOnSent() != null) {
+                response.getOnSent().handle(response.getRequest(), response);
+            }
         }
     }
 
