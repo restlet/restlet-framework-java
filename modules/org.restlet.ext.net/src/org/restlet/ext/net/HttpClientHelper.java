@@ -39,6 +39,7 @@ import javax.net.ssl.HostnameVerifier;
 import org.restlet.Client;
 import org.restlet.Request;
 import org.restlet.data.Protocol;
+import org.restlet.data.Reference;
 import org.restlet.engine.http.ClientCall;
 import org.restlet.ext.net.internal.HttpUrlConnectionCall;
 
@@ -132,8 +133,12 @@ public class HttpClientHelper extends org.restlet.engine.http.HttpClientHelper {
         ClientCall result = null;
 
         try {
+            Reference targetRef = request.getResourceRef().getBaseRef() == null ? request
+                    .getResourceRef()
+                    : request.getResourceRef().getTargetRef();
+
             result = new HttpUrlConnectionCall(this, request.getMethod()
-                    .toString(), request.getResourceRef().toString(), request
+                    .toString(), targetRef.toString(), request
                     .isEntityAvailable());
         } catch (IOException ioe) {
             getLogger().log(Level.WARNING,

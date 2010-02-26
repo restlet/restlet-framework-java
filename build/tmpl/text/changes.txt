@@ -65,6 +65,9 @@ Changes log
           Reported by Nirav Shah.
         - Fixed bug using annotated interfaces declaring simply a "GET"
           method in GWT client. Reported by Xavier Mehaut.
+        - Client HTTP connectors were not automatically resolving 
+          relative URI references with a given base URI.
+          Reported by Rickard Oberg.
     - Misc
         - 
         
