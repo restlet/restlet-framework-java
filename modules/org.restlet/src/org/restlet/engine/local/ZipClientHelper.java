@@ -307,7 +307,7 @@ public class ZipClientHelper extends LocalClientHelper {
                         }
                     }
 
-                    if (!(file.delete() && writeTo.renameTo(file))) {
+                    if (!(BioUtils.delete(file) && writeTo.renameTo(file))) {
                         if (!file.exists())
                             file.createNewFile();
                         FileInputStream fis = null;

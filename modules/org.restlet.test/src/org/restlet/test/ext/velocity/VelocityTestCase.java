@@ -40,6 +40,7 @@ import org.restlet.data.LocalReference;
 import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
+import org.restlet.engine.io.BioUtils;
 import org.restlet.ext.velocity.TemplateRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.test.RestletTestCase;
@@ -76,8 +77,8 @@ public class VelocityTestCase extends RestletTestCase {
         assertEquals("Value=myValue", result);
 
         // Clean-up
-        testFile.delete();
-        testDir.delete();
+        BioUtils.delete(testFile);
+        BioUtils.delete(testDir, true);
     }
 
     public void testStandardTemplate() throws Exception {
@@ -104,7 +105,7 @@ public class VelocityTestCase extends RestletTestCase {
         assertEquals("Value=myValue", result);
 
         // Clean-up
-        testFile.delete();
-        testDir.delete();
+        BioUtils.delete(testFile);
+        BioUtils.delete(testDir, true);
     }
 }

@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.restlet.data.MediaType;
+import org.restlet.engine.io.BioUtils;
 import org.restlet.ext.freemarker.TemplateRepresentation;
 import org.restlet.test.RestletTestCase;
 
@@ -77,8 +78,8 @@ public class FreeMarkerTestCase extends RestletTestCase {
         assertEquals("Value=myValue", result);
 
         // Clean-up
-        testFile.delete();
-        testDir.delete();
+        BioUtils.delete(testFile);
+        BioUtils.delete(testDir, true);
     }
 
 }

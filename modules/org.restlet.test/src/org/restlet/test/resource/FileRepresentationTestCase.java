@@ -45,6 +45,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
+import org.restlet.engine.io.BioUtils;
 import org.restlet.representation.FileRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.test.RestletTestCase;
@@ -89,8 +90,8 @@ public class FileRepresentationTestCase extends RestletTestCase {
     public void tearDown() throws Exception {
         super.tearDown();
         component.stop();
-        this.file.delete();
-        this.testDir.delete();
+        BioUtils.delete(this.file);
+        BioUtils.delete(this.testDir, true);
     }
 
     public void testConstructors() {

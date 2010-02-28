@@ -40,6 +40,7 @@ import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.data.LocalReference;
 import org.restlet.data.Protocol;
+import org.restlet.engine.io.BioUtils;
 import org.restlet.resource.Directory;
 
 /**
@@ -126,34 +127,12 @@ public class TemplateFilterTestCase extends RestletTestCase {
 
     File testDir;
 
-    /**
-     * Recursively delete a directory.
-     * 
-     * @param dir
-     *            The directory to delete.
-     */
-    private void deleteDir(File dir) {
-        if (dir.exists()) {
-            final File[] entries = dir.listFiles();
-
-            for (final File entrie : entries) {
-                if (entrie.isDirectory()) {
-                    deleteDir(entrie);
-                }
-
-                entrie.delete();
-            }
-        }
-
-        dir.delete();
-    }
-
     public void testTemplateFilter() {
         try {
             // Create a temporary directory for the tests
             this.testDir = new File(System.getProperty("java.io.tmpdir"),
                     "TemplateFilterTestCase");
-            deleteDir(this.testDir);
+            BioUtils.delete(this.testDir, true);
             this.testDir.mkdir();
 
             // Create temporary template files

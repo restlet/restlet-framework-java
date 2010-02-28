@@ -39,6 +39,7 @@ import org.restlet.data.LocalReference;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
+import org.restlet.engine.io.BioUtils;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.test.RestletTestCase;
@@ -53,7 +54,7 @@ public class ZipClientTestCase extends RestletTestCase {
     public void testFileClient() throws IOException, InterruptedException {
         File zipFile = File.createTempFile("Restlet", ".zip");
         // We just wanted a valid writable path
-        zipFile.delete();
+        BioUtils.delete(zipFile);
         final String text = "Test content\r\nLine 2\r\nLine2";
         final String text2 = "Test content\nLine 2";
         final Client fc = new Client(Protocol.ZIP);

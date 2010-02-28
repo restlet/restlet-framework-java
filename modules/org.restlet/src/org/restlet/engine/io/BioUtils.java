@@ -31,6 +31,7 @@
 package org.restlet.engine.io;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -122,6 +123,88 @@ public final class BioUtils {
 
         writer.flush();
         reader.close();
+    }
+
+    /**
+     * Deletes an individual file or an empty directory.
+     * 
+     * @param file
+     *            The individual file or directory to delete.
+     * @return True if the deletion was successful.
+     */
+    public static boolean delete(File file) {
+        return delete(file, false);
+    }
+
+    /**
+     * Deletes an individual file or a directory. A recursive deletion can be
+     * forced as well. Under Windows operating systems, the garbage collector
+     * will be invoked once before attempting to delete in order to prevent
+     * locking issues.
+     * 
+     * @param file
+     *            The individual file or directory to delete.
+     * @param recursive
+     *            Indicates if directory with content should be deleted
+     *            recursively as well.
+     * @return True if the deletion was successful or if the file or directory
+     *         didn't exist.
+     */
+    public static boolean delete(File file, boolean recursive) {
+        String osName = System.getProperty("os.name").toLowerCase();
+        return delete(file, recursive, osName.startsWith("windows"));
+    }
+
+    /**
+     * Deletes an individual file or a directory. A recursive deletion can be
+     * forced as well. The garbage collector can be run once before attempting
+     * to delete, to workaround lock issues under Windows operating systems.
+     * 
+     * @param file
+     *            The individual file or directory to delete.
+     * @param recursive
+     *            Indicates if directory with content should be deleted
+     *            recursively as well.
+     * @param garbageCollect
+     *            Indicates if the garbage collector should be run.
+     * @return True if the deletion was successful or if the file or directory
+     *         didn't exist.
+     */
+    public static boolean delete(File file, boolean recursive,
+            boolean garbageCollect) {
+        boolean result = true;
+        boolean runGC = garbageCollect;
+
+        if (file.exists()) {
+            if (file.isDirectory()) {
+                File[] entries = file.listFiles();
+
+                // Check if the directory is empty
+                if (entries.length > 0) {
+                    if (recursive) {
+                        for (int i = 0; result && (i < entries.length); i++) {
+                            if (runGC) {
+                                System.gc();
+                                runGC = false;
+                            }
+
+                            result = delete(entries[i], true, false);
+                        }
+                    } else {
+                        result = false;
+                    }
+                }
+            }
+
+            if (runGC) {
+                System.gc();
+                runGC = false;
+            }
+
+            result = result && file.delete();
+        }
+
+        return result;
     }
 
     /**

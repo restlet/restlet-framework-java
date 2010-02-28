@@ -241,7 +241,7 @@ public class FileRepresentation extends Representation {
     public void release() {
         if (isAutoDeleting() && getFile() != null) {
             try {
-                getFile().delete();
+                BioUtils.delete(getFile(), true);
             } catch (Exception e) {
             }
         }

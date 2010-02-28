@@ -50,6 +50,7 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Range;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
+import org.restlet.engine.io.BioUtils;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Directory;
 import org.restlet.routing.Router;
@@ -158,25 +159,6 @@ public class RangeTestCase extends RestletTestCase {
 
     /** Component used for the tests. */
     private Component component;
-
-    /**
-     * Recursively delete a directory.
-     * 
-     * @param dir
-     *            The directory to delete.
-     */
-    private void deleteDir(File dir) {
-        if (dir.exists()) {
-            final File[] entries = dir.listFiles();
-            for (final File entry : entries) {
-                if (entry.isDirectory()) {
-                    deleteDir(entry);
-                }
-                entry.delete();
-            }
-        }
-        dir.delete();
-    }
 
     @Override
     protected void setUp() throws Exception {
@@ -297,8 +279,7 @@ public class RangeTestCase extends RestletTestCase {
      */
     @Test
     public void testPut() throws IOException {
-        deleteDir(testDir);
-
+        BioUtils.delete(testDir, true);
         Client client = new Client(Protocol.HTTP);
 
         // PUT on a file that does not exist
@@ -392,7 +373,7 @@ public class RangeTestCase extends RestletTestCase {
         assertEquals(Status.SUCCESS_PARTIAL_CONTENT, response.getStatus());
         assertEquals("20000998", response.getEntity().getText());
 
-        deleteDir(testDir);
+        BioUtils.delete(testDir, true);
     }
 
     /**
@@ -407,33 +388,28 @@ public class RangeTestCase extends RestletTestCase {
         Request request = new Request(Method.GET, "http://localhost:"
                 + TEST_PORT + "/test?range=0-500");
         request.setRanges(Arrays.asList(new Range(0, 500)));
-        assertEquals(Status.SUCCESS_OK, client.handle(request)
-                .getStatus());
+        assertEquals(Status.SUCCESS_OK, client.handle(request).getStatus());
 
         request = new Request(Method.GET, "http://localhost:" + TEST_PORT
                 + "/test?range=-500");
         request.setRanges(Arrays.asList(new Range(Range.INDEX_LAST, 500)));
-        assertEquals(Status.SUCCESS_OK, client.handle(request)
-                .getStatus());
+        assertEquals(Status.SUCCESS_OK, client.handle(request).getStatus());
 
         request = new Request(Method.GET, "http://localhost:" + TEST_PORT
                 + "/test?range=500-");
         request.setRanges(Arrays.asList(new Range(500, Range.SIZE_MAX)));
-        assertEquals(Status.SUCCESS_OK, client.handle(request)
-                .getStatus());
+        assertEquals(Status.SUCCESS_OK, client.handle(request).getStatus());
 
         request = new Request(Method.GET, "http://localhost:" + TEST_PORT
                 + "/test?range=500-1000");
         request.setRanges(Arrays.asList(new Range(500, 500)));
-        assertEquals(Status.SUCCESS_OK, client.handle(request)
-                .getStatus());
+        assertEquals(Status.SUCCESS_OK, client.handle(request).getStatus());
 
         request = new Request(Method.GET, "http://localhost:" + TEST_PORT
                 + "/test?range=500-1000&range=500-");
         request.setRanges(Arrays.asList(new Range(500, 500), new Range(500,
                 Range.SIZE_MAX)));
-        assertEquals(Status.SUCCESS_OK, client.handle(request)
-                .getStatus());
+        assertEquals(Status.SUCCESS_OK, client.handle(request).getStatus());
 
     }
 }

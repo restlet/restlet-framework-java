@@ -45,6 +45,7 @@ import org.restlet.data.Protocol;
 import org.restlet.engine.ClientHelper;
 import org.restlet.engine.Engine;
 import org.restlet.engine.ServerHelper;
+import org.restlet.engine.io.BioUtils;
 import org.restlet.engine.local.ClapClientHelper;
 import org.restlet.engine.security.DefaultSslContextFactory;
 import org.restlet.test.RestletTestCase;
@@ -128,7 +129,7 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
         try {
             if (!testKeystoreFile.exists()) {
                 // Prepare a temporary directory for the tests
-                this.testDir.delete();
+                BioUtils.delete(this.testDir, true);
                 this.testDir.mkdir();
                 // Copy the keystore into the test directory
                 Response response = new Client(Protocol.CLAP)
@@ -173,8 +174,8 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
-        this.testKeystoreFile.delete();
-        this.testDir.delete();
+        BioUtils.delete(this.testKeystoreFile);
+        BioUtils.delete(this.testDir, true);
 
         // Restore a clean engine
         org.restlet.engine.Engine.setInstance(new Engine());

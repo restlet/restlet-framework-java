@@ -36,6 +36,7 @@ import java.io.FileOutputStream;
 
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
+import org.restlet.engine.io.BioUtils;
 import org.restlet.ext.atom.Categories;
 import org.restlet.ext.atom.Feed;
 import org.restlet.ext.atom.Service;
@@ -49,28 +50,6 @@ import org.restlet.test.RestletTestCase;
  */
 public class AtomTestCase extends RestletTestCase {
 
-    /**
-     * Recursively delete a directory.
-     * 
-     * @param dir
-     *            The directory to delete.
-     */
-    private void deleteDir(File dir) {
-        if (dir.exists()) {
-            final File[] entries = dir.listFiles();
-
-            for (final File entrie : entries) {
-                if (entrie.isDirectory()) {
-                    deleteDir(entrie);
-                }
-
-                entrie.delete();
-            }
-        }
-
-        dir.delete();
-    }
-
     public void testCategories() throws Exception {
         final Categories atomCategories = new Categories(
                 "clap://class/org/restlet/test/ext/atom/categories.xml");
@@ -83,7 +62,7 @@ public class AtomTestCase extends RestletTestCase {
         // Create a temporary directory for the tests
         final File testDir = new File(System.getProperty("java.io.tmpdir"),
                 "AtomTestCase");
-        deleteDir(testDir);
+        BioUtils.delete(testDir, true);
         testDir.mkdir();
 
         final Service atomService = new Service(
@@ -114,7 +93,7 @@ public class AtomTestCase extends RestletTestCase {
         assertEquals(atomFeed2.getEntries().get(0).getTitle().getContent(),
                 atomFeed2.getEntries().get(0).getTitle().getContent());
 
-        deleteDir(testDir);
+        BioUtils.delete(testDir, true);
     }
 
 }

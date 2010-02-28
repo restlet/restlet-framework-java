@@ -32,6 +32,9 @@ Changes log
           Reported by Nicolas Rinaudo.
         - Response#onSent callback now called by other HTTP server than
           the internal one.
+        - Added BioUtils.delete(...) methods to delete files and 
+          directories, recursively if needed, while working around
+          Windows file locking issues.
     - Bugs fixed
         - Fixed compilation issue in the ClientResource class for the
           GWT edition. Reported by Laszlo Megyer. 
