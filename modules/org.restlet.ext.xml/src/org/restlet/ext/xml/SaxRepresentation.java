@@ -155,7 +155,7 @@ public class SaxRepresentation extends XmlRepresentation {
         xpath.setNamespaceContext(this);
 
         if (this.source != null) {
-            final Document document = getDocumentBuilder().parse(
+            Document document = getDocumentBuilder().parse(
                     SAXSource.sourceToInputSource(this.source));
             result = xpath.evaluate(expression, document, returnType);
         } else {
