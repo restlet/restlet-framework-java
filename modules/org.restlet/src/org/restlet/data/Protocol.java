@@ -275,7 +275,7 @@ public final class Protocol {
      */
     public Protocol(String schemeName, String name, String description,
             int defaultPort, boolean confidential) {
-        this(name, description, schemeName, defaultPort, confidential, null);
+        this(schemeName, name, description, defaultPort, confidential, null);
     }
 
     /**
