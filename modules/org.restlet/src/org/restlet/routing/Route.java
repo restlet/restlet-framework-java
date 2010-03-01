@@ -211,7 +211,9 @@ public class Route extends TemplateRoute {
                 Reference baseRef = request.getResourceRef().getBaseRef();
 
                 if (baseRef == null) {
-                    baseRef = new Reference(matchedPart);
+                    if (matchedLength > 0) {
+                        baseRef = new Reference(matchedPart);
+                    }
                 } else {
                     baseRef = new Reference(baseRef.toString(false, false)
                             + matchedPart);
