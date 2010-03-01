@@ -55,6 +55,9 @@ public class EntityType extends NamedObject implements Comparable<EntityType> {
     /** The parent type this type inherits from. */
     private EntityType baseType;
 
+    /** Is this type a blob? */
+    private boolean blob;
+
     /** The list of properties that identifies an instance of this type. */
     private List<Property> keys;
 
@@ -224,6 +227,17 @@ public class EntityType extends NamedObject implements Comparable<EntityType> {
     }
 
     /**
+     * Returns true if this type a blob, that is to say it represents binary
+     * data.
+     * 
+     * @return True if this type a blob, that is to say it represents binary
+     *         data.
+     */
+    public boolean isBlob() {
+        return blob;
+    }
+
+    /**
      * Indicates if this type is abstract
      * 
      * @param abstractType
@@ -251,6 +265,17 @@ public class EntityType extends NamedObject implements Comparable<EntityType> {
      */
     public void setBaseType(EntityType baseType) {
         this.baseType = baseType;
+    }
+
+    /**
+     * Indicates if this type a blob, that is to say it represents binary data.
+     * 
+     * @param media
+     *            True if this type a blob, that is to say it represents binary
+     *            data.
+     */
+    public void setBlob(boolean blob) {
+        this.blob = blob;
     }
 
     /**

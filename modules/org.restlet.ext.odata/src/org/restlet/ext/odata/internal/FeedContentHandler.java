@@ -117,6 +117,9 @@ public class FeedContentHandler<T> extends FeedReader {
     /** Are we parsing an entity property? */
     private boolean parseProperty;
 
+    /** Must the current property be set to null? */
+    private boolean parsePropertyNull;
+
     /** Used to glean text content. */
     StringBuilder sb = null;
 
@@ -193,13 +196,15 @@ public class FeedContentHandler<T> extends FeedReader {
             parseCount = false;
         } else if (parseProperty) {
             parseProperty = false;
-            Property property = metadata.getProperty(entity, localName);
-            try {
-                ReflectUtils.setProperty(entity, property, sb.toString());
-            } catch (Exception e) {
-                getLogger().warning(
-                        "Cannot set " + localName + " property on " + entity
-                                + " with value " + sb.toString());
+            if (!parsePropertyNull) {
+                Property property = metadata.getProperty(entity, localName);
+                try {
+                    ReflectUtils.setProperty(entity, property, sb.toString());
+                } catch (Exception e) {
+                    getLogger().warning(
+                            "Cannot set " + localName + " property on "
+                                    + entity + " with value " + sb.toString());
+                }
             }
         } else if (parseEntry) {
             if (mapping != null) {
@@ -402,6 +407,8 @@ public class FeedContentHandler<T> extends FeedReader {
             if (Service.WCF_DATASERVICES_NAMESPACE.equals(uri)) {
                 sb = new StringBuilder();
                 parseProperty = true;
+                parsePropertyNull = Boolean.parseBoolean(attrs.getValue(
+                        Service.WCF_DATASERVICES_METADATA_NAMESPACE, "null"));
             }
         } else if (Service.WCF_DATASERVICES_METADATA_NAMESPACE.equals(uri)
                 && "count".equals(localName)) {

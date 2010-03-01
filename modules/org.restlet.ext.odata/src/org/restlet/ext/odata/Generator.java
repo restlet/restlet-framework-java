@@ -43,6 +43,7 @@ import org.restlet.ext.odata.internal.edm.EntityType;
 import org.restlet.ext.odata.internal.edm.Metadata;
 import org.restlet.ext.odata.internal.edm.Schema;
 import org.restlet.ext.odata.internal.edm.Type;
+import org.restlet.ext.odata.internal.reflect.ReflectUtils;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
@@ -67,7 +68,7 @@ public class Generator {
      *            The list of arguments.
      */
     public static void main(String[] args) {
-        boolean error = (args.length != 2);
+        boolean error = (args.length != 2 && args.length != 3);
         String step = "step 1 - check parameters";
         File outputDir = null;
         Metadata metadata;
@@ -101,8 +102,15 @@ public class Generator {
                 error = true;
             } else {
                 step = "step 5 - generate source code";
-                Generator svcUtil = new Generator(
-                        new Reference(dataServiceUri), metadata);
+                Generator svcUtil = null;
+                if (args.length == 3) {
+                    svcUtil = new Generator(new Reference(dataServiceUri),
+                            metadata, args[2]);
+                } else {
+                    svcUtil = new Generator(new Reference(dataServiceUri),
+                            metadata);
+                }
+
                 try {
                     svcUtil.generateSourceCode(outputDir);
                 } catch (Exception e) {
@@ -122,14 +130,19 @@ public class Generator {
             System.out.println("   - a valid URI for the remote service");
             System.out
                     .println("   - a valid directory path where to generate the files.");
+            System.out
+                    .println("   - a valid name for the generated service class (optional).");
         }
     }
+
+    /** The URI of the target data service. */
+    private Reference dataServiceRef;
 
     /** The WCF Data Services metadata. */
     private Metadata metadata;
 
-    /** The URI of the target data service. */
-    private Reference dataServiceRef;
+    /** The name of the service class (in case there is only one in the schema). */
+    private String serviceClassName;
 
     /**
      * Constructor.
@@ -140,9 +153,33 @@ public class Generator {
      *            The metadata descriptor.
      */
     public Generator(Reference dataServiceRef, Metadata metadata) {
+        this(dataServiceRef, metadata, null);
+    }
+
+    /**
+     * Constructor. The name of the service class can be provided if there is
+     * only one service defined in the metadata.
+     * 
+     * @param dataServiceRef
+     *            The URI of the WCF Data Service.
+     * @param metadata
+     *            The metadata descriptor.
+     * @param serviceClassName
+     *            The name of the service class (in case there is only one in
+     *            the matadata).
+     */
+    public Generator(Reference dataServiceRef, Metadata metadata,
+            String serviceClassName) {
         super();
         this.metadata = metadata;
         this.dataServiceRef = dataServiceRef;
+        if (serviceClassName != null) {
+            this.serviceClassName = ReflectUtils.normalize(serviceClassName);
+            this.serviceClassName = this.serviceClassName.substring(0, 1)
+                    .toUpperCase()
+                    + this.serviceClassName.substring(1);
+        }
+
     }
 
     /**
@@ -191,11 +228,15 @@ public class Generator {
 
             // Generate Service subclass.
             StringBuffer className = new StringBuffer();
-            className.append(schema.getNamespace().getNormalizedName()
-                    .substring(0, 1).toUpperCase());
-            className.append(schema.getNamespace().getNormalizedName()
-                    .substring(1));
-            className.append("Service");
+            if (serviceClassName != null && metadata.getSchemas().size() == 1) {
+                className.append(serviceClassName);
+            } else {
+                className.append(schema.getNamespace().getNormalizedName()
+                        .substring(0, 1).toUpperCase());
+                className.append(schema.getNamespace().getNormalizedName()
+                        .substring(1));
+                className.append("Service");
+            }
 
             Map<String, Object> dataModel = new HashMap<String, Object>();
             dataModel.put("schema", schema);

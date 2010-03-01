@@ -59,8 +59,8 @@ import org.xml.sax.SAXException;
  */
 public class EntryContentHandler<T> extends EntryReader {
 
-    /** The currently parsed odata mapping. */
-    private Mapping mapping;
+    /** The path of the current XML element relatively to an Entry. */
+    List<String> eltPath;
 
     /** The entity targeted by this entry. */
     private T entity;
@@ -74,14 +74,11 @@ public class EntryContentHandler<T> extends EntryReader {
     /** Internal logger. */
     private Logger logger;
 
-    /** The path of the current XML element relatively to an Entry. */
-    List<String> eltPath;
+    /** The currently parsed odata mapping. */
+    private Mapping mapping;
 
     /** The metadata of the WCF service. */
     private Metadata metadata;
-
-    /** Are we parsing an association? */
-    private boolean parseAssociation;
 
     /** Are we parsing an entry content element? */
     private boolean parseContent;
@@ -91,6 +88,9 @@ public class EntryContentHandler<T> extends EntryReader {
 
     /** Are we parsing an entity property? */
     private boolean parseProperty;
+
+    /** Must the current be set to null? */
+    private boolean parsePropertyNull;
 
     /** Gleans text content. */
     StringBuilder sb = null;
@@ -132,14 +132,16 @@ public class EntryContentHandler<T> extends EntryReader {
             throws SAXException {
         if (parseProperty) {
             parseProperty = false;
-            Property property = metadata.getProperty(entity, localName);
-            try {
-                ReflectUtils.setProperty(entity, property, sb.toString());
-            } catch (Exception e) {
-                getLogger().warning(
-                        "Cannot set " + localName + " property on " + entity
-                                + " with value " + sb.toString());
+            if (!parsePropertyNull) {
+                Property property = metadata.getProperty(entity, localName);
+                try {
+                    ReflectUtils.setProperty(entity, property, sb.toString());
+                } catch (Exception e) {
+                    getLogger().warning(
+                            "Cannot set " + localName + " property on "
+                                    + entity + " with value " + sb.toString());
 
+                }
             }
         } else if (mapping != null) {
             if (sb != null) {
@@ -252,6 +254,8 @@ public class EntryContentHandler<T> extends EntryReader {
             if (Service.WCF_DATASERVICES_NAMESPACE.equals(uri)) {
                 sb = new StringBuilder();
                 parseProperty = true;
+                parsePropertyNull = Boolean.parseBoolean(attrs.getValue(
+                        Service.WCF_DATASERVICES_METADATA_NAMESPACE, "null"));
             }
         } else if (parseEntry) {
             // Could be mapped value

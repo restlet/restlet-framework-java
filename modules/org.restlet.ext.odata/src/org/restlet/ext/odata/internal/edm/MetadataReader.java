@@ -148,8 +148,8 @@ public class MetadataReader extends DefaultHandler {
             propertyPath = property.getName();
         }
 
-        valuePath = attributes.getValue(Service.WCF_DATASERVICES_METADATA_NAMESPACE,
-                "FC_TargetPath");
+        valuePath = attributes.getValue(
+                Service.WCF_DATASERVICES_METADATA_NAMESPACE, "FC_TargetPath");
 
         if (propertyPath != null && valuePath != null && !keepInContent) {
             // The mapping is really defined between a property and an XML
@@ -403,6 +403,8 @@ public class MetadataReader extends DefaultHandler {
             currentEntityType.setSchema(this.currentSchema);
             currentEntityType.setAbstractType(Boolean.parseBoolean(attr
                     .get("Abstract")));
+            currentEntityType.setBlob(Boolean
+                    .parseBoolean(attr.get("HasMedia")));
             String value = attr.get("BaseType");
             if (value != null) {
                 currentEntityType.setBaseType(new EntityType(value));

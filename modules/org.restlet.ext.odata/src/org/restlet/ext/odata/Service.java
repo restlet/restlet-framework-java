@@ -138,13 +138,17 @@ public class Service {
                 .toString()
                 + entitySetName));
         resource.setChallengeResponse(getCredentials());
-        resource.post(entry);
-        this.latestRequest = resource.getRequest();
-        this.latestResponse = resource.getResponse();
-        if (!resource.getStatus().isSuccess()) {
-            throw new ResourceException(resource.getStatus(),
+
+        try {
+            entry.write(System.out);
+            resource.post(entry);
+        } catch (ResourceException re) {
+            throw new ResourceException(re.getStatus(),
                     "Can't add entity to this entity set "
                             + resource.getReference());
+        } finally {
+            this.latestRequest = resource.getRequest();
+            this.latestResponse = resource.getResponse();
         }
     }
 
@@ -200,9 +204,15 @@ public class Service {
                 + getSubpath(entity)));
         resource.setChallengeResponse(getCredentials());
 
-        resource.delete();
-        this.latestRequest = resource.getRequest();
-        this.latestResponse = resource.getResponse();
+        try {
+            resource.delete();
+        } catch (ResourceException re) {
+            throw new ResourceException(re.getStatus(),
+                    "Can't delete this entity " + resource.getReference());
+        } finally {
+            this.latestRequest = resource.getRequest();
+            this.latestResponse = resource.getResponse();
+        }
     }
 
     /**
@@ -218,9 +228,15 @@ public class Service {
                 + entitySubpath));
         resource.setChallengeResponse(getCredentials());
 
-        resource.delete();
-        this.latestRequest = resource.getRequest();
-        this.latestResponse = resource.getResponse();
+        try {
+            resource.delete();
+        } catch (ResourceException re) {
+            throw new ResourceException(re.getStatus(),
+                    "Can't delete this entity " + resource.getReference());
+        } finally {
+            this.latestRequest = resource.getRequest();
+            this.latestResponse = resource.getResponse();
+        }
     }
 
     /**
@@ -302,16 +318,13 @@ public class Service {
                         "Get the metadata for " + serviceRef + " at "
                                 + resource.getReference());
                 Representation rep = resource.get(MediaType.APPLICATION_XML);
-
-                if (resource.getStatus().isSuccess()) {
-                    this.metadata = new Metadata(rep, resource.getReference());
-                } else {
-                    getLogger().log(
-                            Level.SEVERE,
-                            "Can't get the metadata for " + serviceRef
-                                    + " (response's status: "
-                                    + resource.getStatus() + ")");
-                }
+                this.metadata = new Metadata(rep, resource.getReference());
+            } catch (ResourceException e) {
+                getLogger().log(
+                        Level.SEVERE,
+                        "Can't get the metadata for " + serviceRef
+                                + " (response's status: "
+                                + resource.getStatus() + ")");
             } catch (Exception e) {
                 getLogger().log(Level.SEVERE,
                         "Can't get the metadata for " + serviceRef, e);
@@ -378,45 +391,36 @@ public class Service {
                 resource.setChallengeResponse(getCredentials());
                 Representation rep = resource.get();
 
-                if (resource.getStatus().isSuccess()) {
-                    DomRepresentation xmlRep = new DomRepresentation(rep);
-                    // [ifndef android] instruction
-                    Node node = xmlRep.getNode("//" + propertyName);
+                DomRepresentation xmlRep = new DomRepresentation(rep);
+                // [ifndef android] instruction
+                Node node = xmlRep.getNode("//" + propertyName);
 
-                    // [ifdef android] uncomment
-                    // Node node = null;
-                    // try {
-                    // org.w3c.dom.NodeList nl = xmlRep.getDocument()
-                    // .getElementsByTagName(propertyName);
-                    // node = (nl.getLength() > 0) ? nl.item(0) : null;
-                    // } catch (IOException e1) {
-                    // }
-                    // [enddef]
+                // [ifdef android] uncomment
+                // Node node = null;
+                // try {
+                // org.w3c.dom.NodeList nl = xmlRep.getDocument()
+                // .getElementsByTagName(propertyName);
+                // node = (nl.getLength() > 0) ? nl.item(0) : null;
+                // } catch (IOException e1) {
+                // }
+                // [enddef]
 
-                    if (node != null) {
-                        Property property = metadata.getProperty(entity,
-                                propertyName);
-                        try {
-                            // [ifndef android] instruction
-                            ReflectUtils.setProperty(entity, property, node
-                                    .getTextContent());
-                            // [ifdef android] instruction uncomment
-                            // ReflectUtils.setProperty(entity, property,
-                            // org.restlet.ext.xml.XmlRepresentation.getTextContent(node));
-                        } catch (Exception e) {
-                            getLogger().log(
-                                    Level.WARNING,
-                                    "Can't set the property " + propertyName
-                                            + " of " + entity.getClass()
-                                            + " for the service" + serviceRef,
-                                    e);
-                        }
-                    } else {
+                if (node != null) {
+                    Property property = metadata.getProperty(entity,
+                            propertyName);
+                    try {
+                        // [ifndef android] instruction
+                        ReflectUtils.setProperty(entity, property, node
+                                .getTextContent());
+                        // [ifdef android] instruction uncomment
+                        // ReflectUtils.setProperty(entity, property,
+                        // org.restlet.ext.xml.XmlRepresentation.getTextContent(node));
+                    } catch (Exception e) {
                         getLogger().log(
                                 Level.WARNING,
                                 "Can't set the property " + propertyName
                                         + " of " + entity.getClass()
-                                        + " for the service" + serviceRef);
+                                        + " for the service" + serviceRef, e);
                     }
                 }
             } catch (ResourceException e) {
@@ -518,17 +522,11 @@ public class Service {
             public void write(XmlWriter writer) throws IOException {
                 try {
                     writer
-                            .forceNSDecl(
-                                    "http://schemas.microsoft.com/ado/2007/08/dataservices/metadata",
+                            .forceNSDecl(WCF_DATASERVICES_METADATA_NAMESPACE,
                                     "m");
-                    writer
-                            .forceNSDecl(
-                                    "http://schemas.microsoft.com/ado/2007/08/dataservices",
-                                    "ds");
-                    writer
-                            .startElement(
-                                    "http://schemas.microsoft.com/ado/2007/08/dataservices/metadata",
-                                    "properties");
+                    writer.forceNSDecl(WCF_DATASERVICES_NAMESPACE, "ds");
+                    writer.startElement(WCF_DATASERVICES_METADATA_NAMESPACE,
+                            "properties");
 
                     for (Field field : entity.getClass().getDeclaredFields()) {
                         String getter = "get"
@@ -550,32 +548,27 @@ public class Service {
 
                                     }
                                     if (value != null) {
-                                        writer
-                                                .startElement(
-                                                        "http://schemas.microsoft.com/ado/2007/08/dataservices",
-                                                        prop.getName());
+                                        writer.startElement(
+                                                WCF_DATASERVICES_NAMESPACE,
+                                                prop.getName());
                                         writer.characters(Type.toEdm(value,
                                                 prop.getType()));
-                                        writer
-                                                .endElement(
-                                                        "http://schemas.microsoft.com/ado/2007/08/dataservices",
-                                                        prop.getName());
+                                        writer.endElement(
+                                                WCF_DATASERVICES_NAMESPACE,
+                                                prop.getName());
 
                                     } else {
-                                        writer
-                                                .emptyElement(
-                                                        "http://schemas.microsoft.com/ado/2007/08/dataservices",
-                                                        prop.getName());
+                                        writer.emptyElement(
+                                                WCF_DATASERVICES_NAMESPACE,
+                                                prop.getName());
                                     }
                                     break;
                                 }
                             }
                         }
                     }
-                    writer
-                            .endElement(
-                                    "http://schemas.microsoft.com/ado/2007/08/dataservices/metadata",
-                                    "properties");
+                    writer.endElement(WCF_DATASERVICES_METADATA_NAMESPACE,
+                            "properties");
                 } catch (SAXException e) {
                     throw new IOException(e.getMessage());
                 }
@@ -606,12 +599,14 @@ public class Service {
                 + getSubpath(entity)));
         resource.setChallengeResponse(getCredentials());
 
-        resource.put(entry);
-        this.latestRequest = resource.getRequest();
-        this.latestResponse = resource.getResponse();
-        if (!resource.getStatus().isSuccess()) {
-            throw new ResourceException(resource.getStatus(),
+        try {
+            resource.put(entry);
+        } catch (ResourceException re) {
+            throw new ResourceException(re.getStatus(),
                     "Can't update this entity " + resource.getReference());
+        } finally {
+            this.latestRequest = resource.getRequest();
+            this.latestResponse = resource.getResponse();
         }
     }
 }
