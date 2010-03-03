@@ -43,9 +43,11 @@ import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.ChallengeResponse;
+import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
 import org.restlet.data.Reference;
+import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.ext.atom.Content;
 import org.restlet.ext.atom.Entry;
 import org.restlet.ext.atom.Feed;
@@ -93,6 +95,12 @@ public class Service {
     /** The credentials used to authenticate requests. */
     private ChallengeResponse credentials;
 
+    /**
+     * The version of the OData protocol extensions defined in every request
+     * issued by this service.
+     */
+    private String dataServiceVersion;
+
     /** The latest request sent to the service. */
     private Request latestRequest;
 
@@ -101,6 +109,12 @@ public class Service {
 
     /** The internal logger. */
     private Logger logger;
+
+    /**
+     * The maximum version of the OData protocol extensions the client can
+     * accept in a response.
+     */
+    private String maxDataServiceVersion;
 
     /** The metadata of the WCF service. */
     private Metadata metadata;
@@ -215,6 +229,20 @@ public class Service {
     public ClientResource createResource(Reference reference) {
         ClientResource resource = new ClientResource(reference);
         resource.setChallengeResponse(getCredentials());
+
+        if (getDataServiceVersion() != null
+                || getMaxDataServiceVersion() != null) {
+            Form form = new Form();
+            if (getDataServiceVersion() != null) {
+                form.add("DataServiceVersion", getDataServiceVersion());
+            }
+            if (getMaxDataServiceVersion() != null) {
+                form.add("MaxDataServiceVersion", getMaxDataServiceVersion());
+            }
+            resource.getRequestAttributes().put(
+                    HeaderConstants.ATTRIBUTE_HEADERS, form);
+        }
+
         return resource;
     }
 
@@ -244,10 +272,7 @@ public class Service {
                 ref = ref + "/" + relativePath;
             }
         }
-
-        ClientResource resource = new ClientResource(ref);
-        resource.setChallengeResponse(getCredentials());
-        return resource;
+        return createResource(new Reference(ref));
     }
 
     /**
@@ -326,6 +351,17 @@ public class Service {
     }
 
     /**
+     * Returns the version of the OData protocol extensions defined in every
+     * request issued by this service.
+     * 
+     * @return The version of the OData protocol extensions defined in every
+     *         request issued by this service.
+     */
+    public String getDataServiceVersion() {
+        return dataServiceVersion;
+    }
+
+    /**
      * Returns the latest request sent to the service.
      * 
      * @return The latest request sent to the service.
@@ -353,6 +389,17 @@ public class Service {
             logger = Context.getCurrentLogger();
         }
         return logger;
+    }
+
+    /**
+     * Returns the maximum version of the OData protocol extensions the client
+     * can accept in a response.
+     * 
+     * @return The maximum version of the OData protocol extensions the client
+     *         can accept in a response.
+     */
+    public String getMaxDataServiceVersion() {
+        return maxDataServiceVersion;
     }
 
     /**
@@ -635,6 +682,18 @@ public class Service {
     }
 
     /**
+     * Sets the version of the OData protocol extensions defined in every
+     * request issued by this service.
+     * 
+     * @param dataServiceVersion
+     *            The version of the OData protocol extensions defined in every
+     *            request issued by this service.
+     */
+    public void setDataServiceVersion(String dataServiceVersion) {
+        this.dataServiceVersion = dataServiceVersion;
+    }
+
+    /**
      * Sets the latest request sent to the service.
      * 
      * @param latestRequest
@@ -652,6 +711,18 @@ public class Service {
      */
     public void setLatestResponse(Response latestResponse) {
         this.latestResponse = latestResponse;
+    }
+
+    /**
+     * Sets the maximum version of the OData protocol extensions the client can
+     * accept in a response.
+     * 
+     * @param maxDataServiceVersion
+     *            The maximum version of the OData protocol extensions the
+     *            client can accept in a response.
+     */
+    public void setMaxDataServiceVersion(String maxDataServiceVersion) {
+        this.maxDataServiceVersion = maxDataServiceVersion;
     }
 
     /**
