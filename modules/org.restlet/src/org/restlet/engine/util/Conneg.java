@@ -97,6 +97,30 @@ public class Conneg {
     }
 
     /**
+     * Returns true if the metadata can be added.
+     * 
+     * @param <T>
+     * @param metadata
+     *            The metadata to add.
+     * @param undesired
+     *            The list of proscribed metadata.
+     * @return True if the metadata can be added.
+     */
+    private <T extends Metadata> boolean canAdd(T metadata, List<T> undesired) {
+        boolean add = true;
+        if (undesired != null) {
+            for (T u : undesired) {
+                if (u.equals(metadata)) {
+                    add = false;
+                    break;
+                }
+            }
+        }
+
+        return add;
+    }
+
+    /**
      * Returns the enriched list of character set preferences.
      * 
      * @return The enriched list of character set preferences.
@@ -146,32 +170,47 @@ public class Conneg {
             List<Preference<T>> userPreferences, T defaultValue, T allValue) {
         List<Preference<T>> result = new ArrayList<Preference<T>>();
 
-        // 1) Add user preferences
-        result.addAll(userPreferences);
-
-        // 2) Add user parent preferences
-        T parent;
-        for (int i = 0; i < result.size(); i++) {
-            parent = (T) result.get(i).getMetadata().getParent();
-
-            if (parent != null) {
-                result.add(new Preference<T>(parent, 0.005f + (0.001f * result
-                        .get(i).getQuality())));
+        // 0) List all undesired metadata
+        List<T> undesired = null;
+        for (Preference<T> pref : userPreferences) {
+            if (pref.getQuality() == 0) {
+                if (undesired == null) {
+                    undesired = new ArrayList<T>();
+                }
+                undesired.add(pref.getMetadata());
             }
         }
 
-        // 3) Add default preference
-        if (defaultValue != null) {
+        // 1) Add the user preferences
+        result.addAll(userPreferences);
+
+        // 2) Add the user parent preferences
+        T parent;
+        for (int i = 0; i < result.size(); i++) {
+            Preference<T> userPref = result.get(i);
+            parent = (T) userPref.getMetadata().getParent();
+
+            // Add the parent, if it is not proscribed.
+            if ((parent != null)) {
+                if (canAdd(parent, undesired)) {
+                    result.add(new Preference<T>(parent,
+                            0.005f + (0.001f * userPref.getQuality())));
+                }
+            }
+        }
+
+        // 3) Add the default preference
+        if (defaultValue != null && canAdd(defaultValue, undesired)) {
             Preference<T> defaultPref = new Preference<T>(defaultValue, 0.003f);
             result.add(defaultPref);
             T defaultParent = (T) defaultValue.getParent();
 
-            if (defaultParent != null) {
+            if (defaultParent != null && canAdd(defaultParent, undesired)) {
                 result.add(new Preference<T>(defaultParent, 0.002f));
             }
         }
 
-        // 5) Add all preference
+        // 5) Add "all" preference
         for (int i = result.size() - 1; i >= 0; i--) {
             // Remove any existing preference
             if (result.get(i).getMetadata().equals(allValue)) {
