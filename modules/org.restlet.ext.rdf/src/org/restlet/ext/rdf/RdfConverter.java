@@ -46,7 +46,7 @@ import org.restlet.resource.UniformResource;
  * 
  * @author Thierry Boileau
  */
-public class GraphConverter extends ConverterHelper {
+public class RdfConverter extends ConverterHelper {
 
     private static final VariantInfo VARIANT_RDF_N3 = new VariantInfo(
             MediaType.TEXT_RDF_N3);
