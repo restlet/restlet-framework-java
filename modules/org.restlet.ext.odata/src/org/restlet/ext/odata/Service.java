@@ -162,7 +162,7 @@ public class Service {
         ClientResource resource = createResource(entitySetName);
 
         try {
-            // TODO Fixe chunked request with net client connector
+            // TODO Fix chunked request with net client connector
             ByteArrayOutputStream o = new ByteArrayOutputStream();
             entry.write(o);
             StringRepresentation r = new StringRepresentation(o.toString(),
@@ -202,7 +202,57 @@ public class Service {
         if (target != null) {
             addEntity(getSubpath(source, sourceProperty), target);
         }
+    }
 
+    /**
+     * Sets the association between the source and the target entity via the
+     * given property name. If target is set to null, the call represents a
+     * delete link operation.
+     * 
+     * @param source
+     *            The source entity to update.
+     * @param sourceProperty
+     *            The name of the property of the source entity.
+     * @param target
+     *            The entity to add to the source entity.
+     * @throws Exception
+     */
+    public void setLink(Object source, String sourceProperty, Object target)
+            throws Exception {
+        if (getMetadata() == null || source == null) {
+            return;
+        }
+        if (target != null) {
+            // TODO Take into acount the case where the target does exist.
+            Metadata metadata = (Metadata) getMetadata();
+            ClientResource resource = createResource(metadata
+                    .getSubpath(source)
+                    + "/$links/" + sourceProperty);
+
+            try {
+                // TODO Fix chunked request with net client connector
+                StringBuilder sb = new StringBuilder("<uri xmlns=\"");
+                sb.append(WCF_DATASERVICES_NAMESPACE);
+                sb.append("\">");
+                sb.append(serviceRef.toString());
+                sb.append(metadata.getSubpath(target));
+                sb.append("</uri>");
+
+                StringRepresentation r = new StringRepresentation(
+                        sb.toString(), MediaType.APPLICATION_XML);
+                resource.put(r);
+            } catch (ResourceException re) {
+                throw new ResourceException(re.getStatus(),
+                        "Can't set entity to this entity set "
+                                + resource.getReference());
+            } finally {
+                this.latestRequest = resource.getRequest();
+                this.latestResponse = resource.getResponse();
+            }
+        } else {
+            ReflectUtils.invokeSetter(source, sourceProperty, null);
+            updateEntity(source);
+        }
     }
 
     /**
@@ -872,7 +922,7 @@ public class Service {
         ClientResource resource = createResource(getSubpath(entity));
 
         try {
-            // TODO Fixe chunked request with net client connector
+            // TODO Fix chunked request with net client connector
             ByteArrayOutputStream o = new ByteArrayOutputStream();
             entry.write(o);
             StringRepresentation r = new StringRepresentation(o.toString(),
