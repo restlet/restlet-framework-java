@@ -30,6 +30,7 @@
 
 package org.restlet.ext.odata;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -45,6 +46,8 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.ext.atom.Content;
 import org.restlet.ext.atom.Entry;
+import org.restlet.ext.atom.Feed;
+import org.restlet.ext.odata.internal.EntryContentHandler;
 import org.restlet.ext.odata.internal.edm.AssociationEnd;
 import org.restlet.ext.odata.internal.edm.EntityType;
 import org.restlet.ext.odata.internal.edm.Metadata;
@@ -55,10 +58,12 @@ import org.restlet.ext.xml.DomRepresentation;
 import org.restlet.ext.xml.SaxRepresentation;
 import org.restlet.ext.xml.XmlWriter;
 import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
+import org.xml.sax.helpers.AttributesImpl;
 
 /**
  * Acts as a manager for a specific remote WCF Data Service. WCF Data Services
@@ -128,6 +133,7 @@ public class Service {
      *            The path of the entity set relatively to the service URI.
      * @param entity
      *            The entity to put.
+     * @return The reference of the newly created entity.
      * @throws Exception
      */
     public void addEntity(String entitySetName, Object entity) throws Exception {
@@ -140,8 +146,16 @@ public class Service {
         resource.setChallengeResponse(getCredentials());
 
         try {
-            entry.write(System.out);
-            resource.post(entry);
+            // TODO Fixe chunked request with net client connector
+            ByteArrayOutputStream o = new ByteArrayOutputStream();
+            entry.write(o);
+            StringRepresentation r = new StringRepresentation(o.toString(),
+                    MediaType.APPLICATION_ATOM);
+            Representation rep = resource.post(r);
+            EntryContentHandler<?> entryContentHandler = new EntryContentHandler<Object>(
+                    entity.getClass(), (Metadata) getMetadata(), getLogger());
+            Feed feed = new Feed();
+            feed.getEntries().add(new Entry(rep, entryContentHandler));
         } catch (ResourceException re) {
             throw new ResourceException(re.getStatus(),
                     "Can't add entity to this entity set "
@@ -166,11 +180,13 @@ public class Service {
      */
     public void addLink(Object source, String sourceProperty, Object target)
             throws Exception {
-        if (getMetadata() == null) {
+        if (getMetadata() == null || source == null) {
             return;
         }
+        if (target != null) {
+            addEntity(getSubpath(source, sourceProperty), target);
+        }
 
-        addEntity(getSubpath(source, sourceProperty), target);
     }
 
     /**
@@ -521,10 +537,15 @@ public class Service {
             @Override
             public void write(XmlWriter writer) throws IOException {
                 try {
+                    // Attribute for nullable values.
+                    AttributesImpl nullAttrs = new AttributesImpl();
+                    nullAttrs.addAttribute(WCF_DATASERVICES_METADATA_NAMESPACE,
+                            "null", null, "boolean", "true");
+
                     writer
                             .forceNSDecl(WCF_DATASERVICES_METADATA_NAMESPACE,
                                     "m");
-                    writer.forceNSDecl(WCF_DATASERVICES_NAMESPACE, "ds");
+                    writer.forceNSDecl(WCF_DATASERVICES_NAMESPACE, "d");
                     writer.startElement(WCF_DATASERVICES_METADATA_NAMESPACE,
                             "properties");
 
@@ -556,11 +577,21 @@ public class Service {
                                         writer.endElement(
                                                 WCF_DATASERVICES_NAMESPACE,
                                                 prop.getName());
-
                                     } else {
-                                        writer.emptyElement(
-                                                WCF_DATASERVICES_NAMESPACE,
-                                                prop.getName());
+                                        if (prop.isNullable()) {
+                                            writer.emptyElement(
+                                                    WCF_DATASERVICES_NAMESPACE,
+                                                    prop.getName(), prop
+                                                            .getName(),
+                                                    nullAttrs);
+                                        } else {
+                                            getLogger().warning(
+                                                    "The following property has a null value but is not marked as nullable: "
+                                                            + prop.getName());
+                                            writer.emptyElement(
+                                                    WCF_DATASERVICES_NAMESPACE,
+                                                    prop.getName());
+                                        }
                                     }
                                     break;
                                 }
@@ -600,7 +631,12 @@ public class Service {
         resource.setChallengeResponse(getCredentials());
 
         try {
-            resource.put(entry);
+            // TODO Fixe chunked request with net client connector
+            ByteArrayOutputStream o = new ByteArrayOutputStream();
+            entry.write(o);
+            StringRepresentation r = new StringRepresentation(o.toString(),
+                    MediaType.APPLICATION_ATOM);
+            resource.put(r);
         } catch (ResourceException re) {
             throw new ResourceException(re.getStatus(),
                     "Can't update this entity " + resource.getReference());

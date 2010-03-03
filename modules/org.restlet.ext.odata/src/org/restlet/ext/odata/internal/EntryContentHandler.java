@@ -49,7 +49,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 /**
- * Content handler for Atom Feed that takes care of odata specific needs, such
+ * Content handler for Atom Feed that takes care of OData specific needs, such
  * as parsing XML content from other namespaces than Atom. It generates an
  * entity based on the values discovered in the entry.
  * 
@@ -68,13 +68,13 @@ public class EntryContentHandler<T> extends EntryReader {
     /** The class of the entity targeted by this entry. */
     private Class<?> entityClass;
 
-    /** The odata type of the parsed entity. */
+    /** The OData type of the parsed entity. */
     private EntityType entityType;
 
     /** Internal logger. */
     private Logger logger;
 
-    /** The currently parsed odata mapping. */
+    /** The currently parsed OData mapping. */
     private Mapping mapping;
 
     /** The metadata of the WCF service. */
@@ -101,7 +101,7 @@ public class EntryContentHandler<T> extends EntryReader {
      * @param entityClass
      *            The class of the parsed entities.
      * @param metadata
-     *            The metadata of the remote odata service.
+     *            The metadata of the remote OData service.
      * @param logger
      *            The logger.
      */
