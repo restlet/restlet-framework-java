@@ -34,6 +34,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
@@ -43,10 +44,12 @@ import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.ChallengeResponse;
+import org.restlet.data.CharacterSet;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
 import org.restlet.data.Reference;
+import org.restlet.data.Tag;
 import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.ext.atom.Content;
 import org.restlet.ext.atom.Entry;
@@ -359,6 +362,47 @@ public class Service {
      */
     public String getDataServiceVersion() {
         return dataServiceVersion;
+    }
+
+    /**
+     * Returns the ETag value for the given entity.
+     * 
+     * @param entity
+     *            The given entity.
+     * @return The ETag value for the given entity.
+     */
+    private String getETag(Object entity) {
+        String result = null;
+        if (entity != null) {
+            Metadata metadata = (Metadata) getMetadata();
+            EntityType type = metadata.getEntityType(entity.getClass());
+
+            StringBuilder sb = new StringBuilder();
+            boolean found = false;
+            for (Property property : type.getProperties()) {
+                if (property.isConcurrent()) {
+                    found = true;
+                    Object value = null;
+                    try {
+                        value = ReflectUtils.invokeGetter(entity, property
+                                .getName());
+                        if (value != null) {
+                            sb.append(value);
+                        }
+                    } catch (Exception e) {
+                        getLogger().warning(
+                                "Cannot get the value of the property "
+                                        + property.getName() + " on " + entity);
+                    }
+                }
+            }
+
+            if (found) {
+                result = Reference.encode(sb.toString(), CharacterSet.US_ASCII);
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -833,6 +877,11 @@ public class Service {
             entry.write(o);
             StringRepresentation r = new StringRepresentation(o.toString(),
                     MediaType.APPLICATION_ATOM);
+            String eTag = getETag(entity);
+            if (eTag != null) {
+                // Add a condition
+                resource.getConditions().setMatch(Arrays.asList(new Tag(eTag)));
+            }
             resource.put(r);
         } catch (ResourceException re) {
             throw new ResourceException(re.getStatus(),
