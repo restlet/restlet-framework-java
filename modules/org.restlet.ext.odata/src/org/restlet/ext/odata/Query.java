@@ -50,6 +50,7 @@ import org.restlet.ext.odata.internal.edm.Metadata;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
+import org.restlet.resource.ResourceException;
 import org.restlet.routing.Template;
 import org.restlet.routing.Variable;
 import org.restlet.util.Series;
@@ -329,10 +330,18 @@ public class Query<T> implements Iterable<T> {
         if (!isExecuted()) {
             String targetUri = createTargetUri();
 
-            ClientResource resource = new ClientResource(targetUri);
-            resource.setChallengeResponse(service.getCredentials());
+            ClientResource resource = service.createResource(new Reference(
+                    targetUri));
 
-            Representation result = resource.get(MediaType.APPLICATION_ATOM);
+            Representation result = null;
+            try {
+                result = resource.get(MediaType.APPLICATION_ATOM);
+            } catch (ResourceException e) {
+                getLogger().warning(
+                        "Can't execute the query for the following reference: "
+                                + targetUri + " due to " + e.getMessage());
+                throw e;
+            }
 
             service.setLatestRequest(resource.getRequest());
             service.setLatestResponse(resource.getResponse());
@@ -447,18 +456,16 @@ public class Query<T> implements Iterable<T> {
                 }
                 targetUri += "/$count";
 
-                ClientResource resource = new ClientResource(targetUri);
-                resource.setChallengeResponse(service.getCredentials());
-                Representation result = resource.get();
-                if (resource.getStatus().isSuccess()) {
-                    try {
-                        count = Integer.parseInt(result.getText());
-                    } catch (Exception e) {
-                        getLogger().warning(
-                                "Cannot parse count value due to: "
-                                        + e.getMessage());
-                    }
+                ClientResource resource = service.createResource(new Reference(
+                        targetUri));
 
+                try {
+                    Representation result = resource.get();
+                    count = Integer.parseInt(result.getText());
+                } catch (Exception e) {
+                    getLogger().warning(
+                            "Cannot parse count value due to: "
+                                    + e.getMessage());
                 }
             }
         }

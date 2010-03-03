@@ -28,8 +28,16 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
+import java.util.List;
+
+import org.restlet.data.MediaType;
+import org.restlet.data.Preference;
+import org.restlet.data.Reference;
 import org.restlet.ext.odata.Query;
 import org.restlet.ext.odata.Service;
+import org.restlet.representation.Representation;
+import org.restlet.resource.ClientResource;
+import org.restlet.resource.ResourceException;
 
 <#list schema.types?sort as type>
 import ${type.fullClassName};
@@ -74,8 +82,6 @@ public class ${className} extends Service {
     </#list>
     }
 
-</#list>
-<#list schema.types as type>
     /**
      * Creates a query for ${type.normalizedName} entities hosted by this service.
      * 
@@ -94,6 +100,82 @@ public class ${className} extends Service {
         </#list>
     </#list>
     }
+
+    <#if (type.blob && type.blobValueRefProperty?? && type.blobValueRefProperty.name??)>
+    /**
+     * Returns the binary representation of the given media resource.
+     * 
+     * @param entity
+     *            The given media resource.
+     * @return The binary representation of the given media resource.
+     */
+    public Representation getValue(${type.className} entity) throws ResourceException {
+        Reference ref = getValueRef(entity);
+        if (ref != null) {
+            ClientResource cr = createResource(ref);
+            return cr.get();
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns the binary representation of the given media resource.
+     * 
+     * @param entity
+     *            The given media resource.
+     * @param acceptedMediaTypes
+     *            The requested media types of the representation.
+     * @return The given media resource.
+     */
+    public Representation getValue(${type.className} entity,
+            List<Preference<MediaType>> acceptedMediaTypes)
+            throws ResourceException {
+        Reference ref = getValueRef(entity);
+        if (ref != null) {
+            ClientResource cr = createResource(ref);
+            cr.getClientInfo().setAcceptedMediaTypes(acceptedMediaTypes);
+            return cr.get();
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns the binary representation of the given media resource.
+     * 
+     * @param entity
+     *            The given media resource.
+     * @param mediaType
+     *            The requested media type of the representation
+     * @return The given media resource.
+     */
+    public Representation getValue(${type.className} entity, MediaType mediaType)
+            throws ResourceException {
+        Reference ref = getValueRef(entity);
+        if (ref != null) {
+            ClientResource cr = createResource(ref);
+            return cr.get(mediaType);
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns the reference of the binary representation of the given entity.
+     * 
+     * @param entity
+     *            The media resource.
+     * @return The reference of the binary representation of the given entity.
+     */
+    public Reference getValueRef(${type.className} entity) {
+        if (entity != null) {
+            return entity.get${type.blobValueRefProperty.name?cap_first}();
+        }
+
+        return null;
+    }
+    </#if>
 
 </#list>
 }

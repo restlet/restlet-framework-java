@@ -263,6 +263,37 @@ public class MetadataReader extends DefaultHandler {
         } else if ("documentation".equalsIgnoreCase(localName)) {
             popState();
         } else if ("entityType".equalsIgnoreCase(localName)) {
+            if (currentEntityType.isBlob()) {
+                // Sets the name of the property of the generated class that
+                // contains the reference of the blob value.
+                String[] values = { "blobReference", "blobReferenceValue",
+                        "_blobReference", "_blobReferenceValue" };
+                int index = 0;
+                // Check that this name is not already set.
+                for (int i = 0; i < currentEntityType.getProperties().size()
+                        && (index < values.length); i++) {
+                    Property property = currentEntityType.getProperties()
+                            .get(i);
+                    if (values[index].equals(property.getName())) {
+                        index++;
+                    }
+                }
+                for (int i = 0; i < currentEntityType.getAssociations().size()
+                        && (index < values.length); i++) {
+                    NavigationProperty property = currentEntityType
+                            .getAssociations().get(i);
+                    if (values[index].equals(property.getName())) {
+                        index++;
+                    }
+                }
+                if (index == values.length) {
+                    // Should not happen
+                    currentEntityType.setBlob(false);
+                } else {
+                    Property property = new Property(values[index]);
+                    currentEntityType.setBlobValueRefProperty(property);
+                }
+            }
             popState();
             currentEntityType = null;
         } else if ("key".equalsIgnoreCase(localName)) {
@@ -404,7 +435,7 @@ public class MetadataReader extends DefaultHandler {
             currentEntityType.setAbstractType(Boolean.parseBoolean(attr
                     .get("Abstract")));
             currentEntityType.setBlob(Boolean
-                    .parseBoolean(attr.get("HasMedia")));
+                    .parseBoolean(attr.get("HasStream")));
             String value = attr.get("BaseType");
             if (value != null) {
                 currentEntityType.setBaseType(new EntityType(value));
@@ -431,6 +462,12 @@ public class MetadataReader extends DefaultHandler {
             Property property = new Property(attr.get("Name"));
             property.setDefaultValue(attr.get("Default"));
             property.setNullable(Boolean.parseBoolean(attr.get("Nullable")));
+            // ConcurrencyMode
+            if ("fixed".equalsIgnoreCase(attr.get("ConcurrencyMode"))) {
+                property.setConcurrent(true);
+            } else {
+                property.setConcurrent(false);
+            }
             property.setType(new Type(attr.get("Type")));
             property.setGetterAccess(attr.get("GetterAccess"));
             property.setSetterAccess(attr.get("SetterAccess"));

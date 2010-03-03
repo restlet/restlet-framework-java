@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -43,6 +44,7 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.MediaType;
+import org.restlet.data.Preference;
 import org.restlet.data.Reference;
 import org.restlet.ext.atom.Content;
 import org.restlet.ext.atom.Entry;
@@ -79,11 +81,11 @@ import org.xml.sax.helpers.AttributesImpl;
  *      Class on MSDN</a>
  */
 public class Service {
-    /** WCF data services namespace. */
-    public final static String WCF_DATASERVICES_NAMESPACE = "http://schemas.microsoft.com/ado/2007/08/dataservices";
-
     /** WCF data services metadata namespace. */
     public final static String WCF_DATASERVICES_METADATA_NAMESPACE = "http://schemas.microsoft.com/ado/2007/08/dataservices/metadata";
+
+    /** WCF data services namespace. */
+    public final static String WCF_DATASERVICES_NAMESPACE = "http://schemas.microsoft.com/ado/2007/08/dataservices";
 
     /** WCF data services scheme namespace. */
     public final static String WCF_DATASERVICES_SCHEME_NAMESPACE = "http://schemas.microsoft.com/ado/2007/08/dataservices/scheme";
@@ -140,10 +142,7 @@ public class Service {
         Entry entry = new Entry();
         entry.setContent(toContent(entity));
 
-        ClientResource resource = new ClientResource(new Reference(serviceRef
-                .toString()
-                + entitySetName));
-        resource.setChallengeResponse(getCredentials());
+        ClientResource resource = createResource(entitySetName);
 
         try {
             // TODO Fixe chunked request with net client connector
@@ -205,6 +204,53 @@ public class Service {
     }
 
     /**
+     * Returns an instance of {@link ClientResource} given an absolute
+     * reference. This resource is completed with the service credentials. This
+     * method can be overriden in order to complete the sent requests.
+     * 
+     * @param reference
+     *            The reference of the target resource.
+     * @return An instance of {@link ClientResource}.
+     */
+    public ClientResource createResource(Reference reference) {
+        ClientResource resource = new ClientResource(reference);
+        resource.setChallengeResponse(getCredentials());
+        return resource;
+    }
+
+    /**
+     * Returns an instance of {@link ClientResource} given a path (relative to
+     * the service reference). This resource is completed with the service
+     * credentials. This method can be overriden in order to complete the sent
+     * requests.
+     * 
+     * @param relativePath
+     *            The relative reference of the target resource.
+     * @return An instance of {@link ClientResource} given a path (relative to
+     *         the service reference).
+     */
+    public ClientResource createResource(String relativePath) {
+        String ref = serviceRef.toString();
+        if (ref.endsWith("/")) {
+            if (relativePath.startsWith("/")) {
+                ref = ref + relativePath.substring(1);
+            } else {
+                ref = ref + relativePath;
+            }
+        } else {
+            if (relativePath.startsWith("/")) {
+                ref = ref + relativePath;
+            } else {
+                ref = ref + "/" + relativePath;
+            }
+        }
+
+        ClientResource resource = new ClientResource(ref);
+        resource.setChallengeResponse(getCredentials());
+        return resource;
+    }
+
+    /**
      * Deletes an entity.
      * 
      * @param entity
@@ -215,10 +261,8 @@ public class Service {
         if (getMetadata() == null) {
             return;
         }
-        ClientResource resource = new ClientResource(new Reference(serviceRef
-                .toString()
-                + getSubpath(entity)));
-        resource.setChallengeResponse(getCredentials());
+
+        ClientResource resource = createResource(getSubpath(entity));
 
         try {
             resource.delete();
@@ -239,10 +283,7 @@ public class Service {
      * @throws ResourceException
      */
     public void deleteEntity(String entitySubpath) throws ResourceException {
-        ClientResource resource = new ClientResource(new Reference(serviceRef
-                .toString()
-                + entitySubpath));
-        resource.setChallengeResponse(getCredentials());
+        ClientResource resource = createResource(entitySubpath);
 
         try {
             resource.delete();
@@ -321,12 +362,7 @@ public class Service {
      */
     protected Object getMetadata() {
         if (metadata == null) {
-            String sRef = serviceRef.toString();
-            if (!sRef.endsWith("/")) {
-                sRef += "/";
-            }
-            ClientResource resource = new ClientResource(sRef + "$metadata");
-            resource.setChallengeResponse(getCredentials());
+            ClientResource resource = createResource("$metadata");
 
             try {
                 getLogger().log(
@@ -357,95 +393,6 @@ public class Service {
      */
     public Reference getServiceRef() {
         return serviceRef;
-    }
-
-    /**
-     * Updates the given entity object with the value of the specified property.
-     * 
-     * @param entity
-     *            The entity to update.
-     * @param propertyName
-     *            The name of the property.
-     */
-    public void loadProperty(Object entity, String propertyName) {
-        if (getMetadata() == null || entity == null) {
-            return;
-        }
-
-        Metadata metadata = (Metadata) getMetadata();
-
-        EntityType type = metadata.getEntityType(entity.getClass());
-        AssociationEnd association = metadata
-                .getAssociation(type, propertyName);
-
-        if (association != null) {
-            EntityType propertyEntityType = association.getType();
-            try {
-                Class<?> propertyClass = ReflectUtils.getSimpleClass(entity,
-                        propertyName);
-                if (propertyClass == null) {
-                    propertyClass = Type.getJavaClass(propertyEntityType);
-                }
-                Iterator<?> iterator = createQuery(
-                        getSubpath(entity, propertyName), propertyClass)
-                        .iterator();
-
-                ReflectUtils.setProperty(entity, propertyName, association
-                        .isToMany(), iterator, propertyClass);
-            } catch (Exception e) {
-                getLogger().log(
-                        Level.WARNING,
-                        "Can't set the property " + propertyName + " of "
-                                + entity.getClass() + " for the service"
-                                + serviceRef, e);
-            }
-        } else {
-            String ref = getServiceRef().toString()
-                    + getSubpath(entity, propertyName);
-            try {
-                ClientResource resource = new ClientResource(ref);
-                resource.setChallengeResponse(getCredentials());
-                Representation rep = resource.get();
-
-                DomRepresentation xmlRep = new DomRepresentation(rep);
-                // [ifndef android] instruction
-                Node node = xmlRep.getNode("//" + propertyName);
-
-                // [ifdef android] uncomment
-                // Node node = null;
-                // try {
-                // org.w3c.dom.NodeList nl = xmlRep.getDocument()
-                // .getElementsByTagName(propertyName);
-                // node = (nl.getLength() > 0) ? nl.item(0) : null;
-                // } catch (IOException e1) {
-                // }
-                // [enddef]
-
-                if (node != null) {
-                    Property property = metadata.getProperty(entity,
-                            propertyName);
-                    try {
-                        // [ifndef android] instruction
-                        ReflectUtils.setProperty(entity, property, node
-                                .getTextContent());
-                        // [ifdef android] instruction uncomment
-                        // ReflectUtils.setProperty(entity, property,
-                        // org.restlet.ext.xml.XmlRepresentation.getTextContent(node));
-                    } catch (Exception e) {
-                        getLogger().log(
-                                Level.WARNING,
-                                "Can't set the property " + propertyName
-                                        + " of " + entity.getClass()
-                                        + " for the service" + serviceRef, e);
-                    }
-                }
-            } catch (ResourceException e) {
-                getLogger().log(
-                        Level.WARNING,
-                        "Can't get the following resource " + ref
-                                + " for the service" + serviceRef, e);
-            }
-        }
     }
 
     /**
@@ -493,6 +440,188 @@ public class Service {
             Object target) {
         return ((Metadata) getMetadata()).getSubpath(source, sourceProperty,
                 target);
+    }
+
+    /**
+     * Returns the binary representation of the given media resource. If the
+     * entity is not a media resource, it returns null.
+     * 
+     * @param entity
+     *            The given media resource.
+     * @return The binary representation of the given media resource.
+     */
+    public Representation getValue(Object entity) throws ResourceException {
+        Reference ref = getValueRef(entity);
+        if (ref != null) {
+            ClientResource cr = createResource(ref);
+            return cr.get();
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns the binary representation of the given media resource. If the
+     * entity is not a media resource, it returns null.
+     * 
+     * @param entity
+     *            The given media resource.
+     * @param acceptedMediaTypes
+     *            The requested media types of the representation.
+     * @return The given media resource.
+     */
+    public Representation getValue(Object entity,
+            List<Preference<MediaType>> acceptedMediaTypes)
+            throws ResourceException {
+        Reference ref = getValueRef(entity);
+        if (ref != null) {
+            ClientResource cr = createResource(ref);
+            cr.getClientInfo().setAcceptedMediaTypes(acceptedMediaTypes);
+            return cr.get();
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns the binary representation of the given media resource. If the
+     * entity is not a media resource, it returns null.
+     * 
+     * @param entity
+     *            The given media resource.
+     * @param mediaType
+     *            The requested media type of the representation
+     * @return The given media resource.
+     */
+    public Representation getValue(Object entity, MediaType mediaType)
+            throws ResourceException {
+        Reference ref = getValueRef(entity);
+        if (ref != null) {
+            ClientResource cr = createResource(ref);
+            return cr.get(mediaType);
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns the reference of the binary representation of the given entity,
+     * if this is a media resource. It returns null otherwise.
+     * 
+     * @param entity
+     *            The media resource.
+     * @return The reference of the binary representation of the given entity,
+     *         if this is a media resource. It returns null otherwise.
+     */
+    public Reference getValueRef(Object entity) {
+        if (entity != null) {
+            Metadata metadata = (Metadata) getMetadata();
+            EntityType type = metadata.getEntityType(entity.getClass());
+            if (type.isBlob() && type.getBlobValueRefProperty() != null) {
+                try {
+                    return (Reference) ReflectUtils.invokeGetter(entity, type
+                            .getBlobValueRefProperty().getName());
+                } catch (Exception e) {
+                    getLogger().warning(
+                            "Cannot get the value of the property "
+                                    + type.getBlobValueRefProperty().getName()
+                                    + " on " + entity);
+                }
+            } else {
+                getLogger().warning(
+                        "This entity is not a media resource " + entity);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Updates the given entity object with the value of the specified property.
+     * 
+     * @param entity
+     *            The entity to update.
+     * @param propertyName
+     *            The name of the property.
+     */
+    public void loadProperty(Object entity, String propertyName) {
+        if (getMetadata() == null || entity == null) {
+            return;
+        }
+
+        Metadata metadata = (Metadata) getMetadata();
+
+        EntityType type = metadata.getEntityType(entity.getClass());
+        AssociationEnd association = metadata
+                .getAssociation(type, propertyName);
+
+        if (association != null) {
+            EntityType propertyEntityType = association.getType();
+            try {
+                Class<?> propertyClass = ReflectUtils.getSimpleClass(entity,
+                        propertyName);
+                if (propertyClass == null) {
+                    propertyClass = Type.getJavaClass(propertyEntityType);
+                }
+                Iterator<?> iterator = createQuery(
+                        getSubpath(entity, propertyName), propertyClass)
+                        .iterator();
+
+                ReflectUtils.setProperty(entity, propertyName, association
+                        .isToMany(), iterator, propertyClass);
+            } catch (Exception e) {
+                getLogger().log(
+                        Level.WARNING,
+                        "Can't set the property " + propertyName + " of "
+                                + entity.getClass() + " for the service"
+                                + serviceRef, e);
+            }
+        } else {
+            ClientResource resource = createResource(getSubpath(entity,
+                    propertyName));
+            try {
+                Representation rep = resource.get();
+
+                DomRepresentation xmlRep = new DomRepresentation(rep);
+                // [ifndef android] instruction
+                Node node = xmlRep.getNode("//" + propertyName);
+
+                // [ifdef android] uncomment
+                // Node node = null;
+                // try {
+                // org.w3c.dom.NodeList nl = xmlRep.getDocument()
+                // .getElementsByTagName(propertyName);
+                // node = (nl.getLength() > 0) ? nl.item(0) : null;
+                // } catch (IOException e1) {
+                // }
+                // [enddef]
+
+                if (node != null) {
+                    Property property = metadata.getProperty(entity,
+                            propertyName);
+                    try {
+                        // [ifndef android] instruction
+                        ReflectUtils.setProperty(entity, property, node
+                                .getTextContent());
+                        // [ifdef android] instruction uncomment
+                        // ReflectUtils.setProperty(entity, property,
+                        // org.restlet.ext.xml.XmlRepresentation.getTextContent(node));
+                    } catch (Exception e) {
+                        getLogger().log(
+                                Level.WARNING,
+                                "Can't set the property " + propertyName
+                                        + " of " + entity.getClass()
+                                        + " for the service" + serviceRef, e);
+                    }
+                }
+            } catch (ResourceException e) {
+                getLogger().log(
+                        Level.WARNING,
+                        "Can't get the following resource "
+                                + resource.getReference() + " for the service"
+                                + serviceRef, e);
+            }
+        }
     }
 
     /**
@@ -625,10 +754,7 @@ public class Service {
         Entry entry = new Entry();
         entry.setContent(toContent(entity));
 
-        ClientResource resource = new ClientResource(new Reference(serviceRef
-                .toString()
-                + getSubpath(entity)));
-        resource.setChallengeResponse(getCredentials());
+        ClientResource resource = createResource(getSubpath(entity));
 
         try {
             // TODO Fixe chunked request with net client connector
@@ -645,4 +771,5 @@ public class Service {
             this.latestResponse = resource.getResponse();
         }
     }
+
 }

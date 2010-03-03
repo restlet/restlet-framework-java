@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.restlet.Context;
+import org.restlet.data.Reference;
 import org.restlet.ext.atom.Content;
 import org.restlet.ext.atom.Entry;
 import org.restlet.ext.atom.EntryReader;
@@ -256,6 +257,26 @@ public class EntryContentHandler<T> extends EntryReader {
                 parseProperty = true;
                 parsePropertyNull = Boolean.parseBoolean(attrs.getValue(
                         Service.WCF_DATASERVICES_METADATA_NAMESPACE, "null"));
+            } else {
+                if (entityType.isBlob()
+                        && entityType.getBlobValueRefProperty() != null) {
+                    String str = attrs.getValue("src");
+                    if (str != null) {
+                        try {
+                            ReflectUtils.invokeSetter(entity, entityType
+                                    .getBlobValueRefProperty().getName(),
+                                    new Reference(str));
+                        } catch (Exception e) {
+                            getLogger().warning(
+                                    "Cannot set "
+                                            + entityType
+                                                    .getBlobValueRefProperty()
+                                                    .getName()
+                                            + " property on " + entity
+                                            + " with value " + str);
+                        }
+                    }
+                }
             }
         } else if (parseEntry) {
             // Could be mapped value

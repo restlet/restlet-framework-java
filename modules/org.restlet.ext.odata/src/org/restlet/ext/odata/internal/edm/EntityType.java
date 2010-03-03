@@ -58,6 +58,9 @@ public class EntityType extends NamedObject implements Comparable<EntityType> {
     /** Is this type a blob? */
     private boolean blob;
 
+    /** The property of the entity that stores the blob reference. */
+    private Property blobValueRefProperty;
+
     /** The list of properties that identifies an instance of this type. */
     private List<Property> keys;
 
@@ -116,6 +119,14 @@ public class EntityType extends NamedObject implements Comparable<EntityType> {
      */
     public EntityType getBaseType() {
         return baseType;
+    }
+
+    /**
+     * Returns the name of the entity property that stores the blob reference.
+     * @return The name of the entity property that stores the blob reference.
+     */
+    public Property getBlobValueRefProperty() {
+        return blobValueRefProperty;
     }
 
     /**
@@ -276,6 +287,14 @@ public class EntityType extends NamedObject implements Comparable<EntityType> {
      */
     public void setBlob(boolean blob) {
         this.blob = blob;
+    }
+
+    /**
+     * Sets the name of the entity property that stores the blob reference.
+     * @param blobValueRefProperty The name of the entity property that stores the blob reference.
+     */
+    public void setBlobValueRefProperty(Property blobValueRefProperty) {
+        this.blobValueRefProperty = blobValueRefProperty;
     }
 
     /**

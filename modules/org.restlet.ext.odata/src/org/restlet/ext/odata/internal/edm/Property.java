@@ -39,6 +39,9 @@ package org.restlet.ext.odata.internal.edm;
  */
 public class Property extends NamedObject {
 
+    /** True if this property should be used for optimistic concurrency checks. */
+    private boolean concurrent;
+
     /** The default value. */
     private String defaultValue;
 
@@ -104,6 +107,17 @@ public class Property extends NamedObject {
     }
 
     /**
+     * Returns true if this property should be used for optimistic concurrency
+     * checks.
+     * 
+     * @return True if this property should be used for optimistic concurrency
+     *         checks.
+     */
+    public boolean isConcurrent() {
+        return concurrent;
+    }
+
+    /**
      * Returns true if this property is not mandatory.
      * 
      * @return True if this property is not mandatory.
@@ -111,6 +125,18 @@ public class Property extends NamedObject {
 
     public boolean isNullable() {
         return nullable;
+    }
+
+    /**
+     * Indicates if this property should be used for optimistic concurrency
+     * checks.
+     * 
+     * @param concurrent
+     *            True if this property should be used for optimistic
+     *            concurrency checks.
+     */
+    public void setConcurrent(boolean concurrent) {
+        this.concurrent = concurrent;
     }
 
     /**

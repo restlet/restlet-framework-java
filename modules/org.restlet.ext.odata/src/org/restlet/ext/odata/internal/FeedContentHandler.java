@@ -409,6 +409,26 @@ public class FeedContentHandler<T> extends FeedReader {
                 parseProperty = true;
                 parsePropertyNull = Boolean.parseBoolean(attrs.getValue(
                         Service.WCF_DATASERVICES_METADATA_NAMESPACE, "null"));
+            } else {
+                if (entityType.isBlob()
+                        && entityType.getBlobValueRefProperty() != null) {
+                    String str = attrs.getValue("src");
+                    if (str != null) {
+                        try {
+                            ReflectUtils.invokeSetter(entity, entityType
+                                    .getBlobValueRefProperty().getName(),
+                                    new Reference(str));
+                        } catch (Exception e) {
+                            getLogger().warning(
+                                    "Cannot set "
+                                            + entityType
+                                                    .getBlobValueRefProperty()
+                                                    .getName()
+                                            + " property on " + entity
+                                            + " with value " + str);
+                        }
+                    }
+                }
             }
         } else if (Service.WCF_DATASERVICES_METADATA_NAMESPACE.equals(uri)
                 && "count".equals(localName)) {

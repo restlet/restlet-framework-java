@@ -30,6 +30,7 @@
 
 package ${packageName};
 
+<#if entityType.blob>import org.restlet.data.Reference;</#if>
 <#compress>
 <#list entityType.importedJavaClasses?sort as clazz>
 import ${clazz};
@@ -52,6 +53,7 @@ import ${type.fullClassName};
 
 public <#if entityType.abstractType>abstract </#if>class ${className} {
 
+<#compress>
 <#list entityType.properties?sort_by("name") as property>
     private ${property.type.javaType} ${property.normalizedName}<#if property.defaultValue??> = property.defaultValue</#if>;
 </#list>
@@ -59,6 +61,11 @@ public <#if entityType.abstractType>abstract </#if>class ${className} {
     <#if association.toRole.toMany>private List<${association.toRole.type.className}> ${association.toRole.normalizedRole};<#else>private ${association.toRole.type.className} ${association.toRole.normalizedRole};</#if>
 </#list>
 
+<#if entityType.blob>
+    /** The reference of the underlying blob representation. */
+    private Reference ${entityType.blobValueRefProperty.name};
+</#if>
+</#compress>
     /**
      * Constructor without parameter.
      * 
@@ -106,6 +113,17 @@ public <#if entityType.abstractType>abstract </#if>class ${className} {
    }
    
 </#list>
+<#if entityType.blob>
+   /**
+    * Returns the @{Link Reference} of the underlying blob.
+    *
+    * @return The @{Link Reference} of the underlying blob.
+    */
+   public Reference get${entityType.blobValueRefProperty.name?cap_first}() {
+      return ${entityType.blobValueRefProperty.name};
+   }
+</#if>
+
 <#list entityType.properties?sort_by("name") as property>
    /**
     * Sets the value of the ${property.normalizedName} attribute.
@@ -134,4 +152,16 @@ public <#if entityType.abstractType>abstract </#if>class ${className} {
    }
 
 </#list>
+<#if entityType.blob>
+   /**
+    * sets the @{Link Reference} of the underlying blob.
+    *
+    * @param ref
+    *     The @{Link Reference} of the underlying blob.
+    */
+   public void set${entityType.blobValueRefProperty.name?cap_first}(Reference ref) {
+      this.${entityType.blobValueRefProperty.name} = ref;
+   }
+</#if>
+
 }
