@@ -170,8 +170,8 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
     @Override
     protected void call(String uri) throws Exception {
         for (int i = 0; i < LOOP_NUMBER; i++) {
-            sendPut(uri);
             sendGet(uri);
+            sendPut(uri);
         }
     }
 

@@ -51,6 +51,7 @@ import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.data.LocalReference;
 import org.restlet.data.MediaType;
+import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.ext.xml.TransformRepresentation;
@@ -269,8 +270,8 @@ public class ResolvingTransformerTestCase extends RestletTestCase {
         // xslOne
         Reference xsltOneRef = new LocalReference("clap://thread/"
                 + MY_BASEPATH + "/xslt/one/1st.xsl");
-        Representation xsltOne = comp.getContext().getClientDispatcher().get(
-                xsltOneRef).getEntity();
+        Representation xsltOne = comp.getContext().getClientDispatcher()
+                .handle(new Request(Method.GET, xsltOneRef)).getEntity();
         TransformRepresentation tr = new TransformRepresentation(comp
                 .getContext(), xmlIn, xsltOne);
 

@@ -41,10 +41,12 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.data.LocalReference;
+import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.representation.ObjectRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
+import org.restlet.resource.ClientResource;
 
 /**
  * Unit test case for the RIAP Internal routing protocol.
@@ -97,10 +99,8 @@ public class RiapTestCase extends TestCase {
                                     selfBase + "/echo/" + echoMessage);
                             String echoCopy = null;
                             try {
-                                final Response respo = getContext()
-                                        .getClientDispatcher().get(echoRef);
-                                final Representation entity = respo.getEntity();
-                                echoCopy = entity.getText();
+                                ClientResource r = new ClientResource(echoRef);
+                                echoCopy = r.get().getText();
                             } catch (Exception e) {
                                 e.printStackTrace();
                                 fail("Error getting internal reference to "
@@ -118,32 +118,37 @@ public class RiapTestCase extends TestCase {
         };
 
         comp.getInternalRouter().attach("/local", localOnly);
-        final String localBase = "riap://component/local";
+        String localBase = "riap://component/local";
 
-        final Client dispatcher = comp.getContext().getClientDispatcher();
+        Client dispatcher = comp.getContext().getClientDispatcher();
 
-        final String msg = "this%20message";
-        final String echoURI = localBase + "/echo/" + msg;
-        final Representation echoRep = dispatcher.get(echoURI).getEntity();
+        String msg = "this%20message";
+        String echoURI = localBase + "/echo/" + msg;
+        Representation echoRep = dispatcher.handle(
+                new Request(Method.GET, echoURI)).getEntity();
         assertEquals("expected echo of uri-remainder", msg, echoRep.getText());
 
         final String objURI = localBase + "/object";
-        final Representation objRep = dispatcher.get(objURI).getEntity();
+        final Representation objRep = dispatcher.handle(
+                new Request(Method.GET, objURI)).getEntity();
         assertSame("expected specific test-object", JUST_SOME_OBJ,
                 ((ObjectRepresentation) objRep).getObject());
 
         final String nullURI = localBase + "/null";
-        final Representation nullRep = dispatcher.get(nullURI).getEntity();
+        final Representation nullRep = dispatcher.handle(
+                new Request(Method.GET, nullURI)).getEntity();
         assertNull("expected null", ((ObjectRepresentation) nullRep)
                 .getObject());
 
         final String anyURI = localBase + "/whatever";
-        final Representation anyRep = dispatcher.get(anyURI).getEntity();
+        final Representation anyRep = dispatcher.handle(
+                new Request(Method.GET, anyURI)).getEntity();
         assertEquals("expected echo of uri-remainder", DEFAULT_MSG, anyRep
                 .getText());
 
         final String aggURI = localBase + "/self-aggregated";
-        final Representation aggRep = dispatcher.get(aggURI).getEntity();
+        final Representation aggRep = dispatcher.handle(
+                new Request(Method.GET, aggURI)).getEntity();
         final String expectedResult = buildAggregate(ECHO_TEST_MSG,
                 ECHO_TEST_MSG);
         assertEquals("expected specific aggregated message", expectedResult,

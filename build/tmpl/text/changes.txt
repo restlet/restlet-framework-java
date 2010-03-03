@@ -24,6 +24,8 @@ Changes log
           as protected.
         - Engine's BioUtils#write(InputStream, OutputStream) method was 
           renamed to copy(...).
+        - Removed all Client#get/post/put/... methods not present in 
+          Restlet 1.1.
     - Enhancements
         - UniformResource#doCatch now extract the cause exception from
           caught ResourceException instance for easier debugging.

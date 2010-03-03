@@ -4,11 +4,10 @@ import java.io.IOException;
 
 import junit.framework.TestCase;
 
-import org.restlet.Client;
 import org.restlet.data.MediaType;
-import org.restlet.data.Protocol;
 import org.restlet.ext.atom.Feed;
 import org.restlet.representation.Representation;
+import org.restlet.resource.ClientResource;
 import org.restlet.service.ConverterService;
 
 public class ConverterTestCase extends TestCase {
@@ -22,10 +21,9 @@ public class ConverterTestCase extends TestCase {
 
     public void testRepresentationToObject() throws IOException {
         ConverterService cs = new ConverterService();
-        Client cc = new Client(Protocol.CLAP);
-        Representation representation = cc.get(
-                "clap://class/org/restlet/test/ext/atom/entry.xml").getEntity();
-
+        ClientResource cr = new ClientResource(
+                "clap://class/org/restlet/test/ext/atom/entry.xml");
+        Representation representation = cr.get();
         Object object = cs.toObject(representation);
         assertTrue(object instanceof Feed);
     }

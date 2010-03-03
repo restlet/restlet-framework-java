@@ -38,7 +38,9 @@ import java.util.List;
 
 import org.restlet.Client;
 import org.restlet.Context;
+import org.restlet.Request;
 import org.restlet.data.MediaType;
+import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.ext.atom.internal.ServiceContentReader;
@@ -99,8 +101,8 @@ public class Service extends SaxRepresentation {
      */
     public Service(Client clientDispatcher, String serviceUri)
             throws IOException {
-        this(clientDispatcher, serviceUri, clientDispatcher.get(serviceUri)
-                .getEntity());
+        this(clientDispatcher, serviceUri, clientDispatcher.handle(
+                new Request(Method.GET, serviceUri)).getEntity());
     }
 
     /**
@@ -135,7 +137,8 @@ public class Service extends SaxRepresentation {
      */
     public Service(Context context, String serviceUri) throws IOException {
         this(context.getClientDispatcher(), serviceUri, context
-                .getClientDispatcher().get(serviceUri).getEntity());
+                .getClientDispatcher().handle(
+                        new Request(Method.GET, serviceUri)).getEntity());
     }
 
     /**
@@ -184,7 +187,8 @@ public class Service extends SaxRepresentation {
      * @return The result status.
      */
     public Status deleteResource(String uri) {
-        return getClientDispatcher().delete(uri).getStatus();
+        return getClientDispatcher().handle(new Request(Method.DELETE, uri))
+                .getStatus();
     }
 
     /**
@@ -224,7 +228,8 @@ public class Service extends SaxRepresentation {
      * @return The resource representation.
      */
     public Representation getResource(String uri) {
-        return getClientDispatcher().get(uri).getEntity();
+        return getClientDispatcher().handle(new Request(Method.GET, uri))
+                .getEntity();
     }
 
     /**
@@ -281,7 +286,8 @@ public class Service extends SaxRepresentation {
      */
     public Status updateResource(String uri,
             Representation updatedRepresentation) {
-        return getClientDispatcher().put(uri, updatedRepresentation)
+        return getClientDispatcher().handle(
+                new Request(Method.PUT, uri, updatedRepresentation))
                 .getStatus();
     }
 

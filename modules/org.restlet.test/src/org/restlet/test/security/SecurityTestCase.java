@@ -32,15 +32,12 @@ package org.restlet.test.security;
 
 import org.junit.After;
 import org.junit.Before;
-import org.restlet.Client;
 import org.restlet.Component;
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
-import org.restlet.data.Method;
-import org.restlet.data.Protocol;
 import org.restlet.data.Status;
+import org.restlet.resource.ClientResource;
+import org.restlet.resource.ResourceException;
 import org.restlet.test.RestletTestCase;
 
 /**
@@ -70,66 +67,91 @@ public class SecurityTestCase extends RestletTestCase {
             startComponent();
 
             String uri = "http://localhost:" + TEST_PORT + "/test1";
-            Client client = new Client(Protocol.HTTP);
+            ClientResource resource = new ClientResource(uri);
 
             // TEST SERIES 1
 
             // Try without authentication
-            Response response = client.get(uri);
-            response.release();
-            assertEquals(Status.CLIENT_ERROR_UNAUTHORIZED, response.getStatus());
+            try {
+                resource.get();
+            } catch (ResourceException e) {
+            }
+            resource.release();
+            assertEquals(Status.CLIENT_ERROR_UNAUTHORIZED, resource.getStatus());
 
             // Try with authentication
-            Request request = new Request(Method.GET, uri);
-            request.setChallengeResponse(new ChallengeResponse(
+            resource.setChallengeResponse(new ChallengeResponse(
                     ChallengeScheme.HTTP_BASIC, "stiger", "pwd"));
-            response = client.handle(request);
-            response.release();
-            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            try {
+                resource.get();
+            } catch (ResourceException e) {
+            }
+            resource.release();
+            assertEquals(Status.SUCCESS_OK, resource.getStatus());
 
             // TEST SERIES 2
             uri = "http://localhost:" + TEST_PORT + "/test2";
-            response = client.get(uri);
-            response.release();
-            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            resource = new ClientResource(uri);
+            try {
+                resource.get();
+            } catch (ResourceException e) {
+            }
+            resource.release();
+            assertEquals(Status.SUCCESS_OK, resource.getStatus());
 
             // TEST SERIES 3
             uri = "http://localhost:" + TEST_PORT + "/test3";
-            response = client.get(uri);
-            response.release();
-            assertEquals(Status.CLIENT_ERROR_FORBIDDEN, response.getStatus());
+            resource = new ClientResource(uri);
+            try {
+                resource.get();
+            } catch (ResourceException e) {
+            }
+            resource.release();
+            assertEquals(Status.CLIENT_ERROR_FORBIDDEN, resource.getStatus());
 
             // TEST SERIES 4
             uri = "http://localhost:" + TEST_PORT + "/test4";
-            request = new Request(Method.GET, uri);
-            request.setChallengeResponse(new ChallengeResponse(
+            resource = new ClientResource(uri);
+            resource.setChallengeResponse(new ChallengeResponse(
                     ChallengeScheme.HTTP_BASIC, "stiger", "pwd"));
-            response = client.handle(request);
-            response.release();
-            assertEquals(Status.CLIENT_ERROR_FORBIDDEN, response.getStatus());
+            try {
+                resource.get();
+            } catch (ResourceException e) {
+            }
+            resource.release();
+            assertEquals(Status.CLIENT_ERROR_FORBIDDEN, resource.getStatus());
 
             // Try again with another user
-            request.setChallengeResponse(new ChallengeResponse(
+            resource.setChallengeResponse(new ChallengeResponse(
                     ChallengeScheme.HTTP_BASIC, "larmstrong", "pwd"));
-            response = client.handle(request);
-            response.release();
-            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            try {
+                resource.get();
+            } catch (ResourceException e) {
+            }
+            resource.release();
+            assertEquals(Status.SUCCESS_OK, resource.getStatus());
 
             // TEST SERIES 5
             uri = "http://localhost:" + TEST_PORT + "/test5";
-            request = new Request(Method.GET, uri);
-            request.setChallengeResponse(new ChallengeResponse(
+            resource = new ClientResource(uri);
+            resource.setChallengeResponse(new ChallengeResponse(
                     ChallengeScheme.HTTP_BASIC, "stiger", "pwd"));
-            response = client.handle(request);
-            response.release();
-            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            try {
+                resource.get();
+            } catch (ResourceException e) {
+            }
+            resource.release();
+            assertEquals(Status.SUCCESS_OK, resource.getStatus());
 
             // Try again with another user
-            request.setChallengeResponse(new ChallengeResponse(
+            resource.setChallengeResponse(new ChallengeResponse(
                     ChallengeScheme.HTTP_BASIC, "larmstrong", "pwd"));
-            response = client.handle(request);
-            response.release();
-            assertEquals(Status.CLIENT_ERROR_FORBIDDEN, response.getStatus());
+            try {
+                resource.get();
+            } catch (ResourceException e) {
+            }
+            resource.release();
+            assertEquals(Status.CLIENT_ERROR_FORBIDDEN, resource.getStatus());
 
             stopServer();
         } catch (Exception e) {

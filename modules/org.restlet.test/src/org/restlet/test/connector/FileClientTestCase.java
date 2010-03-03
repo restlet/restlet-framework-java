@@ -33,13 +33,12 @@ package org.restlet.test.connector;
 import java.io.File;
 import java.io.IOException;
 
-import org.restlet.Client;
-import org.restlet.Response;
 import org.restlet.data.Language;
 import org.restlet.data.LocalReference;
-import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.representation.StringRepresentation;
+import org.restlet.resource.ClientResource;
+import org.restlet.resource.ResourceException;
 import org.restlet.test.RestletTestCase;
 
 /**
@@ -50,22 +49,31 @@ import org.restlet.test.RestletTestCase;
 public class FileClientTestCase extends RestletTestCase {
 
     public void testFileClient() throws IOException {
-        final String text = "Test content\r\nLine 2\r\nLine2";
-        final Client fc = new Client(Protocol.FILE);
-        final LocalReference fr = LocalReference
+        String text = "Test content\r\nLine 2\r\nLine2";
+        LocalReference fr = LocalReference
                 .createFileReference(File.createTempFile("Restlet", ".txt."
                         + Language.DEFAULT.getName()));
 
-        // Update the text of the temporary file
-        Response response = fc.put(fr, new StringRepresentation(text));
-        assertEquals(Status.SUCCESS_CREATED, response.getStatus());
+        ClientResource resource = new ClientResource(fr);
+        try {
+            // Update the text of the temporary file
+            resource.put(new StringRepresentation(text));
+        } catch (ResourceException e) {
+        }
+        assertEquals(Status.SUCCESS_CREATED, resource.getStatus());
 
-        // Get the text and compare to the original
-        response = fc.get(fr);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        try {
+            // Get the text and compare to the original
+            resource.get();
+        } catch (ResourceException e) {
+        }
+        assertEquals(Status.SUCCESS_OK, resource.getStatus());
 
-        // Delete the file
-        response = fc.delete(fr);
-        assertEquals(Status.SUCCESS_NO_CONTENT, response.getStatus());
+        try {
+            // Delete the file
+            resource.delete();
+        } catch (ResourceException e) {
+        }
+        assertEquals(Status.SUCCESS_NO_CONTENT, resource.getStatus());
     }
 }

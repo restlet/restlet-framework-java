@@ -1,5 +1,17 @@
 package org.restlet.ext.guice;
 
+import static java.util.Arrays.asList;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+
+import org.restlet.Application;
+import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.resource.Finder;
+import org.restlet.resource.ServerResource;
+
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
@@ -7,26 +19,6 @@ import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.Provider;
 import com.google.inject.Stage;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-import static java.util.Arrays.asList;
-
-import org.restlet.Application;
-import org.restlet.Context;
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.Restlet;
-import org.restlet.Server;
-import org.restlet.resource.Finder;
-import org.restlet.resource.ServerResource;
-import org.restlet.routing.Filter;
-import org.restlet.routing.Router;
-import org.restlet.routing.TemplateRoute;
-import org.restlet.util.ServerList;
-
 
 /**
  * Guice dependency injection for Restlet.
@@ -193,7 +185,6 @@ public class RestletGuice {
         class KeyFinder extends Finder {
             private final Class<?> targetClass;
 
-            @SuppressWarnings("unchecked")
             KeyFinder(Type type) {
                 this.targetClass = (Class<?>) type;
             }

@@ -31,7 +31,9 @@
 package org.restlet.ext.wadl;
 
 import org.restlet.Component;
+import org.restlet.Request;
 import org.restlet.Response;
+import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.representation.Representation;
 
@@ -138,8 +140,8 @@ public class WadlComponent extends Component {
         }
 
         // Get the WADL document
-        final Response response = getContext().getClientDispatcher().get(
-                wadlRef);
+        final Response response = getContext().getClientDispatcher().handle(
+                new Request(Method.GET, wadlRef));
 
         if (response.getStatus().isSuccess() && response.isEntityAvailable()) {
             result = attach(response.getEntity());

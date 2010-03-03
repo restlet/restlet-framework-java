@@ -40,7 +40,9 @@ import java.util.List;
 
 import org.restlet.Client;
 import org.restlet.Context;
+import org.restlet.Request;
 import org.restlet.data.MediaType;
+import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.ext.atom.internal.EntryContentReader;
@@ -122,7 +124,8 @@ public class Entry extends SaxRepresentation {
      * @throws IOException
      */
     public Entry(Client clientDispatcher, String entryUri) throws IOException {
-        this(clientDispatcher.get(entryUri).getEntity());
+        this(clientDispatcher.handle(new Request(Method.GET, entryUri))
+                .getEntity());
     }
 
     /**
@@ -136,7 +139,8 @@ public class Entry extends SaxRepresentation {
      * @throws IOException
      */
     public Entry(Context context, String entryUri) throws IOException {
-        this(context.getClientDispatcher().get(entryUri).getEntity());
+        this(context.getClientDispatcher().handle(
+                new Request(Method.GET, entryUri)).getEntity());
     }
 
     /**

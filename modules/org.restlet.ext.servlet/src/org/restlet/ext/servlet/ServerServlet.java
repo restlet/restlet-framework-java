@@ -45,8 +45,10 @@ import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
 import org.restlet.Context;
+import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Server;
+import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.engine.Engine;
 import org.restlet.engine.component.ComponentContext;
@@ -418,7 +420,7 @@ public class ServerServlet extends HttpServlet {
 
         // Look for the Component XML configuration file.
         Client warClient = createWarClient(new Context(), getServletConfig());
-        Response response = warClient.get("war:///WEB-INF/restlet.xml");
+        Response response = warClient.handle(new Request(Method.GET, "war:///WEB-INF/restlet.xml"));
         if (response.getStatus().isSuccess() && response.isEntityAvailable()) {
             component = new Component(response.getEntity());
         }
@@ -990,7 +992,7 @@ public class ServerServlet extends HttpServlet {
     private boolean isDefaultComponent() {
         // The Component is provided via an XML configuration file.
         Client client = createWarClient(new Context(), getServletConfig());
-        Response response = client.get("war:///WEB-INF/restlet.xml");
+        Response response = client.handle(new Request(Method.GET, "war:///WEB-INF/restlet.xml"));
         if (response.getStatus().isSuccess() && response.isEntityAvailable()) {
             return false;
         }

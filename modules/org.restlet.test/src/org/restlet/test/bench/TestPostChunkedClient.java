@@ -32,29 +32,31 @@ package org.restlet.test.bench;
 
 import java.io.IOException;
 
-import org.restlet.Client;
-import org.restlet.Response;
 import org.restlet.data.MediaType;
-import org.restlet.data.Protocol;
 import org.restlet.representation.FileRepresentation;
 import org.restlet.representation.InputRepresentation;
+import org.restlet.resource.ClientResource;
+import org.restlet.resource.ResourceException;
 
 public class TestPostChunkedClient {
 
     public static void main(String[] args) throws IOException {
         long startTime = System.currentTimeMillis();
 
-        Client client = new Client(Protocol.HTTP);
-
+        ClientResource resource = new ClientResource("http://localhost:8554/");
         FileRepresentation fr = new FileRepresentation("file:///c:/test.mpg",
                 MediaType.VIDEO_MPEG);
         System.out.println("Size sent: " + fr.getSize());
         InputRepresentation ir = new InputRepresentation(fr.getStream(), fr
                 .getMediaType());
 
-        Response response = client.post("http://localhost:8554/", ir);
+        try {
+            resource.post(ir);
+        } catch (ResourceException e) {
+            // Nothing
+        }
 
-        System.out.println("Status: " + response.getStatus());
+        System.out.println("Status: " + resource.getStatus());
         long endTime = System.currentTimeMillis();
         System.out.println("Duration: " + (endTime - startTime) + " ms");
     }

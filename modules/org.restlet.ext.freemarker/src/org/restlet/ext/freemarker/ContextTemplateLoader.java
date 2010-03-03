@@ -35,6 +35,8 @@ import java.io.Reader;
 import java.util.Date;
 
 import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.representation.Representation;
 
@@ -102,13 +104,14 @@ public class ContextTemplateLoader implements TemplateLoader {
      * @return The template source {@link Representation}.
      */
     public Object findTemplateSource(String name) throws IOException {
-    	String fullUri;
-    	if(getBaseUri().endsWith("/")){
-    		fullUri = getBaseUri() + name;
-    	} else {
-    		fullUri = getBaseUri() + "/" + name;	
-    	}
-        return getContext().getClientDispatcher().get(fullUri).getEntity();
+        String fullUri;
+        if (getBaseUri().endsWith("/")) {
+            fullUri = getBaseUri() + name;
+        } else {
+            fullUri = getBaseUri() + "/" + name;
+        }
+        return getContext().getClientDispatcher().handle(
+                new Request(Method.GET, fullUri)).getEntity();
     }
 
     /**

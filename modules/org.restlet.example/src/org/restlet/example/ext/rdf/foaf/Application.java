@@ -48,6 +48,7 @@ import org.restlet.example.ext.rdf.foaf.resources.ContactResource;
 import org.restlet.example.ext.rdf.foaf.resources.ContactsResource;
 import org.restlet.example.ext.rdf.foaf.resources.UserResource;
 import org.restlet.example.ext.rdf.foaf.resources.UsersResource;
+import org.restlet.resource.ClientResource;
 import org.restlet.resource.Directory;
 import org.restlet.routing.Redirector;
 import org.restlet.routing.Router;
@@ -67,10 +68,10 @@ public class Application extends org.restlet.Application {
      */
     public static Properties getProperties(String propertiesUri)
             throws IOException {
-        Reference reference = new Reference(propertiesUri);
-        Response response = new Client(reference.getSchemeProtocol())
-                .get(reference);
-        if (!(response.getStatus().isSuccess() && response.isEntityAvailable())) {
+        ClientResource resource = new ClientResource(propertiesUri);
+        try {
+            resource.get();
+        } catch (Exception e) {
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.append("Cannot access to the configuration file: \"");
             stringBuilder.append(propertiesUri);
@@ -79,7 +80,7 @@ public class Application extends org.restlet.Application {
         }
 
         Properties properties = new Properties();
-        properties.load(response.getEntity().getStream());
+        properties.load(resource.getResponseEntity().getStream());
         return properties;
     }
 

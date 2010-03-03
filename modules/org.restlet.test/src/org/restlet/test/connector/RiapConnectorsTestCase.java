@@ -70,12 +70,14 @@ public class RiapConnectorsTestCase extends TestCase {
 
                 });
                 router.attach("/testB", new Restlet(getContext()) {
-
-                    @Override
                     public void handle(Request request, Response response) {
-                        response.setEntity(getContext().getClientDispatcher()
-                                .get("riap://component/app/testA")
-                                .getEntityAsText(), MediaType.TEXT_PLAIN);
+                        ClientResource resource = new ClientResource(
+                                "riap://component/app/testA");
+                        try {
+                            response.setEntity(resource.get().getText(),
+                                    MediaType.TEXT_PLAIN);                            
+                        } catch (Exception e) {
+                        }
                     }
 
                 });

@@ -43,9 +43,11 @@ import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
 import org.restlet.Context;
+import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.Server;
+import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
@@ -262,7 +264,8 @@ public class ComponentXmlParser {
 
             // Get the WADL document
             final Response response = getComponent().getContext()
-                    .getClientDispatcher().get(targetDescriptor);
+                    .getClientDispatcher().handle(
+                            new Request(Method.GET, targetDescriptor));
             if (response.getStatus().isSuccess()
                     && response.isEntityAvailable()) {
                 final Representation representation = response.getEntity();
@@ -586,7 +589,7 @@ public class ComponentXmlParser {
                         if (server != null) {
                             // Look for Restlet's attributes
                             parseRestlet(server, childNode);
-                            
+
                             if (addressNode != null) {
                                 final String address = addressNode
                                         .getNodeValue();
@@ -861,7 +864,8 @@ public class ComponentXmlParser {
                 }
 
                 item = childNode.getAttributes().getNamedItem("default");
-                final boolean bDefault = getBoolean(item, false) || "attachDefault".equals(childNode.getNodeName());
+                final boolean bDefault = getBoolean(item, false)
+                        || "attachDefault".equals(childNode.getNodeName());
 
                 // Attaches a new route.
                 // save the old router context so new routes do not inherit it
@@ -891,8 +895,8 @@ public class ComponentXmlParser {
                     final Template template = route.getTemplate();
                     item = childNode.getAttributes().getNamedItem(
                             "matchingMode");
-                    template
-                            .setMatchingMode(getInt(item, router.getDefaultMatchingMode()));
+                    template.setMatchingMode(getInt(item, router
+                            .getDefaultMatchingMode()));
                     item = childNode.getAttributes().getNamedItem(
                             "defaultVariableType");
                     template.getDefaultVariable().setType(

@@ -36,9 +36,9 @@ import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.tika.parser.rtf.RTFParser;
-import org.restlet.Client;
 import org.restlet.ext.lucene.TikaRepresentation;
 import org.restlet.representation.Representation;
+import org.restlet.resource.ClientResource;
 import org.restlet.test.RestletTestCase;
 
 /**
@@ -49,11 +49,10 @@ import org.restlet.test.RestletTestCase;
 public class LuceneTestCase extends RestletTestCase {
 
     public void testTika() throws Exception {
+        ClientResource r = new ClientResource(
+                "clap://system/org/restlet/test/ext/lucene/LuceneTestCase.rtf");
 
-        Client clapClient = new Client("clap");
-        Representation rtfSample = clapClient.get(
-                "clap://system/org/restlet/test/ext/lucene/LuceneTestCase.rtf")
-                .getEntity();
+        Representation rtfSample = r.get();
         // rtfSample.write(System.out);
 
         // Prepare a SAX content handler

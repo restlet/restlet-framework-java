@@ -38,6 +38,8 @@ import java.util.List;
 
 import org.restlet.Client;
 import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.ext.atom.internal.CategoriesContentReader;
 import org.restlet.ext.xml.SaxRepresentation;
@@ -80,7 +82,8 @@ public class Categories extends SaxRepresentation {
      */
     public Categories(Client clientDispatcher, String categoriesUri)
             throws IOException {
-        this(clientDispatcher.get(categoriesUri).getEntity());
+        this(clientDispatcher.handle(new Request(Method.GET, categoriesUri))
+                .getEntity());
     }
 
     /**
@@ -94,7 +97,8 @@ public class Categories extends SaxRepresentation {
      * @throws IOException
      */
     public Categories(Context context, String categoriesUri) throws IOException {
-        this(context.getClientDispatcher().get(categoriesUri).getEntity());
+        this(context.getClientDispatcher().handle(
+                new Request(Method.GET, categoriesUri)).getEntity());
     }
 
     /**

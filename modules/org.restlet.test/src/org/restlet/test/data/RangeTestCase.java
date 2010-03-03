@@ -289,7 +289,8 @@ public class RangeTestCase extends RestletTestCase {
         request.setRanges(Arrays.asList(new Range(0, 10)));
         Response response = client.handle(request);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        response = client.get(request.getResourceRef());
+        response = client.handle(new Request(Method.GET, request
+                .getResourceRef()));
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("1234567890", response.getEntity().getText());
 
@@ -301,7 +302,8 @@ public class RangeTestCase extends RestletTestCase {
         request.setRanges(Arrays.asList(new Range(1, 10)));
         response = client.handle(request);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        response = client.get(request.getResourceRef());
+        response = client.handle(new Request(Method.GET, request
+                .getResourceRef()));
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("10000000000", response.getEntity().getText());
 
@@ -325,7 +327,8 @@ public class RangeTestCase extends RestletTestCase {
         request.setRanges(Arrays.asList(new Range(2, 2)));
         response = client.handle(request);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        response = client.get(request.getResourceRef());
+        response = client.handle(new Request(Method.GET, request
+                .getResourceRef()));
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("10220000000", response.getEntity().getText());
 
@@ -337,7 +340,8 @@ public class RangeTestCase extends RestletTestCase {
         request.setRanges(Arrays.asList(new Range(8, Range.SIZE_MAX)));
         response = client.handle(request);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        response = client.get(request.getResourceRef());
+        response = client.handle(new Request(Method.GET, request
+                .getResourceRef()));
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("10220000888", response.getEntity().getText());
 
@@ -362,7 +366,8 @@ public class RangeTestCase extends RestletTestCase {
         request.setRanges(Arrays.asList(new Range(8, Range.SIZE_MAX)));
         response = client.handle(request);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        response = client.get(request.getResourceRef());
+        response = client.handle(new Request(Method.GET, request
+                .getResourceRef()));
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("10220000998", response.getEntity().getText());
 

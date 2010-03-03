@@ -37,7 +37,9 @@ import java.util.List;
 
 import org.restlet.Client;
 import org.restlet.Context;
+import org.restlet.Request;
 import org.restlet.data.MediaType;
+import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.ext.atom.internal.FeedContentReader;
@@ -138,7 +140,8 @@ public class Feed extends SaxRepresentation {
      * @throws IOException
      */
     public Feed(Client clientDispatcher, String feedUri) throws IOException {
-        this(clientDispatcher.get(feedUri).getEntity());
+        this(clientDispatcher.handle(new Request(Method.GET, feedUri))
+                .getEntity());
     }
 
     /**
@@ -152,7 +155,8 @@ public class Feed extends SaxRepresentation {
      * @throws IOException
      */
     public Feed(Context context, String feedUri) throws IOException {
-        this(context.getClientDispatcher().get(feedUri).getEntity());
+        this(context.getClientDispatcher().handle(
+                new Request(Method.GET, feedUri)).getEntity());
     }
 
     /**

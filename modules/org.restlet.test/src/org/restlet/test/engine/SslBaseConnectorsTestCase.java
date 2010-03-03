@@ -38,8 +38,10 @@ import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
 import org.restlet.Context;
+import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Server;
+import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.engine.ClientHelper;
@@ -133,7 +135,8 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
                 this.testDir.mkdir();
                 // Copy the keystore into the test directory
                 Response response = new Client(Protocol.CLAP)
-                        .get("clap://class/org/restlet/test/engine/dummy.jks");
+                        .handle(new Request(Method.GET,
+                                "clap://class/org/restlet/test/engine/dummy.jks"));
 
                 if (response.getEntity() != null) {
                     OutputStream outputStream = new FileOutputStream(

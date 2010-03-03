@@ -32,7 +32,9 @@ package org.restlet.test.component;
 
 import org.restlet.Client;
 import org.restlet.Component;
+import org.restlet.Request;
 import org.restlet.Response;
+import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.representation.AppendableRepresentation;
 import org.restlet.test.RestletTestCase;
@@ -73,20 +75,22 @@ public class ComponentXmlTestCase extends RestletTestCase {
 
         final Client client = new Client(Protocol.HTTP);
 
-        Response response = client.get("http://localhost:" + this.port
-                + "/efgh");
+        Response response = client.handle(new Request(Method.GET,
+                "http://localhost:" + this.port + "/efgh"));
         assertTrue(response.getStatus().isSuccess());
         assertTrue(response.isEntityAvailable());
-        response = client.get("http://localhost:" + this.port + "/abcd");
+        response = client.handle(new Request(Method.GET, "http://localhost:"
+                + this.port + "/abcd"));
         assertTrue(response.getStatus().isClientError());
 
-        response = client.get("http://localhost:" + this.port2 + "/abcd");
+        response = client.handle(new Request(Method.GET, "http://localhost:"
+                + this.port2 + "/abcd"));
         assertTrue(response.getStatus().isSuccess());
         assertTrue(response.isEntityAvailable());
-        response = client.get("http://localhost:" + this.port2 + "/efgh");
+        response = client.handle(new Request(Method.GET, "http://localhost:"
+                + this.port2 + "/efgh"));
         assertTrue(response.getStatus().isClientError());
 
         component.stop();
     }
-
 }

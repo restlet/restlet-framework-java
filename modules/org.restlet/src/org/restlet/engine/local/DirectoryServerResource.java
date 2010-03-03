@@ -507,7 +507,8 @@ public class DirectoryServerResource extends ServerResource {
      * @return A response with the representation if success.
      */
     private Response getRepresentation(String resourceUri) {
-        return getClientDispatcher().get(resourceUri);
+        return getClientDispatcher().handle(
+                new Request(Method.GET, resourceUri));
     }
 
     /**
@@ -523,7 +524,8 @@ public class DirectoryServerResource extends ServerResource {
     protected Response getRepresentation(String resourceUri,
             MediaType acceptedMediaType) {
         if (acceptedMediaType == null) {
-            return getClientDispatcher().get(resourceUri);
+            return getClientDispatcher().handle(
+                    new Request(Method.GET, resourceUri));
         }
 
         Request request = new Request(Method.GET, resourceUri);

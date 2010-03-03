@@ -32,22 +32,22 @@ package org.restlet.test.bench;
 
 import java.io.IOException;
 
-import org.restlet.Client;
-import org.restlet.Response;
-import org.restlet.data.Protocol;
+import org.restlet.representation.Representation;
+import org.restlet.resource.ClientResource;
+import org.restlet.resource.ResourceException;
 
 public class TestGetClient {
 
     public static void main(String[] args) throws IOException {
         long startTime = System.currentTimeMillis();
 
-        Client client = new Client(Protocol.HTTP);
-        Response response = client.get("http://localhost:8554/");
-        System.out.println("Status: " + response.getStatus());
+        ClientResource resource = new ClientResource("http://localhost:8554/");
+        try {
+            Representation entity = resource.get();
+            System.out.println("Status: " + resource.getStatus());
 
-        if (response.getStatus().isSuccess()) {
-            long expectedSize = response.getEntity().getSize();
-            long receivedSize = response.getEntity().exhaust();
+            long expectedSize = entity.getSize();
+            long receivedSize = entity.exhaust();
 
             System.out.println("Size expected: " + expectedSize);
             System.out.println("Size consumed: " + receivedSize);
@@ -55,6 +55,8 @@ public class TestGetClient {
             if ((expectedSize != -1) && (expectedSize != receivedSize)) {
                 System.out.println("ERROR: SOME BYTES WERE LOST!");
             }
+        } catch (ResourceException e) {
+            System.out.println("Status: " + resource.getStatus());
         }
 
         long endTime = System.currentTimeMillis();

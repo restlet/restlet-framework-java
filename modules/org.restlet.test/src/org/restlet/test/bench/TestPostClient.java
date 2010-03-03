@@ -30,26 +30,29 @@
 
 package org.restlet.test.bench;
 
-import org.restlet.Client;
-import org.restlet.Response;
 import org.restlet.data.MediaType;
-import org.restlet.data.Protocol;
 import org.restlet.representation.FileRepresentation;
+import org.restlet.resource.ClientResource;
+import org.restlet.resource.ResourceException;
 
 public class TestPostClient {
 
     public static void main(String[] args) {
         long startTime = System.currentTimeMillis();
 
-        Client client = new Client(Protocol.HTTP);
+        ClientResource resource = new ClientResource("http://localhost:8554/");
 
         FileRepresentation fr = new FileRepresentation("file:///c:/test.mpg",
                 MediaType.VIDEO_MPEG);
         System.out.println("Size sent: " + fr.getSize());
 
-        Response response = client.post("http://localhost:8554/", fr);
+        try {
+            resource.post(fr);
+        } catch (ResourceException e) {
+            // Nothing
+        }
 
-        System.out.println("Status: " + response.getStatus());
+        System.out.println("Status: " + resource.getStatus());
         long endTime = System.currentTimeMillis();
         System.out.println("Duration: " + (endTime - startTime) + " ms");
     }

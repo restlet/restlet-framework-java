@@ -4,9 +4,6 @@ import java.lang.annotation.Annotation;
 
 import org.restlet.resource.Finder;
 import org.restlet.resource.ServerResource;
-import org.restlet.routing.Router;
-import org.restlet.routing.VirtualHost;
-import org.restlet.routing.TemplateRoute;
 
 /**
  * Factory for dependency-injecting Finders.

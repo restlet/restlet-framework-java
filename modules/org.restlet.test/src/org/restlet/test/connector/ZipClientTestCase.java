@@ -33,15 +33,13 @@ package org.restlet.test.connector;
 import java.io.File;
 import java.io.IOException;
 
-import org.restlet.Client;
-import org.restlet.Response;
 import org.restlet.data.LocalReference;
-import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.engine.io.BioUtils;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.StringRepresentation;
+import org.restlet.resource.ClientResource;
 import org.restlet.test.RestletTestCase;
 
 /**
@@ -55,54 +53,58 @@ public class ZipClientTestCase extends RestletTestCase {
         File zipFile = File.createTempFile("Restlet", ".zip");
         // We just wanted a valid writable path
         BioUtils.delete(zipFile);
-        final String text = "Test content\r\nLine 2\r\nLine2";
-        final String text2 = "Test content\nLine 2";
-        final Client fc = new Client(Protocol.ZIP);
-        final LocalReference fr = LocalReference.createFileReference(zipFile);
-        final Reference zr = new Reference("zip:" + fr.toString());
-        final String fzr = zr + "!/test.txt";
-        final String fzd = zr + "!/dir/";
-        final String fzr2 = fzd + "test2.txt";
+        String text = "Test content\r\nLine 2\r\nLine2";
+        String text2 = "Test content\nLine 2";
+        LocalReference fr = LocalReference.createFileReference(zipFile);
+        Reference zr = new Reference("zip:" + fr.toString());
+        String fzr = zr + "!/test.txt";
+        String fzd = zr + "!/dir/";
+        String fzr2 = fzd + "test2.txt";
 
         // Write the text to file
-        Response response = fc.put(fzr, new StringRepresentation(text));
-        assertTrue(response.getStatus().equals(Status.SUCCESS_CREATED));
+        ClientResource r = new ClientResource(fzr);
+        r.put(new StringRepresentation(text));
+        assertTrue(r.getStatus().equals(Status.SUCCESS_CREATED));
 
         // Get the text and compare to the original
-        response = fc.get(fzr);
-        assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
-        assertEquals(response.getEntityAsText(), text);
-        response.getEntity().release();
+        r.get();
+        assertTrue(r.getStatus().equals(Status.SUCCESS_OK));
+        assertEquals(r.getResponseEntity().getText(), text);
+        r.release();
 
         // Write the text to file
-        response = fc.put(fzr2, new StringRepresentation(text2));
-        assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
+        ClientResource r2 = new ClientResource(fzr2);
+        r2.put(new StringRepresentation(text2));
+        assertTrue(r2.getStatus().equals(Status.SUCCESS_OK));
 
         // Checking first one was not overwritten
-        response = fc.get(fzr);
-        assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
-        assertEquals(response.getEntityAsText(), text);
-        response.getEntity().release();
+        r.get();
+        assertTrue(r.getStatus().equals(Status.SUCCESS_OK));
+        assertEquals(r.getResponseEntity().getText(), text);
+        r.release();
 
         // Put a directory
-        response = fc.put(fzd, new EmptyRepresentation());
-        assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
+        ClientResource rd = new ClientResource(fzd);
+        rd.put(new EmptyRepresentation());
+        assertTrue(rd.getStatus().equals(Status.SUCCESS_OK));
 
-        response = fc.get(fzd);
-        assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
+        rd.get();
+        assertTrue(rd.getStatus().equals(Status.SUCCESS_OK));
 
         // Checking second one was output
-        response = fc.get(fzr2);
-        assertTrue("Could not get " + fzr2, response.getStatus().equals(
+        r2.get();
+        assertTrue("Could not get " + fzr2, r2.getStatus().equals(
                 Status.SUCCESS_OK));
-        assertEquals(response.getEntityAsText(), text2);
+        assertEquals(r2.getResponseEntity().getText(), text2);
 
-        response = fc.get(zr + "!test2");
-        assertFalse(response.getStatus().equals(Status.SUCCESS_OK));
+        ClientResource rTest2 = new ClientResource(zr + "!test2");
+        rTest2.get();
+        assertFalse(rTest2.getStatus().equals(Status.SUCCESS_OK));
 
         // Try to replace file by directory
-        response = fc.put(fzr2 + "/", new EmptyRepresentation());
-        assertFalse(response.getStatus().equals(Status.SUCCESS_OK));
+        ClientResource r2d = new ClientResource(fzr2 + "/");
+        r2d.put(new EmptyRepresentation());
+        assertFalse(r2d.getStatus().equals(Status.SUCCESS_OK));
 
     }
 

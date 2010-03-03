@@ -43,8 +43,10 @@ import java.util.logging.Logger;
 
 import org.restlet.Client;
 import org.restlet.Context;
+import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.ChallengeScheme;
+import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.engine.http.HttpProtocolHelper;
 import org.restlet.engine.http.WebDavProtocolHelper;
@@ -348,7 +350,7 @@ public class Engine {
             try {
                 discoverConnectors();
                 discoverProtocols();
-                
+
                 // [ifndef gwt]
                 discoverAuthenticators();
                 discoverConverters();
@@ -537,7 +539,7 @@ public class Engine {
      */
     private void discoverProtocols() throws IOException {
         // [ifndef gwt] instruction
-    	registerHelpers(DESCRIPTOR_PROTOCOL_PATH, getRegisteredProtocols(),
+        registerHelpers(DESCRIPTOR_PROTOCOL_PATH, getRegisteredProtocols(),
                 null);
         registerDefaultProtocols();
     }
@@ -862,7 +864,11 @@ public class Engine {
                                         if (context != null) {
                                             final Response response = context
                                                     .getClientDispatcher()
-                                                    .get(this.url.toString());
+                                                    .handle(
+                                                            new Request(
+                                                                    Method.GET,
+                                                                    this.url
+                                                                            .toString()));
 
                                             if (response.getStatus()
                                                     .isSuccess()) {

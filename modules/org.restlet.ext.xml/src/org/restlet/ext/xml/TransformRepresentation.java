@@ -52,7 +52,9 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.restlet.Context;
+import org.restlet.Request;
 import org.restlet.Response;
+import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.ext.xml.internal.AbstractXmlReader;
 import org.restlet.representation.OutputRepresentation;
@@ -119,8 +121,8 @@ public class TransformRepresentation extends OutputRepresentation {
                 }
 
                 String targetUri = targetRef.getTargetRef().toString();
-                Response response = this.context.getClientDispatcher().get(
-                        targetUri);
+                Response response = this.context.getClientDispatcher().handle(
+                        new Request(Method.GET, targetUri));
 
                 if (response.getStatus().isSuccess()
                         && response.isEntityAvailable()) {

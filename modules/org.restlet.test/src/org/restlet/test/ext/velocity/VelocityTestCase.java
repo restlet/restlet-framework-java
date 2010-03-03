@@ -35,14 +35,13 @@ import java.io.FileWriter;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.restlet.Client;
 import org.restlet.data.LocalReference;
 import org.restlet.data.MediaType;
-import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.engine.io.BioUtils;
 import org.restlet.ext.velocity.TemplateRepresentation;
 import org.restlet.representation.Representation;
+import org.restlet.resource.ClientResource;
 import org.restlet.test.RestletTestCase;
 
 /**
@@ -54,25 +53,25 @@ public class VelocityTestCase extends RestletTestCase {
 
     public void testRepresentationTemplate() throws Exception {
         // Create a temporary directory for the tests
-        final File testDir = new File(System.getProperty("java.io.tmpdir"),
+        File testDir = new File(System.getProperty("java.io.tmpdir"),
                 "VelocityTestCase");
         testDir.mkdir();
 
         // Create a temporary template file
-        final File testFile = File.createTempFile("test", ".vm", testDir);
-        final FileWriter fw = new FileWriter(testFile);
+        File testFile = File.createTempFile("test", ".vm", testDir);
+        FileWriter fw = new FileWriter(testFile);
         fw.write("Value=$value");
         fw.close();
 
-        final Map<String, Object> map = new TreeMap<String, Object>();
+        Map<String, Object> map = new TreeMap<String, Object>();
         map.put("value", "myValue");
 
         // Representation approach
-        final Client client = new Client(Protocol.FILE);
-        final Reference ref = LocalReference.createFileReference(testFile);
-        final Representation templateFile = client.get(ref).getEntity();
-        final TemplateRepresentation tr = new TemplateRepresentation(
-                templateFile, map, MediaType.TEXT_PLAIN);
+        Reference ref = LocalReference.createFileReference(testFile);
+        ClientResource r = new ClientResource(ref);
+        Representation templateFile = r.get();
+        TemplateRepresentation tr = new TemplateRepresentation(templateFile,
+                map, MediaType.TEXT_PLAIN);
         final String result = tr.getText();
         assertEquals("Value=myValue", result);
 
