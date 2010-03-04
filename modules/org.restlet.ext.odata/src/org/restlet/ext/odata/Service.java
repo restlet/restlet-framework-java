@@ -165,29 +165,31 @@ public class Service {
      * @throws Exception
      */
     public void addEntity(String entitySetName, Object entity) throws Exception {
-        Entry entry = new Entry();
-        entry.setContent(toContent(entity));
+        if (entity != null) {
+            Entry entry = toEntry(entity);
 
-        ClientResource resource = createResource(entitySetName);
+            ClientResource resource = createResource(entitySetName);
 
-        try {
-            // TODO Fix chunked request with net client connector
-            ByteArrayOutputStream o = new ByteArrayOutputStream();
-            entry.write(o);
-            StringRepresentation r = new StringRepresentation(o.toString(),
-                    MediaType.APPLICATION_ATOM);
-            Representation rep = resource.post(r);
-            EntryContentHandler<?> entryContentHandler = new EntryContentHandler<Object>(
-                    entity.getClass(), (Metadata) getMetadata(), getLogger());
-            Feed feed = new Feed();
-            feed.getEntries().add(new Entry(rep, entryContentHandler));
-        } catch (ResourceException re) {
-            throw new ResourceException(re.getStatus(),
-                    "Can't add entity to this entity set "
-                            + resource.getReference());
-        } finally {
-            this.latestRequest = resource.getRequest();
-            this.latestResponse = resource.getResponse();
+            try {
+                // TODO Fix chunked request with net client connector
+                ByteArrayOutputStream o = new ByteArrayOutputStream();
+                entry.write(o);
+                StringRepresentation r = new StringRepresentation(o.toString(),
+                        MediaType.APPLICATION_ATOM);
+                Representation rep = resource.post(r);
+                EntryContentHandler<?> entryContentHandler = new EntryContentHandler<Object>(
+                        entity.getClass(), (Metadata) getMetadata(),
+                        getLogger());
+                Feed feed = new Feed();
+                feed.getEntries().add(new Entry(rep, entryContentHandler));
+            } catch (ResourceException re) {
+                throw new ResourceException(re.getStatus(),
+                        "Can't add entity to this entity set "
+                                + resource.getReference());
+            } finally {
+                this.latestRequest = resource.getRequest();
+                this.latestResponse = resource.getResponse();
+            }
         }
     }
 
@@ -859,89 +861,136 @@ public class Service {
     }
 
     /**
-     * Converts an entity to an Atom content object.
+     * Converts an entity to an Atom entry object.
      * 
      * @param entity
      *            The entity to wrap.
-     * @return The Atom content object that corresponds to the given entity.
+     * @return The Atom entry object that corresponds to the given entity.
      */
-    private Content toContent(final Object entity) throws Exception {
-        Representation r = new SaxRepresentation(MediaType.APPLICATION_XML) {
-            @Override
-            public void write(XmlWriter writer) throws IOException {
-                try {
-                    // Attribute for nullable values.
-                    AttributesImpl nullAttrs = new AttributesImpl();
-                    nullAttrs.addAttribute(WCF_DATASERVICES_METADATA_NAMESPACE,
-                            "null", null, "boolean", "true");
+    public Entry toEntry(final Object entity) {
+        Entry result = null;
 
-                    writer
-                            .forceNSDecl(WCF_DATASERVICES_METADATA_NAMESPACE,
-                                    "m");
-                    writer.forceNSDecl(WCF_DATASERVICES_NAMESPACE, "d");
-                    writer.startElement(WCF_DATASERVICES_METADATA_NAMESPACE,
-                            "properties");
+        if (entity != null) {
+            Metadata metadata = (Metadata) getMetadata();
+            EntityType type = metadata.getEntityType(entity.getClass());
+            if (type != null) {
+                final SaxRepresentation r = new SaxRepresentation(
+                        MediaType.APPLICATION_XML) {
+                    @Override
+                    public void write(XmlWriter writer) throws IOException {
+                        try {
+                            // Attribute for nullable values.
+                            AttributesImpl nullAttrs = new AttributesImpl();
+                            nullAttrs.addAttribute(
+                                    WCF_DATASERVICES_METADATA_NAMESPACE,
+                                    "null", null, "boolean", "true");
 
-                    for (Field field : entity.getClass().getDeclaredFields()) {
-                        String getter = "get"
-                                + field.getName().substring(0, 1).toUpperCase()
-                                + field.getName().substring(1);
-                        Property prop = ((Metadata) getMetadata()).getProperty(
-                                entity, field.getName());
-                        if (prop != null) {
-                            for (Method method : entity.getClass()
-                                    .getDeclaredMethods()) {
-                                if (method.getReturnType() != null
-                                        && getter.equals(method.getName())
-                                        && method.getParameterTypes().length == 0) {
-                                    Object value = null;
-                                    try {
-                                        value = method.invoke(entity,
-                                                (Object[]) null);
-                                    } catch (Exception e) {
+                            writer.forceNSDecl(
+                                    WCF_DATASERVICES_METADATA_NAMESPACE, "m");
+                            writer.forceNSDecl(WCF_DATASERVICES_NAMESPACE, "d");
+                            writer.startElement(
+                                    WCF_DATASERVICES_METADATA_NAMESPACE,
+                                    "properties");
 
-                                    }
-                                    if (value != null) {
-                                        writer.startElement(
-                                                WCF_DATASERVICES_NAMESPACE,
-                                                prop.getName());
-                                        writer.characters(Type.toEdm(value,
-                                                prop.getType()));
-                                        writer.endElement(
-                                                WCF_DATASERVICES_NAMESPACE,
-                                                prop.getName());
-                                    } else {
-                                        if (prop.isNullable()) {
-                                            writer.emptyElement(
-                                                    WCF_DATASERVICES_NAMESPACE,
-                                                    prop.getName(), prop
-                                                            .getName(),
-                                                    nullAttrs);
-                                        } else {
-                                            getLogger().warning(
-                                                    "The following property has a null value but is not marked as nullable: "
-                                                            + prop.getName());
-                                            writer.emptyElement(
-                                                    WCF_DATASERVICES_NAMESPACE,
-                                                    prop.getName());
+                            for (Field field : entity.getClass()
+                                    .getDeclaredFields()) {
+                                String getter = "get"
+                                        + field.getName().substring(0, 1)
+                                                .toUpperCase()
+                                        + field.getName().substring(1);
+                                Property prop = ((Metadata) getMetadata())
+                                        .getProperty(entity, field.getName());
+                                if (prop != null) {
+                                    for (Method method : entity.getClass()
+                                            .getDeclaredMethods()) {
+                                        if (method.getReturnType() != null
+                                                && getter.equals(method
+                                                        .getName())
+                                                && method.getParameterTypes().length == 0) {
+                                            Object value = null;
+                                            try {
+                                                value = method.invoke(entity,
+                                                        (Object[]) null);
+                                            } catch (Exception e) {
+
+                                            }
+                                            if (value != null) {
+                                                writer
+                                                        .startElement(
+                                                                WCF_DATASERVICES_NAMESPACE,
+                                                                prop.getName());
+                                                writer.characters(Type.toEdm(
+                                                        value, prop.getType()));
+                                                writer
+                                                        .endElement(
+                                                                WCF_DATASERVICES_NAMESPACE,
+                                                                prop.getName());
+                                            } else {
+                                                if (prop.isNullable()) {
+                                                    writer
+                                                            .emptyElement(
+                                                                    WCF_DATASERVICES_NAMESPACE,
+                                                                    prop
+                                                                            .getName(),
+                                                                    prop
+                                                                            .getName(),
+                                                                    nullAttrs);
+                                                } else {
+                                                    getLogger()
+                                                            .warning(
+                                                                    "The following property has a null value but is not marked as nullable: "
+                                                                            + prop
+                                                                                    .getName());
+                                                    writer
+                                                            .emptyElement(
+                                                                    WCF_DATASERVICES_NAMESPACE,
+                                                                    prop
+                                                                            .getName());
+                                                }
+                                            }
+                                            break;
                                         }
                                     }
-                                    break;
                                 }
                             }
+                            writer.endElement(
+                                    WCF_DATASERVICES_METADATA_NAMESPACE,
+                                    "properties");
+                        } catch (SAXException e) {
+                            throw new IOException(e.getMessage());
                         }
                     }
-                    writer.endElement(WCF_DATASERVICES_METADATA_NAMESPACE,
-                            "properties");
-                } catch (SAXException e) {
-                    throw new IOException(e.getMessage());
+                };
+
+                if (type.isBlob()) {
+                    result = new Entry() {
+                        @Override
+                        public void writeInlineContent(XmlWriter writer)
+                                throws SAXException {
+                            try {
+                                r.write(writer);
+                            } catch (IOException e) {
+                                throw new SAXException(e);
+                            }
+                        }
+                    };
+                    Content content = new Content();
+                    // Get the external blob reference
+                    content.setExternalRef(getValueRef(entity));
+                    content.setToEncode(false);
+                    result.setContent(content);
+                } else {
+                    result = new Entry();
+                    Content content = new Content();
+                    content.setInlineContent(r);
+                    content.setToEncode(false);
+
+                    result.setContent(content);
                 }
             }
-        };
-        Content content = new Content();
-        content.setInlineContent(r);
-        content.setToEncode(false);
-        return content;
+        }
+
+        return result;
     }
 
     /**
@@ -952,11 +1001,10 @@ public class Service {
      * @throws Exception
      */
     public void updateEntity(Object entity) throws Exception {
-        if (getMetadata() == null) {
+        if (getMetadata() == null || entity == null) {
             return;
         }
-        Entry entry = new Entry();
-        entry.setContent(toContent(entity));
+        Entry entry = toEntry(entity);
 
         ClientResource resource = createResource(getSubpath(entity));
 

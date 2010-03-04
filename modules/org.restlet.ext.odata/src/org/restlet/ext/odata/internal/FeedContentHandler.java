@@ -114,6 +114,9 @@ public class FeedContentHandler<T> extends FeedReader {
     /** Are we parsing an entry? */
     private boolean parseEntry;
 
+    /** Are we parsing entity properties? */
+    private boolean parseProperties;
+
     /** Are we parsing an entity property? */
     private boolean parseProperty;
 
@@ -224,6 +227,11 @@ public class FeedContentHandler<T> extends FeedReader {
 
             if (!eltPath.isEmpty()) {
                 eltPath.remove(eltPath.size() - 1);
+            }
+        } else if(parseProperties){
+            if (Service.WCF_DATASERVICES_METADATA_NAMESPACE.equals(uri)
+                    && "properties".equals(localName)) {
+                parseProperties = false;
             }
         }
     }
@@ -403,12 +411,17 @@ public class FeedContentHandler<T> extends FeedReader {
                     extraEntryHandler.startContent(content);
                 }
             }
-        } else if (parseContent) {
+        } else if (parseProperties) {
             if (Service.WCF_DATASERVICES_NAMESPACE.equals(uri)) {
                 sb = new StringBuilder();
                 parseProperty = true;
                 parsePropertyNull = Boolean.parseBoolean(attrs.getValue(
                         Service.WCF_DATASERVICES_METADATA_NAMESPACE, "null"));
+            } 
+        } else if (parseContent) {
+            if (Service.WCF_DATASERVICES_METADATA_NAMESPACE.equals(uri)
+                    && "properties".equals(localName)) {
+                parseProperties = true;
             } else {
                 if (entityType.isBlob()
                         && entityType.getBlobValueRefProperty() != null) {
@@ -435,41 +448,48 @@ public class FeedContentHandler<T> extends FeedReader {
             sb = new StringBuilder();
             parseCount = true;
         } else if (parseEntry) {
-            // Could be mapped value
-            eltPath.add(localName);
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < eltPath.size(); i++) {
-                if (i > 0) {
-                    sb.append("/");
-                }
-                sb.append(eltPath.get(i));
-            }
-            String str = sb.toString();
-
-            // Check if this path is mapped.
-            for (Mapping m : metadata.getMappings()) {
-                if (entityType != null && entityType.equals(m.getType())
-                        && m.getNsUri() != null && m.getNsUri().equals(uri)
-                        && str.equals(m.getValueNodePath())) {
-                    if (m.isAttributeValue()) {
-                        String value = attrs.getValue(uri, m
-                                .getValueAttributeName());
-                        if (value != null) {
-                            try {
-                                ReflectUtils.invokeSetter(entity, m
-                                        .getPropertyPath(), value);
-                            } catch (Exception e) {
-                                getLogger().warning(
-                                        "Cannot set " + m.getPropertyPath()
-                                                + " property on " + entity
-                                                + " with value " + value);
-                            }
-                        }
-                    } else {
-                        this.sb = new StringBuilder();
-                        mapping = m;
+            if (Service.WCF_DATASERVICES_METADATA_NAMESPACE.equals(uri)
+                    && "properties".equals(localName) && entityType.isBlob()) {
+                // in case of Media Link entries, the properties are directly
+                // inside the entry.
+                parseProperties = true;
+            } else {
+                // Could be mapped value
+                eltPath.add(localName);
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < eltPath.size(); i++) {
+                    if (i > 0) {
+                        sb.append("/");
                     }
-                    break;
+                    sb.append(eltPath.get(i));
+                }
+                String str = sb.toString();
+
+                // Check if this path is mapped.
+                for (Mapping m : metadata.getMappings()) {
+                    if (entityType != null && entityType.equals(m.getType())
+                            && m.getNsUri() != null && m.getNsUri().equals(uri)
+                            && str.equals(m.getValueNodePath())) {
+                        if (m.isAttributeValue()) {
+                            String value = attrs.getValue(uri, m
+                                    .getValueAttributeName());
+                            if (value != null) {
+                                try {
+                                    ReflectUtils.invokeSetter(entity, m
+                                            .getPropertyPath(), value);
+                                } catch (Exception e) {
+                                    getLogger().warning(
+                                            "Cannot set " + m.getPropertyPath()
+                                                    + " property on " + entity
+                                                    + " with value " + value);
+                                }
+                            }
+                        } else {
+                            this.sb = new StringBuilder();
+                            mapping = m;
+                        }
+                        break;
+                    }
                 }
             }
         }
