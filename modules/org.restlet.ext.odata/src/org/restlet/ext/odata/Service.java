@@ -47,10 +47,12 @@ import org.restlet.data.ChallengeResponse;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
+import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
 import org.restlet.data.Reference;
 import org.restlet.data.Tag;
 import org.restlet.engine.http.header.HeaderConstants;
+import org.restlet.engine.http.header.HeaderReader;
 import org.restlet.ext.atom.Content;
 import org.restlet.ext.atom.Entry;
 import org.restlet.ext.atom.Feed;
@@ -68,6 +70,7 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
+import org.restlet.util.Series;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
@@ -95,14 +98,14 @@ public class Service {
     /** WCF data services scheme namespace. */
     public final static String WCF_DATASERVICES_SCHEME_NAMESPACE = "http://schemas.microsoft.com/ado/2007/08/dataservices/scheme";
 
-    /** The credentials used to authenticate requests. */
-    private ChallengeResponse credentials;
-
     /**
      * The version of the OData protocol extensions defined in every request
      * issued by this service.
      */
-    private String dataServiceVersion;
+    private String clientVersion;
+
+    /** The credentials used to authenticate requests. */
+    private ChallengeResponse credentials;
 
     /** The latest request sent to the service. */
     private Request latestRequest;
@@ -117,10 +120,16 @@ public class Service {
      * The maximum version of the OData protocol extensions the client can
      * accept in a response.
      */
-    private String maxDataServiceVersion;
+    private String maxClientVersion;
 
     /** The metadata of the WCF service. */
     private Metadata metadata;
+
+    /**
+     * The version of the OData protocol extensions defined by the remote
+     * service.
+     */
+    private String serverVersion;
 
     /** The reference of the WCF service. */
     private Reference serviceRef;
@@ -205,57 +214,6 @@ public class Service {
     }
 
     /**
-     * Sets the association between the source and the target entity via the
-     * given property name. If target is set to null, the call represents a
-     * delete link operation.
-     * 
-     * @param source
-     *            The source entity to update.
-     * @param sourceProperty
-     *            The name of the property of the source entity.
-     * @param target
-     *            The entity to add to the source entity.
-     * @throws Exception
-     */
-    public void setLink(Object source, String sourceProperty, Object target)
-            throws Exception {
-        if (getMetadata() == null || source == null) {
-            return;
-        }
-        if (target != null) {
-            // TODO Take into acount the case where the target does exist.
-            Metadata metadata = (Metadata) getMetadata();
-            ClientResource resource = createResource(metadata
-                    .getSubpath(source)
-                    + "/$links/" + sourceProperty);
-
-            try {
-                // TODO Fix chunked request with net client connector
-                StringBuilder sb = new StringBuilder("<uri xmlns=\"");
-                sb.append(WCF_DATASERVICES_NAMESPACE);
-                sb.append("\">");
-                sb.append(serviceRef.toString());
-                sb.append(metadata.getSubpath(target));
-                sb.append("</uri>");
-
-                StringRepresentation r = new StringRepresentation(
-                        sb.toString(), MediaType.APPLICATION_XML);
-                resource.put(r);
-            } catch (ResourceException re) {
-                throw new ResourceException(re.getStatus(),
-                        "Can't set entity to this entity set "
-                                + resource.getReference());
-            } finally {
-                this.latestRequest = resource.getRequest();
-                this.latestResponse = resource.getResponse();
-            }
-        } else {
-            ReflectUtils.invokeSetter(source, sourceProperty, null);
-            updateEntity(source);
-        }
-    }
-
-    /**
      * Creates a query to a specific entity hosted by this service.
      * 
      * @param <T>
@@ -283,14 +241,13 @@ public class Service {
         ClientResource resource = new ClientResource(reference);
         resource.setChallengeResponse(getCredentials());
 
-        if (getDataServiceVersion() != null
-                || getMaxDataServiceVersion() != null) {
+        if (getClientVersion() != null || getMaxClientVersion() != null) {
             Form form = new Form();
-            if (getDataServiceVersion() != null) {
-                form.add("DataServiceVersion", getDataServiceVersion());
+            if (getClientVersion() != null) {
+                form.add("DataServiceVersion", getClientVersion());
             }
-            if (getMaxDataServiceVersion() != null) {
-                form.add("MaxDataServiceVersion", getMaxDataServiceVersion());
+            if (getMaxClientVersion() != null) {
+                form.add("MaxDataServiceVersion", getMaxClientVersion());
             }
             resource.getRequestAttributes().put(
                     HeaderConstants.ATTRIBUTE_HEADERS, form);
@@ -395,64 +352,23 @@ public class Service {
     }
 
     /**
-     * Returns the credentials used to authenticate requests.
-     * 
-     * @return The credentials used to authenticate requests.
-     */
-    public ChallengeResponse getCredentials() {
-        return credentials;
-    }
-
-    /**
      * Returns the version of the OData protocol extensions defined in every
      * request issued by this service.
      * 
      * @return The version of the OData protocol extensions defined in every
      *         request issued by this service.
      */
-    public String getDataServiceVersion() {
-        return dataServiceVersion;
+    public String getClientVersion() {
+        return clientVersion;
     }
 
     /**
-     * Returns the ETag value for the given entity.
+     * Returns the credentials used to authenticate requests.
      * 
-     * @param entity
-     *            The given entity.
-     * @return The ETag value for the given entity.
+     * @return The credentials used to authenticate requests.
      */
-    private String getETag(Object entity) {
-        String result = null;
-        if (entity != null) {
-            Metadata metadata = (Metadata) getMetadata();
-            EntityType type = metadata.getEntityType(entity.getClass());
-
-            StringBuilder sb = new StringBuilder();
-            boolean found = false;
-            for (Property property : type.getProperties()) {
-                if (property.isConcurrent()) {
-                    found = true;
-                    Object value = null;
-                    try {
-                        value = ReflectUtils.invokeGetter(entity, property
-                                .getName());
-                        if (value != null) {
-                            sb.append(value);
-                        }
-                    } catch (Exception e) {
-                        getLogger().warning(
-                                "Cannot get the value of the property "
-                                        + property.getName() + " on " + entity);
-                    }
-                }
-            }
-
-            if (found) {
-                result = Reference.encode(sb.toString(), CharacterSet.US_ASCII);
-            }
-        }
-
-        return result;
+    public ChallengeResponse getCredentials() {
+        return credentials;
     }
 
     /**
@@ -492,8 +408,8 @@ public class Service {
      * @return The maximum version of the OData protocol extensions the client
      *         can accept in a response.
      */
-    public String getMaxDataServiceVersion() {
-        return maxDataServiceVersion;
+    public String getMaxClientVersion() {
+        return maxClientVersion;
     }
 
     /**
@@ -521,10 +437,41 @@ public class Service {
             } catch (Exception e) {
                 getLogger().log(Level.SEVERE,
                         "Can't get the metadata for " + serviceRef, e);
+            } finally {
+                this.latestRequest = resource.getRequest();
+                this.latestResponse = resource.getResponse();
             }
         }
 
         return metadata;
+    }
+
+    /**
+     * Returns the version of the OData protocol extensions supported by the
+     * remote service.
+     * 
+     * @return The version of the OData protocol extensions supported by the
+     *         remote service.
+     */
+    @SuppressWarnings("unchecked")
+    public String getServerVersion() {
+        if (serverVersion == null) {
+            // Get the version from the latest response.
+            if (this.latestResponse != null) {
+                Object o = this.latestResponse.getAttributes().get(
+                        HeaderConstants.ATTRIBUTE_HEADERS);
+                if (o != null) {
+                    Series<Parameter> headers = (Series<Parameter>) o;
+                    String strHeader = headers
+                            .getFirstValue("DataServiceVersion");
+                    if (strHeader != null) {
+                        HeaderReader reader = new HeaderReader(strHeader);
+                        this.serverVersion = reader.readToken();
+                    }
+                }
+            }
+        }
+        return serverVersion;
     }
 
     /**
@@ -581,6 +528,47 @@ public class Service {
             Object target) {
         return ((Metadata) getMetadata()).getSubpath(source, sourceProperty,
                 target);
+    }
+
+    /**
+     * Returns the ETag value for the given entity.
+     * 
+     * @param entity
+     *            The given entity.
+     * @return The ETag value for the given entity.
+     */
+    private String getTag(Object entity) {
+        String result = null;
+        if (entity != null) {
+            Metadata metadata = (Metadata) getMetadata();
+            EntityType type = metadata.getEntityType(entity.getClass());
+
+            StringBuilder sb = new StringBuilder();
+            boolean found = false;
+            for (Property property : type.getProperties()) {
+                if (property.isConcurrent()) {
+                    found = true;
+                    Object value = null;
+                    try {
+                        value = ReflectUtils.invokeGetter(entity, property
+                                .getName());
+                        if (value != null) {
+                            sb.append(value);
+                        }
+                    } catch (Exception e) {
+                        getLogger().warning(
+                                "Cannot get the value of the property "
+                                        + property.getName() + " on " + entity);
+                    }
+                }
+            }
+
+            if (found) {
+                result = Reference.encode(sb.toString(), CharacterSet.US_ASCII);
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -766,6 +754,18 @@ public class Service {
     }
 
     /**
+     * Sets the version of the OData protocol extensions defined in every
+     * request issued by this service.
+     * 
+     * @param clientVersion
+     *            The version of the OData protocol extensions defined in every
+     *            request issued by this service.
+     */
+    public void setClientVersion(String clientVersion) {
+        this.clientVersion = clientVersion;
+    }
+
+    /**
      * Sets the credentials used to authenticate requests.
      * 
      * @param credentials
@@ -773,18 +773,6 @@ public class Service {
      */
     public void setCredentials(ChallengeResponse credentials) {
         this.credentials = credentials;
-    }
-
-    /**
-     * Sets the version of the OData protocol extensions defined in every
-     * request issued by this service.
-     * 
-     * @param dataServiceVersion
-     *            The version of the OData protocol extensions defined in every
-     *            request issued by this service.
-     */
-    public void setDataServiceVersion(String dataServiceVersion) {
-        this.dataServiceVersion = dataServiceVersion;
     }
 
     /**
@@ -808,15 +796,66 @@ public class Service {
     }
 
     /**
+     * Sets the association between the source and the target entity via the
+     * given property name. If target is set to null, the call represents a
+     * delete link operation.
+     * 
+     * @param source
+     *            The source entity to update.
+     * @param sourceProperty
+     *            The name of the property of the source entity.
+     * @param target
+     *            The entity to add to the source entity.
+     * @throws Exception
+     */
+    public void setLink(Object source, String sourceProperty, Object target)
+            throws Exception {
+        if (getMetadata() == null || source == null) {
+            return;
+        }
+        if (target != null) {
+            // TODO Take into acount the case where the target does exist.
+            Metadata metadata = (Metadata) getMetadata();
+            ClientResource resource = createResource(metadata
+                    .getSubpath(source)
+                    + "/$links/" + sourceProperty);
+
+            try {
+                // TODO Fix chunked request with net client connector
+                StringBuilder sb = new StringBuilder("<uri xmlns=\"");
+                sb.append(WCF_DATASERVICES_NAMESPACE);
+                sb.append("\">");
+                sb.append(serviceRef.toString());
+                sb.append(metadata.getSubpath(target));
+                sb.append("</uri>");
+
+                StringRepresentation r = new StringRepresentation(
+                        sb.toString(), MediaType.APPLICATION_XML);
+                resource.put(r);
+            } catch (ResourceException re) {
+                throw new ResourceException(re.getStatus(),
+                        "Can't set entity to this entity set "
+                                + resource.getReference());
+            } finally {
+                this.latestRequest = resource.getRequest();
+                this.latestResponse = resource.getResponse();
+            }
+        } else {
+            ReflectUtils.invokeSetter(source, sourceProperty, null);
+            updateEntity(source);
+        }
+    }
+
+    /**
      * Sets the maximum version of the OData protocol extensions the client can
      * accept in a response.
      * 
-     * @param maxDataServiceVersion
+     * @param maxClientVersion
      *            The maximum version of the OData protocol extensions the
      *            client can accept in a response.
      */
-    public void setMaxDataServiceVersion(String maxDataServiceVersion) {
-        this.maxDataServiceVersion = maxDataServiceVersion;
+    public void setMaxClientVersion(String maxClientVersion) {
+        this.maxClientVersion = maxClientVersion;
     }
 
     /**
@@ -927,10 +966,10 @@ public class Service {
             entry.write(o);
             StringRepresentation r = new StringRepresentation(o.toString(),
                     MediaType.APPLICATION_ATOM);
-            String eTag = getETag(entity);
-            if (eTag != null) {
+            String tag = getTag(entity);
+            if (tag != null) {
                 // Add a condition
-                resource.getConditions().setMatch(Arrays.asList(new Tag(eTag)));
+                resource.getConditions().setMatch(Arrays.asList(new Tag(tag)));
             }
             resource.put(r);
         } catch (ResourceException re) {
