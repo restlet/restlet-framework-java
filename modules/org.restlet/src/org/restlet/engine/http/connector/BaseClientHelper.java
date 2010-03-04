@@ -546,6 +546,10 @@ public class BaseClientHelper extends BaseHelper<Client> {
                 // port
                 InetSocketAddress socketAddress = new InetSocketAddress(
                         hostDomain, hostPort);
+                if (socketAddress.getAddress() == null) {
+                    throw new UnknownHostException(hostDomain);
+                }
+                
                 int hostConnectionCount = 0;
                 int bestCount = 0;
                 Connection<Client> bestConn = null;
