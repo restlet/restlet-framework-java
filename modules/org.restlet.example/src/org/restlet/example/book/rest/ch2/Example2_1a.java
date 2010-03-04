@@ -30,11 +30,10 @@
 
 package org.restlet.example.book.rest.ch2;
 
-import org.restlet.Client;
-import org.restlet.Response;
-import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.ext.xml.DomRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.resource.ClientResource;
 import org.w3c.dom.Node;
 
 /**
@@ -50,15 +49,14 @@ public class Example2_1a {
             System.err.println("You need to pass a term to search");
         } else {
             // Fetch a resource: an XML document full of search results
-            final String term = Reference.encode(args[0]);
-            final String uri = BASE_URI + "?appid=restbook&query=" + term;
-            final Response response = new Client(Protocol.HTTP).get(uri);
-            final DomRepresentation document = new DomRepresentation(response
-                    .getEntity());
+            String term = Reference.encode(args[0]);
+            String uri = BASE_URI + "?appid=restbook&query=" + term;
+            Representation entity = new ClientResource(uri).get();
+            DomRepresentation document = new DomRepresentation(entity);
 
             // Use XPath to find the interesting parts of the data structure
-            final String expr = "/ResultSet/Result/Title";
-            for (final Node node : document.getNodes(expr)) {
+            String expr = "/ResultSet/Result/Title";
+            for (Node node : document.getNodes(expr)) {
                 System.out.println(node.getTextContent());
             }
         }

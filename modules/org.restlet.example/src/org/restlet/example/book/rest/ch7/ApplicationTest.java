@@ -30,14 +30,10 @@
 
 package org.restlet.example.book.rest.ch7;
 
-import org.restlet.Client;
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Form;
-import org.restlet.data.Method;
-import org.restlet.data.Protocol;
+import org.restlet.resource.ClientResource;
 
 /**
  * Client code that can be used to test the application developed in the chapter
@@ -51,38 +47,38 @@ public class ApplicationTest {
 
     public static void deleteBookmark(String userName, String password,
             String uri) {
-        final Request request = getAuthenticatedRequest(Method.DELETE,
-                getBookmarkUri(userName, uri), userName, password);
-        final Response resp = new Client(Protocol.HTTP).handle(request);
-        System.out.println(resp.getStatus() + " : " + resp.getLocationRef());
+        ClientResource resource = getAuthenticatedResource(getBookmarkUri(
+                userName, uri), userName, password);
+        resource.delete();
+        System.out.println(resource.getStatus() + " : "
+                + resource.getLocationRef());
     }
 
     public static void deleteUser(String userName, String password) {
-        final Request request = getAuthenticatedRequest(Method.DELETE,
+        ClientResource resource = getAuthenticatedResource(
                 getUserUri(userName), userName, password);
-        final Response resp = new Client(Protocol.HTTP).handle(request);
-        System.out.println(resp.getStatus() + " : " + resp.getLocationRef());
+        resource.delete();
+        System.out.println(resource.getStatus() + " : "
+                + resource.getLocationRef());
     }
 
     /**
-     * Creates an authenticated request.
+     * Creates an authenticated resour ce.
      * 
-     * @param method
-     *            The request method.
      * @param uri
      *            The target resource URI.
      * @param login
      *            The login name.
      * @param password
      *            The password.
-     * @return The authenticated request to use.
+     * @return The authenticated resource to use.
      */
-    public static Request getAuthenticatedRequest(Method method, String uri,
+    public static ClientResource getAuthenticatedResource(String uri,
             String login, String password) {
-        final Request request = new Request(method, uri);
-        request.setChallengeResponse(new ChallengeResponse(
+        ClientResource result = new ClientResource(uri);
+        result.setChallengeResponse(new ChallengeResponse(
                 ChallengeScheme.HTTP_BASIC, login, password));
-        return request;
+        return result;
     }
 
     public static String getBookmarkUri(String userName, String uri) {
@@ -124,32 +120,30 @@ public class ApplicationTest {
     public static void putBookmark(String userName, String password,
             String uri, String shortDescription, String longDescription,
             boolean restrict) {
-        final Form form = new Form();
+        Form form = new Form();
         form.add("bookmark[short_description]", shortDescription);
         form.add("bookmark[long_description]", longDescription);
         form.add("bookmark[restrict]", Boolean.toString(restrict));
 
-        // Create an authenticated request as a bookmark is in
+        // Create an authenticated resource as a bookmark is in
         // the user's private area
-        final Request request = getAuthenticatedRequest(Method.PUT,
-                getBookmarkUri(userName, uri), userName, password);
-        request.setEntity(form.getWebRepresentation());
+        ClientResource resource = getAuthenticatedResource(getBookmarkUri(
+                userName, uri), userName, password);
+        resource.put(form.getWebRepresentation());
 
-        // Invoke the client HTTP connector
-        final Response resp = new Client(Protocol.HTTP).handle(request);
-        System.out.println(resp.getStatus());
+        System.out.println(resource.getStatus());
     }
 
     public static void putUser(String userName, String password,
             String fullName, String email) {
-        final Form form = new Form();
+        Form form = new Form();
         form.add("user[password]", password);
         form.add("user[full_name]", fullName);
         form.add("user[email]", email);
 
-        final Response resp = new Client(Protocol.HTTP).put(
-                getUserUri(userName), form.getWebRepresentation());
-        System.out.println(resp.getStatus());
+        ClientResource resource = new ClientResource(getUserUri(userName));
+        resource.put(form.getWebRepresentation());
+        System.out.println(resource.getStatus());
     }
 
 }

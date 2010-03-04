@@ -30,10 +30,9 @@
 
 package org.restlet.example.book.rest.ch6;
 
-import org.restlet.Client;
 import org.restlet.data.Form;
-import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
+import org.restlet.resource.ClientResource;
 
 /**
  * Sample map client to create a user account
@@ -43,14 +42,13 @@ import org.restlet.data.Reference;
 public class Example6_1 {
     public void makeUser(String user, String password) {
         // Create the input form
-        final Form input = new Form();
+        Form input = new Form();
         input.add("password", password);
 
         // Create the target URI, encoding the user name
-        final String uri = "https://maps.example.com/user/"
-                + Reference.encode(user);
+        String uri = "https://maps.example.com/user/" + Reference.encode(user);
 
         // Invoke the web service
-        new Client(Protocol.HTTP).put(uri, input.getWebRepresentation());
+        new ClientResource(uri).put(input.getWebRepresentation());
     }
 }

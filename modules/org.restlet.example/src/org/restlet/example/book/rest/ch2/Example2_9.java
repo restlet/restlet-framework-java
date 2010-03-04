@@ -32,11 +32,10 @@ package org.restlet.example.book.rest.ch2;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.restlet.Client;
-import org.restlet.Response;
-import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.ext.json.JsonRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.resource.ClientResource;
 
 /**
  * Searching the web with Yahoo!'s web service using JSON.
@@ -51,16 +50,14 @@ public class Example2_9 {
             System.err.println("You need to pass a term to search");
         } else {
             // Fetch a resource: a JSON document full of search results
-            final String term = Reference.encode(args[0]);
-            final String uri = BASE_URI + "?appid=restbook&output=json&query="
-                    + term;
-            final Response response = new Client(Protocol.HTTP).get(uri);
-            final JSONObject json = new JsonRepresentation(response.getEntity())
-                    .toJsonObject();
+            String term = Reference.encode(args[0]);
+            String uri = BASE_URI + "?appid=restbook&output=json&query=" + term;
+            Representation entity = new ClientResource(uri).get();
+            JSONObject json = new JsonRepresentation(entity).toJsonObject();
 
             // Navigate within the JSON document to display the titles
-            final JSONObject resultSet = json.getJSONObject("ResultSet");
-            final JSONArray results = resultSet.getJSONArray("Result");
+            JSONObject resultSet = json.getJSONObject("ResultSet");
+            JSONArray results = resultSet.getJSONArray("Result");
             for (int i = 0; i < results.length(); i++) {
                 System.out.println(results.getJSONObject(i).getString("Title"));
             }

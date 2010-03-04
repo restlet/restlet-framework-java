@@ -30,14 +30,11 @@
 
 package org.restlet.example.book.rest.ch2;
 
-import org.restlet.Client;
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
-import org.restlet.data.Method;
-import org.restlet.data.Protocol;
 import org.restlet.ext.xml.DomRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.resource.ClientResource;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
@@ -53,23 +50,20 @@ public class Example2_5 {
                     .println("You need to pass your del.icio.us user name and password");
         } else {
             // Create a authenticated request
-            final Request request = new Request(Method.GET,
+            ClientResource resource = new ClientResource(
                     "https://api.del.icio.us/v1/posts/recent");
-            request.setChallengeResponse(new ChallengeResponse(
+            resource.setChallengeResponse(new ChallengeResponse(
                     ChallengeScheme.HTTP_BASIC, args[0], args[1]));
 
             // Fetch a resource: an XML document with your recent posts
-            final Response response = new Client(Protocol.HTTPS)
-                    .handle(request);
-            final DomRepresentation document = new DomRepresentation(response
-                    .getEntity());
+            Representation entity = resource.get();
+            DomRepresentation document = new DomRepresentation(entity);
 
             // Use XPath to find the interesting parts of the data structure
-            for (final Node node : document.getNodes("/posts/post")) {
-                final NamedNodeMap attrs = node.getAttributes();
-                final String desc = attrs.getNamedItem("description")
-                        .getNodeValue();
-                final String href = attrs.getNamedItem("href").getNodeValue();
+            for (Node node : document.getNodes("/posts/post")) {
+                NamedNodeMap attrs = node.getAttributes();
+                String desc = attrs.getNamedItem("description").getNodeValue();
+                String href = attrs.getNamedItem("href").getNodeValue();
                 System.out.println(desc + ": " + href);
             }
         }
