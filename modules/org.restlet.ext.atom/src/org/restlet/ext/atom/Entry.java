@@ -533,8 +533,21 @@ public class Entry extends SaxRepresentation {
         if (getUpdated() != null) {
             Text.writeElement(writer, getUpdated(), ATOM_NAMESPACE, "updated");
         }
+        
+        writeInlineContent(writer);
 
         writer.endElement(ATOM_NAMESPACE, "entry");
     }
 
+    /**
+     * Allow to write extra content inside the entry. The default implementation
+     * does nothing and is intended to be overridden.
+     * 
+     * @param writer
+     *            The SAX writer.
+     * @throws SAXException
+     */
+    public void writeInlineContent(XmlWriter writer) throws SAXException {
+        // Do nothing by default.
+    }
 }
