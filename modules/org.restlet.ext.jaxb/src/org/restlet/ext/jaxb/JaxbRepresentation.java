@@ -44,17 +44,13 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.ValidationEventHandler;
 import javax.xml.bind.util.JAXBSource;
-import javax.xml.namespace.QName;
 import javax.xml.transform.sax.SAXSource;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathFactory;
 
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.ext.xml.XmlRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
-import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
 /**
@@ -480,24 +476,8 @@ public class JaxbRepresentation<T> extends XmlRepresentation {
     }
 
     @Override
-    public Object evaluate(String expression, QName returnType)
-            throws Exception {
-        Object result = null;
-        final XPath xpath = XPathFactory.newInstance().newXPath();
-        xpath.setNamespaceContext(this);
-
-        final Document xmlDocument = getDocumentBuilder().parse(
-                new InputSource(this.xmlRepresentation.getReader()));
-
-        if (xmlDocument != null) {
-            result = xpath.evaluate(expression, xmlDocument, returnType);
-        } else {
-            throw new Exception(
-                    "Unable to obtain a DOM document for the XML representation. "
-                            + "XPath evaluation cancelled.");
-        }
-
-        return result;
+    public InputSource getInputSource() throws IOException {
+        return new InputSource(this.xmlRepresentation.getReader());
     }
 
     /**

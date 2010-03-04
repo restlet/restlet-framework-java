@@ -43,11 +43,14 @@ import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathFactory;
 
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
+import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.EntityResolver;
@@ -68,7 +71,6 @@ public abstract class XmlRepresentation extends OutputRepresentation
 // [enddef]
 {
 
-    
     // [ifdef android] method
     /**
      * Appends the text content of a given node and its descendants to the given
@@ -244,11 +246,25 @@ public abstract class XmlRepresentation extends OutputRepresentation
 
     /**
      * Indicates the desire for validating this type of XML representations
-     * against an XML schema if one is referenced within the contents.
+     * against a DTD. Note that for XML schema or Relax NG validation, use the
+     * "schema" property instead.
      * 
      * @see DocumentBuilderFactory#setValidating(boolean)
      */
-    private volatile boolean validating;
+    private volatile boolean validatingDtd;
+
+    /**
+     * Specifies that the parser produced by this code will convert CDATA nodes
+     * to text nodes and append it to the adjacent (if any) text node. By
+     * default the value of this is set to false.
+     */
+    private volatile boolean coalescing;
+
+    private volatile boolean expandingEntityRefs;
+
+    private volatile boolean ignoringComments;
+
+    private volatile boolean ignoringExtraWhitespaces;
 
     /**
      * Indicates the desire for processing <em>XInclude</em> if found in this
@@ -265,9 +281,7 @@ public abstract class XmlRepresentation extends OutputRepresentation
      *            The representation's mediaType.
      */
     public XmlRepresentation(MediaType mediaType) {
-        super(mediaType);
-        this.namespaces = null;
-        this.namespaceAware = false;
+        this(mediaType, UNKNOWN_SIZE);
     }
 
     /**
@@ -280,8 +294,17 @@ public abstract class XmlRepresentation extends OutputRepresentation
      */
     public XmlRepresentation(MediaType mediaType, long expectedSize) {
         super(mediaType, expectedSize);
-        this.namespaces = null;
+        this.coalescing = false;
+        this.entityResolver = null;
+        this.errorHandler = null;
+        this.expandingEntityRefs = true;
+        this.ignoringComments = false;
+        this.ignoringExtraWhitespaces = false;
         this.namespaceAware = false;
+        this.namespaces = null;
+        this.schema = null;
+        this.validatingDtd = false;
+        this.xIncludeAware = false;
     }
 
     // [ifndef android] member
@@ -295,8 +318,23 @@ public abstract class XmlRepresentation extends OutputRepresentation
      * @see javax.xml.xpath.XPathException
      * @see javax.xml.xpath.XPathConstants
      */
-    public abstract Object evaluate(String expression,
-            javax.xml.namespace.QName returnType) throws Exception;
+    public Object evaluate(String expression,
+            javax.xml.namespace.QName returnType) throws Exception {
+        Object result = null;
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        xpath.setNamespaceContext(this);
+        Document xmlDocument = getDocument();
+
+        if (xmlDocument != null) {
+            result = xpath.evaluate(expression, xmlDocument, returnType);
+        } else {
+            throw new Exception(
+                    "Unable to obtain a DOM document for the XML representation. "
+                            + "XPath evaluation cancelled.");
+        }
+
+        return result;
+    }
 
     // [ifndef android] method
     /**
@@ -311,6 +349,15 @@ public abstract class XmlRepresentation extends OutputRepresentation
     }
 
     /**
+     * Returns the XML representation as a DOM document.
+     * 
+     * @return The DOM document.
+     */
+    public Document getDocument() throws Exception {
+        return getDocumentBuilder().parse(getInputSource());
+    }
+
+    /**
      * Returns a document builder properly configured.
      * 
      * @return A document builder properly configured.
@@ -321,7 +368,12 @@ public abstract class XmlRepresentation extends OutputRepresentation
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             dbf.setNamespaceAware(isNamespaceAware());
-            dbf.setValidating(isValidating());
+            dbf.setValidating(isValidatingDtd());
+            dbf.setCoalescing(isCoalescing());
+            dbf.setExpandEntityReferences(isExpandingEntityRefs());
+            dbf.setIgnoringComments(isIgnoringComments());
+            dbf
+                    .setIgnoringElementContentWhitespace(isIgnoringExtraWhitespaces());
 
             try {
                 dbf.setXIncludeAware(isXIncludeAware());
@@ -394,6 +446,13 @@ public abstract class XmlRepresentation extends OutputRepresentation
     public ErrorHandler getErrorHandler() {
         return errorHandler;
     }
+
+    /**
+     * Returns the XML representation as a SAX input source.
+     * 
+     * @return The SAX input source.
+     */
+    public abstract InputSource getInputSource() throws IOException;
 
     /**
      * Returns the map of namespaces.
@@ -565,6 +624,29 @@ public abstract class XmlRepresentation extends OutputRepresentation
     }
 
     /**
+     * Indicates if the parser should be coalescing text. If true the parser
+     * will convert CDATA nodes to text nodes and append it to the adjacent (if
+     * any) text node. By default the value of this is set to false.
+     * 
+     * @return True if parser should be coalescing text.
+     */
+    public boolean isCoalescing() {
+        return coalescing;
+    }
+
+    public boolean isExpandingEntityRefs() {
+        return expandingEntityRefs;
+    }
+
+    public boolean isIgnoringComments() {
+        return ignoringComments;
+    }
+
+    public boolean isIgnoringExtraWhitespaces() {
+        return ignoringExtraWhitespaces;
+    }
+
+    /**
      * Indicates if processing is namespace aware.
      * 
      * @return True if processing is namespace aware.
@@ -579,8 +661,8 @@ public abstract class XmlRepresentation extends OutputRepresentation
      * 
      * @return True if the schema-based validation is enabled.
      */
-    public boolean isValidating() {
-        return validating;
+    public boolean isValidatingDtd() {
+        return validatingDtd;
     }
 
     /**
@@ -618,6 +700,18 @@ public abstract class XmlRepresentation extends OutputRepresentation
     }
 
     /**
+     * Indicates if the parser should be coalescing text. If true the parser
+     * will convert CDATA nodes to text nodes and append it to the adjacent (if
+     * any) text node. By default the value of this is set to false.
+     * 
+     * @param coalescing
+     *            True if parser should be coalescing text.
+     */
+    public void setCoalescing(boolean coalescing) {
+        this.coalescing = coalescing;
+    }
+
+    /**
      * Set the {@link EntityResolver} to use when resolving external entity
      * references encountered in this type of XML representations.
      * 
@@ -636,6 +730,24 @@ public abstract class XmlRepresentation extends OutputRepresentation
      */
     public void setErrorHandler(ErrorHandler errorHandler) {
         this.errorHandler = errorHandler;
+    }
+
+    public void setExpandingEntityRefs(boolean expandEntityRefs) {
+        this.expandingEntityRefs = expandEntityRefs;
+    }
+
+    public void setIgnoringComments(boolean ignoringComments) {
+        this.ignoringComments = ignoringComments;
+    }
+
+    public void setIgnoringExtraWhitespaces(boolean ignoringExtraWhitespaces) {
+        if (this.ignoringExtraWhitespaces != ignoringExtraWhitespaces) {
+            if (ignoringExtraWhitespaces) {
+                setValidatingDtd(true);
+            }
+
+            this.ignoringExtraWhitespaces = ignoringExtraWhitespaces;
+        }
     }
 
     /**
@@ -685,8 +797,8 @@ public abstract class XmlRepresentation extends OutputRepresentation
      * @param validating
      *            The new validation flag to set.
      */
-    public void setValidating(boolean validating) {
-        this.validating = validating;
+    public void setValidatingDtd(boolean validating) {
+        this.validatingDtd = validating;
     }
 
     /**

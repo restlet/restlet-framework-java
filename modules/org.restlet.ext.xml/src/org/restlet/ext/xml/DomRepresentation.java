@@ -141,16 +141,6 @@ public class DomRepresentation extends XmlRepresentation {
         }
     }
 
-    // [ifndef android] method
-    @Override
-    public Object evaluate(String expression,
-            javax.xml.namespace.QName returnType) throws Exception {
-        final javax.xml.xpath.XPath xpath = javax.xml.xpath.XPathFactory
-                .newInstance().newXPath();
-        xpath.setNamespaceContext(this);
-        return xpath.evaluate(expression, getDocument(), returnType);
-    }
-
     /**
      * Returns the wrapped DOM document. If no document is defined yet, it
      * attempts to parse the XML representation eventually given at construction
@@ -158,14 +148,12 @@ public class DomRepresentation extends XmlRepresentation {
      * 
      * @return The wrapped DOM document.
      */
+    @Override
     public Document getDocument() throws IOException {
         if (this.dom == null) {
             if (this.xmlRepresentation != null) {
                 try {
-                    this.dom = getDocumentBuilder()
-                            .parse(
-                                    new InputSource(this.xmlRepresentation
-                                            .getReader()));
+                    this.dom = getDocumentBuilder().parse(getInputSource());
                 } catch (SAXException se) {
                     throw new IOException(
                             "Couldn't read the XML representation. "
@@ -188,6 +176,11 @@ public class DomRepresentation extends XmlRepresentation {
     @Override
     public javax.xml.transform.dom.DOMSource getDomSource() throws IOException {
         return new javax.xml.transform.dom.DOMSource(getDocument());
+    }
+
+    @Override
+    public InputSource getInputSource() throws IOException {
+        return new InputSource(this.xmlRepresentation.getReader());
     }
 
     /**

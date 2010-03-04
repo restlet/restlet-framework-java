@@ -33,7 +33,6 @@ package org.restlet.ext.xml;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import javax.xml.namespace.QName;
 import javax.xml.transform.Result;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -42,8 +41,6 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.sax.SAXSource;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathFactory;
 
 import org.restlet.data.MediaType;
 import org.restlet.representation.Representation;
@@ -148,23 +145,8 @@ public class SaxRepresentation extends XmlRepresentation {
     }
 
     @Override
-    public Object evaluate(String expression, QName returnType)
-            throws Exception {
-        Object result = null;
-        final XPath xpath = XPathFactory.newInstance().newXPath();
-        xpath.setNamespaceContext(this);
-
-        if (this.source != null) {
-            Document document = getDocumentBuilder().parse(
-                    SAXSource.sourceToInputSource(this.source));
-            result = xpath.evaluate(expression, document, returnType);
-        } else {
-            throw new Exception(
-                    "Unable to obtain a DOM document for the SAX representation. "
-                            + "XPath evaluation cancelled.");
-        }
-
-        return result;
+    public InputSource getInputSource() throws IOException {
+        return new InputSource(getReader());
     }
 
     /**
@@ -174,7 +156,7 @@ public class SaxRepresentation extends XmlRepresentation {
     @Override
     public SAXSource getSaxSource() throws IOException {
         if (this.source == null) {
-            return new SAXSource(new InputSource(getReader()));
+            return new SAXSource(getInputSource());
         }
 
         return this.source;
