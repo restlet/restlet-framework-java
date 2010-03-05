@@ -113,6 +113,12 @@ public class SaxRepresentation extends XmlRepresentation {
         }
     }
 
+
+    @Override
+    public InputSource getInputSource() throws IOException {
+        return source;
+    }
+
     /**
      * Parses the source and sends SAX events to a content handler.
      * 

@@ -302,12 +302,13 @@ public abstract class XmlRepresentation extends OutputRepresentation
         this.ignoringExtraWhitespaces = false;
         this.namespaceAware = false;
         this.namespaces = null;
-        this.schema = null;
         this.validatingDtd = false;
         this.xIncludeAware = false;
+        // [ifndef android] line
+        this.schema = null;
     }
 
-    // [ifndef android] member
+    // [ifndef android] method
     /**
      * Evaluates an XPath expression and returns the result as in the given
      * return type.
