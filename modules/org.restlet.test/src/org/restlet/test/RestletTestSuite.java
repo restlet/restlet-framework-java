@@ -53,6 +53,7 @@ import org.restlet.test.ext.atom.AtomTestCase;
 import org.restlet.test.ext.freemarker.FreeMarkerTestCase;
 import org.restlet.test.ext.jaxb.JaxbBasicConverterTest;
 import org.restlet.test.ext.jaxb.JaxbIntegrationConverterTestCase;
+import org.restlet.test.ext.odata.ODataTestSuite;
 import org.restlet.test.ext.spring.AllSpringTests;
 import org.restlet.test.ext.velocity.VelocityTestCase;
 import org.restlet.test.ext.wadl.WadlTestCase;
@@ -121,6 +122,7 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(ValidatorTestCase.class);
         addTestSuite(VelocityTestCase.class);
         addTestSuite(WadlTestCase.class);
+        addTest(ODataTestSuite.suite());
         // TODO Fix Zip client test case
         // addTestSuite(ZipClientTestCase.class);
 

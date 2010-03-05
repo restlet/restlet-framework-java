@@ -25,6 +25,7 @@
 		<dependency type="module" id="httpclient" />
 		<dependency type="module" id="net" />
 		<dependency type="module" id="netty" />
+		<dependency type="module" id="odata" />
 		<dependency type="module" id="simple" />
 		<dependency type="module" id="jetty" />
 		<dependency type="module" id="freemarker" />
@@ -65,6 +66,7 @@
          <include name="tomcat/**" />
          <include name="target/**" />
          <include name="src/org/restlet/test/gwt/**" />
+         <exclude name="src/org/restlet/test/ext/odata/**" />
 ]]>
 		</files-sets>
 	</source>
