@@ -180,7 +180,7 @@ public class Type {
      * @return The package name related to the given schema.
      */
     public static String getPackageName(Schema schema) {
-        return getPackageName(schema.getNamespace().getNormalizedName());
+        return getPackageName(schema.getNamespace().getName());
     }
 
     /**
@@ -200,8 +200,7 @@ public class Type {
             if (i > 0) {
                 builder.append(".");
             }
-            builder.append(string.substring(0, 1).toLowerCase());
-            builder.append(string.substring(1));
+            builder.append(string.toLowerCase());
         }
         return builder.toString();
     }

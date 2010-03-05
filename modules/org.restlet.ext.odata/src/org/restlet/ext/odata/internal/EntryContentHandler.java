@@ -151,9 +151,9 @@ public class EntryContentHandler<T> extends EntryReader {
                             mapping.getPropertyPath(), sb.toString());
                 } catch (Exception e) {
                     getLogger().warning(
-                            "Cannot set " + mapping.getPropertyPath()
-                                    + " property on " + entity + " with value "
-                                    + sb.toString());
+                            "Cannot set the mapped property "
+                                    + mapping.getPropertyPath() + " on "
+                                    + entity + " with value " + sb.toString());
 
                 }
             }

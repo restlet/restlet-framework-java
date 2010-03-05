@@ -209,6 +209,11 @@ public class FeedContentHandler<T> extends FeedReader {
                                     + entity + " with value " + sb.toString());
                 }
             }
+        } else if (parseProperties) {
+            if (Service.WCF_DATASERVICES_METADATA_NAMESPACE.equals(uri)
+                    && "properties".equals(localName)) {
+                parseProperties = false;
+            }
         } else if (parseEntry) {
             if (mapping != null) {
                 if (sb != null) {
@@ -217,9 +222,10 @@ public class FeedContentHandler<T> extends FeedReader {
                                 .getPropertyPath(), sb.toString());
                     } catch (Exception e) {
                         getLogger().warning(
-                                "Cannot set " + mapping.getPropertyPath()
-                                        + " property on " + entity
-                                        + " with value " + sb.toString());
+                                "Cannot set the mapped property "
+                                        + mapping.getPropertyPath() + " on "
+                                        + entity + " with value "
+                                        + sb.toString());
                     }
                 }
                 mapping = null;
@@ -227,11 +233,6 @@ public class FeedContentHandler<T> extends FeedReader {
 
             if (!eltPath.isEmpty()) {
                 eltPath.remove(eltPath.size() - 1);
-            }
-        } else if(parseProperties){
-            if (Service.WCF_DATASERVICES_METADATA_NAMESPACE.equals(uri)
-                    && "properties".equals(localName)) {
-                parseProperties = false;
             }
         }
     }
@@ -289,9 +290,9 @@ public class FeedContentHandler<T> extends FeedReader {
                     }
                 } catch (Exception e) {
                     getLogger().warning(
-                            "Cannot set " + m.getPropertyPath()
-                                    + " property on " + entity + " with value "
-                                    + value);
+                            "Cannot set the mapped property "
+                                    + m.getPropertyPath() + " on " + entity
+                                    + " with value " + value);
                 }
             }
         }
@@ -417,7 +418,7 @@ public class FeedContentHandler<T> extends FeedReader {
                 parseProperty = true;
                 parsePropertyNull = Boolean.parseBoolean(attrs.getValue(
                         Service.WCF_DATASERVICES_METADATA_NAMESPACE, "null"));
-            } 
+            }
         } else if (parseContent) {
             if (Service.WCF_DATASERVICES_METADATA_NAMESPACE.equals(uri)
                     && "properties".equals(localName)) {

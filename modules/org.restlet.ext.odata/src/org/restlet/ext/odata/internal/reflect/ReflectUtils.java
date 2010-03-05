@@ -209,7 +209,7 @@ public class ReflectUtils {
                         Field[] fields = o.getClass().getDeclaredFields();
                         for (Field field : fields) {
                             if (field.getName().equalsIgnoreCase(string)) {
-                                o = field.getClass().newInstance();
+                                p = field.getType().newInstance();
                                 break;
                             }
                         }
@@ -279,7 +279,7 @@ public class ReflectUtils {
                         Field[] fields = o.getClass().getDeclaredFields();
                         for (Field field : fields) {
                             if (field.getName().equalsIgnoreCase(string)) {
-                                o = field.getClass().newInstance();
+                                p = field.getType().newInstance();
                                 break;
                             }
                         }
