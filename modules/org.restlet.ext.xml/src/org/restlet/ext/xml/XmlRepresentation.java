@@ -254,21 +254,34 @@ public abstract class XmlRepresentation extends OutputRepresentation
     private volatile boolean validatingDtd;
 
     /**
-     * Specifies that the parser produced by this code will convert CDATA nodes
-     * to text nodes and append it to the adjacent (if any) text node. By
-     * default the value of this is set to false.
+     * Specifies that the parser will convert CDATA nodes to text nodes and
+     * append it to the adjacent (if any) text node. By default the value of
+     * this is set to false.
      */
     private volatile boolean coalescing;
 
+    /**
+     * Specifies that the parser will expand entity reference nodes. By default
+     * the value of this is set to true.
+     */
     private volatile boolean expandingEntityRefs;
 
+    /**
+     * Indicates if the parser will ignore comments. By default the value of
+     * this is set to false.
+     */
     private volatile boolean ignoringComments;
 
+    /**
+     * Indicates if the parser will ignore extra white spaces in element
+     * content. By default the value of this is set to false.
+     */
     private volatile boolean ignoringExtraWhitespaces;
 
     /**
      * Indicates the desire for processing <em>XInclude</em> if found in this
-     * type of XML representations.
+     * type of XML representations. By default the value of this is set to
+     * false.
      * 
      * @see DocumentBuilderFactory#setXIncludeAware(boolean)
      */
@@ -354,7 +367,7 @@ public abstract class XmlRepresentation extends OutputRepresentation
      * 
      * @return The DOM document.
      */
-    public Document getDocument() throws Exception {
+    protected Document getDocument() throws Exception {
         return getDocumentBuilder().parse(getInputSource());
     }
 
@@ -413,7 +426,7 @@ public abstract class XmlRepresentation extends OutputRepresentation
         Node document = null;
 
         try {
-            document = getDocumentBuilder().parse(new InputSource(getReader()));
+            document = getDocumentBuilder().parse(getInputSource());
         } catch (SAXException se) {
             throw new IOException("Couldn't read the XML representation. "
                     + se.getMessage());
@@ -460,7 +473,7 @@ public abstract class XmlRepresentation extends OutputRepresentation
      * 
      * @return The map of namespaces.
      */
-    protected Map<String, String> getNamespaces() {
+    public Map<String, String> getNamespaces() {
         if (this.namespaces == null) {
             this.namespaces = new HashMap<String, String>();
         }
@@ -635,14 +648,34 @@ public abstract class XmlRepresentation extends OutputRepresentation
         return coalescing;
     }
 
+    /**
+     * Indicates if the parser will expand entity reference nodes. By default
+     * the value of this is set to true.
+     * 
+     * @return True if the parser will expand entity reference nodes.
+     */
     public boolean isExpandingEntityRefs() {
         return expandingEntityRefs;
     }
 
+    /**
+     * Indicates if the parser will ignore comments. By default the value of
+     * this is set to false.
+     * 
+     * @return True if the parser will ignore comments.
+     */
     public boolean isIgnoringComments() {
         return ignoringComments;
     }
 
+    /**
+     * Indicates if the parser will ignore extra white spaces in element
+     * content. Note that the {@link #isValidatingDtd()} must be true when this
+     * property is 'true' as validation is needed for it to work. By default the
+     * value of this is set to false.
+     * 
+     * @return True if the parser will ignore extra white spaces.
+     */
     public boolean isIgnoringExtraWhitespaces() {
         return ignoringExtraWhitespaces;
     }
@@ -668,7 +701,8 @@ public abstract class XmlRepresentation extends OutputRepresentation
 
     /**
      * Indicates the desire for processing <em>XInclude</em> if found in this
-     * type of XML representations.
+     * type of XML representations. By default the value of this is set to
+     * false.
      * 
      * @return The current value of the xIncludeAware flag.
      */
@@ -733,14 +767,38 @@ public abstract class XmlRepresentation extends OutputRepresentation
         this.errorHandler = errorHandler;
     }
 
+    /**
+     * Indicates if the parser will expand entity reference nodes. By default
+     * the value of this is set to true.
+     * 
+     * @param expandEntityRefs
+     *            True if the parser will expand entity reference nodes.
+     */
     public void setExpandingEntityRefs(boolean expandEntityRefs) {
         this.expandingEntityRefs = expandEntityRefs;
     }
 
+    /**
+     * Indicates if the parser will ignore comments. By default the value of
+     * this is set to false.
+     * 
+     * @param ignoringComments
+     *            True if the parser will ignore comments.
+     */
     public void setIgnoringComments(boolean ignoringComments) {
         this.ignoringComments = ignoringComments;
     }
 
+    /**
+     * Indicates if the parser will ignore extra white spaces in element
+     * content. Note that the {@link #setValidatingDtd(boolean)} will be invoked
+     * with 'true' if setting this property to 'true' as validation is needed
+     * for it to work.
+     * 
+     * @param ignoringExtraWhitespaces
+     *            True if the parser will ignore extra white spaces in element
+     *            content.
+     */
     public void setIgnoringExtraWhitespaces(boolean ignoringExtraWhitespaces) {
         if (this.ignoringExtraWhitespaces != ignoringExtraWhitespaces) {
             if (ignoringExtraWhitespaces) {
@@ -804,7 +862,8 @@ public abstract class XmlRepresentation extends OutputRepresentation
 
     /**
      * Indicates the desire for processing <em>XInclude</em> if found in this
-     * type of XML representations.
+     * type of XML representations. By default the value of this is set to
+     * false.
      * 
      * @param includeAware
      *            The new value of the xIncludeAware flag.

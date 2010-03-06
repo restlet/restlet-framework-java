@@ -1,4 +1,4 @@
-package org.restlet.example.book.restlet.ch05.sec2.sub2;
+package org.restlet.example.book.restlet.ch05.sec2.sub4;
 
 import java.io.IOException;
 
@@ -8,7 +8,6 @@ import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 /**
@@ -65,30 +64,17 @@ public class MailServerResource extends ServerResource {
         // Wraps the XML representation in a DOM representation
         DomRepresentation mailRep = new DomRepresentation(representation);
 
-        // Parses and normalizes the DOM document
-        Document doc;
-        try {
-            doc = mailRep.getDocument();
+        // Retrieve the XML element using XPath expressions
+        Node statusElt = mailRep.getNode("/mail/status");
+        Node subjectElt = mailRep.getNode("/mail/subject");
+        Node contentElt = mailRep.getNode("/mail/content");
+        Node accountRefElt = mailRep.getNode("/mail/accountRef");
 
-            Element mailElt = doc.getDocumentElement();
-            Element statusElt = (Element) mailElt
-                    .getElementsByTagName("status").item(0);
-            Element subjectElt = (Element) mailElt.getElementsByTagName(
-                    "subject").item(0);
-            Element contentElt = (Element) mailElt.getElementsByTagName(
-                    "content").item(0);
-            Element accountRefElt = (Element) mailElt.getElementsByTagName(
-                    "accountRef").item(0);
-
-            // Output the XML element values
-            System.out.println("Status: " + statusElt.getTextContent());
-            System.out.println("Subject: " + subjectElt.getTextContent());
-            System.out.println("Content: " + contentElt.getTextContent());
-            System.out
-                    .println("Account URI: " + accountRefElt.getTextContent());
-        } catch (IOException e) {
-            throw new ResourceException(e);
-        }
+        // Output the XML element values
+        System.out.println("Status: " + statusElt.getTextContent());
+        System.out.println("Subject: " + subjectElt.getTextContent());
+        System.out.println("Content: " + contentElt.getTextContent());
+        System.out.println("Account URI: " + accountRefElt.getTextContent());
 
         return null;
     }
