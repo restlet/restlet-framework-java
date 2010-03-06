@@ -34,14 +34,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
-import org.restlet.Client;
 import org.restlet.Component;
-import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.data.LocalReference;
 import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
-import org.restlet.data.Reference;
 import org.restlet.example.ext.rdf.foaf.data.ListFacade;
 import org.restlet.example.ext.rdf.foaf.objects.ObjectsFacade;
 import org.restlet.example.ext.rdf.foaf.resources.ContactResource;

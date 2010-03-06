@@ -71,6 +71,10 @@ public abstract class AbstractXmlReader implements XMLReader {
     public AbstractXmlReader() {
         this.features = new HashMap<String, Boolean>();
         this.properties = new HashMap<String, Object>();
+        this.contentHandler = null;
+        this.entityResolver = null;
+        this.errorHandler = null;
+        this.handler = null;
     }
 
     /**

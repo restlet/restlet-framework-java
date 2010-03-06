@@ -111,8 +111,11 @@ public class EntryContentReader extends EntryReader {
 
     /**
      * Constructor.
-     * @param entry The entry object to update during the parsing.
-     * @param extraEntryHandler Custom handler of all events.
+     * 
+     * @param entry
+     *            The entry object to update during the parsing.
+     * @param extraEntryHandler
+     *            Custom handler of all events.
      */
     public EntryContentReader(Entry entry, EntryReader extraEntryHandler) {
         super(extraEntryHandler);
@@ -140,7 +143,7 @@ public class EntryContentReader extends EntryReader {
         } else {
             this.contentBuffer.append(ch, start, length);
         }
-        
+
         super.characters(ch, start, length);
     }
 
@@ -148,7 +151,7 @@ public class EntryContentReader extends EntryReader {
     public void endDocument() throws SAXException {
         this.state = State.NONE;
         this.contentBuffer = null;
-        
+
         super.endDocument();
     }
 
@@ -469,7 +472,7 @@ public class EntryContentReader extends EntryReader {
                 startContent(this.currentContent);
             }
         }
-        
+
         super.startElement(uri, localName, qName, attrs);
     }
 
@@ -477,7 +480,7 @@ public class EntryContentReader extends EntryReader {
     public void startPrefixMapping(String prefix, String uri)
             throws SAXException {
         this.prefixMappings.put(prefix, uri);
-        
+
         super.startPrefixMapping(prefix, uri);
     }
 

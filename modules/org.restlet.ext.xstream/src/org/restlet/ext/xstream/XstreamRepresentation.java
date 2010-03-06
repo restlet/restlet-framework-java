@@ -46,7 +46,8 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 
 /**
  * Representation based on the XStream library. It can serialize and deserialize
- * automatically in either JSON or XML.
+ * automatically in XML. It also supports a bridge to JSON leveraging the
+ * Jettison library.
  * 
  * @see <a href="http://xstream.codehaus.org/">XStream project</a>
  * @author Jerome Louvel

@@ -37,6 +37,12 @@ package org.restlet.engine.http.header;
  */
 public final class HeaderConstants {
 
+    // --------------------
+    // --- Expectations ---
+    // --------------------
+
+    public static final String EXPECT_CONTINUE = "100-continue";
+
     // ------------------------
     // --- Cache directives ---
     // ------------------------
