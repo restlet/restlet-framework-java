@@ -10,7 +10,7 @@ import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 
 /**
  * Resource corresponding to a mail received or sent with the parent mail
@@ -22,49 +22,46 @@ public class MailServerResource extends ServerResource {
     protected Representation get() throws ResourceException {
         SaxRepresentation result;
 
-        try {
-            // Create a new DOM representation
-            result = new SaxRepresentation(){
-                
-                public void write(org.restlet.ext.xml.XmlWriter writer) throws IOException {
-                    
-                    
-                    
-                    
-                };
-                                
+        // Create a new DOM representation
+        result = new SaxRepresentation() {
+
+            public void write(org.restlet.ext.xml.XmlWriter writer)
+                    throws IOException {
+                try {
+                    // Start document
+                    writer.startDocument();
+
+                    // Append the root node
+                    writer.startElement("mail");
+
+                    // Append the child nodes and set their text content
+                    writer.startElement("status");
+                    writer.characters("received");
+                    writer.endElement("status");
+
+                    writer.startElement("subject");
+                    writer.characters("Message to self");
+                    writer.endElement("subject");
+
+                    writer.startElement("content");
+                    writer.characters("Doh!");
+                    writer.endElement("content");
+
+                    writer.startElement("accountRef");
+                    writer.characters(new Reference(getReference(), "..")
+                            .getTargetRef().toString());
+                    writer.endElement("accountRef");
+
+                    // End the root node
+                    writer.endElement("mail");
+
+                    // End the document
+                    writer.endDocument();
+                } catch (SAXException e) {
+                    throw new IOException(e.getMessage());
+                }
             };
-
-            // Ensure pretty printing
-            result.setIndenting(true);
-
-            // Retrieve the DOM document to populate
-            Document doc = result.getDocument();
-
-            // Append the root node
-            Node mailElt = doc.createElement("mail");
-            doc.appendChild(mailElt);
-
-            // Append the child nodes and set their text content
-            Node statusElt = doc.createElement("status");
-            statusElt.setTextContent("received");
-            mailElt.appendChild(statusElt);
-
-            Node subjectElt = doc.createElement("subject");
-            subjectElt.setTextContent("Message to self");
-            mailElt.appendChild(subjectElt);
-
-            Node contentElt = doc.createElement("content");
-            contentElt.setTextContent("Doh!");
-            mailElt.appendChild(contentElt);
-
-            Node accountRefElt = doc.createElement("accountRef");
-            accountRefElt.setTextContent(new Reference(getReference(), "..")
-                    .getTargetRef().toString());
-            mailElt.appendChild(accountRefElt);
-        } catch (IOException e) {
-            throw new ResourceException(e);
-        }
+        };
 
         return result;
     }

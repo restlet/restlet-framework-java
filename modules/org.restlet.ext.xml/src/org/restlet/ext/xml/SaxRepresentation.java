@@ -68,7 +68,7 @@ public class SaxRepresentation extends XmlRepresentation {
     /**
      * Default constructor. Uses the {@link MediaType#TEXT_XML} media type.
      */
-    public SaxRepresentation() throws IOException {
+    public SaxRepresentation() {
         this(MediaType.TEXT_XML);
     }
 
