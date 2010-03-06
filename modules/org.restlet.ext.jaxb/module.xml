@@ -13,6 +13,5 @@
       <dependency type="library" id="jaxb-ri" />
       <dependency type="library" id="stax" />
       <dependency type="module" id="core" />
-      <dependency type="module" id="xml" />
    </dependencies>
 </module>

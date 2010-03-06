@@ -34,8 +34,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
 
+import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
@@ -52,11 +52,8 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.restlet.Context;
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.data.Method;
-import org.restlet.data.Reference;
 import org.restlet.ext.xml.internal.AbstractXmlReader;
+import org.restlet.ext.xml.internal.ContextResolver;
 import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
 import org.xml.sax.InputSource;
@@ -80,67 +77,65 @@ import org.xml.sax.XMLReader;
  */
 public class TransformRepresentation extends OutputRepresentation {
     /**
-     * URI resolver based on a Restlet Context instance.
+     * Wraps a source representation into a {@link SAXSource}. This method can
+     * detect other {@link XmlRepresentation} instances to use their
+     * {@link XmlRepresentation#getSaxSource()} method as well as other
+     * {@link TransformRepresentation} instances to support transformation
+     * chaining.
      * 
-     * @author Jerome Louvel
+     * @param representation
+     *            The source representation.
+     * @return The SAX source.
+     * @throws IOException
      */
-    private final static class ContextResolver implements URIResolver {
-        /** The Restlet context. */
-        private final Context context;
+    public static SAXSource toSaxSource(Representation representation)
+            throws IOException {
+        SAXSource result = null;
 
-        /**
-         * Constructor.
-         * 
-         * @param context
-         *            The Restlet context.
-         */
-        public ContextResolver(Context context) {
-            this.context = context;
-        }
+        if (representation instanceof XmlRepresentation) {
+            result = ((XmlRepresentation) representation).getSaxSource();
+        } else if (representation instanceof TransformRepresentation) {
+            final TransformRepresentation source = (TransformRepresentation) representation;
+            XMLReader reader = new AbstractXmlReader() {
 
-        /**
-         * Resolves a target reference into a Source document.
-         * 
-         * @see javax.xml.transform.URIResolver#resolve(java.lang.String,
-         *      java.lang.String)
-         */
-        public Source resolve(String href, String base)
-                throws TransformerException {
-            Source result = null;
-
-            if (this.context != null) {
-                Reference targetRef = null;
-
-                if ((base != null) && !base.equals("")) {
-                    // Potentially a relative reference
-                    Reference baseRef = new Reference(base);
-                    targetRef = new Reference(baseRef, href);
-                } else {
-                    // No base, assume "href" is an absolute URI
-                    targetRef = new Reference(href);
-                }
-
-                String targetUri = targetRef.getTargetRef().toString();
-                Response response = this.context.getClientDispatcher().handle(
-                        new Request(Method.GET, targetUri));
-
-                if (response.getStatus().isSuccess()
-                        && response.isEntityAvailable()) {
+                /**
+                 * Parses the input source by sending the result event to the
+                 * XML reader's content handler.
+                 * 
+                 * @param input
+                 *            The input source.
+                 */
+                public void parse(InputSource input) throws IOException,
+                        SAXException {
                     try {
-                        result = new StreamSource(response.getEntity()
-                                .getStream());
-                        result.setSystemId(targetUri);
-
-                    } catch (IOException e) {
-                        this.context.getLogger().log(Level.WARNING,
-                                "I/O error while getting the response stream",
-                                e);
+                        source.getTransformer().transform(
+                                source.getSaxSource(),
+                                new SAXResult(getContentHandler()));
+                    } catch (TransformerException te) {
+                        throw new IOException("Transformer exception. "
+                                + te.getMessage());
                     }
                 }
-            }
 
-            return result;
+                public void parse(String systemId) throws IOException,
+                        SAXException {
+                    throw new IllegalStateException("Not implemented");
+                }
+            };
+
+            result = new SAXSource(reader, null);
+        } else {
+            // Prepare the source and result documents
+            result = new SAXSource(new InputSource(representation.getStream()));
         }
+
+        // Copy the representation's URI as an XML system ID.
+        if (representation.getIdentifier() != null) {
+            result.setSystemId(representation.getIdentifier().getTargetRef()
+                    .toString());
+        }
+
+        return result;
     }
 
     /** The JAXP transformer output properties. */
@@ -254,7 +249,7 @@ public class TransformRepresentation extends OutputRepresentation {
     }
 
     /**
-     * Returns the modiable map of JAXP transformer parameters.
+     * Returns the modifiable map of JAXP transformer parameters.
      * 
      * @return The JAXP transformer parameters.
      */
@@ -269,46 +264,7 @@ public class TransformRepresentation extends OutputRepresentation {
      * @throws IOException
      */
     public SAXSource getSaxSource() throws IOException {
-        SAXSource result = null;
-
-        if (getSourceRepresentation() instanceof XmlRepresentation) {
-            result = ((XmlRepresentation) getSourceRepresentation())
-                    .getSaxSource();
-        } else if (getSourceRepresentation() instanceof TransformRepresentation) {
-            XMLReader reader = new AbstractXmlReader() {
-
-                public void parse(String systemId) throws IOException,
-                        SAXException {
-                    throw new IllegalStateException("Not implemented");
-                }
-
-                public void parse(InputSource input) throws IOException,
-                        SAXException {
-                    try {
-                        TransformRepresentation source = (TransformRepresentation) getSourceRepresentation();
-                        source.getTransformer().transform(
-                                source.getSaxSource(),
-                                new SAXResult(getContentHandler()));
-                    } catch (TransformerException te) {
-                        throw new IOException("Transformer exception. "
-                                + te.getMessage());
-                    }
-                }
-            };
-
-            result = new SAXSource(reader, null);
-        } else {
-            // Prepare the source and result documents
-            result = new SAXSource(new InputSource(getSourceRepresentation()
-                    .getReader()));
-        }
-
-        if (getSourceRepresentation().getIdentifier() != null) {
-            result.setSystemId(getSourceRepresentation().getIdentifier()
-                    .getTargetRef().toString());
-        }
-
-        return result;
+        return toSaxSource(getSourceRepresentation());
     }
 
     /**
@@ -566,8 +522,16 @@ public class TransformRepresentation extends OutputRepresentation {
         this.uriResolver = uriResolver;
     }
 
-    @Override
-    public void write(OutputStream outputStream) throws IOException {
+    /**
+     * Transforms the given JAXP source into the given result.
+     * 
+     * @param source
+     *            The JAXP source object.
+     * @param result
+     *            The JAXP result object.
+     * @throws IOException
+     */
+    public void transform(Source source, Result result) throws IOException {
         if (getTransformer() == null) {
             Context
                     .getCurrentLogger()
@@ -576,12 +540,33 @@ public class TransformRepresentation extends OutputRepresentation {
         } else {
             try {
                 // Generates the result of the transformation
-                getTransformer().transform(getSaxSource(),
-                        new StreamResult(outputStream));
+                getTransformer().transform(source, result);
             } catch (TransformerException te) {
                 throw new IOException("Transformer exception. "
                         + te.getMessage());
             }
         }
+    }
+
+    /**
+     * Writes the transformed source into the given output stream. By default,
+     * it leverages the {@link #write(Result)} method using a
+     * {@link StreamResult} object.
+     */
+    @Override
+    public void write(OutputStream outputStream) throws IOException {
+        write(new StreamResult(outputStream));
+    }
+
+    /**
+     * Writes the transformed source into the given JAXP result. The source is
+     * retrieved using the {@link #getSaxSource()} method.
+     * 
+     * @param result
+     *            The JAXP result object.
+     * @throws IOException
+     */
+    public void write(Result result) throws IOException {
+        transform(getSaxSource(), result);
     }
 }

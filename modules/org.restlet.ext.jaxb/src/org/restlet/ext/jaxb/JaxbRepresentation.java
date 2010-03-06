@@ -48,7 +48,7 @@ import javax.xml.transform.sax.SAXSource;
 
 import org.restlet.Context;
 import org.restlet.data.MediaType;
-import org.restlet.ext.xml.XmlRepresentation;
+import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.xml.sax.InputSource;
@@ -62,7 +62,7 @@ import org.xml.sax.InputSource;
  * @param <T>
  *            The type to wrap.
  */
-public class JaxbRepresentation<T> extends XmlRepresentation {
+public class JaxbRepresentation<T> extends OutputRepresentation {
     /**
      * This is a utility class to assist in marshaling Java content trees into
      * XML. Each {@code marshal} method takes a different target for the XML.
@@ -475,9 +475,13 @@ public class JaxbRepresentation<T> extends XmlRepresentation {
         this(MediaType.APPLICATION_XML, object);
     }
 
-    @Override
+    /**
+     * Returns the XML representation as a SAX input source.
+     * 
+     * @return The SAX input source.
+     */
     public InputSource getInputSource() throws IOException {
-        return new InputSource(this.xmlRepresentation.getReader());
+        return new InputSource(this.xmlRepresentation.getStream());
     }
 
     /**
@@ -498,6 +502,21 @@ public class JaxbRepresentation<T> extends XmlRepresentation {
      */
     public String getContextPath() {
         return this.contextPath;
+    }
+
+    /**
+     * Returns a JAXB SAX source.
+     * 
+     * @return A JAXB SAX source.
+     */
+    public JAXBSource getJaxbSource() throws IOException {
+        try {
+            return new JAXBSource(getContext(), getObject());
+        } catch (JAXBException e) {
+            throw new IOException(
+                    "JAXBException while creating the JAXBSource: "
+                            + e.getMessage());
+        }
     }
 
     /**
@@ -551,16 +570,11 @@ public class JaxbRepresentation<T> extends XmlRepresentation {
      * Returns a JAXB SAX source.
      * 
      * @return A JAXB SAX source.
+     * @deprecated Use {@link #getJaxbSource()} instead.
      */
-    @Override
+    @Deprecated
     public SAXSource getSaxSource() throws IOException {
-        try {
-            return new JAXBSource(getContext(), getObject());
-        } catch (JAXBException e) {
-            throw new IOException(
-                    "JAXBException while creating the JAXBSource: "
-                            + e.getMessage());
-        }
+        return getJaxbSource();
     }
 
     /**

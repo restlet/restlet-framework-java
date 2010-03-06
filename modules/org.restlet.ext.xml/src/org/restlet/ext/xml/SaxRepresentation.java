@@ -146,7 +146,8 @@ public class SaxRepresentation extends XmlRepresentation {
 
     @Override
     public InputSource getInputSource() throws IOException {
-        return new InputSource(getReader());
+        return (getSaxSource() == null) ? null : getSaxSource()
+                .getInputSource();
     }
 
     /**
@@ -155,10 +156,6 @@ public class SaxRepresentation extends XmlRepresentation {
      */
     @Override
     public SAXSource getSaxSource() throws IOException {
-        if (this.source == null) {
-            return new SAXSource(getInputSource());
-        }
-
         return this.source;
     }
 
@@ -171,7 +168,7 @@ public class SaxRepresentation extends XmlRepresentation {
     public void parse(ContentHandler contentHandler) throws IOException {
         if (contentHandler != null) {
             try {
-                final Result result = new SAXResult(contentHandler);
+                Result result = new SAXResult(contentHandler);
                 TransformerFactory.newInstance().newTransformer().transform(
                         this.source, result);
             } catch (TransformerConfigurationException tce) {

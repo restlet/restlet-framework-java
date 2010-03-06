@@ -41,7 +41,7 @@ import org.jibx.runtime.IMarshallingContext;
 import org.jibx.runtime.IUnmarshallingContext;
 import org.jibx.runtime.JiBXException;
 import org.restlet.data.MediaType;
-import org.restlet.ext.xml.XmlRepresentation;
+import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
 import org.xml.sax.InputSource;
 
@@ -54,11 +54,11 @@ import org.xml.sax.InputSource;
  * @param <T>
  *            The type to wrap.
  */
-public class JibxRepresentation<T> extends XmlRepresentation {
+public class JibxRepresentation<T> extends OutputRepresentation {
 
     /**
      * Improves performance by caching contexts which are expensive to create.
-     * (All binding factory instances are guaranteed to be threadsafe and
+     * (All binding factory instances are guaranteed to be thread safe and
      * reusable.)
      */
     private final static Map<String, IBindingFactory> bindingFactories = new TreeMap<String, IBindingFactory>();
@@ -192,7 +192,11 @@ public class JibxRepresentation<T> extends XmlRepresentation {
         return this.encoding;
     }
 
-    @Override
+    /**
+     * Returns the XML representation as a SAX input source.
+     * 
+     * @return The SAX input source.
+     */
     public InputSource getInputSource() throws IOException {
         return new InputSource(this.xmlRepresentation.getReader());
     }
