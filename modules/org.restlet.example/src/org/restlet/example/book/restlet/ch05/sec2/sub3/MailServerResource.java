@@ -3,14 +3,13 @@ package org.restlet.example.book.restlet.ch05.sec2.sub3;
 import java.io.IOException;
 
 import org.restlet.data.Reference;
-import org.restlet.ext.xml.DomRepresentation;
 import org.restlet.ext.xml.SaxRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * Resource corresponding to a mail received or sent with the parent mail
@@ -69,30 +68,43 @@ public class MailServerResource extends ServerResource {
     @Override
     protected Representation put(Representation representation)
             throws ResourceException {
-        // Wraps the XML representation in a DOM representation
-        DomRepresentation mailRep = new DomRepresentation(representation);
+        // Wraps the XML representation in a SAX representation
+        SaxRepresentation mailRep = new SaxRepresentation(representation);
 
-        // Parses and normalizes the DOM document
-        Document doc;
         try {
-            doc = mailRep.getDocument();
+            mailRep.parse(new DefaultHandler() {
 
-            Element mailElt = doc.getDocumentElement();
-            Element statusElt = (Element) mailElt
-                    .getElementsByTagName("status").item(0);
-            Element subjectElt = (Element) mailElt.getElementsByTagName(
-                    "subject").item(0);
-            Element contentElt = (Element) mailElt.getElementsByTagName(
-                    "content").item(0);
-            Element accountRefElt = (Element) mailElt.getElementsByTagName(
-                    "accountRef").item(0);
+                @Override
+                public void startElement(String uri, String localName,
+                        String qName, Attributes attributes)
+                        throws SAXException {
+                    // Output the XML element values
+                    if ("status".equals(localName)) {
+                        System.out.print("Status: ");
+                    } else if ("subject".equals(localName)) {
+                        System.out.print("Subject: ");
+                    } else if ("content".equals(localName)) {
+                        System.out.print("Content: ");
+                    } else if ("accountRef".equals(localName)) {
+                        System.out.print("Account URI: ");
+                    }
+                }
 
-            // Output the XML element values
-            System.out.println("Status: " + statusElt.getTextContent());
-            System.out.println("Subject: " + subjectElt.getTextContent());
-            System.out.println("Content: " + contentElt.getTextContent());
-            System.out
-                    .println("Account URI: " + accountRefElt.getTextContent());
+                @Override
+                public void characters(char[] ch, int start, int length)
+                        throws SAXException {
+                    // Output the XML element values
+                    System.out.print(new String(ch, start, length));
+                }
+
+                @Override
+                public void endElement(String uri, String localName,
+                        String qName) throws SAXException {
+                    // Output a new line
+                    System.out.println();
+                }
+
+            });
         } catch (IOException e) {
             throw new ResourceException(e);
         }
