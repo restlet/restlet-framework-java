@@ -39,6 +39,7 @@ Changes log
         - Added TransformRepresentation#toSaxSource(),
           transform(Source, Result) and write(Result) methods for 
           easier extension.
+        - Added default constructor to SaxRepresentation.
     - Enhancements
         - UniformResource#doCatch now extract the cause exception from
           caught ResourceException instance for easier debugging.

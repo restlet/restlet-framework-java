@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.restlet.data.Reference;
 import org.restlet.ext.xml.DomRepresentation;
+import org.restlet.ext.xml.SaxRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
@@ -19,11 +20,20 @@ public class MailServerResource extends ServerResource {
 
     @Override
     protected Representation get() throws ResourceException {
-        DomRepresentation result;
+        SaxRepresentation result;
 
         try {
             // Create a new DOM representation
-            result = new DomRepresentation();
+            result = new SaxRepresentation(){
+                
+                public void write(org.restlet.ext.xml.XmlWriter writer) throws IOException {
+                    
+                    
+                    
+                    
+                };
+                                
+            };
 
             // Ensure pretty printing
             result.setIndenting(true);

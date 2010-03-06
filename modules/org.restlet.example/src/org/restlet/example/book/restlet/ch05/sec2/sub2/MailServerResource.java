@@ -13,7 +13,7 @@ import org.w3c.dom.Node;
 
 /**
  * Resource corresponding to a mail received or sent with the parent mail
- * account.
+ * account. Leverages the DOM API.
  */
 public class MailServerResource extends ServerResource {
 
@@ -22,7 +22,7 @@ public class MailServerResource extends ServerResource {
         DomRepresentation result;
 
         try {
-            // Create a new DOM representation
+            // Create an empty DOM representation
             result = new DomRepresentation();
 
             // Ensure pretty printing
