@@ -49,7 +49,7 @@ import org.xml.sax.SAXException;
  */
 public class DomRepresentation extends XmlRepresentation {
     /** The wrapped DOM document. */
-    private volatile Document dom;
+    private volatile Document document;
 
     /** Indicates if the XML serialization should be indented. */
     private volatile boolean indenting;
@@ -72,7 +72,7 @@ public class DomRepresentation extends XmlRepresentation {
      */
     public DomRepresentation(MediaType mediaType) throws IOException {
         super(mediaType);
-        this.dom = getDocumentBuilder().newDocument();
+        this.document = getDocumentBuilder().newDocument();
     }
 
     /**
@@ -85,7 +85,7 @@ public class DomRepresentation extends XmlRepresentation {
      */
     public DomRepresentation(MediaType mediaType, Document xmlDocument) {
         super(mediaType);
-        this.dom = xmlDocument;
+        this.document = xmlDocument;
     }
 
     /**
@@ -150,21 +150,22 @@ public class DomRepresentation extends XmlRepresentation {
      */
     @Override
     public Document getDocument() throws IOException {
-        if (this.dom == null) {
+        if (this.document == null) {
             if (this.xmlRepresentation != null) {
                 try {
-                    this.dom = getDocumentBuilder().parse(getInputSource());
+                    this.document = getDocumentBuilder()
+                            .parse(getInputSource());
                 } catch (SAXException se) {
                     throw new IOException(
                             "Couldn't read the XML representation. "
                                     + se.getMessage());
                 }
             } else {
-                this.dom = getDocumentBuilder().newDocument();
+                this.document = getDocumentBuilder().newDocument();
             }
         }
 
-        return this.dom;
+        return this.document;
     }
 
     // [ifndef android] method
@@ -180,7 +181,7 @@ public class DomRepresentation extends XmlRepresentation {
 
     @Override
     public InputSource getInputSource() throws IOException {
-        return new InputSource(this.xmlRepresentation.getReader());
+        return new InputSource(this.xmlRepresentation.getStream());
     }
 
     /**
@@ -225,7 +226,7 @@ public class DomRepresentation extends XmlRepresentation {
      *            The wrapped DOM document.
      */
     public void setDocument(Document dom) {
-        this.dom = dom;
+        this.document = dom;
     }
 
     /**
