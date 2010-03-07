@@ -35,7 +35,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.ChallengeResponse;
@@ -46,8 +45,9 @@ import org.restlet.data.Status;
 import org.restlet.ext.xml.DomRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
-import org.restlet.resource.Resource;
+import org.restlet.resource.Post;
 import org.restlet.resource.ResourceException;
+import org.restlet.resource.ServerResource;
 import org.restlet.routing.Template;
 import org.restlet.util.Resolver;
 import org.w3c.dom.Node;
@@ -58,8 +58,7 @@ import org.w3c.dom.Node;
  * 
  * @author Jerome Louvel
  */
-@SuppressWarnings("deprecation")
-public class TriggerResource extends Resource {
+public class TriggerResource extends ServerResource {
 
     public static final String ATTRIBUTE_MAILBOX_CHALLENGE_SCHEME = "org.restlet.ext.javamail.mailbox.authentication.scheme";
 
@@ -100,33 +99,15 @@ public class TriggerResource extends Resource {
     private String targetUri;
 
     /**
-     * Constructor.
-     * 
-     * @param context
-     *            The parent context.
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The response to return.
-     */
-    public TriggerResource(Context context, Request request, Response response) {
-        super(context, request, response);
-        setModifiable(true);
-        this.mailboxChallengeScheme = null;
-        this.mailboxLogin = null;
-        this.mailboxPassword = null;
-        this.mailboxUri = null;
-        this.mailUriTemplate = "/{mailId}";
-        this.resolver = null;
-    }
-
-    /**
      * Handles POST requests. It retrieves a list of mails and generate requests
      * to target resources.
+     * 
+     * @param entity
+     *            The representation of the mails list.
+     * @throws ResourceException
      */
-    @Override
-    public void acceptRepresentation(Representation entity)
-            throws ResourceException {
+    @Post
+    public void acceptMails(Representation entity) throws ResourceException {
 
         // 1 - Get list of identifiers for the mails in the inbox
         final List<String> mailIdentifiers = getMailIdentifiers();
@@ -221,6 +202,16 @@ public class TriggerResource extends Resource {
             throw new ResourceException(Status.SERVER_ERROR_INTERNAL,
                     "Unable to delete the mail from the mailbox");
         }
+    }
+
+    @Override
+    protected void doInit() throws ResourceException {
+        this.mailboxChallengeScheme = null;
+        this.mailboxLogin = null;
+        this.mailboxPassword = null;
+        this.mailboxUri = null;
+        this.mailUriTemplate = "/{mailId}";
+        this.resolver = null;
     }
 
     /**
