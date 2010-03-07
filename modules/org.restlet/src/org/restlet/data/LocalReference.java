@@ -42,8 +42,19 @@ import java.io.File;
 public final class LocalReference extends Reference {
     /**
      * The resources will be resolved from the classloader associated with the
-     * local class. Examples: clap://class/rootPkg/subPkg/myClass.class or
-     * clap://class/rootPkg/file.html
+     * local class. This is the same as the {@link #CLAP_CLASS} authority.
+     * Examples: clap:///rootPkg/subPkg/myClass.class or
+     * clap:///rootPkg/file.html
+     * 
+     * @see java.lang.Class#getClassLoader()
+     */
+    public static final int CLAP_DEFAULT = 0;
+
+    /**
+     * The resources will be resolved from the classloader associated with the
+     * local class. This is the default CLAP authority. Examples:
+     * clap://class/rootPkg/subPkg/myClass.class or
+     * clap://class/rootPkg/file.html or clap:///rootPkg/file.html
      * 
      * @see java.lang.Class#getClassLoader()
      */
@@ -84,6 +95,41 @@ public final class LocalReference extends Reference {
      * Example riap://host/myAppPath/myResource
      */
     public static final int RIAP_HOST = 6;
+
+    /**
+     * Constructor.
+     * 
+     * @param pkg
+     *            The package to identify.
+     */
+    public static LocalReference createClapReference(Package pkg) {
+        return createClapReference(CLAP_DEFAULT, pkg);
+    }
+
+    /**
+     * Constructor for CLAP URIs to a given package.
+     * 
+     * @param authorityType
+     *            The authority type for the resource path.
+     * @param pkg
+     *            The package to identify.
+     */
+    public static LocalReference createClapReference(int authorityType,
+            Package pkg) {
+        String pkgPath = pkg.getName().replaceAll("\\.", "/");
+        return new LocalReference("clap://" + getAuthorityName(authorityType)
+                + "/" + pkgPath);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param path
+     *            The resource path.
+     */
+    public static LocalReference createClapReference(String path) {
+        return createClapReference(CLAP_DEFAULT, path);
+    }
 
     /**
      * Constructor.
@@ -190,6 +236,9 @@ public final class LocalReference extends Reference {
         String result = null;
 
         switch (authority) {
+        case CLAP_DEFAULT:
+            result = "";
+            break;
         case CLAP_CLASS:
             result = "class";
             break;
@@ -305,6 +354,8 @@ public final class LocalReference extends Reference {
                 } else if (authority
                         .equalsIgnoreCase(getAuthorityName(CLAP_THREAD))) {
                     result = CLAP_THREAD;
+                } else {
+                    result = CLAP_DEFAULT;
                 }
             }
         }

@@ -26,28 +26,28 @@ public class MailServerResource extends ServerResource {
             result.setIndenting(true);
 
             // XML namespace configuration
-            String rmepNs = "http://www.rmep.org/namespaces/1.0";
             result.setNamespaceAware(true);
 
             // Populate the DOM document
             Document doc = result.getDocument();
 
-            Node mailElt = doc.createElementNS(rmepNs, "mail");
+            Node mailElt = doc.createElementNS(
+                    "http://www.rmep.org/namespaces/1.0", "mail");
             doc.appendChild(mailElt);
 
-            Node statusElt = doc.createElementNS(rmepNs, "status");
+            Node statusElt = doc.createElement("status");
             statusElt.setTextContent("received");
             mailElt.appendChild(statusElt);
 
-            Node subjectElt = doc.createElementNS(rmepNs, "subject");
+            Node subjectElt = doc.createElement("subject");
             subjectElt.setTextContent("Message to self");
             mailElt.appendChild(subjectElt);
 
-            Node contentElt = doc.createElementNS(rmepNs, "content");
+            Node contentElt = doc.createElement("content");
             contentElt.setTextContent("Doh!");
             mailElt.appendChild(contentElt);
 
-            Node accountRefElt = doc.createElementNS(rmepNs, "accountRef");
+            Node accountRefElt = doc.createElement("accountRef");
             accountRefElt.setTextContent(new Reference(getReference(), "..")
                     .getTargetRef().toString());
             mailElt.appendChild(accountRefElt);

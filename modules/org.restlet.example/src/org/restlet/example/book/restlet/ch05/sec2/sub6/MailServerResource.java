@@ -2,13 +2,18 @@ package org.restlet.example.book.restlet.ch05.sec2.sub6;
 
 import java.io.IOException;
 
+import org.restlet.data.LocalReference;
 import org.restlet.data.Reference;
 import org.restlet.ext.xml.DomRepresentation;
 import org.restlet.representation.Representation;
+import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 /**
  * Resource corresponding to a mail received or sent with the parent mail
@@ -26,28 +31,29 @@ public class MailServerResource extends ServerResource {
             result.setIndenting(true);
 
             // XML namespace configuration
-            String rmepNs = "http://www.rmep.org/namespaces/1.0";
             result.setNamespaceAware(true);
 
             // Populate the DOM document
             Document doc = result.getDocument();
 
-            Node mailElt = doc.createElementNS(rmepNs, "mail");
+            Node mailElt = doc.createElementNS(
+                    "http://www.rmep.org/namespaces/1.0", "mail");
             doc.appendChild(mailElt);
 
-            Node statusElt = doc.createElementNS(rmepNs, "status");
+            // Node statusElt = doc.createElementNS(rmepNs, "status");
+            Node statusElt = doc.createElement("status");
             statusElt.setTextContent("received");
             mailElt.appendChild(statusElt);
 
-            Node subjectElt = doc.createElementNS(rmepNs, "subject");
+            Node subjectElt = doc.createElement("subject");
             subjectElt.setTextContent("Message to self");
             mailElt.appendChild(subjectElt);
 
-            Node contentElt = doc.createElementNS(rmepNs, "content");
+            Node contentElt = doc.createElement("content");
             contentElt.setTextContent("Doh!");
             mailElt.appendChild(contentElt);
 
-            Node accountRefElt = doc.createElementNS(rmepNs, "accountRef");
+            Node accountRefElt = doc.createElement("accountRef");
             accountRefElt.setTextContent(new Reference(getReference(), "..")
                     .getTargetRef().toString());
             mailElt.appendChild(accountRefElt);
@@ -62,6 +68,27 @@ public class MailServerResource extends ServerResource {
     protected Representation put(Representation representation)
             throws ResourceException {
         DomRepresentation mailRep = new DomRepresentation(representation);
+
+        // W3C XML Schema validation
+        Representation mailXsd = new ClientResource(LocalReference
+                .createClapReference(getClass().getPackage())
+                + "/Mail.xsd").get();
+        mailRep.setSchema(mailXsd);
+        mailRep.setErrorHandler(new ErrorHandler() {
+            public void error(SAXParseException exception) throws SAXException {
+                throw new ResourceException(exception);
+            }
+
+            public void fatalError(SAXParseException exception)
+                    throws SAXException {
+                throw new ResourceException(exception);
+            }
+
+            public void warning(SAXParseException exception)
+                    throws SAXException {
+                throw new ResourceException(exception);
+            }
+        });
 
         // XML namespace configuration
         String rmepNs = "http://www.rmep.org/namespaces/1.0";

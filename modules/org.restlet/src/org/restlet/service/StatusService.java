@@ -30,8 +30,6 @@
 
 package org.restlet.service;
 
-import java.util.logging.Level;
-
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -140,8 +138,7 @@ public class StatusService extends Service {
     /**
      * Returns a status for a given exception or error. By default it unwraps
      * the status of {@link ResourceException}. For other exceptions or errors,
-     * it returns an {@link Status#SERVER_ERROR_INTERNAL} status and logs a
-     * severe message.<br>
+     * it returns an {@link Status#SERVER_ERROR_INTERNAL} status.<br>
      * <br>
      * In order to customize the default behavior, this method can be
      * overridden.
@@ -162,8 +159,6 @@ public class StatusService extends Service {
             ResourceException re = (ResourceException) throwable;
             result = re.getStatus();
         } else {
-            Context.getCurrentLogger().log(Level.SEVERE,
-                    "Unhandled exception or error intercepted", throwable);
             result = new Status(Status.SERVER_ERROR_INTERNAL, throwable);
         }
 
@@ -250,5 +245,5 @@ public class StatusService extends Service {
     public void setOverwriting(boolean overwriting) {
         setOverwrite(overwriting);
     }
-    
+
 }

@@ -57,7 +57,7 @@ public class Example2_1b {
 
             // Associate the namespace with the prefix y
             document.setNamespaceAware(true);
-            document.putNamespace("y", "urn:yahoo:srch");
+            document.getNamespaces().put("y", "urn:yahoo:srch");
 
             // Use XPath to find the interesting parts of the data structure
             String expr = "/y:ResultSet/y:Result/y:Title/text()";

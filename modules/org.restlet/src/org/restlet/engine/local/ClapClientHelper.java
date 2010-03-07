@@ -169,7 +169,8 @@ public class ClapClientHelper extends LocalClientHelper {
             LocalReference cr = new LocalReference(request.getResourceRef());
             ClassLoader classLoader = null;
 
-            if (cr.getClapAuthorityType() == LocalReference.CLAP_CLASS) {
+            if ((cr.getClapAuthorityType() == LocalReference.CLAP_CLASS)
+                    || (cr.getClapAuthorityType() == LocalReference.CLAP_DEFAULT)) {
                 // Sometimes, a specific class loader needs to be used,
                 // make sure that it can be provided as a request's attribute
                 Object classLoaderAttribute = request.getAttributes().get(

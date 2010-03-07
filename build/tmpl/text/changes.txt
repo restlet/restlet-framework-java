@@ -47,6 +47,13 @@ Changes log
         - Deprecated the XmlRepresentation#putNamespace(...) method.
         - Added an XmlRepresentation#setNamespaces(Map<String, String>) 
           method.
+        - CLAP scheme now supports a default authority corresponding to
+          the "class" authority for shorter URIs.
+        - Added LocalReference#createClapReference(int, Package) and
+          createClapReference(Package) static methods to help building
+          CLAP URIs.
+        - StatusService#getStatus(Throwable, Request, Response) doesn't
+          log an error anymore.
     - Enhancements
         - UniformResource#doCatch now extract the cause exception from
           caught ResourceException instance for easier debugging.
