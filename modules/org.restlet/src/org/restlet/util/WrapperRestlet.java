@@ -68,13 +68,33 @@ public class WrapperRestlet extends Restlet {
     }
 
     @Override
+    public String getAuthor() {
+        return wrappedRestlet.getAuthor();
+    }
+
+    @Override
     public Context getContext() {
         return wrappedRestlet.getContext();
     }
 
     @Override
+    public String getDescription() {
+        return wrappedRestlet.getDescription();
+    }
+
+    @Override
     public Logger getLogger() {
         return wrappedRestlet.getLogger();
+    }
+
+    @Override
+    public String getName() {
+        return wrappedRestlet.getName();
+    }
+
+    @Override
+    public String getOwner() {
+        return wrappedRestlet.getOwner();
     }
 
     @Override
@@ -93,8 +113,28 @@ public class WrapperRestlet extends Restlet {
     }
 
     @Override
+    public void setAuthor(String author) {
+        wrappedRestlet.setAuthor(author);
+    }
+
+    @Override
     public void setContext(Context context) {
         wrappedRestlet.setContext(context);
+    }
+
+    @Override
+    public void setDescription(String description) {
+        wrappedRestlet.setDescription(description);
+    }
+
+    @Override
+    public void setName(String name) {
+        wrappedRestlet.setName(name);
+    }
+
+    @Override
+    public void setOwner(String owner) {
+        wrappedRestlet.setOwner(owner);
     }
 
     @Override

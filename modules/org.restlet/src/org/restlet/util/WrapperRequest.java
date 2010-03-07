@@ -30,9 +30,12 @@
 
 package org.restlet.util;
 
+import java.util.List;
 import java.util.Map;
 
 import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.Uniform;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
@@ -41,6 +44,7 @@ import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
+import org.restlet.data.Range;
 import org.restlet.data.Reference;
 import org.restlet.representation.Representation;
 
@@ -64,6 +68,16 @@ public class WrapperRequest extends Request {
      */
     public WrapperRequest(Request wrappedRequest) {
         this.wrappedRequest = wrappedRequest;
+    }
+
+    @Override
+    public boolean abort() {
+        return wrappedRequest.abort();
+    }
+
+    @Override
+    public void commit(Response response) {
+        wrappedRequest.commit(response);
     }
 
     /**
@@ -182,6 +196,11 @@ public class WrapperRequest extends Request {
         return getWrappedRequest().getHostRef();
     }
 
+    @Override
+    public int getMaxForwards() {
+        return wrappedRequest.getMaxForwards();
+    }
+
     /**
      * Returns the method.
      * 
@@ -190,6 +209,16 @@ public class WrapperRequest extends Request {
     @Override
     public Method getMethod() {
         return getWrappedRequest().getMethod();
+    }
+
+    @Override
+    public Uniform getOnResponse() {
+        return wrappedRequest.getOnResponse();
+    }
+
+    @Override
+    public Reference getOriginalRef() {
+        return wrappedRequest.getOriginalRef();
     }
 
     /**
@@ -213,6 +242,11 @@ public class WrapperRequest extends Request {
     @Override
     public ChallengeResponse getProxyChallengeResponse() {
         return getWrappedRequest().getProxyChallengeResponse();
+    }
+
+    @Override
+    public List<Range> getRanges() {
+        return wrappedRequest.getRanges();
     }
 
     /**
@@ -277,6 +311,11 @@ public class WrapperRequest extends Request {
         return getWrappedRequest().isEntityAvailable();
     }
 
+    @Override
+    public boolean isExpectingResponse() {
+        return wrappedRequest.isExpectingResponse();
+    }
+
     /**
      * Sets the authentication response sent by a client to an origin server.
      * 
@@ -287,6 +326,21 @@ public class WrapperRequest extends Request {
     @Override
     public void setChallengeResponse(ChallengeResponse response) {
         getWrappedRequest().setChallengeResponse(response);
+    }
+
+    @Override
+    public void setClientInfo(ClientInfo clientInfo) {
+        wrappedRequest.setClientInfo(clientInfo);
+    }
+
+    @Override
+    public void setConditions(Conditions conditions) {
+        wrappedRequest.setConditions(conditions);
+    }
+
+    @Override
+    public void setCookies(Series<Cookie> cookies) {
+        wrappedRequest.setCookies(cookies);
     }
 
     /**
@@ -335,6 +389,11 @@ public class WrapperRequest extends Request {
         getWrappedRequest().setHostRef(hostUri);
     }
 
+    @Override
+    public void setMaxForwards(int maxForwards) {
+        wrappedRequest.setMaxForwards(maxForwards);
+    }
+
     /**
      * Sets the method called.
      * 
@@ -344,6 +403,21 @@ public class WrapperRequest extends Request {
     @Override
     public void setMethod(Method method) {
         getWrappedRequest().setMethod(method);
+    }
+
+    @Override
+    public void setOnResponse(Uniform onResponseCallback) {
+        wrappedRequest.setOnResponse(onResponseCallback);
+    }
+
+    @Override
+    public void setOriginalRef(Reference originalRef) {
+        wrappedRequest.setOriginalRef(originalRef);
+    }
+
+    @Override
+    public void setProtocol(Protocol protocol) {
+        wrappedRequest.setProtocol(protocol);
     }
 
     // [ifndef gwt] method
@@ -356,6 +430,11 @@ public class WrapperRequest extends Request {
     @Override
     public void setProxyChallengeResponse(ChallengeResponse response) {
         getWrappedRequest().setProxyChallengeResponse(response);
+    }
+
+    @Override
+    public void setRanges(List<Range> ranges) {
+        wrappedRequest.setRanges(ranges);
     }
 
     /**
@@ -415,6 +494,11 @@ public class WrapperRequest extends Request {
     @Override
     public void setRootRef(Reference rootRef) {
         getWrappedRequest().setRootRef(rootRef);
+    }
+
+    @Override
+    public String toString() {
+        return wrappedRequest.toString();
     }
 
 }

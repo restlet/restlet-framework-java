@@ -30,12 +30,14 @@
 
 package org.restlet.util;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.restlet.Request;
 import org.restlet.Response;
+import org.restlet.data.AuthenticationInfo;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Dimension;
@@ -68,6 +70,21 @@ public class WrapperResponse extends Response {
     public WrapperResponse(Response wrappedResponse) {
         super((Request) null);
         this.wrappedResponse = wrappedResponse;
+    }
+
+    @Override
+    public void abort() {
+        wrappedResponse.abort();
+    }
+
+    @Override
+    public void commit() {
+        wrappedResponse.commit();
+    }
+
+    @Override
+    public int getAge() {
+        return wrappedResponse.getAge();
     }
 
     /**
@@ -118,6 +135,11 @@ public class WrapperResponse extends Response {
     @Override
     public Map<String, Object> getAttributes() {
         return getWrappedResponse().getAttributes();
+    }
+
+    @Override
+    public AuthenticationInfo getAuthenticationInfo() {
+        return wrappedResponse.getAuthenticationInfo();
     }
 
     /**
@@ -211,6 +233,11 @@ public class WrapperResponse extends Response {
         return getWrappedResponse().getRequest();
     }
 
+    @Override
+    public Date getRetryAfter() {
+        return wrappedResponse.getRetryAfter();
+    }
+
     /**
      * Returns the server-specific information.
      * 
@@ -238,6 +265,16 @@ public class WrapperResponse extends Response {
      */
     protected Response getWrappedResponse() {
         return this.wrappedResponse;
+    }
+
+    @Override
+    public boolean isAutoCommitting() {
+        return wrappedResponse.isAutoCommitting();
+    }
+
+    @Override
+    public boolean isCommitted() {
+        return wrappedResponse.isCommitted();
     }
 
     /**
@@ -340,6 +377,26 @@ public class WrapperResponse extends Response {
         getWrappedResponse().redirectTemporary(targetUri);
     }
 
+    @Override
+    public void setAge(int age) {
+        wrappedResponse.setAge(age);
+    }
+
+    @Override
+    public void setAllowedMethods(Set<Method> allowedMethods) {
+        wrappedResponse.setAllowedMethods(allowedMethods);
+    }
+
+    @Override
+    public void setAuthenticationInfo(AuthenticationInfo authenticationInfo) {
+        wrappedResponse.setAuthenticationInfo(authenticationInfo);
+    }
+
+    @Override
+    public void setAutoCommitting(boolean autoCommitting) {
+        wrappedResponse.setAutoCommitting(autoCommitting);
+    }
+
     /**
      * Sets the authentication request sent by an origin server to a client.
      * 
@@ -364,6 +421,21 @@ public class WrapperResponse extends Response {
     @Override
     public void setChallengeRequests(List<ChallengeRequest> requests) {
         getWrappedResponse().setChallengeRequests(requests);
+    }
+
+    @Override
+    public void setCommitted(boolean committed) {
+        wrappedResponse.setCommitted(committed);
+    }
+
+    @Override
+    public void setCookieSettings(Series<CookieSetting> cookieSettings) {
+        wrappedResponse.setCookieSettings(cookieSettings);
+    }
+
+    @Override
+    public void setDimensions(Set<Dimension> dimensions) {
+        wrappedResponse.setDimensions(dimensions);
     }
 
     /**
@@ -447,6 +519,16 @@ public class WrapperResponse extends Response {
         getWrappedResponse().setRequest(request);
     }
 
+    @Override
+    public void setRetryAfter(Date retryAfter) {
+        wrappedResponse.setRetryAfter(retryAfter);
+    }
+
+    @Override
+    public void setServerInfo(ServerInfo serverInfo) {
+        wrappedResponse.setServerInfo(serverInfo);
+    }
+
     /**
      * Sets the status.
      * 
@@ -469,6 +551,21 @@ public class WrapperResponse extends Response {
     @Override
     public void setStatus(Status status, String message) {
         getWrappedResponse().setStatus(status, message);
+    }
+
+    @Override
+    public void setStatus(Status status, Throwable throwable) {
+        wrappedResponse.setStatus(status, throwable);
+    }
+
+    @Override
+    public void setStatus(Status status, Throwable throwable, String message) {
+        wrappedResponse.setStatus(status, throwable, message);
+    }
+
+    @Override
+    public String toString() {
+        return wrappedResponse.toString();
     }
 
 }
