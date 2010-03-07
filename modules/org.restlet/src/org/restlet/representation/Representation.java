@@ -383,50 +383,6 @@ public abstract class Representation extends RepresentationInfo {
         return this.digest;
     }
 
-    // [ifndef gwt] method
-    /**
-     * Return a Digester representation that wraps the current representation
-     * and helps computing its digest value. By default, the instance relies on
-     * the {@link org.restlet.data.Digest#ALGORITHM_MD5} digest algorithm.
-     * 
-     * @return A Digester representation that wraps the current representation.
-     */
-    public DigesterRepresentation getDigester() {
-        DigesterRepresentation result = null;
-
-        try {
-            result = new DigesterRepresentation(this);
-        } catch (java.security.NoSuchAlgorithmException e) {
-            Context.getCurrentLogger().log(Level.WARNING,
-                    "Unable to get the digester representation", e);
-        }
-
-        return result;
-    }
-
-    // [ifndef gwt] method
-    /**
-     * Return a Digester representation that wraps the current representation
-     * and helps computing its digest value according to the given algorithm.
-     * 
-     * @param algorithm
-     *            The digest algorithm
-     * 
-     * @return A Digester representation that wraps the current representation.
-     */
-    public DigesterRepresentation getDigester(String algorithm) {
-        DigesterRepresentation result = null;
-
-        try {
-            result = new DigesterRepresentation(this, algorithm);
-        } catch (java.security.NoSuchAlgorithmException e) {
-            Context.getCurrentLogger().log(Level.WARNING,
-                    "Unable to get the digester representation", e);
-        }
-
-        return result;
-    }
-
     /**
      * Returns the disposition characteristics of the representation.
      * 
