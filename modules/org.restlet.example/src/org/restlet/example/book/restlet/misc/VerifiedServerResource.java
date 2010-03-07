@@ -13,8 +13,8 @@ public class VerifiedServerResource extends ServerResource {
     @Get
     public Representation represent() throws NoSuchAlgorithmException {
         // Wraps the StringRepresentation
-        DigesterRepresentation result = new StringRepresentation(
-                "hello, world").getDigester();
+        DigesterRepresentation result = new DigesterRepresentation(
+                new StringRepresentation("hello, world"));
         // Compute's representation's digest.
         result.setDigest(result.computeDigest());
 

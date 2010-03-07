@@ -9,7 +9,7 @@ public class VerificationClient {
                 "http://localhost:8182/");
         // The Digester helps computing the digest while reading or writing the
         // representation's content.
-        DigesterRepresentation rep = resource.get().getDigester();
+        DigesterRepresentation rep = new DigesterRepresentation(resource.get());
         rep.write(System.out);
         if (rep.checkDigest()) {
             System.out.println("\nContent checked.");
