@@ -69,7 +69,7 @@ public class MailServerResource extends ServerResource {
             throws ResourceException {
         DomRepresentation mailRep = new DomRepresentation(representation);
 
-        // W3C XML Schema validation
+        // Configure the XML Schema used for validation
         Representation mailXsd = new ClientResource(LocalReference
                 .createClapReference(getClass().getPackage())
                 + "/Mail.xsd").get();
