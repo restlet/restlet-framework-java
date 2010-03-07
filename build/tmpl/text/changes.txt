@@ -54,6 +54,10 @@ Changes log
           CLAP URIs.
         - StatusService#getStatus(Throwable, Request, Response) doesn't
           log an error anymore.
+        - Renamed TransformRepresentation into XsltRepresentation to be
+          more explicit about the actual capabilities.
+        - Added a Transformer#canTransform(Representation) method to
+          prevent systematic transformation. Returns true by default.
     - Enhancements
         - UniformResource#doCatch now extract the cause exception from
           caught ResourceException instance for easier debugging.

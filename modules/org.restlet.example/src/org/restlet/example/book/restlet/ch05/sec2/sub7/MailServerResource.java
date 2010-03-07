@@ -1,19 +1,19 @@
-package org.restlet.example.book.restlet.ch05.sec2.sub6;
+package org.restlet.example.book.restlet.ch05.sec2.sub7;
 
 import java.io.IOException;
+
+import javax.xml.transform.OutputKeys;
 
 import org.restlet.data.LocalReference;
 import org.restlet.data.Reference;
 import org.restlet.ext.xml.DomRepresentation;
+import org.restlet.ext.xml.XsltRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 
 /**
  * Resource corresponding to a mail received or sent with the parent mail
@@ -23,21 +23,17 @@ public class MailServerResource extends ServerResource {
 
     @Override
     protected Representation get() throws ResourceException {
-        DomRepresentation result;
+        XsltRepresentation result = null;
 
         try {
             // Create a new DOM representation
-            result = new DomRepresentation();
-            result.setIndenting(true);
-
-            // XML namespace configuration
-            result.setNamespaceAware(true);
+            DomRepresentation rmepMail = new DomRepresentation();
+            rmepMail.setIndenting(true);
 
             // Populate the DOM document
-            Document doc = result.getDocument();
+            Document doc = rmepMail.getDocument();
 
-            Node mailElt = doc.createElementNS(
-                    "http://www.rmep.org/namespaces/1.0", "mail");
+            Node mailElt = doc.createElement("mail");
             doc.appendChild(mailElt);
 
             Node statusElt = doc.createElement("status");
@@ -56,6 +52,13 @@ public class MailServerResource extends ServerResource {
             accountRefElt.setTextContent(new Reference(getReference(), "..")
                     .getTargetRef().toString());
             mailElt.appendChild(accountRefElt);
+
+            // Transform to another XML format using XSLT
+            Representation transformSheet = new ClientResource(LocalReference
+                    .createClapReference(getClass().getPackage())
+                    + "/Mail.xslt").get();
+            result = new XsltRepresentation(rmepMail, transformSheet);
+            result.getOutputProperties().put(OutputKeys.INDENT, "yes");
         } catch (IOException e) {
             throw new ResourceException(e);
         }
@@ -68,44 +71,13 @@ public class MailServerResource extends ServerResource {
             throws ResourceException {
         DomRepresentation mailRep = new DomRepresentation(representation);
 
-        // Configure the XML Schema used for validation
-        Representation mailXsd = new ClientResource(LocalReference
-                .createClapReference(getClass().getPackage())
-                + "/Mail.xsd").get();
-        mailRep.setSchema(mailXsd);
-        mailRep.setErrorHandler(new ErrorHandler() {
-            public void error(SAXParseException exception) throws SAXException {
-                throw new ResourceException(exception);
-            }
-
-            public void fatalError(SAXParseException exception)
-                    throws SAXException {
-                throw new ResourceException(exception);
-            }
-
-            public void warning(SAXParseException exception)
-                    throws SAXException {
-                throw new ResourceException(exception);
-            }
-        });
-
-        // XML namespace configuration
-        String rmepNs = "http://www.rmep.org/namespaces/1.0";
-        mailRep.setNamespaceAware(true);
-        mailRep.getNamespaces().put("", rmepNs);
-        mailRep.getNamespaces().put("rmep", rmepNs);
-
         // Retrieve the XML element using XPath expressions
-        String status = mailRep.getText("/:mail/:status");
-        String subject = mailRep.getText("/rmep:mail/:subject");
-        String content = mailRep.getText("/rmep:mail/rmep:content");
-        String accountRef = mailRep.getText("/:mail/rmep:accountRef");
+        String subject = mailRep.getText("/email/head/subject");
+        String content = mailRep.getText("/email/body");
 
         // Output the XML element values
-        System.out.println("Status: " + status);
         System.out.println("Subject: " + subject);
         System.out.println("Content: " + content);
-        System.out.println("Account URI: " + accountRef);
 
         return null;
     }

@@ -44,8 +44,8 @@ import org.restlet.routing.Filter;
 
 /**
  * Filter that can transform XML representations by applying an XSLT transform
- * sheet. It uses the {@link org.restlet.representation.TransformRepresentation} to
- * actually transform the XML entities.<br>
+ * sheet. It uses the {@link org.restlet.representation.TransformRepresentation}
+ * to actually transform the XML entities.<br>
  * <br>
  * Concurrency note: instances of this class or its subclasses can be invoked by
  * several threads at the same time and therefore must be thread-safe. You
@@ -109,18 +109,30 @@ public class Transformer extends Filter {
 
     @Override
     protected void afterHandle(Request request, Response response) {
-        if (getMode() == MODE_RESPONSE) {
+        if ((getMode() == MODE_RESPONSE) && canTransform(response.getEntity())) {
             response.setEntity(transform(response.getEntity()));
         }
     }
 
     @Override
     protected int beforeHandle(Request request, Response response) {
-        if (getMode() == MODE_REQUEST) {
+        if ((getMode() == MODE_REQUEST) && canTransform(request.getEntity())) {
             request.setEntity(transform(request.getEntity()));
         }
 
         return CONTINUE;
+    }
+
+    /**
+     * Indicates if the filter can transform the given message entity. By
+     * default, it always returns true.
+     * 
+     * @param representation
+     *            The entity representation to test.
+     * @return True if the transformation can be applied.
+     */
+    protected boolean canTransform(Representation representation) {
+        return true;
     }
 
     /**
@@ -268,7 +280,7 @@ public class Transformer extends Filter {
      * @return The generated result representation.
      */
     public Representation transform(Representation source) {
-        final Representation result = new TransformRepresentation(getContext(),
+        final Representation result = new XsltRepresentation(getContext(),
                 source, getTransformSheet());
 
         if (this.resultLanguages != null) {
