@@ -21,7 +21,7 @@ public class MailServerResource extends ServerResource {
     protected Representation get() throws ResourceException {
         SaxRepresentation result;
 
-        // Create a new DOM representation
+        // Create a new SAX representation
         result = new SaxRepresentation() {
 
             public void write(org.restlet.ext.xml.XmlWriter writer)

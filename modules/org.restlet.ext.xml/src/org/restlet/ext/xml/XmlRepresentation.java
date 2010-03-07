@@ -52,7 +52,6 @@ import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
@@ -507,10 +506,10 @@ public abstract class XmlRepresentation extends OutputRepresentation
      * 
      * @return The evaluation result.
      */
-    public NodeSet getNodes(String expression) {
-        final NodeList nodes = (NodeList) internalEval(expression,
-                javax.xml.xpath.XPathConstants.NODESET);
-        return (nodes == null) ? null : new NodeSet(nodes);
+    public NodeList getNodes(String expression) {
+        final org.w3c.dom.NodeList nodes = (org.w3c.dom.NodeList) internalEval(
+                expression, javax.xml.xpath.XPathConstants.NODESET);
+        return (nodes == null) ? null : new NodeList(nodes);
     }
 
     // [ifndef android] method

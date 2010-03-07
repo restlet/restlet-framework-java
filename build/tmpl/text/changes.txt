@@ -40,6 +40,8 @@ Changes log
           transform(Source, Result) and write(Result) methods for 
           easier extension.
         - Added default constructor to SaxRepresentation.
+        - Renamed org.restlet.ext.xml.NodeSet into NodeList as it is
+          really a List<Node> implementation.
     - Enhancements
         - UniformResource#doCatch now extract the cause exception from
           caught ResourceException instance for easier debugging.

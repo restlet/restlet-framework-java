@@ -33,7 +33,6 @@ package org.restlet.ext.xml;
 import java.util.AbstractList;
 
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 /**
  * DOM nodes set that implements the standard List interface for easier
@@ -41,10 +40,11 @@ import org.w3c.dom.NodeList;
  * 
  * @author Jerome Louvel
  */
-public class NodeSet extends AbstractList<Node> implements NodeList {
+public class NodeList extends AbstractList<Node> implements
+        org.w3c.dom.NodeList {
 
     /** The wrapped node list. */
-    private volatile NodeList nodes;
+    private volatile org.w3c.dom.NodeList nodes;
 
     /**
      * Constructor.
@@ -52,7 +52,7 @@ public class NodeSet extends AbstractList<Node> implements NodeList {
      * @param nodes
      *            The node list to wrap.
      */
-    public NodeSet(NodeList nodes) {
+    public NodeList(org.w3c.dom.NodeList nodes) {
         this.nodes = nodes;
     }
 
