@@ -70,28 +70,26 @@ public class DigestTestCase extends RestletTestCase {
                 @Override
                 public void handle(Request request, Response response) {
                     Representation rep = request.getEntity();
-                    DigesterRepresentation digester = rep.getDigester();
                     try {
                         // Such representation computes the digest while
                         // consuming the wrapped representation.
+                        DigesterRepresentation digester = new DigesterRepresentation(
+                                rep);
                         digester.exhaust();
-                    } catch (IOException e1) {
-                    }
-                    if (digester.checkDigest()) {
-                        response.setStatus(Status.SUCCESS_OK);
-                        StringRepresentation f = new StringRepresentation(
-                                "9876543210");
-                        digester = f.getDigester();
-                        try {
+                        if (digester.checkDigest()) {
+                            response.setStatus(Status.SUCCESS_OK);
+                            StringRepresentation f = new StringRepresentation(
+                                    "9876543210");
+                            digester = new DigesterRepresentation(f);
                             // Consume first
                             digester.exhaust();
-                        } catch (IOException e) {
+                            // Set the digest
+                            digester.setDigest(digester.computeDigest());
+                            response.setEntity(digester);
+                        } else {
+                            response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
                         }
-                        // Set the digest
-                        digester.setDigest(digester.computeDigest());
-                        response.setEntity(digester);
-                    } else {
-                        response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+                    } catch (Exception e1) {
                     }
                 }
 
@@ -126,19 +124,23 @@ public class DigestTestCase extends RestletTestCase {
         Request request = new Request(Method.PUT, "http://localhost:"
                 + TEST_PORT + "/");
         StringRepresentation rep = new StringRepresentation("0123456789");
-        DigesterRepresentation digester = rep.getDigester();
-        // Such representation computes the digest while
-        // consuming the wrapped representation.
-        digester.exhaust();
-        // Set the digest with the computed one
-        digester.setDigest(digester.computeDigest());
-        request.setEntity(digester);
+        try {
+            DigesterRepresentation digester = new DigesterRepresentation(rep);
+            // Such representation computes the digest while
+            // consuming the wrapped representation.
+            digester.exhaust();
+            // Set the digest with the computed one
+            digester.setDigest(digester.computeDigest());
+            request.setEntity(digester);
 
-        Response response = client.handle(request);
+            Response response = client.handle(request);
 
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
-        digester = response.getEntity().getDigester();
-        digester.exhaust();
-        assertTrue(digester.checkDigest());
+            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            digester = new DigesterRepresentation(response.getEntity());
+            digester.exhaust();
+            assertTrue(digester.checkDigest());
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
     }
 }
