@@ -13,7 +13,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * Resource corresponding to a mail received or sent with the parent mail
- * account.
+ * account. Leverages the SAX API.
  */
 public class MailServerResource extends ServerResource {
 

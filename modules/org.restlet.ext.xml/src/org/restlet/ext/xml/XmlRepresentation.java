@@ -473,7 +473,8 @@ public abstract class XmlRepresentation extends OutputRepresentation
     public abstract InputSource getInputSource() throws IOException;
 
     /**
-     * Returns the map of namespaces.
+     * Returns the map of namespaces. Namespace prefixes are keys and URI
+     * references are values.
      * 
      * @return The map of namespaces.
      */
@@ -481,6 +482,7 @@ public abstract class XmlRepresentation extends OutputRepresentation
         if (this.namespaces == null) {
             this.namespaces = new HashMap<String, String>();
         }
+
         return this.namespaces;
     }
 
@@ -721,7 +723,9 @@ public abstract class XmlRepresentation extends OutputRepresentation
      *            The namespace prefix.
      * @param namespaceURI
      *            The namespace URI.
+     * @deprecated Use the modifiable map returned by {@link #getNamespaces()}
      */
+    @Deprecated
     public void putNamespace(String prefix, String namespaceURI) {
         getNamespaces().put(prefix, namespaceURI);
     }
@@ -821,6 +825,16 @@ public abstract class XmlRepresentation extends OutputRepresentation
      */
     public void setNamespaceAware(boolean namespaceAware) {
         this.namespaceAware = namespaceAware;
+    }
+
+    /**
+     * Sets the map of namespaces.
+     * 
+     * @param namespaces
+     *            The map of namespaces.
+     */
+    public void setNamespaces(Map<String, String> namespaces) {
+        this.namespaces = namespaces;
     }
 
     // [ifndef android] method

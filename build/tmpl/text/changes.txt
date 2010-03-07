@@ -44,6 +44,9 @@ Changes log
           really a List<Node> implementation.
         - Deprecated the XmlRepresentation#evaluate(...) method,
           using the get*(String) methods is easier.
+        - Deprecated the XmlRepresentation#putNamespace(...) method.
+        - Added an XmlRepresentation#setNamespaces(Map<String, String>) 
+          method.
     - Enhancements
         - UniformResource#doCatch now extract the cause exception from
           caught ResourceException instance for easier debugging.

@@ -1,4 +1,4 @@
-package org.restlet.example.book.restlet.ch05.sec2.sub4;
+package org.restlet.example.book.restlet.ch05.sec2.sub5;
 
 import java.io.IOException;
 
@@ -12,7 +12,7 @@ import org.w3c.dom.Node;
 
 /**
  * Resource corresponding to a mail received or sent with the parent mail
- * account. Leverages the XPath language.
+ * account. Leverages XML namespaces.
  */
 public class MailServerResource extends ServerResource {
 
@@ -23,31 +23,31 @@ public class MailServerResource extends ServerResource {
         try {
             // Create a new DOM representation
             result = new DomRepresentation();
-
-            // Ensure pretty printing
             result.setIndenting(true);
 
-            // Retrieve the DOM document to populate
+            // XML namespace configuration
+            String rmepNs = "http://www.rmep.org/namespaces/1.0";
+            result.setNamespaceAware(true);
+
+            // Populate the DOM document
             Document doc = result.getDocument();
 
-            // Append the root node
-            Node mailElt = doc.createElement("mail");
+            Node mailElt = doc.createElementNS(rmepNs, "mail");
             doc.appendChild(mailElt);
 
-            // Append the child nodes and set their text content
-            Node statusElt = doc.createElement("status");
+            Node statusElt = doc.createElementNS(rmepNs, "status");
             statusElt.setTextContent("received");
             mailElt.appendChild(statusElt);
 
-            Node subjectElt = doc.createElement("subject");
+            Node subjectElt = doc.createElementNS(rmepNs, "subject");
             subjectElt.setTextContent("Message to self");
             mailElt.appendChild(subjectElt);
 
-            Node contentElt = doc.createElement("content");
+            Node contentElt = doc.createElementNS(rmepNs, "content");
             contentElt.setTextContent("Doh!");
             mailElt.appendChild(contentElt);
 
-            Node accountRefElt = doc.createElement("accountRef");
+            Node accountRefElt = doc.createElementNS(rmepNs, "accountRef");
             accountRefElt.setTextContent(new Reference(getReference(), "..")
                     .getTargetRef().toString());
             mailElt.appendChild(accountRefElt);
@@ -61,14 +61,19 @@ public class MailServerResource extends ServerResource {
     @Override
     protected Representation put(Representation representation)
             throws ResourceException {
-        // Wraps the XML representation in a DOM representation
         DomRepresentation mailRep = new DomRepresentation(representation);
 
+        // XML namespace configuration
+        String rmepNs = "http://www.rmep.org/namespaces/1.0";
+        mailRep.setNamespaceAware(true);
+        mailRep.getNamespaces().put("", rmepNs);
+        mailRep.getNamespaces().put("rmep", rmepNs);
+
         // Retrieve the XML element using XPath expressions
-        String status = mailRep.getText("/mail/status");
-        String subject = mailRep.getText("/mail/subject");
-        String content = mailRep.getText("/mail/content");
-        String accountRef = mailRep.getText("/mail/accountRef");
+        String status = mailRep.getText("/:mail/:status");
+        String subject = mailRep.getText("/rmep:mail/:subject");
+        String content = mailRep.getText("/rmep:mail/rmep:content");
+        String accountRef = mailRep.getText("/:mail/rmep:accountRef");
 
         // Output the XML element values
         System.out.println("Status: " + status);
