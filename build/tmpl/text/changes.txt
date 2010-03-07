@@ -42,6 +42,8 @@ Changes log
         - Added default constructor to SaxRepresentation.
         - Renamed org.restlet.ext.xml.NodeSet into NodeList as it is
           really a List<Node> implementation.
+        - Deprecated the XmlRepresentation#evaluate(...) method,
+          using the get*(String) methods is easier.
     - Enhancements
         - UniformResource#doCatch now extract the cause exception from
           caught ResourceException instance for easier debugging.

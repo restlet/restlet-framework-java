@@ -65,16 +65,16 @@ public class MailServerResource extends ServerResource {
         DomRepresentation mailRep = new DomRepresentation(representation);
 
         // Retrieve the XML element using XPath expressions
-        Node statusElt = mailRep.getNode("/mail/status");
-        Node subjectElt = mailRep.getNode("/mail/subject");
-        Node contentElt = mailRep.getNode("/mail/content");
-        Node accountRefElt = mailRep.getNode("/mail/accountRef");
+        String status = mailRep.getText("/mail/status");
+        String subject = mailRep.getText("/mail/subject");
+        String content = mailRep.getText("/mail/content");
+        String accountRef = mailRep.getText("/mail/accountRef");
 
         // Output the XML element values
-        System.out.println("Status: " + statusElt.getTextContent());
-        System.out.println("Subject: " + subjectElt.getTextContent());
-        System.out.println("Content: " + contentElt.getTextContent());
-        System.out.println("Account URI: " + accountRefElt.getTextContent());
+        System.out.println("Status: " + status);
+        System.out.println("Subject: " + subject);
+        System.out.println("Content: " + content);
+        System.out.println("Account URI: " + accountRef);
 
         return null;
     }

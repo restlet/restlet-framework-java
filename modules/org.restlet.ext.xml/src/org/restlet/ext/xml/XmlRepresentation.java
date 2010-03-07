@@ -330,7 +330,12 @@ public abstract class XmlRepresentation extends OutputRepresentation
      * @return The evaluation result.
      * @see javax.xml.xpath.XPathException
      * @see javax.xml.xpath.XPathConstants
+     * @deprecated Use the {@link #getBoolean(String)},
+     *             {@link #getNumber(String)}, {@link #getText(String)},
+     *             {@link #getNode(String)} and {@link #getNodes(String)}
+     *             methods instead.
      */
+    @Deprecated
     public Object evaluate(String expression,
             javax.xml.namespace.QName returnType) throws Exception {
         Object result = null;
