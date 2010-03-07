@@ -88,7 +88,8 @@ Changes log
           relative URI references with a given base URI.
           Reported by Rickard Oberg.
     - Misc
-        - 
+        - Removed Representation#getDigester* methods. There is no 
+          reason to favor this way to wrap a Representation.
         
 - 2.0 Milestone 7 (2010-01-29)
     - API changes
