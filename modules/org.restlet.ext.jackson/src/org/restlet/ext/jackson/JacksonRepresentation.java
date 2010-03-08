@@ -97,6 +97,16 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
     }
 
     /**
+     * Constructor.
+     * 
+     * @param object
+     *            The object to format.
+     */
+    public JacksonRepresentation(T object) {
+        this(MediaType.APPLICATION_JSON, object);
+    }
+
+    /**
      * Creates a Jackson object mapper based on a media type. By default, it
      * calls {@link ObjectMapper#ObjectMapper()}.
      * 
