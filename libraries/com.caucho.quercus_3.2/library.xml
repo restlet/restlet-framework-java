@@ -5,10 +5,9 @@
 	<package id="resin-util" name="com.caucho.resin.util">
 		<maven></maven>
 	</package>
-	
+
 	<version>3.2</version>
 	<release>1</release>
-	<homeUri>
-		http://quercus.caucho.com/
-	</homeUri>
+	<homeUri>http://quercus.caucho.com/</homeUri>
+	<downloadUri>http://www.caucho.com/download/</downloadUri>
 </library>

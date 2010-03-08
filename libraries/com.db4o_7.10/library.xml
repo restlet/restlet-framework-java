@@ -31,17 +31,13 @@
 			<groupId>com.db4o</groupId>
 		</maven>
 	</package>
-	<version>7.10</version>
-	<release>96</release>
+	<version>7.12</version>
+	<release>132</release>
 	<distributions>
 		<distribution id="classic" />
 		<distribution id="maven" />
 	</distributions>
 	<dependency type="library" id="bloat" />
-	<homeUri>
-		http://www.db4o.com/
-	</homeUri>
-	<downloadUri>
-		http://developer.db4o.com/files/
-	</downloadUri>
+	<homeUri>http://www.db4o.com/</homeUri>
+	<downloadUri>http://developer.db4o.com/Downloads.aspx</downloadUri>
 </library>
