@@ -54,7 +54,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
-import org.restlet.ext.xml.TransformRepresentation;
+import org.restlet.ext.xml.XsltRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.test.RestletTestCase;
@@ -179,7 +179,7 @@ public class ResolvingTransformerTestCase extends RestletTestCase {
                         + "<xsl:template match ='/'><newroot/></xsl:template></xsl:transform>",
                 MediaType.TEXT_XML);
 
-        TransformRepresentation transRep = new TransformRepresentation(comp
+        XsltRepresentation transRep = new XsltRepresentation(comp
                 .getContext(), xml, xslt);
 
         // create a test-stream representation to be returned when the correct
@@ -272,7 +272,7 @@ public class ResolvingTransformerTestCase extends RestletTestCase {
                 + MY_BASEPATH + "/xslt/one/1st.xsl");
         Representation xsltOne = comp.getContext().getClientDispatcher()
                 .handle(new Request(Method.GET, xsltOneRef)).getEntity();
-        TransformRepresentation tr = new TransformRepresentation(comp
+        XsltRepresentation tr = new XsltRepresentation(comp
                 .getContext(), xmlIn, xsltOne);
 
         // TODO transformer output should go to SAX! The sax-event-stream should

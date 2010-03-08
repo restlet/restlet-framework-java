@@ -58,6 +58,7 @@ Changes log
           more explicit about the actual capabilities.
         - Added a Transformer#canTransform(Representation) method to
           prevent systematic transformation. Returns true by default.
+        - Deprecated JaxbRepresentation#getInputSource() method.
     - Enhancements
         - UniformResource#doCatch now extract the cause exception from
           caught ResourceException instance for easier debugging.

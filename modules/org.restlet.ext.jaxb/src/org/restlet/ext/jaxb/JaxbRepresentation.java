@@ -479,7 +479,9 @@ public class JaxbRepresentation<T> extends OutputRepresentation {
      * Returns the XML representation as a SAX input source.
      * 
      * @return The SAX input source.
+     * @deprecated
      */
+    @Deprecated
     public InputSource getInputSource() throws IOException {
         return new InputSource(this.xmlRepresentation.getStream());
     }
