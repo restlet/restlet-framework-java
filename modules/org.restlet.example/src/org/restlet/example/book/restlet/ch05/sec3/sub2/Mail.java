@@ -1,4 +1,4 @@
-package org.restlet.example.book.restlet.ch05.sec3.sub3;
+package org.restlet.example.book.restlet.ch05.sec3.sub2;
 
 /**
  * The mail representation bean.
