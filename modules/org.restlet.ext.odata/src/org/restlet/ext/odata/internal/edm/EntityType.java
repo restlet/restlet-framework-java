@@ -58,6 +58,11 @@ public class EntityType extends NamedObject implements Comparable<EntityType> {
     /** Is this type a blob? */
     private boolean blob;
 
+    /**
+     * The entity's member that stores the resource reference able to update the blob value.
+     */
+    private Property blobValueEditRefProperty;
+
     /** The property of the entity that stores the blob reference. */
     private Property blobValueRefProperty;
 
@@ -122,7 +127,16 @@ public class EntityType extends NamedObject implements Comparable<EntityType> {
     }
 
     /**
+     * Returns the entity's member that stores the resource reference able to update the blob value.
+     * @return The entity's member that stores the resource reference able to update the blob value.
+     */
+    public Property getBlobValueEditRefProperty() {
+        return blobValueEditRefProperty;
+    }
+
+    /**
      * Returns the name of the entity property that stores the blob reference.
+     * 
      * @return The name of the entity property that stores the blob reference.
      */
     public Property getBlobValueRefProperty() {
@@ -290,8 +304,19 @@ public class EntityType extends NamedObject implements Comparable<EntityType> {
     }
 
     /**
+     * Sets the entity's member that stores the resource reference able to update the blob value.
+     * @param blobValueEditRefProperty The entity's member that stores the resource reference able to update the blob value.
+     */
+    public void setBlobValueEditRefProperty(Property blobValueEditRefProperty) {
+        this.blobValueEditRefProperty = blobValueEditRefProperty;
+    }
+
+    /**
      * Sets the name of the entity property that stores the blob reference.
-     * @param blobValueRefProperty The name of the entity property that stores the blob reference.
+     * 
+     * @param blobValueRefProperty
+     *            The name of the entity property that stores the blob
+     *            reference.
      */
     public void setBlobValueRefProperty(Property blobValueRefProperty) {
         this.blobValueRefProperty = blobValueRefProperty;

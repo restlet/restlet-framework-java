@@ -297,6 +297,23 @@ public class FeedContentHandler<T> extends FeedReader {
             }
         }
 
+        // If the entity is a blob, get the edit reference
+        if (entityType.isBlob()
+                && entityType.getBlobValueEditRefProperty() != null) {
+            // Look for en entry with a "edit-media" relation value.
+            Link link = entry.getLink(new Relation("edit-media"));
+            String pty = entityType.getBlobValueEditRefProperty().getName();
+            if (link != null) {
+                try {
+                    ReflectUtils.invokeSetter(entity, pty, link.getHref());
+                } catch (Exception e) {
+                    getLogger().warning(
+                            "Cannot set the property " + pty + " on " + entity
+                                    + " with value " + link.getHref());
+                }
+            }
+        }
+
         entity = null;
     }
 

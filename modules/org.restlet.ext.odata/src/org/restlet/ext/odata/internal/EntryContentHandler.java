@@ -39,7 +39,9 @@ import org.restlet.data.Reference;
 import org.restlet.ext.atom.Content;
 import org.restlet.ext.atom.Entry;
 import org.restlet.ext.atom.EntryReader;
+import org.restlet.ext.atom.Link;
 import org.restlet.ext.atom.Person;
+import org.restlet.ext.atom.Relation;
 import org.restlet.ext.odata.Service;
 import org.restlet.ext.odata.internal.edm.EntityType;
 import org.restlet.ext.odata.internal.edm.Mapping;
@@ -221,7 +223,23 @@ public class EntryContentHandler<T> extends EntryReader {
                             "Cannot set " + m.getPropertyPath()
                                     + " property on " + entity + " with value "
                                     + value);
-
+                }
+            }
+        }
+        
+        // If the entity is a blob, get the edit reference
+        if (entityType.isBlob()
+                && entityType.getBlobValueEditRefProperty() != null) {
+            // Look for en entry with a "edit-media" relation value.
+            Link link = entry.getLink(new Relation("edit-media"));
+            String pty = entityType.getBlobValueEditRefProperty().getName();
+            if (link != null) {
+                try {
+                    ReflectUtils.invokeSetter(entity, pty, link.getHref());
+                } catch (Exception e) {
+                    getLogger().warning(
+                            "Cannot set the property " + pty + " on " + entity
+                                    + " with value " + link.getHref());
                 }
             }
         }

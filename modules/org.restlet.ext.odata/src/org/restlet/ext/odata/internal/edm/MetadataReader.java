@@ -53,6 +53,14 @@ public class MetadataReader extends DefaultHandler {
         ASSOCIATION, ASSOCIATION_END, ASSOCIATION_SET, ASSOCIATION_SET_END, COMPLEX_TYPE, COMPLEX_TYPE_PROPERTY, DOCUMENTATION, ENTITY_CONTAINER, ENTITY_SET, ENTITY_TYPE, ENTITY_TYPE_KEY, ENTITY_TYPE_PROPERTY, FUNCTION, FUNCTION_IMPORT, NAVIGATION_PROPERTY, NONE, ON_DELETE, REFERENTIAL_CONSTRAINT, SCHEMA, USING
     }
 
+    /** List of possible values for the blob reference member. */
+    private final String[] blobEditRefValues = { "blobEditReference",
+            "blobEditReferenceValue" };
+
+    /** List of possible values for the blob reference member. */
+    private final String[] blobRefValues = { "blobReference",
+            "blobReferenceValue" };
+
     /** The current association. */
     private Association currentAssociation;
 
@@ -99,6 +107,41 @@ public class MetadataReader extends DefaultHandler {
         this.states = new ArrayList<State>();
         pushState(State.NONE);
         this.currentMetadata = metadata;
+    }
+
+    /**
+     * Pick up the first method name among a given list of proposed names.
+     * Returns null if the proposed values are already in the given entity type.
+     * 
+     * @param type
+     *            The entity type to check.
+     * @param values
+     *            The list of proposed values.
+     * @return A method name.
+     */
+    private String chooseAttributeName(EntityType type, String[] values) {
+        String result = null;
+        int index = 0;
+        // Check that one of the possible names is not already set.
+        for (int i = 0; i < type.getProperties().size()
+                && (index < values.length); i++) {
+            Property property = type.getProperties().get(i);
+            if (values[index].equals(property.getName())) {
+                index++;
+            }
+        }
+        for (int i = 0; i < type.getAssociations().size()
+                && (index < values.length); i++) {
+            NavigationProperty property = type.getAssociations().get(i);
+            if (values[index].equals(property.getName())) {
+                index++;
+            }
+        }
+
+        if (index != values.length) {
+            result = values[index];
+        }
+        return result;
     }
 
     /**
@@ -264,34 +307,28 @@ public class MetadataReader extends DefaultHandler {
             popState();
         } else if ("entityType".equalsIgnoreCase(localName)) {
             if (currentEntityType.isBlob()) {
-                // Sets the name of the property of the generated class that
-                // contains the reference of the blob value.
-                String[] values = { "blobReference", "blobReferenceValue",
-                        "_blobReference", "_blobReferenceValue" };
-                int index = 0;
-                // Check that this name is not already set.
-                for (int i = 0; i < currentEntityType.getProperties().size()
-                        && (index < values.length); i++) {
-                    Property property = currentEntityType.getProperties()
-                            .get(i);
-                    if (values[index].equals(property.getName())) {
-                        index++;
-                    }
-                }
-                for (int i = 0; i < currentEntityType.getAssociations().size()
-                        && (index < values.length); i++) {
-                    NavigationProperty property = currentEntityType
-                            .getAssociations().get(i);
-                    if (values[index].equals(property.getName())) {
-                        index++;
-                    }
-                }
-                if (index == values.length) {
+                String memberName = chooseAttributeName(currentEntityType,
+                        blobRefValues);
+
+                if (memberName == null) {
                     // Should not happen
                     currentEntityType.setBlob(false);
                 } else {
-                    Property property = new Property(values[index]);
+                    Property property = new Property(memberName);
                     currentEntityType.setBlobValueRefProperty(property);
+                }
+                // Sets the name of the property of the generated class that
+                // contains the reference of resource that is able to update the
+                // blob value.
+                memberName = chooseAttributeName(currentEntityType,
+                        blobEditRefValues);
+
+                if (memberName == null) {
+                    // Should not happen
+                    currentEntityType.setBlob(false);
+                } else {
+                    Property property = new Property(memberName);
+                    currentEntityType.setBlobValueEditRefProperty(property);
                 }
             }
             popState();
@@ -434,8 +471,8 @@ public class MetadataReader extends DefaultHandler {
             currentEntityType.setSchema(this.currentSchema);
             currentEntityType.setAbstractType(Boolean.parseBoolean(attr
                     .get("Abstract")));
-            currentEntityType.setBlob(Boolean
-                    .parseBoolean(attr.get("HasStream")));
+            currentEntityType.setBlob(Boolean.parseBoolean(attr
+                    .get("HasStream")));
             String value = attr.get("BaseType");
             if (value != null) {
                 currentEntityType.setBaseType(new EntityType(value));

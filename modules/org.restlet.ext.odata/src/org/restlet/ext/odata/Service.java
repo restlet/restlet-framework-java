@@ -153,6 +153,41 @@ public class Service {
     public Service(String serviceUri) {
         this(new Reference(serviceUri));
     }
+    
+    /**
+         * Sets the value of the given media entry link.
+         * 
+         * @param entity
+         *            The media entry link which value is to be updated
+         * @param blob
+         *            The new representation.
+         * @throws ResourceException
+         */
+        public void setValue(Object entity, Representation blob)
+                throws ResourceException {
+            Reference ref = null;
+            Metadata metadata = (Metadata) getMetadata();
+            EntityType type = metadata.getEntityType(entity.getClass());
+            if (type.isBlob() && type.getBlobValueRefProperty() != null) {
+                try {
+                    ref = (Reference) ReflectUtils.invokeGetter(entity, type
+                            .getBlobValueEditRefProperty().getName());
+                } catch (Exception e) {
+                    getLogger().warning(
+                            "Cannot get the value of the property "
+                                    + type.getBlobValueEditRefProperty().getName()
+                                    + " on " + entity);
+                }
+            } else {
+                getLogger()
+                        .warning("This entity is not a media resource " + entity);
+            }
+    
+            if (ref != null) {
+                ClientResource cr = createResource(ref);
+                cr.put(blob);
+            }
+        }
 
     /**
      * Adds an entity to an entity set.
