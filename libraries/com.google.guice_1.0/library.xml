@@ -10,6 +10,5 @@
 	</distributions>
 	<homeUri>http://code.google.com/p/google-guice/
 	</homeUri>
-	<downloadUri>http://code.google.com/p/google-guice/downloads/list
-	</downloadUri>
+	<downloadUri>http://code.google.com/p/google-guice/downloads/list</downloadUri>
 </library>
