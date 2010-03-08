@@ -31,11 +31,7 @@
 package org.restlet.ext.jaxb;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.Reader;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Level;
@@ -48,9 +44,10 @@ import javax.xml.transform.sax.SAXSource;
 
 import org.restlet.Context;
 import org.restlet.data.MediaType;
+import org.restlet.ext.jaxb.internal.Marshaller;
+import org.restlet.ext.jaxb.internal.Unmarshaller;
 import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
 import org.xml.sax.InputSource;
 
 /**
@@ -63,261 +60,17 @@ import org.xml.sax.InputSource;
  *            The type to wrap.
  */
 public class JaxbRepresentation<T> extends OutputRepresentation {
-    /**
-     * This is a utility class to assist in marshaling Java content trees into
-     * XML. Each {@code marshal} method takes a different target for the XML.
-     * This class is a factory that constructs an instance of itself for
-     * multiple uses. The created instance is thread safe and is optimized to be
-     * used for multiple, possibly concurrent calls.
-     */
-    private class Marshaller {
-        // Use thread identity to preserve safety of access to marshalers.
-        private final ThreadLocal<javax.xml.bind.Marshaller> marshaller = new ThreadLocal<javax.xml.bind.Marshaller>() {
-            @Override
-            protected synchronized javax.xml.bind.Marshaller initialValue() {
-                javax.xml.bind.Marshaller m = null;
-
-                try {
-                    m = getContext(getPackage()).createMarshaller();
-                    m.setProperty("jaxb.formatted.output", isFormattedOutput());
-
-                    if (getSchemaLocation() != null) {
-                        m.setProperty("jaxb.schemaLocation",
-                                getSchemaLocation());
-                    }
-                    if (getNoNamespaceSchemaLocation() != null) {
-                        m.setProperty("jaxb.noNamespaceSchemaLocation",
-                                getNoNamespaceSchemaLocation());
-                    }
-
-                    if (getCharacterSet() != null) {
-                        m.setProperty("jaxb.encoding", getCharacterSet()
-                                .getName());
-                    }
-
-                    m.setProperty("jaxb.fragment", isFragment());
-                } catch (Exception e) {
-                    Context.getCurrentLogger().log(Level.WARNING,
-                            "Problem creating Marshaller", e);
-                    return null;
-                }
-
-                return m;
-            }
-        };
-
-        private final String pkg;
-
-        // This is a factory class.
-        private Marshaller() {
-            this(null);
-        }
-
-        private Marshaller(String pkg) {
-            this.pkg = pkg;
-        }
-
-        private javax.xml.bind.Marshaller getMarshaller() throws JAXBException {
-            final javax.xml.bind.Marshaller m = this.marshaller.get();
-            if (m == null) {
-                Context.getCurrentLogger().warning(
-                        "Unable to locate marshaller.");
-                throw new JAXBException("Unable to locate marshaller.");
-            }
-            return m;
-        }
-
-        String getPackage() {
-            return this.pkg;
-        }
-
-        /**
-         * Marshal the content tree rooted at {@code jaxbElement} into an output
-         * stream.
-         * 
-         * @param jaxbElement
-         *            The root of the content tree to be marshalled.
-         * @param stream
-         *            The target output stream write the XML to.
-         * @throws JAXBException
-         *             If any unexpected problem occurs during marshalling.
-         */
-        public void marshal(Object jaxbElement, OutputStream stream)
-                throws JAXBException {
-            getMarshaller().marshal(jaxbElement, stream);
-        }
-
-        /**
-         * Marshal the content tree rooted at {@code jaxbElement} into a Restlet
-         * String representation.
-         * 
-         * @param jaxbElement
-         *            The root of the content tree to be marshaled.
-         * @param rep
-         *            The target string representation write the XML to.
-         * @throws JAXBException
-         *             If any unexpected problem occurs during marshaling.
-         */
-        @SuppressWarnings("unused")
-        public void marshal(Object jaxbElement, StringRepresentation rep)
-                throws JAXBException {
-            final StringWriter writer = new StringWriter();
-            marshal(jaxbElement, writer);
-            rep.setText(writer.toString());
-        }
-
-        /**
-         * Marshal the content tree rooted at {@code jaxbElement} into a writer.
-         * 
-         * @param jaxbElement
-         *            The root of the content tree to be marshaled.
-         * @param writer
-         *            The target writer to write the XML to.
-         * @throws JAXBException
-         *             If any unexpected problem occurs during marshaling.
-         */
-        public void marshal(Object jaxbElement, Writer writer)
-                throws JAXBException {
-            getMarshaller().marshal(jaxbElement, writer);
-        }
-
-        /**
-         * Sets the validation handler for this marshaler.
-         * 
-         * @param handler
-         *            A validation handler.
-         * @throws JAXBException
-         *             If an error was encountered while setting the event
-         *             handler.
-         */
-        @SuppressWarnings("unused")
-        public void setEventHandler(ValidationEventHandler handler)
-                throws JAXBException {
-            getMarshaller().setEventHandler(handler);
-        }
-    }
-
-    /**
-     * This is a utility class to assist in unmarshaling XML into a new Java
-     * content tree. Each {@code unmarshal} method takes a different source for
-     * the XML. This class caches information to improve unmarshaling
-     * performance across calls using the same schema (package).
-     */
-    private class Unmarshaller {
-        private final String pkg;
-
-        // Use thread identity to preserve safety of access to unmarshalers.
-        private final ThreadLocal<javax.xml.bind.Unmarshaller> unmarshaller = new ThreadLocal<javax.xml.bind.Unmarshaller>() {
-            @Override
-            protected synchronized javax.xml.bind.Unmarshaller initialValue() {
-                javax.xml.bind.Unmarshaller m = null;
-                try {
-                    m = getContext(getPackage()).createUnmarshaller();
-                } catch (Exception e) {
-                    Context.getCurrentLogger().log(Level.WARNING,
-                            "Problem creating Unmarshaller", e);
-                    return null;
-                }
-                return m;
-            }
-        };
-
-        // This is a factory class.
-        Unmarshaller(String pkg) {
-            this.pkg = pkg;
-        }
-
-        String getPackage() {
-            return this.pkg;
-        }
-
-        private javax.xml.bind.Unmarshaller getUnmarshaller()
-                throws JAXBException {
-            final javax.xml.bind.Unmarshaller m = this.unmarshaller.get();
-            if (m == null) {
-                Context.getCurrentLogger().warning(
-                        "Unable to locate unmarshaller.");
-                throw new JAXBException("Unable to locate unmarshaller.");
-            }
-            return m;
-        }
-
-        /**
-         * Sets the validation handler for this unmarshaller.
-         * 
-         * @param handler
-         *            A validation handler.
-         * @throws JAXBException
-         *             If an error was encountered while setting the event
-         *             handler.
-         */
-        public void setEventHandler(ValidationEventHandler handler)
-                throws JAXBException {
-            getUnmarshaller().setEventHandler(handler);
-        }
-
-        /**
-         * Unmarshal XML data from the specified input stream and return the
-         * resulting Java content tree.
-         * 
-         * @param stream
-         *            The source input stream.
-         * @return The newly created root object of the Java content tree.
-         * @throws JAXBException
-         *             If any unexpected problem occurs during unmarshaling.
-         * @throws IOException
-         *             If an error occurs accessing the string representation.
-         */
-        public Object unmarshal(InputStream stream) throws JAXBException {
-            return getUnmarshaller().unmarshal(stream);
-        }
-
-        /**
-         * Unmarshal XML data from the specified reader and return the resulting
-         * Java content tree.
-         * 
-         * @param reader
-         *            The source reader.
-         * @return The newly created root object of the Java content tree.
-         * @throws JAXBException
-         *             If any unexpected problem occurs during unmarshaling.
-         * @throws IOException
-         *             If an error occurs accessing the string representation.
-         */
-        @SuppressWarnings("unused")
-        public Object unmarshal(Reader reader) throws JAXBException {
-            return getUnmarshaller().unmarshal(reader);
-        }
-
-        /**
-         * Unmarshal XML data from the specified Restlet string representation
-         * and return the resulting Java content tree.
-         * 
-         * @param rep
-         *            The source string representation.
-         * @return The newly created root object of the Java content tree.
-         * @throws JAXBException
-         *             If any unexpected problem occurs during unmarshaling.
-         * @throws IOException
-         *             If an error occurs accessing the string representation.
-         */
-        @SuppressWarnings("unused")
-        public Object unmarshal(StringRepresentation rep) throws JAXBException,
-                IOException {
-            return getUnmarshaller().unmarshal(rep.getReader());
-        }
-    }
 
     /** Improves performance by caching contexts which are expensive to create. */
     private final static Map<String, JAXBContext> contexts = new TreeMap<String, JAXBContext>();
 
     /**
-     * Returns the JAXB context.
+     * Returns the JAXB context, if possible from the cached contexts.
      * 
      * @return The JAXB context.
      * @throws JAXBException
      */
-    private static synchronized JAXBContext getContext(String contextPath)
+    public static synchronized JAXBContext getContext(String contextPath)
             throws JAXBException {
         // Contexts are thread-safe so reuse those.
         JAXBContext result = contexts.get(contextPath);
@@ -476,17 +229,6 @@ public class JaxbRepresentation<T> extends OutputRepresentation {
     }
 
     /**
-     * Returns the XML representation as a SAX input source.
-     * 
-     * @return The SAX input source.
-     * @deprecated
-     */
-    @Deprecated
-    public InputSource getInputSource() throws IOException {
-        return new InputSource(this.xmlRepresentation.getStream());
-    }
-
-    /**
      * Returns the JAXB context.
      * 
      * @return The JAXB context.
@@ -504,6 +246,17 @@ public class JaxbRepresentation<T> extends OutputRepresentation {
      */
     public String getContextPath() {
         return this.contextPath;
+    }
+
+    /**
+     * Returns the XML representation as a SAX input source.
+     * 
+     * @return The SAX input source.
+     * @deprecated
+     */
+    @Deprecated
+    public InputSource getInputSource() throws IOException {
+        return new InputSource(this.xmlRepresentation.getStream());
     }
 
     /**
@@ -542,7 +295,7 @@ public class JaxbRepresentation<T> extends OutputRepresentation {
     public T getObject() throws IOException {
         if ((this.object == null) && (this.xmlRepresentation != null)) {
             // Try to unmarshal the wrapped XML representation
-            final Unmarshaller u = new Unmarshaller(this.contextPath);
+            final Unmarshaller<T> u = new Unmarshaller<T>(this.contextPath);
             if (getValidationEventHandler() != null) {
                 try {
                     u.setEventHandler(getValidationEventHandler());
@@ -708,14 +461,16 @@ public class JaxbRepresentation<T> extends OutputRepresentation {
     @Override
     public void write(OutputStream outputStream) throws IOException {
         try {
-            new Marshaller(this.contextPath).marshal(getObject(), outputStream);
+            new Marshaller<T>(this, this.contextPath).marshal(getObject(),
+                    outputStream);
         } catch (JAXBException e) {
             Context.getCurrentLogger().log(Level.WARNING,
                     "JAXB marshalling error caught.", e);
 
             // Maybe the tree represents a failure, try that.
             try {
-                new Marshaller("failure").marshal(getObject(), outputStream);
+                new Marshaller<T>(this, "failure").marshal(getObject(),
+                        outputStream);
             } catch (JAXBException e2) {
                 // We don't know what package this tree is from.
                 throw new IOException(e.getMessage());
