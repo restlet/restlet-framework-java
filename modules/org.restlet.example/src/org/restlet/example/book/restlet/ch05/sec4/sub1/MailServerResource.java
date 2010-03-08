@@ -1,4 +1,4 @@
-package org.restlet.example.book.restlet.ch05.sec3.sub2;
+package org.restlet.example.book.restlet.ch05.sec4.sub1;
 
 import org.restlet.data.Reference;
 import org.restlet.ext.jackson.JacksonRepresentation;

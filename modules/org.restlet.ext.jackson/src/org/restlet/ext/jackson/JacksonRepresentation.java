@@ -57,8 +57,8 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
     /** The object class to instantiate. */
     private Class<T> objectClass;
 
-    /** The representation to parse. */
-    private Representation representation;
+    /** The JSON representation to parse. */
+    private Representation jsonRepresentation;
 
     /** The modifiable Jackson object mapper. */
     private ObjectMapper objectMapper;
@@ -77,7 +77,7 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
         this.object = object;
         this.objectClass = (Class<T>) ((object == null) ? null : object
                 .getClass());
-        this.representation = null;
+        this.jsonRepresentation = null;
         this.objectMapper = null;
     }
 
@@ -92,7 +92,7 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
         super(representation.getMediaType());
         this.object = null;
         this.objectClass = objectClass;
-        this.representation = representation;
+        this.jsonRepresentation = representation;
         this.objectMapper = null;
     }
 
@@ -110,11 +110,9 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
      * Creates a Jackson object mapper based on a media type. By default, it
      * calls {@link ObjectMapper#ObjectMapper()}.
      * 
-     * @param mediaType
-     *            The serialization media type.
      * @return The Jackson object mapper.
      */
-    protected ObjectMapper createObjectMapper(MediaType mediaType) {
+    protected ObjectMapper createObjectMapper() {
         return new ObjectMapper();
     }
 
@@ -129,10 +127,10 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
 
         if (this.object != null) {
             result = this.object;
-        } else if (this.representation != null) {
+        } else if (this.jsonRepresentation != null) {
             try {
                 result = getObjectMapper().readValue(
-                        this.representation.getStream(), this.objectClass);
+                        this.jsonRepresentation.getStream(), this.objectClass);
             } catch (IOException e) {
                 Context.getCurrentLogger().log(Level.WARNING,
                         "Unable to parse the object with XStream.", e);
@@ -159,10 +157,20 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
      */
     public ObjectMapper getObjectMapper() {
         if (this.objectMapper == null) {
-            this.objectMapper = createObjectMapper(getMediaType());
+            this.objectMapper = createObjectMapper();
         }
 
         return this.objectMapper;
+    }
+
+    /**
+     * Sets the object to format.
+     * 
+     * @param object
+     *            The object to format.
+     */
+    public void setObject(T object) {
+        this.object = object;
     }
 
     /**
@@ -187,8 +195,8 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
 
     @Override
     public void write(OutputStream outputStream) throws IOException {
-        if (representation != null) {
-            representation.write(outputStream);
+        if (jsonRepresentation != null) {
+            jsonRepresentation.write(outputStream);
         } else if (object != null) {
             getObjectMapper().writeValue(outputStream, object);
         }

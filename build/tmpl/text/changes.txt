@@ -62,6 +62,10 @@ Changes log
         - Made JaxbRepresentation#getContext() method public.
         - Deprecated JibxRepresentation#encoding property in favor of 
           the parent Variant#characterSet property.
+        - Added JacksonRepresentation#setObject(T) method.
+        - Renamed JsonRepresentation#indentSize into indentingSize.
+        - Deprecated JsonRepresentation#toJson*() method with logic
+          similar to equivalent getJson*() ones.
     - Enhancements
         - UniformResource#doCatch now extract the cause exception from
           caught ResourceException instance for easier debugging.

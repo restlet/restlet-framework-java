@@ -58,10 +58,10 @@ public class JsonRepresentation extends WriterRepresentation {
     private boolean indenting;
 
     /** Number of spaces to use for indentation. */
-    private int indentSize;
+    private int indentingSize;
 
-    /** The wrapped JSON object. */
-    private Object jsonObject;
+    /** The wrapped JSON value. */
+    private Object jsonValue;
 
     /** The wrapped JSON representation. */
     private Representation jsonRepresentation;
@@ -163,8 +163,19 @@ public class JsonRepresentation extends WriterRepresentation {
      * 
      * @return The number of spaces to use for indentation.
      */
+    public int getIndentingSize() {
+        return indentingSize;
+    }
+
+    /**
+     * Returns the number of spaces to use for indentation.
+     * 
+     * @return The number of spaces to use for indentation.
+     * @deprecated Use ~{@link #getIndentingSize()} instead.
+     */
+    @Deprecated
     public int getIndentSize() {
-        return indentSize;
+        return getIndentingSize();
     }
 
     /**
@@ -175,8 +186,8 @@ public class JsonRepresentation extends WriterRepresentation {
      * @throws JSONException
      */
     public JSONArray getJsonArray() throws JSONException {
-        if (this.jsonObject != null) {
-            return (JSONArray) this.jsonObject;
+        if (this.jsonValue != null) {
+            return (JSONArray) this.jsonValue;
         }
 
         return toJsonArray();
@@ -190,8 +201,8 @@ public class JsonRepresentation extends WriterRepresentation {
      * @throws JSONException
      */
     public JSONObject getJsonObject() throws JSONException {
-        if (this.jsonObject != null) {
-            return (JSONObject) this.jsonObject;
+        if (this.jsonValue != null) {
+            return (JSONObject) this.jsonValue;
         }
 
         return toJsonObject();
@@ -206,28 +217,28 @@ public class JsonRepresentation extends WriterRepresentation {
     private String getJsonText() throws JSONException {
         String result = null;
 
-        if (this.jsonObject != null) {
-            if (this.jsonObject instanceof JSONArray) {
-                JSONArray jsonArray = (JSONArray) this.jsonObject;
+        if (this.jsonValue != null) {
+            if (this.jsonValue instanceof JSONArray) {
+                JSONArray jsonArray = (JSONArray) this.jsonValue;
 
                 if (isIndenting()) {
-                    result = jsonArray.toString(getIndentSize());
+                    result = jsonArray.toString(getIndentingSize());
                 } else {
                     result = jsonArray.toString();
                 }
-            } else if (this.jsonObject instanceof JSONObject) {
-                JSONObject jsonObject = (JSONObject) this.jsonObject;
+            } else if (this.jsonValue instanceof JSONObject) {
+                JSONObject jsonObject = (JSONObject) this.jsonValue;
 
                 if (isIndenting()) {
-                    result = jsonObject.toString(getIndentSize());
+                    result = jsonObject.toString(getIndentingSize());
                 } else {
                     result = jsonObject.toString();
                 }
-            } else if (this.jsonObject instanceof JSONStringer) {
-                JSONStringer jsonStringer = (JSONStringer) this.jsonObject;
+            } else if (this.jsonValue instanceof JSONStringer) {
+                JSONStringer jsonStringer = (JSONStringer) this.jsonValue;
                 result = jsonStringer.toString();
-            } else if (this.jsonObject instanceof JSONTokener) {
-                JSONTokener jsonTokener = (JSONTokener) this.jsonObject;
+            } else if (this.jsonValue instanceof JSONTokener) {
+                JSONTokener jsonTokener = (JSONTokener) this.jsonValue;
                 result = jsonTokener.toString();
             }
         } else if (this.jsonRepresentation != null) {
@@ -252,8 +263,8 @@ public class JsonRepresentation extends WriterRepresentation {
      * @throws JSONException
      */
     public JSONTokener getJsonTokener() throws JSONException {
-        if (this.jsonObject != null) {
-            return (JSONTokener) this.jsonObject;
+        if (this.jsonValue != null) {
+            return (JSONTokener) this.jsonValue;
         }
 
         return toJsonTokener();
@@ -273,9 +284,9 @@ public class JsonRepresentation extends WriterRepresentation {
      */
     private void init(Object jsonObject) {
         setCharacterSet(CharacterSet.UTF_8);
-        this.jsonObject = jsonObject;
+        this.jsonValue = jsonObject;
         this.indenting = false;
-        this.indentSize = 3;
+        this.indentingSize = 3;
     }
 
     /**
@@ -326,8 +337,20 @@ public class JsonRepresentation extends WriterRepresentation {
      * @param indentFactor
      *            The number of spaces to use for indentation.
      */
+    public void setIndentingSize(int indentFactor) {
+        this.indentingSize = indentFactor;
+    }
+
+    /**
+     * Sets the number of spaces to use for indentation.
+     * 
+     * @param indentFactor
+     *            The number of spaces to use for indentation.
+     * @deprecated Use {@link #setIndentingSize(int)} instead
+     */
+    @Deprecated
     public void setIndentSize(int indentFactor) {
-        this.indentSize = indentFactor;
+        setIndentingSize(indentFactor);
     }
 
     /**
@@ -336,7 +359,9 @@ public class JsonRepresentation extends WriterRepresentation {
      * 
      * @return The converted JSON array.
      * @throws JSONException
+     * @deprecated Use {@link #getJsonArray() instead.
      */
+    @Deprecated
     public JSONArray toJsonArray() throws JSONException {
         return new JSONArray(getJsonText());
     }
@@ -347,7 +372,9 @@ public class JsonRepresentation extends WriterRepresentation {
      * 
      * @return The converted JSON object.
      * @throws JSONException
+     * @deprecated Use {@link #getJsonObject() instead.
      */
+    @Deprecated
     public JSONObject toJsonObject() throws JSONException {
         return new JSONObject(getJsonText());
     }
@@ -358,7 +385,9 @@ public class JsonRepresentation extends WriterRepresentation {
      * 
      * @return The converted JSON tokener.
      * @throws JSONException
+     * @deprecated Use {@link #getJsonTokener() instead.
      */
+    @Deprecated
     public JSONTokener toJsonTokener() throws JSONException {
         return new JSONTokener(getJsonText());
     }
