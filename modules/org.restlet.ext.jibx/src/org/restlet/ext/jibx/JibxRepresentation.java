@@ -40,19 +40,20 @@ import org.jibx.runtime.IBindingFactory;
 import org.jibx.runtime.IMarshallingContext;
 import org.jibx.runtime.IUnmarshallingContext;
 import org.jibx.runtime.JiBXException;
+import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
 import org.xml.sax.InputSource;
 
 /**
- * An XML representation based on JIBX that provides easy translation between
- * XML representations and Java objects with JIBX bindings.
+ * An XML representation based on JiBX that provides easy translation between
+ * XML representations and Java objects with JiBX bindings.
  * 
- * @see <a href="http://jibx.sourceforge.net/">JiBX project</a>
- * @author Florian Schwarz
  * @param <T>
  *            The type to wrap.
+ * @author Florian Schwarz
+ * @see <a href="http://jibx.sourceforge.net/">JiBX project</a>
  */
 public class JibxRepresentation<T> extends OutputRepresentation {
 
@@ -105,9 +106,6 @@ public class JibxRepresentation<T> extends OutputRepresentation {
     /** The binding name to use. */
     private volatile String bindingName;
 
-    /** The document encoding to use for marshalling (default is UTF-8). */
-    private volatile String encoding = "UTF-8";
-
     /** The wrapped Java object. */
     private volatile T object;
 
@@ -142,6 +140,7 @@ public class JibxRepresentation<T> extends OutputRepresentation {
      */
     public JibxRepresentation(MediaType mediaType, T object, String bindingName) {
         super(mediaType);
+        setCharacterSet(CharacterSet.UTF_8);
         this.object = object;
         this.bindingClass = object.getClass();
         this.bindingName = bindingName;
@@ -187,16 +186,20 @@ public class JibxRepresentation<T> extends OutputRepresentation {
      * is UTF-8.
      * 
      * @return The document encoding to use for marshalling.
+     * @deprecated Use {@link #getCharacterSet()} instead.
      */
+    @Deprecated
     public String getEncoding() {
-        return this.encoding;
+        return getCharacterSet().getName();
     }
 
     /**
      * Returns the XML representation as a SAX input source.
      * 
      * @return The SAX input source.
+     * @deprecated
      */
+    @Deprecated
     public InputSource getInputSource() throws IOException {
         return new InputSource(this.xmlRepresentation.getReader());
     }
@@ -225,8 +228,16 @@ public class JibxRepresentation<T> extends OutputRepresentation {
         return this.object;
     }
 
+    /**
+     * Sets the JiBX encoding.
+     * 
+     * @param encoding
+     *            The JiBX encoding.
+     * @deprecated Use {@link #setCharacterSet(CharacterSet)} instead.
+     */
+    @Deprecated
     public void setEncoding(String encoding) {
-        this.encoding = encoding;
+        setCharacterSet(CharacterSet.valueOf(encoding));
     }
 
     /**
@@ -254,9 +265,8 @@ public class JibxRepresentation<T> extends OutputRepresentation {
                     .getBindingFactory(this.bindingName, this.bindingClass);
             final IMarshallingContext mctx = jibxBFact
                     .createMarshallingContext();
-            mctx
-                    .marshalDocument(getObject(), this.encoding, null,
-                            outputStream);
+            mctx.marshalDocument(getObject(), getCharacterSet().getName(),
+                    null, outputStream);
         } catch (JiBXException e) {
             throw new IOException(e.getMessage());
         }

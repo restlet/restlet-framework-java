@@ -234,7 +234,7 @@ public class JaxbRepresentation<T> extends OutputRepresentation {
      * @return The JAXB context.
      * @throws JAXBException
      */
-    private JAXBContext getContext() throws JAXBException {
+    public JAXBContext getContext() throws JAXBException {
         return getContext(getContextPath());
     }
 

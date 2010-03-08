@@ -16,19 +16,25 @@ public class MailServerResource extends ServerResource {
 
     @Override
     protected Representation get() throws ResourceException {
+        // Create the mail bean
         Mail mail = new Mail();
         mail.setStatus("received");
         mail.setSubject("Message to self");
         mail.setContent("Doh!");
         mail.setAccountRef(new Reference(getReference(), "..").getTargetRef()
                 .toString());
-        return new JaxbRepresentation<Mail>(mail);
+
+        // Wraps the bean with a JAXB representation
+        JaxbRepresentation<Mail> result = new JaxbRepresentation<Mail>(mail);
+        result.setFormattedOutput(true);
+        return result;
     }
 
     @Override
     protected Representation put(Representation representation)
             throws ResourceException {
         try {
+            // Parse the XML representation to get the mail bean
             JaxbRepresentation<Mail> mailRep = new JaxbRepresentation<Mail>(
                     representation, Mail.class);
             Mail mail = mailRep.getObject();

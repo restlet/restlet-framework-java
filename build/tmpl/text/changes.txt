@@ -59,6 +59,9 @@ Changes log
         - Added a Transformer#canTransform(Representation) method to
           prevent systematic transformation. Returns true by default.
         - Deprecated JaxbRepresentation#getInputSource() method.
+        - Made JaxbRepresentation#getContext() method public.
+        - Deprecated JibxRepresentation#encoding property in favor of 
+          the parent Variant#characterSet property.
     - Enhancements
         - UniformResource#doCatch now extract the cause exception from
           caught ResourceException instance for easier debugging.
