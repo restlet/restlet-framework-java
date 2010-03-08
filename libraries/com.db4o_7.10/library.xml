@@ -31,8 +31,8 @@
 			<groupId>com.db4o</groupId>
 		</maven>
 	</package>
-	<version>7.12</version>
-	<release>132</release>
+	<version>7.10</version>
+	<release>96</release>
 	<distributions>
 		<distribution id="classic" />
 		<distribution id="maven" />
