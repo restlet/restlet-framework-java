@@ -5,7 +5,7 @@
 			<artifactId>junit</artifactId>
 		</maven>
 	</package>
-	<version>4.4</version>
+	<version>4.8</version>
 	<distributions>
 		<distribution id="classic" />
 	</distributions>
