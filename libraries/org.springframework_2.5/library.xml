@@ -2,7 +2,7 @@
 	<package id="spring-beans" name="org.springframework.beans">
 		<maven>
 			<groupId>org.springframework</groupId>
-			<artifactId>spring-context</artifactId>
+			<artifactId>spring-beans</artifactId>
 		</maven>
 	</package>
 	<package id="spring-context" name="org.springframework.context">
