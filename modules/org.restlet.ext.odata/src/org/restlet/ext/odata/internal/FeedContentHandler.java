@@ -396,7 +396,12 @@ public class FeedContentHandler<T> extends FeedReader {
                 extraEntryHandler.startElement(uri, localName, qName, attrs);
             }
 
-            if (localName.equals("entry")) {
+            if (localName.equals("feed")) {
+                Feed feed = new Feed();
+                if (extraFeedHandler != null) {
+                    extraFeedHandler.startFeed(feed);
+                }
+            } else if (localName.equals("entry")) {
                 Entry entry = new Entry();
                 if (extraFeedHandler != null) {
                     extraFeedHandler.startEntry(entry);
