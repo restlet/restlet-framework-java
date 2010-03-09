@@ -27,6 +27,13 @@
 			<version>3.0.1.RELEASE</version>
 		</maven>
 	</package>
+   <package id="spring-expression" name="org.springframework.expression">
+      <maven>
+         <groupId>org.springframework</groupId>
+         <artifactId>spring-expression</artifactId>
+         <version>3.0.1.RELEASE</version>
+      </maven>
+   </package>
 	<package id="spring-web" name="org.springframework.web">
 		<maven>
 			<groupId>org.springframework</groupId>
