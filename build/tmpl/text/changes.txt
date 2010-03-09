@@ -116,6 +116,7 @@ Changes log
     - Misc
         - Removed Representation#getDigester* methods. There is no 
           reason to favor this way to wrap a Representation.
+        - Updated Db4o to version 7.12.132.
         
 - 2.0 Milestone 7 (2010-01-29)
     - API changes
