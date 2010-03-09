@@ -8,7 +8,7 @@ import org.restlet.resource.ServerResource;
 
 /**
  * Resource corresponding to a mail received or sent with the parent mail
- * account. Leverages XML Schema validation.
+ * account. Leverages Jackson extension.
  */
 public class MailServerResource extends ServerResource {
 
@@ -23,9 +23,7 @@ public class MailServerResource extends ServerResource {
                 .toString());
 
         // Wraps the bean with a Jackson representation
-        JacksonRepresentation<Mail> result = new JacksonRepresentation<Mail>(
-                mail);
-        return result;
+        return new JacksonRepresentation<Mail>(mail);
     }
 
     @Override

@@ -69,7 +69,7 @@ import org.restlet.ext.jetty.internal.JettyCall;
  * <td>Time for an idle thread to wait for a request or read.</td>
  * </tr>
  * <tr>
- * <td>lowResourceMaxIdleTimeMs</td>
+ * <td>lowResourcesMaxIdleTimeMs</td>
  * <td>int</td>
  * <td>2500</td>
  * <td>Time in ms that connections will persist if listener is low on resources.
@@ -198,7 +198,7 @@ public abstract class JettyServerHelper extends
             connector.setHost(getHelped().getAddress());
         }
         connector.setPort(getHelped().getPort());
-        connector.setLowResourceMaxIdleTime(getLowResourceMaxIdleTimeMs());
+        connector.setLowResourcesMaxIdleTime(getLowResourcesMaxIdleTimeMs());
         connector.setAcceptors(getAcceptorThreads());
         connector.setAcceptQueueSize(getAcceptQueueSize());
         connector.setRequestHeaderSize(getRequestHeaderSize());
@@ -264,9 +264,9 @@ public abstract class JettyServerHelper extends
      * @return The time in ms that connections will persist if listener is low
      *         on resources.
      */
-    public int getLowResourceMaxIdleTimeMs() {
+    public int getLowResourcesMaxIdleTimeMs() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "lowResourceMaxIdleTimeMs", "2500"));
+                "lowResourcesMaxIdleTimeMs", "2500"));
     }
 
     /**

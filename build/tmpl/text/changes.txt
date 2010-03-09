@@ -67,6 +67,8 @@ Changes log
         - Added new constructors for FreeMarker's TemplateRepresentation
           using a default Configuration instance. Also added getter and
           setter for the "template" variable.
+        - Renamed Jetty parameter "lowResourceMaxIdleTimeMs" into
+          "lowResourcesMaxIdleTimeMs".
     - Enhancements
         - UniformResource#doCatch now extract the cause exception from
           caught ResourceException instance for easier debugging.

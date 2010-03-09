@@ -104,6 +104,17 @@ public class XstreamRepresentation<T> extends OutputRepresentation {
     }
 
     /**
+     * Constructor. Uses the {@link MediaType#APPLICATION_XML} media type by
+     * default.
+     * 
+     * @param object
+     *            The object to format.
+     */
+    public XstreamRepresentation(T object) {
+        this(MediaType.APPLICATION_XML, object);
+    }
+
+    /**
      * Creates an XStream object based on a media type. By default, it creates a
      * {@link HierarchicalStreamDriver} or a {@link DomDriver}.
      * 
