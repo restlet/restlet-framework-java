@@ -1,16 +1,14 @@
 package org.restlet.example.book.restlet.ch05.sec5.sub4;
 
 import org.restlet.data.Reference;
-import org.restlet.ext.jackson.JacksonRepresentation;
-import org.restlet.ext.xstream.XstreamRepresentation;
 import org.restlet.resource.ServerResource;
 
 /**
- *  
+ * Mail server resource implementing the {@link MailResource} interface.
  */
 public class MailServerResource extends ServerResource implements MailResource {
 
-    private Mail getMail() {
+    public Mail retrieve() {
         Mail mail = new Mail();
         mail.setStatus("received");
         mail.setSubject("Message to self");
@@ -20,25 +18,7 @@ public class MailServerResource extends ServerResource implements MailResource {
         return mail;
     }
 
-    public JacksonRepresentation<Mail> toJson() {
-        return new JacksonRepresentation<Mail>(getMail());
-    }
-
-    public XstreamRepresentation<Mail> toXml() {
-        return new XstreamRepresentation<Mail>(getMail());
-    }
-
-    public void fromXml(XstreamRepresentation<Mail> representation) {
-        System.out.println("XML representation received");
-        displayMail(representation.getObject());
-    }
-
-    public void fromJson(JacksonRepresentation<Mail> representation) {
-        System.out.println("JSON representation received");
-        displayMail(representation.getObject());
-    }
-
-    private void displayMail(Mail mail) {
+    public void store(Mail mail) {
         System.out.println("Status: " + mail.getStatus());
         System.out.println("Subject: " + mail.getSubject());
         System.out.println("Content: " + mail.getContent());

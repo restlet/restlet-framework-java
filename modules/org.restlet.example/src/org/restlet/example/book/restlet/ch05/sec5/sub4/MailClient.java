@@ -8,11 +8,10 @@ import org.restlet.resource.ClientResource;
 public class MailClient {
 
     public static void main(String[] args) throws Exception {
-        MailResource mailClient = ClientResource.create(
+        MailResource clientResource = ClientResource.create(
                 "http://localhost:8182/accounts/chunkylover53/mails/123",
                 MailResource.class);
-        mailClient.fromXml(mailClient.toXml());
-        mailClient.fromJson(mailClient.toJson());
+        clientResource.store(clientResource.retrieve());
     }
 
 }
