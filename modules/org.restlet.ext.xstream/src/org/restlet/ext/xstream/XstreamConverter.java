@@ -163,14 +163,25 @@ public class XstreamConverter extends ConverterHelper {
             UniformResource resource) throws IOException {
         Object result = null;
 
+        // The source for the Xstream conversion
+        XstreamRepresentation xstreamSource = null;
         if (source instanceof XstreamRepresentation) {
-            result = ((XstreamRepresentation) source).getObject();
+            xstreamSource = (XstreamRepresentation) source;
         } else if (VARIANT_JSON.isCompatible(source)) {
-            result = create(source).getObject();
+            xstreamSource = create(source);
         } else if (VARIANT_APPLICATION_ALL_XML.isCompatible(source)
                 || VARIANT_APPLICATION_XML.isCompatible(source)
                 || VARIANT_TEXT_XML.isCompatible(source)) {
-            result = create(source).getObject();
+            xstreamSource = create(source);
+        }
+
+        if (xstreamSource != null) {
+            // Handle the conversion
+            if (XstreamRepresentation.class.isAssignableFrom(target)) {
+                result = xstreamSource;
+            } else {
+                result = xstreamSource.getObject();
+            }
         }
 
         return (T) result;
