@@ -1659,7 +1659,10 @@ public class ClientResource extends UniformResource {
                                 // callback.
                                 for (int i = 0; i < args.length; i++) {
                                     Object o = args[i];
-                                    if (Result.class.isAssignableFrom(o
+
+                                    if (o == null) {
+                                        requestEntity = null;
+                                    } else if (Result.class.isAssignableFrom(o
                                             .getClass())) {
                                         // Asynchronous mode where a callback
                                         // object is to be called.

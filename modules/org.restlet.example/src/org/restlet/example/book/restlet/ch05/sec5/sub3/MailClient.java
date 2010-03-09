@@ -1,4 +1,4 @@
-package org.restlet.example.book.restlet.ch05.sec5.sub2;
+package org.restlet.example.book.restlet.ch05.sec5.sub3;
 
 import org.restlet.data.MediaType;
 import org.restlet.representation.Representation;

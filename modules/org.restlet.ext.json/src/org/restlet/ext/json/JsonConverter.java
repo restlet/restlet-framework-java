@@ -116,7 +116,9 @@ public class JsonConverter extends ConverterHelper {
         float result = -1.0F;
 
         if (target != null) {
-            if (JSONArray.class.isAssignableFrom(target)) {
+            if (JsonRepresentation.class.isAssignableFrom(target)) {
+                result = 1.0F;
+            } else if (JSONArray.class.isAssignableFrom(target)) {
                 if (MediaType.APPLICATION_JSON.isCompatible(source
                         .getMediaType())) {
                     result = 1.0F;

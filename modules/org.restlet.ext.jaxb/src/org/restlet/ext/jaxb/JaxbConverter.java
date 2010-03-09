@@ -71,18 +71,6 @@ public class JaxbConverter extends ConverterHelper {
         return result;
     }
 
-    /**
-     * Indicates if the class has JAXB annotations.
-     * 
-     * @param source
-     *            The class to test.
-     * @return True if the class has JAXB annotations.
-     */
-    private boolean isJaxbRootElementClass(Class<?> source) {
-        return source != null
-                && source.isAnnotationPresent(XmlRootElement.class);
-    }
-
     @Override
     public List<VariantInfo> getVariants(Class<?> source) {
         List<VariantInfo> result = null;
@@ -97,20 +85,16 @@ public class JaxbConverter extends ConverterHelper {
         return result;
     }
 
-    @Override
-    public <T> float score(Representation source, Class<T> target,
-            UniformResource resource) {
-        float result = -1.0F;
-
-        if ((source != null)
-                && (isJaxbRootElementClass(target) || JaxbRepresentation.class
-                        .isAssignableFrom(source.getClass()))) {
-            result = 1.0F;
-        } else if (JaxbRepresentation.class.isAssignableFrom(target)) {
-            result = 1.0F;
-        }
-
-        return result;
+    /**
+     * Indicates if the class has JAXB annotations.
+     * 
+     * @param source
+     *            The class to test.
+     * @return True if the class has JAXB annotations.
+     */
+    private boolean isJaxbRootElementClass(Class<?> source) {
+        return source != null
+                && source.isAnnotationPresent(XmlRootElement.class);
     }
 
     @Override
@@ -135,6 +119,24 @@ public class JaxbConverter extends ConverterHelper {
                 // Allow for JAXB object to be used for JSON and other
                 // representations
                 result = 0.5F;
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public <T> float score(Representation source, Class<T> target,
+            UniformResource resource) {
+        float result = -1.0F;
+
+        if (source != null) {
+            if (JaxbRepresentation.class.isAssignableFrom(target)) {
+                result = 1.0F;
+            } else if (isJaxbRootElementClass(target)
+                    || JaxbRepresentation.class.isAssignableFrom(source
+                            .getClass())) {
+                result = 1.0F;
             }
         }
 

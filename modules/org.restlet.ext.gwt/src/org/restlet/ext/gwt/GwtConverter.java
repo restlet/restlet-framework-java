@@ -102,7 +102,9 @@ public class GwtConverter extends ConverterHelper {
         float result = -1.0F;
 
         if (target != null) {
-            if (Serializable.class.isAssignableFrom(target)) {
+            if (ObjectRepresentation.class.isAssignableFrom(target)) {
+                result = 1.0F;
+            } else if (Serializable.class.isAssignableFrom(target)) {
                 if (MediaType.APPLICATION_JAVA_OBJECT_GWT.equals(source
                         .getMediaType())) {
                     result = 1.0F;

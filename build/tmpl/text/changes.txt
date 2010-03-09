@@ -118,6 +118,8 @@ Changes log
         - Client HTTP connectors were not automatically resolving 
           relative URI references with a given base URI.
           Reported by Rickard Oberg.
+        - Fixed conversion issue when using XstreamRepresentation and
+          similar classes in annotated methods' signature.
     - Misc
         - Removed Representation#getDigester* methods. There is no 
           reason to favor this way to wrap a Representation.

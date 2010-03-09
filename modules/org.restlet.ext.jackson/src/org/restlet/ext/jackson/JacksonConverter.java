@@ -125,7 +125,9 @@ public class JacksonConverter extends ConverterHelper {
         float result = -1.0F;
 
         if (target != null) {
-            if (VARIANT_JSON.isCompatible(source)) {
+            if (JacksonRepresentation.class.isAssignableFrom(target)) {
+                result = 1.0F;
+            } else if (VARIANT_JSON.isCompatible(source)) {
                 result = 0.8F;
             }
         }

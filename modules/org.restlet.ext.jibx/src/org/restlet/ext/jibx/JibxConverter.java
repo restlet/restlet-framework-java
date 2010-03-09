@@ -43,7 +43,7 @@ import org.restlet.representation.Variant;
 import org.restlet.resource.UniformResource;
 
 /**
- * A Jibx converter helper to convert from Jibx objects to JibxRepresentation
+ * A JiBX converter helper to convert from JiBX objects to JibxRepresentation
  * and vice versa. It only supports objects that are not bound several times
  * using several binding names.
  * 
@@ -73,6 +73,20 @@ public class JibxConverter extends ConverterHelper {
         return result;
     }
 
+    @Override
+    public List<VariantInfo> getVariants(Class<?> source) {
+        List<VariantInfo> result = null;
+
+        if (isJibxBoundClass(source)
+                || JibxRepresentation.class.isAssignableFrom(source)) {
+            result = addVariant(result, VARIANT_APPLICATION_ALL_XML);
+            result = addVariant(result, VARIANT_APPLICATION_XML);
+            result = addVariant(result, VARIANT_TEXT_XML);
+        }
+
+        return result;
+    }
+
     /**
      * Indicates if the class is bound by a Jibx factory.
      * 
@@ -91,36 +105,6 @@ public class JibxConverter extends ConverterHelper {
         } catch (JiBXException e) {
             // This may be caused by the fact that the source class is bound
             // several times which requires the knowledge of the binding name.
-        }
-
-        return result;
-    }
-
-    @Override
-    public List<VariantInfo> getVariants(Class<?> source) {
-        List<VariantInfo> result = null;
-
-        if (isJibxBoundClass(source)
-                || JibxRepresentation.class.isAssignableFrom(source)) {
-            result = addVariant(result, VARIANT_APPLICATION_ALL_XML);
-            result = addVariant(result, VARIANT_APPLICATION_XML);
-            result = addVariant(result, VARIANT_TEXT_XML);
-        }
-
-        return result;
-    }
-
-    @Override
-    public <T> float score(Representation source, Class<T> target,
-            UniformResource resource) {
-        float result = -1.0F;
-
-        if ((source != null)
-                && (isJibxBoundClass(target) || JibxRepresentation.class
-                        .isAssignableFrom(source.getClass()))) {
-            result = 1.0F;
-        } else if (JibxRepresentation.class.isAssignableFrom(target)) {
-            result = 1.0F;
         }
 
         return result;
@@ -148,6 +132,24 @@ public class JibxConverter extends ConverterHelper {
                 // Allow for JiBX object to be used for JSON and other
                 // representations
                 result = 0.5F;
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public <T> float score(Representation source, Class<T> target,
+            UniformResource resource) {
+        float result = -1.0F;
+
+        if (source != null) {
+            if (JibxRepresentation.class.isAssignableFrom(target)) {
+                result = 1.0F;
+            } else if (isJibxBoundClass(target)
+                    || JibxRepresentation.class.isAssignableFrom(source
+                            .getClass())) {
+                result = 1.0F;
             }
         }
 
