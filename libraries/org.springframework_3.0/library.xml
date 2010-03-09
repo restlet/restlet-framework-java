@@ -49,7 +49,7 @@
 		</maven>
 	</package>
 	<version>3.0</version>
-	<release>0</release>
+	<release>1</release>
 	<distributions>
 		<distribution id="classic" />
 	</distributions>
