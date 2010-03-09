@@ -18,6 +18,6 @@
 		http://jackson.codehaus.org/
 	</homeUri>
 	<downloadUri>
-		http://jackson.codehaus.org/Download
+		http://wiki.fasterxml.com/JacksonDownload
 	</downloadUri>
 </library>
