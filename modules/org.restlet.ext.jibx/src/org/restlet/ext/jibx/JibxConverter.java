@@ -161,7 +161,9 @@ public class JibxConverter extends ConverterHelper {
             UniformResource resource) throws IOException {
         Object result = null;
 
-        if (isJibxBoundClass(target)) {
+        if (JibxRepresentation.class.isAssignableFrom(target)) {
+            result = new JibxRepresentation<T>(source, target);
+        } else if (isJibxBoundClass(target)) {
             try {
                 result = new JibxRepresentation<T>(source, target).getObject();
             } catch (JiBXException e) {

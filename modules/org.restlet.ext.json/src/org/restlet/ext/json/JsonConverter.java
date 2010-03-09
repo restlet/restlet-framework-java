@@ -169,6 +169,8 @@ public class JsonConverter extends ConverterHelper {
             }
         } else if (JSONTokener.class.isAssignableFrom(target)) {
             result = new JSONTokener(source.getText());
+        } else if (JsonRepresentation.class.isAssignableFrom(target)) {
+            result = new JsonRepresentation(source);
         }
 
         return (T) result;

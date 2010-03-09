@@ -148,7 +148,9 @@ public class JaxbConverter extends ConverterHelper {
             UniformResource resource) throws IOException {
         Object result = null;
 
-        if (isJaxbRootElementClass(target)) {
+        if (JaxbRepresentation.class.isAssignableFrom(target)) {
+            result = new JaxbRepresentation<T>(source, target);
+        } else if (isJaxbRootElementClass(target)) {
             result = new JaxbRepresentation<T>(source, target).getObject();
         }
 

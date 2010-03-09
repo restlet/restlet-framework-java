@@ -141,10 +141,21 @@ public class JacksonConverter extends ConverterHelper {
             UniformResource resource) throws IOException {
         Object result = null;
 
+        // The source for the Jackson conversion
+        JacksonRepresentation jacksonSource = null;
         if (source instanceof JacksonRepresentation) {
-            result = ((JacksonRepresentation) source).getObject();
+            jacksonSource = (JacksonRepresentation) source;
         } else if (VARIANT_JSON.isCompatible(source)) {
-            result = create(source, target).getObject();
+            jacksonSource = create(source, target);
+        }
+        
+        if(jacksonSource!=null){
+            // Handle the conversion
+            if (JacksonRepresentation.class.isAssignableFrom(target)) {
+                result = jacksonSource;
+            } else {
+                result = jacksonSource.getObject();
+            }
         }
 
         return (T) result;

@@ -124,7 +124,9 @@ public class GwtConverter extends ConverterHelper {
             UniformResource resource) throws IOException {
         Object result = null;
 
-        if (Serializable.class.isAssignableFrom(target)) {
+        if (ObjectRepresentation.class.isAssignableFrom(target)) {
+            ObjectRepresentation.class.isAssignableFrom(target);
+        } else if (Serializable.class.isAssignableFrom(target)) {
             result = new ObjectRepresentation(source.getText(), target)
                     .getObject();
         }
