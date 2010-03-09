@@ -62,14 +62,14 @@ public class TemplateRepresentation extends OutputRepresentation {
     /**
      * Returns a FreeMarker template from a representation and a configuration.
      * 
-     * @param templateRepresentation
-     *            The template representation.
      * @param config
      *            The FreeMarker configuration.
+     * @param templateRepresentation
+     *            The template representation.
      * @return The template or null if not found.
      */
-    private static Template getTemplate(Representation templateRepresentation,
-            Configuration config) {
+    public static Template getTemplate(Configuration config,
+            Representation templateRepresentation) {
         try {
             // Instantiate the template with the character set of the template
             // representation if it has been set, otherwise use UTF-8.
@@ -93,14 +93,13 @@ public class TemplateRepresentation extends OutputRepresentation {
     /**
      * Returns a FreeMarker template from its name and a configuration.
      * 
-     * @param templateName
-     *            The template name.
      * @param config
      *            The FreeMarker configuration.
+     * @param templateName
+     *            The template name.
      * @return The template or null if not found.
      */
-    private static Template getTemplate(String templateName,
-            Configuration config) {
+    public static Template getTemplate(Configuration config, String templateName) {
         try {
             return config.getTemplate(templateName);
         } catch (IOException e) {
@@ -114,7 +113,7 @@ public class TemplateRepresentation extends OutputRepresentation {
     /** The template's data model. */
     private volatile Object dataModel;
 
-    /** The template. */
+    /** The FreeMarker template. */
     private volatile Template template;
 
     /**
@@ -129,7 +128,7 @@ public class TemplateRepresentation extends OutputRepresentation {
      */
     public TemplateRepresentation(Representation templateRepresentation,
             Configuration config, MediaType mediaType) {
-        this(getTemplate(templateRepresentation, config), mediaType);
+        this(getTemplate(config, templateRepresentation), mediaType);
     }
 
     /**
@@ -146,7 +145,35 @@ public class TemplateRepresentation extends OutputRepresentation {
      */
     public TemplateRepresentation(Representation templateRepresentation,
             Configuration config, Object dataModel, MediaType mediaType) {
-        this(getTemplate(templateRepresentation, config), dataModel, mediaType);
+        this(getTemplate(config, templateRepresentation), dataModel, mediaType);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param templateRepresentation
+     *            The FreeMarker template provided via a representation.
+     * @param mediaType
+     *            The representation's media type.
+     */
+    public TemplateRepresentation(Representation templateRepresentation,
+            MediaType mediaType) {
+        this(templateRepresentation, new Configuration(), mediaType);
+    }
+
+    /**
+     * Constructor. Uses a default FreeMarker configuration.
+     * 
+     * @param templateRepresentation
+     *            The FreeMarker template provided via a representation.
+     * @param dataModel
+     *            The template's data model.
+     * @param mediaType
+     *            The representation's media type.
+     */
+    public TemplateRepresentation(Representation templateRepresentation,
+            Object dataModel, MediaType mediaType) {
+        this(templateRepresentation, new Configuration(), dataModel, mediaType);
     }
 
     /**
@@ -162,7 +189,7 @@ public class TemplateRepresentation extends OutputRepresentation {
      */
     public TemplateRepresentation(String templateName, Configuration config,
             MediaType mediaType) {
-        this(getTemplate(templateName, config), mediaType);
+        this(getTemplate(config, templateName), mediaType);
     }
 
     /**
@@ -180,7 +207,7 @@ public class TemplateRepresentation extends OutputRepresentation {
      */
     public TemplateRepresentation(String templateName, Configuration config,
             Object dataModel, MediaType mediaType) {
-        this(getTemplate(templateName, config), dataModel, mediaType);
+        this(getTemplate(config, templateName), dataModel, mediaType);
     }
 
     /**
@@ -220,6 +247,15 @@ public class TemplateRepresentation extends OutputRepresentation {
      */
     public Object getDataModel() {
         return this.dataModel;
+    }
+
+    /**
+     * Returns the FreeMarker template.
+     * 
+     * @return The FreeMarker template.
+     */
+    public Template getTemplate() {
+        return template;
     }
 
     /**
@@ -263,6 +299,16 @@ public class TemplateRepresentation extends OutputRepresentation {
     public Object setDataModel(Resolver<Object> resolver) {
         this.dataModel = new ResolverHashModel(resolver);
         return this.dataModel;
+    }
+
+    /**
+     * Sets the FreeMarker template.
+     * 
+     * @param template
+     *            The FreeMarker template.
+     */
+    public void setTemplate(Template template) {
+        this.template = template;
     }
 
     /**

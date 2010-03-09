@@ -1,14 +1,17 @@
 package org.restlet.example.book.restlet.ch05.sec4.sub1;
 
+import org.restlet.data.LocalReference;
+import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
-import org.restlet.ext.jackson.JacksonRepresentation;
+import org.restlet.ext.freemarker.TemplateRepresentation;
 import org.restlet.representation.Representation;
+import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 
 /**
  * Resource corresponding to a mail received or sent with the parent mail
- * account. Leverages XML Schema validation.
+ * account. Leverages FreeMarker template engine.
  */
 public class MailServerResource extends ServerResource {
 
@@ -22,26 +25,15 @@ public class MailServerResource extends ServerResource {
         mail.setAccountRef(new Reference(getReference(), "..").getTargetRef()
                 .toString());
 
-        // Wraps the bean with a Jackson representation
-        JacksonRepresentation<Mail> result = new JacksonRepresentation<Mail>(
-                mail);
+        // Load the FreeMarker template
+        Representation mailFtl = new ClientResource(LocalReference
+                .createClapReference(getClass().getPackage())
+                + "/Mail.ftl").get();
+
+        // Wraps the bean with a FreeMarker representation
+        TemplateRepresentation result = new TemplateRepresentation(mailFtl,
+                mail, MediaType.TEXT_HTML);
         return result;
     }
 
-    @Override
-    protected Representation put(Representation representation)
-            throws ResourceException {
-        // Parse the JSON representation to get the mail bean
-        JacksonRepresentation<Mail> mailRep = new JacksonRepresentation<Mail>(
-                representation, Mail.class);
-        Mail mail = mailRep.getObject();
-
-        // Output the JSON element values
-        System.out.println("Status: " + mail.getStatus());
-        System.out.println("Subject: " + mail.getSubject());
-        System.out.println("Content: " + mail.getContent());
-        System.out.println("Account URI: " + mail.getAccountRef());
-
-        return null;
-    }
 }

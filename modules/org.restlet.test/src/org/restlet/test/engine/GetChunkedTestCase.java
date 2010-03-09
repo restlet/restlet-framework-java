@@ -40,7 +40,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
-import org.restlet.ext.xml.XsltRepresentation;
+import org.restlet.ext.xml.TransformRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
@@ -79,7 +79,7 @@ public class GetChunkedTestCase extends BaseConnectorsTestCase {
                     builder.toString(), MediaType.TEXT_XML);
 
             // Instantiates the representation with both source and stylesheet.
-            final Representation representation = new XsltRepresentation(
+            final Representation representation = new TransformRepresentation(
                     getContext(), source, transformSheet);
             // Set the right media-type
             representation.setMediaType(variant.getMediaType());

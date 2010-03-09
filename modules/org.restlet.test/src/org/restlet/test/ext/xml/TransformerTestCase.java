@@ -37,7 +37,7 @@ import junit.framework.TestCase;
 import org.restlet.Component;
 import org.restlet.data.MediaType;
 import org.restlet.ext.xml.Transformer;
-import org.restlet.ext.xml.XsltRepresentation;
+import org.restlet.ext.xml.TransformRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 
@@ -105,7 +105,7 @@ public class TransformerTestCase extends TestCase {
      */
     public void parallelTestTransform() throws Exception {
         final Component comp = new Component();
-        final XsltRepresentation tr = new XsltRepresentation(comp.getContext(),
+        final TransformRepresentation tr = new TransformRepresentation(comp.getContext(),
                 this.source, this.xslt);
         final FailureTracker tracker = new FailureTracker();
 

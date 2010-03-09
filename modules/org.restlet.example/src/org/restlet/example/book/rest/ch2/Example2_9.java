@@ -53,7 +53,7 @@ public class Example2_9 {
             String term = Reference.encode(args[0]);
             String uri = BASE_URI + "?appid=restbook&output=json&query=" + term;
             Representation entity = new ClientResource(uri).get();
-            JSONObject json = new JsonRepresentation(entity).toJsonObject();
+            JSONObject json = new JsonRepresentation(entity).getJsonObject();
 
             // Navigate within the JSON document to display the titles
             JSONObject resultSet = json.getJSONObject("ResultSet");

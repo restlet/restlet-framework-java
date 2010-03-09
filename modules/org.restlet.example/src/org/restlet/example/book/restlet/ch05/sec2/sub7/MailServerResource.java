@@ -7,7 +7,7 @@ import javax.xml.transform.OutputKeys;
 import org.restlet.data.LocalReference;
 import org.restlet.data.Reference;
 import org.restlet.ext.xml.DomRepresentation;
-import org.restlet.ext.xml.XsltRepresentation;
+import org.restlet.ext.xml.TransformRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
@@ -23,7 +23,7 @@ public class MailServerResource extends ServerResource {
 
     @Override
     protected Representation get() throws ResourceException {
-        XsltRepresentation result = null;
+        TransformRepresentation result = null;
 
         try {
             // Create a new DOM representation
@@ -57,7 +57,7 @@ public class MailServerResource extends ServerResource {
             Representation transformSheet = new ClientResource(LocalReference
                     .createClapReference(getClass().getPackage())
                     + "/Mail.xslt").get();
-            result = new XsltRepresentation(rmepMail, transformSheet);
+            result = new TransformRepresentation(rmepMail, transformSheet);
             result.getOutputProperties().put(OutputKeys.INDENT, "yes");
         } catch (IOException e) {
             throw new ResourceException(e);

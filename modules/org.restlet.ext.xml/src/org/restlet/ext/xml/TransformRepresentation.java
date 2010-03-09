@@ -64,8 +64,8 @@ import org.xml.sax.XMLReader;
 /**
  * Representation able to apply an XSLT transformation. The internal JAXP
  * transformer is created when the getTransformer() method is first called. So,
- * if you need to specify a custom URI resolver, you need to do it before
- * actually using the representation for a transformation.<br>
+ * if you need to specify a custom URI resolver, do it before actually using the
+ * representation for a transformation.<br>
  * <br>
  * This representation should be viewed as a wrapper representation that applies
  * a transform sheet on a source representation when it is read or written out.
@@ -74,16 +74,13 @@ import org.xml.sax.XMLReader;
  * filter.
  * 
  * @author Jerome Louvel
- * @deprecated Use the {@link XsltRepresentation} class instead
  */
-@Deprecated
 public class TransformRepresentation extends OutputRepresentation {
     /**
      * Wraps a source representation into a {@link SAXSource}. This method can
      * detect other {@link XmlRepresentation} instances to use their
      * {@link XmlRepresentation#getSaxSource()} method as well as other
-     * {@link TransformRepresentation} instances to support transformation
-     * chaining.
+     * {@link TransformRepresentation} instances to support transformation chaining.
      * 
      * @param representation
      *            The source representation.
@@ -199,8 +196,8 @@ public class TransformRepresentation extends OutputRepresentation {
      * @param transformSheet
      *            The XSLT transform sheet to apply.
      */
-    public TransformRepresentation(URIResolver uriResolver,
-            Representation source, Representation transformSheet) {
+    public TransformRepresentation(URIResolver uriResolver, Representation source,
+            Representation transformSheet) {
         this(uriResolver, source, transformSheet, null);
     }
 
@@ -214,9 +211,8 @@ public class TransformRepresentation extends OutputRepresentation {
      * @param templates
      *            The precompiled JAXP template.
      */
-    private TransformRepresentation(URIResolver uriResolver,
-            Representation source, Representation transformSheet,
-            Templates templates) {
+    private TransformRepresentation(URIResolver uriResolver, Representation source,
+            Representation transformSheet, Templates templates) {
         super(null);
         this.sourceRepresentation = source;
         this.templates = templates;
@@ -236,8 +232,8 @@ public class TransformRepresentation extends OutputRepresentation {
      * @param templates
      *            The precompiled JAXP template.
      */
-    public TransformRepresentation(URIResolver uriResolver,
-            Representation source, Templates templates) {
+    public TransformRepresentation(URIResolver uriResolver, Representation source,
+            Templates templates) {
         this(uriResolver, source, null, templates);
     }
 
@@ -275,7 +271,7 @@ public class TransformRepresentation extends OutputRepresentation {
      * @return The default SAX transformer factory.
      */
     private SAXTransformerFactory getSaxTransformerFactory() {
-        final SAXTransformerFactory result = (SAXTransformerFactory) TransformerFactory
+        SAXTransformerFactory result = (SAXTransformerFactory) TransformerFactory
                 .newInstance();
         return result;
     }
@@ -342,7 +338,7 @@ public class TransformRepresentation extends OutputRepresentation {
         Transformer result = null;
 
         try {
-            final Templates templates = getTemplates();
+            Templates templates = getTemplates();
 
             if (templates != null) {
                 result = templates.newTransformer();
@@ -355,9 +351,9 @@ public class TransformRepresentation extends OutputRepresentation {
                 for (final String name : getParameters().keySet()) {
                     result.setParameter(name, getParameters().get(name));
                 }
-
+                
                 // Set the output properties
-                for (final String name : getOutputProperties().keySet()) {
+                for (String name : getOutputProperties().keySet()) {
                     result.setOutputProperty(name, getOutputProperties().get(
                             name));
                 }
@@ -382,7 +378,7 @@ public class TransformRepresentation extends OutputRepresentation {
      */
     public TransformerHandler getTransformerHandler() throws IOException {
         TransformerHandler result = null;
-        final Templates templates = getTemplates();
+        Templates templates = getTemplates();
 
         if (templates != null) {
             try {

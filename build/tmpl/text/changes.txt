@@ -54,8 +54,6 @@ Changes log
           CLAP URIs.
         - StatusService#getStatus(Throwable, Request, Response) doesn't
           log an error anymore.
-        - Renamed TransformRepresentation into XsltRepresentation to be
-          more explicit about the actual capabilities.
         - Added a Transformer#canTransform(Representation) method to
           prevent systematic transformation. Returns true by default.
         - Deprecated JaxbRepresentation#getInputSource() method.
@@ -66,6 +64,9 @@ Changes log
         - Renamed JsonRepresentation#indentSize into indentingSize.
         - Deprecated JsonRepresentation#toJson*() method with logic
           similar to equivalent getJson*() ones.
+        - Added new constructors for FreeMarker's TemplateRepresentation
+          using a default Configuration instance. Also added getter and
+          setter for the "template" variable.
     - Enhancements
         - UniformResource#doCatch now extract the cause exception from
           caught ResourceException instance for easier debugging.
@@ -77,6 +78,8 @@ Changes log
         - Added BioUtils.delete(...) methods to delete files and 
           directories, recursively if needed, while working around
           Windows file locking issues.
+        - Moved up the documentation on Resolver data model for Restlet
+          calls at the top of Javadocs. Suggested by Tal Liron.
     - Bugs fixed
         - Fixed compilation issue in the ClientResource class for the
           GWT edition. Reported by Laszlo Megyer. 

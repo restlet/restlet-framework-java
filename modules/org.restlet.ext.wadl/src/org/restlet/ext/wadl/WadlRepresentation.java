@@ -48,7 +48,7 @@ import org.restlet.engine.Engine;
 import org.restlet.ext.xml.DomRepresentation;
 import org.restlet.ext.xml.SaxRepresentation;
 import org.restlet.ext.xml.XmlWriter;
-import org.restlet.ext.xml.XsltRepresentation;
+import org.restlet.ext.xml.TransformRepresentation;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
 import org.w3c.dom.Attr;
@@ -916,7 +916,7 @@ public class WadlRepresentation extends SaxRepresentation {
                 final InputRepresentation xslRep = new InputRepresentation(
                         wadlHtmlXsltUrl.openStream(),
                         MediaType.APPLICATION_W3C_XSLT);
-                representation = new XsltRepresentation(Context.getCurrent(),
+                representation = new TransformRepresentation(Context.getCurrent(),
                         this, xslRep);
                 representation.setMediaType(MediaType.TEXT_HTML);
             } catch (IOException e) {

@@ -280,7 +280,7 @@ public class Transformer extends Filter {
      * @return The generated result representation.
      */
     public Representation transform(Representation source) {
-        final Representation result = new XsltRepresentation(getContext(),
+        final Representation result = new TransformRepresentation(getContext(),
                 source, getTransformSheet());
 
         if (this.resultLanguages != null) {
