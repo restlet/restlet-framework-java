@@ -24,6 +24,7 @@
       <dependency type="module" id="spring" />
       <dependency type="module" id="velocity" />
       <dependency type="module" id="xml" />
+      <dependency type="module" id="xstream" />
       <dependency type="module" id="wadl" />
    </dependencies>
 </module>
