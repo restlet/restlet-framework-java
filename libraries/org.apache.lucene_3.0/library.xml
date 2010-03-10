@@ -4,7 +4,7 @@
 			<artifactId>lucene-core</artifactId>
 		</maven>
 	</package>
-	<version>2.4</version>
+	<version>3.0</version>
 	<release>1</release>
 	<distributions>
 		<distribution id="classic" />
@@ -16,6 +16,6 @@
 		http://www.apache.org/dyn/closer.cgi/lucene/java/
 	</downloadUri>
 	<javadocs>
-		<link href="http://lucene.apache.org/java/2_4_1/api/" />
+		<link href="http://lucene.apache.org/java/3_0_1/api/" />
 	</javadocs>
 </library>
