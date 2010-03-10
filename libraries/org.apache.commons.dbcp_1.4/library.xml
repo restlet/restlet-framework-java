@@ -5,8 +5,7 @@
 			<artifactId>commons-dbcp</artifactId>
 		</maven>
 	</package>
-	<version>1.2</version>
-	<release>2</release>
+	<version>1.4</version>
 	<distributions>
 		<distribution id="classic" />
 	</distributions>
