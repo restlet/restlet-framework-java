@@ -11,7 +11,7 @@
 			<artifactId>solr-common</artifactId>
 		</maven>
 	</package>
-	<version>1.3</version>
+	<version>1.4</version>
 	<release>0</release>
 	<distributions>
 		<distribution id="classic" />
