@@ -7,7 +7,7 @@
 		<groupId>org.apache.tika</groupId>
 		<artifactId>tika-parsers</artifactId>
 	</package>
-	<version>0.4</version>
+	<version>0.6</version>
 	<distributions>
 		<distribution id="classic" />
 	</distributions>
