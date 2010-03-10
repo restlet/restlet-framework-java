@@ -6,27 +6,13 @@ Bundle-Version: 4.1
 Bundle-ClassPath: org.simpleframework.jar
 Bundle-Vendor: Niall Gallagher
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Export-Package: org.simpleframework.http;uses:="org.simpleframework.http.session,org.simpleframework.util",
- org.simpleframework.http.core;
-  uses:="org.simpleframework.transport,
-   org.simpleframework.transport.reactor,
-   org.simpleframework.http.parse,
-   org.simpleframework.http.session,
-   org.simpleframework.http,
-   org.simpleframework.util.buffer,
-   org.simpleframework.util.parse",
- org.simpleframework.http.parse;uses:="org.simpleframework.http,org.simpleframework.util.parse,org.simpleframework.util",
- org.simpleframework.http.resource;uses:="org.simpleframework.http.core,org.simpleframework.http",
- org.simpleframework.http.session;uses:="org.simpleframework.util.lease",
- org.simpleframework.transport;uses:="org.simpleframework.util.thread,org.simpleframework.transport.reactor,javax.net.ssl",
- org.simpleframework.transport.connect;
-  uses:="org.simpleframework.http.core,
-   org.simpleframework.transport,
-   org.simpleframework.transport.reactor,
-   javax.net.ssl",
- org.simpleframework.transport.reactor;uses:="org.simpleframework.util.thread",
+Export-Package: org.simpleframework.http,
+ org.simpleframework.http.core,
+ org.simpleframework.http.parse,
+ org.simpleframework.http.resource,
+ org.simpleframework.http.session,
+ org.simpleframework.transport,
+ org.simpleframework.transport.connect,
+ org.simpleframework.transport.reactor,
  org.simpleframework.util,
- org.simpleframework.util.buffer;uses:="org.simpleframework.util.thread",
- org.simpleframework.util.lease;uses:="org.simpleframework.util.thread,org.simpleframework.util",
- org.simpleframework.util.parse,
- org.simpleframework.util.thread
+ org.simpleframework.util.buffer
