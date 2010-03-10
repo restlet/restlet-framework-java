@@ -12,7 +12,7 @@
 		</maven>
 	</package>
 	<version>1.1</version>
-	<release>0</release>
+	<release>7</release>
 	<homeUri>
 		http://mina.apache.org/
 	</homeUri>
