@@ -1,7 +1,7 @@
 <library id="wrapper">
 	<package name="org.tanukisoftware.wrapper" />
-	<version>3.2</version>
-	<release>3</release>
+	<version>3.3</version>
+	<release>9</release>
 	<distributions>
 		<distribution id="classic" />
 	</distributions>
