@@ -120,10 +120,26 @@ Changes log
           Reported by Rickard Oberg.
         - Fixed conversion issue when using XstreamRepresentation and
           similar classes in annotated methods' signature.
+        - Fixed Reference#decode and encode methods for the GWT edition.
+          Reported by Harald Pehl.
     - Misc
         - Removed Representation#getDigester* methods. There is no 
           reason to favor this way to wrap a Representation.
         - Updated Db4o to version 7.12.132.
+        - Updated Grizzly to version 1.9.18i.
+        - Updated cglib to version 2.2.
+        - Updated Spring framework to version 3.0.1.
+        - Updated GWT to version 2.0.3.
+        - Updated antlr to version 3.2.
+        - Updated bouncycastle to version 1.45.
+        - Updated groovy to version 1.7.1.
+        - Updated jackson to version 1.4.3.
+        - Updated jettison to version 1.2.
+        - Updated jetty to version 7.0.1.v20091125.
+        - Updated freemarker to version 2.3.16.
+        - Updated jibx to version 1.2.2.
+        - Updated jruby to version 1.4.0.
+        - Updated junit to version 4.8.1.
         
 - 2.0 Milestone 7 (2010-01-29)
     - API changes

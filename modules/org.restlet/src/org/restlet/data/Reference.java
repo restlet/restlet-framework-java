@@ -147,7 +147,7 @@ public class Reference {
 
             // [ifdef gwt] uncomment
             // try {
-            // result = com.google.gwt.http.client.URL.decode(toDecode);
+            // result = com.google.gwt.http.client.URL.decodeComponent(toDecode);
             // } catch (NullPointerException npe) {
             // System.err
             // .println("Unable to decode the string with the UTF-8 character set.");
@@ -199,7 +199,7 @@ public class Reference {
         // [ifdef gwt] uncomment
         // try {
         // result = (characterSet == null) ? toDecode :
-        // com.google.gwt.http.client.URL.decode(toDecode);
+        // com.google.gwt.http.client.URL.decodeComponent(toDecode);
         // } catch (NullPointerException npe) {
         // System.err
         // .println("Unable to decode the string with the UTF-8 character set.");
@@ -237,7 +237,7 @@ public class Reference {
 
             // [ifdef gwt] uncomment
             // try {
-            // result = com.google.gwt.http.client.URL.encode(toEncode);
+            // result = com.google.gwt.http.client.URL.encodeComponent(toEncode);
             // } catch (NullPointerException npe) {
             // System.err
             // .println("Unable to encode the string with the UTF-8 character set.");
@@ -292,7 +292,7 @@ public class Reference {
         // [ifdef gwt] uncomment
         // try {
         // result = (characterSet == null) ? toEncode :
-        // com.google.gwt.http.client.URL.encode(toEncode);
+        // com.google.gwt.http.client.URL.encodeComponent(toEncode);
         // } catch (NullPointerException npe) {
         // System.err
         // .println("Unable to encode the string with the UTF-8 character set.");
