@@ -76,9 +76,10 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 
 /**
- * Acts as a manager for a specific remote WCF Data Service. WCF Data Services
- * are stateless, but the Service is not. State on the client is maintained
- * between interactions in order to support features such as update management.<br>
+ * Acts as a manager for a specific remote OData service. OData services are
+ * stateless, but {@link Service} instances are not. State on the client is
+ * maintained between interactions in order to support features such as update
+ * management.<br>
  * <br>
  * This Java class is more or less equivalent to the WCF DataServiceContext
  * class.
@@ -153,41 +154,41 @@ public class Service {
     public Service(String serviceUri) {
         this(new Reference(serviceUri));
     }
-    
+
     /**
-         * Sets the value of the given media entry link.
-         * 
-         * @param entity
-         *            The media entry link which value is to be updated
-         * @param blob
-         *            The new representation.
-         * @throws ResourceException
-         */
-        public void setValue(Object entity, Representation blob)
-                throws ResourceException {
-            Reference ref = null;
-            Metadata metadata = (Metadata) getMetadata();
-            EntityType type = metadata.getEntityType(entity.getClass());
-            if (type.isBlob() && type.getBlobValueRefProperty() != null) {
-                try {
-                    ref = (Reference) ReflectUtils.invokeGetter(entity, type
-                            .getBlobValueEditRefProperty().getName());
-                } catch (Exception e) {
-                    getLogger().warning(
-                            "Cannot get the value of the property "
-                                    + type.getBlobValueEditRefProperty().getName()
-                                    + " on " + entity);
-                }
-            } else {
-                getLogger()
-                        .warning("This entity is not a media resource " + entity);
+     * Sets the value of the given media entry link.
+     * 
+     * @param entity
+     *            The media entry link which value is to be updated
+     * @param blob
+     *            The new representation.
+     * @throws ResourceException
+     */
+    public void setValue(Object entity, Representation blob)
+            throws ResourceException {
+        Reference ref = null;
+        Metadata metadata = (Metadata) getMetadata();
+        EntityType type = metadata.getEntityType(entity.getClass());
+        if (type.isBlob() && type.getBlobValueRefProperty() != null) {
+            try {
+                ref = (Reference) ReflectUtils.invokeGetter(entity, type
+                        .getBlobValueEditRefProperty().getName());
+            } catch (Exception e) {
+                getLogger().warning(
+                        "Cannot get the value of the property "
+                                + type.getBlobValueEditRefProperty().getName()
+                                + " on " + entity);
             }
-    
-            if (ref != null) {
-                ClientResource cr = createResource(ref);
-                cr.put(blob);
-            }
+        } else {
+            getLogger()
+                    .warning("This entity is not a media resource " + entity);
         }
+
+        if (ref != null) {
+            ClientResource cr = createResource(ref);
+            cr.put(blob);
+        }
+    }
 
     /**
      * Adds an entity to an entity set.

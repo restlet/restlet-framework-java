@@ -125,18 +125,18 @@ Changes log
     - Misc
         - Removed Representation#getDigester* methods. There is no 
           reason to favor this way to wrap a Representation.
-        - Updated Db4o library to version 7.12.132.
+        - Updated db4o library to version 7.12.132.
         - Updated Grizzly library to version 1.9.18i.
         - Updated cglib library to version 2.2.
         - Updated Spring framework library to version 3.0.1.
         - Updated GWT library to version 2.0.3.
-        - Updated antlr library to version 3.2.
+        - Updated ANTLR library to version 3.2.
         - Updated Bouncy Castle library to version 1.45.
         - Updated Groovy library to version 1.7.1.
         - Updated Jackson library to version 1.4.3.
         - Updated Jettison library to version 1.2.
         - Updated Jetty library to version 7.0.1.v20091125.
-        - Updated Freemarker library to version 2.3.16.
+        - Updated FreeMarker library to version 2.3.16.
         - Updated JiBX library to version 1.2.2.
         - Updated JRuby library to version 1.4.0.
         - Updated JUnit library to version 4.8.1.
@@ -144,19 +144,19 @@ Changes log
         - Updated Jython library to version 2.5.1.
         - Updated Simple framework library to version 4.1.18.
         - Updated SLF4J library to version 1.5.11.
-        - Updated Apache commons cli library to version 1.2.
-        - Updated Apache commons codec library to version 1.4.
-        - Updated Apache commons collections library to version 3.2.1.
-        - Updated Apache commons dbcp library to version 1.3.
-        - Updated Apache commons lang library to version 2.5.
-        - Updated Apache commons pool library to version 1.5.
-        - Updated Apache httpclient library to version 4.0.1.
-        - Updated Apache httpmime library to version 4.0.1.
-        - Updated Lucene library to version 2.9.2.
-        - Updated Mina library to version 1.1.7.
-        - Updated Solr library to version 1.4.0.
-        - Updated Tika library to version 0.6.
-        - Updated Velocity library to version 1.6.3.
+        - Updated Apache Commons CLI library to version 1.2.
+        - Updated Apache Commons Codec library to version 1.4.
+        - Updated Apache Commons Collections library to version 3.2.1.
+        - Updated Apache Commons DBCP library to version 1.3.
+        - Updated Apache Commons Lang library to version 2.5.
+        - Updated Apache Commons Pool library to version 1.5.
+        - Updated Apache HTTP Client library to version 4.0.1.
+        - Updated Apache HTTP MIME library to version 4.0.1.
+        - Updated Apache Mina library to version 1.1.7.
+        - Updated Apache Lucene library to version 2.9.2.
+        - Updated Apache Lucene Solr library to version 1.4.0.
+        - Updated Apache Lucene Tika library to version 0.6.
+        - Updated Apache Velocity library to version 1.6.3.
                 
 - 2.0 Milestone 7 (2010-01-29)
     - API changes

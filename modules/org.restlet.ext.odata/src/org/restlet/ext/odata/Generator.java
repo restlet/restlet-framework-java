@@ -51,7 +51,9 @@ import org.restlet.resource.ClientResource;
 import freemarker.template.Configuration;
 
 /**
- * Code generator for WCF Data Services.
+ * Code generator for accessing OData services. The generator use metadata
+ * exposed by an online service to generate client-side artifacts facilitating
+ * the execution of queries on the available entities.
  * 
  * @author Thierry Boileau
  */

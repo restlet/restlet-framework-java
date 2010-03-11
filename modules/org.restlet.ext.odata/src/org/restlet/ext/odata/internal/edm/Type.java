@@ -42,7 +42,7 @@ import org.restlet.engine.util.DateUtils;
 import org.restlet.ext.odata.internal.reflect.ReflectUtils;
 
 /**
- * Type resolver. Able to handle WCF <=> Java types conversions.
+ * Type resolver. Able to handle EDM <=> Java types conversions.
  * 
  * @author Thierry Boileau
  * @see <a href="http://msdn.microsoft.com/en-us/library/bb399213.aspx">Simple

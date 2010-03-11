@@ -38,6 +38,7 @@ import org.apache.tika.metadata.HttpHeaders;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.metadata.TikaMetadataKeys;
 import org.apache.tika.parser.AutoDetectParser;
+import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.Parser;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.ext.xml.SaxRepresentation;
@@ -183,7 +184,7 @@ public class TikaRepresentation extends SaxRepresentation {
 
                 // Parse the wrapped representation
                 parser.parse(this.representation.getStream(), contentHandler,
-                        getMetadata());
+                        getMetadata(), new ParseContext());
             } catch (SAXException e) {
                 throw new IOException("SAX exception: "
                         + e.getLocalizedMessage());

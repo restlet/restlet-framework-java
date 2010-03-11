@@ -41,8 +41,8 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
- * Used to parse a metadata descriptor of a given WCF Data Service and generate
- * the associated object's tree.
+ * Used to parse a metadata descriptor of a given OData service and generate the
+ * associated object's tree.
  * 
  * @author Thierry Boileau
  */

@@ -56,7 +56,7 @@ import org.restlet.routing.Variable;
 import org.restlet.util.Series;
 
 /**
- * Specific query to a Data Service, represents a particular HTTP request to a
+ * Specific query to a OData service, represents a particular HTTP request to a
  * data service. This Java class is more or less equivalent to the WCF
  * DataServiceQuery class.
  * 

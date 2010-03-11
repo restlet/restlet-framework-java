@@ -41,7 +41,7 @@ import org.restlet.ext.xml.SaxRepresentation;
 import org.restlet.representation.Representation;
 
 /**
- * Represents the metadata of an WCF Data Service.
+ * Represents the metadata of an OData service.
  * 
  * @author Thierry Boileau
  */
