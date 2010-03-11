@@ -562,7 +562,11 @@ public class Request extends Message {
      *            The cookies provided by the client.
      */
     public void setCookies(Series<Cookie> cookies) {
-        this.cookies = cookies;
+        synchronized (this) {
+            Series<Cookie> c = getCookies();
+            c.clear();
+            c.addAll(cookies);
+        }
     }
 
     /**
@@ -661,7 +665,11 @@ public class Request extends Message {
      *            The ranges.
      */
     public void setRanges(List<Range> ranges) {
-        this.ranges = ranges;
+        synchronized (this) {
+            List<Range> r = getRanges();
+            r.clear();
+            r.addAll(ranges);
+        }
     }
 
     /**

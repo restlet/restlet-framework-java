@@ -122,6 +122,9 @@ Changes log
           similar classes in annotated methods' signature.
         - Fixed Reference#decode and encode methods for the GWT edition.
           Reported by Harald Pehl.
+        - Fixed potential threading issues on Message/Request/Response
+          regarding collections in asynchronous processing mode.
+          Based on feed-back from Tim Peierls.
     - Misc
         - Removed Representation#getDigester* methods. There is no 
           reason to favor this way to wrap a Representation.

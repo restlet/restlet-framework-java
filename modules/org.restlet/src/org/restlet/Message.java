@@ -33,7 +33,7 @@ package org.restlet;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.restlet.data.CacheDirective;
@@ -144,8 +144,15 @@ public abstract class Message {
      * @return The modifiable attributes map.
      */
     public Map<String, Object> getAttributes() {
-        if (this.attributes == null) {
-            this.attributes = new TreeMap<String, Object>();
+        // Lazy initialization with double-check.
+        Map<String, Object> r = this.attributes;
+        if (r == null) {
+            synchronized (this) {
+                r = this.attributes;
+                if (r == null) {
+                    this.attributes = r = new ConcurrentHashMap<String, Object>();
+                }
+            }
         }
 
         return this.attributes;
@@ -300,7 +307,11 @@ public abstract class Message {
      *            The modifiable map of attributes
      */
     public void setAttributes(Map<String, Object> attributes) {
-        this.attributes = attributes;
+        synchronized (this) {
+            Map<String, Object> atts = getAttributes();
+            atts.clear();
+            atts.putAll(attributes);
+        }
     }
 
     /**
@@ -313,7 +324,11 @@ public abstract class Message {
      *            The cache directives.
      */
     public void setCacheDirectives(List<CacheDirective> cacheDirectives) {
-        this.cacheDirectives = cacheDirectives;
+        synchronized (this) {
+            List<CacheDirective> cds = getCacheDirectives();
+            cds.clear();
+            cds.addAll(cacheDirectives);
+        }
     }
 
     /**
@@ -368,7 +383,11 @@ public abstract class Message {
      *            The warnings.
      */
     public void setWarnings(List<Warning> warnings) {
-        this.warnings = warnings;
+        synchronized (this) {
+            List<Warning> cds = getWarnings();
+            cds.clear();
+            cds.addAll(warnings);
+        }
     }
 
 }

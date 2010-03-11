@@ -527,7 +527,11 @@ public class Response extends Message {
      *            The set of methods allowed on the requested resource.
      */
     public void setAllowedMethods(Set<Method> allowedMethods) {
-        this.allowedMethods = allowedMethods;
+        synchronized (this) {
+            Set<Method> am = getAllowedMethods();
+            am.clear();
+            am.addAll(allowedMethods);
+        }
     }
 
     /**
@@ -584,7 +588,11 @@ public class Response extends Message {
      *            to a client.
      */
     public void setChallengeRequests(List<ChallengeRequest> requests) {
-        this.challengeRequests = requests;
+        synchronized (this) {
+            List<ChallengeRequest> cr = getChallengeRequests();
+            cr.clear();
+            cr.addAll(requests);
+        }
     }
 
     /**
@@ -605,7 +613,11 @@ public class Response extends Message {
      *            The cookie settings provided by the server.
      */
     public void setCookieSettings(Series<CookieSetting> cookieSettings) {
-        this.cookieSettings = cookieSettings;
+        synchronized (this) {
+            Series<CookieSetting> c = getCookieSettings();
+            c.clear();
+            c.addAll(cookieSettings);
+        }
     }
 
     /**
@@ -620,7 +632,11 @@ public class Response extends Message {
      *            The set of dimensions on which the response entity may vary.
      */
     public void setDimensions(Set<Dimension> dimensions) {
-        this.dimensions = dimensions;
+        synchronized (this) {
+            Set<Dimension> d = getDimensions();
+            d.clear();
+            d.addAll(dimensions);
+        }
     }
 
     /**
@@ -676,7 +692,11 @@ public class Response extends Message {
      *            client.
      */
     public void setProxyChallengeRequests(List<ChallengeRequest> requests) {
-        this.proxyChallengeRequests = requests;
+        synchronized (this) {
+            List<ChallengeRequest> cr = getProxyChallengeRequests();
+            cr.clear();
+            cr.addAll(requests);
+        }
     }
 
     /**
