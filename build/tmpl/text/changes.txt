@@ -69,6 +69,9 @@ Changes log
           setter for the "template" variable.
         - Renamed Jetty parameter "lowResourceMaxIdleTimeMs" into
           "lowResourcesMaxIdleTimeMs".
+        - Added Expectation data class and Request#expectations property
+          to support "100-continue" headers to optimize sending of large
+          request entities.
     - Enhancements
         - UniformResource#doCatch now extract the cause exception from
           caught ResourceException instance for easier debugging.

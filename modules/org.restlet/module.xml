@@ -108,6 +108,7 @@
          <exclude name="src/org/restlet/Component.java" />
          <exclude name="src/org/restlet/Component.xsd" />
          <exclude name="src/org/restlet/data/agent.properties" />
+         <exclude name="src/org/restlet/data/Expectation.java" />
          <exclude name="src/org/restlet/data/LocalReference.java" />
          <exclude name="src/org/restlet/engine/ChainHelper.java" />
          <exclude name="src/org/restlet/engine/ServerHelper.java" />

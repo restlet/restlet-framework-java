@@ -33,10 +33,10 @@ package org.restlet.data;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.restlet.Context;
 import org.restlet.engine.Engine;
@@ -168,7 +168,7 @@ public final class ClientInfo {
                                 if ((line.trim().length() > 0)
                                         && !line.trim().startsWith("#")) {
                                     if (u == null) {
-                                        u = new ArrayList<String>();
+                                        u = new CopyOnWriteArrayList<String>();
                                     }
                                     u.add(line);
                                 }
@@ -254,6 +254,10 @@ public final class ClientInfo {
     /** List of user roles. */
     private volatile List<org.restlet.security.Role> roles;
 
+    // [ifndef gwt] member
+    /** List of expectations. */
+    private volatile List<org.restlet.data.Expectation> expectations;
+
     /**
      * Constructor.
      */
@@ -270,6 +274,9 @@ public final class ClientInfo {
         // [ifndef gwt]
         this.agentProducts = null;
         this.principals = null;
+        this.user = null;
+        this.roles = null;
+        this.expectations = null;
         // [enddef]
     }
 
@@ -289,7 +296,7 @@ public final class ClientInfo {
             synchronized (this) {
                 a = this.acceptedCharacterSets;
                 if (a == null) {
-                    this.acceptedCharacterSets = a = new ArrayList<Preference<CharacterSet>>();
+                    this.acceptedCharacterSets = a = new CopyOnWriteArrayList<Preference<CharacterSet>>();
                 }
             }
         }
@@ -312,7 +319,7 @@ public final class ClientInfo {
             synchronized (this) {
                 a = this.acceptedEncodings;
                 if (a == null) {
-                    this.acceptedEncodings = a = new ArrayList<Preference<Encoding>>();
+                    this.acceptedEncodings = a = new CopyOnWriteArrayList<Preference<Encoding>>();
                 }
             }
         }
@@ -335,7 +342,7 @@ public final class ClientInfo {
             synchronized (this) {
                 a = this.acceptedLanguages;
                 if (a == null) {
-                    this.acceptedLanguages = a = new ArrayList<Preference<Language>>();
+                    this.acceptedLanguages = a = new CopyOnWriteArrayList<Preference<Language>>();
                 }
             }
         }
@@ -358,7 +365,7 @@ public final class ClientInfo {
             synchronized (this) {
                 a = this.acceptedMediaTypes;
                 if (a == null) {
-                    this.acceptedMediaTypes = a = new ArrayList<Preference<MediaType>>();
+                    this.acceptedMediaTypes = a = new CopyOnWriteArrayList<Preference<MediaType>>();
                 }
             }
         }
@@ -415,31 +422,31 @@ public final class ClientInfo {
      * @see #getAgent()
      */
     public Map<String, String> getAgentAttributes() {
-
         if (this.agentAttributes == null) {
-            this.agentAttributes = new HashMap<String, String>();
-            final Map<String, Object> map = new HashMap<String, Object>();
+            this.agentAttributes = new ConcurrentHashMap<String, String>();
+            Map<String, Object> map = new ConcurrentHashMap<String, Object>();
 
             // Loop on a list of user-agent templates until a template match
             // the current user-agent string. The list of templates is
             // located in a file named "agent.properties" available on
             // the classpath.
             // Some defined variables are used in order to catch the name,
-            // version and facultative comment. Respectively, these
+            // version and optional comment. Respectively, these
             // variables are called "agentName", "agentVersion" and
             // "agentComment".
             org.restlet.routing.Template template = null;
             // Predefined variables.
-            final org.restlet.routing.Variable agentName = new org.restlet.routing.Variable(
+            org.restlet.routing.Variable agentName = new org.restlet.routing.Variable(
                     org.restlet.routing.Variable.TYPE_TOKEN);
-            final org.restlet.routing.Variable agentVersion = new org.restlet.routing.Variable(
+            org.restlet.routing.Variable agentVersion = new org.restlet.routing.Variable(
                     org.restlet.routing.Variable.TYPE_TOKEN);
-            final org.restlet.routing.Variable agentComment = new org.restlet.routing.Variable(
+            org.restlet.routing.Variable agentComment = new org.restlet.routing.Variable(
                     org.restlet.routing.Variable.TYPE_COMMENT);
-            final org.restlet.routing.Variable agentCommentAttribute = new org.restlet.routing.Variable(
+            org.restlet.routing.Variable agentCommentAttribute = new org.restlet.routing.Variable(
                     org.restlet.routing.Variable.TYPE_COMMENT_ATTRIBUTE);
-            final org.restlet.routing.Variable facultativeData = new org.restlet.routing.Variable(
+            org.restlet.routing.Variable facultativeData = new org.restlet.routing.Variable(
                     org.restlet.routing.Variable.TYPE_ALL, null, false, false);
+
             for (String string : ClientInfo.getUserAgentTemplates()) {
                 template = new org.restlet.routing.Template(string,
                         org.restlet.routing.Template.MODE_EQUALS);
@@ -453,7 +460,7 @@ public final class ClientInfo {
                 template.getVariables().put("facultativeData", facultativeData);
                 // Parse the template
                 if (template.parse(getAgent(), map) > -1) {
-                    for (final String key : map.keySet()) {
+                    for (String key : map.keySet()) {
                         this.agentAttributes.put(key, (String) map.get(key));
                     }
                     break;
@@ -511,6 +518,26 @@ public final class ClientInfo {
 
     }
 
+    // [ifndef gwt] method
+    /**
+     * Returns the client expectations.
+     * 
+     * @return The client expectations.
+     */
+    public List<org.restlet.data.Expectation> getExpectations() {
+        // Lazy initialization with double-check.
+        List<org.restlet.data.Expectation> a = this.expectations;
+        if (a == null) {
+            synchronized (this) {
+                a = this.expectations;
+                if (a == null) {
+                    this.expectations = a = new CopyOnWriteArrayList<org.restlet.data.Expectation>();
+                }
+            }
+        }
+        return a;
+    }
+
     /**
      * Returns the list of forwarded IP addresses. This is useful when the user
      * agent is separated from the origin server by a chain of intermediary
@@ -540,7 +567,7 @@ public final class ClientInfo {
             synchronized (this) {
                 a = this.forwardedAddresses;
                 if (a == null) {
-                    this.forwardedAddresses = a = new ArrayList<String>();
+                    this.forwardedAddresses = a = new CopyOnWriteArrayList<String>();
                 }
             }
         }
@@ -702,7 +729,7 @@ public final class ClientInfo {
             synchronized (this) {
                 a = this.principals;
                 if (a == null) {
-                    this.principals = a = new ArrayList<java.security.Principal>();
+                    this.principals = a = new CopyOnWriteArrayList<java.security.Principal>();
                 }
             }
         }
@@ -722,7 +749,7 @@ public final class ClientInfo {
             synchronized (this) {
                 a = this.roles;
                 if (a == null) {
-                    this.roles = a = new ArrayList<org.restlet.security.Role>();
+                    this.roles = a = new CopyOnWriteArrayList<org.restlet.security.Role>();
                 }
             }
         }
@@ -787,7 +814,11 @@ public final class ClientInfo {
      */
     public void setAcceptedCharacterSets(
             List<Preference<CharacterSet>> acceptedCharacterSets) {
-        this.acceptedCharacterSets = acceptedCharacterSets;
+        synchronized (this) {
+            List<Preference<CharacterSet>> ac = getAcceptedCharacterSets();
+            ac.clear();
+            ac.addAll(acceptedCharacterSets);
+        }
     }
 
     /**
@@ -799,7 +830,11 @@ public final class ClientInfo {
      */
     public void setAcceptedEncodings(
             List<Preference<Encoding>> acceptedEncodings) {
-        this.acceptedEncodings = acceptedEncodings;
+        synchronized (this) {
+            List<Preference<Encoding>> ac = getAcceptedEncodings();
+            ac.clear();
+            ac.addAll(acceptedEncodings);
+        }
     }
 
     /**
@@ -811,7 +846,11 @@ public final class ClientInfo {
      */
     public void setAcceptedLanguages(
             List<Preference<Language>> acceptedLanguages) {
-        this.acceptedLanguages = acceptedLanguages;
+        synchronized (this) {
+            List<Preference<Language>> ac = getAcceptedLanguages();
+            ac.clear();
+            ac.addAll(acceptedLanguages);
+        }
     }
 
     /**
@@ -823,7 +862,11 @@ public final class ClientInfo {
      */
     public void setAcceptedMediaTypes(
             List<Preference<MediaType>> acceptedMediaTypes) {
-        this.acceptedMediaTypes = acceptedMediaTypes;
+        synchronized (this) {
+            List<Preference<MediaType>> ac = getAcceptedMediaTypes();
+            ac.clear();
+            ac.addAll(acceptedMediaTypes);
+        }
     }
 
     /**
@@ -859,6 +902,34 @@ public final class ClientInfo {
         this.agent = agent;
     }
 
+    /**
+     * Sets a list of attributes taken from the name of the user agent.
+     * 
+     * @param agentAttributes
+     *            A list of attributes taken from the name of the user agent.
+     */
+    public void setAgentAttributes(Map<String, String> agentAttributes) {
+        synchronized (this) {
+            Map<String, String> aa = getAgentAttributes();
+            aa.clear();
+            aa.putAll(agentAttributes);
+        }
+    }
+
+    /**
+     * Sets the list of product tokens from the user agent name.
+     * 
+     * @param agentProducts
+     *            The list of product tokens from the user agent name.
+     */
+    public void setAgentProducts(List<Product> agentProducts) {
+        synchronized (this) {
+            List<Product> ap = getAgentProducts();
+            ap.clear();
+            ap.addAll(agentProducts);
+        }
+    }
+
     // [ifndef gwt] method
     /**
      * Indicates if the identifier or principal has been authenticated. The
@@ -873,6 +944,20 @@ public final class ClientInfo {
     }
 
     /**
+     * Sets the client expectations.
+     * 
+     * @param expectations
+     *            The client expectations.
+     */
+    public void setExpectations(List<org.restlet.data.Expectation> expectations) {
+        synchronized (this) {
+            List<org.restlet.data.Expectation> e = getExpectations();
+            e.clear();
+            e.addAll(expectations);
+        }
+    }
+
+    /**
      * Sets the list of forwarded IP addresses.
      * 
      * @param forwardedAddresses
@@ -880,7 +965,11 @@ public final class ClientInfo {
      * @see #getForwardedAddresses()
      */
     public void setForwardedAddresses(List<String> forwardedAddresses) {
-        this.forwardedAddresses = forwardedAddresses;
+        synchronized (this) {
+            List<String> fa = getForwardedAddresses();
+            fa.clear();
+            fa.addAll(forwardedAddresses);
+        }
     }
 
     /**
@@ -912,7 +1001,11 @@ public final class ClientInfo {
      *            The user principals.
      */
     public void setPrincipals(List<java.security.Principal> principals) {
-        this.principals = principals;
+        synchronized (this) {
+            List<java.security.Principal> fa = getPrincipals();
+            fa.clear();
+            fa.addAll(principals);
+        }
     }
 
     // [ifndef gwt] method
@@ -923,7 +1016,11 @@ public final class ClientInfo {
      *            The authenticated user roles.
      */
     public void setRoles(List<org.restlet.security.Role> roles) {
-        this.roles = roles;
+        synchronized (this) {
+            List<org.restlet.security.Role> r = getRoles();
+            r.clear();
+            r.addAll(roles);
+        }
     }
 
     // [ifndef gwt] method
