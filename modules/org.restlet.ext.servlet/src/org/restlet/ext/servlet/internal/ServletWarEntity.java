@@ -30,9 +30,11 @@
 
 package org.restlet.ext.servlet.internal;
 
+import java.io.File;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -174,9 +176,21 @@ public class ServletWarEntity extends Entity {
     @Override
     public Representation getRepresentation(MediaType defaultMediaType,
             int timeToLive) {
-        final InputStream ris = getServletContext().getResourceAsStream(path);
-        return (ris == null) ? null : new InputRepresentation(ris,
-                defaultMediaType);
+        Representation result = null;
+
+        InputStream ris = getServletContext().getResourceAsStream(path);
+        if (ris != null) {
+            result = new InputRepresentation(ris, defaultMediaType);
+            // Sets the modification date
+            String realPath = getServletContext().getRealPath(path);
+            if (realPath != null) {
+                File file = new File(realPath);
+                if (file != null) {
+                    result.setModificationDate(new Date(file.lastModified()));
+                }
+            }
+        }
+        return result;
     }
 
     /**
