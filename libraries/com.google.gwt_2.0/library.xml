@@ -6,9 +6,7 @@
 	</package>
 	<version>2.0</version>
 	<release>3</release>
-	<distributions>
-		<distribution id="classic" />
-	</distributions>
+	<distributions />
 	<homeUri>
 		http://code.google.com/webtoolkit/
 	</homeUri>
