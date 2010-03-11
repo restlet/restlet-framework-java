@@ -114,7 +114,7 @@ public class Generator {
                 }
 
                 try {
-                    svcUtil.generateSourceCode(outputDir);
+                    svcUtil.generate(outputDir);
                 } catch (Exception e) {
                     error = true;
                 }
@@ -186,13 +186,13 @@ public class Generator {
     }
 
     /**
-     * Generates the code to the given output directory.
+     * Generates the client code to the given output directory.
      * 
      * @param outputDir
      *            The output directory.
      * @throws Exception
      */
-    public void generateSourceCode(File outputDir) throws Exception {
+    public void generate(File outputDir) throws Exception {
         Configuration fmc = new Configuration();
         fmc.setDefaultEncoding(CharacterSet.UTF_8.getName());
 
@@ -210,6 +210,7 @@ public class Generator {
             File packageDir = new File(outputDir, packageName.replace(".",
                     System.getProperty("file.separator")));
             packageDir.mkdirs();
+
             // For each class
             for (EntityType type : schema.getTypes()) {
                 String className = type.getClassName();
@@ -229,7 +230,7 @@ public class Generator {
                         packageDir, type.getClassName() + ".java")));
             }
 
-            // Generate Service subclass.
+            // Generate Service subclass
             StringBuffer className = new StringBuffer();
             if (serviceClassName != null && metadata.getSchemas().size() == 1) {
                 className.append(serviceClassName);
