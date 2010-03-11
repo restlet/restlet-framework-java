@@ -438,7 +438,7 @@
 			<property name="lib-dir-@{name}-maven" value="${dist-maven2}/${lib-dir-@{name}-maven-groupId}/org.restlet.lib.${lib-@{name}-maven-artifactId}/${lib-@{name}-maven-version}" />
 			<mkdir dir="${lib-dir-@{name}-maven}" />
 
-			<copy file="${dist-classic}/lib/${lib-@{name}-root}/${lib-@{name}-package}.jar" tofile="${lib-dir-@{name}-maven}/${lib-@{name}-maven-artifactId}-${lib-@{name}-maven-version}.jar" overwrite="true" />
+			<copy file="${libs}/${lib-@{name}-root}/${lib-@{name}-package}.jar" tofile="${lib-dir-@{name}-maven}/${lib-@{name}-maven-artifactId}-${lib-@{name}-maven-version}.jar" overwrite="true" />
 			<copy file="${poms}/${lib-@{name}-package}.pom" tofile="${lib-dir-@{name}-maven}/${lib-@{name}-maven-artifactId}-${lib-@{name}-maven-version}.pom" overwrite="true" />
 			<checksum file="${lib-dir-@{name}-maven}/${lib-@{name}-maven-artifactId}-${lib-@{name}-maven-version}.jar" algorithm="MD5" fileext=".md5" />
 			<checksum file="${lib-dir-@{name}-maven}/${lib-@{name}-maven-artifactId}-${lib-@{name}-maven-version}.jar" algorithm="SHA" fileext=".sha1" />
