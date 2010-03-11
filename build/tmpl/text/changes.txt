@@ -3,7 +3,10 @@
 Changes log  
 ===========
 
-- @version-full@ (@release-date@)
+- 1.1.8 (2010-01-29)
+    - NRE and Extension Enhancements
+        - War client now sets the modification date, if available. 
+          Suggested by Warren Janssens.
     - Bugs fixed
         - Fixed generation of Atom document.
           Reported by Bedwyr Humphreys.
