@@ -62,8 +62,8 @@ public class Generator {
     /**
      * Takes two parameters :<br>
      * <ol>
-     * <li>the URI of the WCF Data Service</li>
-     * <li>the output directory</li>
+     * <li>The URI of the OData service</li>
+     * <li>The output directory</li>
      * </ol>
      * 
      * @param args
@@ -122,25 +122,26 @@ public class Generator {
         }
 
         if (error) {
-            System.out.println("WCF Data Services code generation tool");
-            System.out.println("******************************************");
+            System.out.println("---------------------------");
+            System.out.println("OData client code generator");
+            System.out.println("---------------------------");
             System.out.println("Error encountered at this step: ");
             System.out.println(step);
             System.out.println();
             System.out
                     .println("Please check that you provide the following parameters:");
-            System.out.println("   - a valid URI for the remote service");
+            System.out.println("   - Valid URI for the remote service");
             System.out
-                    .println("   - a valid directory path where to generate the files.");
+                    .println("   - Valid directory path where to generate the files");
             System.out
-                    .println("   - a valid name for the generated service class (optional).");
+                    .println("   - Valid name for the generated service class (optional)");
         }
     }
 
     /** The URI of the target data service. */
     private Reference dataServiceRef;
 
-    /** The WCF Data Services metadata. */
+    /** The OData service metadata. */
     private Metadata metadata;
 
     /** The name of the service class (in case there is only one in the schema). */
@@ -150,7 +151,7 @@ public class Generator {
      * Constructor.
      * 
      * @param dataServiceRef
-     *            The URI of the WCF Data Service.
+     *            The URI of the OData service.
      * @param metadata
      *            The metadata descriptor.
      */
@@ -163,12 +164,12 @@ public class Generator {
      * only one service defined in the metadata.
      * 
      * @param dataServiceRef
-     *            The URI of the WCF Data Service.
+     *            The URI of the OData service.
      * @param metadata
      *            The metadata descriptor.
      * @param serviceClassName
      *            The name of the service class (in case there is only one in
-     *            the matadata).
+     *            the metadata).
      */
     public Generator(Reference dataServiceRef, Metadata metadata,
             String serviceClassName) {
