@@ -70,25 +70,41 @@ public class Generator {
      *            The list of arguments.
      */
     public static void main(String[] args) {
-        boolean error = (args.length != 2 && args.length != 3);
-        String step = "step 1 - check parameters";
+        System.out.println("---------------------------");
+        System.out.println("OData client code generator");
+        System.out.println("---------------------------");
+        System.out.println("step 1 - check parameters");
+
+        String errorMessage = null;
+
+        if (args.length != 2 && args.length != 3) {
+            errorMessage = "Wrong number of arguments.";
+        }
+
         File outputDir = null;
         Metadata metadata;
-        if (!error) {
+
+        if (errorMessage == null) {
             outputDir = new File(args[1]);
             if (outputDir.exists()) {
-                step = "step 2 - check the ouput directory";
-                error = !outputDir.isDirectory();
+                System.out.println("step 2 - check the ouput directory");
+                if (!outputDir.isDirectory()) {
+                    errorMessage = outputDir.getPath()
+                            + " is not a valid directory.";
+                }
+
             } else {
                 try {
-                    step = "step 3 - create the ouput directory";
+                    System.out.println("step 2 - create the ouput directory");
                     outputDir.mkdirs();
                 } catch (Throwable e) {
-                    error = true;
+                    errorMessage = "Cannot create " + outputDir.getPath()
+                            + " due to: " + e.getMessage();
                 }
             }
         }
-        if (!error) {
+        if (errorMessage == null) {
+            System.out.println("step 3 - get the metadata descriptor");
             String dataServiceUri = null;
             if (args[0].endsWith("$metadata")) {
                 dataServiceUri = args[0].substring(0, args[0].length() - 10);
@@ -98,12 +114,11 @@ public class Generator {
                 dataServiceUri = args[0];
             }
 
-            step = "step 4 - get the metadata descriptor";
             Service service = new Service(dataServiceUri);
             if ((metadata = ((Metadata) service.getMetadata())) == null) {
-                error = true;
+                errorMessage = "Cannot retrieve the metadata.";
             } else {
-                step = "step 5 - generate source code";
+                System.out.println("step 4 - generate source code");
                 Generator svcUtil = null;
                 if (args.length == 3) {
                     svcUtil = new Generator(new Reference(dataServiceUri),
@@ -115,18 +130,19 @@ public class Generator {
 
                 try {
                     svcUtil.generate(outputDir);
+                    System.out
+                            .print("The source code has been generated in directory: ");
+                    System.out.println(outputDir.getPath());
                 } catch (Exception e) {
-                    error = true;
+                    errorMessage = "Cannot generate the source code in directory: "
+                            + outputDir.getPath();
                 }
             }
         }
 
-        if (error) {
-            System.out.println("---------------------------");
-            System.out.println("OData client code generator");
-            System.out.println("---------------------------");
-            System.out.println("Error encountered at this step: ");
-            System.out.println(step);
+        if (errorMessage != null) {
+            System.out.println("An error occurred: ");
+            System.out.println(errorMessage);
             System.out.println();
             System.out
                     .println("Please check that you provide the following parameters:");
