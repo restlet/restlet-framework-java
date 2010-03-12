@@ -141,7 +141,7 @@ Changes log
         - Updated FreeMarker library to version 2.3.16.
         - Updated JiBX library to version 1.2.2.
         - Updated JUnit library to version 4.8.1.
-        - Updated Simple framework library to version 4.1.18.
+        - Updated Simple framework library to version 4.1.19.
         - Updated SLF4J library to version 1.5.11.
         - Updated Apache Commons Codec library to version 1.4.
         - Updated Apache Commons Collections library to version 3.2.1.
