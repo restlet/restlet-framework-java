@@ -902,6 +902,7 @@ public final class ClientInfo {
         this.agent = agent;
     }
 
+    // [ifndef gwt] method
     /**
      * Sets a list of attributes taken from the name of the user agent.
      * 
@@ -916,6 +917,7 @@ public final class ClientInfo {
         }
     }
 
+    // [ifndef gwt] method
     /**
      * Sets the list of product tokens from the user agent name.
      * 
@@ -943,6 +945,7 @@ public final class ClientInfo {
         this.authenticated = authenticated;
     }
 
+    // [ifndef gwt] method
     /**
      * Sets the client expectations.
      * 
