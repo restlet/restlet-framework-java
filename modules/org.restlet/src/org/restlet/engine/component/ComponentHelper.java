@@ -127,8 +127,7 @@ public class ComponentHelper extends ChainHelper<Component> {
                                 boolean serverFound = false;
 
                                 // Try to find a server connector matching the
-                                // server
-                                // protocol
+                                // server protocol
                                 Server server;
                                 for (Iterator<Server> iter = getHelped()
                                         .getServers().iterator(); !serverFound
@@ -212,7 +211,8 @@ public class ComponentHelper extends ChainHelper<Component> {
 
             for (Service service : getHelped().getServices()) {
                 if (service.isEnabled()) {
-                    inboundFilter = service.createInboundFilter(getContext().createChildContext());
+                    inboundFilter = service.createInboundFilter(getContext()
+                            .createChildContext());
 
                     if (inboundFilter != null) {
                         addFilter(inboundFilter);
