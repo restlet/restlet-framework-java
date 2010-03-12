@@ -31,34 +31,35 @@
 package org.restlet.engine.http.header;
 
 import java.io.IOException;
+import java.util.Collection;
 
-import org.restlet.data.CacheDirective;
-import org.restlet.data.Parameter;
+import org.restlet.data.Encoding;
 
 /**
- * Cache-Control header reader.
+ * Content-Encoding header reader.
  * 
  * @author Jerome Louvel
  */
-public class CacheControlReader extends HeaderReader<CacheDirective> {
+public class ContentEncodingReader extends HeaderReader<Encoding> {
+
     /**
      * Constructor.
      * 
      * @param header
      *            The header to read.
      */
-    public CacheControlReader(String header) {
+    public ContentEncodingReader(String header) {
         super(header);
     }
 
     @Override
-    protected Parameter createParameter(String name, String value) {
-        return new CacheDirective(name, value);
+    protected boolean canAdd(Encoding value, Collection<Encoding> values) {
+        return !Encoding.IDENTITY.equals(value);
     }
 
     @Override
-    public CacheDirective readValue() throws IOException {
-        return (CacheDirective) readParameter();
+    public Encoding readValue() throws IOException {
+        return Encoding.valueOf(readToken());
     }
 
 }

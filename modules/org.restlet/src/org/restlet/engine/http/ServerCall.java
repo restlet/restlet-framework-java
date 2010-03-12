@@ -42,13 +42,12 @@ import java.util.logging.Level;
 import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Digest;
-import org.restlet.data.Encoding;
-import org.restlet.data.Language;
 import org.restlet.data.Parameter;
 import org.restlet.engine.ConnectorHelper;
+import org.restlet.engine.http.header.ContentEncodingReader;
+import org.restlet.engine.http.header.ContentLanguageReader;
 import org.restlet.engine.http.header.ContentType;
 import org.restlet.engine.http.header.HeaderConstants;
-import org.restlet.engine.http.header.HeaderReader;
 import org.restlet.engine.http.header.HeaderUtils;
 import org.restlet.engine.http.header.RangeUtils;
 import org.restlet.engine.security.SslUtils;
@@ -169,26 +168,12 @@ public abstract class ServerCall extends Call {
         for (Parameter header : getRequestHeaders()) {
             if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_CONTENT_ENCODING)) {
-                HeaderReader hr = new HeaderReader(header.getValue());
-                String value = hr.readValue();
-
-                while (value != null) {
-                    Encoding encoding = Encoding.valueOf(value);
-
-                    if (!encoding.equals(Encoding.IDENTITY)) {
-                        result.getEncodings().add(encoding);
-                    }
-                    value = hr.readValue();
-                }
+                new ContentEncodingReader(header.getValue()).addValues(result
+                        .getEncodings());
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_CONTENT_LANGUAGE)) {
-                HeaderReader hr = new HeaderReader(header.getValue());
-                String value = hr.readValue();
-
-                while (value != null) {
-                    result.getLanguages().add(Language.valueOf(value));
-                    value = hr.readValue();
-                }
+                new ContentLanguageReader(header.getValue()).addValues(result
+                        .getLanguages());
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_CONTENT_TYPE)) {
                 ContentType contentType = new ContentType(header.getValue());

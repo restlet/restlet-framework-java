@@ -38,7 +38,7 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
-import org.restlet.engine.http.header.HeaderBuilder;
+import org.restlet.engine.http.header.HeaderWriter;
 import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.security.AuthenticatorHelper;
 import org.restlet.engine.util.Base64;
@@ -84,7 +84,7 @@ public class HttpSharedKeyLiteHelper extends AuthenticatorHelper {
     }
 
     @Override
-    public void formatRawResponse(HeaderBuilder hb,
+    public void formatRawResponse(HeaderWriter hb,
             ChallengeResponse challenge, Request request,
             Series<Parameter> httpHeaders) {
 

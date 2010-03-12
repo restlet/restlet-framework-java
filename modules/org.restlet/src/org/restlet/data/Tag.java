@@ -70,7 +70,7 @@ public final class Tag {
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.11">HTTP
      *      Entity Tags</a>
      */
-    public static Tag parse(final String httpTag) {
+    public static Tag parse(String httpTag) {
         Tag result = null;
         boolean weak = false;
         String httpTagCopy = httpTag;

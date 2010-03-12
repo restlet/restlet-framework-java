@@ -32,33 +32,27 @@ package org.restlet.engine.http.header;
 
 import java.io.IOException;
 
-import org.restlet.data.CacheDirective;
 import org.restlet.data.Parameter;
 
 /**
- * Cache-Control header reader.
+ * Authentication-Info header reader.
  * 
  * @author Jerome Louvel
  */
-public class CacheControlReader extends HeaderReader<CacheDirective> {
+public class AuthenticationInfoReader extends HeaderReader<Parameter> {
     /**
      * Constructor.
      * 
      * @param header
      *            The header to read.
      */
-    public CacheControlReader(String header) {
+    public AuthenticationInfoReader(String header) {
         super(header);
     }
 
     @Override
-    protected Parameter createParameter(String name, String value) {
-        return new CacheDirective(name, value);
-    }
-
-    @Override
-    public CacheDirective readValue() throws IOException {
-        return (CacheDirective) readParameter();
+    public Parameter readValue() throws IOException {
+        return readParameter();
     }
 
 }

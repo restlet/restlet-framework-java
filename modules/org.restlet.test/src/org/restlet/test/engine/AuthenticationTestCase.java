@@ -38,7 +38,7 @@ import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Form;
 import org.restlet.data.Method;
-import org.restlet.engine.http.header.HeaderBuilder;
+import org.restlet.engine.http.header.HeaderWriter;
 import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.security.AuthenticatorUtils;
 import org.restlet.ext.crypto.internal.HttpAwsS3Helper;
@@ -64,7 +64,7 @@ public class AuthenticationTestCase extends RestletTestCase {
         HttpAwsS3Helper helper = new HttpAwsS3Helper();
 
         // Example Object GET
-        HeaderBuilder hb = new HeaderBuilder();
+        HeaderWriter hb = new HeaderWriter();
         ChallengeResponse challenge = new ChallengeResponse(
                 ChallengeScheme.HTTP_AWS_S3, "0PN5J17HBGZHT7JJ3X82",
                 "uV3F3YluFJax1cknvbcGwgjvx4QpvB+leU8dUj2o");
@@ -79,7 +79,7 @@ public class AuthenticationTestCase extends RestletTestCase {
                 .toString());
 
         // Example Object PUT
-        hb = new HeaderBuilder();
+        hb = new HeaderWriter();
         request.setMethod(Method.PUT);
         httpHeaders.set(HeaderConstants.HEADER_DATE,
                 "Tue, 27 Mar 2007 21:15:45 +0000", true);

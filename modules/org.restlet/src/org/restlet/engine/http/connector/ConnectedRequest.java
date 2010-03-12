@@ -315,20 +315,10 @@ public class ConnectedRequest extends Request {
 
         if (!this.cacheDirectivesAdded) {
             if (getHeaders() != null) {
-                for (String string : getHeaders().getValuesArray(
+                for (String directive : getHeaders().getValuesArray(
                         HeaderConstants.HEADER_CACHE_CONTROL)) {
-                    CacheControlReader ccr = new CacheControlReader(string);
-                    try {
-                        result.addAll(ccr.readDirectives());
-                    } catch (Exception e) {
-                        Context.getCurrentLogger().log(
-                                Level.WARNING,
-                                "Error during cache control parsing. Header: "
-                                        + string, e);
-                    }
+                    new CacheControlReader(directive).addValues(result);
                 }
-
-                setCacheDirectives(result);
             }
 
             this.cacheDirectivesAdded = true;
@@ -456,21 +446,21 @@ public class ConnectedRequest extends Request {
      */
     @Override
     public Conditions getConditions() {
-        final Conditions result = super.getConditions();
+        Conditions result = super.getConditions();
 
         if (!this.conditionAdded) {
             if (getHeaders() != null) {
                 // Extract the header values
-                final String ifMatchHeader = getHeaders().getValues(
+                String ifMatchHeader = getHeaders().getValues(
                         HeaderConstants.HEADER_IF_MATCH);
-                final String ifNoneMatchHeader = getHeaders().getValues(
+                String ifNoneMatchHeader = getHeaders().getValues(
                         HeaderConstants.HEADER_IF_NONE_MATCH);
                 Date ifModifiedSince = null;
                 Date ifUnmodifiedSince = null;
                 String ifRangeHeader = getHeaders().getFirstValue(
                         HeaderConstants.HEADER_IF_RANGE);
 
-                for (final Parameter header : getHeaders()) {
+                for (Parameter header : getHeaders()) {
                     if (header.getName().equalsIgnoreCase(
                             HeaderConstants.HEADER_IF_MODIFIED_SINCE)) {
                         ifModifiedSince = HeaderUtils.parseDate(header
@@ -499,8 +489,10 @@ public class ConnectedRequest extends Request {
                 Tag current = null;
                 if (ifMatchHeader != null) {
                     try {
-                        final HeaderReader hr = new HeaderReader(ifMatchHeader);
-                        String value = hr.readValue();
+                        HeaderReader<Object> hr = new HeaderReader<Object>(
+                                ifMatchHeader);
+                        String value = hr.readRawValue();
+
                         while (value != null) {
                             current = Tag.parse(value);
 
@@ -514,7 +506,7 @@ public class ConnectedRequest extends Request {
                             match.add(current);
 
                             // Read the next token
-                            value = hr.readValue();
+                            value = hr.readRawValue();
                         }
                     } catch (Exception e) {
                         this.context.getLogger().log(
@@ -528,9 +520,10 @@ public class ConnectedRequest extends Request {
                 List<Tag> noneMatch = null;
                 if (ifNoneMatchHeader != null) {
                     try {
-                        final HeaderReader hr = new HeaderReader(
+                        HeaderReader<Object> hr = new HeaderReader<Object>(
                                 ifNoneMatchHeader);
-                        String value = hr.readValue();
+                        String value = hr.readRawValue();
+
                         while (value != null) {
                             current = Tag.parse(value);
 
@@ -543,7 +536,7 @@ public class ConnectedRequest extends Request {
                             noneMatch.add(current);
 
                             // Read the next token
-                            value = hr.readValue();
+                            value = hr.readRawValue();
                         }
                     } catch (Exception e) {
                         this.context.getLogger().log(
@@ -581,27 +574,13 @@ public class ConnectedRequest extends Request {
      */
     @Override
     public Series<Cookie> getCookies() {
-        final Series<Cookie> result = super.getCookies();
+        Series<Cookie> result = super.getCookies();
 
         if (!this.cookiesAdded) {
             if (getHeaders() != null) {
-                final String cookiesValue = getHeaders().getValues(
-                        HeaderConstants.HEADER_COOKIE);
-
-                if (cookiesValue != null) {
-                    try {
-                        final CookieReader cr = new CookieReader(cookiesValue);
-                        Cookie current = cr.readCookie();
-                        while (current != null) {
-                            result.add(current);
-                            current = cr.readCookie();
-                        }
-                    } catch (Exception e) {
-                        this.context.getLogger().log(
-                                Level.WARNING,
-                                "An exception occurred during cookies parsing. Headers value: "
-                                        + cookiesValue, e);
-                    }
+                for (String cookieValue : getHeaders().getValuesArray(
+                        HeaderConstants.HEADER_COOKIE)) {
+                    new CookieReader(cookieValue).addValues(result);
                 }
             }
 
@@ -651,7 +630,7 @@ public class ConnectedRequest extends Request {
         if (!this.rangesAdded) {
             if (getHeaders() != null) {
                 // Extract the header value
-                final String ranges = getHeaders().getValues(
+                String ranges = getHeaders().getValues(
                         HeaderConstants.HEADER_RANGE);
                 result.addAll(RangeUtils.parseRangeHeader(ranges));
             }
@@ -694,21 +673,10 @@ public class ConnectedRequest extends Request {
 
         if (!this.warningsAdded) {
             if (getHeaders() != null) {
-                for (String string : getHeaders().getValuesArray(
+                for (String warning : getHeaders().getValuesArray(
                         HeaderConstants.HEADER_WARNING)) {
-                    WarningReader hr = new WarningReader(string);
-
-                    try {
-                        result.add(hr.readWarning());
-                    } catch (Exception e) {
-                        Context.getCurrentLogger().log(
-                                Level.WARNING,
-                                "Error during warning parsing. Header: "
-                                        + string, e);
-                    }
+                    new WarningReader(warning).addValues(result);
                 }
-
-                setWarnings(result);
             }
 
             this.warningsAdded = true;

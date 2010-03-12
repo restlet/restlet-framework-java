@@ -40,7 +40,7 @@ import org.restlet.data.CacheDirective;
  * 
  * @author Thierry Boileau
  */
-public class CacheControlUtils {
+public class CacheControlWriter {
 
     /**
      * Formats a list of cache directives with a comma separator.
@@ -50,7 +50,7 @@ public class CacheControlUtils {
      * @return The formatted list of cache directives.
      * @throws IllegalArgumentException
      */
-    public static String format(List<CacheDirective> directives)
+    public static String append(List<CacheDirective> directives)
             throws IllegalArgumentException {
         final StringBuilder sb = new StringBuilder();
 
@@ -61,7 +61,7 @@ public class CacheControlUtils {
             }
             directive = directives.get(i);
             try {
-                format(directive, sb);
+                append(directive, sb);
             } catch (IOException e) {
                 // IOExceptions are not possible on StringBuilders
             }
@@ -79,7 +79,7 @@ public class CacheControlUtils {
      *            The appendable destination.
      * @throws IOException
      */
-    public static void format(CacheDirective directive, Appendable destination)
+    public static void append(CacheDirective directive, Appendable destination)
             throws IOException {
         destination.append(directive.getName());
         if ((directive.getValue() != null)

@@ -40,7 +40,7 @@ import org.restlet.data.Parameter;
  * 
  * @author Jerome Louvel
  */
-public class HeaderBuilder implements Appendable {
+public class HeaderWriter implements Appendable {
     /** The header buffer. */
     private final StringBuilder wrappedBuilder;
 
@@ -50,7 +50,7 @@ public class HeaderBuilder implements Appendable {
     /**
      * Constructor.
      */
-    public HeaderBuilder() {
+    public HeaderWriter() {
         this.firstParameter = true;
         this.wrappedBuilder = new StringBuilder();
     }
@@ -62,7 +62,7 @@ public class HeaderBuilder implements Appendable {
      *            The character to append.
      * @return The current builder.
      */
-    public HeaderBuilder append(char c) {
+    public HeaderWriter append(char c) {
         this.wrappedBuilder.append(c);
         return this;
     }
@@ -74,7 +74,7 @@ public class HeaderBuilder implements Appendable {
      *            The sequence of characters.
      * @return The current builder.
      */
-    public HeaderBuilder append(CharSequence csq) {
+    public HeaderWriter append(CharSequence csq) {
         this.wrappedBuilder.append(csq);
         return this;
     }
@@ -90,7 +90,7 @@ public class HeaderBuilder implements Appendable {
      *            The end index.
      * @return The current builder.
      */
-    public HeaderBuilder append(CharSequence csq, int start, int end) {
+    public HeaderWriter append(CharSequence csq, int start, int end) {
         this.wrappedBuilder.append(csq, start, end);
         return this;
     }
@@ -104,7 +104,7 @@ public class HeaderBuilder implements Appendable {
      * @return The current builder.
      * @throws IOException
      */
-    public HeaderBuilder appendComment(String content) throws IOException {
+    public HeaderWriter appendComment(String content) throws IOException {
         this.wrappedBuilder.append('(');
 
         char c;
@@ -131,7 +131,7 @@ public class HeaderBuilder implements Appendable {
      * @return The current builder.
      * @throws IOException
      */
-    public HeaderBuilder appendParameter(Parameter parameter)
+    public HeaderWriter appendParameter(Parameter parameter)
             throws IOException {
         return appendParameter(parameter.getName(), parameter.getValue());
     }
@@ -144,7 +144,7 @@ public class HeaderBuilder implements Appendable {
      * @return The current builder.
      * @throws IOException
      */
-    public HeaderBuilder appendParameter(String name) throws IOException {
+    public HeaderWriter appendParameter(String name) throws IOException {
         appendParameterSeparator();
         return appendToken(name);
     }
@@ -160,7 +160,7 @@ public class HeaderBuilder implements Appendable {
      * @return The current builder.
      * @throws IOException
      */
-    public HeaderBuilder appendParameter(String name, String value)
+    public HeaderWriter appendParameter(String name, String value)
             throws IOException {
         appendParameterSeparator();
 
@@ -183,7 +183,7 @@ public class HeaderBuilder implements Appendable {
      * @return The current builder.
      * @throws IOException
      */
-    public HeaderBuilder appendParameterSeparator() throws IOException {
+    public HeaderWriter appendParameterSeparator() throws IOException {
         if (isFirstParameter()) {
             setFirstParameter(false);
         } else {
@@ -200,7 +200,7 @@ public class HeaderBuilder implements Appendable {
      *            The character to quote.
      * @return The current builder.
      */
-    protected HeaderBuilder appendQuotedPair(char character) {
+    protected HeaderWriter appendQuotedPair(char character) {
         this.wrappedBuilder.append('\\').append(character);
         return this;
     }
@@ -214,7 +214,7 @@ public class HeaderBuilder implements Appendable {
      * @throws IOException
      * @return The current builder.
      */
-    public HeaderBuilder appendQuotedParameter(Parameter parameter)
+    public HeaderWriter appendQuotedParameter(Parameter parameter)
             throws IOException {
         return appendQuotedParameter(parameter.getName(), parameter.getValue());
     }
@@ -230,7 +230,7 @@ public class HeaderBuilder implements Appendable {
      * @throws IOException
      * @return The current builder.
      */
-    public HeaderBuilder appendQuotedParameter(String name, String value)
+    public HeaderWriter appendQuotedParameter(String name, String value)
             throws IOException {
         appendParameterSeparator();
 
@@ -253,7 +253,7 @@ public class HeaderBuilder implements Appendable {
      *            The string to quote and write.
      * @return The current builder.
      */
-    public HeaderBuilder appendQuotedString(String content) {
+    public HeaderWriter appendQuotedString(String content) {
         this.wrappedBuilder.append('"');
 
         char c;
@@ -276,7 +276,7 @@ public class HeaderBuilder implements Appendable {
      * 
      * @return The current builder.
      */
-    public HeaderBuilder appendSpace() {
+    public HeaderWriter appendSpace() {
         this.wrappedBuilder.append(' ');
         return this;
     }
@@ -289,7 +289,7 @@ public class HeaderBuilder implements Appendable {
      * @return The current builder.
      * @throws IOException
      */
-    public HeaderBuilder appendToken(String token) throws IOException {
+    public HeaderWriter appendToken(String token) throws IOException {
         if (HeaderUtils.isToken(token)) {
             this.wrappedBuilder.append(token);
         } else {

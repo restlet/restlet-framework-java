@@ -29,7 +29,6 @@
  */
 package org.restlet.ext.jaxrs.internal.spi;
 
-import java.io.IOException;
 import java.util.List;
 
 import javax.ws.rs.core.CacheControl;
@@ -38,7 +37,7 @@ import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
 
 import org.restlet.data.CacheDirective;
 import org.restlet.engine.http.header.CacheControlReader;
-import org.restlet.engine.http.header.CacheControlUtils;
+import org.restlet.engine.http.header.CacheControlWriter;
 import org.restlet.ext.jaxrs.internal.util.Converter;
 
 /**
@@ -68,13 +67,9 @@ public class CacheControlHeaderDelegate implements HeaderDelegate<CacheControl> 
      */
     public CacheControl fromString(String value)
             throws IllegalArgumentException {
-        try {
-            CacheControlReader ccr = new CacheControlReader(value);
-            List<CacheDirective> cacheDirectives = ccr.readDirectives();
-            return Converter.toJaxRsCacheControl(cacheDirectives);
-        } catch (IOException e) {
-            throw new RuntimeException("not possible", e);
-        }
+        CacheControlReader ccr = new CacheControlReader(value);
+        List<CacheDirective> cacheDirectives = ccr.readValues();
+        return Converter.toJaxRsCacheControl(cacheDirectives);
     }
 
     /**
@@ -88,7 +83,8 @@ public class CacheControlHeaderDelegate implements HeaderDelegate<CacheControl> 
      * @see javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate#toString(java.lang.Object)
      */
     public String toString(CacheControl cacheControl) {
-        List<CacheDirective> directives = Converter.toRestletCacheDirective(cacheControl);
-        return CacheControlUtils.format(directives);
+        List<CacheDirective> directives = Converter
+                .toRestletCacheDirective(cacheControl);
+        return CacheControlWriter.append(directives);
     }
 }

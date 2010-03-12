@@ -32,33 +32,33 @@ package org.restlet.engine.http.header;
 
 import java.io.IOException;
 
-import org.restlet.data.CacheDirective;
+import org.restlet.data.Expectation;
 import org.restlet.data.Parameter;
 
 /**
- * Cache-Control header reader.
+ * Expect header reader.
  * 
  * @author Jerome Louvel
  */
-public class CacheControlReader extends HeaderReader<CacheDirective> {
+public class ExpectReader extends HeaderReader<Expectation> {
     /**
      * Constructor.
      * 
      * @param header
      *            The header to read.
      */
-    public CacheControlReader(String header) {
+    public ExpectReader(String header) {
         super(header);
     }
 
     @Override
     protected Parameter createParameter(String name, String value) {
-        return new CacheDirective(name, value);
+        return new Expectation(name, value);
     }
 
     @Override
-    public CacheDirective readValue() throws IOException {
-        return (CacheDirective) readParameter();
+    public Expectation readValue() throws IOException {
+        return (Expectation) readParameter();
     }
 
 }

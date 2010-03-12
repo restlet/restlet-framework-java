@@ -198,16 +198,9 @@ public class HttpRequest extends Request {
         if (!cacheDirectivesAdded) {
             for (String string : getHttpCall().getRequestHeaders()
                     .getValuesArray(HeaderConstants.HEADER_CACHE_CONTROL)) {
-                CacheControlReader ccr = new CacheControlReader(string);
-                try {
-                    result.addAll(ccr.readDirectives());
-                } catch (Exception e) {
-                    Context.getCurrentLogger().log(
-                            Level.WARNING,
-                            "Error during cache control parsing. Header: "
-                                    + string, e);
-                }
+                new CacheControlReader(string).addValues(result);
             }
+
             setCacheDirectives(result);
         }
         return result;
@@ -365,8 +358,10 @@ public class HttpRequest extends Request {
             Tag current = null;
             if (ifMatchHeader != null) {
                 try {
-                    final HeaderReader hr = new HeaderReader(ifMatchHeader);
-                    String value = hr.readValue();
+                    HeaderReader<Object> hr = new HeaderReader<Object>(
+                            ifMatchHeader);
+                    String value = hr.readRawValue();
+
                     while (value != null) {
                         current = Tag.parse(value);
 
@@ -380,7 +375,7 @@ public class HttpRequest extends Request {
                         match.add(current);
 
                         // Read the next token
-                        value = hr.readValue();
+                        value = hr.readRawValue();
                     }
                 } catch (Exception e) {
                     this.context.getLogger().log(
@@ -394,8 +389,10 @@ public class HttpRequest extends Request {
             List<Tag> noneMatch = null;
             if (ifNoneMatchHeader != null) {
                 try {
-                    final HeaderReader hr = new HeaderReader(ifNoneMatchHeader);
-                    String value = hr.readValue();
+                    HeaderReader<Object> hr = new HeaderReader<Object>(
+                            ifNoneMatchHeader);
+                    String value = hr.readRawValue();
+
                     while (value != null) {
                         current = Tag.parse(value);
 
@@ -408,7 +405,7 @@ public class HttpRequest extends Request {
                         noneMatch.add(current);
 
                         // Read the next token
-                        value = hr.readValue();
+                        value = hr.readRawValue();
                     }
                 } catch (Exception e) {
                     this.context.getLogger().log(
@@ -420,6 +417,7 @@ public class HttpRequest extends Request {
 
             if (ifRangeHeader != null && ifRangeHeader.length() > 0) {
                 Tag tag = Tag.parse(ifRangeHeader);
+
                 if (tag != null) {
                     result.setRangeTag(tag);
                 } else {
@@ -450,10 +448,10 @@ public class HttpRequest extends Request {
             if (cookiesValue != null) {
                 try {
                     final CookieReader cr = new CookieReader(cookiesValue);
-                    Cookie current = cr.readCookie();
+                    Cookie current = cr.readValue();
                     while (current != null) {
                         result.add(current);
-                        current = cr.readCookie();
+                        current = cr.readValue();
                     }
                 } catch (Exception e) {
                     this.context.getLogger().log(
@@ -563,16 +561,9 @@ public class HttpRequest extends Request {
     public List<Warning> getWarnings() {
         List<Warning> result = super.getWarnings();
         if (!warningsAdded) {
-            for (String string : getHttpCall().getRequestHeaders()
+            for (String header : getHttpCall().getRequestHeaders()
                     .getValuesArray(HeaderConstants.HEADER_WARNING)) {
-                WarningReader hr = new WarningReader(string);
-                try {
-                    result.add(hr.readWarning());
-                } catch (Exception e) {
-                    Context.getCurrentLogger().log(Level.WARNING,
-                            "Error during warning parsing. Header: " + string,
-                            e);
-                }
+                new WarningReader(header).addValues(result);
             }
             setWarnings(result);
         }

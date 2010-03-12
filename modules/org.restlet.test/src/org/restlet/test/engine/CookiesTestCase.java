@@ -38,10 +38,10 @@ import java.util.List;
 import org.restlet.data.Cookie;
 import org.restlet.data.CookieSetting;
 import org.restlet.engine.http.header.CookieReader;
-import org.restlet.engine.http.header.CookieUtils;
+import org.restlet.engine.http.header.CookieSettingReader;
+import org.restlet.engine.http.header.CookieWriter;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.test.RestletTestCase;
-
 
 /**
  * Unit tests for the Cookie related classes.
@@ -59,15 +59,15 @@ public class CookiesTestCase extends RestletTestCase {
     private void testCookie(String headerValue) throws IOException {
         final CookieReader cr = new CookieReader(headerValue);
         final List<Cookie> cookies = new ArrayList<Cookie>();
-        Cookie cookie = cr.readCookie();
+        Cookie cookie = cr.readValue();
 
         while (cookie != null) {
             cookies.add(cookie);
-            cookie = cr.readCookie();
+            cookie = cr.readValue();
         }
 
         // Rewrite the header
-        final String newHeaderValue = CookieUtils.format(cookies);
+        final String newHeaderValue = CookieWriter.format(cookies);
 
         // Compare initial and new headers
         assertEquals(headerValue, newHeaderValue);
@@ -102,15 +102,15 @@ public class CookiesTestCase extends RestletTestCase {
      */
     private void testCookieSetting(String headerValue, boolean compare)
             throws IOException {
-        final CookieReader cr = new CookieReader(headerValue);
-        final CookieSetting cookie = cr.readCookieSetting();
+        CookieSettingReader cr = new CookieSettingReader(headerValue);
+        CookieSetting cookie = cr.readValue();
 
         // Rewrite the header
-        final String newHeaderValue = CookieUtils.format(cookie);
+        String newHeaderValue = CookieWriter.format(cookie);
 
         // Compare initial and new headers
         if (compare) {
-            final boolean result = newHeaderValue.toLowerCase().startsWith(
+            boolean result = newHeaderValue.toLowerCase().startsWith(
                     headerValue.toLowerCase());
             assertTrue(result);
         }

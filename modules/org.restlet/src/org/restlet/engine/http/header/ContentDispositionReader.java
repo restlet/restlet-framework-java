@@ -36,49 +36,47 @@ import org.restlet.data.Disposition;
 import org.restlet.data.Parameter;
 
 /**
- * Disposition manipulation utilities.
+ * Content-Disposition header reader.
  * 
  * @author Thierry Boileau
  */
-public class DispositionUtils {
+public class ContentDispositionReader extends HeaderReader<Disposition> {
 
     /**
-     * Formats a disposition.
+     * Constructor.
      * 
-     * @param disposition
-     *            The disposition to format.
-     * @return The formatted disposition.
+     * @param header
+     *            The header to read.
      */
-    public static String format(Disposition disposition) {
-        if (Disposition.TYPE_NONE.equals(disposition.getType())
-                || disposition.getType() == null) {
-            return null;
-        }
-        final StringBuilder sb = new StringBuilder();
+    public ContentDispositionReader(String header) {
+        super(header);
+    }
 
-        sb.append(disposition.getType());
-        for (Parameter parameter : disposition.getParameters()) {
-            sb.append("; ");
-            sb.append(parameter.getName());
-            sb.append("=");
-            if (HeaderUtils.isToken(parameter.getValue())) {
-                sb.append(parameter.getValue());
-            } else {
-                try {
-                    HeaderUtils.appendQuote(parameter.getValue(), sb);
-                } catch (IOException e) {
-                    // IOExceptions are not possible on StringBuilders
+    @Override
+    public Disposition readValue() throws IOException {
+        Disposition result = null;
+        String type = readToken();
+
+        if (type.length() > 0) {
+            result = new Disposition();
+            result.setType(type);
+
+            if (skipParameterSeparator()) {
+                Parameter param = readParameter();
+
+                while (param != null) {
+                    result.getParameters().add(param);
+
+                    if (skipParameterSeparator()) {
+                        param = readParameter();
+                    } else {
+                        param = null;
+                    }
                 }
             }
         }
-        return sb.toString();
-    }
 
-    /**
-     * Private constructor to ensure that the class acts as a true utility class
-     * i.e. it isn't instantiable and extensible.
-     */
-    private DispositionUtils() {
+        return result;
     }
 
 }

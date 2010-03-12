@@ -42,7 +42,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Status;
 import org.restlet.engine.ConnectorHelper;
-import org.restlet.engine.http.header.DispositionReader;
+import org.restlet.engine.http.header.ContentDispositionReader;
 import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.http.header.HeaderUtils;
 import org.restlet.representation.Representation;
@@ -78,7 +78,7 @@ public abstract class ClientCall extends Call {
      * @param value
      *            Content-disposition header
      * @return Filename
-     * @deprecated Use {@link DispositionReader} instead.
+     * @deprecated Use {@link ContentDispositionReader} instead.
      */
     @Deprecated
     public static String parseContentDisposition(String value) {

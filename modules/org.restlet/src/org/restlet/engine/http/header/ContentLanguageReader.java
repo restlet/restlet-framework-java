@@ -32,33 +32,28 @@ package org.restlet.engine.http.header;
 
 import java.io.IOException;
 
-import org.restlet.data.CacheDirective;
-import org.restlet.data.Parameter;
+import org.restlet.data.Language;
 
 /**
- * Cache-Control header reader.
+ * Content-Language header reader.
  * 
  * @author Jerome Louvel
  */
-public class CacheControlReader extends HeaderReader<CacheDirective> {
+public class ContentLanguageReader extends HeaderReader<Language> {
+
     /**
      * Constructor.
      * 
      * @param header
      *            The header to read.
      */
-    public CacheControlReader(String header) {
+    public ContentLanguageReader(String header) {
         super(header);
     }
 
     @Override
-    protected Parameter createParameter(String name, String value) {
-        return new CacheDirective(name, value);
-    }
-
-    @Override
-    public CacheDirective readValue() throws IOException {
-        return (CacheDirective) readParameter();
+    public Language readValue() throws IOException {
+        return Language.valueOf(readRawValue());
     }
 
 }

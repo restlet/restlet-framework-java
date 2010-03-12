@@ -96,7 +96,7 @@ public class ContentType {
     public ContentType(String headerValue) {
         try {
             ContentTypeReader ctr = new ContentTypeReader(headerValue);
-            ContentType ct = ctr.readContentType();
+            ContentType ct = ctr.readValue();
 
             if (ct != null) {
                 this.mediaType = ct.getMediaType();

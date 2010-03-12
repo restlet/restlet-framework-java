@@ -41,7 +41,7 @@ import org.restlet.engine.util.DateUtils;
  * 
  * @author Thierry Boileau
  */
-public class WarningReader extends HeaderReader {
+public class WarningReader extends HeaderReader<Warning> {
 
     /**
      * Constructor.
@@ -54,50 +54,22 @@ public class WarningReader extends HeaderReader {
     }
 
     @Override
-    public void readQuotedString(Appendable buffer) throws IOException {
-        int nextChar = read();
-        while (nextChar != '"' && (nextChar != -1)) {
-            nextChar = read();
-        }
-        if (nextChar == '"') {
-            super.readQuotedString(buffer);
-        }
-    }
-
-    /**
-     * Indicates if the given character is a value separator.
-     * 
-     * @param character
-     *            The character to test.
-     * @return True if the given character is a value separator.
-     */
-    @Override
-    public final boolean isValueSeparator(int character) {
-        return (character == ' ');
-    }
-
-    /**
-     * Read the warning header.
-     * 
-     * @return The next warning.
-     * @throws IOException
-     */
-    public Warning readWarning() throws IOException {
+    public Warning readValue() throws IOException {
         Warning result = new Warning();
 
-        String code = readValue();
-        String agent = readValue();
+        String code = readToken();
+        String agent = readRawValue();
         String text = readQuotedString();
         String date = readQuotedString();
 
         if ((code == null) || (agent == null) || (text == null)) {
             throw new IOException("Warning header malformed.");
         }
+
         result.setStatus(Status.valueOf(Integer.parseInt(code)));
         result.setAgent(agent);
         result.setText(text);
         result.setDate(DateUtils.parse(date));
-
         return result;
     }
 

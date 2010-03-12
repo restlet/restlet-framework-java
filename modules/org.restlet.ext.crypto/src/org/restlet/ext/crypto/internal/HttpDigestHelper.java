@@ -42,7 +42,7 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Digest;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
-import org.restlet.engine.http.header.HeaderBuilder;
+import org.restlet.engine.http.header.HeaderWriter;
 import org.restlet.engine.http.header.HeaderReader;
 import org.restlet.engine.http.header.HeaderUtils;
 import org.restlet.engine.security.AuthenticatorHelper;
@@ -220,7 +220,7 @@ public class HttpDigestHelper extends AuthenticatorHelper {
     }
 
     @Override
-    public void formatRawRequest(HeaderBuilder hb, ChallengeRequest challenge,
+    public void formatRawRequest(HeaderWriter hb, ChallengeRequest challenge,
             Response response, Series<Parameter> httpHeaders)
             throws IOException {
 
@@ -282,9 +282,8 @@ public class HttpDigestHelper extends AuthenticatorHelper {
     }
 
     @Override
-    public void formatRawResponse(HeaderBuilder hb,
-            ChallengeResponse challenge, Request request,
-            Series<Parameter> httpHeaders) throws IOException {
+    public void formatRawResponse(HeaderWriter hb, ChallengeResponse challenge,
+            Request request, Series<Parameter> httpHeaders) throws IOException {
 
         if (challenge.getIdentifier() != null) {
             hb.appendQuotedParameter("username", challenge.getIdentifier());
@@ -383,7 +382,8 @@ public class HttpDigestHelper extends AuthenticatorHelper {
     public void parseRequest(ChallengeRequest challenge, Response response,
             Series<Parameter> httpHeaders) {
         if (challenge.getRawValue() != null) {
-            HeaderReader hr = new HeaderReader(challenge.getRawValue());
+            HeaderReader<Object> hr = new HeaderReader<Object>(challenge
+                    .getRawValue());
 
             try {
                 Parameter param = hr.readParameter();
@@ -410,7 +410,11 @@ public class HttpDigestHelper extends AuthenticatorHelper {
                             challenge.getParameters().add(param);
                         }
 
-                        param = hr.readParameter();
+                        if (hr.skipValueSeparator()) {
+                            param = hr.readParameter();
+                        } else {
+                            param = null;
+                        }
                     } catch (Exception e) {
                         Context
                                 .getCurrentLogger()
@@ -435,7 +439,8 @@ public class HttpDigestHelper extends AuthenticatorHelper {
     public void parseResponse(ChallengeResponse challenge, Request request,
             Series<Parameter> httpHeaders) {
         if (challenge.getCredentials() != null) {
-            HeaderReader hr = new HeaderReader(challenge.getCredentials());
+            HeaderReader<Object> hr = new HeaderReader<Object>(challenge
+                    .getCredentials());
 
             try {
                 Parameter param = hr.readParameter();
@@ -468,7 +473,11 @@ public class HttpDigestHelper extends AuthenticatorHelper {
                             challenge.getParameters().add(param);
                         }
 
-                        param = hr.readParameter();
+                        if (hr.skipValueSeparator()) {
+                            param = hr.readParameter();
+                        } else {
+                            param = null;
+                        }
                     } catch (Exception e) {
                         Context
                                 .getCurrentLogger()

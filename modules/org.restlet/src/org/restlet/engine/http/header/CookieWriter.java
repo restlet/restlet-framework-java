@@ -31,21 +31,18 @@
 package org.restlet.engine.http.header;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.restlet.data.Cookie;
-import org.restlet.data.CookieSetting;
-import org.restlet.engine.util.DateUtils;
 
 /**
  * Cookie manipulation utilities.
  * 
  * @author Jerome Louvel
  */
-public class CookieUtils {
+public class CookieWriter {
 
     /**
      * Appends a source string as an HTTP comment.
@@ -63,7 +60,7 @@ public class CookieUtils {
         if (version == 0) {
             destination.append(value.toString());
         } else {
-            HeaderUtils.appendQuote(value, destination);
+            HeaderUtils.appendQuotedString(value, destination);
         }
 
         return destination;
@@ -81,7 +78,7 @@ public class CookieUtils {
     public static String format(Cookie cookie) throws IllegalArgumentException {
         final StringBuilder sb = new StringBuilder();
         try {
-            format(cookie, sb);
+            append(cookie, sb);
         } catch (IOException e) {
             // IOExceptions are not possible on StringBuilders
         }
@@ -99,7 +96,7 @@ public class CookieUtils {
      * @throws IllegalArgumentException
      *             If the Cookie contains illegal values.
      */
-    public static void format(Cookie cookie, Appendable destination)
+    public static void append(Cookie cookie, Appendable destination)
             throws IllegalArgumentException, IOException {
         final String name = cookie.getName();
         final String value = cookie.getValue();
@@ -121,135 +118,13 @@ public class CookieUtils {
             final String path = cookie.getPath();
             if ((path != null) && (path.length() > 0)) {
                 destination.append("; $Path=");
-                HeaderUtils.appendQuote(path, destination);
+                HeaderUtils.appendQuotedString(path, destination);
             }
             // Append the domain
             final String domain = cookie.getDomain();
             if ((domain != null) && (domain.length() > 0)) {
                 destination.append("; $Domain=");
-                HeaderUtils.appendQuote(domain, destination);
-            }
-        }
-    }
-
-    /**
-     * Formats a cookie setting.
-     * 
-     * @param cookieSetting
-     *            The cookie setting to format.
-     * @return The formatted cookie setting.
-     * @throws IllegalArgumentException
-     *             If the CookieSetting can not be formatted to a String
-     */
-    public static String format(CookieSetting cookieSetting)
-            throws IllegalArgumentException {
-        final StringBuilder sb = new StringBuilder();
-
-        try {
-            format(cookieSetting, sb);
-        } catch (IOException e) {
-            // log error
-        }
-
-        return sb.toString();
-    }
-
-    /**
-     * Formats a cookie setting.
-     * 
-     * @param cookieSetting
-     *            The cookie setting to format.
-     * @param destination
-     *            The appendable destination.
-     * @throws IOException
-     * @throws IllegalArgumentException
-     *             If the CookieSetting can not be formatted to a String
-     */
-    public static void format(CookieSetting cookieSetting,
-            Appendable destination) throws IOException,
-            IllegalArgumentException {
-        final String name = cookieSetting.getName();
-        final String value = cookieSetting.getValue();
-        final int version = cookieSetting.getVersion();
-
-        if ((name == null) || (name.length() == 0)) {
-            throw new IllegalArgumentException(
-                    "Can't write cookie. Invalid name detected");
-        }
-
-        destination.append(name).append('=');
-
-        // Append the value
-        if ((value != null) && (value.length() > 0)) {
-            appendValue(value, version, destination);
-        }
-
-        // Append the version
-        if (version > 0) {
-            destination.append("; Version=");
-            appendValue(Integer.toString(version), version, destination);
-        }
-
-        // Append the path
-        final String path = cookieSetting.getPath();
-        if ((path != null) && (path.length() > 0)) {
-            destination.append("; Path=");
-
-            if (version == 0) {
-                destination.append(path);
-            } else {
-                HeaderUtils.appendQuote(path, destination);
-            }
-        }
-
-        // Append the expiration date
-        final int maxAge = cookieSetting.getMaxAge();
-        if (maxAge >= 0) {
-            if (version == 0) {
-                final long currentTime = System.currentTimeMillis();
-                final long maxTime = (maxAge * 1000L);
-                final long expiresTime = currentTime + maxTime;
-                final Date expires = new Date(expiresTime);
-                destination.append("; Expires=");
-                appendValue(DateUtils.format(expires, DateUtils.FORMAT_RFC_1036
-                        .get(0)), version, destination);
-            } else {
-                destination.append("; Max-Age=");
-                appendValue(Integer.toString(cookieSetting.getMaxAge()),
-                        version, destination);
-            }
-        } else if ((maxAge == -1) && (version > 0)) {
-            // Discard the cookie at the end of the user's session (RFC
-            // 2965)
-            destination.append("; Discard");
-        } else {
-            // Netscape cookies automatically expire at the end of the
-            // user's session
-        }
-
-        // Append the domain
-        final String domain = cookieSetting.getDomain();
-        if ((domain != null) && (domain.length() > 0)) {
-            destination.append("; Domain=");
-            appendValue(domain.toLowerCase(), version, destination);
-        }
-
-        // Append the secure flag
-        if (cookieSetting.isSecure()) {
-            destination.append("; Secure");
-        }
-
-        // Append the secure flag
-        if (cookieSetting.isAccessRestricted()) {
-            destination.append("; HttpOnly");
-        }
-
-        // Append the comment
-        if (version > 0) {
-            final String comment = cookieSetting.getComment();
-            if ((comment != null) && (comment.length() > 0)) {
-                destination.append("; Comment=");
-                appendValue(comment, version, destination);
+                HeaderUtils.appendQuotedString(domain, destination);
             }
         }
     }
@@ -281,7 +156,7 @@ public class CookieUtils {
             }
 
             try {
-                format(cookie, sb);
+                append(cookie, sb);
             } catch (IOException e) {
                 // IOExceptiosn are not possible on StringBuilder
             }
@@ -324,29 +199,9 @@ public class CookieUtils {
         CookieReader cr = new CookieReader(cookie);
 
         try {
-            return cr.readCookie();
+            return cr.readValue();
         } catch (IOException e) {
             throw new IllegalArgumentException("Could not read the cookie", e);
-        }
-    }
-
-    /**
-     * Parses the given String to a CookieSetting
-     * 
-     * @param cookieSetting
-     * @return the CookieSetting parsed from the String
-     * @throws IllegalArgumentException
-     *             Thrown if the String can not be parsed as CookieSetting.
-     */
-    public static CookieSetting parseSetting(String cookieSetting)
-            throws IllegalArgumentException {
-        CookieReader cr = new CookieReader(cookieSetting);
-
-        try {
-            return cr.readCookieSetting();
-        } catch (IOException e) {
-            throw new IllegalArgumentException(
-                    "Could not read the cookie setting", e);
         }
     }
 
@@ -354,7 +209,7 @@ public class CookieUtils {
      * Private constructor to ensure that the class acts as a true utility class
      * i.e. it isn't instantiable and extensible.
      */
-    private CookieUtils() {
+    private CookieWriter() {
     }
 
 }

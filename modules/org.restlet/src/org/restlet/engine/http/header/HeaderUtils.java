@@ -206,8 +206,10 @@ public class HeaderUtils {
             if (entity.getDisposition() != null
                     && !Disposition.TYPE_NONE.equals(entity.getDisposition()
                             .getType())) {
-                headers.add(HeaderConstants.HEADER_CONTENT_DISPOSITION,
-                        DispositionUtils.format(entity.getDisposition()));
+                headers
+                        .add(HeaderConstants.HEADER_CONTENT_DISPOSITION,
+                                ContentDispositionWriter.write(entity
+                                        .getDisposition()));
             }
         }
     }
@@ -364,8 +366,8 @@ public class HeaderUtils {
 
         // Add the Cache-control headers
         if (!message.getCacheDirectives().isEmpty()) {
-            headers.add(HeaderConstants.HEADER_CACHE_CONTROL, CacheControlUtils
-                    .format(message.getCacheDirectives()));
+            headers.add(HeaderConstants.HEADER_CACHE_CONTROL,
+                    CacheControlWriter.append(message.getCacheDirectives()));
         }
 
         // Add the date
@@ -564,13 +566,23 @@ public class HeaderUtils {
                     Engine.VERSION_HEADER);
         }
 
+        if (client.getExpectations().size() > 0) {
+            try {
+                headers.add(HeaderConstants.HEADER_ACCEPT_ENCODING,
+                        PreferenceUtils.format(client.getAcceptedEncodings()));
+            } catch (IOException ioe) {
+                Context.getCurrentLogger().log(Level.WARNING,
+                        "Unable to format the HTTP Accept header", ioe);
+            }
+        }
+
         // ----------------------------------
         // 3) Add supported extension headers
         // ----------------------------------
 
         // Add the cookies
         if (request.getCookies().size() > 0) {
-            String cookies = CookieUtils.format(request.getCookies());
+            String cookies = CookieWriter.format(request.getCookies());
             headers.add(HeaderConstants.HEADER_COOKIE, cookies);
         }
 
@@ -748,7 +760,7 @@ public class HeaderUtils {
         // Add the cookie settings
         List<CookieSetting> cookies = response.getCookieSettings();
         for (int i = 0; i < cookies.size(); i++) {
-            headers.add(HeaderConstants.HEADER_SET_COOKIE, CookieUtils
+            headers.add(HeaderConstants.HEADER_SET_COOKIE, CookieWriter
                     .format(cookies.get(i)));
         }
 
@@ -762,7 +774,74 @@ public class HeaderUtils {
     }
 
     /**
-     * Appends a source string as an HTTP quoted string.
+     * Formats and appends a parameter as an extension. If the value is not a
+     * token, then it is quoted.
+     * 
+     * @param extension
+     *            The parameter to format as an extension.
+     * @param destination
+     *            The appendable destination.
+     * @return The formatted extension.
+     * @throws IOException
+     */
+    public static Appendable appendExtension(Parameter extension,
+            Appendable destination) throws IOException {
+        if (extension != null) {
+            if ((extension.getName() != null)
+                    || (extension.getName().length() > 0)) {
+                destination.append(extension.getName());
+
+                if ((extension.getValue() != null)
+                        || (extension.getValue().length() > 0)) {
+                    destination.append("=");
+
+                    if (isToken(extension.getValue())) {
+                        destination.append(extension.getValue());
+                    } else {
+                        appendQuotedString(extension.getValue(), destination);
+                    }
+                }
+            }
+        }
+
+        return destination;
+    }
+
+    /**
+     * Formats and appends a product description.
+     * 
+     * @param nameToken
+     *            The product name token.
+     * @param versionToken
+     *            The product version token.
+     * @param destination
+     *            The appendable destination;
+     * @throws IOException
+     */
+    public static Appendable appendProduct(CharSequence nameToken,
+            CharSequence versionToken, Appendable destination)
+            throws IOException {
+        if (!isToken(nameToken)) {
+            throw new IllegalArgumentException(
+                    "Invalid product name detected. Only token characters are allowed.");
+        }
+
+        destination.append(nameToken);
+
+        if (versionToken != null) {
+            if (!isToken(versionToken)) {
+                throw new IllegalArgumentException(
+                        "Invalid product version detected. Only token characters are allowed.");
+            }
+
+            destination.append('/').append(versionToken);
+        }
+
+        return destination;
+    }
+
+    /**
+     * Formats and appends a source string as an HTTP quoted string.
      * 
      * @param source
      *            The unquoted source string.
@@ -770,29 +849,31 @@ public class HeaderUtils {
      *            The destination to append to.
      * @throws IOException
      */
-    public static Appendable appendQuote(CharSequence source,
+    public static Appendable appendQuotedString(CharSequence source,
             Appendable destination) throws IOException {
-        destination.append('"');
 
-        char c;
-        for (int i = 0; i < source.length(); i++) {
-            c = source.charAt(i);
+        if ((source != null) && (source.length() > 0)) {
+            destination.append('"');
+            char c;
 
-            if (c == '"') {
-                destination.append("\\\"");
-            } else if (c == '\\') {
-                destination.append("\\\\");
-            } else {
-                destination.append(c);
+            for (int i = 0; i < source.length(); i++) {
+                c = source.charAt(i);
+
+                if (isQuotedText(c)) {
+                    destination.append(c);
+                } else {
+                    destination.append('\\').append(c);
+                }
             }
+
+            destination.append('"');
         }
 
-        destination.append('"');
         return destination;
     }
 
     /**
-     * Appends a source string as an URI encoded string.
+     * Formats and appends a source string as an URI encoded string.
      * 
      * @param source
      *            The source string to format.
@@ -852,24 +933,15 @@ public class HeaderUtils {
                 entityHeaderFound = true;
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_CONTENT_ENCODING)) {
-                HeaderReader hr = new HeaderReader(header.getValue());
-                String value = hr.readValue();
-                while (value != null) {
-                    Encoding encoding = new Encoding(value);
-                    if (!encoding.equals(Encoding.IDENTITY)) {
-                        result.getEncodings().add(encoding);
-                    }
-                    value = hr.readValue();
-                }
+                ContentEncodingReader hr = new ContentEncodingReader(header
+                        .getValue());
+                hr.addValues(result.getEncodings());
                 entityHeaderFound = true;
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_CONTENT_LANGUAGE)) {
-                HeaderReader hr = new HeaderReader(header.getValue());
-                String value = hr.readValue();
-                while (value != null) {
-                    result.getLanguages().add(new Language(value));
-                    value = hr.readValue();
-                }
+                ContentLanguageReader hr = new ContentLanguageReader(header
+                        .getValue());
+                hr.addValues(result.getLanguages());
                 entityHeaderFound = true;
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_LAST_MODIFIED)) {
@@ -887,9 +959,9 @@ public class HeaderUtils {
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_CONTENT_DISPOSITION)) {
                 try {
-                    DispositionReader r = new DispositionReader(header
-                            .getValue());
-                    result.setDisposition(r.readDisposition());
+                    ContentDispositionReader r = new ContentDispositionReader(
+                            header.getValue());
+                    result.setDisposition(r.readValue());
                     entityHeaderFound = true;
                 } catch (IOException ioe) {
                     Context.getCurrentLogger().log(
@@ -989,8 +1061,9 @@ public class HeaderUtils {
                     || (header.getName()
                             .equalsIgnoreCase(HeaderConstants.HEADER_SET_COOKIE2))) {
                 try {
-                    CookieReader cr = new CookieReader(header.getValue());
-                    response.getCookieSettings().add(cr.readCookieSetting());
+                    CookieSettingReader cr = new CookieSettingReader(header
+                            .getValue());
+                    response.getCookieSettings().add(cr.readValue());
                 } catch (Exception e) {
                     Context.getCurrentLogger().log(
                             Level.WARNING,
@@ -1023,67 +1096,21 @@ public class HeaderUtils {
                 response.getServerInfo().setAgent(header.getValue());
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_ALLOW)) {
-                HeaderReader hr = new HeaderReader(header.getValue());
-                String value = hr.readValue();
-                Set<Method> allowedMethods = response.getAllowedMethods();
-
-                while (value != null) {
-                    allowedMethods.add(Method.valueOf(value));
-                    value = hr.readValue();
-                }
+                AllowReader hr = new AllowReader(header.getValue());
+                hr.addValues(response.getAllowedMethods());
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_VARY)) {
-                HeaderReader hr = new HeaderReader(header.getValue());
-                String value = hr.readValue();
-                Set<Dimension> dimensions = response.getDimensions();
-
-                while (value != null) {
-                    if (value.equalsIgnoreCase(HeaderConstants.HEADER_ACCEPT)) {
-                        dimensions.add(Dimension.MEDIA_TYPE);
-                    } else if (value
-                            .equalsIgnoreCase(HeaderConstants.HEADER_ACCEPT_CHARSET)) {
-                        dimensions.add(Dimension.CHARACTER_SET);
-                    } else if (value
-                            .equalsIgnoreCase(HeaderConstants.HEADER_ACCEPT_ENCODING)) {
-                        dimensions.add(Dimension.ENCODING);
-                    } else if (value
-                            .equalsIgnoreCase(HeaderConstants.HEADER_ACCEPT_LANGUAGE)) {
-                        dimensions.add(Dimension.LANGUAGE);
-                    } else if (value
-                            .equalsIgnoreCase(HeaderConstants.HEADER_AUTHORIZATION)) {
-                        dimensions.add(Dimension.AUTHORIZATION);
-                    } else if (value
-                            .equalsIgnoreCase(HeaderConstants.HEADER_USER_AGENT)) {
-                        dimensions.add(Dimension.CLIENT_AGENT);
-                    } else if (value.equals("*")) {
-                        dimensions.add(Dimension.UNSPECIFIED);
-                    }
-
-                    value = hr.readValue();
-                }
+                VaryReader hr = new VaryReader(header.getValue());
+                hr.addValues(response.getDimensions());
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_WARNING)) {
                 WarningReader hr = new WarningReader(header.getValue());
-                try {
-                    response.getWarnings().add(hr.readWarning());
-                } catch (Exception e) {
-                    Context.getCurrentLogger().log(
-                            Level.WARNING,
-                            "Error during warning parsing. Header: "
-                                    + header.getValue(), e);
-                }
+                hr.addValues(response.getWarnings());
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_CACHE_CONTROL)) {
-                CacheControlReader ccr = new CacheControlReader(header
+                CacheControlReader hr = new CacheControlReader(header
                         .getValue());
-                try {
-                    response.getCacheDirectives().addAll(ccr.readDirectives());
-                } catch (Exception e) {
-                    Context.getCurrentLogger().log(
-                            Level.WARNING,
-                            "Error during cache control parsing. Header: "
-                                    + header.getValue(), e);
-                }
+                hr.addValues(response.getCacheDirectives());
             }
         }
     }
@@ -1150,37 +1177,6 @@ public class HeaderUtils {
         }
 
         return DateUtils.format(date, DateUtils.FORMAT_RFC_1123.get(0));
-    }
-
-    /**
-     * Formats a product description.
-     * 
-     * @param nameToken
-     *            The product name token.
-     * @param versionToken
-     *            The product version token.
-     * @param destination
-     *            The appendable destination;
-     * @throws IOException
-     */
-    public static void formatProduct(CharSequence nameToken,
-            CharSequence versionToken, Appendable destination)
-            throws IOException {
-        if (!isToken(nameToken)) {
-            throw new IllegalArgumentException(
-                    "Invalid product name detected. Only token characters are allowed.");
-        }
-
-        destination.append(nameToken);
-
-        if (versionToken != null) {
-            if (!isToken(versionToken)) {
-                throw new IllegalArgumentException(
-                        "Invalid product version detected. Only token characters are allowed.");
-            }
-
-            destination.append('/').append(versionToken);
-        }
     }
 
     /**
@@ -1257,6 +1253,18 @@ public class HeaderUtils {
         }
 
         return result;
+    }
+
+    /**
+     * Indicates if the given character is a comma, the character used as header
+     * value separator.
+     * 
+     * @param character
+     *            The character to test.
+     * @return True if the given character is a comma.
+     */
+    public static boolean isComma(int character) {
+        return (character == ',');
     }
 
     /**
@@ -1370,6 +1378,17 @@ public class HeaderUtils {
     }
 
     /**
+     * Indicates if the given character marks the start of a quoted pair.
+     * 
+     * @param character
+     *            The character to test.
+     * @return True if the given character marks the start of a quoted pair.
+     */
+    public static boolean isQuoteCharacter(int character) {
+        return (character == '\\');
+    }
+
+    /**
      * Indicates if the given character is a quoted text. It means
      * {@link #isText(int)} returns true and {@link #isDoubleQuote(int)} returns
      * false.
@@ -1380,6 +1399,18 @@ public class HeaderUtils {
      */
     public static boolean isQuotedText(int character) {
         return isText(character) && !isDoubleQuote(character);
+    }
+
+    /**
+     * Indicates if the given character is a semicolon, the character used as
+     * header parameter separator.
+     * 
+     * @param character
+     *            The character to test.
+     * @return True if the given character is a semicolon.
+     */
+    public static boolean isSemiColon(int character) {
+        return (character == ';');
     }
 
     /**
@@ -1481,17 +1512,6 @@ public class HeaderUtils {
      */
     public static boolean isUpperCase(int character) {
         return (character >= 'A') && (character <= 'Z');
-    }
-
-    /**
-     * Indicates if the given character is a value separator.
-     * 
-     * @param character
-     *            The character to test.
-     * @return True if the given character is a value separator.
-     */
-    public static boolean isValueSeparator(int character) {
-        return (character == ',');
     }
 
     /**

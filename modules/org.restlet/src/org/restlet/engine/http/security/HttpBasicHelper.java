@@ -42,7 +42,7 @@ import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Parameter;
-import org.restlet.engine.http.header.HeaderBuilder;
+import org.restlet.engine.http.header.HeaderWriter;
 import org.restlet.engine.http.header.HeaderReader;
 import org.restlet.engine.security.AuthenticatorHelper;
 import org.restlet.engine.util.Base64;
@@ -63,7 +63,7 @@ public class HttpBasicHelper extends AuthenticatorHelper {
     }
 
     @Override
-    public void formatRawRequest(HeaderBuilder hb, ChallengeRequest challenge,
+    public void formatRawRequest(HeaderWriter hb, ChallengeRequest challenge,
             Response response, Series<Parameter> httpHeaders)
             throws IOException {
         if (challenge.getRealm() != null) {
@@ -72,9 +72,8 @@ public class HttpBasicHelper extends AuthenticatorHelper {
     }
 
     @Override
-    public void formatRawResponse(HeaderBuilder hb,
-            ChallengeResponse challenge, Request request,
-            Series<Parameter> httpHeaders) {
+    public void formatRawResponse(HeaderWriter hb, ChallengeResponse challenge,
+            Request request, Series<Parameter> httpHeaders) {
         try {
             CharArrayWriter credentials = new CharArrayWriter();
             credentials.write(challenge.getIdentifier());
@@ -95,7 +94,8 @@ public class HttpBasicHelper extends AuthenticatorHelper {
     public void parseRequest(ChallengeRequest challenge, Response response,
             Series<Parameter> httpHeaders) {
         if (challenge.getRawValue() != null) {
-            HeaderReader hr = new HeaderReader(challenge.getRawValue());
+            HeaderReader<Object> hr = new HeaderReader<Object>(challenge
+                    .getRawValue());
 
             try {
                 Parameter param = hr.readParameter();
@@ -108,7 +108,11 @@ public class HttpBasicHelper extends AuthenticatorHelper {
                             challenge.getParameters().add(param);
                         }
 
-                        param = hr.readParameter();
+                        if (hr.skipValueSeparator()) {
+                            param = hr.readParameter();
+                        } else {
+                            param = null;
+                        }
                     } catch (Exception e) {
                         Context
                                 .getCurrentLogger()

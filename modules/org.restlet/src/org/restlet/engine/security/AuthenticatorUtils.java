@@ -45,9 +45,9 @@ import org.restlet.data.Digest;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.engine.Engine;
-import org.restlet.engine.http.header.HeaderBuilder;
-import org.restlet.engine.http.header.HeaderReader;
+import org.restlet.engine.http.header.AuthenticationInfoReader;
 import org.restlet.engine.http.header.HeaderConstants;
+import org.restlet.engine.http.header.HeaderWriter;
 import org.restlet.security.Guard;
 import org.restlet.util.Series;
 
@@ -170,7 +170,7 @@ public class AuthenticatorUtils {
      */
     public static String formatAuthenticationInfo(AuthenticationInfo info)
             throws IOException {
-        HeaderBuilder hb = new HeaderBuilder();
+        HeaderWriter hb = new HeaderWriter();
         boolean firstParameter = true;
 
         if (info != null) {
@@ -308,15 +308,16 @@ public class AuthenticatorUtils {
      */
     public static AuthenticationInfo parseAuthenticationInfo(String header) {
         AuthenticationInfo result = null;
-        HeaderReader hr = new HeaderReader(header);
+        AuthenticationInfoReader hr = new AuthenticationInfoReader(header);
+
         try {
             String nextNonce = null;
             String qop = null;
             String responseAuth = null;
             String cnonce = null;
             int nonceCount = 0;
+            Parameter param = hr.readValue();
 
-            Parameter param = hr.readParameter();
             while (param != null) {
                 try {
                     if ("nextnonce".equals(param.getName())) {
@@ -331,7 +332,11 @@ public class AuthenticatorUtils {
                         nonceCount = Integer.parseInt(param.getValue(), 16);
                     }
 
-                    param = hr.readParameter();
+                    if (hr.skipValueSeparator()) {
+                        param = hr.readValue();
+                    } else {
+                        param = null;
+                    }
                 } catch (Exception e) {
                     Context
                             .getCurrentLogger()
@@ -341,6 +346,7 @@ public class AuthenticatorUtils {
                                     e);
                 }
             }
+
             result = new AuthenticationInfo(nextNonce, nonceCount, cnonce, qop,
                     responseAuth);
         } catch (IOException e) {

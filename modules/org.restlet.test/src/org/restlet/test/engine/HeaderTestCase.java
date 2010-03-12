@@ -40,7 +40,6 @@ import org.restlet.engine.http.header.PreferenceUtils;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.test.RestletTestCase;
 
-
 /**
  * Unit tests for the header.
  * 
@@ -141,13 +140,13 @@ public class HeaderTestCase extends RestletTestCase {
      *            The parsed values.
      */
     public void testValues(String header, String[] values) {
-        final HeaderReader hr = new HeaderReader(header);
-        String value = hr.readValue();
+        HeaderReader<Object> hr = new HeaderReader<Object>(header);
+        String value = hr.readRawValue();
         int index = 0;
         while (value != null) {
             assertEquals(value, values[index]);
             index++;
-            value = hr.readValue();
+            value = hr.readRawValue();
         }
     }
 

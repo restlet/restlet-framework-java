@@ -32,15 +32,14 @@ package org.restlet.engine.http.header;
 
 import java.io.IOException;
 
-import org.restlet.data.Disposition;
-import org.restlet.data.Parameter;
+import org.restlet.data.Dimension;
 
 /**
- * Disposition header reader.
+ * Vary header reader.
  * 
- * @author Thierry Boileau
+ * @author Jerome Louvel
  */
-public class DispositionReader extends HeaderReader {
+public class VaryReader extends HeaderReader<Dimension> {
 
     /**
      * Constructor.
@@ -48,31 +47,32 @@ public class DispositionReader extends HeaderReader {
      * @param header
      *            The header to read.
      */
-    public DispositionReader(String header) {
+    public VaryReader(String header) {
         super(header);
     }
 
     @Override
-    public boolean isValueSeparator(int character) {
-        return ';' == character;
-    }
+    public Dimension readValue() throws IOException {
+        Dimension result = null;
+        String value = readRawValue();
 
-    /**
-     * Read the disposition header.
-     * 
-     * @return The disposition.
-     * @throws IOException
-     */
-    public Disposition readDisposition() throws IOException {
-        Disposition result = new Disposition();
-
-        String type = readToken();
-        result.setType(type);
-
-        Parameter param = readParameter();
-        while (param != null) {
-            result.getParameters().add(param);
-            param = readParameter();
+        if (value.equalsIgnoreCase(HeaderConstants.HEADER_ACCEPT)) {
+            result = Dimension.MEDIA_TYPE;
+        } else if (value
+                .equalsIgnoreCase(HeaderConstants.HEADER_ACCEPT_CHARSET)) {
+            result = Dimension.CHARACTER_SET;
+        } else if (value
+                .equalsIgnoreCase(HeaderConstants.HEADER_ACCEPT_ENCODING)) {
+            result = Dimension.ENCODING;
+        } else if (value
+                .equalsIgnoreCase(HeaderConstants.HEADER_ACCEPT_LANGUAGE)) {
+            result = Dimension.LANGUAGE;
+        } else if (value.equalsIgnoreCase(HeaderConstants.HEADER_AUTHORIZATION)) {
+            result = Dimension.AUTHORIZATION;
+        } else if (value.equalsIgnoreCase(HeaderConstants.HEADER_USER_AGENT)) {
+            result = Dimension.CLIENT_AGENT;
+        } else if (value.equals("*")) {
+            result = Dimension.UNSPECIFIED;
         }
 
         return result;

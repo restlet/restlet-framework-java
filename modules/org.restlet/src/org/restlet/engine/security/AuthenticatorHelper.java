@@ -43,7 +43,7 @@ import org.restlet.data.Digest;
 import org.restlet.data.Parameter;
 import org.restlet.data.Status;
 import org.restlet.engine.Helper;
-import org.restlet.engine.http.header.HeaderBuilder;
+import org.restlet.engine.http.header.HeaderWriter;
 import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.security.Guard;
 import org.restlet.util.Series;
@@ -146,7 +146,7 @@ public abstract class AuthenticatorHelper extends Helper {
      * @param httpHeaders
      *            The current request HTTP headers.
      */
-    public void formatRawRequest(HeaderBuilder hb, ChallengeRequest challenge,
+    public void formatRawRequest(HeaderWriter hb, ChallengeRequest challenge,
             Response response, Series<Parameter> httpHeaders)
             throws IOException {
     }
@@ -163,7 +163,7 @@ public abstract class AuthenticatorHelper extends Helper {
      * @param httpHeaders
      *            The current request HTTP headers.
      */
-    public void formatRawResponse(HeaderBuilder hb,
+    public void formatRawResponse(HeaderWriter hb,
             ChallengeResponse challenge, Request request,
             Series<Parameter> httpHeaders) throws IOException {
     }
@@ -172,7 +172,7 @@ public abstract class AuthenticatorHelper extends Helper {
      * Formats a challenge request as a HTTP header value. The header is
      * {@link HeaderConstants#HEADER_WWW_AUTHENTICATE}. The default implementation
      * relies on
-     * {@link #formatRawRequest(HeaderBuilder, ChallengeRequest, Response, Series)}
+     * {@link #formatRawRequest(HeaderWriter, ChallengeRequest, Response, Series)}
      * to append all parameters from {@link ChallengeRequest#getParameters()}.
      * 
      * @param challenge
@@ -186,7 +186,7 @@ public abstract class AuthenticatorHelper extends Helper {
      */
     public String formatRequest(ChallengeRequest challenge, Response response,
             Series<Parameter> httpHeaders) throws IOException {
-        HeaderBuilder hb = new HeaderBuilder();
+        HeaderWriter hb = new HeaderWriter();
         hb.append(challenge.getScheme().getTechnicalName()).appendSpace();
 
         if (challenge.getRawValue() != null) {
@@ -202,7 +202,7 @@ public abstract class AuthenticatorHelper extends Helper {
      * Formats a challenge response as a HTTP header value. The header is
      * {@link HeaderConstants#HEADER_AUTHORIZATION}. The default implementation
      * relies on
-     * {@link #formatRawResponse(HeaderBuilder, ChallengeResponse, Request, Series)}
+     * {@link #formatRawResponse(HeaderWriter, ChallengeResponse, Request, Series)}
      * unless some custom credentials are provided via
      * {@link ChallengeResponse#getCredentials()}.
      * 
@@ -217,7 +217,7 @@ public abstract class AuthenticatorHelper extends Helper {
      */
     public String formatResponse(ChallengeResponse challenge, Request request,
             Series<Parameter> httpHeaders) throws IOException {
-        HeaderBuilder hb = new HeaderBuilder();
+        HeaderWriter hb = new HeaderWriter();
         hb.append(challenge.getScheme().getTechnicalName()).appendSpace();
 
         if (challenge.getRawValue() != null) {

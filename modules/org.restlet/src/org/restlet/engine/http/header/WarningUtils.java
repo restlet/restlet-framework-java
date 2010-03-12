@@ -53,12 +53,14 @@ public class WarningUtils {
      */
     public static String format(Warning warning)
             throws IllegalArgumentException {
-        final StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
+
         try {
             format(warning, sb);
         } catch (IOException e) {
             // IOExceptions are not possible on StringBuilders
         }
+
         return sb.toString();
     }
 
@@ -96,9 +98,10 @@ public class WarningUtils {
         destination.append(" ");
         destination.append(agent);
         destination.append(" ");
-        HeaderUtils.appendQuote(text, destination);
+        HeaderUtils.appendQuotedString(text, destination);
+
         if (warning.getDate() != null) {
-            HeaderUtils.appendQuote(DateUtils.format(warning.getDate()),
+            HeaderUtils.appendQuotedString(DateUtils.format(warning.getDate()),
                     destination);
         }
     }

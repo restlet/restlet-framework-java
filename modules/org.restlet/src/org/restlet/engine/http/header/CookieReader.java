@@ -31,46 +31,19 @@
 package org.restlet.engine.http.header;
 
 import java.io.IOException;
-import java.util.Date;
-import java.util.logging.Level;
 
-import org.restlet.Context;
 import org.restlet.data.Cookie;
-import org.restlet.data.CookieSetting;
 import org.restlet.data.Parameter;
-import org.restlet.engine.util.DateUtils;
 
 /**
  * Cookie header reader.
  * 
  * @author Jerome Louvel
  */
-public class CookieReader extends HeaderReader {
+public class CookieReader extends HeaderReader<Cookie> {
     private static final String NAME_DOMAIN = "$Domain";
 
     private static final String NAME_PATH = "$Path";
-
-    private static final String NAME_SET_ACCESS_RESTRICTED = "httpOnly";
-
-    private static final String NAME_SET_COMMENT = "comment";
-
-    private static final String NAME_SET_COMMENT_URL = "commentURL";
-
-    private static final String NAME_SET_DISCARD = "discard";
-
-    private static final String NAME_SET_DOMAIN = "domain";
-
-    private static final String NAME_SET_EXPIRES = "expires";
-
-    private static final String NAME_SET_MAX_AGE = "max-age";
-
-    private static final String NAME_SET_PATH = "path";
-
-    private static final String NAME_SET_PORT = "port";
-
-    private static final String NAME_SET_SECURE = "secure";
-
-    private static final String NAME_SET_VERSION = "version";
 
     private static final String NAME_VERSION = "$Version";
 
@@ -92,13 +65,8 @@ public class CookieReader extends HeaderReader {
         this.globalVersion = -1;
     }
 
-    /**
-     * Reads the next cookie available or null.
-     * 
-     * @return The next cookie available or null.
-     * @throws IOException
-     */
-    public Cookie readCookie() throws IOException {
+    @Override
+    public Cookie readValue() throws IOException {
         Cookie result = null;
         Parameter pair = readPair();
 
@@ -149,98 +117,6 @@ public class CookieReader extends HeaderReader {
             // We started to read the next cookie
             // So let's put it back into the stream
             this.cachedPair = pair;
-        }
-
-        return result;
-    }
-
-    /**
-     * Reads the next cookie setting available or null.
-     * 
-     * @return The next cookie setting available or null.
-     * @throws IOException
-     */
-    public CookieSetting readCookieSetting() throws IOException {
-        CookieSetting result = null;
-        Parameter pair = readPair();
-
-        while ((pair != null) && (pair.getName().charAt(0) == '$')) {
-            // Unexpected special attribute
-            // Silently ignore it as it may have been introduced by new
-            // specifications
-            pair = readPair();
-        }
-
-        if (pair != null) {
-            // Set the cookie name and value
-            result = new CookieSetting(pair.getName(), pair.getValue());
-            pair = readPair();
-        }
-
-        while (pair != null) {
-            if (pair.getName().equalsIgnoreCase(NAME_SET_PATH)) {
-                result.setPath(pair.getValue());
-            } else if (pair.getName().equalsIgnoreCase(NAME_SET_DOMAIN)) {
-                result.setDomain(pair.getValue());
-            } else if (pair.getName().equalsIgnoreCase(NAME_SET_COMMENT)) {
-                result.setComment(pair.getValue());
-            } else if (pair.getName().equalsIgnoreCase(NAME_SET_COMMENT_URL)) {
-                // No yet supported
-            } else if (pair.getName().equalsIgnoreCase(NAME_SET_DISCARD)) {
-                result.setMaxAge(-1);
-            } else if (pair.getName().equalsIgnoreCase(NAME_SET_EXPIRES)) {
-                final Date current = new Date(System.currentTimeMillis());
-                Date expires = DateUtils.parse(pair.getValue(),
-                        DateUtils.FORMAT_RFC_1036);
-
-                if (expires == null) {
-                    expires = DateUtils.parse(pair.getValue(),
-                            DateUtils.FORMAT_RFC_1123);
-                }
-
-                if (expires == null) {
-                    expires = DateUtils.parse(pair.getValue(),
-                            DateUtils.FORMAT_ASC_TIME);
-                }
-
-                if (expires != null) {
-                    if (DateUtils.after(current, expires)) {
-                        result.setMaxAge((int) ((expires.getTime() - current
-                                .getTime()) / 1000));
-                    } else {
-                        result.setMaxAge(0);
-                    }
-                } else {
-                    // Ignore the expires header
-                    Context.getCurrentLogger().log(
-                            Level.WARNING,
-                            "Ignoring cookie setting expiration date. Unable to parse the date: "
-                                    + pair.getValue());
-                }
-            } else if (pair.getName().equalsIgnoreCase(NAME_SET_MAX_AGE)) {
-                result.setMaxAge(Integer.valueOf(pair.getValue()));
-            } else if (pair.getName().equalsIgnoreCase(NAME_SET_PORT)) {
-                // No yet supported
-            } else if (pair.getName().equalsIgnoreCase(NAME_SET_SECURE)) {
-                if ((pair.getValue() == null)
-                        || (pair.getValue().length() == 0)) {
-                    result.setSecure(true);
-                }
-            } else if (pair.getName().equalsIgnoreCase(
-                    NAME_SET_ACCESS_RESTRICTED)) {
-                if ((pair.getValue() == null)
-                        || (pair.getValue().length() == 0)) {
-                    result.setAccessRestricted(true);
-                }
-            } else if (pair.getName().equalsIgnoreCase(NAME_SET_VERSION)) {
-                result.setVersion(Integer.valueOf(pair.getValue()));
-            } else {
-                // Unexpected special attribute
-                // Silently ignore it as it may have been introduced by new
-                // specifications
-            }
-
-            pair = readPair();
         }
 
         return result;

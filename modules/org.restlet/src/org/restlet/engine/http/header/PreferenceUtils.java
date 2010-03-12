@@ -184,21 +184,9 @@ public class PreferenceUtils {
                 client.getAcceptedCharacterSets().add(
                         new Preference<CharacterSet>(CharacterSet.ISO_8859_1));
             } else {
-                try {
-                    final PreferenceReader pr = new PreferenceReader(
-                            PreferenceReader.TYPE_CHARACTER_SET,
-                            acceptCharsetHeader);
-                    Preference currentPref = pr.readPreference();
-                    while (currentPref != null) {
-                        client.getAcceptedCharacterSets().add(currentPref);
-                        currentPref = pr.readPreference();
-                    }
-                } catch (IOException ioe) {
-                    throw new IllegalArgumentException(
-                            "An exception occurred during character set preferences parsing. Header: "
-                                    + acceptCharsetHeader
-                                    + ". Ignoring header.");
-                }
+                AcceptReader pr = new AcceptReader(
+                        AcceptReader.TYPE_CHARACTER_SET, acceptCharsetHeader);
+                pr.addValues(client.getAcceptedCharacterSets());
             }
         } else {
             client.getAcceptedCharacterSets().add(
@@ -218,19 +206,9 @@ public class PreferenceUtils {
     public static void parseEncodings(String acceptEncodingHeader,
             ClientInfo preference) {
         if (acceptEncodingHeader != null) {
-            try {
-                final PreferenceReader pr = new PreferenceReader(
-                        PreferenceReader.TYPE_ENCODING, acceptEncodingHeader);
-                Preference currentPref = pr.readPreference();
-                while (currentPref != null) {
-                    preference.getAcceptedEncodings().add(currentPref);
-                    currentPref = pr.readPreference();
-                }
-            } catch (IOException ioe) {
-                throw new IllegalArgumentException(
-                        "An exception occurred during encoding preferences parsing. Header: "
-                                + acceptEncodingHeader + ". Ignoring header.");
-            }
+            AcceptReader pr = new AcceptReader(AcceptReader.TYPE_ENCODING,
+                    acceptEncodingHeader);
+            pr.addValues(preference.getAcceptedEncodings());
         } else {
             preference.getAcceptedEncodings().add(
                     new Preference(Encoding.IDENTITY));
@@ -249,19 +227,9 @@ public class PreferenceUtils {
     public static void parseLanguages(String acceptLanguageHeader,
             ClientInfo preference) {
         if (acceptLanguageHeader != null) {
-            try {
-                final PreferenceReader pr = new PreferenceReader(
-                        PreferenceReader.TYPE_LANGUAGE, acceptLanguageHeader);
-                Preference currentPref = pr.readPreference();
-                while (currentPref != null) {
-                    preference.getAcceptedLanguages().add(currentPref);
-                    currentPref = pr.readPreference();
-                }
-            } catch (IOException ioe) {
-                throw new IllegalArgumentException(
-                        "An exception occurred during language preferences parsing. Header: "
-                                + acceptLanguageHeader + ". Ignoring header.");
-            }
+            AcceptReader pr = new AcceptReader(AcceptReader.TYPE_LANGUAGE,
+                    acceptLanguageHeader);
+            pr.addValues(preference.getAcceptedLanguages());
         } else {
             preference.getAcceptedLanguages().add(new Preference(Language.ALL));
         }
@@ -279,19 +247,9 @@ public class PreferenceUtils {
     public static void parseMediaTypes(String acceptMediaTypeHeader,
             ClientInfo preference) {
         if (acceptMediaTypeHeader != null) {
-            try {
-                final PreferenceReader pr = new PreferenceReader(
-                        PreferenceReader.TYPE_MEDIA_TYPE, acceptMediaTypeHeader);
-                Preference currentPref = pr.readPreference();
-                while (currentPref != null) {
-                    preference.getAcceptedMediaTypes().add(currentPref);
-                    currentPref = pr.readPreference();
-                }
-            } catch (IOException ioe) {
-                throw new IllegalArgumentException(
-                        "An exception occurred during media type preferences parsing. Header: "
-                                + acceptMediaTypeHeader + ". Ignoring header.");
-            }
+            AcceptReader pr = new AcceptReader(AcceptReader.TYPE_MEDIA_TYPE,
+                    acceptMediaTypeHeader);
+            pr.addValues(preference.getAcceptedMediaTypes());
         } else {
             preference.getAcceptedMediaTypes().add(
                     new Preference(MediaType.ALL));

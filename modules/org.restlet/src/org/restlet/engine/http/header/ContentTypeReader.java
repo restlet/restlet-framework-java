@@ -43,7 +43,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
-public class ContentTypeReader extends HeaderReader {
+public class ContentTypeReader extends HeaderReader<ContentType> {
 
     /**
      * Constructor.
@@ -80,16 +80,12 @@ public class ContentTypeReader extends HeaderReader {
             return new ContentType(new MediaType(mediaType.toString(),
                     parameters), characterSet);
         }
-        
+
         return new ContentType(new MediaType(mediaType.toString()), null);
     }
 
-    /**
-     * Read the content type.
-     * 
-     * @return The next preference.
-     */
-    public ContentType readContentType() throws IOException {
+    @Override
+    public ContentType readValue() throws IOException {
         ContentType result = null;
 
         boolean readingMediaType = true;
@@ -101,7 +97,7 @@ public class ContentTypeReader extends HeaderReader {
         StringBuilder paramValueBuffer = null;
 
         Series<Parameter> parameters = null;
-        String nextValue = readValue();
+        String nextValue = readRawValue();
         int nextIndex = 0;
 
         if (nextValue != null) {

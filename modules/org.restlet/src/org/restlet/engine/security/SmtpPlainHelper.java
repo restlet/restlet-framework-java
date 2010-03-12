@@ -38,7 +38,7 @@ import org.restlet.Request;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Parameter;
-import org.restlet.engine.http.header.HeaderBuilder;
+import org.restlet.engine.http.header.HeaderWriter;
 import org.restlet.engine.util.Base64;
 import org.restlet.util.Series;
 
@@ -57,7 +57,7 @@ public class SmtpPlainHelper extends AuthenticatorHelper {
     }
 
     @Override
-    public void formatRawResponse(HeaderBuilder sb,
+    public void formatRawResponse(HeaderWriter sb,
             ChallengeResponse challenge, Request request,
             Series<Parameter> httpHeaders) {
         try {

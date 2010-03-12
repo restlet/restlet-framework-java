@@ -30,16 +30,33 @@
 
 package org.restlet.engine.http.header;
 
-import java.io.IOException;
+import static org.restlet.engine.http.header.HeaderUtils.isComma;
+import static org.restlet.engine.http.header.HeaderUtils.isDoubleQuote;
+import static org.restlet.engine.http.header.HeaderUtils.isLinearWhiteSpace;
+import static org.restlet.engine.http.header.HeaderUtils.isQuoteCharacter;
+import static org.restlet.engine.http.header.HeaderUtils.isQuotedText;
+import static org.restlet.engine.http.header.HeaderUtils.isSemiColon;
+import static org.restlet.engine.http.header.HeaderUtils.isTokenChar;
 
+import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Level;
+
+import org.restlet.Context;
+import org.restlet.data.Encoding;
 import org.restlet.data.Parameter;
 
 /**
  * HTTP-style header reader.
  * 
+ * @param <V>
+ *            The header value target type. There can be multiple values for a
+ *            single header.
  * @author Jerome Louvel
  */
-public class HeaderReader {
+public class HeaderReader<V> {
     /** The header to read. */
     private final String header;
 
@@ -58,15 +75,88 @@ public class HeaderReader {
     }
 
     /**
-     * Indicates if the given character is a value separator.
+     * Adds values to the given list.
      * 
-     * @param character
-     *            The character to test.
-     * @return True if the given character is a value separator.
-     * @see HeaderUtils#isValueSeparator(int)
+     * @param values
+     *            The list of values to update.
      */
-    public boolean isValueSeparator(int character) {
-        return HeaderUtils.isValueSeparator(character);
+    public void addValues(Collection<V> values) {
+        try {
+            // Skip leading spaces
+            skipSpaces();
+
+            // Read the first value
+            V nextValue = readValue();
+
+            while (canAdd(nextValue, values)) {
+                // Add the value to the list
+                values.add(nextValue);
+
+                // Attempt to skip the value separator
+                if (skipValueSeparator()) {
+                    // Read the next value
+                    nextValue = readValue();
+                }
+            }
+        } catch (IOException ioe) {
+            Context.getCurrentLogger().log(Level.INFO,
+                    "Unable to read a header", ioe);
+        }
+    }
+
+    /**
+     * Indicates if the value can be added the the list. Useful to prevent the
+     * addition of {@link Encoding#IDENTITY} constants for example. By default
+     * it returns true for non null values.
+     * 
+     * @param value
+     *            The value to add.
+     * 
+     * @param values
+     *            The target collection.
+     * @return True if the value can be added.
+     */
+    protected boolean canAdd(V value, Collection<V> values) {
+        return (value != null) && !values.contains(value);
+    }
+
+    /**
+     * Creates a new parameter with a null value. Can be overridden.
+     * 
+     * @param name
+     *            The parameter name.
+     * @return The new parameter.
+     */
+    protected final Parameter createParameter(String name) {
+        return createParameter(name, null);
+    }
+
+    /**
+     * Creates a new parameter. Can be overridden.
+     * 
+     * @param name
+     *            The parameter name.
+     * @param value
+     *            The parameter value or null.
+     * @return The new parameter.
+     */
+    protected Parameter createParameter(String name, String value) {
+        return new Parameter(name, value);
+    }
+
+    /**
+     * Reads the next character.
+     * 
+     * @return The next character.
+     */
+    public int peek() {
+        int result = -1;
+
+        if (this.index != -1) {
+            result = this.header.charAt(this.index);
+        }
+
+        return result;
     }
 
     /**
@@ -77,14 +167,35 @@ public class HeaderReader {
     public int read() {
         int result = -1;
 
-        if (this.index != -1) {
+        if (this.index >= 0) {
             result = this.header.charAt(this.index++);
+
             if (this.index >= this.header.length()) {
                 this.index = -1;
             }
         }
 
         return result;
+    }
+
+    /**
+     * Reads the next digits.
+     * 
+     * @return The next digits.
+     */
+    public String readDigits() {
+        StringBuilder sb = new StringBuilder();
+        int next = read();
+
+        while (isTokenChar(next)) {
+            sb.append((char) next);
+            next = read();
+        }
+
+        // Unread the last character (separator or end marker)
+        unread();
+
+        return sb.toString();
     }
 
     /**
@@ -95,54 +206,45 @@ public class HeaderReader {
      */
     public Parameter readParameter() throws IOException {
         Parameter result = null;
+        String name = readToken();
+        int nextChar = read();
 
-        boolean readingName = true;
-        boolean readingValue = false;
-        StringBuilder nameBuffer = new StringBuilder();
-        StringBuilder valueBuffer = new StringBuilder();
-        int nextChar = 0;
-
-        while ((result == null) && (nextChar != -1)) {
-            nextChar = read();
-
-            if (readingName) {
-                if ((HeaderUtils.isSpace(nextChar)) && (nameBuffer.length() == 0)) {
-                    // Skip spaces
-                } else if ((nextChar == -1) || (nextChar == ',')) {
-                    if (nameBuffer.length() > 0) {
-                        // End of pair with no value
-                        result = Parameter.create(nameBuffer, null);
-                    } else if (nextChar == -1) {
-                        // Do nothing return null preference
-                    } else {
-                        throw new IOException(
-                                "Empty parameter name detected. Please check your HTTP header");
-                    }
-                } else if (nextChar == '=') {
-                    readingName = false;
-                    readingValue = true;
-                } else if (HeaderUtils.isTokenChar(nextChar)) {
-                    nameBuffer.append((char) nextChar);
-                } else {
-                    throw new IOException(
-                            "Separator and control characters are not allowed within a token. Please check your HTTP header");
-                }
-            } else if (readingValue) {
-                if ((HeaderUtils.isSpace(nextChar))
-                        && (valueBuffer.length() == 0)) {
-                    // Skip spaces
-                } else if ((nextChar == -1) || (nextChar == ',')) {
-                    // End of pair
-                    result = Parameter.create(nameBuffer, valueBuffer);
-                } else if ((nextChar == '"') && (valueBuffer.length() == 0)) {
-                    valueBuffer.append(readQuotedString());
-                } else if (HeaderUtils.isTokenChar(nextChar)) {
-                    valueBuffer.append((char) nextChar);
-                } else {
-                    throw new IOException(
-                            "Separator and control characters are not allowed within a token. Please check your HTTP header");
-                }
+        if (name.length() > 0) {
+            if (nextChar == '=') {
+                // The parameter has a value
+                result = createParameter(name, readParameterValue());
+            } else {
+                // The parameter has not value
+                unread();
+                result = createParameter(name);
             }
+        } else {
+            throw new IOException(
+                    "Parameter or extension has no name. Please check your value");
+        }
+
+        return result;
+    }
+
+    /**
+     * Reads a parameter value which is either a token or a quoted string.
+     * 
+     * @return A parameter value.
+     * @throws IOException
+     */
+    public String readParameterValue() throws IOException {
+        String result = null;
+
+        // Discard any leading space
+        skipSpaces();
+
+        // Detect if quoted string or token available
+        int nextChar = peek();
+
+        if (isDoubleQuote(nextChar)) {
+            result = readQuotedString();
+        } else if (isTokenChar(nextChar)) {
+            result = readToken();
         }
 
         return result;
@@ -155,96 +257,61 @@ public class HeaderReader {
      * @throws IOException
      */
     public String readQuotedString() throws IOException {
-        final StringBuilder sb = new StringBuilder();
-        readQuotedString(sb);
-        return sb.toString();
-    }
+        String result = null;
+        int nextChar = read();
 
-    /**
-     * Appends the next quoted string.
-     * 
-     * @param buffer
-     *            The buffer to append.
-     * @throws IOException
-     */
-    public void readQuotedString(Appendable buffer) throws IOException {
-        boolean done = false;
-        boolean quotedPair = false;
-        int nextChar = 0;
+        // First character must be a double quote
+        if (isDoubleQuote(nextChar)) {
+            StringBuilder buffer = new StringBuilder();
 
-        while ((!done) && (nextChar != -1)) {
-            nextChar = read();
+            while (result == null) {
+                nextChar = read();
 
-            if (quotedPair) {
-                // End of quoted pair (escape sequence)
-                if (HeaderUtils.isText(nextChar)) {
+                if (isQuotedText(nextChar)) {
                     buffer.append((char) nextChar);
-                    quotedPair = false;
+                } else if (isQuoteCharacter(nextChar)) {
+                    // Start of a quoted pair (escape sequence)
+                    buffer.append((char) read());
+                } else if (isDoubleQuote(nextChar)) {
+                    // End of quoted string
+                    result = buffer.toString();
+                } else if (nextChar == -1) {
+                    throw new IOException(
+                            "Unexpected end of quoted string. Please check your value");
                 } else {
                     throw new IOException(
-                            "Invalid character detected in quoted string. Please check your value");
+                            "Invalid character \""
+                                    + nextChar
+                                    + "\" detected in quoted string. Please check your value");
                 }
-            } else if (HeaderUtils.isDoubleQuote(nextChar)) {
-                // End of quoted string
-                done = true;
-            } else if (nextChar == '\\') {
-                // Begin of quoted pair (escape sequence)
-                quotedPair = true;
-            } else if (HeaderUtils.isText(nextChar)) {
-                buffer.append((char) nextChar);
-            } else {
-                throw new IOException(
-                        "Invalid character detected in quoted string. Please check your value");
             }
+        } else {
+            throw new IOException(
+                    "A quoted string must start with a double quote");
         }
+
+        return result;
     }
 
     /**
-     * Reads the next token.
-     * 
-     * @return The next token or null.
-     */
-    public String readToken() {
-        StringBuilder sb = null;
-        int next = read();
-
-        // Skip leading spaces
-        while ((next != -1) && HeaderUtils.isLinearWhiteSpace(next)) {
-            next = read();
-        }
-
-        while ((next != -1) && HeaderUtils.isTokenChar(next)) {
-            if (sb == null) {
-                sb = new StringBuilder();
-            }
-
-            sb.append((char) next);
-            next = read();
-        }
-
-        return (sb == null) ? null : sb.toString();
-    }
-
-    /**
-     * Read the next value of a multi-value header. It skips separator commas
-     * and spaces.
+     * Read the next header value of a multi-value header. It skips leading and
+     * trailing spaces.
      * 
      * @see <a
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec2.html#sec2">HTTP
      *      parsing rule</a>
      * 
-     * @return The next value or null.
+     * @return The next header value or null.
      */
-    public String readValue() {
+    public String readRawValue() {
+        // Skip leading spaces
+        skipSpaces();
+
+        // Read value until end or comma
         StringBuilder sb = null;
         int next = read();
 
-        // Skip leading spaces
-        while ((next != -1) && HeaderUtils.isLinearWhiteSpace(next)) {
-            next = read();
-        }
-
-        while ((next != -1) && !isValueSeparator(next)) {
+        while ((next != -1) && !isComma(next)) {
             if (sb == null) {
                 sb = new StringBuilder();
             }
@@ -256,12 +323,128 @@ public class HeaderReader {
         // Remove trailing spaces
         if (sb != null) {
             for (int i = sb.length() - 1; (i >= 0)
-                    && HeaderUtils.isLinearWhiteSpace(sb.charAt(i)); i--) {
+                    && isLinearWhiteSpace(sb.charAt(i)); i--) {
                 sb.deleteCharAt(i);
             }
         }
 
+        // Unread the separator
+        if (isComma(next)) {
+            unread();
+        }
+
         return (sb == null) ? null : sb.toString();
+    }
+
+    /**
+     * Reads the next token.
+     * 
+     * @return The next token.
+     */
+    public String readToken() {
+        StringBuilder sb = new StringBuilder();
+        int next = read();
+
+        while (isTokenChar(next)) {
+            sb.append((char) next);
+            next = read();
+        }
+
+        // Unread the last character (separator or end marker)
+        unread();
+
+        return sb.toString();
+    }
+
+    /**
+     * Read the next value. There can be multiple values for a single header.
+     * 
+     * @return The next value.
+     */
+    public V readValue() throws IOException {
+        return null;
+    }
+
+    /**
+     * Returns a new list with all values added.
+     * 
+     * @return A new list with all values added.
+     */
+    public List<V> readValues() {
+        List<V> result = new CopyOnWriteArrayList<V>();
+        addValues(result);
+        return result;
+    }
+
+    /**
+     * Skips the next spaces.
+     */
+    public void skipSpaces() {
+        while (isLinearWhiteSpace(read())) {
+            // Ignore
+        }
+
+        // Restore the first non space character found
+        unread();
+    }
+
+    /**
+     * Skips the next value separator (comma) including leading and trailing
+     * spaces.
+     * 
+     * @return True if a separator was effectively skipped.
+     */
+    public boolean skipValueSeparator() {
+        boolean result = false;
+
+        // Skip leading spaces
+        skipSpaces();
+
+        // Check if next character is a value separator
+        if (isComma(read())) {
+            result = true;
+
+            // Skip trailing spaces
+            skipSpaces();
+        } else {
+            // Probably reached the end of the header
+            unread();
+        }
+
+        return result;
+    }
+
+    /**
+     * Unreads the last character.
+     */
+    public void unread() {
+        this.index--;
+    }
+
+    /**
+     * Skips the next parameter separator (semi-colon) including leading and
+     * trailing spaces.
+     * 
+     * @return True if a separator was effectively skipped.
+     */
+    public boolean skipParameterSeparator() {
+        boolean result = false;
+
+        // Skip leading spaces
+        skipSpaces();
+
+        // Check if next character is a parameter separator
+        if (isSemiColon(read())) {
+            result = true;
+
+            // Skip trailing spaces
+            skipSpaces();
+        } else {
+            // Probably reached the end of the header
+            unread();
+        }
+
+        return result;
     }
 
 }
