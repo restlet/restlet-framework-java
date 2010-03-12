@@ -30,14 +30,14 @@
 
 package ${packageName};
 
-<#if entityType.blob>import org.restlet.data.Reference;</#if>
+<#if type.blob>import org.restlet.data.Reference;</#if>
 <#compress>
-<#list entityType.importedJavaClasses?sort as clazz>
+<#list type.importedJavaClasses?sort as clazz>
 import ${clazz};
 </#list>
 
-<#list entityType.importedEntityTypes?sort as type>
-import ${type.fullClassName};
+<#list type.importedTypes?sort as t>
+import ${t.fullClassName};
 </#list>
 </#compress>
 
@@ -51,21 +51,21 @@ import ${type.fullClassName};
  */
 </#compress>
 
-public <#if entityType.abstractType>abstract </#if>class ${className} {
+public <#if type.abstractType>abstract </#if>class ${className} {
 
-<#compress>
-<#list entityType.properties?sort_by("name") as property>
+<#list type.properties?sort_by("name") as property>
     private ${property.type.javaType} ${property.normalizedName}<#if property.defaultValue??> = property.defaultValue</#if>;
 </#list>
-<#list entityType.associations?sort_by("name") as association>
-    <#if association.toRole.toMany>private List<${association.toRole.type.className}> ${association.toRole.normalizedRole};<#else>private ${association.toRole.type.className} ${association.toRole.normalizedRole};</#if>
+<#list type.associations?sort_by("name") as association>
+    private <#if association.toRole.toMany>List<${association.toRole.type.className}><#else>${association.toRole.type.className}</#if> ${association.normalizedName};
 </#list>
-
-<#if entityType.blob>
+<#if type.blob>
     /** The reference of the underlying blob representation. */
-    private Reference ${entityType.blobValueRefProperty.name};
+    private Reference ${type.blobValueRefProperty.name};
+    /** The reference to update the underlying blob representation. */
+    private Reference ${type.blobValueEditRefProperty.name};
 </#if>
-</#compress>
+
     /**
      * Constructor without parameter.
      * 
@@ -80,14 +80,14 @@ public <#if entityType.abstractType>abstract </#if>class ${className} {
      * @param id
      *            The identifiant value of the entity.
      */
-    public ${className}(<#if entityType.keys??><#list entityType.keys as key>${key.type.javaType} ${key.normalizedName}<#if key_has_next>, </#if></#list></#if>) {
+    public ${className}(<#if type.keys??><#list type.keys as key>${key.type.javaType} ${key.normalizedName}<#if key_has_next>, </#if></#list></#if>) {
         this();
-<#if entityType.keys??><#list entityType.keys as key>
+<#if type.keys??><#list type.keys as key>
         this.${key.normalizedName} = ${key.normalizedName};
 </#list></#if>
     }
     
-<#list entityType.properties?sort_by("name") as property>
+<#list type.properties?sort_by("name") as property>
    /**
     * Returns the value of the ${property.normalizedName} attribute.
     *
@@ -98,37 +98,48 @@ public <#if entityType.abstractType>abstract </#if>class ${className} {
    }
    
 </#list>
-<#list entityType.associations?sort_by("name") as association>
+<#list type.associations?sort_by("name") as association>
    /**
-    * Returns the value of the ${association.toRole.normalizedRole} attribute.
+    * Returns the value of the ${association.normalizedName} attribute.
     *
-    * @return The value of the ${association.toRole.normalizedRole} attribute.
+    * @return The value of the ${association.normalizedName} attribute.
     */
     <#if association.toRole.toMany>
-   public List<${association.toRole.type.className}> get${association.toRole.normalizedRole?cap_first}() {
+   public List<${association.toRole.type.className}> get${association.normalizedName?cap_first}() {
     <#else>
-   public ${association.toRole.type.className} get${association.toRole.normalizedRole?cap_first}() {
+   public ${association.toRole.type.className} get${association.normalizedName?cap_first}() {
     </#if>
-      return ${association.toRole.normalizedRole};
+      return ${association.normalizedName};
    }
    
 </#list>
-<#if entityType.blob>
+<#if type.blob>
    /**
     * Returns the @{Link Reference} of the underlying blob.
     *
     * @return The @{Link Reference} of the underlying blob.
     */
-   public Reference get${entityType.blobValueRefProperty.name?cap_first}() {
-      return ${entityType.blobValueRefProperty.name};
+   public Reference get${type.blobValueRefProperty.name?cap_first}() {
+      return ${type.blobValueRefProperty.name};
    }
-</#if>
 
-<#list entityType.properties?sort_by("name") as property>
+</#if>
+<#if type.blob>
+   /**
+    * Returns the @{Link Reference} to update the underlying blob.
+    *
+    * @return The @{Link Reference} to update the underlying blob.
+    */
+   public Reference get${type.blobValueEditRefProperty.name?cap_first}() {
+      return ${type.blobValueEditRefProperty.name};
+   }
+
+</#if>
+<#list type.properties?sort_by("name") as property>
    /**
     * Sets the value of the ${property.normalizedName} attribute.
     *
-    * @param ${property.name}
+    * @param ${property.normalizedName}
     *     The value of the ${property.normalizedName} attribute.
     */
    <#if property.setterAccess??>${property.setterAccess}<#else>public</#if> void set${property.normalizedName?cap_first}(${property.type.javaType} ${property.normalizedName}) {
@@ -136,32 +147,44 @@ public <#if entityType.abstractType>abstract </#if>class ${className} {
    }
    
 </#list>
-<#list entityType.associations?sort_by("name") as association>
+<#list type.associations?sort_by("name") as association>
    /**
-    * Sets the value of the ${association.toRole.normalizedRole} attribute.
+    * Sets the value of the ${association.normalizedName} attribute.
     *
-    * @param ${association.toRole.normalizedRole}
-    *     The value of the ${association.toRole.normalizedRole} attribute.
+    * @param ${association.normalizedName}
+    *     The value of the ${association.normalizedName} attribute.
     */
     <#if association.toRole.toMany>
-   public void set${association.toRole.role?cap_first}(List<${association.toRole.type.className}> ${association.toRole.normalizedRole}) {
+   public void set${association.normalizedName?cap_first}(List<${association.toRole.type.className}> ${association.normalizedName}) {
     <#else>
-   public void set${association.toRole.role?cap_first}(${association.toRole.type.className} ${association.toRole.normalizedRole}) {
+   public void set${association.normalizedName?cap_first}(${association.toRole.type.className} ${association.normalizedName}) {
     </#if>
-      this.${association.toRole.normalizedRole} = ${association.toRole.normalizedRole};
+      this.${association.normalizedName} = ${association.normalizedName};
    }
 
 </#list>
-<#if entityType.blob>
+<#if type.blob>
    /**
-    * sets the @{Link Reference} of the underlying blob.
+    * Sets the @{Link Reference} of the underlying blob.
     *
     * @param ref
     *     The @{Link Reference} of the underlying blob.
     */
-   public void set${entityType.blobValueRefProperty.name?cap_first}(Reference ref) {
-      this.${entityType.blobValueRefProperty.name} = ref;
+   public void set${type.blobValueRefProperty.name?cap_first}(Reference ref) {
+      this.${type.blobValueRefProperty.name} = ref;
    }
-</#if>
 
+</#if>
+<#if type.blob>
+   /**
+    * Sets the @{Link Reference} to update the underlying blob.
+    *
+    * @param ref
+    *     The @{Link Reference} to update the underlying blob.
+    */
+   public void set${type.blobValueEditRefProperty.name?cap_first}(Reference ref) {
+      this.${type.blobValueEditRefProperty.name} = ref;
+   }
+
+</#if>
 }

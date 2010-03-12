@@ -1,0 +1,200 @@
+/**
+ * Copyright 2005-2010 Noelios Technologies.
+ * 
+ * The contents of this file are subject to the terms of one of the following
+ * open source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL 1.0 (the
+ * "Licenses"). You can select the license that you prefer but you may not use
+ * this file except in compliance with one of these Licenses.
+ * 
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.opensource.org/licenses/lgpl-3.0.html
+ * 
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.opensource.org/licenses/lgpl-2.1.php
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.opensource.org/licenses/cddl1.php
+ * 
+ * You can obtain a copy of the EPL 1.0 license at
+ * http://www.opensource.org/licenses/eclipse-1.0.php
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royalty free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
+ */
+
+package org.restlet.ext.odata.internal.edm;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.restlet.data.Method;
+
+/**
+ * Represents an exposed stored procedure.
+ * 
+ * @author Thierry Boileau
+ * @see <a
+ *      href="http://msdn.microsoft.com/en-us/library/cc716710.aspx">FunctionImport
+ *      Element (CSDL)</a>
+ */
+public class FunctionImport extends NamedObject {
+
+    /** The entity set returned by this function, if applicable. */
+    private EntitySet entitySet;
+
+    /** The method used to invoke this function. */
+    private Method method;
+
+    /**
+     * The method access of this function (defined in the CSDL, but not
+     * described).
+     */
+    private String methodAccess;
+
+    /** The list of parameters. */
+    private List<Parameter> parameters;
+
+    /** The return type of this function. */
+    private String returnType;
+
+    /** The schema. */
+    private Schema schema;
+
+    /**
+     * Constructor.
+     * 
+     * @param name
+     *            The name of the schema.
+     */
+    public FunctionImport(String name) {
+        super(name);
+    }
+
+    /**
+     * Returns the entity set returned by this function, if applicable.
+     * 
+     * @return The entity set returned by this function, if applicable.
+     */
+    public EntitySet getEntitySet() {
+        return entitySet;
+    }
+
+    /**
+     * Returns the method used to invoke this function.
+     * 
+     * @return The method used to invoke this function.
+     */
+    public Method getMethod() {
+        return method;
+    }
+
+    /**
+     * Returns the method access of this function (defined in the CSDL, but not
+     * described).
+     * 
+     * @return The method access of this function (defined in the CSDL, but not
+     *         described).
+     */
+    public String getMethodAccess() {
+        return methodAccess;
+    }
+
+    /**
+     * Returns the list of parameters.
+     * 
+     * @return The list of parameters.
+     */
+    public List<Parameter> getParameters() {
+        if (parameters == null) {
+            parameters = new ArrayList<Parameter>();
+        }
+        return parameters;
+    }
+
+    /**
+     * Returns the return type of this function.
+     * 
+     * @return The return type of this function.
+     */
+    public String getReturnType() {
+        return returnType;
+    }
+
+    /**
+     * Returns the schema.
+     * 
+     * @return The schema.
+     */
+    public Schema getSchema() {
+        return schema;
+    }
+
+    /**
+     * Sets the entity set returned by this function, if applicable.
+     * 
+     * @param entitySet
+     *            The entity set returned by this function, if applicable.
+     */
+    public void setEntitySet(EntitySet entitySet) {
+        this.entitySet = entitySet;
+    }
+
+    /**
+     * Sets the method used to invoke this function.
+     * 
+     * @param method
+     *            The method used to invoke this function.
+     */
+    public void setMethod(Method method) {
+        this.method = method;
+    }
+
+    /**
+     * Sets the method access of this function (defined in the CSDL, but not
+     * described).
+     * 
+     * @param methodAccess
+     *            The method access of this function (defined in the CSDL, but
+     *            not described).
+     */
+    public void setMethodAccess(String methodAccess) {
+        this.methodAccess = methodAccess;
+    }
+
+    /**
+     * Sets the list of parameters.
+     * 
+     * @param parameters
+     *            The list of parameters.
+     */
+    public void setParameters(List<Parameter> parameters) {
+        this.parameters = parameters;
+    }
+
+    /**
+     * Sets the return type of this function.
+     * 
+     * @param returnType
+     *            The return type of this function.
+     */
+    public void setReturnType(String returnType) {
+        this.returnType = returnType;
+    }
+
+    /**
+     * Sets the schema.
+     * 
+     * @param schema
+     *            The schema.
+     */
+    public void setSchema(Schema schema) {
+        this.schema = schema;
+    }
+
+}

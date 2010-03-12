@@ -56,6 +56,8 @@ import org.restlet.engine.http.header.HeaderReader;
 import org.restlet.ext.atom.Content;
 import org.restlet.ext.atom.Entry;
 import org.restlet.ext.atom.Feed;
+import org.restlet.ext.atom.Link;
+import org.restlet.ext.atom.Relation;
 import org.restlet.ext.odata.internal.EntryContentHandler;
 import org.restlet.ext.odata.internal.edm.AssociationEnd;
 import org.restlet.ext.odata.internal.edm.EntityType;
@@ -153,41 +155,6 @@ public class Service {
      */
     public Service(String serviceUri) {
         this(new Reference(serviceUri));
-    }
-
-    /**
-     * Sets the value of the given media entry link.
-     * 
-     * @param entity
-     *            The media entry link which value is to be updated
-     * @param blob
-     *            The new representation.
-     * @throws ResourceException
-     */
-    public void setValue(Object entity, Representation blob)
-            throws ResourceException {
-        Reference ref = null;
-        Metadata metadata = (Metadata) getMetadata();
-        EntityType type = metadata.getEntityType(entity.getClass());
-        if (type.isBlob() && type.getBlobValueRefProperty() != null) {
-            try {
-                ref = (Reference) ReflectUtils.invokeGetter(entity, type
-                        .getBlobValueEditRefProperty().getName());
-            } catch (Exception e) {
-                getLogger().warning(
-                        "Cannot get the value of the property "
-                                + type.getBlobValueEditRefProperty().getName()
-                                + " on " + entity);
-            }
-        } else {
-            getLogger()
-                    .warning("This entity is not a media resource " + entity);
-        }
-
-        if (ref != null) {
-            ClientResource cr = createResource(ref);
-            cr.put(blob);
-        }
     }
 
     /**
@@ -672,6 +639,39 @@ public class Service {
     }
 
     /**
+     * Returns the reference used to edit the binary representation of the given
+     * entity, if this is a media resource. It returns null otherwise.
+     * 
+     * @param entity
+     *            The media resource.
+     * @return Returns the reference used to edit the binary representation of
+     *         the given entity, if this is a media resource. It returns null
+     *         otherwise.
+     */
+    private Reference getValueEditRef(Object entity) {
+        if (entity != null) {
+            Metadata metadata = (Metadata) getMetadata();
+            EntityType type = metadata.getEntityType(entity.getClass());
+            if (type.isBlob() && type.getBlobValueEditRefProperty() != null) {
+                try {
+                    return (Reference) ReflectUtils.invokeGetter(entity, type
+                            .getBlobValueEditRefProperty().getName());
+                } catch (Exception e) {
+                    getLogger().warning(
+                            "Cannot get the value of the property "
+                                    + type.getBlobValueEditRefProperty()
+                                            .getName() + " on " + entity);
+                }
+            } else {
+                getLogger().warning(
+                        "This entity is not a media resource " + entity);
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Returns the reference of the binary representation of the given entity,
      * if this is a media resource. It returns null otherwise.
      * 
@@ -897,6 +897,25 @@ public class Service {
     }
 
     /**
+     * Sets the value of the given media entry link.
+     * 
+     * @param entity
+     *            The media entry link which value is to be updated
+     * @param blob
+     *            The new representation.
+     * @throws ResourceException
+     */
+    public void setValue(Object entity, Representation blob)
+            throws ResourceException {
+        Reference ref = getValueEditRef(entity);
+
+        if (ref != null) {
+            ClientResource cr = createResource(ref);
+            cr.put(blob);
+        }
+    }
+
+    /**
      * Converts an entity to an Atom entry object.
      * 
      * @param entity
@@ -1010,6 +1029,9 @@ public class Service {
                             }
                         }
                     };
+                    Link editLink = new Link(getValueEditRef(entity),
+                            Relation.EDIT_MEDIA, null);
+                    result.getLinks().add(editLink);
                     Content content = new Content();
                     // Get the external blob reference
                     content.setExternalRef(getValueRef(entity));

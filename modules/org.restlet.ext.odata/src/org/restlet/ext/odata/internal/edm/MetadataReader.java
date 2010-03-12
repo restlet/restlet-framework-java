@@ -35,6 +35,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.restlet.data.MediaType;
+import org.restlet.data.Method;
 import org.restlet.ext.odata.Service;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -48,12 +50,12 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class MetadataReader extends DefaultHandler {
 
-    private static String SCHEMA_EDM = "http://schemas.microsoft.com/ado/2007/05/edm";
-
     /** The list of defined states of this parser. */
     private enum State {
-        ASSOCIATION, ASSOCIATION_END, ASSOCIATION_SET, ASSOCIATION_SET_END, COMPLEX_TYPE, COMPLEX_TYPE_PROPERTY, DOCUMENTATION, ENTITY_CONTAINER, ENTITY_SET, ENTITY_TYPE, ENTITY_TYPE_KEY, ENTITY_TYPE_PROPERTY, FUNCTION, FUNCTION_IMPORT, NAVIGATION_PROPERTY, NONE, ON_DELETE, REFERENTIAL_CONSTRAINT, SCHEMA, USING
+        ASSOCIATION, ASSOCIATION_END, ASSOCIATION_SET, ASSOCIATION_SET_END, COMPLEX_TYPE, COMPLEX_TYPE_PROPERTY, DOCUMENTATION, ENTITY_CONTAINER, ENTITY_SET, ENTITY_TYPE, ENTITY_TYPE_KEY, ENTITY_TYPE_PROPERTY, FUNCTION, FUNCTION_IMPORT, NAVIGATION_PROPERTY, NONE, ON_DELETE, PARAMETER, REFERENTIAL_CONSTRAINT, SCHEMA, USING
     }
+
+    private static String SCHEMA_EDM = "http://schemas.microsoft.com/ado/2007/05/edm";
 
     /** List of possible values for the blob reference member. */
     private final String[] blobEditRefValues = { "blobEditReference",
@@ -78,6 +80,9 @@ public class MetadataReader extends DefaultHandler {
     /** The current entity type. */
     private EntityType currentEntityType;
 
+    /** The current functionn import. */
+    private FunctionImport currentFunctionImport;
+
     /** The metadata objet to update. */
     private Metadata currentMetadata;
 
@@ -89,6 +94,12 @@ public class MetadataReader extends DefaultHandler {
 
     /** The registered collection of entity containers. */
     private Map<String, EntityContainer> registeredContainers;
+
+    /** The registered collection of entity sets. */
+    private Map<String, NamedObject> registeredEntitySets;
+
+    /** The registered collection of complex types. */
+    private Map<String, NamedObject> registeredComplexTypes;
 
     /** The registered collection of entity types. */
     private Map<String, NamedObject> registeredEntityTypes;
@@ -220,10 +231,10 @@ public class MetadataReader extends DefaultHandler {
                 // association type
                 for (AssociationEnd end : association.getEnds()) {
                     end.setType((EntityType) resolve(end.getType(),
-                            registeredEntityTypes));
+                            registeredEntityTypes, schema));
                 }
             }
-            for (EntityType entityType : schema.getTypes()) {
+            for (EntityType entityType : schema.getEntityTypes()) {
                 // entityType.key
                 if (entityType.getKeys() != null) {
                     List<Property> props = entityType.getKeys();
@@ -236,14 +247,13 @@ public class MetadataReader extends DefaultHandler {
                             }
                         }
                     }
-
                 }
                 // entityType.associations
                 for (NavigationProperty navigationProperty : entityType
                         .getAssociations()) {
                     navigationProperty.setRelationship((Association) resolve(
                             navigationProperty.getRelationship(),
-                            registeredAssociations));
+                            registeredAssociations, schema));
 
                     if (navigationProperty.getRelationship() != null) {
                         // association's roles.
@@ -264,7 +274,12 @@ public class MetadataReader extends DefaultHandler {
                 }
                 // entityType.baseType
                 entityType.setBaseType((EntityType) resolve(entityType
-                        .getBaseType(), registeredEntityTypes));
+                        .getBaseType(), registeredEntityTypes, schema));
+            }
+            for (ComplexType complexType : schema.getComplexTypes()) {
+                // complexType.baseType
+                complexType.setBaseType((EntityType) resolve(complexType
+                        .getBaseType(), registeredComplexTypes, schema));
             }
         }
         for (EntityContainer container : currentMetadata.getContainers()) {
@@ -276,9 +291,9 @@ public class MetadataReader extends DefaultHandler {
 
             for (AssociationSet associationSet : container.getAssociations()) {
                 // - associationSet.association
-                associationSet
-                        .setAssociation((Association) resolve(associationSet
-                                .getAssociation(), registeredAssociations));
+                associationSet.setAssociation((Association) resolve(
+                        associationSet.getAssociation(),
+                        registeredAssociations, container.getSchema()));
                 // - associationSet.ends.entitySet
                 for (AssociationSetEnd end : associationSet.getEnds()) {
                     for (EntitySet entitySet : container.getEntities()) {
@@ -292,7 +307,13 @@ public class MetadataReader extends DefaultHandler {
             // - entityContainer.entitySet.entityType
             for (EntitySet entitySet : container.getEntities()) {
                 entitySet.setType((EntityType) resolve(entitySet.getType(),
-                        registeredEntityTypes));
+                        registeredEntityTypes, container.getSchema()));
+            }
+            // - entityContainer.functionImport.entitySet
+            for (FunctionImport functionImport : container.getFunctionImports()) {
+                functionImport.setEntitySet((EntitySet) resolve(functionImport
+                        .getEntitySet(), registeredEntitySets, container
+                        .getSchema()));
             }
         }
     }
@@ -343,9 +364,6 @@ public class MetadataReader extends DefaultHandler {
             popState();
         } else if ("complexType".equalsIgnoreCase(localName)) {
             popState();
-            if (currentComplexType != null) {
-                currentComplexType = currentComplexType.getParentComplexType();
-            }
         } else if ("association".equalsIgnoreCase(localName)) {
             popState();
             currentAssociation = null;
@@ -356,6 +374,7 @@ public class MetadataReader extends DefaultHandler {
         } else if ("referentialConstraint".equalsIgnoreCase(localName)) {
             popState();
         } else if ("functionImport".equalsIgnoreCase(localName)) {
+            currentFunctionImport = null;
             popState();
         } else if ("function".equalsIgnoreCase(localName)) {
             popState();
@@ -367,6 +386,8 @@ public class MetadataReader extends DefaultHandler {
         } else if ("associationSet".equalsIgnoreCase(localName)) {
             popState();
             currentAssociationSet = null;
+        } else if ("parameter".equalsIgnoreCase(localName)) {
+            popState();
         }
     }
 
@@ -407,28 +428,32 @@ public class MetadataReader extends DefaultHandler {
      *            The namedObject to find.
      * @param register
      *            The register.
+     * @param schema
+     *            The schema of the named object.
      * @return The namedObject if found inside the register, null otherwise.
      */
     private NamedObject resolve(NamedObject namedObject,
-            Map<String, NamedObject> register) {
+            Map<String, NamedObject> register, Schema currentSchema) {
         NamedObject result = null;
-        if (namedObject != null) {
+        if (namedObject != null && namedObject.getName() != null) {
             String key = null;
-            int index = namedObject.getName().indexOf(".");
+            int index = namedObject.getName().lastIndexOf(".");
             if (index != -1) {
-                String nsName = namedObject.getName().substring(0, index - 1);
+                // Objects are named via the namespace alias or full name
+                String nsName = namedObject.getName().substring(0, index);
                 for (Namespace namespace : registeredNamespaces) {
                     if (nsName.equals(namespace.getAlias())
                             || nsName.equals(namespace.getName())) {
-                        key = namespace + "."
+                        key = namespace.getName()
                                 + namedObject.getName().substring(index);
                         break;
                     }
                 }
+            } else {
+                key = currentSchema.getNamespace().getName() + "."
+                        + namedObject.getName();
             }
-            if (key == null) {
-                key = namedObject.getName();
-            }
+
             result = register.get(key);
         }
 
@@ -437,8 +462,10 @@ public class MetadataReader extends DefaultHandler {
 
     @Override
     public void startDocument() throws SAXException {
+        registeredComplexTypes = new HashMap<String, NamedObject>();
         registeredEntityTypes = new HashMap<String, NamedObject>();
         registeredAssociations = new HashMap<String, NamedObject>();
+        registeredEntitySets = new HashMap<String, NamedObject>();
         registeredNamespaces = new ArrayList<Namespace>();
         registeredContainers = new HashMap<String, EntityContainer>();
     }
@@ -446,7 +473,6 @@ public class MetadataReader extends DefaultHandler {
     @Override
     public void startElement(String uri, String localName, String name,
             Attributes attrs) throws SAXException {
-
         if (SCHEMA_EDM.equals(uri)) {
             if ("schema".equalsIgnoreCase(localName)) {
                 pushState(State.SCHEMA);
@@ -471,13 +497,14 @@ public class MetadataReader extends DefaultHandler {
                 currentEntityType.setSchema(this.currentSchema);
                 currentEntityType.setAbstractType(Boolean.parseBoolean(attrs
                         .getValue("Abstract")));
-                currentEntityType.setBlob(Boolean.parseBoolean(attrs
-                        .getValue("HasStream")));
+                currentEntityType.setBlob(Boolean.parseBoolean(attrs.getValue(
+                        Service.WCF_DATASERVICES_METADATA_NAMESPACE,
+                        "HasStream")));
                 String value = attrs.getValue("BaseType");
                 if (value != null) {
                     currentEntityType.setBaseType(new EntityType(value));
                 }
-                this.currentSchema.getTypes().add(currentEntityType);
+                this.currentSchema.getEntityTypes().add(currentEntityType);
 
                 // Check the declaration of a property mapping.
                 discoverMapping(currentEntityType, null, currentMetadata, attrs);
@@ -485,7 +512,6 @@ public class MetadataReader extends DefaultHandler {
                 registeredEntityTypes.put(currentSchema.getNamespace()
                         .getName()
                         + "." + currentEntityType.getName(), currentEntityType);
-
             } else if ("key".equalsIgnoreCase(localName)) {
                 pushState(State.ENTITY_TYPE_KEY);
             } else if ("propertyRef".equalsIgnoreCase(localName)) {
@@ -510,6 +536,13 @@ public class MetadataReader extends DefaultHandler {
                 property.setType(new Type(attrs.getValue("Type")));
                 property.setGetterAccess(attrs.getValue("GetterAccess"));
                 property.setSetterAccess(attrs.getValue("SetterAccess"));
+                String str = attrs
+                        .getValue(Service.WCF_DATASERVICES_METADATA_NAMESPACE,
+                                "MimeType");
+                if (str != null) {
+                    property.setMediaType(MediaType.valueOf(str));
+                }
+
                 if (getState() == State.ENTITY_TYPE) {
                     pushState(State.ENTITY_TYPE_PROPERTY);
                     this.currentEntityType.getProperties().add(property);
@@ -534,11 +567,19 @@ public class MetadataReader extends DefaultHandler {
                 currentEntityType.getAssociations().add(property);
             } else if ("complexType".equalsIgnoreCase(localName)) {
                 pushState(State.COMPLEX_TYPE);
-                ComplexType complexType = new ComplexType(attrs
-                        .getValue("Name"));
-                complexType.setSchema(this.currentSchema);
-                complexType.setParentComplexType(currentComplexType);
-                currentComplexType = complexType;
+                currentComplexType = new ComplexType(attrs.getValue("Name"));
+                currentComplexType.setSchema(this.currentSchema);
+
+                String value = attrs.getValue("BaseType");
+                if (value != null) {
+                    currentComplexType.setBaseType(new ComplexType(value));
+                }
+                this.currentSchema.getComplexTypes().add(currentComplexType);
+                // register the new type.
+                registeredComplexTypes.put(currentSchema.getNamespace()
+                        .getName()
+                        + "." + currentComplexType.getName(),
+                        currentComplexType);
             } else if ("association".equalsIgnoreCase(localName)) {
                 pushState(State.ASSOCIATION);
                 currentAssociation = new Association(attrs.getValue("Name"));
@@ -567,7 +608,47 @@ public class MetadataReader extends DefaultHandler {
             } else if ("referentialConstraint".equalsIgnoreCase(localName)) {
                 pushState(State.REFERENTIAL_CONSTRAINT);
             } else if ("functionImport".equalsIgnoreCase(localName)) {
+                currentFunctionImport = new FunctionImport(attrs
+                        .getValue("Name"));
+                currentFunctionImport.setReturnType(attrs
+                        .getValue("ReturnType"));
+                currentFunctionImport.setEntitySet(new EntitySet(attrs
+                        .getValue("EntitySet")));
+                currentFunctionImport.setMethodAccess(attrs
+                        .getValue("MethodAccess"));
+
+                String str = attrs.getValue(
+                        Service.WCF_DATASERVICES_METADATA_NAMESPACE,
+                        "HttpMethod");
+                if (str != null) {
+                    currentFunctionImport.setMethod(Method.valueOf(str));
+                }
+
+                if (State.ENTITY_CONTAINER == getState()) {
+                    currentEntityContainer.getFunctionImports().add(
+                            currentFunctionImport);
+                }
+
                 pushState(State.FUNCTION_IMPORT);
+            } else if ("function".equalsIgnoreCase(localName)) {
+                Parameter parameter = new Parameter(attrs.getValue("Name"));
+                parameter.setType(attrs.getValue("Type"));
+                parameter.setMode(attrs.getValue("Mode"));
+                String str = attrs.getValue("MaxLength");
+                if (str != null) {
+                    parameter.setMaxLength(Integer.parseInt(str));
+                }
+                str = attrs.getValue("Precision");
+                if (str != null) {
+                    parameter.setPrecision(Integer.parseInt(str));
+                }
+                str = attrs.getValue("Scale");
+                if (str != null) {
+                    parameter.setScale(Integer.parseInt(str));
+                }
+
+                currentFunctionImport.getParameters().add(parameter);
+                pushState(State.PARAMETER);
             } else if ("function".equalsIgnoreCase(localName)) {
                 pushState(State.FUNCTION);
             } else if ("entityContainer".equalsIgnoreCase(localName)) {
@@ -575,19 +656,24 @@ public class MetadataReader extends DefaultHandler {
                 currentEntityContainer = new EntityContainer(attrs
                         .getValue("Name"));
                 currentEntityContainer.setDefaultEntityContainer(Boolean
-                        .parseBoolean(attrs
-                                .getValue("IsDefaultEntityContainer")));
+                        .parseBoolean(attrs.getValue(
+                                Service.WCF_DATASERVICES_METADATA_NAMESPACE,
+                                "IsDefaultEntityContainer")));
                 String value = attrs.getValue("Extends");
                 if (value != null) {
                     currentEntityContainer.setExtended(new EntityContainer(
                             value));
                 }
+                currentEntityContainer.setSchema(currentSchema);
                 currentMetadata.getContainers().add(currentEntityContainer);
-                registeredContainers.put(currentEntityContainer.getName(),
+                registeredContainers.put(currentSchema.getNamespace().getName()
+                        + "." + currentEntityContainer.getName(),
                         currentEntityContainer);
             } else if ("entitySet".equalsIgnoreCase(localName)) {
                 pushState(State.ENTITY_SET);
                 EntitySet entitySet = new EntitySet(attrs.getValue("Name"));
+                registeredEntitySets.put(currentSchema.getNamespace().getName()
+                        + "." + entitySet.getName(), entitySet);
                 entitySet.setType(new EntityType(attrs.getValue("EntityType")));
                 currentEntityContainer.getEntities().add(entitySet);
             } else if ("associationSet".equalsIgnoreCase(localName)) {

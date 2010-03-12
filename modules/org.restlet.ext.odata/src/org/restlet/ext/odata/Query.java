@@ -178,6 +178,8 @@ public class Query<T> implements Iterable<T> {
     /** The number of entities. */
     protected int count;
 
+    private List<T> entities;
+
     /** Class of the entity targeted by this query. */
     private Class<?> entityClass;
 
@@ -204,8 +206,6 @@ public class Query<T> implements Iterable<T> {
 
     /** The path of the targeted entity relatively to the data service URI. */
     private String subpath;
-
-    private List<T> entities;
 
     /**
      * Constructor.
@@ -435,8 +435,8 @@ public class Query<T> implements Iterable<T> {
      * @throws Exception
      */
     public int getCount() {
-        if (!isExecuted()) {
-            if (inlineCount) {
+        if (inlineCount) {
+            if (!isExecuted()) {
                 // Execute the query which sets the count retrieved from the
                 // Atom document.
                 try {
@@ -446,27 +446,25 @@ public class Query<T> implements Iterable<T> {
                             "Cannot retrieve inline count value due to: "
                                     + e.getMessage());
                 }
-            } else {
-                // Send a request to a specific URI.
-                String targetUri = createTargetUri();
+            }
+        } else {
+            // Send a request to a specific URI.
+            String targetUri = createTargetUri();
 
-                if (guessType(targetUri) == TYPE_ENTITY) {
-                    targetUri = targetUri.substring(0, targetUri
-                            .lastIndexOf("("));
-                }
-                targetUri += "/$count";
+            if (guessType(targetUri) == TYPE_ENTITY) {
+                targetUri = targetUri.substring(0, targetUri.lastIndexOf("("));
+            }
+            targetUri += "/$count";
 
-                ClientResource resource = service.createResource(new Reference(
-                        targetUri));
+            ClientResource resource = service.createResource(new Reference(
+                    targetUri));
 
-                try {
-                    Representation result = resource.get();
-                    count = Integer.parseInt(result.getText());
-                } catch (Exception e) {
-                    getLogger().warning(
-                            "Cannot parse count value due to: "
-                                    + e.getMessage());
-                }
+            try {
+                Representation result = resource.get();
+                count = Integer.parseInt(result.getText());
+            } catch (Exception e) {
+                getLogger().warning(
+                        "Cannot parse count value due to: " + e.getMessage());
             }
         }
 

@@ -231,7 +231,7 @@ public class EntryContentHandler<T> extends EntryReader {
         if (entityType.isBlob()
                 && entityType.getBlobValueEditRefProperty() != null) {
             // Look for en entry with a "edit-media" relation value.
-            Link link = entry.getLink(new Relation("edit-media"));
+            Link link = entry.getLink(Relation.EDIT_MEDIA);
             String pty = entityType.getBlobValueEditRefProperty().getName();
             if (link != null) {
                 try {

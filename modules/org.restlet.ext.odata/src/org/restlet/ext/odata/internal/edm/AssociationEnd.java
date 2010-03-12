@@ -30,8 +30,6 @@
 
 package org.restlet.ext.odata.internal.edm;
 
-import org.restlet.ext.odata.internal.reflect.ReflectUtils;
-
 /**
  * Represents one entity implied in an association.
  * 
@@ -69,15 +67,6 @@ public class AssociationEnd {
      */
     public String getMultiplicity() {
         return multiplicity;
-    }
-
-    /**
-     * Returns the role as a valid Java identifier.
-     * 
-     * @return The role as a valid Java identifier.
-     */
-    public String getNormalizedRole() {
-        return ReflectUtils.normalize(role);
     }
 
     /**

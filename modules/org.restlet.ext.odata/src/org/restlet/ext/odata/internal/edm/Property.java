@@ -30,6 +30,8 @@
 
 package org.restlet.ext.odata.internal.edm;
 
+import org.restlet.data.MediaType;
+
 /**
  * Represents a property of an EntityType.
  * 
@@ -48,6 +50,9 @@ public class Property extends NamedObject {
     /** The access level modifier of the getter method. */
     private String getterAccess;
 
+    /** The media type stored in the content. */
+    private MediaType mediaType;
+    
     /** True if this property is not mandatory. */
     private boolean nullable;
 
@@ -85,6 +90,14 @@ public class Property extends NamedObject {
 
     public String getGetterAccess() {
         return getterAccess;
+    }
+
+    /**
+     * Returns the media type stored in the content.
+     * @return The media type stored in the content.
+     */
+    public MediaType getMediaType() {
+        return mediaType;
     }
 
     /**
@@ -157,6 +170,14 @@ public class Property extends NamedObject {
      */
     public void setGetterAccess(String getterAccess) {
         this.getterAccess = getterAccess;
+    }
+
+    /**
+     * Sets the media type stored in the content.
+     * @param mediaType The media type stored in the content.
+     */
+    public void setMediaType(MediaType mediaType) {
+        this.mediaType = mediaType;
     }
 
     /**

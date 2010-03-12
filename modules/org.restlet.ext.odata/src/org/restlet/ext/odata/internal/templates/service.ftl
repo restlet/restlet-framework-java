@@ -39,8 +39,8 @@ import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
 
-<#list schema.types?sort as type>
-import ${type.fullClassName};
+<#list entityContainer.entities?sort as entitySet>
+import ${entitySet.type.fullClassName};
 </#list>
 
 <#compress>
@@ -62,7 +62,8 @@ public class ${className} extends Service {
         super("${dataServiceUri}");
     }
 
-<#list schema.types as type>
+<#list entityContainer.entities as entitySet>
+    <#assign type=entitySet.type>
     /**
      * Adds a new entity to the service.
      * 
@@ -71,15 +72,7 @@ public class ${className} extends Service {
      * @throws Exception 
      */
     public void addEntity(${type.className} entity) throws Exception {
-    <#list entityContainers as container>
-        <#list container.entities as entity>
-            <#if entity.type??>
-                <#if (entity.type.name!"") == type.name>
-        addEntity("/${entity.name}", entity);
-                </#if>
-            </#if>
-        </#list>
-    </#list>
+        <#if entityContainer.defaultEntityContainer>addEntity("/${entitySet.name}", entity);<#else>addEntity("/${entityContainer.name}.${entitySet.name}", entity);</#if>
     }
 
     /**
@@ -90,15 +83,7 @@ public class ${className} extends Service {
      * @return A query object.
      */
     public Query<${type.className}> create${type.className}Query(String subpath) {
-    <#list entityContainers as container>
-        <#list container.entities as entity>
-            <#if entity.type??>
-                <#if (entity.type.name!"") == type.name>
         return createQuery(subpath, ${type.className}.class);
-                </#if>
-            </#if>
-        </#list>
-    </#list>
     }
 
     <#if (type.blob && type.blobValueRefProperty?? && type.blobValueRefProperty.name??)>
@@ -174,6 +159,25 @@ public class ${className} extends Service {
         }
 
         return null;
+    }
+
+    /**
+     * Sets the value of the given media entry link.
+     * 
+     * @param entity
+     *            The media entry link which value is to be updated
+     * @param blob
+     *            The new representation.
+     * @throws ResourceException
+     */
+    public void setValue(${type.className} entity, Representation blob)
+            throws ResourceException {
+        Reference ref = entity.get${type.blobValueEditRefProperty.name?cap_first}();
+
+        if (ref != null) {
+            ClientResource cr = createResource(ref);
+            cr.put(blob);
+        }
     }
     </#if>
 

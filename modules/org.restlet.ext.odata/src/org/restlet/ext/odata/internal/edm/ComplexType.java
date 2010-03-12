@@ -34,25 +34,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents an entity type, without "key", i.e. identifier.
+ * Represents a kind of entity type, without "key", i.e. identifier.
  * 
  * @author Thierry Boileau
  * @see <a href="http://msdn.microsoft.com/en-us/library/bb738466.aspx">Complex
  *      Type (EDM)</a>
  */
-public class ComplexType extends NamedObject {
+public class ComplexType extends ODataType {
 
     /** The list of complex types this type inherits from. */
     private List<ComplexType> complexTypes;
-
-    /** The parent complex type. */
-    private ComplexType parentComplexType;
-
-    /** The list of properties. */
-    private List<Property> properties;
-
-    /** The schema. */
-    private Schema schema;
 
     /**
      * Constructor.
@@ -62,6 +53,16 @@ public class ComplexType extends NamedObject {
      */
     public ComplexType(String name) {
         super(name);
+    }
+
+    /**
+     * Returns the parent type this type inherits from.
+     * 
+     * @return The parent type this type inherits from.
+     */
+    @Override
+    public ComplexType getBaseType() {
+        return (ComplexType) super.getBaseType();
     }
 
     /**
@@ -77,36 +78,6 @@ public class ComplexType extends NamedObject {
     }
 
     /**
-     * Returns the parent complex type.
-     * 
-     * @return The parent complex type.
-     */
-    public ComplexType getParentComplexType() {
-        return parentComplexType;
-    }
-
-    /**
-     * Returns the list of properties.
-     * 
-     * @return The list of properties.
-     */
-    public List<Property> getProperties() {
-        if (properties == null) {
-            properties = new ArrayList<Property>();
-        }
-        return properties;
-    }
-
-    /**
-     * Returns the schema.
-     * 
-     * @return The schema.
-     */
-    public Schema getSchema() {
-        return schema;
-    }
-
-    /**
      * Sets the list of complex types this type inherits from.
      * 
      * @param complexTypes
@@ -114,36 +85,6 @@ public class ComplexType extends NamedObject {
      */
     public void setComplexTypes(List<ComplexType> complexTypes) {
         this.complexTypes = complexTypes;
-    }
-
-    /**
-     * Sets the parent complex type.
-     * 
-     * @param parentComplexType
-     *            The parent complex type.
-     */
-    public void setParentComplexType(ComplexType parentComplexType) {
-        this.parentComplexType = parentComplexType;
-    }
-
-    /**
-     * Sets the list of properties.
-     * 
-     * @param properties
-     *            The list of properties.
-     */
-    public void setProperties(List<Property> properties) {
-        this.properties = properties;
-    }
-
-    /**
-     * Sets the schema.
-     * 
-     * @param schema
-     *            The schema.
-     */
-    public void setSchema(Schema schema) {
-        this.schema = schema;
     }
 
 }

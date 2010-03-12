@@ -39,6 +39,8 @@ import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.ext.freemarker.TemplateRepresentation;
+import org.restlet.ext.odata.internal.edm.ComplexType;
+import org.restlet.ext.odata.internal.edm.EntityContainer;
 import org.restlet.ext.odata.internal.edm.EntityType;
 import org.restlet.ext.odata.internal.edm.Metadata;
 import org.restlet.ext.odata.internal.edm.Schema;
@@ -214,6 +216,9 @@ public class Generator {
 
         // Generate classes
         String rootTemplates = "clap://class/org/restlet/ext/odata/internal/templates";
+        Representation complexTmpl = new StringRepresentation(
+                new ClientResource(rootTemplates + "/complexType.ftl").get()
+                        .getText());
         Representation entityTmpl = new StringRepresentation(
                 new ClientResource(rootTemplates + "/entityType.ftl").get()
                         .getText());
@@ -222,56 +227,97 @@ public class Generator {
                         .getText());
 
         for (Schema schema : metadata.getSchemas()) {
-            String packageName = Type.getPackageName(schema);
-            File packageDir = new File(outputDir, packageName.replace(".",
-                    System.getProperty("file.separator")));
-            packageDir.mkdirs();
+            if ((schema.getEntityTypes() != null && !schema.getEntityTypes()
+                    .isEmpty())
+                    || (schema.getComplexTypes() != null && !schema
+                            .getComplexTypes().isEmpty())) {
+                String packageName = Type.getPackageName(schema);
+                File packageDir = new File(outputDir, packageName.replace(".",
+                        System.getProperty("file.separator")));
+                packageDir.mkdirs();
 
-            // For each class
-            for (EntityType type : schema.getTypes()) {
-                String className = type.getClassName();
+                // For each entity type
+                for (EntityType type : schema.getEntityTypes()) {
+                    String className = type.getClassName();
+                    Map<String, Object> dataModel = new HashMap<String, Object>();
+                    dataModel.put("type", type);
+                    dataModel.put("schema", schema);
+                    dataModel.put("metadata", metadata);
+                    dataModel.put("className", className);
+                    dataModel.put("packageName", packageName);
+
+                    TemplateRepresentation templateRepresentation = new TemplateRepresentation(
+                            entityTmpl, fmc, dataModel, MediaType.TEXT_PLAIN);
+                    templateRepresentation.setCharacterSet(CharacterSet.UTF_8);
+
+                    // Write the template representation as a Java class
+                    templateRepresentation.write(new FileOutputStream(new File(
+                            packageDir, type.getClassName() + ".java")));
+                }
+                for (ComplexType type : schema.getComplexTypes()) {
+                    String className = type.getClassName();
+                    Map<String, Object> dataModel = new HashMap<String, Object>();
+                    dataModel.put("type", type);
+                    dataModel.put("schema", schema);
+                    dataModel.put("metadata", metadata);
+                    dataModel.put("className", className);
+                    dataModel.put("packageName", packageName);
+
+                    TemplateRepresentation templateRepresentation = new TemplateRepresentation(
+                            complexTmpl, fmc, dataModel, MediaType.TEXT_PLAIN);
+                    templateRepresentation.setCharacterSet(CharacterSet.UTF_8);
+
+                    // Write the template representation as a Java class
+                    templateRepresentation.write(new FileOutputStream(new File(
+                            packageDir, type.getClassName() + ".java")));
+                }
+            }
+        }
+        if (metadata.getContainers() != null
+                && !metadata.getContainers().isEmpty()) {
+            for (EntityContainer entityContainer : metadata.getContainers()) {
+                Schema schema = entityContainer.getSchema();
+                // Generate Service subclass
+                StringBuffer className = new StringBuffer();
+
+                if (serviceClassName != null) {
+                    // Try to use the Client preference
+                    if (entityContainer.isDefaultEntityContainer()) {
+                        className.append(serviceClassName);
+                    } else if (metadata.getContainers().size() == 1) {
+                        className.append(serviceClassName);
+                    } else {
+                        className.append(schema.getNamespace()
+                                .getNormalizedName().substring(0, 1)
+                                .toUpperCase());
+                        className.append(schema.getNamespace()
+                                .getNormalizedName().substring(1));
+                        className.append("Service");
+                    }
+                } else {
+                    className.append(schema.getNamespace().getNormalizedName()
+                            .substring(0, 1).toUpperCase());
+                    className.append(schema.getNamespace().getNormalizedName()
+                            .substring(1));
+                    className.append("Service");
+                }
+
                 Map<String, Object> dataModel = new HashMap<String, Object>();
-                dataModel.put("entityType", type);
                 dataModel.put("schema", schema);
                 dataModel.put("metadata", metadata);
                 dataModel.put("className", className);
-                dataModel.put("packageName", packageName);
+                dataModel.put("dataServiceUri", this.dataServiceRef
+                        .getTargetRef());
+                dataModel.put("entityContainer", entityContainer);
 
                 TemplateRepresentation templateRepresentation = new TemplateRepresentation(
-                        entityTmpl, fmc, dataModel, MediaType.TEXT_PLAIN);
+                        serviceTmpl, fmc, dataModel, MediaType.TEXT_PLAIN);
                 templateRepresentation.setCharacterSet(CharacterSet.UTF_8);
 
                 // Write the template representation as a Java class
                 templateRepresentation.write(new FileOutputStream(new File(
-                        packageDir, type.getClassName() + ".java")));
+                        outputDir, className + ".java")));
             }
-
-            // Generate Service subclass
-            StringBuffer className = new StringBuffer();
-            if (serviceClassName != null && metadata.getSchemas().size() == 1) {
-                className.append(serviceClassName);
-            } else {
-                className.append(schema.getNamespace().getNormalizedName()
-                        .substring(0, 1).toUpperCase());
-                className.append(schema.getNamespace().getNormalizedName()
-                        .substring(1));
-                className.append("Service");
-            }
-
-            Map<String, Object> dataModel = new HashMap<String, Object>();
-            dataModel.put("schema", schema);
-            dataModel.put("metadata", metadata);
-            dataModel.put("className", className);
-            dataModel.put("dataServiceUri", this.dataServiceRef.getTargetRef());
-            dataModel.put("entityContainers", metadata.getContainers());
-
-            TemplateRepresentation templateRepresentation = new TemplateRepresentation(
-                    serviceTmpl, fmc, dataModel, MediaType.TEXT_PLAIN);
-            templateRepresentation.setCharacterSet(CharacterSet.UTF_8);
-
-            // Write the template representation as a Java class
-            templateRepresentation.write(new FileOutputStream(new File(
-                    outputDir, className + ".java")));
         }
     }
 }

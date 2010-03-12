@@ -53,6 +53,12 @@ public class EntityContainer extends NamedObject {
     /** The container this container inherits from. */
     private EntityContainer extended;
 
+    /** The list of function imports. */
+    private List<FunctionImport> functionImports;
+
+    /** The schema. */
+    private Schema schema;
+
     /**
      * Constructor.
      * 
@@ -97,11 +103,29 @@ public class EntityContainer extends NamedObject {
     }
 
     /**
-     * Return true if this container is the default one for a WCF data
-     * service.
+     * Returns the list of function imports.
      * 
-     * @return True if this container is the default one for a WCF data
-     *         service.
+     * @return The list of function imports.
+     */
+    public List<FunctionImport> getFunctionImports() {
+        if (functionImports == null) {
+            functionImports = new ArrayList<FunctionImport>();
+        }
+        return functionImports;
+    }
+
+    /**
+     * Returns the schema.
+     * @return The schema.
+     */
+    public Schema getSchema() {
+        return schema;
+    }
+
+    /**
+     * Return true if this container is the default one for a WCF data service.
+     * 
+     * @return True if this container is the default one for a WCF data service.
      */
     public boolean isDefaultEntityContainer() {
         return defaultEntityContainer;
@@ -118,8 +142,7 @@ public class EntityContainer extends NamedObject {
     }
 
     /**
-     * Indicates if this container is the default one for a WCF data
-     * service.
+     * Indicates if this container is the default one for a WCF data service.
      * 
      * @param defaultEntityContainer
      *            True if this container is the default one for a WCF data
@@ -147,6 +170,24 @@ public class EntityContainer extends NamedObject {
      */
     public void setExtended(EntityContainer extended) {
         this.extended = extended;
+    }
+
+    /**
+     * Sets the list of function imports.
+     * 
+     * @param functionImports
+     *            The list of function imports.
+     */
+    public void setFunctionImports(List<FunctionImport> functionImports) {
+        this.functionImports = functionImports;
+    }
+
+    /**
+     * Sets the schema.
+     * @param schema The schema.
+     */
+    public void setSchema(Schema schema) {
+        this.schema = schema;
     }
 
 }

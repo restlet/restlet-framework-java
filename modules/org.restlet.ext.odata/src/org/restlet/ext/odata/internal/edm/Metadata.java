@@ -90,10 +90,8 @@ public class Metadata extends SaxRepresentation {
         AssociationEnd result = null;
 
         for (NavigationProperty association : type.getAssociations()) {
-            AssociationEnd to = association.getToRole();
-            if (to.getRole().equals(propertyName)
-                    || to.getNormalizedRole().equals(propertyName)) {
-                result = to;
+            if (association.getNormalizedName().equals(propertyName)) {
+                result = association.getToRole();
                 break;
             }
         }
