@@ -15,4 +15,7 @@ Export-Package: org.simpleframework.http,
  org.simpleframework.transport.connect,
  org.simpleframework.transport.reactor,
  org.simpleframework.util,
- org.simpleframework.util.buffer
+ org.simpleframework.util.buffer,
+ org.simpleframework.util.lease,
+ org.simpleframework.util.parse,
+ org.simpleframework.util.thread
