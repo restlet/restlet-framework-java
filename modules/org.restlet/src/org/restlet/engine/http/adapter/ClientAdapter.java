@@ -137,6 +137,7 @@ public class ClientAdapter extends Adapter {
 
             HeaderUtils.copyResponseTransportHeaders(responseHeaders, response);
         } catch (Exception e) {
+            e.printStackTrace();
             getLogger()
                     .log(
                             Level.FINE,

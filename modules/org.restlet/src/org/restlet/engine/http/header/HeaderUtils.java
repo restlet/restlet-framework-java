@@ -34,7 +34,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 
 import org.restlet.Context;
@@ -48,7 +47,6 @@ import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Digest;
-import org.restlet.data.Dimension;
 import org.restlet.data.Disposition;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
@@ -398,7 +396,8 @@ public class HeaderUtils {
      */
     public static void addHeader(String headerName, String headerValue,
             Series<Parameter> headers) {
-        if ((headerName != null) && (headerValue != null)) {
+        if ((headerName != null) && (headerValue != null)
+                && (headerValue.length() > 0)) {
             try {
                 headers.add(headerName, headerValue);
             } catch (Throwable t) {
@@ -714,12 +713,8 @@ public class HeaderUtils {
         if (!((response.getRequest().getClientInfo().getAgent() != null) && response
                 .getRequest().getClientInfo().getAgent().contains("MSIE"))) {
             // Add the Vary header if content negotiation was used
-            Set<Dimension> dimensions = response.getDimensions();
-            String vary = DimensionWriter.writer(dimensions);
-
-            if (vary != null) {
-                addHeader(HeaderConstants.HEADER_VARY, vary, headers);
-            }
+            addHeader(HeaderConstants.HEADER_VARY, DimensionWriter
+                    .writer(response.getDimensions()), headers);
         }
 
         // Set the security data

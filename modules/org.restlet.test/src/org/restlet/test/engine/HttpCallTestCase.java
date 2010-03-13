@@ -50,7 +50,7 @@ public class HttpCallTestCase extends RestletTestCase {
 
     public void testFormatContentDisposition() {
         Disposition disposition = new Disposition();
-        assertNull(DispositionWriter.write(disposition));
+        assertEquals("", DispositionWriter.write(disposition));
 
         disposition = new Disposition(Disposition.TYPE_ATTACHMENT);
         assertEquals("attachment", DispositionWriter.write(disposition));
@@ -91,8 +91,8 @@ public class HttpCallTestCase extends RestletTestCase {
         assertEquals("file.txt", disposition.getParameters().getFirstValue(
                 "fileName"));
 
-        disposition = new DispositionReader(
-                "attachment; fileName=file.txt").readValue();
+        disposition = new DispositionReader("attachment; fileName=file.txt")
+                .readValue();
         assertEquals("file.txt", disposition.getParameters().getFirstValue(
                 "fileName"));
 
@@ -109,8 +109,7 @@ public class HttpCallTestCase extends RestletTestCase {
                 .readValue();
         assertNull(disposition.getParameters().getFirstValue("filename"));
 
-        disposition = new DispositionReader("attachment; filenam")
-                .readValue();
+        disposition = new DispositionReader("attachment; filenam").readValue();
         assertNull(disposition.getParameters().getFirstValue("filename"));
 
         disposition = new DispositionReader(
