@@ -55,8 +55,6 @@ public class MetadataReader extends DefaultHandler {
         ASSOCIATION, ASSOCIATION_END, ASSOCIATION_SET, ASSOCIATION_SET_END, COMPLEX_TYPE, COMPLEX_TYPE_PROPERTY, DOCUMENTATION, ENTITY_CONTAINER, ENTITY_SET, ENTITY_TYPE, ENTITY_TYPE_KEY, ENTITY_TYPE_PROPERTY, FUNCTION, FUNCTION_IMPORT, NAVIGATION_PROPERTY, NONE, ON_DELETE, PARAMETER, REFERENTIAL_CONSTRAINT, SCHEMA, USING
     }
 
-    private static String SCHEMA_EDM = "http://schemas.microsoft.com/ado/2007/05/edm";
-
     /** List of possible values for the blob reference member. */
     private final String[] blobEditRefValues = { "blobEditReference",
             "blobEditReferenceValue" };
@@ -321,6 +319,7 @@ public class MetadataReader extends DefaultHandler {
     @Override
     public void endElement(String uri, String localName, String name)
             throws SAXException {
+
         if ("schema".equalsIgnoreCase(localName)) {
             popState();
             currentSchema = null;
@@ -473,219 +472,200 @@ public class MetadataReader extends DefaultHandler {
     @Override
     public void startElement(String uri, String localName, String name,
             Attributes attrs) throws SAXException {
-        if (SCHEMA_EDM.equals(uri)) {
-            if ("schema".equalsIgnoreCase(localName)) {
-                pushState(State.SCHEMA);
-                currentSchema = new Schema();
-                this.currentMetadata.getSchemas().add(currentSchema);
 
-                Namespace namespace = new Namespace(attrs.getValue("Namespace"));
-                namespace.setAlias(attrs.getValue(SCHEMA_EDM, "Alias"));
-                this.currentSchema.setNamespace(namespace);
-                registeredNamespaces.add(namespace);
-            } else if ("using".equalsIgnoreCase(localName)) {
-                pushState(State.USING);
-                Namespace namespace = new Namespace(attrs.getValue(SCHEMA_EDM,
-                        "Namespace"));
-                namespace.setAlias(attrs.getValue(SCHEMA_EDM, "Alias"));
-                this.currentSchema.getReferencedNamespaces().add(namespace);
-            } else if ("documentation".equalsIgnoreCase(localName)) {
-                pushState(State.DOCUMENTATION);
-            } else if ("entityType".equalsIgnoreCase(localName)) {
-                pushState(State.ENTITY_TYPE);
-                currentEntityType = new EntityType(attrs.getValue("Name"));
-                currentEntityType.setSchema(this.currentSchema);
-                currentEntityType.setAbstractType(Boolean.parseBoolean(attrs
-                        .getValue("Abstract")));
-                currentEntityType.setBlob(Boolean.parseBoolean(attrs.getValue(
-                        Service.WCF_DATASERVICES_METADATA_NAMESPACE,
-                        "HasStream")));
-                String value = attrs.getValue("BaseType");
-                if (value != null) {
-                    currentEntityType.setBaseType(new EntityType(value));
-                }
-                this.currentSchema.getEntityTypes().add(currentEntityType);
+        if ("schema".equalsIgnoreCase(localName)) {
+            pushState(State.SCHEMA);
+            currentSchema = new Schema();
+            this.currentMetadata.getSchemas().add(currentSchema);
 
-                // Check the declaration of a property mapping.
-                discoverMapping(currentEntityType, null, currentMetadata, attrs);
-                // register the new type.
-                registeredEntityTypes.put(currentSchema.getNamespace()
-                        .getName()
-                        + "." + currentEntityType.getName(), currentEntityType);
-            } else if ("key".equalsIgnoreCase(localName)) {
-                pushState(State.ENTITY_TYPE_KEY);
-            } else if ("propertyRef".equalsIgnoreCase(localName)) {
-                if (getState() == State.ENTITY_TYPE_KEY) {
-                    if (currentEntityType.getKeys() == null) {
-                        currentEntityType.setKeys(new ArrayList<Property>());
-                    }
-                    currentEntityType.getKeys().add(
-                            new Property(attrs.getValue("Name")));
-                }
-            } else if ("property".equalsIgnoreCase(localName)) {
-                Property property = new Property(attrs.getValue("Name"));
-                property.setDefaultValue(attrs.getValue("Default"));
-                property.setNullable(Boolean.parseBoolean(attrs
-                        .getValue("Nullable")));
-                // ConcurrencyMode
-                if ("fixed".equalsIgnoreCase(attrs.getValue("ConcurrencyMode"))) {
-                    property.setConcurrent(true);
-                } else {
-                    property.setConcurrent(false);
-                }
-                property.setType(new Type(attrs.getValue("Type")));
-                property.setGetterAccess(attrs.getValue("GetterAccess"));
-                property.setSetterAccess(attrs.getValue("SetterAccess"));
-                String str = attrs
-                        .getValue(Service.WCF_DATASERVICES_METADATA_NAMESPACE,
-                                "MimeType");
-                if (str != null) {
-                    property.setMediaType(MediaType.valueOf(str));
-                }
+            Namespace namespace = new Namespace(attrs.getValue("Namespace"));
+            namespace.setAlias(attrs.getValue("Alias"));
+            this.currentSchema.setNamespace(namespace);
+            registeredNamespaces.add(namespace);
+        } else if ("using".equalsIgnoreCase(localName)) {
+            pushState(State.USING);
+            Namespace namespace = new Namespace(attrs.getValue("Namespace"));
+            namespace.setAlias(attrs.getValue("Alias"));
+            this.currentSchema.getReferencedNamespaces().add(namespace);
+        } else if ("documentation".equalsIgnoreCase(localName)) {
+            pushState(State.DOCUMENTATION);
+        } else if ("entityType".equalsIgnoreCase(localName)) {
+            pushState(State.ENTITY_TYPE);
+            currentEntityType = new EntityType(attrs.getValue("Name"));
+            currentEntityType.setSchema(this.currentSchema);
+            currentEntityType.setAbstractType(Boolean.parseBoolean(attrs
+                    .getValue("Abstract")));
+            currentEntityType.setBlob(Boolean.parseBoolean(attrs.getValue(
+                    Service.WCF_DATASERVICES_METADATA_NAMESPACE, "HasStream")));
+            String value = attrs.getValue("BaseType");
+            if (value != null) {
+                currentEntityType.setBaseType(new EntityType(value));
+            }
+            this.currentSchema.getEntityTypes().add(currentEntityType);
 
-                if (getState() == State.ENTITY_TYPE) {
-                    pushState(State.ENTITY_TYPE_PROPERTY);
-                    this.currentEntityType.getProperties().add(property);
-                } else {
-                    pushState(State.COMPLEX_TYPE_PROPERTY);
-                    this.currentComplexType.getProperties().add(property);
+            // Check the declaration of a property mapping.
+            discoverMapping(currentEntityType, null, currentMetadata, attrs);
+            // register the new type.
+            registeredEntityTypes.put(currentSchema.getNamespace().getName()
+                    + "." + currentEntityType.getName(), currentEntityType);
+        } else if ("key".equalsIgnoreCase(localName)) {
+            pushState(State.ENTITY_TYPE_KEY);
+        } else if ("propertyRef".equalsIgnoreCase(localName)) {
+            if (getState() == State.ENTITY_TYPE_KEY) {
+                if (currentEntityType.getKeys() == null) {
+                    currentEntityType.setKeys(new ArrayList<Property>());
                 }
-
-                // Check the declaration of a property mapping.
-                discoverMapping(this.currentEntityType, property,
-                        currentMetadata, attrs);
-            } else if ("navigationProperty".equalsIgnoreCase(localName)) {
-                pushState(State.NAVIGATION_PROPERTY);
-                NavigationProperty property = new NavigationProperty(attrs
-                        .getValue("Name"));
-                property.setFromRole(new AssociationEnd(attrs
-                        .getValue("FromRole")));
-                property.setRelationship(new Association(attrs
-                        .getValue("Relationship")));
-                property
-                        .setToRole(new AssociationEnd(attrs.getValue("ToRole")));
-                currentEntityType.getAssociations().add(property);
-            } else if ("complexType".equalsIgnoreCase(localName)) {
-                pushState(State.COMPLEX_TYPE);
-                currentComplexType = new ComplexType(attrs.getValue("Name"));
-                currentComplexType.setSchema(this.currentSchema);
-
-                String value = attrs.getValue("BaseType");
-                if (value != null) {
-                    currentComplexType.setBaseType(new ComplexType(value));
-                }
-                this.currentSchema.getComplexTypes().add(currentComplexType);
-                // register the new type.
-                registeredComplexTypes.put(currentSchema.getNamespace()
-                        .getName()
-                        + "." + currentComplexType.getName(),
-                        currentComplexType);
-            } else if ("association".equalsIgnoreCase(localName)) {
-                pushState(State.ASSOCIATION);
-                currentAssociation = new Association(attrs.getValue("Name"));
-                currentSchema.getAssociations().add(currentAssociation);
-                registeredAssociations.put(currentSchema.getNamespace()
-                        .getName()
-                        + "." + currentAssociation.getName(),
-                        currentAssociation);
-            } else if ("end".equalsIgnoreCase(localName)) {
-                if (getState() == State.ASSOCIATION) {
-                    pushState(State.ASSOCIATION_END);
-                    AssociationEnd end = new AssociationEnd(attrs
-                            .getValue("Role"));
-                    end.setMultiplicity(attrs.getValue("Multiplicity"));
-                    end.setType(new EntityType(attrs.getValue("Type")));
-                    currentAssociation.getEnds().add(end);
-                } else {
-                    pushState(State.ASSOCIATION_SET_END);
-                    AssociationSetEnd end = new AssociationSetEnd(attrs
-                            .getValue("Role"));
-                    end.setType(new EntitySet(attrs.getValue("EntitySet")));
-                    currentAssociationSet.getEnds().add(end);
-                }
-            } else if ("onDelete".equalsIgnoreCase(localName)) {
-                pushState(State.ON_DELETE);
-            } else if ("referentialConstraint".equalsIgnoreCase(localName)) {
-                pushState(State.REFERENTIAL_CONSTRAINT);
-            } else if ("functionImport".equalsIgnoreCase(localName)) {
-                currentFunctionImport = new FunctionImport(attrs
-                        .getValue("Name"));
-                currentFunctionImport.setReturnType(attrs
-                        .getValue("ReturnType"));
-                currentFunctionImport.setEntitySet(new EntitySet(attrs
-                        .getValue("EntitySet")));
-                currentFunctionImport.setMethodAccess(attrs
-                        .getValue("MethodAccess"));
-
-                String str = attrs.getValue(
-                        Service.WCF_DATASERVICES_METADATA_NAMESPACE,
-                        "HttpMethod");
-                if (str != null) {
-                    currentFunctionImport.setMethod(Method.valueOf(str));
-                }
-
-                if (State.ENTITY_CONTAINER == getState()) {
-                    currentEntityContainer.getFunctionImports().add(
-                            currentFunctionImport);
-                }
-
-                pushState(State.FUNCTION_IMPORT);
-            } else if ("function".equalsIgnoreCase(localName)) {
-                Parameter parameter = new Parameter(attrs.getValue("Name"));
-                parameter.setType(attrs.getValue("Type"));
-                parameter.setMode(attrs.getValue("Mode"));
-                String str = attrs.getValue("MaxLength");
-                if (str != null) {
-                    parameter.setMaxLength(Integer.parseInt(str));
-                }
-                str = attrs.getValue("Precision");
-                if (str != null) {
-                    parameter.setPrecision(Integer.parseInt(str));
-                }
-                str = attrs.getValue("Scale");
-                if (str != null) {
-                    parameter.setScale(Integer.parseInt(str));
-                }
-
-                currentFunctionImport.getParameters().add(parameter);
-                pushState(State.PARAMETER);
-            } else if ("function".equalsIgnoreCase(localName)) {
-                pushState(State.FUNCTION);
-            } else if ("entityContainer".equalsIgnoreCase(localName)) {
-                pushState(State.ENTITY_CONTAINER);
-                currentEntityContainer = new EntityContainer(attrs
-                        .getValue("Name"));
-                currentEntityContainer.setDefaultEntityContainer(Boolean
-                        .parseBoolean(attrs.getValue(
-                                Service.WCF_DATASERVICES_METADATA_NAMESPACE,
-                                "IsDefaultEntityContainer")));
-                String value = attrs.getValue("Extends");
-                if (value != null) {
-                    currentEntityContainer.setExtended(new EntityContainer(
-                            value));
-                }
-                currentEntityContainer.setSchema(currentSchema);
-                currentMetadata.getContainers().add(currentEntityContainer);
-                registeredContainers.put(currentSchema.getNamespace().getName()
-                        + "." + currentEntityContainer.getName(),
-                        currentEntityContainer);
-            } else if ("entitySet".equalsIgnoreCase(localName)) {
-                pushState(State.ENTITY_SET);
-                EntitySet entitySet = new EntitySet(attrs.getValue("Name"));
-                registeredEntitySets.put(currentSchema.getNamespace().getName()
-                        + "." + entitySet.getName(), entitySet);
-                entitySet.setType(new EntityType(attrs.getValue("EntityType")));
-                currentEntityContainer.getEntities().add(entitySet);
-            } else if ("associationSet".equalsIgnoreCase(localName)) {
-                pushState(State.ASSOCIATION_SET);
-                currentAssociationSet = new AssociationSet(attrs
-                        .getValue("Name"));
-                currentAssociationSet.setAssociation(new Association(attrs
-                        .getValue("Association")));
-                currentEntityContainer.getAssociations().add(
-                        currentAssociationSet);
+                currentEntityType.getKeys().add(
+                        new Property(attrs.getValue("Name")));
+            }
+        } else if ("property".equalsIgnoreCase(localName)) {
+            Property property = new Property(attrs.getValue("Name"));
+            property.setDefaultValue(attrs.getValue("Default"));
+            property.setNullable(Boolean.parseBoolean(attrs
+                    .getValue("Nullable")));
+            // ConcurrencyMode
+            if ("fixed".equalsIgnoreCase(attrs.getValue("ConcurrencyMode"))) {
+                property.setConcurrent(true);
+            } else {
+                property.setConcurrent(false);
+            }
+            property.setType(new Type(attrs.getValue("Type")));
+            property.setGetterAccess(attrs.getValue("GetterAccess"));
+            property.setSetterAccess(attrs.getValue("SetterAccess"));
+            String str = attrs.getValue(
+                    Service.WCF_DATASERVICES_METADATA_NAMESPACE, "MimeType");
+            if (str != null) {
+                property.setMediaType(MediaType.valueOf(str));
             }
 
+            if (getState() == State.ENTITY_TYPE) {
+                pushState(State.ENTITY_TYPE_PROPERTY);
+                this.currentEntityType.getProperties().add(property);
+            } else {
+                pushState(State.COMPLEX_TYPE_PROPERTY);
+                this.currentComplexType.getProperties().add(property);
+            }
+
+            // Check the declaration of a property mapping.
+            discoverMapping(this.currentEntityType, property, currentMetadata,
+                    attrs);
+        } else if ("navigationProperty".equalsIgnoreCase(localName)) {
+            pushState(State.NAVIGATION_PROPERTY);
+            NavigationProperty property = new NavigationProperty(attrs
+                    .getValue("Name"));
+            property
+                    .setFromRole(new AssociationEnd(attrs.getValue("FromRole")));
+            property.setRelationship(new Association(attrs
+                    .getValue("Relationship")));
+            property.setToRole(new AssociationEnd(attrs.getValue("ToRole")));
+            currentEntityType.getAssociations().add(property);
+        } else if ("complexType".equalsIgnoreCase(localName)) {
+            pushState(State.COMPLEX_TYPE);
+            currentComplexType = new ComplexType(attrs.getValue("Name"));
+            currentComplexType.setSchema(this.currentSchema);
+
+            String value = attrs.getValue("BaseType");
+            if (value != null) {
+                currentComplexType.setBaseType(new ComplexType(value));
+            }
+            this.currentSchema.getComplexTypes().add(currentComplexType);
+            // register the new type.
+            registeredComplexTypes.put(currentSchema.getNamespace().getName()
+                    + "." + currentComplexType.getName(), currentComplexType);
+        } else if ("association".equalsIgnoreCase(localName)) {
+            pushState(State.ASSOCIATION);
+            currentAssociation = new Association(attrs.getValue("Name"));
+            currentSchema.getAssociations().add(currentAssociation);
+            registeredAssociations.put(currentSchema.getNamespace().getName()
+                    + "." + currentAssociation.getName(), currentAssociation);
+        } else if ("end".equalsIgnoreCase(localName)) {
+            if (getState() == State.ASSOCIATION) {
+                pushState(State.ASSOCIATION_END);
+                AssociationEnd end = new AssociationEnd(attrs.getValue("Role"));
+                end.setMultiplicity(attrs.getValue("Multiplicity"));
+                end.setType(new EntityType(attrs.getValue("Type")));
+                currentAssociation.getEnds().add(end);
+            } else {
+                pushState(State.ASSOCIATION_SET_END);
+                AssociationSetEnd end = new AssociationSetEnd(attrs
+                        .getValue("Role"));
+                end.setType(new EntitySet(attrs.getValue("EntitySet")));
+                currentAssociationSet.getEnds().add(end);
+            }
+        } else if ("onDelete".equalsIgnoreCase(localName)) {
+            pushState(State.ON_DELETE);
+        } else if ("referentialConstraint".equalsIgnoreCase(localName)) {
+            pushState(State.REFERENTIAL_CONSTRAINT);
+        } else if ("functionImport".equalsIgnoreCase(localName)) {
+            currentFunctionImport = new FunctionImport(attrs.getValue("Name"));
+            currentFunctionImport.setReturnType(attrs.getValue("ReturnType"));
+            currentFunctionImport.setEntitySet(new EntitySet(attrs
+                    .getValue("EntitySet")));
+            currentFunctionImport.setMethodAccess(attrs
+                    .getValue("MethodAccess"));
+
+            String str = attrs.getValue(
+                    Service.WCF_DATASERVICES_METADATA_NAMESPACE, "HttpMethod");
+            if (str != null) {
+                currentFunctionImport.setMethod(Method.valueOf(str));
+            }
+
+            if (State.ENTITY_CONTAINER == getState()) {
+                currentEntityContainer.getFunctionImports().add(
+                        currentFunctionImport);
+            }
+
+            pushState(State.FUNCTION_IMPORT);
+        } else if ("function".equalsIgnoreCase(localName)) {
+            Parameter parameter = new Parameter(attrs.getValue("Name"));
+            parameter.setType(attrs.getValue("Type"));
+            parameter.setMode(attrs.getValue("Mode"));
+            String str = attrs.getValue("MaxLength");
+            if (str != null) {
+                parameter.setMaxLength(Integer.parseInt(str));
+            }
+            str = attrs.getValue("Precision");
+            if (str != null) {
+                parameter.setPrecision(Integer.parseInt(str));
+            }
+            str = attrs.getValue("Scale");
+            if (str != null) {
+                parameter.setScale(Integer.parseInt(str));
+            }
+
+            currentFunctionImport.getParameters().add(parameter);
+            pushState(State.PARAMETER);
+        } else if ("function".equalsIgnoreCase(localName)) {
+            pushState(State.FUNCTION);
+        } else if ("entityContainer".equalsIgnoreCase(localName)) {
+            pushState(State.ENTITY_CONTAINER);
+            currentEntityContainer = new EntityContainer(attrs.getValue("Name"));
+            currentEntityContainer.setDefaultEntityContainer(Boolean
+                    .parseBoolean(attrs.getValue(
+                            Service.WCF_DATASERVICES_METADATA_NAMESPACE,
+                            "IsDefaultEntityContainer")));
+            String value = attrs.getValue("Extends");
+            if (value != null) {
+                currentEntityContainer.setExtended(new EntityContainer(value));
+            }
+            currentEntityContainer.setSchema(currentSchema);
+            currentMetadata.getContainers().add(currentEntityContainer);
+            registeredContainers.put(currentSchema.getNamespace().getName()
+                    + "." + currentEntityContainer.getName(),
+                    currentEntityContainer);
+        } else if ("entitySet".equalsIgnoreCase(localName)) {
+            pushState(State.ENTITY_SET);
+            EntitySet entitySet = new EntitySet(attrs.getValue("Name"));
+            registeredEntitySets.put(currentSchema.getNamespace().getName()
+                    + "." + entitySet.getName(), entitySet);
+            entitySet.setType(new EntityType(attrs.getValue("EntityType")));
+            currentEntityContainer.getEntities().add(entitySet);
+        } else if ("associationSet".equalsIgnoreCase(localName)) {
+            pushState(State.ASSOCIATION_SET);
+            currentAssociationSet = new AssociationSet(attrs.getValue("Name"));
+            currentAssociationSet.setAssociation(new Association(attrs
+                    .getValue("Association")));
+            currentEntityContainer.getAssociations().add(currentAssociationSet);
         }
     }
 }
