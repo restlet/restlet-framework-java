@@ -228,6 +228,8 @@ public class CookieSettingReader extends HeaderReader<CookieSetting> {
                         // End of pair
                         result = Parameter.create(nameBuffer, valueBuffer);
                     } else if ((nextChar == '"') && (valueBuffer.length() == 0)) {
+                        // Step back
+                        unread();
                         valueBuffer.append(readQuotedString());
                     } else if (HeaderUtils.isTokenChar(nextChar)
                             || (this.globalVersion < 1)) {

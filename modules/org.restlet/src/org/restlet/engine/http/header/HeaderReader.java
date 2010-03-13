@@ -251,7 +251,7 @@ public class HeaderReader<V> {
     }
 
     /**
-     * Reads the next quoted string.
+     * Reads the next quoted string. The first character must be a double quote.
      * 
      * @return The next quoted string.
      * @throws IOException

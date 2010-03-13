@@ -113,6 +113,7 @@ public class CookieWriter {
         if ((value != null) && (value.length() > 0)) {
             appendValue(value, version, destination);
         }
+        
         if (version > 0) {
             // Append the path
             final String path = cookie.getPath();
