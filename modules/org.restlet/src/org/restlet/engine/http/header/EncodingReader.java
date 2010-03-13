@@ -31,34 +31,35 @@
 package org.restlet.engine.http.header;
 
 import java.io.IOException;
+import java.util.Collection;
 
-import org.restlet.data.Expectation;
-import org.restlet.data.Parameter;
+import org.restlet.data.Encoding;
 
 /**
- * Expect header reader.
+ * Content-Encoding header reader.
  * 
  * @author Jerome Louvel
  */
-public class ExpectReader extends HeaderReader<Expectation> {
+public class EncodingReader extends HeaderReader<Encoding> {
+
     /**
      * Constructor.
      * 
      * @param header
      *            The header to read.
      */
-    public ExpectReader(String header) {
+    public EncodingReader(String header) {
         super(header);
     }
 
     @Override
-    protected Parameter createParameter(String name, String value) {
-        return new Expectation(name, value);
+    protected boolean canAdd(Encoding value, Collection<Encoding> values) {
+        return !Encoding.IDENTITY.equals(value);
     }
 
     @Override
-    public Expectation readValue() throws IOException {
-        return (Expectation) readParameter();
+    public Encoding readValue() throws IOException {
+        return Encoding.valueOf(readToken());
     }
 
 }

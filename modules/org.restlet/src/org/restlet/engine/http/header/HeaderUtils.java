@@ -208,7 +208,7 @@ public class HeaderUtils {
                             .getType())) {
                 headers
                         .add(HeaderConstants.HEADER_CONTENT_DISPOSITION,
-                                ContentDispositionWriter.write(entity
+                                DispositionWriter.write(entity
                                         .getDisposition()));
             }
         }
@@ -367,7 +367,7 @@ public class HeaderUtils {
         // Add the Cache-control headers
         if (!message.getCacheDirectives().isEmpty()) {
             headers.add(HeaderConstants.HEADER_CACHE_CONTROL,
-                    CacheControlWriter.append(message.getCacheDirectives()));
+                    CacheDirectiveWriter.append(message.getCacheDirectives()));
         }
 
         // Add the date
@@ -381,7 +381,7 @@ public class HeaderUtils {
         // Add the warning headers
         if (!message.getWarnings().isEmpty()) {
             for (Warning warning : message.getWarnings()) {
-                headers.add(HeaderConstants.HEADER_WARNING, WarningUtils
+                headers.add(HeaderConstants.HEADER_WARNING, WarningWriter
                         .format(warning));
             }
         }
@@ -415,7 +415,7 @@ public class HeaderUtils {
         ClientInfo client = request.getClientInfo();
         if (client.getAcceptedMediaTypes().size() > 0) {
             try {
-                headers.add(HeaderConstants.HEADER_ACCEPT, PreferenceUtils
+                headers.add(HeaderConstants.HEADER_ACCEPT, PreferenceWriter
                         .format(client.getAcceptedMediaTypes()));
             } catch (IOException ioe) {
                 Context.getCurrentLogger().log(Level.WARNING,
@@ -428,7 +428,7 @@ public class HeaderUtils {
         if (client.getAcceptedCharacterSets().size() > 0) {
             try {
                 headers.add(HeaderConstants.HEADER_ACCEPT_CHARSET,
-                        PreferenceUtils.format(client
+                        PreferenceWriter.format(client
                                 .getAcceptedCharacterSets()));
             } catch (IOException ioe) {
                 Context.getCurrentLogger().log(Level.WARNING,
@@ -439,7 +439,7 @@ public class HeaderUtils {
         if (client.getAcceptedEncodings().size() > 0) {
             try {
                 headers.add(HeaderConstants.HEADER_ACCEPT_ENCODING,
-                        PreferenceUtils.format(client.getAcceptedEncodings()));
+                        PreferenceWriter.format(client.getAcceptedEncodings()));
             } catch (IOException ioe) {
                 Context.getCurrentLogger().log(Level.WARNING,
                         "Unable to format the HTTP Accept header", ioe);
@@ -449,7 +449,7 @@ public class HeaderUtils {
         if (client.getAcceptedLanguages().size() > 0) {
             try {
                 headers.add(HeaderConstants.HEADER_ACCEPT_LANGUAGE,
-                        PreferenceUtils.format(client.getAcceptedLanguages()));
+                        PreferenceWriter.format(client.getAcceptedLanguages()));
             } catch (IOException ioe) {
                 Context.getCurrentLogger().log(Level.WARNING,
                         "Unable to format the HTTP Accept header", ioe);
@@ -570,7 +570,7 @@ public class HeaderUtils {
         if (client.getExpectations().size() > 0) {
             try {
                 headers.add(HeaderConstants.HEADER_ACCEPT_ENCODING,
-                        PreferenceUtils.format(client.getAcceptedEncodings()));
+                        PreferenceWriter.format(client.getAcceptedEncodings()));
             } catch (IOException ioe) {
                 Context.getCurrentLogger().log(Level.WARNING,
                         "Unable to format the HTTP Accept header", ioe);
@@ -935,13 +935,13 @@ public class HeaderUtils {
                 entityHeaderFound = true;
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_CONTENT_ENCODING)) {
-                ContentEncodingReader hr = new ContentEncodingReader(header
+                EncodingReader hr = new EncodingReader(header
                         .getValue());
                 hr.addValues(result.getEncodings());
                 entityHeaderFound = true;
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_CONTENT_LANGUAGE)) {
-                ContentLanguageReader hr = new ContentLanguageReader(header
+                LanguageReader hr = new LanguageReader(header
                         .getValue());
                 hr.addValues(result.getLanguages());
                 entityHeaderFound = true;
@@ -961,7 +961,7 @@ public class HeaderUtils {
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_CONTENT_DISPOSITION)) {
                 try {
-                    ContentDispositionReader r = new ContentDispositionReader(
+                    DispositionReader r = new DispositionReader(
                             header.getValue());
                     result.setDisposition(r.readValue());
                     entityHeaderFound = true;
@@ -1098,11 +1098,11 @@ public class HeaderUtils {
                 response.getServerInfo().setAgent(header.getValue());
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_ALLOW)) {
-                AllowReader hr = new AllowReader(header.getValue());
+                MethodReader hr = new MethodReader(header.getValue());
                 hr.addValues(response.getAllowedMethods());
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_VARY)) {
-                VaryReader hr = new VaryReader(header.getValue());
+                DimensionReader hr = new DimensionReader(header.getValue());
                 hr.addValues(response.getDimensions());
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_WARNING)) {
@@ -1110,7 +1110,7 @@ public class HeaderUtils {
                 hr.addValues(response.getWarnings());
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_CACHE_CONTROL)) {
-                CacheControlReader hr = new CacheControlReader(header
+                CacheDirectiveReader hr = new CacheDirectiveReader(header
                         .getValue());
                 hr.addValues(response.getCacheDirectives());
             } else if (header.getName().equalsIgnoreCase(

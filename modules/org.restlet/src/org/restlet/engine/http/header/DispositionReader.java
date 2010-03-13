@@ -32,14 +32,15 @@ package org.restlet.engine.http.header;
 
 import java.io.IOException;
 
-import org.restlet.data.Dimension;
+import org.restlet.data.Disposition;
+import org.restlet.data.Parameter;
 
 /**
- * Vary header reader.
+ * Content-Disposition header reader.
  * 
- * @author Jerome Louvel
+ * @author Thierry Boileau
  */
-public class VaryReader extends HeaderReader<Dimension> {
+public class DispositionReader extends HeaderReader<Disposition> {
 
     /**
      * Constructor.
@@ -47,32 +48,32 @@ public class VaryReader extends HeaderReader<Dimension> {
      * @param header
      *            The header to read.
      */
-    public VaryReader(String header) {
+    public DispositionReader(String header) {
         super(header);
     }
 
     @Override
-    public Dimension readValue() throws IOException {
-        Dimension result = null;
-        String value = readRawValue();
+    public Disposition readValue() throws IOException {
+        Disposition result = null;
+        String type = readToken();
 
-        if (value.equalsIgnoreCase(HeaderConstants.HEADER_ACCEPT)) {
-            result = Dimension.MEDIA_TYPE;
-        } else if (value
-                .equalsIgnoreCase(HeaderConstants.HEADER_ACCEPT_CHARSET)) {
-            result = Dimension.CHARACTER_SET;
-        } else if (value
-                .equalsIgnoreCase(HeaderConstants.HEADER_ACCEPT_ENCODING)) {
-            result = Dimension.ENCODING;
-        } else if (value
-                .equalsIgnoreCase(HeaderConstants.HEADER_ACCEPT_LANGUAGE)) {
-            result = Dimension.LANGUAGE;
-        } else if (value.equalsIgnoreCase(HeaderConstants.HEADER_AUTHORIZATION)) {
-            result = Dimension.AUTHORIZATION;
-        } else if (value.equalsIgnoreCase(HeaderConstants.HEADER_USER_AGENT)) {
-            result = Dimension.CLIENT_AGENT;
-        } else if (value.equals("*")) {
-            result = Dimension.UNSPECIFIED;
+        if (type.length() > 0) {
+            result = new Disposition();
+            result.setType(type);
+
+            if (skipParameterSeparator()) {
+                Parameter param = readParameter();
+
+                while (param != null) {
+                    result.getParameters().add(param);
+
+                    if (skipParameterSeparator()) {
+                        param = readParameter();
+                    } else {
+                        param = null;
+                    }
+                }
+            }
         }
 
         return result;

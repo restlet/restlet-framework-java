@@ -40,7 +40,7 @@ import org.restlet.data.Expectation;
  * 
  * @author Jerome Louvel
  */
-public class ExpectationUtils {
+public class ExpectationWriter {
 
     /**
      * Formats a list of expectations with a comma separator.

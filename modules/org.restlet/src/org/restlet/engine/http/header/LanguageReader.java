@@ -39,7 +39,7 @@ import org.restlet.data.Language;
  * 
  * @author Jerome Louvel
  */
-public class ContentLanguageReader extends HeaderReader<Language> {
+public class LanguageReader extends HeaderReader<Language> {
 
     /**
      * Constructor.
@@ -47,7 +47,7 @@ public class ContentLanguageReader extends HeaderReader<Language> {
      * @param header
      *            The header to read.
      */
-    public ContentLanguageReader(String header) {
+    public LanguageReader(String header) {
         super(header);
     }
 

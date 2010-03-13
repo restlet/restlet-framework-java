@@ -32,28 +32,33 @@ package org.restlet.engine.http.header;
 
 import java.io.IOException;
 
-import org.restlet.data.Method;
+import org.restlet.data.Expectation;
+import org.restlet.data.Parameter;
 
 /**
- * Allow header reader.
+ * Expect header reader.
  * 
  * @author Jerome Louvel
  */
-public class AllowReader extends HeaderReader<Method> {
-
+public class ExpectationReader extends HeaderReader<Expectation> {
     /**
      * Constructor.
      * 
      * @param header
      *            The header to read.
      */
-    public AllowReader(String header) {
+    public ExpectationReader(String header) {
         super(header);
     }
 
     @Override
-    public Method readValue() throws IOException {
-        return Method.valueOf(readToken());
+    protected Parameter createParameter(String name, String value) {
+        return new Expectation(name, value);
+    }
+
+    @Override
+    public Expectation readValue() throws IOException {
+        return (Expectation) readParameter();
     }
 
 }

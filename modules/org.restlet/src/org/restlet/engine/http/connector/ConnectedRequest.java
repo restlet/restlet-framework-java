@@ -52,12 +52,12 @@ import org.restlet.data.Range;
 import org.restlet.data.Reference;
 import org.restlet.data.Tag;
 import org.restlet.data.Warning;
-import org.restlet.engine.http.header.CacheControlReader;
+import org.restlet.engine.http.header.CacheDirectiveReader;
 import org.restlet.engine.http.header.CookieReader;
 import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.http.header.HeaderReader;
 import org.restlet.engine.http.header.HeaderUtils;
-import org.restlet.engine.http.header.PreferenceUtils;
+import org.restlet.engine.http.header.PreferenceReader;
 import org.restlet.engine.http.header.RangeUtils;
 import org.restlet.engine.http.header.WarningReader;
 import org.restlet.engine.security.AuthenticatorUtils;
@@ -317,7 +317,7 @@ public class ConnectedRequest extends Request {
             if (getHeaders() != null) {
                 for (String directive : getHeaders().getValuesArray(
                         HeaderConstants.HEADER_CACHE_CONTROL)) {
-                    new CacheControlReader(directive).addValues(result);
+                    new CacheDirectiveReader(directive).addValues(result);
                 }
             }
 
@@ -377,22 +377,22 @@ public class ConnectedRequest extends Request {
                 // other
                 // headers.
                 try {
-                    PreferenceUtils.parseCharacterSets(acceptCharset, result);
+                    PreferenceReader.parseCharacterSets(acceptCharset, result);
                 } catch (Exception e) {
                     this.context.getLogger().log(Level.INFO, e.getMessage());
                 }
                 try {
-                    PreferenceUtils.parseEncodings(acceptEncoding, result);
+                    PreferenceReader.parseEncodings(acceptEncoding, result);
                 } catch (Exception e) {
                     this.context.getLogger().log(Level.INFO, e.getMessage());
                 }
                 try {
-                    PreferenceUtils.parseLanguages(acceptLanguage, result);
+                    PreferenceReader.parseLanguages(acceptLanguage, result);
                 } catch (Exception e) {
                     this.context.getLogger().log(Level.INFO, e.getMessage());
                 }
                 try {
-                    PreferenceUtils.parseMediaTypes(acceptMediaType, result);
+                    PreferenceReader.parseMediaTypes(acceptMediaType, result);
                 } catch (Exception e) {
                     this.context.getLogger().log(Level.INFO, e.getMessage());
                 }

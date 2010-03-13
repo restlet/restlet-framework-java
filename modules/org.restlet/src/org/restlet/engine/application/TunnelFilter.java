@@ -55,7 +55,7 @@ import org.restlet.data.Preference;
 import org.restlet.data.Reference;
 import org.restlet.engine.Engine;
 import org.restlet.engine.http.header.HeaderConstants;
-import org.restlet.engine.http.header.PreferenceUtils;
+import org.restlet.engine.http.header.PreferenceReader;
 import org.restlet.routing.Filter;
 import org.restlet.service.MetadataService;
 import org.restlet.service.TunnelService;
@@ -507,20 +507,19 @@ public class TunnelFilter extends Filter {
         if (agentAttributes != null) {
             if (getAcceptReplacers() != null) {
                 // Get the old Accept header value
-                final Form headers = (Form) request.getAttributes().get(
+                Form headers = (Form) request.getAttributes().get(
                         HeaderConstants.ATTRIBUTE_HEADERS);
-
-                final String acceptOld = (headers != null) ? headers
-                        .getFirstValue(HeaderConstants.HEADER_ACCEPT, true)
-                        : null;
+                String acceptOld = (headers != null) ? headers.getFirstValue(
+                        HeaderConstants.HEADER_ACCEPT, true) : null;
 
                 // Check each replacer
                 for (AcceptReplacer acceptReplacer : this.acceptReplacers) {
                     // Check the conditions
                     boolean checked = true;
+
                     for (String key : acceptReplacer.getAgentAttributes()
                             .keySet()) {
-                        final String attribute = agentAttributes.get(key);
+                        String attribute = agentAttributes.get(key);
                         // Check that the agent properties match the properties
                         // set by the rule.
                         checked = checked
@@ -537,8 +536,8 @@ public class TunnelFilter extends Filter {
                                     acceptOld);
                         }
                         if (checked) {
-                            final ClientInfo clientInfo = new ClientInfo();
-                            PreferenceUtils.parseMediaTypes(acceptReplacer
+                            ClientInfo clientInfo = new ClientInfo();
+                            PreferenceReader.parseMediaTypes(acceptReplacer
                                     .getAcceptNew(), clientInfo);
                             request.getClientInfo().setAcceptedMediaTypes(
                                     clientInfo.getAcceptedMediaTypes());

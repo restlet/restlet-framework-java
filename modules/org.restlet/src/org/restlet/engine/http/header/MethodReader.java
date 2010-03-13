@@ -31,16 +31,15 @@
 package org.restlet.engine.http.header;
 
 import java.io.IOException;
-import java.util.Collection;
 
-import org.restlet.data.Encoding;
+import org.restlet.data.Method;
 
 /**
- * Content-Encoding header reader.
+ * Allow header reader.
  * 
  * @author Jerome Louvel
  */
-public class ContentEncodingReader extends HeaderReader<Encoding> {
+public class MethodReader extends HeaderReader<Method> {
 
     /**
      * Constructor.
@@ -48,18 +47,13 @@ public class ContentEncodingReader extends HeaderReader<Encoding> {
      * @param header
      *            The header to read.
      */
-    public ContentEncodingReader(String header) {
+    public MethodReader(String header) {
         super(header);
     }
 
     @Override
-    protected boolean canAdd(Encoding value, Collection<Encoding> values) {
-        return !Encoding.IDENTITY.equals(value);
-    }
-
-    @Override
-    public Encoding readValue() throws IOException {
-        return Encoding.valueOf(readToken());
+    public Method readValue() throws IOException {
+        return Method.valueOf(readToken());
     }
 
 }

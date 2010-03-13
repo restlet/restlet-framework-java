@@ -35,6 +35,7 @@ import java.util.Iterator;
 import static org.restlet.engine.http.header.HeaderUtils.*;
 
 import org.restlet.data.CharacterSet;
+import org.restlet.data.ClientInfo;
 import org.restlet.data.Encoding;
 import org.restlet.data.Form;
 import org.restlet.data.Language;
@@ -50,7 +51,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
-public class AcceptReader<T extends Metadata> extends
+public class PreferenceReader<T extends Metadata> extends
         HeaderReader<Preference<T>> {
     public static final int TYPE_CHARACTER_SET = 1;
 
@@ -59,6 +60,121 @@ public class AcceptReader<T extends Metadata> extends
     public static final int TYPE_LANGUAGE = 3;
 
     public static final int TYPE_MEDIA_TYPE = 4;
+
+    /**
+     * Parses character set preferences from a header.
+     * 
+     * @param acceptCharsetHeader
+     *            The header to parse.
+     * @param client
+     *            The client preferences to update.
+     */
+    @SuppressWarnings("unchecked")
+    public static void parseCharacterSets(String acceptCharsetHeader,
+            ClientInfo client) {
+        if (acceptCharsetHeader != null) {
+            // Implementation according to
+            // http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.2
+            if (acceptCharsetHeader.length() == 0) {
+                client.getAcceptedCharacterSets().add(
+                        new Preference<CharacterSet>(CharacterSet.ISO_8859_1));
+            } else {
+                PreferenceReader pr = new PreferenceReader(
+                        PreferenceReader.TYPE_CHARACTER_SET,
+                        acceptCharsetHeader);
+                pr.addValues(client.getAcceptedCharacterSets());
+            }
+        } else {
+            client.getAcceptedCharacterSets().add(
+                    new Preference(CharacterSet.ALL));
+        }
+    }
+
+    /**
+     * Parses encoding preferences from a header.
+     * 
+     * @param acceptEncodingHeader
+     *            The header to parse.
+     * @param preference
+     *            The client preferences to update.
+     */
+    @SuppressWarnings("unchecked")
+    public static void parseEncodings(String acceptEncodingHeader,
+            ClientInfo preference) {
+        if (acceptEncodingHeader != null) {
+            PreferenceReader pr = new PreferenceReader(
+                    PreferenceReader.TYPE_ENCODING, acceptEncodingHeader);
+            pr.addValues(preference.getAcceptedEncodings());
+        } else {
+            preference.getAcceptedEncodings().add(
+                    new Preference(Encoding.IDENTITY));
+        }
+    }
+
+    /**
+     * Parses language preferences from a header.
+     * 
+     * @param acceptLanguageHeader
+     *            The header to parse.
+     * @param preference
+     *            The client preferences to update.
+     */
+    @SuppressWarnings("unchecked")
+    public static void parseLanguages(String acceptLanguageHeader,
+            ClientInfo preference) {
+        if (acceptLanguageHeader != null) {
+            PreferenceReader pr = new PreferenceReader(
+                    PreferenceReader.TYPE_LANGUAGE, acceptLanguageHeader);
+            pr.addValues(preference.getAcceptedLanguages());
+        } else {
+            preference.getAcceptedLanguages().add(new Preference(Language.ALL));
+        }
+    }
+
+    /**
+     * Parses media type preferences from a header.
+     * 
+     * @param acceptMediaTypeHeader
+     *            The header to parse.
+     * @param preference
+     *            The client preferences to update.
+     */
+    @SuppressWarnings("unchecked")
+    public static void parseMediaTypes(String acceptMediaTypeHeader,
+            ClientInfo preference) {
+        if (acceptMediaTypeHeader != null) {
+            PreferenceReader pr = new PreferenceReader(
+                    PreferenceReader.TYPE_MEDIA_TYPE, acceptMediaTypeHeader);
+            pr.addValues(preference.getAcceptedMediaTypes());
+        } else {
+            preference.getAcceptedMediaTypes().add(
+                    new Preference(MediaType.ALL));
+        }
+    }
+
+    /**
+     * Parses a quality value.<br>
+     * If the quality is invalid, an IllegalArgumentException is thrown.
+     * 
+     * @param quality
+     *            The quality value as a string.
+     * @return The parsed quality value as a float.
+     */
+    public static float parseQuality(String quality) {
+        try {
+            final float result = Float.valueOf(quality);
+
+            if (PreferenceWriter.isQuality(result)) {
+                return result;
+            }
+
+            throw new IllegalArgumentException(
+                    "Invalid quality value detected. Value must be between 0 and 1.");
+        } catch (NumberFormatException nfe) {
+            throw new IllegalArgumentException(
+                    "Invalid quality value detected. Value must be between 0 and 1.");
+        }
+    }
 
     /** The type of metadata read. */
     private volatile int type;
@@ -71,7 +187,7 @@ public class AcceptReader<T extends Metadata> extends
      * @param header
      *            The header to read.
      */
-    public AcceptReader(int type, String header) {
+    public PreferenceReader(int type, String header) {
         super(header);
         this.type = type;
     }
@@ -188,7 +304,7 @@ public class AcceptReader<T extends Metadata> extends
                     && iter.hasNext();) {
                 param = iter.next();
                 if (param.getName().equals("q")) {
-                    result = PreferenceUtils.parseQuality(param.getValue());
+                    result = parseQuality(param.getValue());
                     found = true;
 
                     // Remove the quality parameter as we will directly store it

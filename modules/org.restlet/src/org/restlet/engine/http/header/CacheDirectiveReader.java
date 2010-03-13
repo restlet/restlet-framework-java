@@ -40,14 +40,14 @@ import org.restlet.data.Parameter;
  * 
  * @author Jerome Louvel
  */
-public class CacheControlReader extends HeaderReader<CacheDirective> {
+public class CacheDirectiveReader extends HeaderReader<CacheDirective> {
     /**
      * Constructor.
      * 
      * @param header
      *            The header to read.
      */
-    public CacheControlReader(String header) {
+    public CacheDirectiveReader(String header) {
         super(header);
     }
 

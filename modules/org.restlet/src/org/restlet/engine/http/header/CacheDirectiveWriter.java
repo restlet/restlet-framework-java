@@ -40,7 +40,7 @@ import org.restlet.data.CacheDirective;
  * 
  * @author Thierry Boileau
  */
-public class CacheControlWriter {
+public class CacheDirectiveWriter {
 
     /**
      * Formats a list of cache directives with a comma separator.

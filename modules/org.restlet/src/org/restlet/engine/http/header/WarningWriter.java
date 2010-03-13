@@ -40,7 +40,7 @@ import org.restlet.engine.util.DateUtils;
  * 
  * @author Thierry Boileau
  */
-public class WarningUtils {
+public class WarningWriter {
 
     /**
      * Formats a warning.
@@ -110,7 +110,7 @@ public class WarningUtils {
      * Private constructor to ensure that the class acts as a true utility class
      * i.e. it isn't instantiable and extensible.
      */
-    private WarningUtils() {
+    private WarningWriter() {
     }
 
 }

@@ -36,8 +36,8 @@ import javax.ws.rs.ext.RuntimeDelegate;
 import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
 
 import org.restlet.data.CacheDirective;
-import org.restlet.engine.http.header.CacheControlReader;
-import org.restlet.engine.http.header.CacheControlWriter;
+import org.restlet.engine.http.header.CacheDirectiveReader;
+import org.restlet.engine.http.header.CacheDirectiveWriter;
 import org.restlet.ext.jaxrs.internal.util.Converter;
 
 /**
@@ -67,7 +67,7 @@ public class CacheControlHeaderDelegate implements HeaderDelegate<CacheControl> 
      */
     public CacheControl fromString(String value)
             throws IllegalArgumentException {
-        CacheControlReader ccr = new CacheControlReader(value);
+        CacheDirectiveReader ccr = new CacheDirectiveReader(value);
         List<CacheDirective> cacheDirectives = ccr.readValues();
         return Converter.toJaxRsCacheControl(cacheDirectives);
     }
@@ -85,6 +85,6 @@ public class CacheControlHeaderDelegate implements HeaderDelegate<CacheControl> 
     public String toString(CacheControl cacheControl) {
         List<CacheDirective> directives = Converter
                 .toRestletCacheDirective(cacheControl);
-        return CacheControlWriter.append(directives);
+        return CacheDirectiveWriter.append(directives);
     }
 }

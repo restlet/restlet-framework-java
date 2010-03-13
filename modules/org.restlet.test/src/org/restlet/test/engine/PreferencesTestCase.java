@@ -36,8 +36,8 @@ import java.util.List;
 
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
-import org.restlet.engine.http.header.AcceptReader;
-import org.restlet.engine.http.header.PreferenceUtils;
+import org.restlet.engine.http.header.PreferenceReader;
+import org.restlet.engine.http.header.PreferenceWriter;
 import org.restlet.test.RestletTestCase;
 
 /**
@@ -54,13 +54,13 @@ public class PreferencesTestCase extends RestletTestCase {
      */
     private void testMediaType(String headerValue, boolean testEquals)
             throws IOException {
-        AcceptReader<MediaType> pr = new AcceptReader<MediaType>(
-                AcceptReader.TYPE_MEDIA_TYPE, headerValue);
+        PreferenceReader<MediaType> pr = new PreferenceReader<MediaType>(
+                PreferenceReader.TYPE_MEDIA_TYPE, headerValue);
         List<Preference<MediaType>> prefs = new ArrayList<Preference<MediaType>>();
         pr.addValues(prefs);
         
         // Rewrite the header
-        String newHeaderValue = PreferenceUtils.format(prefs);
+        String newHeaderValue = PreferenceWriter.format(prefs);
 
         if (testEquals) {
             // Compare initial and new headers

@@ -44,8 +44,8 @@ import org.restlet.Server;
 import org.restlet.data.Digest;
 import org.restlet.data.Parameter;
 import org.restlet.engine.ConnectorHelper;
-import org.restlet.engine.http.header.ContentEncodingReader;
-import org.restlet.engine.http.header.ContentLanguageReader;
+import org.restlet.engine.http.header.EncodingReader;
+import org.restlet.engine.http.header.LanguageReader;
 import org.restlet.engine.http.header.ContentType;
 import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.http.header.HeaderUtils;
@@ -168,11 +168,11 @@ public abstract class ServerCall extends Call {
         for (Parameter header : getRequestHeaders()) {
             if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_CONTENT_ENCODING)) {
-                new ContentEncodingReader(header.getValue()).addValues(result
+                new EncodingReader(header.getValue()).addValues(result
                         .getEncodings());
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_CONTENT_LANGUAGE)) {
-                new ContentLanguageReader(header.getValue()).addValues(result
+                new LanguageReader(header.getValue()).addValues(result
                         .getLanguages());
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_CONTENT_TYPE)) {
