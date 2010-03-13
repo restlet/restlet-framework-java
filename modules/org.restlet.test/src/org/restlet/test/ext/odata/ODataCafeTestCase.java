@@ -53,7 +53,7 @@ public class ODataCafeTestCase extends RestletTestCase {
         assertTrue(iterator.hasNext());
         Cafe cafe = iterator.next();
         assertEquals("1", cafe.getId());
-        assertEquals("Le Café Louis", cafe.getName());
+        assertEquals("Le Cafe Louis", cafe.getName());
         assertEquals("Cafe corp.", cafe.getCompanyName());
         assertEquals("Levallois-Perret", cafe.getCity());
         assertEquals(92300, cafe.getZipCode());
@@ -79,7 +79,7 @@ public class ODataCafeTestCase extends RestletTestCase {
         assertTrue(iterator.hasNext());
         Cafe cafe = iterator.next();
         assertEquals("1", cafe.getId());
-        assertEquals("Le Café Louis", cafe.getName());
+        assertEquals("Le Cafe Louis", cafe.getName());
         assertEquals("Cafe corp.", cafe.getCompanyName());
         assertEquals("Levallois-Perret", cafe.getCity());
         assertEquals(92300, cafe.getZipCode());
@@ -117,7 +117,7 @@ public class ODataCafeTestCase extends RestletTestCase {
         assertTrue(iterator.hasNext());
         Cafe cafe = iterator.next();
         assertEquals("1", cafe.getId());
-        assertEquals("Le Café Louis", cafe.getName());
+        assertEquals("Le Cafe Louis", cafe.getName());
         assertEquals("Cafe corp.", cafe.getCompanyName());
         assertEquals("Levallois-Perret", cafe.getCity());
         assertEquals(92300, cafe.getZipCode());
@@ -131,7 +131,7 @@ public class ODataCafeTestCase extends RestletTestCase {
         assertTrue(iterator2.hasNext());
         item = iterator2.next();
         assertEquals("2", item.getId());
-        assertEquals("Pâté", item.getDescription());
+        assertEquals("Pate", item.getDescription());
 
         assertTrue(iterator.hasNext());
         cafe = iterator.next();
@@ -150,7 +150,7 @@ public class ODataCafeTestCase extends RestletTestCase {
         assertTrue(iterator2.hasNext());
         item = iterator2.next();
         assertEquals("4", item.getId());
-        assertEquals("Côte du Rhone", item.getDescription());
+        assertEquals("Cote du Rhone", item.getDescription());
     }
 
     /**
@@ -179,7 +179,7 @@ public class ODataCafeTestCase extends RestletTestCase {
         assertTrue(iterator.hasNext());
         Cafe cafe = iterator.next();
         assertEquals("1", cafe.getId());
-        assertEquals("Le Café Louis", cafe.getName());
+        assertEquals("Le Cafe Louis", cafe.getName());
         assertEquals("Cafe corp.", cafe.getCompanyName());
         assertEquals("Levallois-Perret", cafe.getCity());
         assertEquals(92300, cafe.getZipCode());
@@ -195,7 +195,7 @@ public class ODataCafeTestCase extends RestletTestCase {
         assertTrue(iterator.hasNext());
         cafe = iterator.next();
         assertEquals("1", cafe.getId());
-        assertEquals("Le Café Louis", cafe.getName());
+        assertEquals("Le Cafe Louis", cafe.getName());
         assertEquals("Cafe corp.", cafe.getCompanyName());
         assertEquals("Levallois-Perret", cafe.getCity());
         assertEquals(92300, cafe.getZipCode());

@@ -56,7 +56,7 @@ public class ODataCafeCustoFeedsTestCase extends RestletTestCase {
         assertTrue(iterator.hasNext());
         Cafe cafe = iterator.next();
         assertEquals("1", cafe.getId());
-        assertEquals("Le CafÃ© Louis", cafe.getName());
+        assertEquals("Le Café Louis", cafe.getName());
         assertEquals("Cafe corp.", cafe.getCompanyName());
         assertEquals("Levallois-Perret", cafe.getCity());
         assertEquals(92300, cafe.getZipCode());
@@ -82,7 +82,7 @@ public class ODataCafeCustoFeedsTestCase extends RestletTestCase {
         assertTrue(iterator.hasNext());
         Cafe cafe = iterator.next();
         assertEquals("1", cafe.getId());
-        assertEquals("Le CafÃ© Louis", cafe.getName());
+        assertEquals("Le Café Louis", cafe.getName());
         assertEquals("Cafe corp.", cafe.getCompanyName());
         assertEquals("Levallois-Perret", cafe.getCity());
         assertEquals(92300, cafe.getZipCode());
@@ -120,7 +120,7 @@ public class ODataCafeCustoFeedsTestCase extends RestletTestCase {
         assertTrue(iterator.hasNext());
         Cafe cafe = iterator.next();
         assertEquals("1", cafe.getId());
-        assertEquals("Le CafÃ© Louis", cafe.getName());
+        assertEquals("Le Café Louis", cafe.getName());
         assertEquals("Cafe corp.", cafe.getCompanyName());
         assertEquals("Levallois-Perret", cafe.getCity());
         assertEquals(92300, cafe.getZipCode());
@@ -134,7 +134,7 @@ public class ODataCafeCustoFeedsTestCase extends RestletTestCase {
         assertTrue(iterator2.hasNext());
         item = iterator2.next();
         assertEquals("2", item.getId());
-        assertEquals("PÃ¢tÃ©", item.getDescription());
+        assertEquals("Pâté", item.getDescription());
 
         assertTrue(iterator.hasNext());
         cafe = iterator.next();
@@ -153,7 +153,7 @@ public class ODataCafeCustoFeedsTestCase extends RestletTestCase {
         assertTrue(iterator2.hasNext());
         item = iterator2.next();
         assertEquals("4", item.getId());
-        assertEquals("CÃ´te du Rhone", item.getDescription());
+        assertEquals("Côte du Rhone", item.getDescription());
     }
 
     /**

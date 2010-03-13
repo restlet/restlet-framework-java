@@ -386,11 +386,10 @@ public final class ClientInfo {
     }
 
     /**
-     * Returns the list of client IP addresses.<br>
-     * <br>
-     * The first address is the one of the immediate client component as
-     * returned by the getClientAdress() method and the last address should
-     * correspond to the origin client (frequently a user agent).<br>
+     * Returns the list of client IP addresses. The first address is the one of
+     * the immediate client component as returned by the getClientAdress()
+     * method and the last address should correspond to the origin client
+     * (frequently a user agent).<br>
      * <br>
      * This is useful when the user agent is separated from the origin server by
      * a chain of intermediary components. Creates a new instance if no one has
@@ -693,9 +692,8 @@ public final class ClientInfo {
     // [ifndef gwt] method
     /**
      * Returns the best variant for a given resource according the the client
-     * preferences.<br>
-     * A default language is provided in case the resource's variants don't
-     * match the client preferences.
+     * preferences. A default language is provided in case the resource's
+     * variants don't match the client preferences.
      * 
      * @param resource
      *            The resource for which the best representation needs to be

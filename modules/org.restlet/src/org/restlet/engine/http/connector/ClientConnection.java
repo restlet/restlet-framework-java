@@ -69,7 +69,7 @@ public class ClientConnection extends Connection<Client> {
         if (absoluteRef.hasQuery()) {
             result = absoluteRef.getPath() + "?" + absoluteRef.getQuery();
         } else {
-            result = absoluteRef.getPath();            
+            result = absoluteRef.getPath();
         }
 
         if ((result == null) || (result.equals(""))) {
@@ -210,6 +210,7 @@ public class ClientConnection extends Connection<Client> {
         response.setEntity(createInboundEntity(headers));
 
         HeaderUtils.copyResponseTransportHeaders(headers, response);
+
         // Put the headers in the response's attributes map
         response.getAttributes()
                 .put(HeaderConstants.ATTRIBUTE_HEADERS, headers);

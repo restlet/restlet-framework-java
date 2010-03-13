@@ -227,6 +227,7 @@ public class ServerConnection extends Connection<Server> {
                 requestUri, version, headers, createInboundEntity(headers),
                 false, null);
         Response response = getHelper().createResponse(request);
+
         // Update the response
         response.getServerInfo().setAddress(
                 getHelper().getHelped().getAddress());

@@ -1113,6 +1113,11 @@ public class HeaderUtils {
                 CacheControlReader hr = new CacheControlReader(header
                         .getValue());
                 hr.addValues(response.getCacheDirectives());
+            } else if (header.getName().equalsIgnoreCase(
+                    HeaderConstants.HEADER_ACCEPT_RANGES)) {
+                TokenReader tr = new TokenReader(header.getValue());
+                response.getServerInfo().setAcceptingRanges(
+                        tr.readValues().contains("bytes"));
             }
         }
     }

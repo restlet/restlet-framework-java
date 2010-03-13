@@ -188,9 +188,8 @@ public class AuthenticationInfo {
     }
 
     /**
-     * Returns the optional response digest for mutual authentication.<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
+     * Returns the optional response digest for mutual authentication. Note that
+     * when used with HTTP connectors, this property maps to the
      * "response-digest" value in the "response-auth" directive of the
      * "Authentication-Info" header.
      * 
@@ -241,8 +240,8 @@ public class AuthenticationInfo {
     /**
      * Sets the quality of protection. The value can be
      * {@link ChallengeMessage#QUALITY_AUTHENTICATION} for authentication or
-     * {@link ChallengeMessage#QUALITY_AUTHENTICATION_INTEGRITY} for authentication with
-     * integrity protection.
+     * {@link ChallengeMessage#QUALITY_AUTHENTICATION_INTEGRITY} for
+     * authentication with integrity protection.
      * 
      * @param qop
      *            The quality of protection.
@@ -252,9 +251,8 @@ public class AuthenticationInfo {
     }
 
     /**
-     * Sets the optional response digest for mutual authentication.<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
+     * Sets the optional response digest for mutual authentication. Note that
+     * when used with HTTP connectors, this property maps to the
      * "response-digest" value in the "response-auth" directive of the
      * "Authentication-Info" header.
      * 

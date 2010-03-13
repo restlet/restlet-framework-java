@@ -130,6 +130,8 @@ Changes log
         - Fixed potential threading issues on Message/Request/Response
           regarding collections in asynchronous processing mode.
           Based on feed-back from Tim Peierls.
+        - Fixed missing parsing of the "Accept-Ranges" header to 
+          populate the ServerInfo#isAcceptingRanges() property.
     - Misc
         - Removed Representation#getDigester* methods. There is no 
           reason to favor this way to wrap a Representation.
