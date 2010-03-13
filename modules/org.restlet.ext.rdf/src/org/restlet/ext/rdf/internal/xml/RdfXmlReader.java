@@ -71,7 +71,7 @@ public class RdfXmlReader extends RdfReader {
             saxRepresentation = new SaxRepresentation(getRdfRepresentation());
             // Transmit the identifier used as a base for the resolution of
             // relative URIs.
-            saxRepresentation.setLocation(getRdfRepresentation().getLocation());
+            saxRepresentation.setLocationRef(getRdfRepresentation().getLocationRef());
         }
 
         saxRepresentation.parse(new ContentReader(saxRepresentation,

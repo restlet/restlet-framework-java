@@ -130,8 +130,8 @@ public class TransformRepresentation extends OutputRepresentation {
         }
 
         // Copy the representation's URI as an XML system ID.
-        if (representation.getLocation() != null) {
-            result.setSystemId(representation.getLocation().getTargetRef()
+        if (representation.getLocationRef() != null) {
+            result.setSystemId(representation.getLocationRef().getTargetRef()
                     .toString());
         }
 
@@ -302,9 +302,9 @@ public class TransformRepresentation extends OutputRepresentation {
                     final StreamSource transformSource = new StreamSource(
                             getTransformSheet().getStream());
 
-                    if (getTransformSheet().getLocation() != null) {
+                    if (getTransformSheet().getLocationRef() != null) {
                         transformSource.setSystemId(getTransformSheet()
-                                .getLocation().getTargetRef().toString());
+                                .getLocationRef().getTargetRef().toString());
                     }
 
                     // Create the transformer factory

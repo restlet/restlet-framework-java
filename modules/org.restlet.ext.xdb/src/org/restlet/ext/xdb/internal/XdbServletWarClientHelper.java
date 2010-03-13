@@ -210,7 +210,7 @@ public class XdbServletWarClientHelper extends ServletWarClientHelper {
                             final MetadataService metadataService = getMetadataService();
                             output = new InputRepresentation(is,
                                     metadataService.getDefaultMediaType());
-                            output.setLocation(request.getResourceRef());
+                            output.setLocationRef(request.getResourceRef());
                             Entity.updateMetadata(entry, output, true,
                                     getMetadataService());
 

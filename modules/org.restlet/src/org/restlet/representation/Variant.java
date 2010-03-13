@@ -61,7 +61,7 @@ public class Variant {
     private volatile List<Encoding> encodings;
 
     /** The location reference. */
-    private volatile Reference location;
+    private volatile Reference locationRef;
 
     /** The natural language(s) of the intended audience for this variant. */
     private volatile List<Language> languages;
@@ -105,7 +105,7 @@ public class Variant {
         }
 
         this.mediaType = mediaType;
-        this.location = null;
+        this.locationRef = null;
     }
 
     /**
@@ -281,11 +281,11 @@ public class Variant {
      * "Content-Location" header.
      * 
      * @return The identifier.
-     * @deprecated Use {@link #getLocation()} instead.
+     * @deprecated Use {@link #getLocationRef()} instead.
      */
     @Deprecated
     public Reference getIdentifier() {
-        return getLocation();
+        return getLocationRef();
     }
 
     /**
@@ -373,8 +373,8 @@ public class Variant {
      * 
      * @return The identifier.
      */
-    public Reference getLocation() {
-        return this.location;
+    public Reference getLocationRef() {
+        return this.locationRef;
     }
 
     /**
@@ -475,11 +475,11 @@ public class Variant {
      * 
      * @param identifier
      *            The identifier.
-     * @deprecated Use {@link #setLocation(Reference)} instead
+     * @deprecated Use {@link #setLocationRef(Reference)} instead
      */
     @Deprecated
     public void setIdentifier(Reference identifier) {
-        setLocation(identifier);
+        setLocationRef(identifier);
     }
 
     /**
@@ -491,11 +491,11 @@ public class Variant {
      * @param identifierUri
      *            The identifier to parse.
      * @see #setIdentifier(Reference)
-     * @deprecated Use {@link #setLocation(String)} instead.
+     * @deprecated Use {@link #setLocationRef(String)} instead.
      */
     @Deprecated
     public void setIdentifier(String identifierUri) {
-        setLocation(identifierUri);
+        setLocationRef(identifierUri);
     }
 
     /**
@@ -522,8 +522,8 @@ public class Variant {
      * @param location
      *            The location reference.
      */
-    public void setLocation(Reference location) {
-        this.location = location;
+    public void setLocationRef(Reference location) {
+        this.locationRef = location;
     }
 
     /**
@@ -536,8 +536,8 @@ public class Variant {
      *            The location URI to parse.
      * @see #setIdentifier(Reference)
      */
-    public void setLocation(String locationUri) {
-        setLocation(new Reference(locationUri));
+    public void setLocationRef(String locationUri) {
+        setLocationRef(new Reference(locationUri));
     }
 
     /**

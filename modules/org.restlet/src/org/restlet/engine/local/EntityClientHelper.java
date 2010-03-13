@@ -242,7 +242,7 @@ public abstract class EntityClientHelper extends LocalClientHelper {
                     // Return the file content
                     output = entity.getRepresentation(getMetadataService()
                             .getDefaultMediaType(), getTimeToLive());
-                    output.setLocation(request.getResourceRef());
+                    output.setLocationRef(request.getResourceRef());
                     Entity.updateMetadata(entity.getName(), output, true,
                             getMetadataService());
                 }
@@ -282,7 +282,7 @@ public abstract class EntityClientHelper extends LocalClientHelper {
                     output = uniqueVariant.getRepresentation(
                             getMetadataService().getDefaultMediaType(),
                             getTimeToLive());
-                    output.setLocation(request.getResourceRef());
+                    output.setLocationRef(request.getResourceRef());
                     Entity.updateMetadata(entity.getName(), output, true,
                             getMetadataService());
                 }
@@ -292,7 +292,7 @@ public abstract class EntityClientHelper extends LocalClientHelper {
         if (output == null) {
             response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
         } else {
-            output.setLocation(request.getResourceRef());
+            output.setLocationRef(request.getResourceRef());
             response.setEntity(output);
             response.setStatus(Status.SUCCESS_OK);
         }

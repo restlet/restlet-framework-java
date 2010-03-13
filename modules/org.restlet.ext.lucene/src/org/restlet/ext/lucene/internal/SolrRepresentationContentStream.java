@@ -113,8 +113,8 @@ public class SolrRepresentationContentStream implements ContentStream {
      * @see ContentStream#getSourceInfo()
      */
     public String getSourceInfo() {
-        if (representation.getLocation() != null)
-            return representation.getLocation().toString();
+        if (representation.getLocationRef() != null)
+            return representation.getLocationRef().toString();
         return null;
     }
 

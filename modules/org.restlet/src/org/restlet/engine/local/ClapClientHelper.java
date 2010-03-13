@@ -122,7 +122,7 @@ public class ClapClientHelper extends LocalClientHelper {
                     Representation output = new InputRepresentation(url
                             .openStream(), metadataService
                             .getDefaultMediaType());
-                    output.setLocation(request.getResourceRef());
+                    output.setLocationRef(request.getResourceRef());
                     output.setModificationDate(modificationDate);
 
                     // Update the expiration date

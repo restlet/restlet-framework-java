@@ -429,8 +429,8 @@ public class DirectoryServerResource extends ServerResource {
                 ReferenceList variantRefs = new ReferenceList();
 
                 for (Variant variant : variants) {
-                    if (variant.getLocation() != null) {
-                        variantRefs.add(variant.getLocation());
+                    if (variant.getLocationRef() != null) {
+                        variantRefs.add(variant.getLocationRef());
                     } else {
                         getLogger()
                                 .warning(
@@ -544,8 +544,8 @@ public class DirectoryServerResource extends ServerResource {
         // Sort the list of representations by their identifier.
         Comparator<Representation> identifiersComparator = new Comparator<Representation>() {
             public int compare(Representation rep0, Representation rep1) {
-                boolean bRep0Null = (rep0.getLocation() == null);
-                boolean bRep1Null = (rep1.getLocation() == null);
+                boolean bRep0Null = (rep0.getLocationRef() == null);
+                boolean bRep1Null = (rep1.getLocationRef() == null);
 
                 if (bRep0Null && bRep1Null) {
                     return 0;
@@ -558,8 +558,8 @@ public class DirectoryServerResource extends ServerResource {
                     return 1;
                 }
 
-                return rep0.getLocation().getLastSegment().compareTo(
-                        rep1.getLocation().getLastSegment());
+                return rep0.getLocationRef().getLastSegment().compareTo(
+                        rep1.getLocationRef().getLastSegment());
             }
         };
         return identifiersComparator;
@@ -633,9 +633,9 @@ public class DirectoryServerResource extends ServerResource {
                                         .getEntity();
 
                                 if (filePath.startsWith("/")) {
-                                    rep.setLocation(baseRef + filePath);
+                                    rep.setLocationRef(baseRef + filePath);
                                 } else {
-                                    rep.setLocation(baseRef + "/" + filePath);
+                                    rep.setLocationRef(baseRef + "/" + filePath);
                                 }
 
                                 resultSet.add(rep);
@@ -687,10 +687,10 @@ public class DirectoryServerResource extends ServerResource {
                 } else if (this.fileTarget && (this.fileContent != null)) {
                     // Sets the location of the target representation.
                     if (getOriginalRef() != null) {
-                        this.fileContent.setLocation(getRequest()
+                        this.fileContent.setLocationRef(getRequest()
                                 .getOriginalRef());
                     } else {
-                        this.fileContent.setLocation(getReference());
+                        this.fileContent.setLocationRef(getReference());
                     }
 
                     result = new ArrayList<Variant>();
@@ -765,7 +765,7 @@ public class DirectoryServerResource extends ServerResource {
                         }
                     }
                 } else {
-                    result.add(contextResponse.getEntity().getLocation());
+                    result.add(contextResponse.getEntity().getLocationRef());
                 }
             }
         } catch (IOException ioe) {

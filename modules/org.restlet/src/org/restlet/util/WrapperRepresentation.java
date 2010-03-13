@@ -149,8 +149,8 @@ public class WrapperRepresentation extends Representation {
     }
 
     @Override
-    public Reference getLocation() {
-        return getWrappedRepresentation().getLocation();
+    public Reference getLocationRef() {
+        return getWrappedRepresentation().getLocationRef();
     }
 
     @Override
@@ -285,13 +285,13 @@ public class WrapperRepresentation extends Representation {
     }
 
     @Override
-    public void setLocation(Reference location) {
-        getWrappedRepresentation().setLocation(location);
+    public void setLocationRef(Reference location) {
+        getWrappedRepresentation().setLocationRef(location);
     }
 
     @Override
-    public void setLocation(String locationUri) {
-        getWrappedRepresentation().setLocation(locationUri);
+    public void setLocationRef(String locationUri) {
+        getWrappedRepresentation().setLocationRef(locationUri);
     }
 
     @Override

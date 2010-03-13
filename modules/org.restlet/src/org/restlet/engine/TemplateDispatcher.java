@@ -125,8 +125,8 @@ public class TemplateDispatcher extends Client {
         // This is very useful to resolve relative references in XSLT for
         // example.
         if ((response.getEntity() != null)
-                && (response.getEntity().getLocation() == null)) {
-            response.getEntity().setLocation(
+                && (response.getEntity().getLocationRef() == null)) {
+            response.getEntity().setLocationRef(
                     request.getResourceRef().toString());
         }
     }

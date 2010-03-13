@@ -142,8 +142,8 @@ public abstract class XmlRepresentation extends OutputRepresentation
             result = new javax.xml.transform.sax.SAXSource(new InputSource(
                     xmlRepresentation.getStream()));
 
-            if (xmlRepresentation.getLocation() != null) {
-                result.setSystemId(xmlRepresentation.getLocation()
+            if (xmlRepresentation.getLocationRef() != null) {
+                result.setSystemId(xmlRepresentation.getLocationRef()
                         .getTargetRef().toString());
             }
         }
@@ -439,8 +439,8 @@ public abstract class XmlRepresentation extends OutputRepresentation
         if (document != null) {
             result = new javax.xml.transform.dom.DOMSource(document);
 
-            if (getLocation() != null) {
-                result.setSystemId(getLocation().getTargetRef().toString());
+            if (getLocationRef() != null) {
+                result.setSystemId(getLocationRef().getTargetRef().toString());
             }
         }
 
@@ -605,8 +605,8 @@ public abstract class XmlRepresentation extends OutputRepresentation
         final javax.xml.transform.stream.StreamSource result = new javax.xml.transform.stream.StreamSource(
                 getStream());
 
-        if (getLocation() != null) {
-            result.setSystemId(getLocation().getTargetRef().toString());
+        if (getLocationRef() != null) {
+            result.setSystemId(getLocationRef().getTargetRef().toString());
         }
 
         return result;

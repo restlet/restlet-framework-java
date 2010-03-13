@@ -183,7 +183,7 @@ public class ZipClientHelper extends LocalClientHelper {
                     // Return the file content
                     output = entity.getRepresentation(metadataService
                             .getDefaultMediaType(), getTimeToLive());
-                    output.setLocation(request.getResourceRef());
+                    output.setLocationRef(request.getResourceRef());
                     Entity.updateMetadata(entity.getName(), output, true,
                             getMetadataService());
                 }

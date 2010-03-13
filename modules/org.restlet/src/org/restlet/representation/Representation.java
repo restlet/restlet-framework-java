@@ -207,7 +207,7 @@ public abstract class Representation extends RepresentationInfo {
     public Representation(Variant variant, Date modificationDate, Tag tag) {
         setCharacterSet(variant.getCharacterSet());
         setEncodings(variant.getEncodings());
-        setLocation(variant.getLocation());
+        setLocationRef(variant.getLocationRef());
         setLanguages(variant.getLanguages());
         setMediaType(variant.getMediaType());
         setModificationDate(modificationDate);

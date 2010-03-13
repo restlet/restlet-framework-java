@@ -84,7 +84,7 @@ public class TemplateRepresentation extends OutputRepresentation {
         } catch (IOException e) {
             Context.getCurrentLogger().warning(
                     "Unable to get the template from the representation "
-                            + templateRepresentation.getLocation()
+                            + templateRepresentation.getLocationRef()
                             + ". Error message: " + e.getMessage());
             return null;
         }
