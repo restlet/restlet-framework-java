@@ -42,7 +42,7 @@ import org.restlet.data.Cookie;
  * 
  * @author Jerome Louvel
  */
-public class CookieWriter extends HeaderWriter {
+public class CookieWriter extends HeaderWriter<Cookie> {
 
     /**
      * Gets the cookies whose name is a key in the given map. If a matching
@@ -90,24 +90,7 @@ public class CookieWriter extends HeaderWriter {
         return new CookieWriter().append(cookies).toString();
     }
 
-    /**
-     * Private constructor to ensure that the class acts as a true utility class
-     * i.e. it isn't instantiable and extensible.
-     */
-    private CookieWriter() {
-    }
-
-    /**
-     * Formats a cookie setting.
-     * 
-     * @param cookie
-     *            The cookie to format.
-     * @param destination
-     *            The appendable destination.
-     * @throws IOException
-     * @throws IllegalArgumentException
-     *             If the Cookie contains illegal values.
-     */
+    @Override
     public CookieWriter append(Cookie cookie) throws IllegalArgumentException {
         String name = cookie.getName();
         String value = cookie.getValue();

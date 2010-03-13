@@ -40,7 +40,7 @@ import org.restlet.representation.Representation;
  * 
  * @author Jerome Louvel
  */
-public class RangeWriter extends HeaderWriter {
+public class RangeWriter extends HeaderWriter<Range> {
 
     /**
      * Format {@code ranges} as a Range header value
@@ -141,6 +141,11 @@ public class RangeWriter extends HeaderWriter {
             }
         }
 
+        return this;
+    }
+
+    @Override
+    public HeaderWriter<Range> append(Range value) {
         return this;
     }
 

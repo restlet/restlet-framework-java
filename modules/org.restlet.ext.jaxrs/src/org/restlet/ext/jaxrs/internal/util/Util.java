@@ -514,7 +514,7 @@ public class Util {
      * @return the Vary header or null, if dimensions is null or empty.
      */
     public static String formatDimensions(Set<Dimension> dimensions) {
-        return DimensionWriter.writer(dimensions);
+        return DimensionWriter.write(dimensions);
     }
 
     /**

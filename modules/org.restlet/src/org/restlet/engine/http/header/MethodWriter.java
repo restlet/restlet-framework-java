@@ -39,7 +39,7 @@ import org.restlet.data.Method;
  * 
  * @author Jerome Louvel
  */
-public class MethodWriter extends HeaderWriter {
+public class MethodWriter extends HeaderWriter<Method> {
 
     /**
      * Writes a set of methods with a comma separator.
@@ -52,37 +52,9 @@ public class MethodWriter extends HeaderWriter {
         return new MethodWriter().append(methods).toString();
     }
 
-    /**
-     * Appends a set of methods.
-     * 
-     * @param method
-     *            The method to append.
-     */
-    public void append(Method method) {
-        appendToken(method.getName());
-    }
-
-    /**
-     * Appends a set of methods with a comma separator.
-     * 
-     * @param methods
-     *            The set of methods to append.
-     * @return The writer.
-     */
-    public MethodWriter append(Set<Method> methods) {
-        boolean first = true;
-
-        for (Method method : methods) {
-            if (first) {
-                first = false;
-            } else {
-                append(", ");
-            }
-
-            append(method);
-        }
-
-        return this;
+    @Override
+    public MethodWriter append(Method method) {
+        return (MethodWriter) appendToken(method.getName());
     }
 
 }

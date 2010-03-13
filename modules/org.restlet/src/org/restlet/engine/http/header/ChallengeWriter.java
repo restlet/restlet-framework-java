@@ -30,6 +30,7 @@
 
 package org.restlet.engine.http.header;
 
+import org.restlet.data.ChallengeRequest;
 import org.restlet.data.Parameter;
 
 /**
@@ -37,7 +38,7 @@ import org.restlet.data.Parameter;
  * 
  * @author Jerome Louvel
  */
-public class ChallengeWriter extends HeaderWriter {
+public class ChallengeWriter extends HeaderWriter<ChallengeRequest> {
 
     /** Indicates if the first challenge parameter is written. */
     private volatile boolean firstChallengeParameter;
@@ -47,6 +48,11 @@ public class ChallengeWriter extends HeaderWriter {
      */
     public ChallengeWriter() {
         this.firstChallengeParameter = true;
+    }
+
+    @Override
+    public HeaderWriter<ChallengeRequest> append(ChallengeRequest value) {
+        return this;
     }
 
     /**

@@ -31,6 +31,7 @@
 package org.restlet.engine.http.header;
 
 import java.io.StringWriter;
+import java.util.Collection;
 import java.util.Date;
 
 import org.restlet.data.CharacterSet;
@@ -43,7 +44,7 @@ import org.restlet.engine.util.DateUtils;
  * 
  * @author Jerome Louvel
  */
-public class HeaderWriter extends StringWriter {
+public abstract class HeaderWriter<T> extends StringWriter {
 
     /**
      * Formats a date as a header string.
@@ -63,14 +64,39 @@ public class HeaderWriter extends StringWriter {
     }
 
     @Override
-    public HeaderWriter append(char c) {
+    public HeaderWriter<T> append(char c) {
         super.append(c);
         return this;
     }
 
     @Override
-    public HeaderWriter append(CharSequence csq) {
+    public HeaderWriter<T> append(CharSequence csq) {
         super.append(csq);
+        return this;
+    }
+
+    /**
+     * Appends a collection of values.
+     * 
+     * @param values
+     *            The collection of values to append.
+     * @return This writer.
+     */
+    public HeaderWriter<T> append(Collection<T> values) {
+        if ((values != null) && !values.isEmpty()) {
+            boolean first = true;
+
+            for (T value : values) {
+                if (first) {
+                    first = false;
+                } else {
+                    appendValueSeparator();
+                }
+
+                append(value);
+            }
+        }
+
         return this;
     }
 
@@ -81,7 +107,7 @@ public class HeaderWriter extends StringWriter {
      *            The value to append.
      * @return This writer.
      */
-    public HeaderWriter append(int i) {
+    public HeaderWriter<T> append(int i) {
         return append(Integer.toString(i));
     }
 
@@ -92,9 +118,18 @@ public class HeaderWriter extends StringWriter {
      *            The value to append.
      * @return This writer.
      */
-    public HeaderWriter append(long l) {
+    public HeaderWriter<T> append(long l) {
         return append(Long.toString(l));
     }
+
+    /**
+     * Appends a value.
+     * 
+     * @param value
+     *            The value.
+     * @return This writer.
+     */
+    public abstract HeaderWriter<T> append(T value);
 
     /**
      * Appends a string as an HTTP comment, surrounded by parenthesis and with
@@ -104,7 +139,7 @@ public class HeaderWriter extends StringWriter {
      *            The comment to write.
      * @return The current builder.
      */
-    public HeaderWriter appendComment(String content) {
+    public HeaderWriter<T> appendComment(String content) {
         append('(');
         char c;
 
@@ -131,7 +166,7 @@ public class HeaderWriter extends StringWriter {
      *            The appendable destination.
      * @return This writer.
      */
-    public HeaderWriter appendExtension(Parameter extension) {
+    public HeaderWriter<T> appendExtension(Parameter extension) {
         if (extension != null) {
             return appendExtension(extension.getName(), extension.getValue());
         } else {
@@ -148,7 +183,7 @@ public class HeaderWriter extends StringWriter {
      *            The extension value.
      * @return This writer.
      */
-    public HeaderWriter appendExtension(String name, String value) {
+    public HeaderWriter<T> appendExtension(String name, String value) {
         if ((name != null) && (name.length() > 0)) {
             append(name);
 
@@ -175,7 +210,7 @@ public class HeaderWriter extends StringWriter {
      *            The product version token.
      * @return This writer.
      */
-    public HeaderWriter appendProduct(String name, String version) {
+    public HeaderWriter<T> appendProduct(String name, String version) {
         appendToken(name);
 
         if (version != null) {
@@ -192,7 +227,7 @@ public class HeaderWriter extends StringWriter {
      *            The character to quote.
      * @return The current builder.
      */
-    public HeaderWriter appendQuotedPair(char character) {
+    public HeaderWriter<T> appendQuotedPair(char character) {
         return append('\\').append(character);
     }
 
@@ -203,7 +238,7 @@ public class HeaderWriter extends StringWriter {
      *            The string to quote and write.
      * @return The current builder.
      */
-    public HeaderWriter appendQuotedString(String content) {
+    public HeaderWriter<T> appendQuotedString(String content) {
         if ((content != null) && (content.length() > 0)) {
             append('"');
             char c;
@@ -229,7 +264,7 @@ public class HeaderWriter extends StringWriter {
      * 
      * @return The current builder.
      */
-    public HeaderWriter appendSpace() {
+    public HeaderWriter<T> appendSpace() {
         return append(' ');
     }
 
@@ -240,7 +275,7 @@ public class HeaderWriter extends StringWriter {
      *            The token to write.
      * @return The current builder.
      */
-    public HeaderWriter appendToken(String token) {
+    public HeaderWriter<T> appendToken(String token) {
         if (HeaderUtils.isToken(token)) {
             return append(token);
         } else {
@@ -258,9 +293,18 @@ public class HeaderWriter extends StringWriter {
      *            The supported character encoding.
      * @return This writer.
      */
-    public HeaderWriter appendUriEncoded(CharSequence source,
+    public HeaderWriter<T> appendUriEncoded(CharSequence source,
             CharacterSet characterSet) {
         return append(Reference.encode(source.toString(), characterSet));
+    }
+
+    /**
+     * Appends a comma as a value separator.
+     * 
+     * @return
+     */
+    public HeaderWriter<T> appendValueSeparator() {
+        return append(", ");
     }
 
 }

@@ -56,7 +56,6 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
-import org.restlet.data.Warning;
 import org.restlet.engine.Engine;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.representation.EmptyRepresentation;
@@ -360,13 +359,10 @@ public class HeaderUtils {
             Series<Parameter> headers) {
 
         // Add the Cache-control headers
-        if (!message.getCacheDirectives().isEmpty()) {
-            addHeader(HeaderConstants.HEADER_CACHE_CONTROL,
-                    CacheDirectiveWriter.write(message.getCacheDirectives()),
-                    headers);
-        }
+        addHeader(HeaderConstants.HEADER_CACHE_CONTROL, CacheDirectiveWriter
+                .write(message.getCacheDirectives()), headers);
 
-        // Add the date
+        // Add the date if necessary
         if (message.getDate() == null) {
             message.setDate(new Date());
         }
@@ -375,13 +371,8 @@ public class HeaderUtils {
                 .getDate()), headers);
 
         // Add the warning headers
-        if (!message.getWarnings().isEmpty()) {
-            for (Warning warning : message.getWarnings()) {
-                addHeader(HeaderConstants.HEADER_WARNING, WarningWriter
-                        .write(warning), headers);
-            }
-        }
-
+        addHeader(HeaderConstants.HEADER_WARNING, WarningWriter.write(message
+                .getWarnings()), headers);
     }
 
     /**
@@ -432,6 +423,7 @@ public class HeaderUtils {
 
         // Add the preferences
         ClientInfo client = request.getClientInfo();
+
         if (client.getAcceptedMediaTypes().size() > 0) {
             addHeader(HeaderConstants.HEADER_ACCEPT, PreferenceWriter
                     .write(client.getAcceptedMediaTypes()), headers);
@@ -483,6 +475,7 @@ public class HeaderUtils {
 
         // Add the conditions
         Conditions condition = request.getConditions();
+
         if (!condition.getMatch().isEmpty()) {
             StringBuilder value = new StringBuilder();
 
@@ -490,6 +483,7 @@ public class HeaderUtils {
                 if (i > 0) {
                     value.append(", ");
                 }
+
                 value.append(condition.getMatch().get(i).format());
             }
 
@@ -510,6 +504,7 @@ public class HeaderUtils {
                 if (i > 0) {
                     value.append(", ");
                 }
+
                 value.append(condition.getNoneMatch().get(i).format());
             }
 
@@ -658,20 +653,8 @@ public class HeaderUtils {
         // Indicate the allowed methods
         if (response.getStatus().equals(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED)
                 || Method.OPTIONS.equals(response.getRequest().getMethod())) {
-            StringBuilder sb = new StringBuilder();
-            boolean first = true;
-
-            for (Method method : response.getAllowedMethods()) {
-                if (first) {
-                    first = false;
-                } else {
-                    sb.append(", ");
-                }
-
-                sb.append(method.getName());
-            }
-
-            addHeader(HeaderConstants.HEADER_ALLOW, sb.toString(), headers);
+            addHeader(HeaderConstants.HEADER_ALLOW, MethodWriter.write(response
+                    .getAllowedMethods()), headers);
         }
 
         // Set the location URI (for redirections or creations)
@@ -714,7 +697,7 @@ public class HeaderUtils {
                 .getRequest().getClientInfo().getAgent().contains("MSIE"))) {
             // Add the Vary header if content negotiation was used
             addHeader(HeaderConstants.HEADER_VARY, DimensionWriter
-                    .writer(response.getDimensions()), headers);
+                    .write(response.getDimensions()), headers);
         }
 
         // Set the security data

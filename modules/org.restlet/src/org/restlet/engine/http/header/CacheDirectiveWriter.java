@@ -39,7 +39,7 @@ import org.restlet.data.CacheDirective;
  * 
  * @author Thierry Boileau
  */
-public class CacheDirectiveWriter extends HeaderWriter {
+public class CacheDirectiveWriter extends HeaderWriter<CacheDirective> {
 
     /**
      * Writes a list of cache directives with a comma separator.
@@ -52,13 +52,8 @@ public class CacheDirectiveWriter extends HeaderWriter {
         return new CacheDirectiveWriter().append(directives).toString();
     }
 
-    /**
-     * Formats a cache directive.
-     * 
-     * @param directive
-     *            The directive to format.
-     */
-    public void append(CacheDirective directive) {
+    @Override
+    public CacheDirectiveWriter append(CacheDirective directive) {
         append(directive.getName());
 
         if ((directive.getValue() != null)
@@ -68,26 +63,6 @@ public class CacheDirectiveWriter extends HeaderWriter {
             } else {
                 append("=\"").append(directive.getValue()).append('\"');
             }
-        }
-    }
-
-    /**
-     * Appends a list of cache directives with a comma separator.
-     * 
-     * @param directives
-     *            The list of cache directives.
-     * @return The writer.
-     */
-    public CacheDirectiveWriter append(List<CacheDirective> directives) {
-        CacheDirective directive;
-
-        for (int i = 0; i < directives.size(); i++) {
-            if (i > 0) {
-                append(", ");
-            }
-
-            directive = directives.get(i);
-            append(directive);
         }
 
         return this;

@@ -39,7 +39,7 @@ import org.restlet.data.Expectation;
  * 
  * @author Jerome Louvel
  */
-public class ExpectationWriter extends HeaderWriter {
+public class ExpectationWriter extends HeaderWriter<Expectation> {
 
     /**
      * Formats a list of expectations with a comma separator.
@@ -54,12 +54,7 @@ public class ExpectationWriter extends HeaderWriter {
         return new ExpectationWriter().append(expectations).toString();
     }
 
-    /**
-     * Formats a cache directive.
-     * 
-     * @param expectation
-     *            The directive to format.
-     */
+    @Override
     public ExpectationWriter append(Expectation expectation) {
         append(expectation.getName());
 
@@ -76,27 +71,4 @@ public class ExpectationWriter extends HeaderWriter {
         return this;
     }
 
-    /**
-     * Formats a list of expectations with a comma separator.
-     * 
-     * @param expectations
-     *            The list of expectations.
-     * @return The formatted list of expectations.
-     * @throws IllegalArgumentException
-     */
-    public ExpectationWriter append(List<Expectation> expectations)
-            throws IllegalArgumentException {
-        Expectation expectation;
-
-        for (int i = 0; i < expectations.size(); i++) {
-            if (i > 0) {
-                append(", ");
-            }
-
-            expectation = expectations.get(i);
-            append(expectation);
-        }
-
-        return this;
-    }
 }

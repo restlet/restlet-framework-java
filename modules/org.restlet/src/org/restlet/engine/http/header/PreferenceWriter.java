@@ -43,7 +43,7 @@ import org.restlet.data.Preference;
  * 
  * @author Jerome Louvel
  */
-public class PreferenceWriter extends HeaderWriter {
+public class PreferenceWriter extends HeaderWriter<Preference<?>> {
     /**
      * Indicates if the quality value is valid.
      * 
@@ -63,62 +63,13 @@ public class PreferenceWriter extends HeaderWriter {
      * @return The formatted list of preferences.
      * @throws IOException
      */
-    public static String write(List<? extends Preference<?>> prefs) {
+    @SuppressWarnings("unchecked")
+    public static String write(List prefs) {
         return new PreferenceWriter().append(prefs).toString();
     }
 
-    /**
-     * Formats a quality value.<br>
-     * If the quality is invalid, an IllegalArgumentException is thrown.
-     * 
-     * @param quality
-     *            The quality value as a float.
-     */
-    public void appendQuality(float quality) {
-        if (!isValidQuality(quality)) {
-            throw new IllegalArgumentException(
-                    "Invalid quality value detected. Value must be between 0 and 1.");
-        }
-
-        // [ifndef gwt]
-        java.text.NumberFormat formatter = java.text.NumberFormat
-                .getNumberInstance(java.util.Locale.US);
-        formatter.setMaximumFractionDigits(2);
-        append(formatter.format(quality));
-        // [enddef]
-    }
-
-    /**
-     * Appends a list of preferences with a comma separator.
-     * 
-     * @param prefs
-     *            The list of preferences.
-     * @return This writer.
-     */
-    public PreferenceWriter append(List<? extends Preference<?>> prefs) {
-        Preference<?> pref;
-
-        for (int i = 0; i < prefs.size(); i++) {
-            if (i > 0) {
-                append(", ");
-            }
-
-            pref = prefs.get(i);
-            append(pref);
-        }
-
-        return this;
-    }
-
-    /**
-     * Formats a preference.
-     * 
-     * @param pref
-     *            The preference to format.
-     * @return This writer.
-     */
-    @SuppressWarnings("unchecked")
-    public PreferenceWriter append(Preference pref) {
+    @Override
+    public PreferenceWriter append(Preference<?> pref) {
         append(pref.getMetadata().getName());
 
         if (pref.getMetadata() instanceof MediaType) {
@@ -167,6 +118,27 @@ public class PreferenceWriter extends HeaderWriter {
         }
 
         return this;
+    }
+
+    /**
+     * Formats a quality value.<br>
+     * If the quality is invalid, an IllegalArgumentException is thrown.
+     * 
+     * @param quality
+     *            The quality value as a float.
+     */
+    public void appendQuality(float quality) {
+        if (!isValidQuality(quality)) {
+            throw new IllegalArgumentException(
+                    "Invalid quality value detected. Value must be between 0 and 1.");
+        }
+
+        // [ifndef gwt]
+        java.text.NumberFormat formatter = java.text.NumberFormat
+                .getNumberInstance(java.util.Locale.US);
+        formatter.setMaximumFractionDigits(2);
+        append(formatter.format(quality));
+        // [enddef]
     }
 
 }

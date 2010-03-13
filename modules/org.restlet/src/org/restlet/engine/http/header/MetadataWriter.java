@@ -30,49 +30,18 @@
 
 package org.restlet.engine.http.header;
 
-import org.restlet.data.Disposition;
-import org.restlet.data.Parameter;
+import org.restlet.data.Metadata;
 
 /**
- * Disposition header writer.
+ * Metadata header writer.
  * 
- * @author Thierry Boileau
+ * @author Jerome Louvel
  */
-public class DispositionWriter extends HeaderWriter<Disposition> {
-
-    /**
-     * Formats a disposition.
-     * 
-     * @param disposition
-     *            The disposition to format.
-     * @return The formatted disposition.
-     */
-    public static String write(Disposition disposition) {
-        return new DispositionWriter().append(disposition).toString();
-    }
+public class MetadataWriter extends HeaderWriter<Metadata> {
 
     @Override
-    public DispositionWriter append(Disposition disposition) {
-        if (Disposition.TYPE_NONE.equals(disposition.getType())
-                || disposition.getType() == null) {
-            return this;
-        }
-
-        append(disposition.getType());
-
-        for (Parameter parameter : disposition.getParameters()) {
-            append("; ");
-            append(parameter.getName());
-            append("=");
-
-            if (HeaderUtils.isToken(parameter.getValue())) {
-                append(parameter.getValue());
-            } else {
-                appendQuotedString(parameter.getValue());
-            }
-        }
-
-        return this;
+    public MetadataWriter append(Metadata metadata) {
+        return (MetadataWriter) append(metadata.getName());
     }
 
 }

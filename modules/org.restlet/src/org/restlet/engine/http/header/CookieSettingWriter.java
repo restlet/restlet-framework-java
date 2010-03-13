@@ -41,7 +41,7 @@ import org.restlet.engine.util.DateUtils;
  * 
  * @author Jerome Louvel
  */
-public class CookieSettingWriter extends HeaderWriter {
+public class CookieSettingWriter extends HeaderWriter<CookieSetting> {
 
     /**
      * Formats a cookie setting.
@@ -54,30 +54,12 @@ public class CookieSettingWriter extends HeaderWriter {
      */
     public static String write(CookieSetting cookieSetting)
             throws IllegalArgumentException {
-        CookieSettingWriter csw = new CookieSettingWriter();
-
-        try {
-            csw.append(cookieSetting);
-        } catch (IOException e) {
-            // log error
-        }
-
-        return csw.toString();
+        return new CookieSettingWriter().append(cookieSetting).toString();
     }
 
-    /**
-     * Formats a cookie setting.
-     * 
-     * @param cookieSetting
-     *            The cookie setting to format.
-     * @param destination
-     *            The appendable destination.
-     * @throws IOException
-     * @throws IllegalArgumentException
-     *             If the CookieSetting can not be formatted to a String
-     */
+    @Override
     public CookieSettingWriter append(CookieSetting cookieSetting)
-            throws IOException, IllegalArgumentException {
+            throws IllegalArgumentException {
         String name = cookieSetting.getName();
         String value = cookieSetting.getValue();
         int version = cookieSetting.getVersion();
@@ -180,8 +162,7 @@ public class CookieSettingWriter extends HeaderWriter {
      *            The cookie version.
      * @throws IOException
      */
-    public CookieSettingWriter appendValue(String value, int version)
-            throws IOException {
+    public CookieSettingWriter appendValue(String value, int version) {
         if (version == 0) {
             append(value.toString());
         } else {

@@ -30,7 +30,7 @@
 
 package org.restlet.engine.http.header;
 
-import java.io.IOException;
+import java.util.List;
 
 import org.restlet.data.Warning;
 import org.restlet.engine.util.DateUtils;
@@ -40,10 +40,10 @@ import org.restlet.engine.util.DateUtils;
  * 
  * @author Thierry Boileau
  */
-public class WarningWriter extends HeaderWriter {
+public class WarningWriter extends HeaderWriter<Warning> {
 
     /**
-     * Formats a warning.
+     * Writes a warning.
      * 
      * @param warning
      *            The warning to format.
@@ -51,21 +51,12 @@ public class WarningWriter extends HeaderWriter {
      * @throws IllegalArgumentException
      *             If the Cookie contains illegal values.
      */
-    public static String write(Warning warning) throws IllegalArgumentException {
-        return new WarningWriter().append(warning).toString();
+    public static String write(List<Warning> warnings)
+            throws IllegalArgumentException {
+        return new WarningWriter().append(warnings).toString();
     }
 
-    /**
-     * Formats a warning.
-     * 
-     * @param warning
-     *            The warning to format.
-     * @param destination
-     *            The appendable destination.
-     * @throws IOException
-     * @throws IllegalArgumentException
-     *             If the warning contains illegal values.
-     */
+    @Override
     public WarningWriter append(Warning warning)
             throws IllegalArgumentException {
         String agent = warning.getAgent();

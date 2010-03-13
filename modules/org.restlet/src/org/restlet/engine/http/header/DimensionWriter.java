@@ -39,7 +39,7 @@ import org.restlet.data.Dimension;
  * 
  * @author Thierry Boileau
  */
-public class DimensionWriter extends HeaderWriter {
+public class DimensionWriter extends HeaderWriter<Dimension> {
 
     /**
      * Creates a vary header from the given dimensions.
@@ -48,7 +48,7 @@ public class DimensionWriter extends HeaderWriter {
      *            The dimensions to copy to the response.
      * @return Returns the Vary header or null, if dimensions is null or empty.
      */
-    public static String writer(Collection<Dimension> dimensions) {
+    public static String write(Collection<Dimension> dimensions) {
         return new DimensionWriter().append(dimensions).toString();
     }
 
@@ -61,8 +61,6 @@ public class DimensionWriter extends HeaderWriter {
      */
     public DimensionWriter append(Collection<Dimension> dimensions) {
         if ((dimensions != null) && !dimensions.isEmpty()) {
-            boolean first = true;
-
             if (dimensions.contains(Dimension.CLIENT_ADDRESS)
                     || dimensions.contains(Dimension.TIME)
                     || dimensions.contains(Dimension.UNSPECIFIED)) {
@@ -70,28 +68,37 @@ public class DimensionWriter extends HeaderWriter {
                 // vary in unspecified ways
                 append("*");
             } else {
-                for (Dimension dim : dimensions) {
+                boolean first = true;
+
+                for (Dimension dimension : dimensions) {
                     if (first) {
                         first = false;
                     } else {
                         append(", ");
                     }
 
-                    if (dim == Dimension.CHARACTER_SET) {
-                        append(HeaderConstants.HEADER_ACCEPT_CHARSET);
-                    } else if (dim == Dimension.CLIENT_AGENT) {
-                        append(HeaderConstants.HEADER_USER_AGENT);
-                    } else if (dim == Dimension.ENCODING) {
-                        append(HeaderConstants.HEADER_ACCEPT_ENCODING);
-                    } else if (dim == Dimension.LANGUAGE) {
-                        append(HeaderConstants.HEADER_ACCEPT_LANGUAGE);
-                    } else if (dim == Dimension.MEDIA_TYPE) {
-                        append(HeaderConstants.HEADER_ACCEPT);
-                    } else if (dim == Dimension.AUTHORIZATION) {
-                        append(HeaderConstants.HEADER_AUTHORIZATION);
-                    }
+                    append(dimension);
                 }
             }
+        }
+
+        return this;
+    }
+
+    @Override
+    public HeaderWriter<Dimension> append(Dimension dimension) {
+        if (dimension == Dimension.CHARACTER_SET) {
+            append(HeaderConstants.HEADER_ACCEPT_CHARSET);
+        } else if (dimension == Dimension.CLIENT_AGENT) {
+            append(HeaderConstants.HEADER_USER_AGENT);
+        } else if (dimension == Dimension.ENCODING) {
+            append(HeaderConstants.HEADER_ACCEPT_ENCODING);
+        } else if (dimension == Dimension.LANGUAGE) {
+            append(HeaderConstants.HEADER_ACCEPT_LANGUAGE);
+        } else if (dimension == Dimension.MEDIA_TYPE) {
+            append(HeaderConstants.HEADER_ACCEPT);
+        } else if (dimension == Dimension.AUTHORIZATION) {
+            append(HeaderConstants.HEADER_AUTHORIZATION);
         }
 
         return this;
