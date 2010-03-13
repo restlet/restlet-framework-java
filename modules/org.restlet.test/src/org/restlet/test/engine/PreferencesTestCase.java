@@ -54,18 +54,13 @@ public class PreferencesTestCase extends RestletTestCase {
      */
     private void testMediaType(String headerValue, boolean testEquals)
             throws IOException {
-        final AcceptReader<MediaType> pr = new AcceptReader<MediaType>(
+        AcceptReader<MediaType> pr = new AcceptReader<MediaType>(
                 AcceptReader.TYPE_MEDIA_TYPE, headerValue);
-        final List<Preference<MediaType>> prefs = new ArrayList<Preference<MediaType>>();
-        Preference<MediaType> pref = pr.readValue();
-
-        while (pref != null) {
-            prefs.add(pref);
-            pref = pr.readValue();
-        }
-
+        List<Preference<MediaType>> prefs = new ArrayList<Preference<MediaType>>();
+        pr.addValues(prefs);
+        
         // Rewrite the header
-        final String newHeaderValue = PreferenceUtils.format(prefs);
+        String newHeaderValue = PreferenceUtils.format(prefs);
 
         if (testEquals) {
             // Compare initial and new headers
