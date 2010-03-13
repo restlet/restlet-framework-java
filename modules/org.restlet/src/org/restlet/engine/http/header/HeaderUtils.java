@@ -84,12 +84,12 @@ public class HeaderUtils {
     public static void addEntityHeaders(Representation entity,
             Series<Parameter> headers) {
         if (entity == null || !entity.isAvailable()) {
-            headers.add(HeaderConstants.HEADER_CONTENT_LENGTH, "0");
+            addHeader(HeaderConstants.HEADER_CONTENT_LENGTH, "0", headers);
         } else {
             if (!entity.getEncodings().isEmpty()) {
                 if (entity.getEncodings().size() == 1) {
-                    headers.add(HeaderConstants.HEADER_CONTENT_ENCODING, entity
-                            .getEncodings().get(0).getName());
+                    addHeader(HeaderConstants.HEADER_CONTENT_ENCODING, entity
+                            .getEncodings().get(0).getName(), headers);
                 } else {
                     StringBuilder value = new StringBuilder();
 
@@ -104,16 +104,16 @@ public class HeaderUtils {
                     }
 
                     if (value.length() > 0) {
-                        headers.add(HeaderConstants.HEADER_CONTENT_ENCODING,
-                                value.toString());
+                        addHeader(HeaderConstants.HEADER_CONTENT_ENCODING,
+                                value.toString(), headers);
                     }
                 }
             }
 
             if (!entity.getLanguages().isEmpty()) {
                 if (entity.getLanguages().size() == 1) {
-                    headers.add(HeaderConstants.HEADER_CONTENT_LANGUAGE, entity
-                            .getLanguages().get(0).toString());
+                    addHeader(HeaderConstants.HEADER_CONTENT_LANGUAGE, entity
+                            .getLanguages().get(0).toString(), headers);
                 } else {
                     StringBuilder value = new StringBuilder();
 
@@ -125,38 +125,38 @@ public class HeaderUtils {
                         value.append(language.getName());
                     }
 
-                    headers.add(HeaderConstants.HEADER_CONTENT_LANGUAGE, value
-                            .toString());
+                    addHeader(HeaderConstants.HEADER_CONTENT_LANGUAGE, value
+                            .toString(), headers);
                 }
             }
 
             long size = entity.getAvailableSize();
 
             if (size != Representation.UNKNOWN_SIZE) {
-                headers.add(HeaderConstants.HEADER_CONTENT_LENGTH, Long
-                        .toString(size));
+                addHeader(HeaderConstants.HEADER_CONTENT_LENGTH, Long
+                        .toString(size), headers);
             }
 
             if (entity.getLocationRef() != null) {
-                headers.add(HeaderConstants.HEADER_CONTENT_LOCATION, entity
-                        .getLocationRef().getTargetRef().toString());
+                addHeader(HeaderConstants.HEADER_CONTENT_LOCATION, entity
+                        .getLocationRef().getTargetRef().toString(), headers);
             }
 
             // [ifndef gwt]
             if (entity.getDigest() != null
                     && Digest.ALGORITHM_MD5.equals(entity.getDigest()
                             .getAlgorithm())) {
-                headers.add(HeaderConstants.HEADER_CONTENT_MD5, new String(
+                addHeader(HeaderConstants.HEADER_CONTENT_MD5, new String(
                         org.restlet.engine.util.Base64.encode(entity
-                                .getDigest().getValue(), false)));
+                                .getDigest().getValue(), false)), headers);
             }
             // [enddef]
 
             if (entity.getRange() != null) {
                 try {
-                    headers.add(HeaderConstants.HEADER_CONTENT_RANGE,
-                            RangeWriter.write(entity.getRange(), entity
-                                    .getSize()));
+                    addHeader(HeaderConstants.HEADER_CONTENT_RANGE, RangeWriter
+                            .write(entity.getRange(), entity.getSize()),
+                            headers);
                 } catch (Exception e) {
                     Context
                             .getCurrentLogger()
@@ -179,32 +179,34 @@ public class HeaderUtils {
                             + entity.getCharacterSet().getName();
                 }
 
-                headers.add(HeaderConstants.HEADER_CONTENT_TYPE, contentType);
+                addHeader(HeaderConstants.HEADER_CONTENT_TYPE, contentType,
+                        headers);
             }
 
             // Add the expiration date header
             if (entity.getExpirationDate() != null) {
-                headers.add(HeaderConstants.HEADER_EXPIRES, DateUtils
-                        .format(entity.getExpirationDate()));
+                addHeader(HeaderConstants.HEADER_EXPIRES, DateUtils
+                        .format(entity.getExpirationDate()), headers);
             }
 
             // Add the last modification date header
             if (entity.getModificationDate() != null) {
-                headers.add(HeaderConstants.HEADER_LAST_MODIFIED, HeaderWriter
-                        .write(entity.getModificationDate(), false));
+                addHeader(HeaderConstants.HEADER_LAST_MODIFIED, HeaderWriter
+                        .write(entity.getModificationDate(), false), headers);
             }
 
             // Add the E-Tag header
             if (entity.getTag() != null) {
-                headers.add(HeaderConstants.HEADER_ETAG, entity.getTag()
-                        .format());
+                addHeader(HeaderConstants.HEADER_ETAG,
+                        entity.getTag().format(), headers);
             }
 
             if (entity.getDisposition() != null
                     && !Disposition.TYPE_NONE.equals(entity.getDisposition()
                             .getType())) {
-                headers.add(HeaderConstants.HEADER_CONTENT_DISPOSITION,
-                        DispositionWriter.write(entity.getDisposition()));
+                addHeader(HeaderConstants.HEADER_CONTENT_DISPOSITION,
+                        DispositionWriter.write(entity.getDisposition()),
+                        headers);
             }
         }
     }
@@ -266,6 +268,8 @@ public class HeaderUtils {
                         || param.getName().equalsIgnoreCase(
                                 HeaderConstants.HEADER_ETAG)
                         || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_EXPECT)
+                        || param.getName().equalsIgnoreCase(
                                 HeaderConstants.HEADER_EXPIRES)
                         || param.getName().equalsIgnoreCase(
                                 HeaderConstants.HEADER_FROM)
@@ -319,9 +323,7 @@ public class HeaderUtils {
                                             + param.getName()
                                             + "\" is not allowed. Please use the equivalent property in the Restlet API.");
                 } else if (param.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_EXPECT)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_PRAGMA)
+                        HeaderConstants.HEADER_PRAGMA)
                         || param.getName().equalsIgnoreCase(
                                 HeaderConstants.HEADER_TRAILER)
                         || param.getName().equalsIgnoreCase(
@@ -361,8 +363,9 @@ public class HeaderUtils {
 
         // Add the Cache-control headers
         if (!message.getCacheDirectives().isEmpty()) {
-            headers.add(HeaderConstants.HEADER_CACHE_CONTROL,
-                    CacheDirectiveWriter.write(message.getCacheDirectives()));
+            addHeader(HeaderConstants.HEADER_CACHE_CONTROL,
+                    CacheDirectiveWriter.write(message.getCacheDirectives()),
+                    headers);
         }
 
         // Add the date
@@ -370,17 +373,39 @@ public class HeaderUtils {
             message.setDate(new Date());
         }
 
-        headers.add(HeaderConstants.HEADER_DATE, DateUtils.format(message
-                .getDate()));
+        addHeader(HeaderConstants.HEADER_DATE, DateUtils.format(message
+                .getDate()), headers);
 
         // Add the warning headers
         if (!message.getWarnings().isEmpty()) {
             for (Warning warning : message.getWarnings()) {
-                headers.add(HeaderConstants.HEADER_WARNING, WarningWriter
-                        .write(warning));
+                addHeader(HeaderConstants.HEADER_WARNING, WarningWriter
+                        .write(warning), headers);
             }
         }
 
+    }
+
+    /**
+     * Adds a header to the given list. Check for exceptions and logs them.
+     * 
+     * @param headerName
+     *            The header name.
+     * @param headerValue
+     *            The header value.
+     * @param headers
+     *            The headers list.
+     */
+    public static void addHeader(String headerName, String headerValue,
+            Series<Parameter> headers) {
+        if ((headerName != null) && (headerValue != null)) {
+            try {
+                headers.add(headerName, headerValue);
+            } catch (Throwable t) {
+                Context.getCurrentLogger().log(Level.WARNING,
+                        "Unable to format the " + headerName + " header", t);
+            }
+        }
     }
 
     /**
@@ -409,52 +434,32 @@ public class HeaderUtils {
         // Add the preferences
         ClientInfo client = request.getClientInfo();
         if (client.getAcceptedMediaTypes().size() > 0) {
-            try {
-                headers.add(HeaderConstants.HEADER_ACCEPT, PreferenceWriter
-                        .write(client.getAcceptedMediaTypes()));
-            } catch (IOException ioe) {
-                Context.getCurrentLogger().log(Level.WARNING,
-                        "Unable to format the HTTP Accept header", ioe);
-            }
+            addHeader(HeaderConstants.HEADER_ACCEPT, PreferenceWriter
+                    .write(client.getAcceptedMediaTypes()), headers);
         } else {
-            headers.add(HeaderConstants.HEADER_ACCEPT, MediaType.ALL.getName());
+            addHeader(HeaderConstants.HEADER_ACCEPT, MediaType.ALL.getName(),
+                    headers);
         }
 
         if (client.getAcceptedCharacterSets().size() > 0) {
-            try {
-                headers.add(HeaderConstants.HEADER_ACCEPT_CHARSET,
-                        PreferenceWriter.write(client
-                                .getAcceptedCharacterSets()));
-            } catch (IOException ioe) {
-                Context.getCurrentLogger().log(Level.WARNING,
-                        "Unable to format the HTTP Accept header", ioe);
-            }
+            addHeader(HeaderConstants.HEADER_ACCEPT_CHARSET, PreferenceWriter
+                    .write(client.getAcceptedCharacterSets()), headers);
         }
 
         if (client.getAcceptedEncodings().size() > 0) {
-            try {
-                headers.add(HeaderConstants.HEADER_ACCEPT_ENCODING,
-                        PreferenceWriter.write(client.getAcceptedEncodings()));
-            } catch (IOException ioe) {
-                Context.getCurrentLogger().log(Level.WARNING,
-                        "Unable to format the HTTP Accept header", ioe);
-            }
+            addHeader(HeaderConstants.HEADER_ACCEPT_ENCODING, PreferenceWriter
+                    .write(client.getAcceptedEncodings()), headers);
         }
 
         if (client.getAcceptedLanguages().size() > 0) {
-            try {
-                headers.add(HeaderConstants.HEADER_ACCEPT_LANGUAGE,
-                        PreferenceWriter.write(client.getAcceptedLanguages()));
-            } catch (IOException ioe) {
-                Context.getCurrentLogger().log(Level.WARNING,
-                        "Unable to format the HTTP Accept header", ioe);
-            }
+            addHeader(HeaderConstants.HEADER_ACCEPT_LANGUAGE, PreferenceWriter
+                    .write(client.getAcceptedLanguages()), headers);
         }
 
         // Add the from header
         if (request.getClientInfo().getFrom() != null) {
-            headers.add(HeaderConstants.HEADER_FROM, request.getClientInfo()
-                    .getFrom());
+            addHeader(HeaderConstants.HEADER_FROM, request.getClientInfo()
+                    .getFrom(), headers);
         }
 
         // Manually add the host name and port when it is potentially
@@ -474,7 +479,7 @@ public class HeaderUtils {
                 host = host + ':' + hostRefPortValue;
             }
 
-            headers.add(HeaderConstants.HEADER_HOST, host);
+            addHeader(HeaderConstants.HEADER_HOST, host, headers);
         }
 
         // Add the conditions
@@ -489,12 +494,14 @@ public class HeaderUtils {
                 value.append(condition.getMatch().get(i).format());
             }
 
-            headers.add(HeaderConstants.HEADER_IF_MATCH, value.toString());
+            addHeader(HeaderConstants.HEADER_IF_MATCH, value.toString(),
+                    headers);
         }
 
         if (condition.getModifiedSince() != null) {
             String imsDate = DateUtils.format(condition.getModifiedSince());
-            headers.add(HeaderConstants.HEADER_IF_MODIFIED_SINCE, imsDate);
+            addHeader(HeaderConstants.HEADER_IF_MODIFIED_SINCE, imsDate,
+                    headers);
         }
 
         if (!condition.getNoneMatch().isEmpty()) {
@@ -507,7 +514,8 @@ public class HeaderUtils {
                 value.append(condition.getNoneMatch().get(i).format());
             }
 
-            headers.add(HeaderConstants.HEADER_IF_NONE_MATCH, value.toString());
+            addHeader(HeaderConstants.HEADER_IF_NONE_MATCH, value.toString(),
+                    headers);
         }
 
         if (condition.getRangeTag() != null && condition.getRangeDate() != null) {
@@ -518,58 +526,54 @@ public class HeaderUtils {
                             "Unable to format the HTTP If-Range header due to the presence of both entity tag and modification date.");
         } else {
             if (condition.getRangeTag() != null) {
-                headers.add(HeaderConstants.HEADER_IF_RANGE, condition
-                        .getRangeTag().format());
+                addHeader(HeaderConstants.HEADER_IF_RANGE, condition
+                        .getRangeTag().format(), headers);
             } else if (condition.getRangeDate() != null) {
                 String rDate = DateUtils.format(condition.getRangeDate(),
                         DateUtils.FORMAT_RFC_1123.get(0));
-                headers.add(HeaderConstants.HEADER_IF_RANGE, rDate);
+                addHeader(HeaderConstants.HEADER_IF_RANGE, rDate, headers);
             }
         }
 
         if (condition.getUnmodifiedSince() != null) {
             String iusDate = DateUtils.format(condition.getUnmodifiedSince(),
                     DateUtils.FORMAT_RFC_1123.get(0));
-            headers.add(HeaderConstants.HEADER_IF_UNMODIFIED_SINCE, iusDate);
+            addHeader(HeaderConstants.HEADER_IF_UNMODIFIED_SINCE, iusDate,
+                    headers);
         }
 
         // Add the maxForwards header
         if (request.getMaxForwards() > -1) {
-            headers.add(HeaderConstants.HEADER_MAX_FORWARDS, Integer
-                    .toString(request.getMaxForwards()));
+            addHeader(HeaderConstants.HEADER_MAX_FORWARDS, Integer
+                    .toString(request.getMaxForwards()), headers);
         }
 
         // Add Range header
         if (!request.getRanges().isEmpty()) {
-            headers.add(HeaderConstants.HEADER_RANGE,
+            addHeader(HeaderConstants.HEADER_RANGE,
                     org.restlet.engine.http.header.RangeWriter.write(request
-                            .getRanges()));
+                            .getRanges()), headers);
         }
 
         // Add the referrer header
         if (request.getReferrerRef() != null) {
-            headers.add(HeaderConstants.HEADER_REFERRER, request
-                    .getReferrerRef().toString());
+            addHeader(HeaderConstants.HEADER_REFERRER, request.getReferrerRef()
+                    .toString(), headers);
         }
 
         // Add the user agent header
         if (request.getClientInfo().getAgent() != null) {
-            headers.add(HeaderConstants.HEADER_USER_AGENT, request
-                    .getClientInfo().getAgent());
+            addHeader(HeaderConstants.HEADER_USER_AGENT, request
+                    .getClientInfo().getAgent(), headers);
         } else {
-            headers.add(HeaderConstants.HEADER_USER_AGENT,
-                    Engine.VERSION_HEADER);
+            addHeader(HeaderConstants.HEADER_USER_AGENT, Engine.VERSION_HEADER,
+                    headers);
         }
 
         // [ifndef gwt]
         if (client.getExpectations().size() > 0) {
-            try {
-                headers.add(HeaderConstants.HEADER_ACCEPT_ENCODING,
-                        PreferenceWriter.write(client.getAcceptedEncodings()));
-            } catch (IOException ioe) {
-                Context.getCurrentLogger().log(Level.WARNING,
-                        "Unable to format the HTTP Accept header", ioe);
-            }
+            addHeader(HeaderConstants.HEADER_ACCEPT_ENCODING, PreferenceWriter
+                    .write(client.getAcceptedEncodings()), headers);
         }
         // [enddef]
 
@@ -579,14 +583,13 @@ public class HeaderUtils {
 
         // Add the cookies
         if (request.getCookies().size() > 0) {
-            String cookies = CookieWriter.write(request.getCookies());
-            headers.add(HeaderConstants.HEADER_COOKIE, cookies);
+            addHeader(HeaderConstants.HEADER_COOKIE, CookieWriter.write(request
+                    .getCookies()), headers);
         }
 
         // -------------------------------------
         // 4) Add user-defined extension headers
         // -------------------------------------
-
         Series<Parameter> additionalHeaders = (Series<Parameter>) request
                 .getAttributes().get(HeaderConstants.ATTRIBUTE_HEADERS);
         addExtensionHeaders(headers, additionalHeaders);
@@ -600,29 +603,20 @@ public class HeaderUtils {
         // the AWS challenge scheme requires access to all HTTP headers
         ChallengeResponse challengeResponse = request.getChallengeResponse();
         if (challengeResponse != null) {
-            try {
-                headers.add(HeaderConstants.HEADER_AUTHORIZATION,
-                        org.restlet.engine.security.AuthenticatorUtils
-                                .formatResponse(challengeResponse, request,
-                                        headers));
-            } catch (IOException e) {
-                Context.getCurrentLogger().log(Level.WARNING,
-                        "Unable to write the Authorization header", e);
-            }
+            addHeader(
+                    HeaderConstants.HEADER_AUTHORIZATION,
+                    org.restlet.engine.security.AuthenticatorUtils
+                            .formatResponse(challengeResponse, request, headers),
+                    headers);
         }
 
         ChallengeResponse proxyChallengeResponse = request
                 .getProxyChallengeResponse();
         if (proxyChallengeResponse != null) {
-            try {
-                headers.add(HeaderConstants.HEADER_PROXY_AUTHORIZATION,
-                        org.restlet.engine.security.AuthenticatorUtils
-                                .formatResponse(proxyChallengeResponse,
-                                        request, headers));
-            } catch (IOException e) {
-                Context.getCurrentLogger().log(Level.WARNING,
-                        "Unable to write the Proxy-Authorization header", e);
-            }
+            addHeader(HeaderConstants.HEADER_PROXY_AUTHORIZATION,
+                    org.restlet.engine.security.AuthenticatorUtils
+                            .formatResponse(proxyChallengeResponse, request,
+                                    headers), headers);
         }
         // [enddef]
     }
@@ -653,13 +647,13 @@ public class HeaderUtils {
 
         // Add the accept-ranges header
         if (response.getServerInfo().isAcceptingRanges()) {
-            headers.add(HeaderConstants.HEADER_ACCEPT_RANGES, "bytes");
+            addHeader(HeaderConstants.HEADER_ACCEPT_RANGES, "bytes", headers);
         }
 
         // Add the age
         if (response.getAge() > 0) {
-            headers.add(HeaderConstants.HEADER_AGE, Integer.toString(response
-                    .getAge()));
+            addHeader(HeaderConstants.HEADER_AGE, Integer.toString(response
+                    .getAge()), headers);
         }
 
         // Indicate the allowed methods
@@ -668,7 +662,7 @@ public class HeaderUtils {
             StringBuilder sb = new StringBuilder();
             boolean first = true;
 
-            for (final Method method : response.getAllowedMethods()) {
+            for (Method method : response.getAllowedMethods()) {
                 if (first) {
                     first = false;
                 } else {
@@ -678,40 +672,41 @@ public class HeaderUtils {
                 sb.append(method.getName());
             }
 
-            headers.add(HeaderConstants.HEADER_ALLOW, sb.toString());
+            addHeader(HeaderConstants.HEADER_ALLOW, sb.toString(), headers);
         }
 
         // Set the location URI (for redirections or creations)
         if (response.getLocationRef() != null) {
             // The location header must contain an absolute URI.
-            headers.add(HeaderConstants.HEADER_LOCATION, response
-                    .getLocationRef().getTargetRef().toString());
+            addHeader(HeaderConstants.HEADER_LOCATION, response
+                    .getLocationRef().getTargetRef().toString(), headers);
         }
 
         // Add proxy authentication information
         if (response.getProxyChallengeRequests() != null) {
-            for (final ChallengeRequest challengeRequest : response
+            for (ChallengeRequest challengeRequest : response
                     .getProxyChallengeRequests()) {
-                headers.add(HeaderConstants.HEADER_PROXY_AUTHENTICATE,
+                addHeader(HeaderConstants.HEADER_PROXY_AUTHENTICATE,
                         org.restlet.engine.security.AuthenticatorUtils
                                 .formatRequest(challengeRequest, response,
-                                        headers));
+                                        headers), headers);
             }
         }
 
         // Add the retry after date
         if (response.getRetryAfter() != null) {
-            headers.add(HeaderConstants.HEADER_RETRY_AFTER, DateUtils
-                    .format(response.getRetryAfter()));
+            addHeader(HeaderConstants.HEADER_RETRY_AFTER, DateUtils
+                    .format(response.getRetryAfter()), headers);
         }
 
         // Set the server name again
         if ((response.getServerInfo() != null)
                 && (response.getServerInfo().getAgent() != null)) {
-            headers.add(HeaderConstants.HEADER_SERVER, response.getServerInfo()
-                    .getAgent());
+            addHeader(HeaderConstants.HEADER_SERVER, response.getServerInfo()
+                    .getAgent(), headers);
         } else {
-            headers.add(HeaderConstants.HEADER_SERVER, Engine.VERSION_HEADER);
+            addHeader(HeaderConstants.HEADER_SERVER, Engine.VERSION_HEADER,
+                    headers);
         }
 
         // Send the Vary header only to none-MSIE user agents as MSIE seems
@@ -723,18 +718,18 @@ public class HeaderUtils {
             String vary = DimensionWriter.writer(dimensions);
 
             if (vary != null) {
-                headers.add(HeaderConstants.HEADER_VARY, vary);
+                addHeader(HeaderConstants.HEADER_VARY, vary, headers);
             }
         }
 
         // Set the security data
         if (response.getChallengeRequests() != null) {
-            for (final ChallengeRequest challengeRequest : response
+            for (ChallengeRequest challengeRequest : response
                     .getChallengeRequests()) {
-                headers.add(HeaderConstants.HEADER_WWW_AUTHENTICATE,
+                addHeader(HeaderConstants.HEADER_WWW_AUTHENTICATE,
                         org.restlet.engine.security.AuthenticatorUtils
                                 .formatRequest(challengeRequest, response,
-                                        headers));
+                                        headers), headers);
             }
         }
 
@@ -744,22 +739,17 @@ public class HeaderUtils {
 
         // Add the Authentication-Info header
         if (response.getAuthenticationInfo() != null) {
-            try {
-                headers.add(HeaderConstants.HEADER_AUTHENTICATION_INFO,
-                        org.restlet.engine.security.AuthenticatorUtils
-                                .formatAuthenticationInfo(response
-                                        .getAuthenticationInfo()));
-            } catch (IOException e) {
-                Context.getCurrentLogger().log(Level.WARNING,
-                        "Unable to write the Authentication-Info header", e);
-            }
+            addHeader(HeaderConstants.HEADER_AUTHENTICATION_INFO,
+                    org.restlet.engine.security.AuthenticatorUtils
+                            .formatAuthenticationInfo(response
+                                    .getAuthenticationInfo()), headers);
         }
 
         // Add the cookie settings
         List<CookieSetting> cookies = response.getCookieSettings();
         for (int i = 0; i < cookies.size(); i++) {
-            headers.add(HeaderConstants.HEADER_SET_COOKIE, CookieWriter
-                    .write(cookies.get(i)));
+            addHeader(HeaderConstants.HEADER_SET_COOKIE, CookieWriter
+                    .write(cookies.get(i)), headers);
         }
 
         // -------------------------------------

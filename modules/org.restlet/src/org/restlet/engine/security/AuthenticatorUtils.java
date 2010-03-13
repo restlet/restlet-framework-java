@@ -166,46 +166,48 @@ public class AuthenticatorUtils {
      *            The authentication information to format.
      * @return The {@link HeaderConstants#HEADER_AUTHENTICATION_INFO} header
      *         value.
-     * @throws IOException
      */
-    public static String formatAuthenticationInfo(AuthenticationInfo info)
-            throws IOException {
-        HeaderWriter hb = new HeaderWriter();
+    public static String formatAuthenticationInfo(AuthenticationInfo info) {
+        HeaderWriter hw = new HeaderWriter();
         boolean firstParameter = true;
 
         if (info != null) {
             if (info.getNextServerNonce() != null
                     && info.getNextServerNonce().length() > 0) {
-                hb.setFirstParameter(firstParameter);
-                hb
+                hw.setFirstParameter(firstParameter);
+                hw
                         .appendQuotedParameter("nextnonce", info
                                 .getNextServerNonce());
                 firstParameter = false;
             }
+
             if (info.getQuality() != null && info.getQuality().length() > 0) {
-                hb.setFirstParameter(firstParameter);
-                hb.appendParameter("qop", info.getQuality());
+                hw.setFirstParameter(firstParameter);
+                hw.appendParameter("qop", info.getQuality());
                 firstParameter = false;
+
                 if (info.getNonceCount() > 0) {
-                    hb.appendParameter("nc", formatNonceCount(info
+                    hw.appendParameter("nc", formatNonceCount(info
                             .getNonceCount()));
                 }
             }
+
             if (info.getResponseDigest() != null
                     && info.getResponseDigest().length() > 0) {
-                hb.setFirstParameter(firstParameter);
-                hb.appendQuotedParameter("rspauth", info.getResponseDigest());
+                hw.setFirstParameter(firstParameter);
+                hw.appendQuotedParameter("rspauth", info.getResponseDigest());
                 firstParameter = false;
             }
+
             if (info.getClientNonce() != null
                     && info.getClientNonce().length() > 0) {
-                hb.setFirstParameter(firstParameter);
-                hb.appendParameter("cnonce", info.getClientNonce());
+                hw.setFirstParameter(firstParameter);
+                hw.appendParameter("cnonce", info.getClientNonce());
                 firstParameter = false;
             }
         }
 
-        return hb.toString();
+        return hw.toString();
     }
 
     /**
@@ -281,7 +283,7 @@ public class AuthenticatorUtils {
      * @throws IOException
      */
     public static String formatResponse(ChallengeResponse challenge,
-            Request request, Series<Parameter> httpHeaders) throws IOException {
+            Request request, Series<Parameter> httpHeaders) {
         String result = null;
         AuthenticatorHelper helper = Engine.getInstance().findHelper(
                 challenge.getScheme(), true, false);

@@ -282,59 +282,59 @@ public class HttpDigestHelper extends AuthenticatorHelper {
     }
 
     @Override
-    public void formatRawResponse(HeaderWriter hb, ChallengeResponse challenge,
-            Request request, Series<Parameter> httpHeaders) throws IOException {
+    public void formatRawResponse(HeaderWriter hw, ChallengeResponse challenge,
+            Request request, Series<Parameter> httpHeaders) {
 
         if (challenge.getIdentifier() != null) {
-            hb.appendQuotedParameter("username", challenge.getIdentifier());
+            hw.appendQuotedParameter("username", challenge.getIdentifier());
         }
 
         if (challenge.getRealm() != null) {
-            hb.appendQuotedParameter("realm", challenge.getRealm());
+            hw.appendQuotedParameter("realm", challenge.getRealm());
         }
 
         if (challenge.getServerNonce() != null) {
-            hb.appendQuotedParameter("nonce", challenge.getServerNonce());
+            hw.appendQuotedParameter("nonce", challenge.getServerNonce());
         }
 
         if (challenge.getDigestRef() != null) {
-            hb
+            hw
                     .appendQuotedParameter("uri", challenge.getDigestRef()
                             .toString());
         }
 
         if (challenge.getSecret() != null) {
-            hb.appendQuotedParameter("response", new String(challenge
+            hw.appendQuotedParameter("response", new String(challenge
                     .getSecret()));
         }
 
         if ((challenge.getDigestAlgorithm() != null)
                 && !Digest.ALGORITHM_MD5.equals(challenge.getDigestAlgorithm())) {
-            hb.appendParameter("algorithm", challenge.getDigestAlgorithm());
+            hw.appendParameter("algorithm", challenge.getDigestAlgorithm());
         }
 
         if (challenge.getClientNonce() != null) {
-            hb.appendQuotedParameter("cnonce", challenge.getClientNonce());
+            hw.appendQuotedParameter("cnonce", challenge.getClientNonce());
         }
 
         if (challenge.getOpaque() != null) {
-            hb.appendQuotedParameter("opaque", challenge.getOpaque());
+            hw.appendQuotedParameter("opaque", challenge.getOpaque());
         }
 
         if (challenge.getQuality() != null) {
-            hb.appendParameter("qop", challenge.getQuality());
+            hw.appendParameter("qop", challenge.getQuality());
         }
 
         if ((challenge.getQuality() != null)
                 && (challenge.getServerNounceCount() > 0)) {
-            hb.appendParameter("nc", challenge.getServerNounceCountAsHex());
+            hw.appendParameter("nc", challenge.getServerNounceCountAsHex());
         }
 
         for (Parameter param : challenge.getParameters()) {
             if (HeaderUtils.isToken(param.getValue())) {
-                hb.appendParameter(param);
+                hw.appendParameter(param);
             } else {
-                hb.appendQuotedParameter(param);
+                hw.appendQuotedParameter(param);
             }
         }
     }

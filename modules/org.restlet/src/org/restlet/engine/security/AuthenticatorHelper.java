@@ -163,15 +163,14 @@ public abstract class AuthenticatorHelper extends Helper {
      * @param httpHeaders
      *            The current request HTTP headers.
      */
-    public void formatRawResponse(HeaderWriter hb,
-            ChallengeResponse challenge, Request request,
-            Series<Parameter> httpHeaders) throws IOException {
+    public void formatRawResponse(HeaderWriter hb, ChallengeResponse challenge,
+            Request request, Series<Parameter> httpHeaders) {
     }
 
     /**
      * Formats a challenge request as a HTTP header value. The header is
-     * {@link HeaderConstants#HEADER_WWW_AUTHENTICATE}. The default implementation
-     * relies on
+     * {@link HeaderConstants#HEADER_WWW_AUTHENTICATE}. The default
+     * implementation relies on
      * {@link #formatRawRequest(HeaderWriter, ChallengeRequest, Response, Series)}
      * to append all parameters from {@link ChallengeRequest#getParameters()}.
      * 
@@ -213,10 +212,9 @@ public abstract class AuthenticatorHelper extends Helper {
      * @param httpHeaders
      *            The current request HTTP headers.
      * @return The {@link HeaderConstants#HEADER_AUTHORIZATION} header value.
-     * @throws IOException
      */
     public String formatResponse(ChallengeResponse challenge, Request request,
-            Series<Parameter> httpHeaders) throws IOException {
+            Series<Parameter> httpHeaders) {
         HeaderWriter hb = new HeaderWriter();
         hb.append(challenge.getScheme().getTechnicalName()).appendSpace();
 

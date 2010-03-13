@@ -30,7 +30,6 @@
 
 package org.restlet.engine.http.header;
 
-import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Date;
 
@@ -110,17 +109,16 @@ public class HeaderWriter extends StringWriter {
 
     /**
      * Appends a string as an HTTP comment, surrounded by parenthesis and with
-     * properly quote content if needed.
+     * quoted pairs if needed.
      * 
      * @param content
      *            The comment to write.
      * @return The current builder.
-     * @throws IOException
      */
-    public HeaderWriter appendComment(String content) throws IOException {
+    public HeaderWriter appendComment(String content) {
         append('(');
-
         char c;
+
         for (int i = 0; i < content.length(); i++) {
             c = content.charAt(i);
 
@@ -131,8 +129,7 @@ public class HeaderWriter extends StringWriter {
             }
         }
 
-        append(')');
-        return this;
+        return append(')');
     }
 
     /**
@@ -144,23 +141,20 @@ public class HeaderWriter extends StringWriter {
      * @param destination
      *            The appendable destination.
      * @return This writer.
-     * @throws IOException
      */
-    public HeaderWriter appendExtension(Parameter extension) throws IOException {
-        if (extension != null) {
-            if ((extension.getName() != null)
-                    || (extension.getName().length() > 0)) {
-                append(extension.getName());
+    public HeaderWriter appendExtension(Parameter extension) {
+        if ((extension != null) && (extension.getName() != null)
+                || (extension.getName().length() > 0)) {
+            append(extension.getName());
 
-                if ((extension.getValue() != null)
-                        || (extension.getValue().length() > 0)) {
-                    append("=");
+            if ((extension.getValue() != null)
+                    || (extension.getValue().length() > 0)) {
+                append("=");
 
-                    if (HeaderUtils.isToken(extension.getValue())) {
-                        append(extension.getValue());
-                    } else {
-                        appendQuotedString(extension.getValue());
-                    }
+                if (HeaderUtils.isToken(extension.getValue())) {
+                    append(extension.getValue());
+                } else {
+                    appendQuotedString(extension.getValue());
                 }
             }
         }
@@ -175,9 +169,8 @@ public class HeaderWriter extends StringWriter {
      * @param parameter
      *            The parameter.
      * @return The current builder.
-     * @throws IOException
      */
-    public HeaderWriter appendParameter(Parameter parameter) throws IOException {
+    public HeaderWriter appendParameter(Parameter parameter) {
         return appendParameter(parameter.getName(), parameter.getValue());
     }
 
@@ -187,9 +180,8 @@ public class HeaderWriter extends StringWriter {
      * @param name
      *            The parameter name.
      * @return The current builder.
-     * @throws IOException
      */
-    public HeaderWriter appendParameter(String name) throws IOException {
+    public HeaderWriter appendParameter(String name) {
         appendParameterSeparator();
         return appendToken(name);
     }
@@ -203,10 +195,8 @@ public class HeaderWriter extends StringWriter {
      * @param value
      *            The parameter value.
      * @return The current builder.
-     * @throws IOException
      */
-    public HeaderWriter appendParameter(String name, String value)
-            throws IOException {
+    public HeaderWriter appendParameter(String name, String value) {
         appendParameterSeparator();
 
         if (name != null) {
@@ -226,9 +216,8 @@ public class HeaderWriter extends StringWriter {
      * written.
      * 
      * @return The current builder.
-     * @throws IOException
      */
-    public HeaderWriter appendParameterSeparator() throws IOException {
+    public HeaderWriter appendParameterSeparator() {
         if (isFirstParameter()) {
             setFirstParameter(false);
         } else {
@@ -241,29 +230,17 @@ public class HeaderWriter extends StringWriter {
     /**
      * Appends a product description.
      * 
-     * @param nameToken
+     * @param name
      *            The product name token.
-     * @param versionToken
+     * @param version
      *            The product version token.
      * @return This writer.
-     * @throws IOException
      */
-    public HeaderWriter appendProduct(CharSequence nameToken,
-            CharSequence versionToken) throws IOException {
-        if (!HeaderUtils.isToken(nameToken)) {
-            throw new IllegalArgumentException(
-                    "Invalid product name detected. Only token characters are allowed.");
-        }
+    public HeaderWriter appendProduct(String name, String version) {
+        appendToken(name);
 
-        append(nameToken);
-
-        if (versionToken != null) {
-            if (!HeaderUtils.isToken(versionToken)) {
-                throw new IllegalArgumentException(
-                        "Invalid product version detected. Only token characters are allowed.");
-            }
-
-            append('/').append(versionToken);
+        if (version != null) {
+            append('/').appendToken(version);
         }
 
         return this;
@@ -277,8 +254,7 @@ public class HeaderWriter extends StringWriter {
      * @return The current builder.
      */
     public HeaderWriter appendQuotedPair(char character) {
-        append('\\').append(character);
-        return this;
+        return append('\\').append(character);
     }
 
     /**
@@ -287,11 +263,9 @@ public class HeaderWriter extends StringWriter {
      * 
      * @param parameter
      *            The parameter.
-     * @throws IOException
      * @return The current builder.
      */
-    public HeaderWriter appendQuotedParameter(Parameter parameter)
-            throws IOException {
+    public HeaderWriter appendQuotedParameter(Parameter parameter) {
         return appendQuotedParameter(parameter.getName(), parameter.getValue());
     }
 
@@ -303,11 +277,9 @@ public class HeaderWriter extends StringWriter {
      *            The parameter name.
      * @param value
      *            The parameter value to quote.
-     * @throws IOException
      * @return The current builder.
      */
-    public HeaderWriter appendQuotedParameter(String name, String value)
-            throws IOException {
+    public HeaderWriter appendQuotedParameter(String name, String value) {
         appendParameterSeparator();
 
         if (name != null) {
@@ -356,8 +328,7 @@ public class HeaderWriter extends StringWriter {
      * @return The current builder.
      */
     public HeaderWriter appendSpace() {
-        append(' ');
-        return this;
+        return append(' ');
     }
 
     /**
@@ -366,17 +337,14 @@ public class HeaderWriter extends StringWriter {
      * @param token
      *            The token to write.
      * @return The current builder.
-     * @throws IOException
      */
-    public HeaderWriter appendToken(String token) throws IOException {
+    public HeaderWriter appendToken(String token) {
         if (HeaderUtils.isToken(token)) {
-            append(token);
+            return append(token);
         } else {
-            throw new IOException("Unexpected character found in token: "
-                    + token);
+            throw new IllegalArgumentException(
+                    "Unexpected character found in token: " + token);
         }
-
-        return this;
     }
 
     /**
@@ -387,12 +355,10 @@ public class HeaderWriter extends StringWriter {
      * @param characterSet
      *            The supported character encoding.
      * @return This writer.
-     * @throws IOException
      */
     public HeaderWriter appendUriEncoded(CharSequence source,
-            CharacterSet characterSet) throws IOException {
-        append(Reference.encode(source.toString(), characterSet));
-        return this;
+            CharacterSet characterSet) {
+        return append(Reference.encode(source.toString(), characterSet));
     }
 
     /**

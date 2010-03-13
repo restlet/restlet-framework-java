@@ -164,7 +164,7 @@ public class PreferenceReader<T extends Metadata> extends
         try {
             final float result = Float.valueOf(quality);
 
-            if (PreferenceWriter.isQuality(result)) {
+            if (PreferenceWriter.isValidQuality(result)) {
                 return result;
             }
 

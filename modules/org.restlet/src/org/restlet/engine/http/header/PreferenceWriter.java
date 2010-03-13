@@ -43,87 +43,28 @@ import org.restlet.data.Preference;
  * 
  * @author Jerome Louvel
  */
-public class PreferenceWriter {
+public class PreferenceWriter extends HeaderWriter {
     /**
-     * Formats a list of preferences with a comma separator.
+     * Indicates if the quality value is valid.
+     * 
+     * @param quality
+     *            The quality value.
+     * @return True if the quality value is valid.
+     */
+    public static boolean isValidQuality(float quality) {
+        return (quality >= 0F) && (quality <= 1F);
+    }
+
+    /**
+     * Writes a list of preferences with a comma separator.
      * 
      * @param prefs
      *            The list of preferences.
      * @return The formatted list of preferences.
      * @throws IOException
      */
-    public static String write(List<? extends Preference<?>> prefs)
-            throws IOException {
-        final StringBuilder sb = new StringBuilder();
-
-        Preference<?> pref;
-        for (int i = 0; i < prefs.size(); i++) {
-            if (i > 0) {
-                sb.append(", ");
-            }
-            pref = prefs.get(i);
-            append(pref, sb);
-        }
-
-        return sb.toString();
-    }
-
-    /**
-     * Formats a preference.
-     * 
-     * @param pref
-     *            The preference to format.
-     * @param destination
-     *            The appendable destination.
-     * @throws IOException
-     */
-    @SuppressWarnings("unchecked")
-    public static void append(Preference pref, Appendable destination)
-            throws IOException {
-        destination.append(pref.getMetadata().getName());
-
-        if (pref.getMetadata() instanceof MediaType) {
-            final MediaType mediaType = (MediaType) pref.getMetadata();
-
-            if (mediaType.getParameters() != null) {
-                Parameter param;
-                for (final Iterator<Parameter> iter = mediaType.getParameters()
-                        .iterator(); iter.hasNext();) {
-                    param = iter.next();
-
-                    if (param.getName() != null) {
-                        destination.append(';').append(param.getName());
-
-                        if ((param.getValue() != null)
-                                && (param.getValue().length() > 0)) {
-                            destination.append('=').append(param.getValue());
-                        }
-                    }
-                }
-            }
-        }
-
-        if (pref.getQuality() < 1F) {
-            destination.append(";q=");
-            append(pref.getQuality(), destination);
-        }
-
-        if (pref.getParameters() != null) {
-            Parameter param;
-            for (final Iterator<Parameter> iter = pref.getParameters()
-                    .iterator(); iter.hasNext();) {
-                param = iter.next();
-
-                if (param.getName() != null) {
-                    destination.append(';').append(param.getName());
-
-                    if ((param.getValue() != null)
-                            && (param.getValue().length() > 0)) {
-                        destination.append('=').append(param.getValue());
-                    }
-                }
-            }
-        }
+    public static String write(List<? extends Preference<?>> prefs) {
+        return new PreferenceWriter().append(prefs).toString();
     }
 
     /**
@@ -132,34 +73,100 @@ public class PreferenceWriter {
      * 
      * @param quality
      *            The quality value as a float.
-     * @param destination
-     *            The appendable destination;
-     * @throws IOException
      */
-    public static void append(float quality, Appendable destination)
-            throws IOException {
-        if (!isQuality(quality)) {
+    public void appendQuality(float quality) {
+        if (!isValidQuality(quality)) {
             throw new IllegalArgumentException(
                     "Invalid quality value detected. Value must be between 0 and 1.");
         }
 
         // [ifndef gwt]
-        final java.text.NumberFormat formatter = java.text.NumberFormat
+        java.text.NumberFormat formatter = java.text.NumberFormat
                 .getNumberInstance(java.util.Locale.US);
         formatter.setMaximumFractionDigits(2);
-        destination.append(formatter.format(quality));
+        append(formatter.format(quality));
         // [enddef]
     }
 
     /**
-     * Indicates if the quality value is valid.
+     * Appends a list of preferences with a comma separator.
      * 
-     * @param quality
-     *            The quality value.
-     * @return True if the quality value is valid.
+     * @param prefs
+     *            The list of preferences.
+     * @return This writer.
      */
-    public static boolean isQuality(float quality) {
-        return (quality >= 0F) && (quality <= 1F);
+    public PreferenceWriter append(List<? extends Preference<?>> prefs) {
+        Preference<?> pref;
+
+        for (int i = 0; i < prefs.size(); i++) {
+            if (i > 0) {
+                append(", ");
+            }
+
+            pref = prefs.get(i);
+            append(pref);
+        }
+
+        return this;
+    }
+
+    /**
+     * Formats a preference.
+     * 
+     * @param pref
+     *            The preference to format.
+     * @return This writer.
+     */
+    @SuppressWarnings("unchecked")
+    public PreferenceWriter append(Preference pref) {
+        append(pref.getMetadata().getName());
+
+        if (pref.getMetadata() instanceof MediaType) {
+            MediaType mediaType = (MediaType) pref.getMetadata();
+
+            if (mediaType.getParameters() != null) {
+                Parameter param;
+
+                for (Iterator<Parameter> iter = mediaType.getParameters()
+                        .iterator(); iter.hasNext();) {
+                    param = iter.next();
+
+                    if (param.getName() != null) {
+                        append(';').append(param.getName());
+
+                        if ((param.getValue() != null)
+                                && (param.getValue().length() > 0)) {
+                            append('=').append(param.getValue());
+                        }
+                    }
+                }
+            }
+        }
+
+        if (pref.getQuality() < 1F) {
+            append(";q=");
+            appendQuality(pref.getQuality());
+        }
+
+        if (pref.getParameters() != null) {
+            Parameter param;
+
+            for (Iterator<Parameter> iter = pref.getParameters().iterator(); iter
+                    .hasNext();) {
+                param = iter.next();
+
+                if (param.getName() != null) {
+                    append(';').append(param.getName());
+
+                    if ((param.getValue() != null)
+                            && (param.getValue().length() > 0)) {
+                        append('=').append(param.getValue());
+                    }
+                }
+            }
+        }
+
+        return this;
     }
 
 }
