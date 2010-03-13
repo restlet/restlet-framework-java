@@ -36,7 +36,7 @@ import java.util.List;
 import org.restlet.data.Product;
 
 /**
- * Utilities related to the user agent header.
+ * User agent header reader.
  * 
  * @author Thierry Boileau
  */

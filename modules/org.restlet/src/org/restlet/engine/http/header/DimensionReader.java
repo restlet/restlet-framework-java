@@ -35,7 +35,7 @@ import java.io.IOException;
 import org.restlet.data.Dimension;
 
 /**
- * Vary header reader.
+ * Dimension header reader.
  * 
  * @author Jerome Louvel
  */

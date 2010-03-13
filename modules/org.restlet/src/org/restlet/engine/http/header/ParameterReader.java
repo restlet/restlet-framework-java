@@ -35,7 +35,7 @@ import java.io.IOException;
 import org.restlet.data.Parameter;
 
 /**
- * Authentication-Info header reader.
+ * Parameter header reader.
  * 
  * @author Jerome Louvel
  */

@@ -36,7 +36,7 @@ import org.restlet.data.Warning;
 import org.restlet.engine.util.DateUtils;
 
 /**
- * Warning manipulation utilities.
+ * Warning header writer.
  * 
  * @author Thierry Boileau
  */

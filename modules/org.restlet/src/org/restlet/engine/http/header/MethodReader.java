@@ -35,7 +35,7 @@ import java.io.IOException;
 import org.restlet.data.Method;
 
 /**
- * Allow header reader.
+ * Method header reader.
  * 
  * @author Jerome Louvel
  */

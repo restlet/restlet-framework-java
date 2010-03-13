@@ -34,7 +34,7 @@ import org.restlet.data.Disposition;
 import org.restlet.data.Parameter;
 
 /**
- * Disposition manipulation utilities.
+ * Disposition header writer.
  * 
  * @author Thierry Boileau
  */

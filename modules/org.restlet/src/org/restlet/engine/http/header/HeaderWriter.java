@@ -39,8 +39,7 @@ import org.restlet.data.Reference;
 import org.restlet.engine.util.DateUtils;
 
 /**
- * HTTP-style header builder. It builds an internal buffer that can be retrieved
- * at the end via the {@link #toString()} method.
+ * HTTP-style header writer.
  * 
  * @author Jerome Louvel
  */
@@ -61,16 +60,6 @@ public class HeaderWriter extends StringWriter {
         }
 
         return DateUtils.format(date, DateUtils.FORMAT_RFC_1123.get(0));
-    }
-
-    /** Indicates if the first parameter is written. */
-    private volatile boolean firstParameter;
-
-    /**
-     * Constructor.
-     */
-    public HeaderWriter() {
-        this.firstParameter = true;
     }
 
     @Override
@@ -143,85 +132,35 @@ public class HeaderWriter extends StringWriter {
      * @return This writer.
      */
     public HeaderWriter appendExtension(Parameter extension) {
-        if ((extension != null) && (extension.getName() != null)
-                || (extension.getName().length() > 0)) {
-            append(extension.getName());
+        if (extension != null) {
+            return appendExtension(extension.getName(), extension.getValue());
+        } else {
+            return this;
+        }
+    }
 
-            if ((extension.getValue() != null)
-                    || (extension.getValue().length() > 0)) {
+    /**
+     * Appends an extension. If the value is not a token, then it is quoted.
+     * 
+     * @param name
+     *            The extension name.
+     * @param destination
+     *            The extension value.
+     * @return This writer.
+     */
+    public HeaderWriter appendExtension(String name, String value) {
+        if ((name != null) && (name.length() > 0)) {
+            append(name);
+
+            if ((value != null) && (value.length() > 0)) {
                 append("=");
 
-                if (HeaderUtils.isToken(extension.getValue())) {
-                    append(extension.getValue());
+                if (HeaderUtils.isToken(value)) {
+                    append(value);
                 } else {
-                    appendQuotedString(extension.getValue());
+                    appendQuotedString(value);
                 }
             }
-        }
-
-        return this;
-    }
-
-    /**
-     * Appends a new parameter, prefixed with a comma. The value is separated
-     * from the name by an '=' character.
-     * 
-     * @param parameter
-     *            The parameter.
-     * @return The current builder.
-     */
-    public HeaderWriter appendParameter(Parameter parameter) {
-        return appendParameter(parameter.getName(), parameter.getValue());
-    }
-
-    /**
-     * Appends a new parameter, prefixed with a comma.
-     * 
-     * @param name
-     *            The parameter name.
-     * @return The current builder.
-     */
-    public HeaderWriter appendParameter(String name) {
-        appendParameterSeparator();
-        return appendToken(name);
-    }
-
-    /**
-     * Appends a new parameter, prefixed with a comma. The value is separated
-     * from the name by an '=' character.
-     * 
-     * @param name
-     *            The parameter name.
-     * @param value
-     *            The parameter value.
-     * @return The current builder.
-     */
-    public HeaderWriter appendParameter(String name, String value) {
-        appendParameterSeparator();
-
-        if (name != null) {
-            appendToken(name);
-        }
-
-        if (value != null) {
-            append('=');
-            appendToken(value);
-        }
-
-        return this;
-    }
-
-    /**
-     * Appends a comma as a separator if the first parameter has already been
-     * written.
-     * 
-     * @return The current builder.
-     */
-    public HeaderWriter appendParameterSeparator() {
-        if (isFirstParameter()) {
-            setFirstParameter(false);
-        } else {
-            append(", ");
         }
 
         return this;
@@ -255,43 +194,6 @@ public class HeaderWriter extends StringWriter {
      */
     public HeaderWriter appendQuotedPair(char character) {
         return append('\\').append(character);
-    }
-
-    /**
-     * Appends a new parameter, prefixed with a comma. The value is separated
-     * from the name by an '=' character.
-     * 
-     * @param parameter
-     *            The parameter.
-     * @return The current builder.
-     */
-    public HeaderWriter appendQuotedParameter(Parameter parameter) {
-        return appendQuotedParameter(parameter.getName(), parameter.getValue());
-    }
-
-    /**
-     * Appends a new parameter, prefixed with a comma. The value is quoted and
-     * separated from the name by an '=' character.
-     * 
-     * @param name
-     *            The parameter name.
-     * @param value
-     *            The parameter value to quote.
-     * @return The current builder.
-     */
-    public HeaderWriter appendQuotedParameter(String name, String value) {
-        appendParameterSeparator();
-
-        if (name != null) {
-            appendToken(name);
-        }
-
-        if (value != null) {
-            append('=');
-            appendQuotedString(value);
-        }
-
-        return this;
     }
 
     /**
@@ -359,25 +261,6 @@ public class HeaderWriter extends StringWriter {
     public HeaderWriter appendUriEncoded(CharSequence source,
             CharacterSet characterSet) {
         return append(Reference.encode(source.toString(), characterSet));
-    }
-
-    /**
-     * Indicates if the first parameter is written.
-     * 
-     * @return True if the first parameter is written.
-     */
-    public boolean isFirstParameter() {
-        return firstParameter;
-    }
-
-    /**
-     * Indicates if the first parameter is written.
-     * 
-     * @param firstParameter
-     *            True if the first parameter is written.
-     */
-    public void setFirstParameter(boolean firstParameter) {
-        this.firstParameter = firstParameter;
     }
 
 }

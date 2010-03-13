@@ -43,8 +43,9 @@ import org.restlet.data.Digest;
 import org.restlet.data.Parameter;
 import org.restlet.data.Status;
 import org.restlet.engine.Helper;
-import org.restlet.engine.http.header.HeaderWriter;
+import org.restlet.engine.http.header.ChallengeWriter;
 import org.restlet.engine.http.header.HeaderConstants;
+import org.restlet.engine.http.header.HeaderWriter;
 import org.restlet.security.Guard;
 import org.restlet.util.Series;
 
@@ -137,8 +138,8 @@ public abstract class AuthenticatorHelper extends Helper {
     /**
      * Formats a challenge request as raw credentials.
      * 
-     * @param hb
-     *            The header builder to update.
+     * @param cw
+     *            The header writer to update.
      * @param challenge
      *            The challenge request to format.
      * @param response
@@ -146,16 +147,16 @@ public abstract class AuthenticatorHelper extends Helper {
      * @param httpHeaders
      *            The current request HTTP headers.
      */
-    public void formatRawRequest(HeaderWriter hb, ChallengeRequest challenge,
-            Response response, Series<Parameter> httpHeaders)
-            throws IOException {
+    public void formatRawRequest(ChallengeWriter cw,
+            ChallengeRequest challenge, Response response,
+            Series<Parameter> httpHeaders) throws IOException {
     }
 
     /**
      * Formats a challenge response as raw credentials.
      * 
-     * @param hb
-     *            The header builder to update.
+     * @param cw
+     *            The header writer to update.
      * @param challenge
      *            The challenge response to format.
      * @param request
@@ -163,8 +164,9 @@ public abstract class AuthenticatorHelper extends Helper {
      * @param httpHeaders
      *            The current request HTTP headers.
      */
-    public void formatRawResponse(HeaderWriter hb, ChallengeResponse challenge,
-            Request request, Series<Parameter> httpHeaders) {
+    public void formatRawResponse(ChallengeWriter cw,
+            ChallengeResponse challenge, Request request,
+            Series<Parameter> httpHeaders) {
     }
 
     /**
@@ -185,16 +187,16 @@ public abstract class AuthenticatorHelper extends Helper {
      */
     public String formatRequest(ChallengeRequest challenge, Response response,
             Series<Parameter> httpHeaders) throws IOException {
-        HeaderWriter hb = new HeaderWriter();
-        hb.append(challenge.getScheme().getTechnicalName()).appendSpace();
+        ChallengeWriter cw = new ChallengeWriter();
+        cw.append(challenge.getScheme().getTechnicalName()).appendSpace();
 
         if (challenge.getRawValue() != null) {
-            hb.append(challenge.getRawValue());
+            cw.append(challenge.getRawValue());
         } else {
-            formatRawRequest(hb, challenge, response, httpHeaders);
+            formatRawRequest(cw, challenge, response, httpHeaders);
         }
 
-        return hb.toString();
+        return cw.toString();
     }
 
     /**
@@ -215,7 +217,7 @@ public abstract class AuthenticatorHelper extends Helper {
      */
     public String formatResponse(ChallengeResponse challenge, Request request,
             Series<Parameter> httpHeaders) {
-        HeaderWriter hb = new HeaderWriter();
+        ChallengeWriter hb = new ChallengeWriter();
         hb.append(challenge.getScheme().getTechnicalName()).appendSpace();
 
         if (challenge.getRawValue() != null) {

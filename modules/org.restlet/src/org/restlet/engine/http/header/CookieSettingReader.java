@@ -40,7 +40,7 @@ import org.restlet.data.Parameter;
 import org.restlet.engine.util.DateUtils;
 
 /**
- * Cookie header reader.
+ * Cookie setting header reader.
  * 
  * @author Jerome Louvel
  */

@@ -42,7 +42,7 @@ import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Parameter;
-import org.restlet.engine.http.header.HeaderWriter;
+import org.restlet.engine.http.header.ChallengeWriter;
 import org.restlet.engine.http.header.HeaderReader;
 import org.restlet.engine.security.AuthenticatorHelper;
 import org.restlet.engine.util.Base64;
@@ -63,23 +63,24 @@ public class HttpBasicHelper extends AuthenticatorHelper {
     }
 
     @Override
-    public void formatRawRequest(HeaderWriter hb, ChallengeRequest challenge,
-            Response response, Series<Parameter> httpHeaders)
-            throws IOException {
+    public void formatRawRequest(ChallengeWriter cw,
+            ChallengeRequest challenge, Response response,
+            Series<Parameter> httpHeaders) throws IOException {
         if (challenge.getRealm() != null) {
-            hb.appendQuotedParameter("realm", challenge.getRealm());
+            cw.appendQuotedChallengeParameter("realm", challenge.getRealm());
         }
     }
 
     @Override
-    public void formatRawResponse(HeaderWriter hb, ChallengeResponse challenge,
-            Request request, Series<Parameter> httpHeaders) {
+    public void formatRawResponse(ChallengeWriter cw,
+            ChallengeResponse challenge, Request request,
+            Series<Parameter> httpHeaders) {
         try {
             CharArrayWriter credentials = new CharArrayWriter();
             credentials.write(challenge.getIdentifier());
             credentials.write(":");
             credentials.write(challenge.getSecret());
-            hb.append(Base64.encode(credentials.toCharArray(), "US-ASCII",
+            cw.append(Base64.encode(credentials.toCharArray(), "US-ASCII",
                     false));
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(

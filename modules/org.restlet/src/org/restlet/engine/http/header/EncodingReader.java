@@ -36,7 +36,7 @@ import java.util.Collection;
 import org.restlet.data.Encoding;
 
 /**
- * Content-Encoding header reader.
+ * Encoding header reader.
  * 
  * @author Jerome Louvel
  */

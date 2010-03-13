@@ -37,7 +37,7 @@ import org.restlet.data.CookieSetting;
 import org.restlet.engine.util.DateUtils;
 
 /**
- * Cookie manipulation utilities.
+ * Cookie setting header writer.
  * 
  * @author Jerome Louvel
  */

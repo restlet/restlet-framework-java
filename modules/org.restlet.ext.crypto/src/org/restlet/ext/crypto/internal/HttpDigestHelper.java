@@ -42,7 +42,7 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Digest;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
-import org.restlet.engine.http.header.HeaderWriter;
+import org.restlet.engine.http.header.ChallengeWriter;
 import org.restlet.engine.http.header.HeaderReader;
 import org.restlet.engine.http.header.HeaderUtils;
 import org.restlet.engine.security.AuthenticatorHelper;
@@ -220,121 +220,128 @@ public class HttpDigestHelper extends AuthenticatorHelper {
     }
 
     @Override
-    public void formatRawRequest(HeaderWriter hb, ChallengeRequest challenge,
-            Response response, Series<Parameter> httpHeaders)
-            throws IOException {
+    public void formatRawRequest(ChallengeWriter cw,
+            ChallengeRequest challenge, Response response,
+            Series<Parameter> httpHeaders) throws IOException {
 
         if (challenge.getRealm() != null) {
-            hb.appendQuotedParameter("realm", challenge.getRealm());
+            cw.appendQuotedChallengeParameter("realm", challenge.getRealm());
         }
 
         if (!challenge.getDomainRefs().isEmpty()) {
-            hb.append(", domain=\"");
+            cw.append(", domain=\"");
 
             for (int i = 0; i < challenge.getDomainRefs().size(); i++) {
                 if (i > 0) {
-                    hb.append(' ');
+                    cw.append(' ');
                 }
 
-                hb.append(challenge.getDomainRefs().get(i).toString());
+                cw.append(challenge.getDomainRefs().get(i).toString());
             }
 
-            hb.append('"');
+            cw.append('"');
         }
 
         if (challenge.getServerNonce() != null) {
-            hb.appendQuotedParameter("nonce", challenge.getServerNonce());
+            cw.appendQuotedChallengeParameter("nonce", challenge
+                    .getServerNonce());
         }
 
         if (challenge.getOpaque() != null) {
-            hb.appendQuotedParameter("opaque", challenge.getOpaque());
+            cw.appendQuotedChallengeParameter("opaque", challenge.getOpaque());
         }
 
         if (challenge.isStale()) {
-            hb.appendParameter("stale", "true");
+            cw.appendChallengeParameter("stale", "true");
         }
 
         if (challenge.getDigestAlgorithm() != null) {
-            hb.appendParameter("algorithm", challenge.getDigestAlgorithm());
+            cw.appendChallengeParameter("algorithm", challenge
+                    .getDigestAlgorithm());
         }
 
         if (!challenge.getQualityOptions().isEmpty()) {
-            hb.append(", qop=\"");
+            cw.append(", qop=\"");
 
             for (int i = 0; i < challenge.getQualityOptions().size(); i++) {
                 if (i > 0) {
-                    hb.append(',');
+                    cw.append(',');
                 }
 
-                hb.appendToken(challenge.getQualityOptions().get(i).toString());
+                cw.appendToken(challenge.getQualityOptions().get(i).toString());
             }
 
-            hb.append('"');
+            cw.append('"');
         }
 
         for (Parameter param : challenge.getParameters()) {
             if (HeaderUtils.isToken(param.getValue())) {
-                hb.appendParameter(param);
+                cw.appendChallengeParameter(param);
             } else {
-                hb.appendQuotedParameter(param);
+                cw.appendQuotedChallengeParameter(param);
             }
         }
     }
 
     @Override
-    public void formatRawResponse(HeaderWriter hw, ChallengeResponse challenge,
-            Request request, Series<Parameter> httpHeaders) {
+    public void formatRawResponse(ChallengeWriter cw,
+            ChallengeResponse challenge, Request request,
+            Series<Parameter> httpHeaders) {
 
         if (challenge.getIdentifier() != null) {
-            hw.appendQuotedParameter("username", challenge.getIdentifier());
+            cw.appendQuotedChallengeParameter("username", challenge
+                    .getIdentifier());
         }
 
         if (challenge.getRealm() != null) {
-            hw.appendQuotedParameter("realm", challenge.getRealm());
+            cw.appendQuotedChallengeParameter("realm", challenge.getRealm());
         }
 
         if (challenge.getServerNonce() != null) {
-            hw.appendQuotedParameter("nonce", challenge.getServerNonce());
+            cw.appendQuotedChallengeParameter("nonce", challenge
+                    .getServerNonce());
         }
 
         if (challenge.getDigestRef() != null) {
-            hw
-                    .appendQuotedParameter("uri", challenge.getDigestRef()
-                            .toString());
+            cw.appendQuotedChallengeParameter("uri", challenge.getDigestRef()
+                    .toString());
         }
 
         if (challenge.getSecret() != null) {
-            hw.appendQuotedParameter("response", new String(challenge
+            cw.appendQuotedChallengeParameter("response", new String(challenge
                     .getSecret()));
         }
 
         if ((challenge.getDigestAlgorithm() != null)
                 && !Digest.ALGORITHM_MD5.equals(challenge.getDigestAlgorithm())) {
-            hw.appendParameter("algorithm", challenge.getDigestAlgorithm());
+            cw.appendChallengeParameter("algorithm", challenge
+                    .getDigestAlgorithm());
         }
 
         if (challenge.getClientNonce() != null) {
-            hw.appendQuotedParameter("cnonce", challenge.getClientNonce());
+            cw.appendQuotedChallengeParameter("cnonce", challenge
+                    .getClientNonce());
         }
 
         if (challenge.getOpaque() != null) {
-            hw.appendQuotedParameter("opaque", challenge.getOpaque());
+            cw.appendQuotedChallengeParameter("opaque", challenge.getOpaque());
         }
 
         if (challenge.getQuality() != null) {
-            hw.appendParameter("qop", challenge.getQuality());
+            cw.appendChallengeParameter("qop", challenge.getQuality());
         }
 
         if ((challenge.getQuality() != null)
                 && (challenge.getServerNounceCount() > 0)) {
-            hw.appendParameter("nc", challenge.getServerNounceCountAsHex());
+            cw.appendChallengeParameter("nc", challenge
+                    .getServerNounceCountAsHex());
         }
 
         for (Parameter param : challenge.getParameters()) {
             if (HeaderUtils.isToken(param.getValue())) {
-                hw.appendParameter(param);
+                cw.appendChallengeParameter(param);
             } else {
-                hw.appendQuotedParameter(param);
+                cw.appendQuotedChallengeParameter(param);
             }
         }
     }

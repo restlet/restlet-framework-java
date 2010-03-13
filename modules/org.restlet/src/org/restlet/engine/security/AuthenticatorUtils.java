@@ -45,9 +45,9 @@ import org.restlet.data.Digest;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.engine.Engine;
-import org.restlet.engine.http.header.ParameterReader;
+import org.restlet.engine.http.header.ChallengeWriter;
 import org.restlet.engine.http.header.HeaderConstants;
-import org.restlet.engine.http.header.HeaderWriter;
+import org.restlet.engine.http.header.ParameterReader;
 import org.restlet.security.Guard;
 import org.restlet.util.Series;
 
@@ -168,46 +168,46 @@ public class AuthenticatorUtils {
      *         value.
      */
     public static String formatAuthenticationInfo(AuthenticationInfo info) {
-        HeaderWriter hw = new HeaderWriter();
+        ChallengeWriter cw = new ChallengeWriter();
         boolean firstParameter = true;
 
         if (info != null) {
             if (info.getNextServerNonce() != null
                     && info.getNextServerNonce().length() > 0) {
-                hw.setFirstParameter(firstParameter);
-                hw
-                        .appendQuotedParameter("nextnonce", info
-                                .getNextServerNonce());
+                cw.setFirstChallengeParameter(firstParameter);
+                cw.appendQuotedChallengeParameter("nextnonce", info
+                        .getNextServerNonce());
                 firstParameter = false;
             }
 
             if (info.getQuality() != null && info.getQuality().length() > 0) {
-                hw.setFirstParameter(firstParameter);
-                hw.appendParameter("qop", info.getQuality());
+                cw.setFirstChallengeParameter(firstParameter);
+                cw.appendChallengeParameter("qop", info.getQuality());
                 firstParameter = false;
 
                 if (info.getNonceCount() > 0) {
-                    hw.appendParameter("nc", formatNonceCount(info
+                    cw.appendChallengeParameter("nc", formatNonceCount(info
                             .getNonceCount()));
                 }
             }
 
             if (info.getResponseDigest() != null
                     && info.getResponseDigest().length() > 0) {
-                hw.setFirstParameter(firstParameter);
-                hw.appendQuotedParameter("rspauth", info.getResponseDigest());
+                cw.setFirstChallengeParameter(firstParameter);
+                cw.appendQuotedChallengeParameter("rspauth", info
+                        .getResponseDigest());
                 firstParameter = false;
             }
 
             if (info.getClientNonce() != null
                     && info.getClientNonce().length() > 0) {
-                hw.setFirstParameter(firstParameter);
-                hw.appendParameter("cnonce", info.getClientNonce());
+                cw.setFirstChallengeParameter(firstParameter);
+                cw.appendChallengeParameter("cnonce", info.getClientNonce());
                 firstParameter = false;
             }
         }
 
-        return hw.toString();
+        return cw.toString();
     }
 
     /**

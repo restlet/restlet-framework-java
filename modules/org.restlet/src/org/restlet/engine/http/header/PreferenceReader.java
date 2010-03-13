@@ -46,7 +46,7 @@ import org.restlet.data.Preference;
 import org.restlet.util.Series;
 
 /**
- * Accept-* headers reader. Works for character sets, encodings, languages or
+ * Preference header reader. Works for character sets, encodings, languages or
  * media types.
  * 
  * @author Jerome Louvel

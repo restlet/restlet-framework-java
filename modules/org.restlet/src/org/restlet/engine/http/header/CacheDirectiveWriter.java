@@ -30,13 +30,12 @@
 
 package org.restlet.engine.http.header;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.restlet.data.CacheDirective;
 
 /**
- * Builder of Cache Control header.
+ * Cache directive header writer.
  * 
  * @author Thierry Boileau
  */
@@ -58,9 +57,8 @@ public class CacheDirectiveWriter extends HeaderWriter {
      * 
      * @param directive
      *            The directive to format.
-     * @throws IOException
      */
-    public void append(CacheDirective directive) throws IOException {
+    public void append(CacheDirective directive) {
         append(directive.getName());
 
         if ((directive.getValue() != null)
@@ -89,12 +87,7 @@ public class CacheDirectiveWriter extends HeaderWriter {
             }
 
             directive = directives.get(i);
-
-            try {
-                append(directive);
-            } catch (IOException e) {
-                // IOExceptions are not possible on StringBuilders
-            }
+            append(directive);
         }
 
         return this;

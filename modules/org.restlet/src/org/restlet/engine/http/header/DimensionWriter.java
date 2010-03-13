@@ -35,7 +35,7 @@ import java.util.Collection;
 import org.restlet.data.Dimension;
 
 /**
- * Disposition manipulation utilities.
+ * Dimension header writer.
  * 
  * @author Thierry Boileau
  */

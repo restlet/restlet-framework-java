@@ -38,7 +38,7 @@ import java.util.Map;
 import org.restlet.data.Cookie;
 
 /**
- * Cookie manipulation utilities.
+ * Cookie header writer.
  * 
  * @author Jerome Louvel
  */

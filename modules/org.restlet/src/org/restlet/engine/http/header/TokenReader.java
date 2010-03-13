@@ -33,7 +33,7 @@ package org.restlet.engine.http.header;
 import java.io.IOException;
 
 /**
- * Reader of headers containing just tokens.
+ * Token header reader.
  * 
  * @author Jerome Louvel
  */

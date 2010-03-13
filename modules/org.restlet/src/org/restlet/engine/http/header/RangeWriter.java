@@ -36,7 +36,7 @@ import org.restlet.data.Range;
 import org.restlet.representation.Representation;
 
 /**
- * Range manipulation utilities.
+ * Range header writer.
  * 
  * @author Jerome Louvel
  */

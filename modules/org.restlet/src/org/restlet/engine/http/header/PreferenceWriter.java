@@ -39,7 +39,7 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
 
 /**
- * Preference manipulation utilities.<br>
+ * Preference header writer.
  * 
  * @author Jerome Louvel
  */

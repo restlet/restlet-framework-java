@@ -36,7 +36,7 @@ import org.restlet.data.Expectation;
 import org.restlet.data.Parameter;
 
 /**
- * Expect header reader.
+ * Expectation header reader.
  * 
  * @author Jerome Louvel
  */

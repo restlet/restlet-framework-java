@@ -35,7 +35,7 @@ import java.util.List;
 import org.restlet.data.Expectation;
 
 /**
- * Builder of Expect header.
+ * Expectation header writer.
  * 
  * @author Jerome Louvel
  */

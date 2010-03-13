@@ -42,7 +42,7 @@ import org.restlet.data.Form;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
-import org.restlet.engine.http.header.HeaderWriter;
+import org.restlet.engine.http.header.ChallengeWriter;
 import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.io.BioUtils;
 import org.restlet.engine.security.AuthenticatorHelper;
@@ -131,7 +131,7 @@ public class HttpAwsS3Helper extends AuthenticatorHelper {
     }
 
     @Override
-    public void formatRawResponse(HeaderWriter sb,
+    public void formatRawResponse(ChallengeWriter cw,
             ChallengeResponse challenge, Request request,
             Series<Parameter> httpHeaders) {
 
@@ -205,7 +205,7 @@ public class HttpAwsS3Helper extends AuthenticatorHelper {
                 .append(canonicalizedAmzHeaders).append(canonicalizedResource);
 
         // Append the AWS credentials
-        sb.append(challenge.getIdentifier()).append(':').append(
+        cw.append(challenge.getIdentifier()).append(':').append(
                 Base64.encode(DigestUtils.toHMac(rest.toString(), BioUtils
                         .toByteArray(challenge.getSecret())), false));
 

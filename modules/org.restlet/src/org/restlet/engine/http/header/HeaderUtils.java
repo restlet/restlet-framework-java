@@ -66,7 +66,7 @@ import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 
 /**
- * Various HTTP utilities.
+ * HTTP-style header utilities.
  * 
  * @author Jerome Louvel
  */

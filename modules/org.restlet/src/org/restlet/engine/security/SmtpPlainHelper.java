@@ -38,7 +38,7 @@ import org.restlet.Request;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Parameter;
-import org.restlet.engine.http.header.HeaderWriter;
+import org.restlet.engine.http.header.ChallengeWriter;
 import org.restlet.engine.util.Base64;
 import org.restlet.util.Series;
 
@@ -57,7 +57,7 @@ public class SmtpPlainHelper extends AuthenticatorHelper {
     }
 
     @Override
-    public void formatRawResponse(HeaderWriter sb,
+    public void formatRawResponse(ChallengeWriter cw,
             ChallengeResponse challenge, Request request,
             Series<Parameter> httpHeaders) {
         try {
@@ -66,7 +66,7 @@ public class SmtpPlainHelper extends AuthenticatorHelper {
             credentials.write(challenge.getIdentifier());
             credentials.write("^@");
             credentials.write(challenge.getSecret());
-            sb.append(Base64.encode(credentials.toCharArray(), "US-ASCII",
+            cw.append(Base64.encode(credentials.toCharArray(), "US-ASCII",
                     false));
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(

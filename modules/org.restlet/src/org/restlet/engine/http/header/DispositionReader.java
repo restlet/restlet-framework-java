@@ -36,7 +36,7 @@ import org.restlet.data.Disposition;
 import org.restlet.data.Parameter;
 
 /**
- * Content-Disposition header reader.
+ * Disposition header reader.
  * 
  * @author Thierry Boileau
  */

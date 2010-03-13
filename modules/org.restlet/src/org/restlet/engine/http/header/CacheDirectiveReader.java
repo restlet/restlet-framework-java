@@ -36,7 +36,7 @@ import org.restlet.data.CacheDirective;
 import org.restlet.data.Parameter;
 
 /**
- * Cache-Control header reader.
+ * Cache directive header reader.
  * 
  * @author Jerome Louvel
  */
