@@ -32,7 +32,6 @@ package org.restlet.engine.http.header;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -45,7 +44,6 @@ import org.restlet.Response;
 import org.restlet.data.AuthenticationInfo;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
-import org.restlet.data.CharacterSet;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
 import org.restlet.data.CookieSetting;
@@ -721,8 +719,9 @@ public class HeaderUtils {
         if (!((response.getRequest().getClientInfo().getAgent() != null) && response
                 .getRequest().getClientInfo().getAgent().contains("MSIE"))) {
             // Add the Vary header if content negotiation was used
-            final Set<Dimension> dimensions = response.getDimensions();
-            final String vary = createVaryHeader(dimensions);
+            Set<Dimension> dimensions = response.getDimensions();
+            String vary = DimensionWriter.writer(dimensions);
+
             if (vary != null) {
                 headers.add(HeaderConstants.HEADER_VARY, vary);
             }
@@ -770,123 +769,6 @@ public class HeaderUtils {
         Series<Parameter> additionalHeaders = (Series<Parameter>) response
                 .getAttributes().get(HeaderConstants.ATTRIBUTE_HEADERS);
         addExtensionHeaders(headers, additionalHeaders);
-    }
-
-    /**
-     * Formats and appends a parameter as an extension. If the value is not a
-     * token, then it is quoted.
-     * 
-     * @param extension
-     *            The parameter to format as an extension.
-     * @param destination
-     *            The appendable destination.
-     * @return The formatted extension.
-     * @throws IOException
-     */
-    public static Appendable appendExtension(Parameter extension,
-            Appendable destination) throws IOException {
-        if (extension != null) {
-            if ((extension.getName() != null)
-                    || (extension.getName().length() > 0)) {
-                destination.append(extension.getName());
-
-                if ((extension.getValue() != null)
-                        || (extension.getValue().length() > 0)) {
-                    destination.append("=");
-
-                    if (isToken(extension.getValue())) {
-                        destination.append(extension.getValue());
-                    } else {
-                        appendQuotedString(extension.getValue(), destination);
-                    }
-                }
-            }
-        }
-
-        return destination;
-    }
-
-    /**
-     * Formats and appends a product description.
-     * 
-     * @param nameToken
-     *            The product name token.
-     * @param versionToken
-     *            The product version token.
-     * @param destination
-     *            The appendable destination;
-     * @throws IOException
-     */
-    public static Appendable appendProduct(CharSequence nameToken,
-            CharSequence versionToken, Appendable destination)
-            throws IOException {
-        if (!isToken(nameToken)) {
-            throw new IllegalArgumentException(
-                    "Invalid product name detected. Only token characters are allowed.");
-        }
-
-        destination.append(nameToken);
-
-        if (versionToken != null) {
-            if (!isToken(versionToken)) {
-                throw new IllegalArgumentException(
-                        "Invalid product version detected. Only token characters are allowed.");
-            }
-
-            destination.append('/').append(versionToken);
-        }
-
-        return destination;
-    }
-
-    /**
-     * Formats and appends a source string as an HTTP quoted string.
-     * 
-     * @param source
-     *            The unquoted source string.
-     * @param destination
-     *            The destination to append to.
-     * @throws IOException
-     */
-    public static Appendable appendQuotedString(CharSequence source,
-            Appendable destination) throws IOException {
-
-        if ((source != null) && (source.length() > 0)) {
-            destination.append('"');
-            char c;
-
-            for (int i = 0; i < source.length(); i++) {
-                c = source.charAt(i);
-
-                if (isQuotedText(c)) {
-                    destination.append(c);
-                } else {
-                    destination.append('\\').append(c);
-                }
-            }
-
-            destination.append('"');
-        }
-
-        return destination;
-    }
-
-    /**
-     * Formats and appends a source string as an URI encoded string.
-     * 
-     * @param source
-     *            The source string to format.
-     * @param destination
-     *            The appendable destination.
-     * @param characterSet
-     *            The supported character encoding.
-     * @throws IOException
-     */
-    public static Appendable appendUriEncoded(CharSequence source,
-            Appendable destination, CharacterSet characterSet)
-            throws IOException {
-        destination.append(Reference.encode(source.toString(), characterSet));
-        return destination;
     }
 
     /**
@@ -1115,53 +997,6 @@ public class HeaderUtils {
                         tr.readValues().contains("bytes"));
             }
         }
-    }
-
-    /**
-     * Creates a vary header from the given dimensions.
-     * 
-     * @param dimensions
-     *            The dimensions to copy to the response.
-     * @return Returns the Vary header or null, if dimensions is null or empty.
-     */
-    public static String createVaryHeader(Collection<Dimension> dimensions) {
-        String vary = null;
-        if ((dimensions != null) && !dimensions.isEmpty()) {
-            final StringBuilder sb = new StringBuilder();
-            boolean first = true;
-
-            if (dimensions.contains(Dimension.CLIENT_ADDRESS)
-                    || dimensions.contains(Dimension.TIME)
-                    || dimensions.contains(Dimension.UNSPECIFIED)) {
-                // From an HTTP point of view the representations can
-                // vary in unspecified ways
-                vary = "*";
-            } else {
-                for (final Dimension dim : dimensions) {
-                    if (first) {
-                        first = false;
-                    } else {
-                        sb.append(", ");
-                    }
-
-                    if (dim == Dimension.CHARACTER_SET) {
-                        sb.append(HeaderConstants.HEADER_ACCEPT_CHARSET);
-                    } else if (dim == Dimension.CLIENT_AGENT) {
-                        sb.append(HeaderConstants.HEADER_USER_AGENT);
-                    } else if (dim == Dimension.ENCODING) {
-                        sb.append(HeaderConstants.HEADER_ACCEPT_ENCODING);
-                    } else if (dim == Dimension.LANGUAGE) {
-                        sb.append(HeaderConstants.HEADER_ACCEPT_LANGUAGE);
-                    } else if (dim == Dimension.MEDIA_TYPE) {
-                        sb.append(HeaderConstants.HEADER_ACCEPT);
-                    } else if (dim == Dimension.AUTHORIZATION) {
-                        sb.append(HeaderConstants.HEADER_AUTHORIZATION);
-                    }
-                }
-                vary = sb.toString();
-            }
-        }
-        return vary;
     }
 
     /**

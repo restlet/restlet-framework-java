@@ -33,7 +33,9 @@ package org.restlet.engine.http.header;
 import java.io.IOException;
 import java.io.StringWriter;
 
+import org.restlet.data.CharacterSet;
 import org.restlet.data.Parameter;
+import org.restlet.data.Reference;
 
 /**
  * HTTP-style header builder. It builds an internal buffer that can be retrieved
@@ -45,6 +47,123 @@ public class HeaderWriter extends StringWriter {
 
     /** Indicates if the first parameter is written. */
     private volatile boolean firstParameter;
+
+    /**
+     * Formats and appends a parameter as an extension. If the value is not a
+     * token, then it is quoted.
+     * 
+     * @param extension
+     *            The parameter to format as an extension.
+     * @param destination
+     *            The appendable destination.
+     * @return The formatted extension.
+     * @throws IOException
+     */
+    public static Appendable appendExtension(Parameter extension,
+            Appendable destination) throws IOException {
+        if (extension != null) {
+            if ((extension.getName() != null)
+                    || (extension.getName().length() > 0)) {
+                destination.append(extension.getName());
+
+                if ((extension.getValue() != null)
+                        || (extension.getValue().length() > 0)) {
+                    destination.append("=");
+
+                    if (HeaderUtils.isToken(extension.getValue())) {
+                        destination.append(extension.getValue());
+                    } else {
+                        appendQuotedString(extension.getValue(), destination);
+                    }
+                }
+            }
+        }
+
+        return destination;
+    }
+
+    /**
+     * Formats and appends a product description.
+     * 
+     * @param nameToken
+     *            The product name token.
+     * @param versionToken
+     *            The product version token.
+     * @param destination
+     *            The appendable destination;
+     * @throws IOException
+     */
+    public static Appendable appendProduct(CharSequence nameToken,
+            CharSequence versionToken, Appendable destination)
+            throws IOException {
+        if (!HeaderUtils.isToken(nameToken)) {
+            throw new IllegalArgumentException(
+                    "Invalid product name detected. Only token characters are allowed.");
+        }
+
+        destination.append(nameToken);
+
+        if (versionToken != null) {
+            if (!HeaderUtils.isToken(versionToken)) {
+                throw new IllegalArgumentException(
+                        "Invalid product version detected. Only token characters are allowed.");
+            }
+
+            destination.append('/').append(versionToken);
+        }
+
+        return destination;
+    }
+
+    /**
+     * Formats and appends a source string as an HTTP quoted string.
+     * 
+     * @param source
+     *            The unquoted source string.
+     * @param destination
+     *            The destination to append to.
+     * @throws IOException
+     */
+    public static Appendable appendQuotedString(CharSequence source,
+            Appendable destination) throws IOException {
+
+        if ((source != null) && (source.length() > 0)) {
+            destination.append('"');
+            char c;
+
+            for (int i = 0; i < source.length(); i++) {
+                c = source.charAt(i);
+
+                if (HeaderUtils.isQuotedText(c)) {
+                    destination.append(c);
+                } else {
+                    destination.append('\\').append(c);
+                }
+            }
+
+            destination.append('"');
+        }
+
+        return destination;
+    }
+
+    /**
+     * Formats and appends a source string as an URI encoded string.
+     * 
+     * @param source
+     *            The source string to format.
+     * @param destination
+     *            The appendable destination.
+     * @param characterSet
+     *            The supported character encoding.
+     * @throws IOException
+     */
+    public static Appendable appendUriEncoded(CharSequence source,
+            Appendable destination, CharacterSet characterSet)
+            throws IOException {
+        destination.append(Reference.encode(source.toString(), characterSet));
+        return destination;
+    }
 
     /**
      * Constructor.

@@ -65,7 +65,7 @@ public class DispositionWriter {
                 sb.append(parameter.getValue());
             } else {
                 try {
-                    HeaderUtils.appendQuotedString(parameter.getValue(), sb);
+                    HeaderWriter.appendQuotedString(parameter.getValue(), sb);
                 } catch (IOException e) {
                     // IOExceptions are not possible on StringBuilders
                 }

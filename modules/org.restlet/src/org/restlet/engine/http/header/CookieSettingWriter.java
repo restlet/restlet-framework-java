@@ -59,7 +59,7 @@ public class CookieSettingWriter {
         if (version == 0) {
             destination.append(value.toString());
         } else {
-            HeaderUtils.appendQuotedString(value, destination);
+            HeaderWriter.appendQuotedString(value, destination);
         }
 
         return destination;
@@ -131,7 +131,7 @@ public class CookieSettingWriter {
             if (version == 0) {
                 destination.append(path);
             } else {
-                HeaderUtils.appendQuotedString(path, destination);
+                HeaderWriter.appendQuotedString(path, destination);
             }
         }
 

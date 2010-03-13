@@ -60,7 +60,7 @@ public class CookieWriter {
         if (version == 0) {
             destination.append(value.toString());
         } else {
-            HeaderUtils.appendQuotedString(value, destination);
+            HeaderWriter.appendQuotedString(value, destination);
         }
 
         return destination;
@@ -98,9 +98,9 @@ public class CookieWriter {
      */
     public static void append(Cookie cookie, Appendable destination)
             throws IllegalArgumentException, IOException {
-        final String name = cookie.getName();
-        final String value = cookie.getValue();
-        final int version = cookie.getVersion();
+        String name = cookie.getName();
+        String value = cookie.getValue();
+        int version = cookie.getVersion();
 
         if ((name == null) || (name.length() == 0)) {
             throw new IllegalArgumentException(
@@ -113,19 +113,19 @@ public class CookieWriter {
         if ((value != null) && (value.length() > 0)) {
             appendValue(value, version, destination);
         }
-        
+
         if (version > 0) {
             // Append the path
             final String path = cookie.getPath();
             if ((path != null) && (path.length() > 0)) {
                 destination.append("; $Path=");
-                HeaderUtils.appendQuotedString(path, destination);
+                HeaderWriter.appendQuotedString(path, destination);
             }
             // Append the domain
             final String domain = cookie.getDomain();
             if ((domain != null) && (domain.length() > 0)) {
                 destination.append("; $Domain=");
-                HeaderUtils.appendQuotedString(domain, destination);
+                HeaderWriter.appendQuotedString(domain, destination);
             }
         }
     }

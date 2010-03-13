@@ -51,8 +51,7 @@ public class WarningWriter {
      * @throws IllegalArgumentException
      *             If the Cookie contains illegal values.
      */
-    public static String write(Warning warning)
-            throws IllegalArgumentException {
+    public static String write(Warning warning) throws IllegalArgumentException {
         StringBuilder sb = new StringBuilder();
 
         try {
@@ -98,11 +97,11 @@ public class WarningWriter {
         destination.append(" ");
         destination.append(agent);
         destination.append(" ");
-        HeaderUtils.appendQuotedString(text, destination);
+        HeaderWriter.appendQuotedString(text, destination);
 
         if (warning.getDate() != null) {
-            HeaderUtils.appendQuotedString(DateUtils.format(warning.getDate()),
-                    destination);
+            HeaderWriter.appendQuotedString(
+                    DateUtils.format(warning.getDate()), destination);
         }
     }
 

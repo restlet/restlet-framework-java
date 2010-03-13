@@ -77,6 +77,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
 import org.restlet.data.Parameter;
 import org.restlet.engine.http.header.ContentType;
+import org.restlet.engine.http.header.DimensionWriter;
 import org.restlet.engine.http.header.HeaderUtils;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.ext.jaxrs.internal.core.UnmodifiableMultivaluedMap;
@@ -513,7 +514,7 @@ public class Util {
      * @return the Vary header or null, if dimensions is null or empty.
      */
     public static String formatDimensions(Set<Dimension> dimensions) {
-        return HeaderUtils.createVaryHeader(dimensions);
+        return DimensionWriter.writer(dimensions);
     }
 
     /**
