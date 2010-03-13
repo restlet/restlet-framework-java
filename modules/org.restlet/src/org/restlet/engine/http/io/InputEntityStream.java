@@ -84,8 +84,8 @@ public abstract class InputEntityStream extends InputStream {
 
     /**
      * To be called when the end of the stream is reached. By default, it
-     * updates the state of the connection ({@link
-     * Connection#setInboundBusy(false)}) .
+     * updates the state of the connection (
+     * {@link Connection#setInboundBusy(boolean)}) .
      */
     protected void onEndReached() {
         if (connection != null) {

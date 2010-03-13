@@ -867,9 +867,9 @@ public abstract class Connection<T extends Connector> {
     /**
      * Indicates if the entity should be chunked because its length is unknown.
      * 
-     * @param response
-     *            The response to analyze.
-     * @return True if the response should be chunked.
+     * @param entity
+     *            The entity to analyze.
+     * @return True if the entity should be chunked.
      */
     protected boolean shouldBeChunked(Representation entity) {
         return (entity != null)

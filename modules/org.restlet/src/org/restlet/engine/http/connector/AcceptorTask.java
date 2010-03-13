@@ -70,8 +70,6 @@ public class AcceptorTask extends BaseTask {
      * @param latch
      *            The latch to countdown when the socket is ready to accept
      *            connections.
-     * @param handlerService
-     *            The handler service.
      */
     public AcceptorTask(BaseServerHelper helper, ServerSocket serverSocket,
             CountDownLatch latch) {

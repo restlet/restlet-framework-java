@@ -238,7 +238,7 @@ public abstract class Representation extends RepresentationInfo {
      * {@link #isTransient}
      * 
      * @return True if both digests are not null and equals.
-     * @deprecated Use {@link Representation#getDigester()} instead.
+     * @deprecated Use a {@link DigesterRepresentation} instead.
      */
     @Deprecated
     public boolean checkDigest() {
@@ -261,7 +261,7 @@ public abstract class Representation extends RepresentationInfo {
      *            The algorithm used to compute the digest to compare with. See
      *            constant values in {@link org.restlet.data.Digest}.
      * @return True if both digests are not null and equals.
-     * @deprecated Use {@link Representation#getDigester()} instead.
+     * @deprecated Use a {@link DigesterRepresentation} instead.
      */
     @Deprecated
     public boolean checkDigest(String algorithm) {
@@ -287,7 +287,7 @@ public abstract class Representation extends RepresentationInfo {
      *            The algorithm used to compute the digest. See constant values
      *            in {@link org.restlet.data.Digest}.
      * @return The computed digest or null if the digest cannot be computed.
-     * @deprecated Use {@link Representation#getDigester()} instead.
+     * @deprecated Use a {@link DigesterRepresentation} instead.
      */
     @Deprecated
     public org.restlet.data.Digest computeDigest(String algorithm) {

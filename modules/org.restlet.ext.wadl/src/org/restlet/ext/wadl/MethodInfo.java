@@ -307,7 +307,7 @@ public class MethodInfo extends DocumentedInfo {
      * 
      * @param response
      *            The output of the method.
-     * @deprecated Use the {@link #getResponses()} or {@link #setResponses()}
+     * @deprecated Use the {@link #getResponses()} or {@link #setResponses(List)}
      *             methods instead.
      */
     @Deprecated
