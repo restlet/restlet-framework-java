@@ -579,7 +579,7 @@ public class Util {
         if (contentType == null) {
             charSet = defaultCs;
         } else {
-            charSet = ContentType.parseCharacterSet(contentType.toString());
+            charSet = ContentType.readCharacterSet(contentType.toString());
 
             if (charSet == null) {
                 charSet = defaultCs;
@@ -1073,7 +1073,7 @@ public class Util {
             return Converter
                     .toRestletMediaType((javax.ws.rs.core.MediaType) contentType);
         }
-        return ContentType.parseMediaType(contentType.toString());
+        return ContentType.readMediaType(contentType.toString());
     }
 
     /**

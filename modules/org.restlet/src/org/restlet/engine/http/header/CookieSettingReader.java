@@ -68,6 +68,26 @@ public class CookieSettingReader extends HeaderReader<CookieSetting> {
 
     private static final String NAME_SET_VERSION = "version";
 
+    /**
+     * Parses the given String to a CookieSetting
+     * 
+     * @param cookieSetting
+     * @return the CookieSetting parsed from the String
+     * @throws IllegalArgumentException
+     *             Thrown if the String can not be parsed as CookieSetting.
+     */
+    public static CookieSetting read(String cookieSetting)
+            throws IllegalArgumentException {
+        CookieSettingReader cr = new CookieSettingReader(cookieSetting);
+
+        try {
+            return cr.readValue();
+        } catch (IOException e) {
+            throw new IllegalArgumentException(
+                    "Could not read the cookie setting", e);
+        }
+    }
+
     /** The cached pair. Used by the readPair() method. */
     private volatile Parameter cachedPair;
 
@@ -84,6 +104,78 @@ public class CookieSettingReader extends HeaderReader<CookieSetting> {
         super(header);
         this.cachedPair = null;
         this.globalVersion = -1;
+    }
+
+    /**
+     * Reads the next pair as a parameter.
+     * 
+     * @return The next pair as a parameter.
+     * @throws IOException
+     */
+    private Parameter readPair() throws IOException {
+        Parameter result = null;
+
+        if (this.cachedPair != null) {
+            result = this.cachedPair;
+            this.cachedPair = null;
+        } else {
+            boolean readingName = true;
+            boolean readingValue = false;
+            StringBuilder nameBuffer = new StringBuilder();
+            StringBuilder valueBuffer = new StringBuilder();
+            int nextChar = 0;
+
+            while ((result == null) && (nextChar != -1)) {
+                nextChar = read();
+
+                if (readingName) {
+                    if ((HeaderUtils.isSpace(nextChar))
+                            && (nameBuffer.length() == 0)) {
+                        // Skip spaces
+                    } else if ((nextChar == -1) || (nextChar == ';')
+                            || (nextChar == ',')) {
+                        if (nameBuffer.length() > 0) {
+                            // End of pair with no value
+                            result = Parameter.create(nameBuffer, null);
+                        } else if (nextChar == -1) {
+                            // Do nothing return null preference
+                        } else {
+                            throw new IOException(
+                                    "Empty cookie name detected. Please check your cookies");
+                        }
+                    } else if (nextChar == '=') {
+                        readingName = false;
+                        readingValue = true;
+                    } else if (HeaderUtils.isTokenChar(nextChar)
+                            || (this.globalVersion < 1)) {
+                        nameBuffer.append((char) nextChar);
+                    } else {
+                        throw new IOException(
+                                "Separator and control characters are not allowed within a token. Please check your cookie header");
+                    }
+                } else if (readingValue) {
+                    if ((HeaderUtils.isSpace(nextChar))
+                            && (valueBuffer.length() == 0)) {
+                        // Skip spaces
+                    } else if ((nextChar == -1) || (nextChar == ';')) {
+                        // End of pair
+                        result = Parameter.create(nameBuffer, valueBuffer);
+                    } else if ((nextChar == '"') && (valueBuffer.length() == 0)) {
+                        // Step back
+                        unread();
+                        valueBuffer.append(readQuotedString());
+                    } else if (HeaderUtils.isTokenChar(nextChar)
+                            || (this.globalVersion < 1)) {
+                        valueBuffer.append((char) nextChar);
+                    } else {
+                        throw new IOException(
+                                "Separator and control characters are not allowed within a token. Please check your cookie header");
+                    }
+                }
+            }
+        }
+
+        return result;
     }
 
     @Override
@@ -168,78 +260,6 @@ public class CookieSettingReader extends HeaderReader<CookieSetting> {
             }
 
             pair = readPair();
-        }
-
-        return result;
-    }
-
-    /**
-     * Reads the next pair as a parameter.
-     * 
-     * @return The next pair as a parameter.
-     * @throws IOException
-     */
-    private Parameter readPair() throws IOException {
-        Parameter result = null;
-
-        if (this.cachedPair != null) {
-            result = this.cachedPair;
-            this.cachedPair = null;
-        } else {
-            boolean readingName = true;
-            boolean readingValue = false;
-            StringBuilder nameBuffer = new StringBuilder();
-            StringBuilder valueBuffer = new StringBuilder();
-            int nextChar = 0;
-
-            while ((result == null) && (nextChar != -1)) {
-                nextChar = read();
-
-                if (readingName) {
-                    if ((HeaderUtils.isSpace(nextChar))
-                            && (nameBuffer.length() == 0)) {
-                        // Skip spaces
-                    } else if ((nextChar == -1) || (nextChar == ';')
-                            || (nextChar == ',')) {
-                        if (nameBuffer.length() > 0) {
-                            // End of pair with no value
-                            result = Parameter.create(nameBuffer, null);
-                        } else if (nextChar == -1) {
-                            // Do nothing return null preference
-                        } else {
-                            throw new IOException(
-                                    "Empty cookie name detected. Please check your cookies");
-                        }
-                    } else if (nextChar == '=') {
-                        readingName = false;
-                        readingValue = true;
-                    } else if (HeaderUtils.isTokenChar(nextChar)
-                            || (this.globalVersion < 1)) {
-                        nameBuffer.append((char) nextChar);
-                    } else {
-                        throw new IOException(
-                                "Separator and control characters are not allowed within a token. Please check your cookie header");
-                    }
-                } else if (readingValue) {
-                    if ((HeaderUtils.isSpace(nextChar))
-                            && (valueBuffer.length() == 0)) {
-                        // Skip spaces
-                    } else if ((nextChar == -1) || (nextChar == ';')) {
-                        // End of pair
-                        result = Parameter.create(nameBuffer, valueBuffer);
-                    } else if ((nextChar == '"') && (valueBuffer.length() == 0)) {
-                        // Step back
-                        unread();
-                        valueBuffer.append(readQuotedString());
-                    } else if (HeaderUtils.isTokenChar(nextChar)
-                            || (this.globalVersion < 1)) {
-                        valueBuffer.append((char) nextChar);
-                    } else {
-                        throw new IOException(
-                                "Separator and control characters are not allowed within a token. Please check your cookie header");
-                    }
-                }
-            }
         }
 
         return result;

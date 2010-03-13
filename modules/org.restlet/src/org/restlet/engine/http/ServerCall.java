@@ -181,7 +181,7 @@ public abstract class ServerCall extends Call {
                 result.setCharacterSet(contentType.getCharacterSet());
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_CONTENT_RANGE)) {
-                RangeUtils.parseContentRange(header.getValue(), result);
+                RangeUtils.update(header.getValue(), result);
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_CONTENT_MD5)) {
                 result.setDigest(new Digest(Digest.ALGORITHM_MD5, Base64

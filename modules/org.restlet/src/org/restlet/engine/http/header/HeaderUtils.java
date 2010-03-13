@@ -158,7 +158,7 @@ public class HeaderUtils {
             if (entity.getRange() != null) {
                 try {
                     headers.add(HeaderConstants.HEADER_CONTENT_RANGE,
-                            RangeUtils.formatContentRange(entity.getRange(),
+                            RangeUtils.write(entity.getRange(),
                                     entity.getSize()));
                 } catch (Exception e) {
                     Context
@@ -367,7 +367,7 @@ public class HeaderUtils {
         // Add the Cache-control headers
         if (!message.getCacheDirectives().isEmpty()) {
             headers.add(HeaderConstants.HEADER_CACHE_CONTROL,
-                    CacheDirectiveWriter.format(message.getCacheDirectives()));
+                    CacheDirectiveWriter.write(message.getCacheDirectives()));
         }
 
         // Add the date
@@ -382,7 +382,7 @@ public class HeaderUtils {
         if (!message.getWarnings().isEmpty()) {
             for (Warning warning : message.getWarnings()) {
                 headers.add(HeaderConstants.HEADER_WARNING, WarningWriter
-                        .format(warning));
+                        .write(warning));
             }
         }
 
@@ -416,7 +416,7 @@ public class HeaderUtils {
         if (client.getAcceptedMediaTypes().size() > 0) {
             try {
                 headers.add(HeaderConstants.HEADER_ACCEPT, PreferenceWriter
-                        .format(client.getAcceptedMediaTypes()));
+                        .write(client.getAcceptedMediaTypes()));
             } catch (IOException ioe) {
                 Context.getCurrentLogger().log(Level.WARNING,
                         "Unable to format the HTTP Accept header", ioe);
@@ -428,7 +428,7 @@ public class HeaderUtils {
         if (client.getAcceptedCharacterSets().size() > 0) {
             try {
                 headers.add(HeaderConstants.HEADER_ACCEPT_CHARSET,
-                        PreferenceWriter.format(client
+                        PreferenceWriter.write(client
                                 .getAcceptedCharacterSets()));
             } catch (IOException ioe) {
                 Context.getCurrentLogger().log(Level.WARNING,
@@ -439,7 +439,7 @@ public class HeaderUtils {
         if (client.getAcceptedEncodings().size() > 0) {
             try {
                 headers.add(HeaderConstants.HEADER_ACCEPT_ENCODING,
-                        PreferenceWriter.format(client.getAcceptedEncodings()));
+                        PreferenceWriter.write(client.getAcceptedEncodings()));
             } catch (IOException ioe) {
                 Context.getCurrentLogger().log(Level.WARNING,
                         "Unable to format the HTTP Accept header", ioe);
@@ -449,7 +449,7 @@ public class HeaderUtils {
         if (client.getAcceptedLanguages().size() > 0) {
             try {
                 headers.add(HeaderConstants.HEADER_ACCEPT_LANGUAGE,
-                        PreferenceWriter.format(client.getAcceptedLanguages()));
+                        PreferenceWriter.write(client.getAcceptedLanguages()));
             } catch (IOException ioe) {
                 Context.getCurrentLogger().log(Level.WARNING,
                         "Unable to format the HTTP Accept header", ioe);
@@ -548,7 +548,7 @@ public class HeaderUtils {
         if (!request.getRanges().isEmpty()) {
             headers.add(HeaderConstants.HEADER_RANGE,
                     org.restlet.engine.http.header.RangeUtils
-                            .formatRanges(request.getRanges()));
+                            .write(request.getRanges()));
         }
 
         // Add the referrer header
@@ -570,7 +570,7 @@ public class HeaderUtils {
         if (client.getExpectations().size() > 0) {
             try {
                 headers.add(HeaderConstants.HEADER_ACCEPT_ENCODING,
-                        PreferenceWriter.format(client.getAcceptedEncodings()));
+                        PreferenceWriter.write(client.getAcceptedEncodings()));
             } catch (IOException ioe) {
                 Context.getCurrentLogger().log(Level.WARNING,
                         "Unable to format the HTTP Accept header", ioe);
@@ -584,7 +584,7 @@ public class HeaderUtils {
 
         // Add the cookies
         if (request.getCookies().size() > 0) {
-            String cookies = CookieWriter.format(request.getCookies());
+            String cookies = CookieWriter.write(request.getCookies());
             headers.add(HeaderConstants.HEADER_COOKIE, cookies);
         }
 
@@ -763,7 +763,7 @@ public class HeaderUtils {
         List<CookieSetting> cookies = response.getCookieSettings();
         for (int i = 0; i < cookies.size(); i++) {
             headers.add(HeaderConstants.HEADER_SET_COOKIE, CookieWriter
-                    .format(cookies.get(i)));
+                    .write(cookies.get(i)));
         }
 
         // -------------------------------------
@@ -974,7 +974,7 @@ public class HeaderUtils {
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_CONTENT_RANGE)) {
                 // [ifndef gwt]
-                org.restlet.engine.http.header.RangeUtils.parseContentRange(
+                org.restlet.engine.http.header.RangeUtils.update(
                         header.getValue(), result);
                 entityHeaderFound = true;
                 // [enddef]

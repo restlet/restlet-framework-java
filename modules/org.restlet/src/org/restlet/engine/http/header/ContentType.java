@@ -49,7 +49,7 @@ public class ContentType {
      *            The content type header to parse.
      * @return The media type.
      */
-    public static MediaType parseMediaType(String contentType) {
+    public static MediaType readMediaType(String contentType) {
         return new ContentType(contentType).getMediaType();
     }
 
@@ -60,7 +60,7 @@ public class ContentType {
      *            The content type header to parse.
      * @return The character set.
      */
-    public static CharacterSet parseCharacterSet(String contentType) {
+    public static CharacterSet readCharacterSet(String contentType) {
         return new ContentType(contentType).getCharacterSet();
     }
 

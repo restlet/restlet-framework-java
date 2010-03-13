@@ -67,7 +67,7 @@ public class MediaTypeHeaderDelegate implements HeaderDelegate<MediaType> {
         // if(true)
         // throw new NotYetImplementedException("waiting for an Engine patch");
         final org.restlet.data.MediaType restletMediaType = ContentType
-                .parseMediaType(contentType);
+                .readMediaType(contentType);
         return Converter.toJaxRsMediaType(restletMediaType, null);
     }
 

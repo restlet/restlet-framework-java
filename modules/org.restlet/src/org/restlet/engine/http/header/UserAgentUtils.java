@@ -52,7 +52,7 @@ public class UserAgentUtils {
      * @throws IllegalArgumentException
      *             Thrown if the List of Products contains illegal values
      */
-    public static String format(List<Product> products)
+    public static String write(List<Product> products)
             throws IllegalArgumentException {
         final StringBuilder builder = new StringBuilder();
 
@@ -90,7 +90,7 @@ public class UserAgentUtils {
      *             Thrown if the String can not be parsed as a list of Product
      *             instances.
      */
-    public static List<Product> parse(String userAgent)
+    public static List<Product> read(String userAgent)
             throws IllegalArgumentException {
         final List<Product> result = new ArrayList<Product>();
 

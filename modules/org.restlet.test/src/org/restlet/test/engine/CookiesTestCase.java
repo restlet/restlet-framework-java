@@ -68,7 +68,7 @@ public class CookiesTestCase extends RestletTestCase {
         }
 
         // Rewrite the header
-        final String newHeaderValue = CookieWriter.format(cookies);
+        final String newHeaderValue = CookieWriter.write(cookies);
 
         // Compare initial and new headers
         assertEquals(headerValue, newHeaderValue);
@@ -107,7 +107,7 @@ public class CookiesTestCase extends RestletTestCase {
         CookieSetting cookie = cr.readValue();
 
         // Rewrite the header
-        String newHeaderValue = CookieSettingWriter.format(cookie);
+        String newHeaderValue = CookieSettingWriter.write(cookie);
 
         // Compare initial and new headers
         if (compare) {

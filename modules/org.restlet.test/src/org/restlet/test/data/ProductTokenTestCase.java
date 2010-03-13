@@ -146,7 +146,7 @@ public class ProductTokenTestCase extends RestletTestCase {
         final String userAgent5 = "Mozilla/5.0 (Macintosh; U; PPC Mac OS X; en-US; rv:1.8) Gecko/20051107 Camino/1.0b1";
         final String userAgent6 = "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.1) Gecko/20061024 Iceweasel/2.0 (Debian-2.0+dfsg-1)";
 
-        List<Product> list = UserAgentUtils.parse(userAgent1);
+        List<Product> list = UserAgentUtils.read(userAgent1);
         assertEquals(1, list.size());
         assertEquals("Mozilla", list.get(0).getName());
         assertEquals("4.0", list.get(0).getVersion());
@@ -154,25 +154,25 @@ public class ProductTokenTestCase extends RestletTestCase {
                 "compatible; MSIE 6.0; America Online Browser 1.1; rev1.1; Windows NT 5.1;",
                 list.get(0).getComment());
 
-        list = UserAgentUtils.parse(userAgent2);
+        list = UserAgentUtils.read(userAgent2);
         assertEquals(1, list.size());
         assertEquals(list.get(0).getName(), "Advanced Browser");
         assertNull(list.get(0).getVersion());
         assertEquals(list.get(0).getComment(), "http://www.avantbrowser.com");
 
-        list = UserAgentUtils.parse(userAgent3);
+        list = UserAgentUtils.read(userAgent3);
         assertEquals(1, list.size());
         assertEquals("Mozilla", list.get(0).getName());
         assertEquals("5.0", list.get(0).getVersion());
         assertNull(list.get(0).getComment());
 
-        list = UserAgentUtils.parse(userAgent4);
+        list = UserAgentUtils.read(userAgent4);
         assertEquals(1, list.size());
         assertEquals("Mozilla", list.get(0).getName());
         assertNull(list.get(0).getVersion());
         assertNull(list.get(0).getComment());
 
-        list = UserAgentUtils.parse(userAgent5);
+        list = UserAgentUtils.read(userAgent5);
         assertEquals(3, list.size());
         assertEquals("Mozilla", list.get(0).getName());
         assertEquals("5.0", list.get(0).getVersion());
@@ -185,7 +185,7 @@ public class ProductTokenTestCase extends RestletTestCase {
         assertEquals("1.0b1", list.get(2).getVersion());
         assertNull(list.get(2).getComment());
 
-        list = UserAgentUtils.parse(userAgent6);
+        list = UserAgentUtils.read(userAgent6);
         assertEquals(3, list.size());
         assertEquals("Mozilla", list.get(0).getName());
         assertEquals("5.0", list.get(0).getVersion());
@@ -202,7 +202,7 @@ public class ProductTokenTestCase extends RestletTestCase {
         products.add(new Product("Product", "1.2", null));
         products.add(new Product("Nre", "1.1m4", "This is a comment"));
 
-        list = UserAgentUtils.parse(UserAgentUtils.format(products));
+        list = UserAgentUtils.read(UserAgentUtils.write(products));
         assertEquals(2, list.size());
         assertEquals("Product", list.get(0).getName());
         assertEquals("1.2", list.get(0).getVersion());

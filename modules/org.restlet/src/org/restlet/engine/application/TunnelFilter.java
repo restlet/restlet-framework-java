@@ -537,7 +537,7 @@ public class TunnelFilter extends Filter {
                         }
                         if (checked) {
                             ClientInfo clientInfo = new ClientInfo();
-                            PreferenceReader.parseMediaTypes(acceptReplacer
+                            PreferenceReader.readMediaTypes(acceptReplacer
                                     .getAcceptNew(), clientInfo);
                             request.getClientInfo().setAcceptedMediaTypes(
                                     clientInfo.getAcceptedMediaTypes());

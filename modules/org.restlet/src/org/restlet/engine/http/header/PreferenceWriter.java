@@ -52,7 +52,7 @@ public class PreferenceWriter {
      * @return The formatted list of preferences.
      * @throws IOException
      */
-    public static String format(List<? extends Preference<?>> prefs)
+    public static String write(List<? extends Preference<?>> prefs)
             throws IOException {
         final StringBuilder sb = new StringBuilder();
 
@@ -62,7 +62,7 @@ public class PreferenceWriter {
                 sb.append(", ");
             }
             pref = prefs.get(i);
-            format(pref, sb);
+            append(pref, sb);
         }
 
         return sb.toString();
@@ -78,7 +78,7 @@ public class PreferenceWriter {
      * @throws IOException
      */
     @SuppressWarnings("unchecked")
-    public static void format(Preference pref, Appendable destination)
+    public static void append(Preference pref, Appendable destination)
             throws IOException {
         destination.append(pref.getMetadata().getName());
 
@@ -105,7 +105,7 @@ public class PreferenceWriter {
 
         if (pref.getQuality() < 1F) {
             destination.append(";q=");
-            formatQuality(pref.getQuality(), destination);
+            append(pref.getQuality(), destination);
         }
 
         if (pref.getParameters() != null) {
@@ -136,7 +136,7 @@ public class PreferenceWriter {
      *            The appendable destination;
      * @throws IOException
      */
-    public static void formatQuality(float quality, Appendable destination)
+    public static void append(float quality, Appendable destination)
             throws IOException {
         if (!isQuality(quality)) {
             throw new IllegalArgumentException(

@@ -51,12 +51,12 @@ public class WarningWriter {
      * @throws IllegalArgumentException
      *             If the Cookie contains illegal values.
      */
-    public static String format(Warning warning)
+    public static String write(Warning warning)
             throws IllegalArgumentException {
         StringBuilder sb = new StringBuilder();
 
         try {
-            format(warning, sb);
+            append(warning, sb);
         } catch (IOException e) {
             // IOExceptions are not possible on StringBuilders
         }
@@ -75,7 +75,7 @@ public class WarningWriter {
      * @throws IllegalArgumentException
      *             If the warning contains illegal values.
      */
-    public static void format(Warning warning, Appendable destination)
+    public static void append(Warning warning, Appendable destination)
             throws IllegalArgumentException, IOException {
         final String agent = warning.getAgent();
         final String text = warning.getText();

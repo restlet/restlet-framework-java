@@ -60,7 +60,7 @@ public class PreferencesTestCase extends RestletTestCase {
         pr.addValues(prefs);
         
         // Rewrite the header
-        String newHeaderValue = PreferenceWriter.format(prefs);
+        String newHeaderValue = PreferenceWriter.write(prefs);
 
         if (testEquals) {
             // Compare initial and new headers

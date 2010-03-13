@@ -377,22 +377,22 @@ public class ConnectedRequest extends Request {
                 // other
                 // headers.
                 try {
-                    PreferenceReader.parseCharacterSets(acceptCharset, result);
+                    PreferenceReader.readCharacterSets(acceptCharset, result);
                 } catch (Exception e) {
                     this.context.getLogger().log(Level.INFO, e.getMessage());
                 }
                 try {
-                    PreferenceReader.parseEncodings(acceptEncoding, result);
+                    PreferenceReader.readEncodings(acceptEncoding, result);
                 } catch (Exception e) {
                     this.context.getLogger().log(Level.INFO, e.getMessage());
                 }
                 try {
-                    PreferenceReader.parseLanguages(acceptLanguage, result);
+                    PreferenceReader.readLanguages(acceptLanguage, result);
                 } catch (Exception e) {
                     this.context.getLogger().log(Level.INFO, e.getMessage());
                 }
                 try {
-                    PreferenceReader.parseMediaTypes(acceptMediaType, result);
+                    PreferenceReader.readMediaTypes(acceptMediaType, result);
                 } catch (Exception e) {
                     this.context.getLogger().log(Level.INFO, e.getMessage());
                 }
@@ -632,7 +632,7 @@ public class ConnectedRequest extends Request {
                 // Extract the header value
                 String ranges = getHeaders().getValues(
                         HeaderConstants.HEADER_RANGE);
-                result.addAll(RangeUtils.parseRangeHeader(ranges));
+                result.addAll(RangeUtils.read(ranges));
             }
 
             this.rangesAdded = true;

@@ -70,7 +70,7 @@ public class PreferenceReader<T extends Metadata> extends
      *            The client preferences to update.
      */
     @SuppressWarnings("unchecked")
-    public static void parseCharacterSets(String acceptCharsetHeader,
+    public static void readCharacterSets(String acceptCharsetHeader,
             ClientInfo client) {
         if (acceptCharsetHeader != null) {
             // Implementation according to
@@ -99,7 +99,7 @@ public class PreferenceReader<T extends Metadata> extends
      *            The client preferences to update.
      */
     @SuppressWarnings("unchecked")
-    public static void parseEncodings(String acceptEncodingHeader,
+    public static void readEncodings(String acceptEncodingHeader,
             ClientInfo preference) {
         if (acceptEncodingHeader != null) {
             PreferenceReader pr = new PreferenceReader(
@@ -120,7 +120,7 @@ public class PreferenceReader<T extends Metadata> extends
      *            The client preferences to update.
      */
     @SuppressWarnings("unchecked")
-    public static void parseLanguages(String acceptLanguageHeader,
+    public static void readLanguages(String acceptLanguageHeader,
             ClientInfo preference) {
         if (acceptLanguageHeader != null) {
             PreferenceReader pr = new PreferenceReader(
@@ -140,7 +140,7 @@ public class PreferenceReader<T extends Metadata> extends
      *            The client preferences to update.
      */
     @SuppressWarnings("unchecked")
-    public static void parseMediaTypes(String acceptMediaTypeHeader,
+    public static void readMediaTypes(String acceptMediaTypeHeader,
             ClientInfo preference) {
         if (acceptMediaTypeHeader != null) {
             PreferenceReader pr = new PreferenceReader(
@@ -160,7 +160,7 @@ public class PreferenceReader<T extends Metadata> extends
      *            The quality value as a string.
      * @return The parsed quality value as a float.
      */
-    public static float parseQuality(String quality) {
+    public static float readQuality(String quality) {
         try {
             final float result = Float.valueOf(quality);
 
@@ -304,7 +304,7 @@ public class PreferenceReader<T extends Metadata> extends
                     && iter.hasNext();) {
                 param = iter.next();
                 if (param.getName().equals("q")) {
-                    result = parseQuality(param.getValue());
+                    result = readQuality(param.getValue());
                     found = true;
 
                     // Remove the quality parameter as we will directly store it

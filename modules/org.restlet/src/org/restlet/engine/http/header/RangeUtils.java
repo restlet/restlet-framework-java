@@ -52,8 +52,7 @@ public class RangeUtils {
      *            Total size of the entity
      * @return {@code range} formatted
      */
-    public static String formatContentRange(Range range, long size)
-            throws Exception {
+    public static String write(Range range, long size) throws Exception {
         final StringBuilder b = new StringBuilder("bytes ");
 
         if (range.getIndex() >= Range.INDEX_FIRST) {
@@ -102,12 +101,13 @@ public class RangeUtils {
      *            List of ranges to format
      * @return {@code ranges} formatted or null if the list is null or empty.
      */
-    public static String formatRanges(List<Range> ranges) {
+    public static String write(List<Range> ranges) {
         if (ranges == null || ranges.isEmpty()) {
             return null;
         }
 
-        final StringBuilder value = new StringBuilder("bytes=");
+        StringBuilder value = new StringBuilder("bytes=");
+
         for (int i = 0; i < ranges.size(); i++) {
             Range range = ranges.get(i);
             if (i > 0) {
@@ -139,7 +139,7 @@ public class RangeUtils {
      * @param representation
      *            Representation to update.
      */
-    public static void parseContentRange(String value,
+    public static void update(String value,
             Representation representation) {
         String prefix = "bytes ";
         if (value != null && value.startsWith(prefix)) {
@@ -172,7 +172,7 @@ public class RangeUtils {
      *            The Range header value.
      * @return The list of corresponding Range objects.
      */
-    public static List<Range> parseRangeHeader(String rangeHeader) {
+    public static List<Range> read(String rangeHeader) {
         List<Range> result = new ArrayList<Range>();
         String prefix = "bytes=";
         if (rangeHeader != null && rangeHeader.startsWith(prefix)) {

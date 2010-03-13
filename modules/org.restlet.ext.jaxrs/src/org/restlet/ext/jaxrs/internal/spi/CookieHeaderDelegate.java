@@ -64,7 +64,7 @@ public class CookieHeaderDelegate implements HeaderDelegate<Cookie> {
      */
     public Cookie fromString(String string) throws IllegalArgumentException {
         return Converter
-                .toJaxRsCookie(CookieWriter.parse(string));
+                .toJaxRsCookie(CookieWriter.write(string));
     }
 
     /**
@@ -78,6 +78,6 @@ public class CookieHeaderDelegate implements HeaderDelegate<Cookie> {
      * @see javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate#toString(java.lang.Object)
      */
     public String toString(Cookie jaxRsCookie) {
-        return CookieWriter.format(Converter.toRestletCookie(jaxRsCookie));
+        return CookieWriter.write(Converter.toRestletCookie(jaxRsCookie));
     }
 }

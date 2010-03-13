@@ -75,7 +75,7 @@ public class CookieWriter {
      * @throws IllegalArgumentException
      *             If the Cookie contains illegal values.
      */
-    public static String format(Cookie cookie) throws IllegalArgumentException {
+    public static String write(Cookie cookie) throws IllegalArgumentException {
         final StringBuilder sb = new StringBuilder();
         try {
             append(cookie, sb);
@@ -139,7 +139,7 @@ public class CookieWriter {
      * @throws IllegalArgumentException
      *             If one of the Cookies contains illegal values
      */
-    public static String format(List<Cookie> cookies)
+    public static String write(List<Cookie> cookies)
             throws IllegalArgumentException {
         final StringBuilder sb = new StringBuilder();
 
@@ -196,7 +196,7 @@ public class CookieWriter {
      * @throws IllegalArgumentException
      *             Thrown if the String can not be parsed as Cookie.
      */
-    public static Cookie parse(String cookie) throws IllegalArgumentException {
+    public static Cookie write(String cookie) throws IllegalArgumentException {
         CookieReader cr = new CookieReader(cookie);
 
         try {

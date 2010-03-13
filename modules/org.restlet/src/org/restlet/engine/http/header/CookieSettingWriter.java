@@ -74,12 +74,12 @@ public class CookieSettingWriter {
      * @throws IllegalArgumentException
      *             If the CookieSetting can not be formatted to a String
      */
-    public static String format(CookieSetting cookieSetting)
+    public static String write(CookieSetting cookieSetting)
             throws IllegalArgumentException {
         final StringBuilder sb = new StringBuilder();
 
         try {
-            format(cookieSetting, sb);
+            append(cookieSetting, sb);
         } catch (IOException e) {
             // log error
         }
@@ -98,7 +98,7 @@ public class CookieSettingWriter {
      * @throws IllegalArgumentException
      *             If the CookieSetting can not be formatted to a String
      */
-    public static void format(CookieSetting cookieSetting,
+    public static void append(CookieSetting cookieSetting,
             Appendable destination) throws IOException,
             IllegalArgumentException {
         final String name = cookieSetting.getName();
@@ -184,26 +184,6 @@ public class CookieSettingWriter {
                 destination.append("; Comment=");
                 appendValue(comment, version, destination);
             }
-        }
-    }
-
-    /**
-     * Parses the given String to a CookieSetting
-     * 
-     * @param cookieSetting
-     * @return the CookieSetting parsed from the String
-     * @throws IllegalArgumentException
-     *             Thrown if the String can not be parsed as CookieSetting.
-     */
-    public static CookieSetting parseSetting(String cookieSetting)
-            throws IllegalArgumentException {
-        CookieSettingReader cr = new CookieSettingReader(cookieSetting);
-
-        try {
-            return cr.readValue();
-        } catch (IOException e) {
-            throw new IllegalArgumentException(
-                    "Could not read the cookie setting", e);
         }
     }
 

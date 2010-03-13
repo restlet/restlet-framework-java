@@ -50,7 +50,7 @@ public class ExpectationWriter {
      * @return The formatted list of expectations.
      * @throws IllegalArgumentException
      */
-    public static String format(List<Expectation> expectations)
+    public static String write(List<Expectation> expectations)
             throws IllegalArgumentException {
         final StringBuilder sb = new StringBuilder();
 
@@ -61,7 +61,7 @@ public class ExpectationWriter {
             }
             expectation = expectations.get(i);
             try {
-                format(expectation, sb);
+                append(expectation, sb);
             } catch (IOException e) {
                 // IOExceptions are not possible on StringBuilders
             }
@@ -79,7 +79,7 @@ public class ExpectationWriter {
      *            The appendable destination.
      * @throws IOException
      */
-    public static void format(Expectation directive, Appendable destination)
+    public static void append(Expectation directive, Appendable destination)
             throws IOException {
         destination.append(directive.getName());
         if ((directive.getValue() != null)
