@@ -44,11 +44,12 @@ import org.restlet.Server;
 import org.restlet.data.Digest;
 import org.restlet.data.Parameter;
 import org.restlet.engine.ConnectorHelper;
-import org.restlet.engine.http.header.EncodingReader;
-import org.restlet.engine.http.header.LanguageReader;
 import org.restlet.engine.http.header.ContentType;
+import org.restlet.engine.http.header.EncodingReader;
 import org.restlet.engine.http.header.HeaderConstants;
+import org.restlet.engine.http.header.HeaderReader;
 import org.restlet.engine.http.header.HeaderUtils;
+import org.restlet.engine.http.header.LanguageReader;
 import org.restlet.engine.http.header.RangeUtils;
 import org.restlet.engine.security.SslUtils;
 import org.restlet.engine.util.Base64;
@@ -364,10 +365,10 @@ public abstract class ServerCall extends Call {
             sb.delete(0, sb.length());
 
             // Parse the headers
-            Parameter header = HeaderUtils.readHeader(headStream, sb);
+            Parameter header = HeaderReader.readHeader(headStream, sb);
             while (header != null) {
                 getRequestHeaders().add(header);
-                header = HeaderUtils.readHeader(headStream, sb);
+                header = HeaderReader.readHeader(headStream, sb);
             }
         } else {
             throw new IOException(

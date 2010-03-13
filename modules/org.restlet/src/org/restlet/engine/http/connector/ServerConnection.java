@@ -45,6 +45,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
+import org.restlet.engine.http.header.HeaderReader;
 import org.restlet.engine.http.header.HeaderUtils;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
@@ -203,14 +204,14 @@ public class ServerConnection extends Connection<Server> {
             sb.delete(0, sb.length());
 
             // Parse the headers
-            Parameter header = HeaderUtils.readHeader(getInboundStream(), sb);
+            Parameter header = HeaderReader.readHeader(getInboundStream(), sb);
             while (header != null) {
                 if (headers == null) {
                     headers = new Form();
                 }
 
                 headers.add(header);
-                header = HeaderUtils.readHeader(getInboundStream(), sb);
+                header = HeaderReader.readHeader(getInboundStream(), sb);
             }
         } else {
             throw new IOException(

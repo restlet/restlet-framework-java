@@ -52,7 +52,6 @@ import org.restlet.engine.http.header.CacheDirectiveReader;
 import org.restlet.engine.http.header.CookieReader;
 import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.http.header.HeaderReader;
-import org.restlet.engine.http.header.HeaderUtils;
 import org.restlet.engine.http.header.PreferenceReader;
 import org.restlet.engine.http.header.RangeUtils;
 import org.restlet.engine.http.header.WarningReader;
@@ -335,11 +334,11 @@ public class HttpRequest extends Request {
             for (final Parameter header : getHttpCall().getRequestHeaders()) {
                 if (header.getName().equalsIgnoreCase(
                         HeaderConstants.HEADER_IF_MODIFIED_SINCE)) {
-                    ifModifiedSince = HeaderUtils.parseDate(header.getValue(),
+                    ifModifiedSince = HeaderReader.readDate(header.getValue(),
                             false);
                 } else if (header.getName().equalsIgnoreCase(
                         HeaderConstants.HEADER_IF_UNMODIFIED_SINCE)) {
-                    ifUnmodifiedSince = HeaderUtils.parseDate(
+                    ifUnmodifiedSince = HeaderReader.readDate(
                             header.getValue(), false);
                 }
             }
@@ -423,7 +422,7 @@ public class HttpRequest extends Request {
                 if (tag != null) {
                     result.setRangeTag(tag);
                 } else {
-                    Date date = HeaderUtils.parseDate(ifRangeHeader, false);
+                    Date date = HeaderReader.readDate(ifRangeHeader, false);
                     result.setRangeDate(date);
                 }
             }

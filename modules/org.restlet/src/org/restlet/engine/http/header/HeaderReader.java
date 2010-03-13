@@ -30,16 +30,21 @@
 
 package org.restlet.engine.http.header;
 
+import static org.restlet.engine.http.header.HeaderUtils.isCarriageReturn;
 import static org.restlet.engine.http.header.HeaderUtils.isComma;
 import static org.restlet.engine.http.header.HeaderUtils.isDoubleQuote;
+import static org.restlet.engine.http.header.HeaderUtils.isLineFeed;
 import static org.restlet.engine.http.header.HeaderUtils.isLinearWhiteSpace;
 import static org.restlet.engine.http.header.HeaderUtils.isQuoteCharacter;
 import static org.restlet.engine.http.header.HeaderUtils.isQuotedText;
 import static org.restlet.engine.http.header.HeaderUtils.isSemiColon;
+import static org.restlet.engine.http.header.HeaderUtils.isSpace;
 import static org.restlet.engine.http.header.HeaderUtils.isTokenChar;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
@@ -47,6 +52,7 @@ import java.util.logging.Level;
 import org.restlet.Context;
 import org.restlet.data.Encoding;
 import org.restlet.data.Parameter;
+import org.restlet.engine.util.DateUtils;
 
 /**
  * HTTP-style header reader.
@@ -57,6 +63,92 @@ import org.restlet.data.Parameter;
  * @author Jerome Louvel
  */
 public class HeaderReader<V> {
+    /**
+     * Parses a date string.
+     * 
+     * @param date
+     *            The date string to parse.
+     * @param cookie
+     *            Indicates if the date is in the cookie format.
+     * @return The parsed date.
+     */
+    public static Date readDate(String date, boolean cookie) {
+        if (cookie) {
+            return DateUtils.parse(date, DateUtils.FORMAT_RFC_1036);
+        }
+
+        return DateUtils.parse(date, DateUtils.FORMAT_RFC_1123);
+    }
+
+    /**
+     * Read a header. Return null if the last header was already read.
+     * 
+     * @param is
+     *            The message input stream.
+     * @param sb
+     *            The string builder to reuse.
+     * @return The header read or null.
+     * @throws IOException
+     */
+    public static Parameter readHeader(InputStream is, StringBuilder sb)
+            throws IOException {
+        Parameter result = null;
+
+        // Detect the end of headers
+        int next = is.read();
+        if (isCarriageReturn(next)) {
+            next = is.read();
+            if (!isLineFeed(next)) {
+                throw new IOException(
+                        "Invalid end of headers. Line feed missing after the carriage return.");
+            }
+        } else {
+            result = new Parameter();
+
+            // Parse the header name
+            while ((next != -1) && (next != ':')) {
+                sb.append((char) next);
+                next = is.read();
+            }
+
+            if (next == -1) {
+                throw new IOException(
+                        "Unable to parse the header name. End of stream reached too early.");
+            }
+
+            result.setName(sb.toString());
+            sb.delete(0, sb.length());
+
+            next = is.read();
+            while (isSpace(next)) {
+                // Skip any separator space between colon and header value
+                next = is.read();
+            }
+
+            // Parse the header value
+            while ((next != -1) && (!isCarriageReturn(next))) {
+                sb.append((char) next);
+                next = is.read();
+            }
+
+            if (next == -1) {
+                throw new IOException(
+                        "Unable to parse the header value. End of stream reached too early.");
+            }
+            next = is.read();
+
+            if (isLineFeed(next)) {
+                result.setValue(sb.toString());
+                sb.delete(0, sb.length());
+            } else {
+                throw new IOException(
+                        "Unable to parse the HTTP header value. The carriage return must be followed by a line feed.");
+            }
+        }
+
+        return result;
+    }
+
     /** The header to read. */
     private final String header;
 
@@ -377,6 +469,32 @@ public class HeaderReader<V> {
     }
 
     /**
+     * Skips the next parameter separator (semi-colon) including leading and
+     * trailing spaces.
+     * 
+     * @return True if a separator was effectively skipped.
+     */
+    public boolean skipParameterSeparator() {
+        boolean result = false;
+
+        // Skip leading spaces
+        skipSpaces();
+
+        // Check if next character is a parameter separator
+        if (isSemiColon(read())) {
+            result = true;
+
+            // Skip trailing spaces
+            skipSpaces();
+        } else {
+            // Probably reached the end of the header
+            unread();
+        }
+
+        return result;
+    }
+
+    /**
      * Skips the next spaces.
      */
     public void skipSpaces() {
@@ -419,32 +537,6 @@ public class HeaderReader<V> {
      */
     public void unread() {
         this.index--;
-    }
-
-    /**
-     * Skips the next parameter separator (semi-colon) including leading and
-     * trailing spaces.
-     * 
-     * @return True if a separator was effectively skipped.
-     */
-    public boolean skipParameterSeparator() {
-        boolean result = false;
-
-        // Skip leading spaces
-        skipSpaces();
-
-        // Check if next character is a parameter separator
-        if (isSemiColon(read())) {
-            result = true;
-
-            // Skip trailing spaces
-            skipSpaces();
-        } else {
-            // Probably reached the end of the header
-            unread();
-        }
-
-        return result;
     }
 
 }
