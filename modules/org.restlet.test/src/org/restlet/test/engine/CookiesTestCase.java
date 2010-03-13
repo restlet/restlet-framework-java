@@ -39,6 +39,7 @@ import org.restlet.data.Cookie;
 import org.restlet.data.CookieSetting;
 import org.restlet.engine.http.header.CookieReader;
 import org.restlet.engine.http.header.CookieSettingReader;
+import org.restlet.engine.http.header.CookieSettingWriter;
 import org.restlet.engine.http.header.CookieWriter;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.test.RestletTestCase;
@@ -106,7 +107,7 @@ public class CookiesTestCase extends RestletTestCase {
         CookieSetting cookie = cr.readValue();
 
         // Rewrite the header
-        String newHeaderValue = CookieWriter.format(cookie);
+        String newHeaderValue = CookieSettingWriter.format(cookie);
 
         // Compare initial and new headers
         if (compare) {
