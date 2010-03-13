@@ -31,7 +31,6 @@
 package org.restlet.engine.http.header;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collection;
 import java.util.Date;
@@ -158,8 +157,8 @@ public class HeaderUtils {
             if (entity.getRange() != null) {
                 try {
                     headers.add(HeaderConstants.HEADER_CONTENT_RANGE,
-                            RangeUtils.write(entity.getRange(),
-                                    entity.getSize()));
+                            RangeUtils.write(entity.getRange(), entity
+                                    .getSize()));
                 } catch (Exception e) {
                     Context
                             .getCurrentLogger()
@@ -206,10 +205,8 @@ public class HeaderUtils {
             if (entity.getDisposition() != null
                     && !Disposition.TYPE_NONE.equals(entity.getDisposition()
                             .getType())) {
-                headers
-                        .add(HeaderConstants.HEADER_CONTENT_DISPOSITION,
-                                DispositionWriter.write(entity
-                                        .getDisposition()));
+                headers.add(HeaderConstants.HEADER_CONTENT_DISPOSITION,
+                        DispositionWriter.write(entity.getDisposition()));
             }
         }
     }
@@ -547,8 +544,8 @@ public class HeaderUtils {
         // Add Range header
         if (!request.getRanges().isEmpty()) {
             headers.add(HeaderConstants.HEADER_RANGE,
-                    org.restlet.engine.http.header.RangeUtils
-                            .write(request.getRanges()));
+                    org.restlet.engine.http.header.RangeUtils.write(request
+                            .getRanges()));
         }
 
         // Add the referrer header
@@ -930,24 +927,22 @@ public class HeaderUtils {
                 entityHeaderFound = true;
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_EXPIRES)) {
-                result.setExpirationDate(HeaderUtils.parseDate(header
+                result.setExpirationDate(HeaderReader.readDate(header
                         .getValue(), false));
                 entityHeaderFound = true;
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_CONTENT_ENCODING)) {
-                EncodingReader hr = new EncodingReader(header
-                        .getValue());
+                EncodingReader hr = new EncodingReader(header.getValue());
                 hr.addValues(result.getEncodings());
                 entityHeaderFound = true;
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_CONTENT_LANGUAGE)) {
-                LanguageReader hr = new LanguageReader(header
-                        .getValue());
+                LanguageReader hr = new LanguageReader(header.getValue());
                 hr.addValues(result.getLanguages());
                 entityHeaderFound = true;
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_LAST_MODIFIED)) {
-                result.setModificationDate(HeaderUtils.parseDate(header
+                result.setModificationDate(HeaderReader.readDate(header
                         .getValue(), false));
                 entityHeaderFound = true;
             } else if (header.getName().equalsIgnoreCase(
@@ -961,8 +956,8 @@ public class HeaderUtils {
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_CONTENT_DISPOSITION)) {
                 try {
-                    DispositionReader r = new DispositionReader(
-                            header.getValue());
+                    DispositionReader r = new DispositionReader(header
+                            .getValue());
                     result.setDisposition(r.readValue());
                     entityHeaderFound = true;
                 } catch (IOException ioe) {
@@ -974,8 +969,8 @@ public class HeaderUtils {
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_CONTENT_RANGE)) {
                 // [ifndef gwt]
-                org.restlet.engine.http.header.RangeUtils.update(
-                        header.getValue(), result);
+                org.restlet.engine.http.header.RangeUtils.update(header
+                        .getValue(), result);
                 entityHeaderFound = true;
                 // [enddef]
             } else if (header.getName().equalsIgnoreCase(
@@ -1519,92 +1514,6 @@ public class HeaderUtils {
      */
     public static boolean isUpperCase(int character) {
         return (character >= 'A') && (character <= 'Z');
-    }
-
-    /**
-     * Parses a date string.
-     * 
-     * @param date
-     *            The date string to parse.
-     * @param cookie
-     *            Indicates if the date is in the cookie format.
-     * @return The parsed date.
-     */
-    public static Date parseDate(String date, boolean cookie) {
-        if (cookie) {
-            return DateUtils.parse(date, DateUtils.FORMAT_RFC_1036);
-        }
-
-        return DateUtils.parse(date, DateUtils.FORMAT_RFC_1123);
-    }
-
-    /**
-     * Read a header. Return null if the last header was already read.
-     * 
-     * @param is
-     *            The message input stream.
-     * @param sb
-     *            The string builder to reuse.
-     * @return The header read or null.
-     * @throws IOException
-     */
-    public static Parameter readHeader(InputStream is, StringBuilder sb)
-            throws IOException {
-        Parameter result = null;
-
-        // Detect the end of headers
-        int next = is.read();
-        if (isCarriageReturn(next)) {
-            next = is.read();
-            if (!isLineFeed(next)) {
-                throw new IOException(
-                        "Invalid end of headers. Line feed missing after the carriage return.");
-            }
-        } else {
-            result = new Parameter();
-
-            // Parse the header name
-            while ((next != -1) && (next != ':')) {
-                sb.append((char) next);
-                next = is.read();
-            }
-
-            if (next == -1) {
-                throw new IOException(
-                        "Unable to parse the header name. End of stream reached too early.");
-            }
-
-            result.setName(sb.toString());
-            sb.delete(0, sb.length());
-
-            next = is.read();
-            while (isSpace(next)) {
-                // Skip any separator space between colon and header value
-                next = is.read();
-            }
-
-            // Parse the header value
-            while ((next != -1) && (!isCarriageReturn(next))) {
-                sb.append((char) next);
-                next = is.read();
-            }
-
-            if (next == -1) {
-                throw new IOException(
-                        "Unable to parse the header value. End of stream reached too early.");
-            }
-            next = is.read();
-
-            if (isLineFeed(next)) {
-                result.setValue(sb.toString());
-                sb.delete(0, sb.length());
-            } else {
-                throw new IOException(
-                        "Unable to parse the HTTP header value. The carriage return must be followed by a line feed.");
-            }
-        }
-
-        return result;
     }
 
     // [ifndef gwt] method

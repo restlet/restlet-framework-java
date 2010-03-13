@@ -31,6 +31,7 @@
 package org.restlet.engine.http.header;
 
 import java.io.IOException;
+import java.io.StringWriter;
 
 import org.restlet.data.Parameter;
 
@@ -40,9 +41,7 @@ import org.restlet.data.Parameter;
  * 
  * @author Jerome Louvel
  */
-public class HeaderWriter implements Appendable {
-    /** The header buffer. */
-    private final StringBuilder wrappedBuilder;
+public class HeaderWriter extends StringWriter {
 
     /** Indicates if the first parameter is written. */
     private volatile boolean firstParameter;
@@ -52,46 +51,17 @@ public class HeaderWriter implements Appendable {
      */
     public HeaderWriter() {
         this.firstParameter = true;
-        this.wrappedBuilder = new StringBuilder();
     }
 
-    /**
-     * Appends a character.
-     * 
-     * @param c
-     *            The character to append.
-     * @return The current builder.
-     */
+    @Override
     public HeaderWriter append(char c) {
-        this.wrappedBuilder.append(c);
+        super.append(c);
         return this;
     }
 
-    /**
-     * Appends a sequence of characters.
-     * 
-     * @param csq
-     *            The sequence of characters.
-     * @return The current builder.
-     */
+    @Override
     public HeaderWriter append(CharSequence csq) {
-        this.wrappedBuilder.append(csq);
-        return this;
-    }
-
-    /**
-     * Appends a sequence of characters.
-     * 
-     * @param csq
-     *            The sequence to add.
-     * @param start
-     *            The start index.
-     * @param end
-     *            The end index.
-     * @return The current builder.
-     */
-    public HeaderWriter append(CharSequence csq, int start, int end) {
-        this.wrappedBuilder.append(csq, start, end);
+        super.append(csq);
         return this;
     }
 
@@ -105,20 +75,20 @@ public class HeaderWriter implements Appendable {
      * @throws IOException
      */
     public HeaderWriter appendComment(String content) throws IOException {
-        this.wrappedBuilder.append('(');
+        append('(');
 
         char c;
         for (int i = 0; i < content.length(); i++) {
             c = content.charAt(i);
 
             if (HeaderUtils.isCommentText(c)) {
-                this.wrappedBuilder.append(c);
+                append(c);
             } else {
                 appendQuotedPair(c);
             }
         }
 
-        this.wrappedBuilder.append(')');
+        append(')');
         return this;
     }
 
@@ -131,8 +101,7 @@ public class HeaderWriter implements Appendable {
      * @return The current builder.
      * @throws IOException
      */
-    public HeaderWriter appendParameter(Parameter parameter)
-            throws IOException {
+    public HeaderWriter appendParameter(Parameter parameter) throws IOException {
         return appendParameter(parameter.getName(), parameter.getValue());
     }
 
@@ -169,7 +138,7 @@ public class HeaderWriter implements Appendable {
         }
 
         if (value != null) {
-            this.wrappedBuilder.append('=');
+            append('=');
             appendToken(value);
         }
 
@@ -187,7 +156,7 @@ public class HeaderWriter implements Appendable {
         if (isFirstParameter()) {
             setFirstParameter(false);
         } else {
-            this.wrappedBuilder.append(", ");
+            append(", ");
         }
 
         return this;
@@ -201,7 +170,7 @@ public class HeaderWriter implements Appendable {
      * @return The current builder.
      */
     protected HeaderWriter appendQuotedPair(char character) {
-        this.wrappedBuilder.append('\\').append(character);
+        append('\\').append(character);
         return this;
     }
 
@@ -239,7 +208,7 @@ public class HeaderWriter implements Appendable {
         }
 
         if (value != null) {
-            this.wrappedBuilder.append('=');
+            append('=');
             appendQuotedString(value);
         }
 
@@ -254,20 +223,20 @@ public class HeaderWriter implements Appendable {
      * @return The current builder.
      */
     public HeaderWriter appendQuotedString(String content) {
-        this.wrappedBuilder.append('"');
+        append('"');
 
         char c;
         for (int i = 0; i < content.length(); i++) {
             c = content.charAt(i);
 
             if (HeaderUtils.isQuotedText(c)) {
-                this.wrappedBuilder.append(c);
+                append(c);
             } else {
                 appendQuotedPair(c);
             }
         }
 
-        this.wrappedBuilder.append('"');
+        append('"');
         return this;
     }
 
@@ -277,7 +246,7 @@ public class HeaderWriter implements Appendable {
      * @return The current builder.
      */
     public HeaderWriter appendSpace() {
-        this.wrappedBuilder.append(' ');
+        append(' ');
         return this;
     }
 
@@ -291,22 +260,13 @@ public class HeaderWriter implements Appendable {
      */
     public HeaderWriter appendToken(String token) throws IOException {
         if (HeaderUtils.isToken(token)) {
-            this.wrappedBuilder.append(token);
+            append(token);
         } else {
             throw new IOException("Unexpected character found in token: "
                     + token);
         }
 
         return this;
-    }
-
-    /**
-     * Returns the wrapped string builder.
-     * 
-     * @return The wrapped string builder.
-     */
-    public StringBuilder getWrappedBuilder() {
-        return wrappedBuilder;
     }
 
     /**
@@ -326,15 +286,6 @@ public class HeaderWriter implements Appendable {
      */
     public void setFirstParameter(boolean firstParameter) {
         this.firstParameter = firstParameter;
-    }
-
-    /**
-     * Returns the header value built.
-     * 
-     * @return The header value built.
-     */
-    public String toString() {
-        return this.wrappedBuilder.toString();
     }
 
 }
