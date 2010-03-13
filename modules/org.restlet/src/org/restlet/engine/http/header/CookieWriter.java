@@ -42,129 +42,7 @@ import org.restlet.data.Cookie;
  * 
  * @author Jerome Louvel
  */
-public class CookieWriter {
-
-    /**
-     * Appends a source string as an HTTP comment.
-     * 
-     * @param value
-     *            The source string to format.
-     * @param version
-     *            The cookie version.
-     * @param destination
-     *            The appendable destination.
-     * @throws IOException
-     */
-    private static Appendable appendValue(CharSequence value, int version,
-            Appendable destination) throws IOException {
-        if (version == 0) {
-            destination.append(value.toString());
-        } else {
-            HeaderWriter.appendQuotedString(value, destination);
-        }
-
-        return destination;
-    }
-
-    /**
-     * Formats a cookie.
-     * 
-     * @param cookie
-     *            The cookie to format.
-     * @return The formatted cookie.
-     * @throws IllegalArgumentException
-     *             If the Cookie contains illegal values.
-     */
-    public static String write(Cookie cookie) throws IllegalArgumentException {
-        final StringBuilder sb = new StringBuilder();
-        try {
-            append(cookie, sb);
-        } catch (IOException e) {
-            // IOExceptions are not possible on StringBuilders
-        }
-        return sb.toString();
-    }
-
-    /**
-     * Formats a cookie setting.
-     * 
-     * @param cookie
-     *            The cookie to format.
-     * @param destination
-     *            The appendable destination.
-     * @throws IOException
-     * @throws IllegalArgumentException
-     *             If the Cookie contains illegal values.
-     */
-    public static void append(Cookie cookie, Appendable destination)
-            throws IllegalArgumentException, IOException {
-        String name = cookie.getName();
-        String value = cookie.getValue();
-        int version = cookie.getVersion();
-
-        if ((name == null) || (name.length() == 0)) {
-            throw new IllegalArgumentException(
-                    "Can't write cookie. Invalid name detected");
-        }
-
-        appendValue(name, 0, destination).append('=');
-
-        // Append the value
-        if ((value != null) && (value.length() > 0)) {
-            appendValue(value, version, destination);
-        }
-
-        if (version > 0) {
-            // Append the path
-            final String path = cookie.getPath();
-            if ((path != null) && (path.length() > 0)) {
-                destination.append("; $Path=");
-                HeaderWriter.appendQuotedString(path, destination);
-            }
-            // Append the domain
-            final String domain = cookie.getDomain();
-            if ((domain != null) && (domain.length() > 0)) {
-                destination.append("; $Domain=");
-                HeaderWriter.appendQuotedString(domain, destination);
-            }
-        }
-    }
-
-    /**
-     * Formats a list of cookies as an HTTP header.
-     * 
-     * @param cookies
-     *            The list of cookies to format.
-     * @return The HTTP header.
-     * @throws IllegalArgumentException
-     *             If one of the Cookies contains illegal values
-     */
-    public static String write(List<Cookie> cookies)
-            throws IllegalArgumentException {
-        final StringBuilder sb = new StringBuilder();
-
-        Cookie cookie;
-        for (int i = 0; i < cookies.size(); i++) {
-            cookie = cookies.get(i);
-
-            if (i == 0) {
-                if (cookie.getVersion() > 0) {
-                    sb.append("$Version=\"").append(cookie.getVersion())
-                            .append("\"; ");
-                }
-            } else {
-                sb.append("; ");
-            }
-
-            try {
-                append(cookie, sb);
-            } catch (IOException e) {
-                // IOExceptiosn are not possible on StringBuilder
-            }
-        }
-
-        return sb.toString();
-    }
+public class CookieWriter extends HeaderWriter {
 
     /**
      * Gets the cookies whose name is a key in the given map. If a matching
@@ -189,21 +67,27 @@ public class CookieWriter {
     }
 
     /**
-     * Parses the given String to a Cookie
+     * Writes a cookie.
      * 
      * @param cookie
-     * @return the Cookie parsed from the String
+     *            The cookie to format.
+     * @return The formatted cookie.
      * @throws IllegalArgumentException
-     *             Thrown if the String can not be parsed as Cookie.
+     *             If the Cookie contains illegal values.
      */
-    public static Cookie write(String cookie) throws IllegalArgumentException {
-        CookieReader cr = new CookieReader(cookie);
+    public static String write(Cookie cookie) throws IllegalArgumentException {
+        return new CookieWriter().append(cookie).toString();
+    }
 
-        try {
-            return cr.readValue();
-        } catch (IOException e) {
-            throw new IllegalArgumentException("Could not read the cookie", e);
-        }
+    /**
+     * Writes a cookie.
+     * 
+     * @param cookies
+     *            The cookies to format.
+     * @return The formatted cookie.
+     */
+    public static String write(List<Cookie> cookies) {
+        return new CookieWriter().append(cookies).toString();
     }
 
     /**
@@ -211,6 +95,106 @@ public class CookieWriter {
      * i.e. it isn't instantiable and extensible.
      */
     private CookieWriter() {
+    }
+
+    /**
+     * Formats a cookie setting.
+     * 
+     * @param cookie
+     *            The cookie to format.
+     * @param destination
+     *            The appendable destination.
+     * @throws IOException
+     * @throws IllegalArgumentException
+     *             If the Cookie contains illegal values.
+     */
+    public CookieWriter append(Cookie cookie) throws IllegalArgumentException {
+        String name = cookie.getName();
+        String value = cookie.getValue();
+        int version = cookie.getVersion();
+
+        if ((name == null) || (name.length() == 0)) {
+            throw new IllegalArgumentException(
+                    "Can't write cookie. Invalid name detected");
+        }
+
+        appendValue(name, 0).append('=');
+
+        // Append the value
+        if ((value != null) && (value.length() > 0)) {
+            appendValue(value, version);
+        }
+
+        if (version > 0) {
+            // Append the path
+            String path = cookie.getPath();
+
+            if ((path != null) && (path.length() > 0)) {
+                append("; $Path=");
+                appendQuotedString(path);
+            }
+
+            // Append the domain
+            String domain = cookie.getDomain();
+
+            if ((domain != null) && (domain.length() > 0)) {
+                append("; $Domain=");
+                appendQuotedString(domain);
+            }
+        }
+
+        return this;
+    }
+
+    /**
+     * Formats a list of cookies as an HTTP header.
+     * 
+     * @param cookies
+     *            The list of cookies to format.
+     * @return This writer.
+     * @throws IllegalArgumentException
+     *             If one of the Cookies contains illegal values
+     */
+    public CookieWriter append(List<Cookie> cookies)
+            throws IllegalArgumentException {
+        Cookie cookie;
+
+        for (int i = 0; i < cookies.size(); i++) {
+            cookie = cookies.get(i);
+
+            if (i == 0) {
+                if (cookie.getVersion() > 0) {
+                    append("$Version=\"").append(cookie.getVersion()).append(
+                            "\"; ");
+                }
+            } else {
+                append("; ");
+            }
+
+            append(cookie);
+        }
+
+        return this;
+    }
+
+    /**
+     * Appends a source string as an HTTP comment.
+     * 
+     * @param value
+     *            The source string to format.
+     * @param version
+     *            The cookie version.
+     * @return This writer.
+     * @throws IOException
+     */
+    public CookieWriter appendValue(String value, int version) {
+        if (version == 0) {
+            append(value.toString());
+        } else {
+            appendQuotedString(value);
+        }
+
+        return this;
     }
 
 }

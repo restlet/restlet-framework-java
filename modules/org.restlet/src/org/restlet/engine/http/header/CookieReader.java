@@ -47,6 +47,24 @@ public class CookieReader extends HeaderReader<Cookie> {
 
     private static final String NAME_VERSION = "$Version";
 
+    /**
+     * Parses the given String to a Cookie
+     * 
+     * @param cookie
+     * @return the Cookie parsed from the String
+     * @throws IllegalArgumentException
+     *             Thrown if the String can not be parsed as Cookie.
+     */
+    public static Cookie read(String cookie) throws IllegalArgumentException {
+        CookieReader cr = new CookieReader(cookie);
+
+        try {
+            return cr.readValue();
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Could not read the cookie", e);
+        }
+    }
+
     /** The cached pair. Used by the readPair() method. */
     private volatile Parameter cachedPair;
 
@@ -63,63 +81,6 @@ public class CookieReader extends HeaderReader<Cookie> {
         super(header);
         this.cachedPair = null;
         this.globalVersion = -1;
-    }
-
-    @Override
-    public Cookie readValue() throws IOException {
-        Cookie result = null;
-        Parameter pair = readPair();
-
-        if (this.globalVersion == -1) {
-            // Cookies version not yet detected
-            if (pair.getName().equalsIgnoreCase(NAME_VERSION)) {
-                if (pair.getValue() != null) {
-                    this.globalVersion = Integer.parseInt(pair.getValue());
-                } else {
-                    throw new IOException(
-                            "Empty cookies version attribute detected. Please check your cookie header");
-                }
-            } else {
-                // Set the default version for old Netscape cookies
-                this.globalVersion = 0;
-            }
-        }
-
-        while ((pair != null) && (pair.getName().charAt(0) == '$')) {
-            // Unexpected special attribute
-            // Silently ignore it as it may have been introduced by new
-            // specifications
-            pair = readPair();
-        }
-
-        if (pair != null) {
-            // Set the cookie name and value
-            result = new Cookie(this.globalVersion, pair.getName(), pair
-                    .getValue());
-            pair = readPair();
-        }
-
-        while ((pair != null) && (pair.getName().charAt(0) == '$')) {
-            if (pair.getName().equalsIgnoreCase(NAME_PATH)) {
-                result.setPath(pair.getValue());
-            } else if (pair.getName().equalsIgnoreCase(NAME_DOMAIN)) {
-                result.setDomain(pair.getValue());
-            } else {
-                // Unexpected special attribute
-                // Silently ignore it as it may have been introduced by new
-                // specifications
-            }
-
-            pair = readPair();
-        }
-
-        if (pair != null) {
-            // We started to read the next cookie
-            // So let's put it back into the stream
-            this.cachedPair = pair;
-        }
-
-        return result;
     }
 
     /**
@@ -189,6 +150,63 @@ public class CookieReader extends HeaderReader<Cookie> {
                     }
                 }
             }
+        }
+
+        return result;
+    }
+
+    @Override
+    public Cookie readValue() throws IOException {
+        Cookie result = null;
+        Parameter pair = readPair();
+
+        if (this.globalVersion == -1) {
+            // Cookies version not yet detected
+            if (pair.getName().equalsIgnoreCase(NAME_VERSION)) {
+                if (pair.getValue() != null) {
+                    this.globalVersion = Integer.parseInt(pair.getValue());
+                } else {
+                    throw new IOException(
+                            "Empty cookies version attribute detected. Please check your cookie header");
+                }
+            } else {
+                // Set the default version for old Netscape cookies
+                this.globalVersion = 0;
+            }
+        }
+
+        while ((pair != null) && (pair.getName().charAt(0) == '$')) {
+            // Unexpected special attribute
+            // Silently ignore it as it may have been introduced by new
+            // specifications
+            pair = readPair();
+        }
+
+        if (pair != null) {
+            // Set the cookie name and value
+            result = new Cookie(this.globalVersion, pair.getName(), pair
+                    .getValue());
+            pair = readPair();
+        }
+
+        while ((pair != null) && (pair.getName().charAt(0) == '$')) {
+            if (pair.getName().equalsIgnoreCase(NAME_PATH)) {
+                result.setPath(pair.getValue());
+            } else if (pair.getName().equalsIgnoreCase(NAME_DOMAIN)) {
+                result.setDomain(pair.getValue());
+            } else {
+                // Unexpected special attribute
+                // Silently ignore it as it may have been introduced by new
+                // specifications
+            }
+
+            pair = readPair();
+        }
+
+        if (pair != null) {
+            // We started to read the next cookie
+            // So let's put it back into the stream
+            this.cachedPair = pair;
         }
 
         return result;

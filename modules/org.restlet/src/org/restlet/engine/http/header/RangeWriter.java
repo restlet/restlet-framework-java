@@ -30,7 +30,6 @@
 
 package org.restlet.engine.http.header;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.data.Range;
@@ -41,7 +40,18 @@ import org.restlet.representation.Representation;
  * 
  * @author Jerome Louvel
  */
-public class RangeUtils {
+public class RangeWriter extends HeaderWriter {
+
+    /**
+     * Format {@code ranges} as a Range header value
+     * 
+     * @param ranges
+     *            List of ranges to format
+     * @return {@code ranges} formatted or null if the list is null or empty.
+     */
+    public static String write(List<Range> ranges) {
+        return new RangeWriter().append(ranges).toString();
+    }
 
     /**
      * Format {@code range} as a Content-Range header value
@@ -101,113 +111,37 @@ public class RangeUtils {
      *            List of ranges to format
      * @return {@code ranges} formatted or null if the list is null or empty.
      */
-    public static String write(List<Range> ranges) {
+    public RangeWriter append(List<Range> ranges) {
         if (ranges == null || ranges.isEmpty()) {
-            return null;
+            return this;
         }
 
-        StringBuilder value = new StringBuilder("bytes=");
+        append("bytes=");
 
         for (int i = 0; i < ranges.size(); i++) {
             Range range = ranges.get(i);
+
             if (i > 0) {
-                value.append(", ");
+                append(", ");
             }
 
             if (range.getIndex() >= Range.INDEX_FIRST) {
-                value.append(range.getIndex());
-                value.append("-");
+                append(range.getIndex());
+                append("-");
+
                 if (range.getSize() != Range.SIZE_MAX) {
-                    value.append(range.getIndex() + range.getSize() - 1);
+                    append(range.getIndex() + range.getSize() - 1);
                 }
             } else if (range.getIndex() == Range.INDEX_LAST) {
-                value.append("-");
+                append("-");
+
                 if (range.getSize() != Range.SIZE_MAX) {
-                    value.append(range.getSize());
+                    append(range.getSize());
                 }
             }
         }
 
-        return value.toString();
+        return this;
     }
 
-    /**
-     * Parse the Content-Range header value and update the given representation.
-     * 
-     * @param value
-     *            Content-range header.
-     * @param representation
-     *            Representation to update.
-     */
-    public static void update(String value,
-            Representation representation) {
-        String prefix = "bytes ";
-        if (value != null && value.startsWith(prefix)) {
-            value = value.substring(prefix.length());
-
-            int index = value.indexOf("-");
-            int index1 = value.indexOf("/");
-
-            if (index != -1) {
-                int startIndex = Integer.parseInt(value.substring(0, index));
-                int endIndex = Integer.parseInt(value.substring(index + 1,
-                        index1));
-
-                representation.setRange(new Range(startIndex, endIndex
-                        - startIndex + 1));
-            }
-
-            String strLength = value.substring(index1 + 1, value.length());
-            if (!("*".equals(strLength))) {
-                representation.setSize(Long.parseLong(strLength));
-            }
-        }
-    }
-
-    /**
-     * Parse the Range header and returns the list of corresponding Range
-     * objects.
-     * 
-     * @param rangeHeader
-     *            The Range header value.
-     * @return The list of corresponding Range objects.
-     */
-    public static List<Range> read(String rangeHeader) {
-        List<Range> result = new ArrayList<Range>();
-        String prefix = "bytes=";
-        if (rangeHeader != null && rangeHeader.startsWith(prefix)) {
-            rangeHeader = rangeHeader.substring(prefix.length());
-
-            String[] array = rangeHeader.split(",");
-            for (int i = 0; i < array.length; i++) {
-                String value = array[i].trim();
-                long index = 0;
-                long length = 0;
-                if (value.startsWith("-")) {
-                    index = Range.INDEX_LAST;
-                    length = Long.parseLong(value.substring(1));
-                } else if (value.endsWith("-")) {
-                    index = Long.parseLong(value.substring(0,
-                            value.length() - 1));
-                    length = Range.SIZE_MAX;
-                } else {
-                    String[] tab = value.split("-");
-                    if (tab.length == 2) {
-                        index = Long.parseLong(tab[0]);
-                        length = Long.parseLong(tab[1]) - index + 1;
-                    }
-                }
-                result.add(new Range(index, length));
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * Private constructor to ensure that the class acts as a true utility class
-     * i.e. it isn't instantiable and extensible.
-     */
-    private RangeUtils() {
-    }
 }

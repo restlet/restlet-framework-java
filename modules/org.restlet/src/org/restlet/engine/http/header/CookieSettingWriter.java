@@ -41,29 +41,7 @@ import org.restlet.engine.util.DateUtils;
  * 
  * @author Jerome Louvel
  */
-public class CookieSettingWriter {
-
-    /**
-     * Appends a source string as an HTTP comment.
-     * 
-     * @param value
-     *            The source string to format.
-     * @param version
-     *            The cookie version.
-     * @param destination
-     *            The appendable destination.
-     * @throws IOException
-     */
-    private static Appendable appendValue(CharSequence value, int version,
-            Appendable destination) throws IOException {
-        if (version == 0) {
-            destination.append(value.toString());
-        } else {
-            HeaderWriter.appendQuotedString(value, destination);
-        }
-
-        return destination;
-    }
+public class CookieSettingWriter extends HeaderWriter {
 
     /**
      * Formats a cookie setting.
@@ -76,15 +54,15 @@ public class CookieSettingWriter {
      */
     public static String write(CookieSetting cookieSetting)
             throws IllegalArgumentException {
-        final StringBuilder sb = new StringBuilder();
+        CookieSettingWriter csw = new CookieSettingWriter();
 
         try {
-            append(cookieSetting, sb);
+            csw.append(cookieSetting);
         } catch (IOException e) {
             // log error
         }
 
-        return sb.toString();
+        return csw.toString();
     }
 
     /**
@@ -98,100 +76,119 @@ public class CookieSettingWriter {
      * @throws IllegalArgumentException
      *             If the CookieSetting can not be formatted to a String
      */
-    public static void append(CookieSetting cookieSetting,
-            Appendable destination) throws IOException,
-            IllegalArgumentException {
-        final String name = cookieSetting.getName();
-        final String value = cookieSetting.getValue();
-        final int version = cookieSetting.getVersion();
+    public CookieSettingWriter append(CookieSetting cookieSetting)
+            throws IOException, IllegalArgumentException {
+        String name = cookieSetting.getName();
+        String value = cookieSetting.getValue();
+        int version = cookieSetting.getVersion();
 
         if ((name == null) || (name.length() == 0)) {
             throw new IllegalArgumentException(
                     "Can't write cookie. Invalid name detected");
         }
 
-        destination.append(name).append('=');
+        append(name).append('=');
 
         // Append the value
         if ((value != null) && (value.length() > 0)) {
-            appendValue(value, version, destination);
+            appendValue(value, version);
         }
 
         // Append the version
         if (version > 0) {
-            destination.append("; Version=");
-            appendValue(Integer.toString(version), version, destination);
+            append("; Version=");
+            appendValue(Integer.toString(version), version);
         }
 
         // Append the path
-        final String path = cookieSetting.getPath();
+        String path = cookieSetting.getPath();
+
         if ((path != null) && (path.length() > 0)) {
-            destination.append("; Path=");
+            append("; Path=");
 
             if (version == 0) {
-                destination.append(path);
+                append(path);
             } else {
-                HeaderWriter.appendQuotedString(path, destination);
+                appendQuotedString(path);
             }
         }
 
         // Append the expiration date
-        final int maxAge = cookieSetting.getMaxAge();
+        int maxAge = cookieSetting.getMaxAge();
+
         if (maxAge >= 0) {
             if (version == 0) {
-                final long currentTime = System.currentTimeMillis();
-                final long maxTime = (maxAge * 1000L);
-                final long expiresTime = currentTime + maxTime;
-                final Date expires = new Date(expiresTime);
-                destination.append("; Expires=");
+                long currentTime = System.currentTimeMillis();
+                long maxTime = (maxAge * 1000L);
+                long expiresTime = currentTime + maxTime;
+                Date expires = new Date(expiresTime);
+
+                append("; Expires=");
                 appendValue(DateUtils.format(expires, DateUtils.FORMAT_RFC_1036
-                        .get(0)), version, destination);
+                        .get(0)), version);
             } else {
-                destination.append("; Max-Age=");
+                append("; Max-Age=");
                 appendValue(Integer.toString(cookieSetting.getMaxAge()),
-                        version, destination);
+                        version);
             }
         } else if ((maxAge == -1) && (version > 0)) {
             // Discard the cookie at the end of the user's session (RFC
             // 2965)
-            destination.append("; Discard");
+            append("; Discard");
         } else {
-            // Netscape cookies automatically expire at the end of the
+            // NetScape cookies automatically expire at the end of the
             // user's session
         }
 
         // Append the domain
-        final String domain = cookieSetting.getDomain();
+        String domain = cookieSetting.getDomain();
+
         if ((domain != null) && (domain.length() > 0)) {
-            destination.append("; Domain=");
-            appendValue(domain.toLowerCase(), version, destination);
+            append("; Domain=");
+            appendValue(domain.toLowerCase(), version);
         }
 
         // Append the secure flag
         if (cookieSetting.isSecure()) {
-            destination.append("; Secure");
+            append("; Secure");
         }
 
         // Append the secure flag
         if (cookieSetting.isAccessRestricted()) {
-            destination.append("; HttpOnly");
+            append("; HttpOnly");
         }
 
         // Append the comment
         if (version > 0) {
-            final String comment = cookieSetting.getComment();
+            String comment = cookieSetting.getComment();
+
             if ((comment != null) && (comment.length() > 0)) {
-                destination.append("; Comment=");
-                appendValue(comment, version, destination);
+                append("; Comment=");
+                appendValue(comment, version);
             }
         }
+
+        return this;
     }
 
     /**
-     * Private constructor to ensure that the class acts as a true utility class
-     * i.e. it isn't instantiable and extensible.
+     * Appends a source string as an HTTP comment.
+     * 
+     * @param value
+     *            The source string to format.
+     * @param version
+     *            The cookie version.
+     * @throws IOException
      */
-    private CookieSettingWriter() {
+    public CookieSettingWriter appendValue(String value, int version)
+            throws IOException {
+        if (version == 0) {
+            append(value.toString());
+        } else {
+            appendQuotedString(value);
+        }
+
+        return this;
     }
 
 }

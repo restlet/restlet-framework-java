@@ -39,7 +39,7 @@ import org.restlet.data.Dimension;
  * 
  * @author Thierry Boileau
  */
-public class DimensionWriter {
+public class DimensionWriter extends HeaderWriter {
 
     /**
      * Creates a vary header from the given dimensions.
@@ -49,9 +49,18 @@ public class DimensionWriter {
      * @return Returns the Vary header or null, if dimensions is null or empty.
      */
     public static String writer(Collection<Dimension> dimensions) {
-        String vary = null;
+        return new DimensionWriter().append(dimensions).toString();
+    }
+
+    /**
+     * Creates a vary header from the given dimensions.
+     * 
+     * @param dimensions
+     *            The dimensions to copy to the response.
+     * @return Returns the Vary header or null, if dimensions is null or empty.
+     */
+    public DimensionWriter append(Collection<Dimension> dimensions) {
         if ((dimensions != null) && !dimensions.isEmpty()) {
-            final StringBuilder sb = new StringBuilder();
             boolean first = true;
 
             if (dimensions.contains(Dimension.CLIENT_ADDRESS)
@@ -59,40 +68,33 @@ public class DimensionWriter {
                     || dimensions.contains(Dimension.UNSPECIFIED)) {
                 // From an HTTP point of view the representations can
                 // vary in unspecified ways
-                vary = "*";
+                append("*");
             } else {
-                for (final Dimension dim : dimensions) {
+                for (Dimension dim : dimensions) {
                     if (first) {
                         first = false;
                     } else {
-                        sb.append(", ");
+                        append(", ");
                     }
 
                     if (dim == Dimension.CHARACTER_SET) {
-                        sb.append(HeaderConstants.HEADER_ACCEPT_CHARSET);
+                        append(HeaderConstants.HEADER_ACCEPT_CHARSET);
                     } else if (dim == Dimension.CLIENT_AGENT) {
-                        sb.append(HeaderConstants.HEADER_USER_AGENT);
+                        append(HeaderConstants.HEADER_USER_AGENT);
                     } else if (dim == Dimension.ENCODING) {
-                        sb.append(HeaderConstants.HEADER_ACCEPT_ENCODING);
+                        append(HeaderConstants.HEADER_ACCEPT_ENCODING);
                     } else if (dim == Dimension.LANGUAGE) {
-                        sb.append(HeaderConstants.HEADER_ACCEPT_LANGUAGE);
+                        append(HeaderConstants.HEADER_ACCEPT_LANGUAGE);
                     } else if (dim == Dimension.MEDIA_TYPE) {
-                        sb.append(HeaderConstants.HEADER_ACCEPT);
+                        append(HeaderConstants.HEADER_ACCEPT);
                     } else if (dim == Dimension.AUTHORIZATION) {
-                        sb.append(HeaderConstants.HEADER_AUTHORIZATION);
+                        append(HeaderConstants.HEADER_AUTHORIZATION);
                     }
                 }
-                vary = sb.toString();
             }
         }
-        return vary;
-    }
 
-    /**
-     * Private constructor to ensure that the class acts as a true utility class
-     * i.e. it isn't instantiable and extensible.
-     */
-    private DimensionWriter() {
+        return this;
     }
 
 }

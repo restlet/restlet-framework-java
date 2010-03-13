@@ -31,7 +31,6 @@
 package org.restlet.engine.http.header;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.restlet.data.Product;
@@ -41,45 +40,7 @@ import org.restlet.data.Product;
  * 
  * @author Thierry Boileau
  */
-public class UserAgentUtils {
-
-    /**
-     * Formats the given List of Products to a String.
-     * 
-     * @param products
-     *            The list of products to format.
-     * @return the List of Products as String.
-     * @throws IllegalArgumentException
-     *             Thrown if the List of Products contains illegal values
-     */
-    public static String write(List<Product> products)
-            throws IllegalArgumentException {
-        final StringBuilder builder = new StringBuilder();
-
-        for (final Iterator<Product> iterator = products.iterator(); iterator
-                .hasNext();) {
-            final Product product = iterator.next();
-            if ((product.getName() == null)
-                    || (product.getName().length() == 0)) {
-                throw new IllegalArgumentException(
-                        "Product name cannot be null.");
-            }
-
-            builder.append(product.getName());
-            if (product.getVersion() != null) {
-                builder.append("/").append(product.getVersion());
-            }
-            if (product.getComment() != null) {
-                builder.append(" (").append(product.getComment()).append(")");
-            }
-
-            if (iterator.hasNext()) {
-                builder.append(" ");
-            }
-        }
-
-        return builder.toString();
-    }
+public class UserAgentReader {
 
     /**
      * Parses the given user agent String to a list of Product instances.
@@ -183,7 +144,7 @@ public class UserAgentUtils {
      * Private constructor to ensure that the class acts as a true utility class
      * i.e. it isn't instantiable and extensible.
      */
-    private UserAgentUtils() {
+    private UserAgentReader() {
     }
 
 }

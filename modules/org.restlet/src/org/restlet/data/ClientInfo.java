@@ -495,7 +495,7 @@ public final class ClientInfo {
      */
     public List<Product> getAgentProducts() {
         if (this.agentProducts == null) {
-            this.agentProducts = org.restlet.engine.http.header.UserAgentUtils
+            this.agentProducts = org.restlet.engine.http.header.UserAgentReader
                     .read(getAgent());
         }
         return this.agentProducts;

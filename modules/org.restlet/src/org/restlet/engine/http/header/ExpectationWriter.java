@@ -30,7 +30,6 @@
 
 package org.restlet.engine.http.header;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.restlet.data.Expectation;
@@ -40,7 +39,7 @@ import org.restlet.data.Expectation;
  * 
  * @author Jerome Louvel
  */
-public class ExpectationWriter {
+public class ExpectationWriter extends HeaderWriter {
 
     /**
      * Formats a list of expectations with a comma separator.
@@ -52,44 +51,52 @@ public class ExpectationWriter {
      */
     public static String write(List<Expectation> expectations)
             throws IllegalArgumentException {
-        final StringBuilder sb = new StringBuilder();
-
-        Expectation expectation;
-        for (int i = 0; i < expectations.size(); i++) {
-            if (i > 0) {
-                sb.append(", ");
-            }
-            expectation = expectations.get(i);
-            try {
-                append(expectation, sb);
-            } catch (IOException e) {
-                // IOExceptions are not possible on StringBuilders
-            }
-        }
-
-        return sb.toString();
+        return new ExpectationWriter().append(expectations).toString();
     }
 
     /**
      * Formats a cache directive.
      * 
-     * @param directive
+     * @param expectation
      *            The directive to format.
-     * @param destination
-     *            The appendable destination.
-     * @throws IOException
      */
-    public static void append(Expectation directive, Appendable destination)
-            throws IOException {
-        destination.append(directive.getName());
-        if ((directive.getValue() != null)
-                && (directive.getValue().length() > 0)) {
-//            if (directive.isDigit()) {
-//                destination.append("=").append(directive.getValue());
-//            } else {
-//                destination.append("=\"").append(directive.getValue()).append(
-//                        '\"');
-//            }
+    public ExpectationWriter append(Expectation expectation) {
+        append(expectation.getName());
+
+        if ((expectation.getValue() != null)
+                && (expectation.getValue().length() > 0)) {
+            // if (directive.isDigit()) {
+            // destination.append("=").append(directive.getValue());
+            // } else {
+            // destination.append("=\"").append(directive.getValue()).append(
+            // '\"');
+            // }
         }
+
+        return this;
+    }
+
+    /**
+     * Formats a list of expectations with a comma separator.
+     * 
+     * @param expectations
+     *            The list of expectations.
+     * @return The formatted list of expectations.
+     * @throws IllegalArgumentException
+     */
+    public ExpectationWriter append(List<Expectation> expectations)
+            throws IllegalArgumentException {
+        Expectation expectation;
+
+        for (int i = 0; i < expectations.size(); i++) {
+            if (i > 0) {
+                append(", ");
+            }
+
+            expectation = expectations.get(i);
+            append(expectation);
+        }
+
+        return this;
     }
 }

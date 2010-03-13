@@ -32,10 +32,12 @@ package org.restlet.engine.http.header;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Date;
 
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
+import org.restlet.engine.util.DateUtils;
 
 /**
  * HTTP-style header builder. It builds an internal buffer that can be retrieved
@@ -45,125 +47,25 @@ import org.restlet.data.Reference;
  */
 public class HeaderWriter extends StringWriter {
 
+    /**
+     * Formats a date as a header string.
+     * 
+     * @param date
+     *            The date to format.
+     * @param cookie
+     *            Indicates if the date should be in the cookie format.
+     * @return The formatted date.
+     */
+    public static String write(Date date, boolean cookie) {
+        if (cookie) {
+            return DateUtils.format(date, DateUtils.FORMAT_RFC_1036.get(0));
+        }
+
+        return DateUtils.format(date, DateUtils.FORMAT_RFC_1123.get(0));
+    }
+
     /** Indicates if the first parameter is written. */
     private volatile boolean firstParameter;
-
-    /**
-     * Formats and appends a parameter as an extension. If the value is not a
-     * token, then it is quoted.
-     * 
-     * @param extension
-     *            The parameter to format as an extension.
-     * @param destination
-     *            The appendable destination.
-     * @return The formatted extension.
-     * @throws IOException
-     */
-    public static Appendable appendExtension(Parameter extension,
-            Appendable destination) throws IOException {
-        if (extension != null) {
-            if ((extension.getName() != null)
-                    || (extension.getName().length() > 0)) {
-                destination.append(extension.getName());
-
-                if ((extension.getValue() != null)
-                        || (extension.getValue().length() > 0)) {
-                    destination.append("=");
-
-                    if (HeaderUtils.isToken(extension.getValue())) {
-                        destination.append(extension.getValue());
-                    } else {
-                        appendQuotedString(extension.getValue(), destination);
-                    }
-                }
-            }
-        }
-
-        return destination;
-    }
-
-    /**
-     * Formats and appends a product description.
-     * 
-     * @param nameToken
-     *            The product name token.
-     * @param versionToken
-     *            The product version token.
-     * @param destination
-     *            The appendable destination;
-     * @throws IOException
-     */
-    public static Appendable appendProduct(CharSequence nameToken,
-            CharSequence versionToken, Appendable destination)
-            throws IOException {
-        if (!HeaderUtils.isToken(nameToken)) {
-            throw new IllegalArgumentException(
-                    "Invalid product name detected. Only token characters are allowed.");
-        }
-
-        destination.append(nameToken);
-
-        if (versionToken != null) {
-            if (!HeaderUtils.isToken(versionToken)) {
-                throw new IllegalArgumentException(
-                        "Invalid product version detected. Only token characters are allowed.");
-            }
-
-            destination.append('/').append(versionToken);
-        }
-
-        return destination;
-    }
-
-    /**
-     * Formats and appends a source string as an HTTP quoted string.
-     * 
-     * @param source
-     *            The unquoted source string.
-     * @param destination
-     *            The destination to append to.
-     * @throws IOException
-     */
-    public static Appendable appendQuotedString(CharSequence source,
-            Appendable destination) throws IOException {
-
-        if ((source != null) && (source.length() > 0)) {
-            destination.append('"');
-            char c;
-
-            for (int i = 0; i < source.length(); i++) {
-                c = source.charAt(i);
-
-                if (HeaderUtils.isQuotedText(c)) {
-                    destination.append(c);
-                } else {
-                    destination.append('\\').append(c);
-                }
-            }
-
-            destination.append('"');
-        }
-
-        return destination;
-    }
-
-    /**
-     * Formats and appends a source string as an URI encoded string.
-     * 
-     * @param source
-     *            The source string to format.
-     * @param destination
-     *            The appendable destination.
-     * @param characterSet
-     *            The supported character encoding.
-     * @throws IOException
-     */
-    public static Appendable appendUriEncoded(CharSequence source,
-            Appendable destination, CharacterSet characterSet)
-            throws IOException {
-        destination.append(Reference.encode(source.toString(), characterSet));
-        return destination;
-    }
 
     /**
      * Constructor.
@@ -182,6 +84,28 @@ public class HeaderWriter extends StringWriter {
     public HeaderWriter append(CharSequence csq) {
         super.append(csq);
         return this;
+    }
+
+    /**
+     * Appends an integer.
+     * 
+     * @param i
+     *            The value to append.
+     * @return This writer.
+     */
+    public HeaderWriter append(int i) {
+        return append(Integer.toString(i));
+    }
+
+    /**
+     * Appends a long.
+     * 
+     * @param l
+     *            The value to append.
+     * @return This writer.
+     */
+    public HeaderWriter append(long l) {
+        return append(Long.toString(l));
     }
 
     /**
@@ -208,6 +132,39 @@ public class HeaderWriter extends StringWriter {
         }
 
         append(')');
+        return this;
+    }
+
+    /**
+     * Formats and appends a parameter as an extension. If the value is not a
+     * token, then it is quoted.
+     * 
+     * @param extension
+     *            The parameter to format as an extension.
+     * @param destination
+     *            The appendable destination.
+     * @return This writer.
+     * @throws IOException
+     */
+    public HeaderWriter appendExtension(Parameter extension) throws IOException {
+        if (extension != null) {
+            if ((extension.getName() != null)
+                    || (extension.getName().length() > 0)) {
+                append(extension.getName());
+
+                if ((extension.getValue() != null)
+                        || (extension.getValue().length() > 0)) {
+                    append("=");
+
+                    if (HeaderUtils.isToken(extension.getValue())) {
+                        append(extension.getValue());
+                    } else {
+                        appendQuotedString(extension.getValue());
+                    }
+                }
+            }
+        }
+
         return this;
     }
 
@@ -282,13 +239,44 @@ public class HeaderWriter extends StringWriter {
     }
 
     /**
+     * Appends a product description.
+     * 
+     * @param nameToken
+     *            The product name token.
+     * @param versionToken
+     *            The product version token.
+     * @return This writer.
+     * @throws IOException
+     */
+    public HeaderWriter appendProduct(CharSequence nameToken,
+            CharSequence versionToken) throws IOException {
+        if (!HeaderUtils.isToken(nameToken)) {
+            throw new IllegalArgumentException(
+                    "Invalid product name detected. Only token characters are allowed.");
+        }
+
+        append(nameToken);
+
+        if (versionToken != null) {
+            if (!HeaderUtils.isToken(versionToken)) {
+                throw new IllegalArgumentException(
+                        "Invalid product version detected. Only token characters are allowed.");
+            }
+
+            append('/').append(versionToken);
+        }
+
+        return this;
+    }
+
+    /**
      * Appends a quoted character, prefixing it with a backslash.
      * 
      * @param character
      *            The character to quote.
      * @return The current builder.
      */
-    protected HeaderWriter appendQuotedPair(char character) {
+    public HeaderWriter appendQuotedPair(char character) {
         append('\\').append(character);
         return this;
     }
@@ -342,20 +330,23 @@ public class HeaderWriter extends StringWriter {
      * @return The current builder.
      */
     public HeaderWriter appendQuotedString(String content) {
-        append('"');
+        if ((content != null) && (content.length() > 0)) {
+            append('"');
+            char c;
 
-        char c;
-        for (int i = 0; i < content.length(); i++) {
-            c = content.charAt(i);
+            for (int i = 0; i < content.length(); i++) {
+                c = content.charAt(i);
 
-            if (HeaderUtils.isQuotedText(c)) {
-                append(c);
-            } else {
-                appendQuotedPair(c);
+                if (HeaderUtils.isQuotedText(c)) {
+                    append(c);
+                } else {
+                    appendQuotedPair(c);
+                }
             }
+
+            append('"');
         }
 
-        append('"');
         return this;
     }
 
@@ -385,6 +376,22 @@ public class HeaderWriter extends StringWriter {
                     + token);
         }
 
+        return this;
+    }
+
+    /**
+     * Formats and appends a source string as an URI encoded string.
+     * 
+     * @param source
+     *            The source string to format.
+     * @param characterSet
+     *            The supported character encoding.
+     * @return This writer.
+     * @throws IOException
+     */
+    public HeaderWriter appendUriEncoded(CharSequence source,
+            CharacterSet characterSet) throws IOException {
+        append(Reference.encode(source.toString(), characterSet));
         return this;
     }
 

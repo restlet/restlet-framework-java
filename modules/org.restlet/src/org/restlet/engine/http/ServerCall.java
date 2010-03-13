@@ -50,7 +50,7 @@ import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.http.header.HeaderReader;
 import org.restlet.engine.http.header.HeaderUtils;
 import org.restlet.engine.http.header.LanguageReader;
-import org.restlet.engine.http.header.RangeUtils;
+import org.restlet.engine.http.header.RangeReader;
 import org.restlet.engine.security.SslUtils;
 import org.restlet.engine.util.Base64;
 import org.restlet.representation.InputRepresentation;
@@ -182,7 +182,7 @@ public abstract class ServerCall extends Call {
                 result.setCharacterSet(contentType.getCharacterSet());
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_CONTENT_RANGE)) {
-                RangeUtils.update(header.getValue(), result);
+                RangeReader.update(header.getValue(), result);
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_CONTENT_MD5)) {
                 result.setDigest(new Digest(Digest.ALGORITHM_MD5, Base64
@@ -523,7 +523,7 @@ public abstract class ServerCall extends Call {
 
         // Write the response headers
         for (Parameter header : getResponseHeaders()) {
-            HeaderUtils.writeHeader(header, headStream);
+            HeaderUtils.writeHeaderLine(header, headStream);
         }
 
         // Write the end of the headers section

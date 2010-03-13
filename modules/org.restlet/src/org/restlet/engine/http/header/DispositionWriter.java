@@ -30,8 +30,6 @@
 
 package org.restlet.engine.http.header;
 
-import java.io.IOException;
-
 import org.restlet.data.Disposition;
 import org.restlet.data.Parameter;
 
@@ -40,7 +38,7 @@ import org.restlet.data.Parameter;
  * 
  * @author Thierry Boileau
  */
-public class DispositionWriter {
+public class DispositionWriter extends HeaderWriter {
 
     /**
      * Formats a disposition.
@@ -50,28 +48,7 @@ public class DispositionWriter {
      * @return The formatted disposition.
      */
     public static String write(Disposition disposition) {
-        if (Disposition.TYPE_NONE.equals(disposition.getType())
-                || disposition.getType() == null) {
-            return null;
-        }
-        final StringBuilder sb = new StringBuilder();
-
-        sb.append(disposition.getType());
-        for (Parameter parameter : disposition.getParameters()) {
-            sb.append("; ");
-            sb.append(parameter.getName());
-            sb.append("=");
-            if (HeaderUtils.isToken(parameter.getValue())) {
-                sb.append(parameter.getValue());
-            } else {
-                try {
-                    HeaderWriter.appendQuotedString(parameter.getValue(), sb);
-                } catch (IOException e) {
-                    // IOExceptions are not possible on StringBuilders
-                }
-            }
-        }
-        return sb.toString();
+        return new DispositionWriter().append(disposition).toString();
     }
 
     /**
@@ -79,6 +56,36 @@ public class DispositionWriter {
      * i.e. it isn't instantiable and extensible.
      */
     private DispositionWriter() {
+    }
+
+    /**
+     * Formats a disposition.
+     * 
+     * @param disposition
+     *            The disposition to format.
+     * @return The formatted disposition.
+     */
+    public DispositionWriter append(Disposition disposition) {
+        if (Disposition.TYPE_NONE.equals(disposition.getType())
+                || disposition.getType() == null) {
+            return this;
+        }
+
+        append(disposition.getType());
+
+        for (Parameter parameter : disposition.getParameters()) {
+            append("; ");
+            append(parameter.getName());
+            append("=");
+
+            if (HeaderUtils.isToken(parameter.getValue())) {
+                append(parameter.getValue());
+            } else {
+                appendQuotedString(parameter.getValue());
+            }
+        }
+
+        return this;
     }
 
 }

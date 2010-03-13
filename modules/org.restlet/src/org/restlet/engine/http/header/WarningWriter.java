@@ -40,7 +40,7 @@ import org.restlet.engine.util.DateUtils;
  * 
  * @author Thierry Boileau
  */
-public class WarningWriter {
+public class WarningWriter extends HeaderWriter {
 
     /**
      * Formats a warning.
@@ -52,15 +52,7 @@ public class WarningWriter {
      *             If the Cookie contains illegal values.
      */
     public static String write(Warning warning) throws IllegalArgumentException {
-        StringBuilder sb = new StringBuilder();
-
-        try {
-            append(warning, sb);
-        } catch (IOException e) {
-            // IOExceptions are not possible on StringBuilders
-        }
-
-        return sb.toString();
+        return new WarningWriter().append(warning).toString();
     }
 
     /**
@@ -74,10 +66,10 @@ public class WarningWriter {
      * @throws IllegalArgumentException
      *             If the warning contains illegal values.
      */
-    public static void append(Warning warning, Appendable destination)
-            throws IllegalArgumentException, IOException {
-        final String agent = warning.getAgent();
-        final String text = warning.getText();
+    public WarningWriter append(Warning warning)
+            throws IllegalArgumentException {
+        String agent = warning.getAgent();
+        String text = warning.getText();
 
         if (warning.getStatus() == null) {
             throw new IllegalArgumentException(
@@ -93,23 +85,18 @@ public class WarningWriter {
             throw new IllegalArgumentException(
                     "Can't write warning. Invalid text detected");
         }
-        destination.append(Integer.toString(warning.getStatus().getCode()));
-        destination.append(" ");
-        destination.append(agent);
-        destination.append(" ");
-        HeaderWriter.appendQuotedString(text, destination);
+
+        append(Integer.toString(warning.getStatus().getCode()));
+        append(" ");
+        append(agent);
+        append(" ");
+        appendQuotedString(text);
 
         if (warning.getDate() != null) {
-            HeaderWriter.appendQuotedString(
-                    DateUtils.format(warning.getDate()), destination);
+            appendQuotedString(DateUtils.format(warning.getDate()));
         }
-    }
 
-    /**
-     * Private constructor to ensure that the class acts as a true utility class
-     * i.e. it isn't instantiable and extensible.
-     */
-    private WarningWriter() {
+        return this;
     }
 
 }

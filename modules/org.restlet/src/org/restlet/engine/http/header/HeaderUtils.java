@@ -155,7 +155,7 @@ public class HeaderUtils {
             if (entity.getRange() != null) {
                 try {
                     headers.add(HeaderConstants.HEADER_CONTENT_RANGE,
-                            RangeUtils.write(entity.getRange(), entity
+                            RangeWriter.write(entity.getRange(), entity
                                     .getSize()));
                 } catch (Exception e) {
                     Context
@@ -190,8 +190,8 @@ public class HeaderUtils {
 
             // Add the last modification date header
             if (entity.getModificationDate() != null) {
-                headers.add(HeaderConstants.HEADER_LAST_MODIFIED, HeaderUtils
-                        .formatDate(entity.getModificationDate(), false));
+                headers.add(HeaderConstants.HEADER_LAST_MODIFIED, HeaderWriter
+                        .write(entity.getModificationDate(), false));
             }
 
             // Add the E-Tag header
@@ -542,7 +542,7 @@ public class HeaderUtils {
         // Add Range header
         if (!request.getRanges().isEmpty()) {
             headers.add(HeaderConstants.HEADER_RANGE,
-                    org.restlet.engine.http.header.RangeUtils.write(request
+                    org.restlet.engine.http.header.RangeWriter.write(request
                             .getRanges()));
         }
 
@@ -851,7 +851,7 @@ public class HeaderUtils {
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_CONTENT_RANGE)) {
                 // [ifndef gwt]
-                org.restlet.engine.http.header.RangeUtils.update(header
+                org.restlet.engine.http.header.RangeReader.update(header
                         .getValue(), result);
                 entityHeaderFound = true;
                 // [enddef]
@@ -997,23 +997,6 @@ public class HeaderUtils {
                         tr.readValues().contains("bytes"));
             }
         }
-    }
-
-    /**
-     * Formats a date as a header string.
-     * 
-     * @param date
-     *            The date to format.
-     * @param cookie
-     *            Indicates if the date should be in the cookie format.
-     * @return The formatted date.
-     */
-    public static String formatDate(Date date, boolean cookie) {
-        if (cookie) {
-            return DateUtils.format(date, DateUtils.FORMAT_RFC_1036.get(0));
-        }
-
-        return DateUtils.format(date, DateUtils.FORMAT_RFC_1123.get(0));
     }
 
     /**
@@ -1374,7 +1357,7 @@ public class HeaderUtils {
      *            The output stream.
      * @throws IOException
      */
-    public static void writeHeader(Parameter header, OutputStream os)
+    public static void writeHeaderLine(Parameter header, OutputStream os)
             throws IOException {
         os.write(header.getName().getBytes());
         os.write(':');

@@ -57,7 +57,7 @@ import org.restlet.engine.http.header.CookieReader;
 import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.http.header.HeaderReader;
 import org.restlet.engine.http.header.PreferenceReader;
-import org.restlet.engine.http.header.RangeUtils;
+import org.restlet.engine.http.header.RangeReader;
 import org.restlet.engine.http.header.WarningReader;
 import org.restlet.engine.security.AuthenticatorUtils;
 import org.restlet.engine.util.DateUtils;
@@ -631,7 +631,7 @@ public class ConnectedRequest extends Request {
                 // Extract the header value
                 String ranges = getHeaders().getValues(
                         HeaderConstants.HEADER_RANGE);
-                result.addAll(RangeUtils.read(ranges));
+                result.addAll(RangeReader.read(ranges));
             }
 
             this.rangesAdded = true;

@@ -997,7 +997,7 @@ public abstract class Connection<T extends Connector> {
 
         // Write the headers
         for (Parameter header : headers) {
-            HeaderUtils.writeHeader(header, headStream);
+            HeaderUtils.writeHeaderLine(header, headStream);
         }
 
         // Write the end of the headers section

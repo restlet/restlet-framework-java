@@ -40,34 +40,17 @@ import org.restlet.data.CacheDirective;
  * 
  * @author Thierry Boileau
  */
-public class CacheDirectiveWriter {
+public class CacheDirectiveWriter extends HeaderWriter {
 
     /**
-     * Formats a list of cache directives with a comma separator.
+     * Writes a list of cache directives with a comma separator.
      * 
      * @param directives
      *            The list of cache directives.
      * @return The formatted list of cache directives.
-     * @throws IllegalArgumentException
      */
-    public static String write(List<CacheDirective> directives)
-            throws IllegalArgumentException {
-        final StringBuilder sb = new StringBuilder();
-
-        CacheDirective directive;
-        for (int i = 0; i < directives.size(); i++) {
-            if (i > 0) {
-                sb.append(", ");
-            }
-            directive = directives.get(i);
-            try {
-                append(directive, sb);
-            } catch (IOException e) {
-                // IOExceptions are not possible on StringBuilders
-            }
-        }
-
-        return sb.toString();
+    public static String write(List<CacheDirective> directives) {
+        return new CacheDirectiveWriter().append(directives).toString();
     }
 
     /**
@@ -75,21 +58,46 @@ public class CacheDirectiveWriter {
      * 
      * @param directive
      *            The directive to format.
-     * @param destination
-     *            The appendable destination.
      * @throws IOException
      */
-    public static void append(CacheDirective directive, Appendable destination)
-            throws IOException {
-        destination.append(directive.getName());
+    public void append(CacheDirective directive) throws IOException {
+        append(directive.getName());
+
         if ((directive.getValue() != null)
                 && (directive.getValue().length() > 0)) {
             if (directive.isDigit()) {
-                destination.append("=").append(directive.getValue());
+                append("=").append(directive.getValue());
             } else {
-                destination.append("=\"").append(directive.getValue()).append(
-                        '\"');
+                append("=\"").append(directive.getValue()).append('\"');
             }
         }
     }
+
+    /**
+     * Appends a list of cache directives with a comma separator.
+     * 
+     * @param directives
+     *            The list of cache directives.
+     * @return The writer.
+     */
+    public CacheDirectiveWriter append(List<CacheDirective> directives) {
+        CacheDirective directive;
+
+        for (int i = 0; i < directives.size(); i++) {
+            if (i > 0) {
+                append(", ");
+            }
+
+            directive = directives.get(i);
+
+            try {
+                append(directive);
+            } catch (IOException e) {
+                // IOExceptions are not possible on StringBuilders
+            }
+        }
+
+        return this;
+    }
+
 }
