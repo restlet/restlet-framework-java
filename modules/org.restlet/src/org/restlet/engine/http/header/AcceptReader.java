@@ -231,6 +231,7 @@ public class AcceptReader<T extends Metadata> extends
                         result = createPreference(metadataBuffer, null);
                     } else {
                         // Ignore empty metadata name
+                        break;
                     }
                 } else if (next == ';') {
                     if (metadataBuffer.length() > 0) {
