@@ -566,6 +566,7 @@ public class HeaderUtils {
                     Engine.VERSION_HEADER);
         }
 
+        // [ifndef gwt]
         if (client.getExpectations().size() > 0) {
             try {
                 headers.add(HeaderConstants.HEADER_ACCEPT_ENCODING,
@@ -575,6 +576,7 @@ public class HeaderUtils {
                         "Unable to format the HTTP Accept header", ioe);
             }
         }
+        // [enddef]
 
         // ----------------------------------
         // 3) Add supported extension headers
