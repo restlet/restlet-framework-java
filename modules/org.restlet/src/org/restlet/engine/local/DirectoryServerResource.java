@@ -429,12 +429,12 @@ public class DirectoryServerResource extends ServerResource {
                 ReferenceList variantRefs = new ReferenceList();
 
                 for (Variant variant : variants) {
-                    if (variant.getIdentifier() != null) {
-                        variantRefs.add(variant.getIdentifier());
+                    if (variant.getLocation() != null) {
+                        variantRefs.add(variant.getLocation());
                     } else {
                         getLogger()
                                 .warning(
-                                        "A resource with multiple variants should provide an identifier for each variant when content negotiation is turned off");
+                                        "A resource with multiple variants should provide a location for each variant when content negotiation is turned off");
                     }
                 }
 
@@ -544,8 +544,8 @@ public class DirectoryServerResource extends ServerResource {
         // Sort the list of representations by their identifier.
         Comparator<Representation> identifiersComparator = new Comparator<Representation>() {
             public int compare(Representation rep0, Representation rep1) {
-                boolean bRep0Null = (rep0.getIdentifier() == null);
-                boolean bRep1Null = (rep1.getIdentifier() == null);
+                boolean bRep0Null = (rep0.getLocation() == null);
+                boolean bRep1Null = (rep1.getLocation() == null);
 
                 if (bRep0Null && bRep1Null) {
                     return 0;
@@ -558,8 +558,8 @@ public class DirectoryServerResource extends ServerResource {
                     return 1;
                 }
 
-                return rep0.getIdentifier().getLastSegment().compareTo(
-                        rep1.getIdentifier().getLastSegment());
+                return rep0.getLocation().getLastSegment().compareTo(
+                        rep1.getLocation().getLastSegment());
             }
         };
         return identifiersComparator;
@@ -633,9 +633,9 @@ public class DirectoryServerResource extends ServerResource {
                                         .getEntity();
 
                                 if (filePath.startsWith("/")) {
-                                    rep.setIdentifier(baseRef + filePath);
+                                    rep.setLocation(baseRef + filePath);
                                 } else {
-                                    rep.setIdentifier(baseRef + "/" + filePath);
+                                    rep.setLocation(baseRef + "/" + filePath);
                                 }
 
                                 resultSet.add(rep);
@@ -685,12 +685,12 @@ public class DirectoryServerResource extends ServerResource {
                         }
                     }
                 } else if (this.fileTarget && (this.fileContent != null)) {
-                    // Sets the identifier of the target representation.
+                    // Sets the location of the target representation.
                     if (getOriginalRef() != null) {
-                        this.fileContent.setIdentifier(getRequest()
+                        this.fileContent.setLocation(getRequest()
                                 .getOriginalRef());
                     } else {
-                        this.fileContent.setIdentifier(getReference());
+                        this.fileContent.setLocation(getReference());
                     }
 
                     result = new ArrayList<Variant>();
@@ -765,7 +765,7 @@ public class DirectoryServerResource extends ServerResource {
                         }
                     }
                 } else {
-                    result.add(contextResponse.getEntity().getIdentifier());
+                    result.add(contextResponse.getEntity().getLocation());
                 }
             }
         } catch (IOException ioe) {

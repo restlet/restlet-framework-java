@@ -26,9 +26,8 @@ public class FirstResourceClientMain {
         Item item = new Item("item1", "this is an item.");
         Representation r = itemsResource.post(getRepresentation(item));
         if (itemsResource.getStatus().isSuccess()) {
-            itemResource = new ClientResource(r.getIdentifier());
+            itemResource = new ClientResource(r.getLocation());
         }
-
 
         if (itemResource != null) {
             // Prints the representation of the newly created resource.

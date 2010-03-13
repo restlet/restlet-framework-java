@@ -60,8 +60,8 @@ public class Variant {
     /** The additional content codings applied to the entity-body. */
     private volatile List<Encoding> encodings;
 
-    /** The identifier. */
-    private volatile Reference identifier;
+    /** The location reference. */
+    private volatile Reference location;
 
     /** The natural language(s) of the intended audience for this variant. */
     private volatile List<Language> languages;
@@ -105,7 +105,7 @@ public class Variant {
         }
 
         this.mediaType = mediaType;
-        this.identifier = null;
+        this.location = null;
     }
 
     /**
@@ -281,9 +281,11 @@ public class Variant {
      * "Content-Location" header.
      * 
      * @return The identifier.
+     * @deprecated Use {@link #getLocation()} instead.
      */
+    @Deprecated
     public Reference getIdentifier() {
-        return this.identifier;
+        return getLocation();
     }
 
     /**
@@ -358,6 +360,21 @@ public class Variant {
             };
         }
         return this.languages;
+    }
+
+    /**
+     * Returns an optional location reference. This is useful when the
+     * representation is accessible from a location separate from the
+     * representation's resource URI, for example when content negotiation
+     * occurs.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Content-Location" header.
+     * 
+     * @return The identifier.
+     */
+    public Reference getLocation() {
+        return this.location;
     }
 
     /**
@@ -458,9 +475,11 @@ public class Variant {
      * 
      * @param identifier
      *            The identifier.
+     * @deprecated Use {@link #setLocation(Reference)} instead
      */
+    @Deprecated
     public void setIdentifier(Reference identifier) {
-        this.identifier = identifier;
+        setLocation(identifier);
     }
 
     /**
@@ -472,9 +491,11 @@ public class Variant {
      * @param identifierUri
      *            The identifier to parse.
      * @see #setIdentifier(Reference)
+     * @deprecated Use {@link #setLocation(String)} instead.
      */
+    @Deprecated
     public void setIdentifier(String identifierUri) {
-        setIdentifier(new Reference(identifierUri));
+        setLocation(identifierUri);
     }
 
     /**
@@ -488,6 +509,35 @@ public class Variant {
      */
     public void setLanguages(List<Language> languages) {
         this.languages = languages;
+    }
+
+    /**
+     * Sets the optional identifier. This is useful when the representation is
+     * accessible from a location separate from the representation's resource
+     * URI, for example when content negotiation occurs.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Content-Location" header.
+     * 
+     * @param location
+     *            The location reference.
+     */
+    public void setLocation(Reference location) {
+        this.location = location;
+    }
+
+    /**
+     * Sets the identifier from a URI string.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Content-Location" header.
+     * 
+     * @param locationUri
+     *            The location URI to parse.
+     * @see #setIdentifier(Reference)
+     */
+    public void setLocation(String locationUri) {
+        setLocation(new Reference(locationUri));
     }
 
     /**

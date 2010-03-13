@@ -133,8 +133,8 @@ class ContentReader extends DefaultHandler {
         this.graphHandler = graphHandler;
         this.base = new ScopedProperty<Reference>();
         this.language = new ScopedProperty<Language>();
-        if (representation.getIdentifier() != null) {
-            this.base.add(representation.getIdentifier().getTargetRef());
+        if (representation.getLocation() != null) {
+            this.base.add(representation.getLocation().getTargetRef());
             this.base.incrDepth();
         }
         if (representation.getLanguages().size() == 1) {

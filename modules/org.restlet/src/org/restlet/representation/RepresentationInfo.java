@@ -138,7 +138,7 @@ public class RepresentationInfo extends Variant {
     public RepresentationInfo(Variant variant, Date modificationDate, Tag tag) {
         setCharacterSet(variant.getCharacterSet());
         setEncodings(variant.getEncodings());
-        setIdentifier(variant.getIdentifier());
+        setLocation(variant.getLocation());
         setLanguages(variant.getLanguages());
         setMediaType(variant.getMediaType());
         setModificationDate(modificationDate);

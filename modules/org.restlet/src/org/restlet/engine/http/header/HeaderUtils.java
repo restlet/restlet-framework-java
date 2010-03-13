@@ -140,9 +140,9 @@ public class HeaderUtils {
                         .toString(size));
             }
 
-            if (entity.getIdentifier() != null) {
+            if (entity.getLocation() != null) {
                 headers.add(HeaderConstants.HEADER_CONTENT_LOCATION, entity
-                        .getIdentifier().getTargetRef().toString());
+                        .getLocation().getTargetRef().toString());
             }
 
             // [ifndef gwt]
@@ -954,7 +954,7 @@ public class HeaderUtils {
                 entityHeaderFound = true;
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_CONTENT_LOCATION)) {
-                result.setIdentifier(header.getValue());
+                result.setLocation(header.getValue());
                 entityHeaderFound = true;
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_CONTENT_DISPOSITION)) {

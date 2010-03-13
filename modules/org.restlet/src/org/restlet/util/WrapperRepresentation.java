@@ -137,6 +137,7 @@ public class WrapperRepresentation extends Representation {
         return getWrappedRepresentation().getExpirationDate();
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public Reference getIdentifier() {
         return getWrappedRepresentation().getIdentifier();
@@ -145,6 +146,11 @@ public class WrapperRepresentation extends Representation {
     @Override
     public List<Language> getLanguages() {
         return getWrappedRepresentation().getLanguages();
+    }
+
+    @Override
+    public Reference getLocation() {
+        return getWrappedRepresentation().getLocation();
     }
 
     @Override
@@ -261,11 +267,13 @@ public class WrapperRepresentation extends Representation {
         getWrappedRepresentation().setExpirationDate(expirationDate);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void setIdentifier(Reference identifier) {
         getWrappedRepresentation().setIdentifier(identifier);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void setIdentifier(String identifierUri) {
         getWrappedRepresentation().setIdentifier(identifierUri);
@@ -274,6 +282,16 @@ public class WrapperRepresentation extends Representation {
     @Override
     public void setLanguages(List<Language> languages) {
         getWrappedRepresentation().setLanguages(languages);
+    }
+
+    @Override
+    public void setLocation(Reference location) {
+        getWrappedRepresentation().setLocation(location);
+    }
+
+    @Override
+    public void setLocation(String locationUri) {
+        getWrappedRepresentation().setLocation(locationUri);
     }
 
     @Override

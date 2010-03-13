@@ -72,6 +72,8 @@ Changes log
         - Added Expectation data class and Request#expectations property
           to support "100-continue" headers to optimize sending of large
           request entities.
+        - Renamed Variant#identifier property into "location" to more
+          close match HTTP terminology. 
     - Enhancements
         - UniformResource#doCatch now extract the cause exception from
           caught ResourceException instance for easier debugging.
