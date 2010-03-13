@@ -45,7 +45,7 @@ import org.restlet.data.Digest;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.engine.Engine;
-import org.restlet.engine.http.header.AuthenticationInfoReader;
+import org.restlet.engine.http.header.ParameterReader;
 import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.http.header.HeaderWriter;
 import org.restlet.security.Guard;
@@ -308,7 +308,7 @@ public class AuthenticatorUtils {
      */
     public static AuthenticationInfo parseAuthenticationInfo(String header) {
         AuthenticationInfo result = null;
-        AuthenticationInfoReader hr = new AuthenticationInfoReader(header);
+        ParameterReader hr = new ParameterReader(header);
 
         try {
             String nextNonce = null;

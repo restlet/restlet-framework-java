@@ -50,7 +50,7 @@ public class CacheDirectiveWriter {
      * @return The formatted list of cache directives.
      * @throws IllegalArgumentException
      */
-    public static String append(List<CacheDirective> directives)
+    public static String format(List<CacheDirective> directives)
             throws IllegalArgumentException {
         final StringBuilder sb = new StringBuilder();
 

@@ -367,7 +367,7 @@ public class HeaderUtils {
         // Add the Cache-control headers
         if (!message.getCacheDirectives().isEmpty()) {
             headers.add(HeaderConstants.HEADER_CACHE_CONTROL,
-                    CacheDirectiveWriter.append(message.getCacheDirectives()));
+                    CacheDirectiveWriter.format(message.getCacheDirectives()));
         }
 
         // Add the date

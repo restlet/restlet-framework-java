@@ -195,6 +195,7 @@ public class HttpRequest extends Request {
     @Override
     public List<CacheDirective> getCacheDirectives() {
         List<CacheDirective> result = super.getCacheDirectives();
+
         if (!cacheDirectivesAdded) {
             for (String string : getHttpCall().getRequestHeaders()
                     .getValuesArray(HeaderConstants.HEADER_CACHE_CONTROL)) {
@@ -203,6 +204,7 @@ public class HttpRequest extends Request {
 
             setCacheDirectives(result);
         }
+
         return result;
     }
 

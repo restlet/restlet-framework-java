@@ -85,6 +85,6 @@ public class CacheControlHeaderDelegate implements HeaderDelegate<CacheControl> 
     public String toString(CacheControl cacheControl) {
         List<CacheDirective> directives = Converter
                 .toRestletCacheDirective(cacheControl);
-        return CacheDirectiveWriter.append(directives);
+        return CacheDirectiveWriter.format(directives);
     }
 }

@@ -39,14 +39,15 @@ import org.restlet.data.Parameter;
  * 
  * @author Jerome Louvel
  */
-public class AuthenticationInfoReader extends HeaderReader<Parameter> {
+public class ParameterReader extends HeaderReader<Parameter> {
+
     /**
      * Constructor.
      * 
      * @param header
      *            The header to read.
      */
-    public AuthenticationInfoReader(String header) {
+    public ParameterReader(String header) {
         super(header);
     }
 
