@@ -107,7 +107,7 @@ public class HttpCallTestCase extends RestletTestCase {
 
         disposition = new ContentDispositionReader("attachment; filename=")
                 .readValue();
-        assertEquals("", disposition.getParameters().getFirstValue("filename"));
+        assertNull(disposition.getParameters().getFirstValue("filename"));
 
         disposition = new ContentDispositionReader("attachment; filenam")
                 .readValue();
