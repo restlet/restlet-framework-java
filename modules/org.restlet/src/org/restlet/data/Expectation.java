@@ -56,7 +56,7 @@ public final class Expectation extends Parameter {
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.20">HTTP
      *      1.1 - Expect header</a>
      */
-    public static Expectation continueProvisionalStatus() {
+    public static Expectation continueResponse() {
         return new Expectation(HeaderConstants.EXPECT_CONTINUE);
     }
 
@@ -83,6 +83,11 @@ public final class Expectation extends Parameter {
      */
     public Expectation(String name, String value) {
         super(name, value);
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return super.equals(other);
     }
 
     /**

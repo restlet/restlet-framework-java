@@ -361,7 +361,7 @@ public class ConnectedRequest extends Request {
      */
     @Override
     public ClientInfo getClientInfo() {
-        final ClientInfo result = super.getClientInfo();
+        ClientInfo result = super.getClientInfo();
 
         if (!this.clientAdded) {
             if (getHeaders() != null) {

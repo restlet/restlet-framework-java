@@ -677,9 +677,8 @@ public class HeaderUtils {
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_CONTENT_DISPOSITION)) {
                 try {
-                    DispositionReader r = new DispositionReader(header
-                            .getValue());
-                    result.setDisposition(r.readValue());
+                    result.setDisposition(new DispositionReader(header
+                            .getValue()).readValue());
                     entityHeaderFound = true;
                 } catch (IOException ioe) {
                     Context.getCurrentLogger().log(
