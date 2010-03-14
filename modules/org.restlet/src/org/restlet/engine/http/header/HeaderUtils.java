@@ -349,7 +349,7 @@ public class HeaderUtils {
             Series<Parameter> headers) {
         ClientInfo clientInfo = request.getClientInfo();
 
-        if (clientInfo.getAcceptedMediaTypes().size() > 0) {
+        if (!clientInfo.getAcceptedMediaTypes().isEmpty()) {
             addHeader(HeaderConstants.HEADER_ACCEPT, PreferenceWriter
                     .write(clientInfo.getAcceptedMediaTypes()), headers);
         } else {
@@ -357,22 +357,27 @@ public class HeaderUtils {
                     headers);
         }
 
-        if (clientInfo.getAcceptedCharacterSets().size() > 0) {
+        if (!clientInfo.getAcceptedCharacterSets().isEmpty()) {
             addHeader(HeaderConstants.HEADER_ACCEPT_CHARSET, PreferenceWriter
                     .write(clientInfo.getAcceptedCharacterSets()), headers);
         }
 
-        if (clientInfo.getAcceptedEncodings().size() > 0) {
+        if (!clientInfo.getAcceptedEncodings().isEmpty()) {
             addHeader(HeaderConstants.HEADER_ACCEPT_ENCODING, PreferenceWriter
                     .write(clientInfo.getAcceptedEncodings()), headers);
         }
 
-        if (clientInfo.getAcceptedLanguages().size() > 0) {
+        if (!clientInfo.getAcceptedLanguages().isEmpty()) {
             addHeader(HeaderConstants.HEADER_ACCEPT_LANGUAGE, PreferenceWriter
                     .write(clientInfo.getAcceptedLanguages()), headers);
         }
 
-        if (request.getClientInfo().getFrom() != null) {
+        if (!clientInfo.getExpectations().isEmpty()) {
+            addHeader(HeaderConstants.HEADER_EXPECT, ExpectationWriter
+                    .write(clientInfo.getExpectations()), headers);
+        }
+
+        if (clientInfo.getFrom() != null) {
             addHeader(HeaderConstants.HEADER_FROM, request.getClientInfo()
                     .getFrom(), headers);
         }
@@ -645,13 +650,13 @@ public class HeaderUtils {
                 entityHeaderFound = true;
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_CONTENT_ENCODING)) {
-                EncodingReader hr = new EncodingReader(header.getValue());
-                hr.addValues(result.getEncodings());
+                new EncodingReader(header.getValue()).addValues(result
+                        .getEncodings());
                 entityHeaderFound = true;
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_CONTENT_LANGUAGE)) {
-                LanguageReader hr = new LanguageReader(header.getValue());
-                hr.addValues(result.getLanguages());
+                new LanguageReader(header.getValue()).addValues(result
+                        .getLanguages());
                 entityHeaderFound = true;
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_LAST_MODIFIED)) {
@@ -806,21 +811,17 @@ public class HeaderUtils {
                 response.getServerInfo().setAgent(header.getValue());
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_ALLOW)) {
-                MethodReader hr = new MethodReader(header.getValue());
-                hr.addValues(response.getAllowedMethods());
+                MethodReader.addValues(header, response.getAllowedMethods());
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_VARY)) {
-                DimensionReader hr = new DimensionReader(header.getValue());
-                hr.addValues(response.getDimensions());
+                DimensionReader.addValues(header, response.getDimensions());
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_WARNING)) {
-                WarningReader hr = new WarningReader(header.getValue());
-                hr.addValues(response.getWarnings());
+                WarningReader.addValues(header, response.getWarnings());
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_CACHE_CONTROL)) {
-                CacheDirectiveReader hr = new CacheDirectiveReader(header
-                        .getValue());
-                hr.addValues(response.getCacheDirectives());
+                CacheDirectiveReader.addValues(header, response
+                        .getCacheDirectives());
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_ACCEPT_RANGES)) {
                 TokenReader tr = new TokenReader(header.getValue());

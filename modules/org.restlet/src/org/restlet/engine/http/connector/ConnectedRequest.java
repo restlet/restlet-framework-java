@@ -54,6 +54,7 @@ import org.restlet.data.Tag;
 import org.restlet.data.Warning;
 import org.restlet.engine.http.header.CacheDirectiveReader;
 import org.restlet.engine.http.header.CookieReader;
+import org.restlet.engine.http.header.ExpectationReader;
 import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.http.header.HeaderReader;
 import org.restlet.engine.http.header.PreferenceReader;
@@ -314,9 +315,9 @@ public class ConnectedRequest extends Request {
 
         if (!this.cacheDirectivesAdded) {
             if (getHeaders() != null) {
-                for (String directive : getHeaders().getValuesArray(
+                for (Parameter header : getHeaders().subList(
                         HeaderConstants.HEADER_CACHE_CONTROL)) {
-                    new CacheDirectiveReader(directive).addValues(result);
+                    CacheDirectiveReader.addValues(header, result);
                 }
             }
 
@@ -359,14 +360,16 @@ public class ConnectedRequest extends Request {
         if (!this.clientAdded) {
             if (getHeaders() != null) {
                 // Extract the header values
-                final String acceptCharset = getHeaders().getValues(
-                        HeaderConstants.HEADER_ACCEPT_CHARSET);
-                final String acceptEncoding = getHeaders().getValues(
-                        HeaderConstants.HEADER_ACCEPT_ENCODING);
-                final String acceptLanguage = getHeaders().getValues(
-                        HeaderConstants.HEADER_ACCEPT_LANGUAGE);
-                final String acceptMediaType = getHeaders().getValues(
+                String acceptMediaType = getHeaders().getValues(
                         HeaderConstants.HEADER_ACCEPT);
+                String acceptCharset = getHeaders().getValues(
+                        HeaderConstants.HEADER_ACCEPT_CHARSET);
+                String acceptEncoding = getHeaders().getValues(
+                        HeaderConstants.HEADER_ACCEPT_ENCODING);
+                String acceptLanguage = getHeaders().getValues(
+                        HeaderConstants.HEADER_ACCEPT_LANGUAGE);
+                String expect = getHeaders().getValues(
+                        HeaderConstants.HEADER_EXPECT);
 
                 // Parse the headers and update the call preferences
 
@@ -376,22 +379,31 @@ public class ConnectedRequest extends Request {
                 // other
                 // headers.
                 try {
-                    PreferenceReader.readCharacterSets(acceptCharset, result);
+                    PreferenceReader.addCharacterSets(acceptCharset, result);
                 } catch (Exception e) {
                     this.context.getLogger().log(Level.INFO, e.getMessage());
                 }
+
                 try {
-                    PreferenceReader.readEncodings(acceptEncoding, result);
+                    PreferenceReader.addEncodings(acceptEncoding, result);
                 } catch (Exception e) {
                     this.context.getLogger().log(Level.INFO, e.getMessage());
                 }
+
                 try {
-                    PreferenceReader.readLanguages(acceptLanguage, result);
+                    PreferenceReader.addLanguages(acceptLanguage, result);
                 } catch (Exception e) {
                     this.context.getLogger().log(Level.INFO, e.getMessage());
                 }
+
                 try {
-                    PreferenceReader.readMediaTypes(acceptMediaType, result);
+                    PreferenceReader.addMediaTypes(acceptMediaType, result);
+                } catch (Exception e) {
+                    this.context.getLogger().log(Level.INFO, e.getMessage());
+                }
+
+                try {
+                    ExpectationReader.addValues(expect, result);
                 } catch (Exception e) {
                     this.context.getLogger().log(Level.INFO, e.getMessage());
                 }
@@ -399,7 +411,7 @@ public class ConnectedRequest extends Request {
                 // Set other properties
                 result.setAgent(getHeaders().getValues(
                         HeaderConstants.HEADER_USER_AGENT));
-                result.setFrom(getHeaders().getValues(
+                result.setFrom(getHeaders().getFirstValue(
                         HeaderConstants.HEADER_FROM));
                 result.setAddress(getConnection().getAddress());
                 result.setPort(getConnection().getPort());
@@ -577,9 +589,11 @@ public class ConnectedRequest extends Request {
 
         if (!this.cookiesAdded) {
             if (getHeaders() != null) {
-                for (String cookieValue : getHeaders().getValuesArray(
-                        HeaderConstants.HEADER_COOKIE)) {
-                    new CookieReader(cookieValue).addValues(result);
+                String cookieValues = getHeaders().getValues(
+                        HeaderConstants.HEADER_COOKIE);
+
+                if (cookieValues != null) {
+                    new CookieReader(cookieValues).addValues(result);
                 }
             }
 

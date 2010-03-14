@@ -31,6 +31,7 @@
 package org.restlet.engine.http.header;
 
 import java.io.IOException;
+import java.util.Collection;
 
 import org.restlet.data.CacheDirective;
 import org.restlet.data.Parameter;
@@ -41,6 +42,19 @@ import org.restlet.data.Parameter;
  * @author Jerome Louvel
  */
 public class CacheDirectiveReader extends HeaderReader<CacheDirective> {
+    /**
+     * Adds values to the given collection.
+     * 
+     * @param header
+     *            The header to read.
+     * @param collection
+     *            The collection to update.
+     */
+    public static void addValues(Parameter header,
+            Collection<CacheDirective> collection) {
+        new CacheDirectiveReader(header.getValue()).addValues(collection);
+    }
+
     /**
      * Constructor.
      * 

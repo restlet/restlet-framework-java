@@ -31,8 +31,10 @@
 package org.restlet.engine.http.header;
 
 import java.io.IOException;
+import java.util.Collection;
 
 import org.restlet.data.Dimension;
+import org.restlet.data.Parameter;
 
 /**
  * Dimension header reader.
@@ -40,6 +42,18 @@ import org.restlet.data.Dimension;
  * @author Jerome Louvel
  */
 public class DimensionReader extends HeaderReader<Dimension> {
+    /**
+     * Adds values to the given collection.
+     * 
+     * @param header
+     *            The header to read.
+     * @param collection
+     *            The collection to update.
+     */
+    public static void addValues(Parameter header,
+            Collection<Dimension> collection) {
+        new DimensionReader(header.getValue()).addValues(collection);
+    }
 
     /**
      * Constructor.

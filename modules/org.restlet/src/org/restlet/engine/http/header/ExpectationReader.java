@@ -32,6 +32,7 @@ package org.restlet.engine.http.header;
 
 import java.io.IOException;
 
+import org.restlet.data.ClientInfo;
 import org.restlet.data.Expectation;
 import org.restlet.data.Parameter;
 
@@ -41,6 +42,21 @@ import org.restlet.data.Parameter;
  * @author Jerome Louvel
  */
 public class ExpectationReader extends HeaderReader<Expectation> {
+    /**
+     * Adds values to the given collection.
+     * 
+     * @param header
+     *            The header to read.
+     * @param clientInfo
+     *            The client info to update.
+     */
+    public static void addValues(String header, ClientInfo clientInfo) {
+        if (header != null) {
+            new ExpectationReader(header).addValues(clientInfo
+                    .getExpectations());
+        }
+    }
+
     /**
      * Constructor.
      * 
@@ -58,7 +74,13 @@ public class ExpectationReader extends HeaderReader<Expectation> {
 
     @Override
     public Expectation readValue() throws IOException {
-        return (Expectation) readParameter();
+        Expectation result = (Expectation) readParameter();
+
+        while (skipParameterSeparator()) {
+            result.getParameters().add(readParameter());
+        }
+
+        return result;
     }
 
 }

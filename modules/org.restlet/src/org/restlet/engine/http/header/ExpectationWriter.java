@@ -33,6 +33,7 @@ package org.restlet.engine.http.header;
 import java.util.List;
 
 import org.restlet.data.Expectation;
+import org.restlet.data.Parameter;
 
 /**
  * Expectation header writer.
@@ -54,16 +55,16 @@ public class ExpectationWriter extends HeaderWriter<Expectation> {
 
     @Override
     public ExpectationWriter append(Expectation expectation) {
-        append(expectation.getName());
+        if ((expectation.getName() != null)
+                && (expectation.getName().length() > 0)) {
+            appendExtension(expectation);
 
-        if ((expectation.getValue() != null)
-                && (expectation.getValue().length() > 0)) {
-            // if (directive.isDigit()) {
-            // destination.append("=").append(directive.getValue());
-            // } else {
-            // destination.append("=\"").append(directive.getValue()).append(
-            // '\"');
-            // }
+            if (!expectation.getParameters().isEmpty()) {
+                for (Parameter param : expectation.getParameters()) {
+                    appendParameterSeparator();
+                    appendExtension(param);
+                }
+            }
         }
 
         return this;

@@ -81,7 +81,7 @@ public class HeaderTestCase extends RestletTestCase {
         // Test the parsing of a "Accept-encoding" header
         header1 = "gzip;q=1.0, identity;q=0.5 , *;q=0";
         ClientInfo clientInfo = new ClientInfo();
-        PreferenceReader.readEncodings(header1, clientInfo);
+        PreferenceReader.addEncodings(header1, clientInfo);
         assertEquals(clientInfo.getAcceptedEncodings().get(0).getMetadata(),
                 Encoding.GZIP);
         assertEquals(clientInfo.getAcceptedEncodings().get(0).getQuality(),
@@ -97,7 +97,7 @@ public class HeaderTestCase extends RestletTestCase {
         // Test the parsing of a "Accept" header
         header1 = "text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2";
         clientInfo = new ClientInfo();
-        PreferenceReader.readMediaTypes(header1, clientInfo);
+        PreferenceReader.addMediaTypes(header1, clientInfo);
         assertEquals(clientInfo.getAcceptedMediaTypes().get(0).getMetadata(),
                 MediaType.TEXT_HTML);
         assertEquals(clientInfo.getAcceptedMediaTypes().get(0).getQuality(),
@@ -124,7 +124,7 @@ public class HeaderTestCase extends RestletTestCase {
                 + "application/xhtml+xml; profile=\"http://www.wapforum.org/xhtml\", "
                 + "image/gif, image/jpeg, image/pjpeg, audio/amr, */*";
         clientInfo = new ClientInfo();
-        PreferenceReader.readMediaTypes(header1, clientInfo);
+        PreferenceReader.addMediaTypes(header1, clientInfo);
         assertEquals(clientInfo.getAcceptedMediaTypes().get(0).getMetadata(),
                 MediaType.TEXT_HTML);
         assertEquals(clientInfo.getAcceptedMediaTypes().get(0).getQuality(),

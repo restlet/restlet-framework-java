@@ -31,8 +31,10 @@
 package org.restlet.engine.http.header;
 
 import java.io.IOException;
+import java.util.Collection;
 
 import org.restlet.data.Method;
+import org.restlet.data.Parameter;
 
 /**
  * Method header reader.
@@ -40,6 +42,18 @@ import org.restlet.data.Method;
  * @author Jerome Louvel
  */
 public class MethodReader extends HeaderReader<Method> {
+
+    /**
+     * Adds values to the given collection.
+     * 
+     * @param header
+     *            The header to read.
+     * @param collection
+     *            The collection to update.
+     */
+    public static void addValues(Parameter header, Collection<Method> collection) {
+        new MethodReader(header.getValue()).addValues(collection);
+    }
 
     /**
      * Constructor.

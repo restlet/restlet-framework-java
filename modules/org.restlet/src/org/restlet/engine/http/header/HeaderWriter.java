@@ -188,6 +188,15 @@ public abstract class HeaderWriter<V> extends StringWriter {
     }
 
     /**
+     * Appends a semicolon as a parameter separator.
+     * 
+     * @return This writer.
+     */
+    public HeaderWriter<V> appendParameterSeparator() {
+        return append(";");
+    }
+
+    /**
      * Appends a product description.
      * 
      * @param name

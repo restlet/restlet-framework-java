@@ -50,6 +50,7 @@ import org.restlet.data.Tag;
 import org.restlet.data.Warning;
 import org.restlet.engine.http.header.CacheDirectiveReader;
 import org.restlet.engine.http.header.CookieReader;
+import org.restlet.engine.http.header.ExpectationReader;
 import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.http.header.HeaderReader;
 import org.restlet.engine.http.header.PreferenceReader;
@@ -196,9 +197,9 @@ public class HttpRequest extends Request {
         List<CacheDirective> result = super.getCacheDirectives();
 
         if (!cacheDirectivesAdded) {
-            for (String string : getHttpCall().getRequestHeaders()
-                    .getValuesArray(HeaderConstants.HEADER_CACHE_CONTROL)) {
-                new CacheDirectiveReader(string).addValues(result);
+            for (Parameter header : getHttpCall().getRequestHeaders().subList(
+                    HeaderConstants.HEADER_CACHE_CONTROL)) {
+                CacheDirectiveReader.addValues(header, result);
             }
 
             setCacheDirectives(result);
@@ -237,14 +238,16 @@ public class HttpRequest extends Request {
 
         if (!this.clientAdded) {
             // Extract the header values
+            String acceptMediaType = getHttpCall().getRequestHeaders()
+                    .getValues(HeaderConstants.HEADER_ACCEPT);
             String acceptCharset = getHttpCall().getRequestHeaders().getValues(
                     HeaderConstants.HEADER_ACCEPT_CHARSET);
             String acceptEncoding = getHttpCall().getRequestHeaders()
                     .getValues(HeaderConstants.HEADER_ACCEPT_ENCODING);
             String acceptLanguage = getHttpCall().getRequestHeaders()
                     .getValues(HeaderConstants.HEADER_ACCEPT_LANGUAGE);
-            String acceptMediaType = getHttpCall().getRequestHeaders()
-                    .getValues(HeaderConstants.HEADER_ACCEPT);
+            String expect = getHttpCall().getRequestHeaders().getValues(
+                    HeaderConstants.HEADER_EXPECT);
 
             // Parse the headers and update the call preferences
 
@@ -252,22 +255,31 @@ public class HttpRequest extends Request {
             // of each header, the error is traced and we keep on with the other
             // headers.
             try {
-                PreferenceReader.readCharacterSets(acceptCharset, result);
+                PreferenceReader.addCharacterSets(acceptCharset, result);
             } catch (Exception e) {
                 this.context.getLogger().log(Level.INFO, e.getMessage());
             }
+
             try {
-                PreferenceReader.readEncodings(acceptEncoding, result);
+                PreferenceReader.addEncodings(acceptEncoding, result);
             } catch (Exception e) {
                 this.context.getLogger().log(Level.INFO, e.getMessage());
             }
+
             try {
-                PreferenceReader.readLanguages(acceptLanguage, result);
+                PreferenceReader.addLanguages(acceptLanguage, result);
             } catch (Exception e) {
                 this.context.getLogger().log(Level.INFO, e.getMessage());
             }
+
             try {
-                PreferenceReader.readMediaTypes(acceptMediaType, result);
+                PreferenceReader.addMediaTypes(acceptMediaType, result);
+            } catch (Exception e) {
+                this.context.getLogger().log(Level.INFO, e.getMessage());
+            }
+
+            try {
+                ExpectationReader.addValues(expect, result);
             } catch (Exception e) {
                 this.context.getLogger().log(Level.INFO, e.getMessage());
             }
@@ -275,7 +287,7 @@ public class HttpRequest extends Request {
             // Set other properties
             result.setAgent(getHttpCall().getRequestHeaders().getValues(
                     HeaderConstants.HEADER_USER_AGENT));
-            result.setFrom(getHttpCall().getRequestHeaders().getValues(
+            result.setFrom(getHttpCall().getRequestHeaders().getFirstValue(
                     HeaderConstants.HEADER_FROM));
             result.setAddress(getHttpCall().getClientAddress());
             result.setPort(getHttpCall().getClientPort());
@@ -443,23 +455,11 @@ public class HttpRequest extends Request {
         final Series<Cookie> result = super.getCookies();
 
         if (!this.cookiesAdded) {
-            final String cookiesValue = getHttpCall().getRequestHeaders()
-                    .getValues(HeaderConstants.HEADER_COOKIE);
+            String cookieValues = getHttpCall().getRequestHeaders().getValues(
+                    HeaderConstants.HEADER_COOKIE);
 
-            if (cookiesValue != null) {
-                try {
-                    final CookieReader cr = new CookieReader(cookiesValue);
-                    Cookie current = cr.readValue();
-                    while (current != null) {
-                        result.add(current);
-                        current = cr.readValue();
-                    }
-                } catch (Exception e) {
-                    this.context.getLogger().log(
-                            Level.WARNING,
-                            "An exception occurred during cookies parsing. Headers value: "
-                                    + cookiesValue, e);
-                }
+            if (cookieValues != null) {
+                new CookieReader(cookieValues).addValues(result);
             }
 
             this.cookiesAdded = true;

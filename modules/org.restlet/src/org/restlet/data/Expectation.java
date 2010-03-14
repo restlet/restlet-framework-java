@@ -30,6 +30,9 @@
 
 package org.restlet.data;
 
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import org.restlet.engine.http.header.HeaderConstants;
 
 /**
@@ -57,6 +60,9 @@ public final class Expectation extends Parameter {
         return new Expectation(HeaderConstants.EXPECT_CONTINUE);
     }
 
+    /** The list of parameters. */
+    private volatile List<Parameter> parameters;
+
     /**
      * Constructor for directives with no value.
      * 
@@ -77,6 +83,39 @@ public final class Expectation extends Parameter {
      */
     public Expectation(String name, String value) {
         super(name, value);
+    }
+
+    /**
+     * Returns the list of parameters.
+     * 
+     * @return The list of parameters.
+     */
+    public List<Parameter> getParameters() {
+        // Lazy initialization with double-check.
+        List<Parameter> r = this.parameters;
+        if (r == null) {
+            synchronized (this) {
+                r = this.parameters;
+                if (r == null) {
+                    this.parameters = r = new CopyOnWriteArrayList<Parameter>();
+                }
+            }
+        }
+        return r;
+    }
+
+    /**
+     * Sets the list of parameters.
+     * 
+     * @param parameters
+     *            The list of parameters.
+     */
+    public void setParameters(List<Parameter> parameters) {
+        synchronized (this) {
+            List<Parameter> r = getParameters();
+            r.clear();
+            r.addAll(parameters);
+        }
     }
 
 }

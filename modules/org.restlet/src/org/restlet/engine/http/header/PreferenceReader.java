@@ -66,26 +66,26 @@ public class PreferenceReader<T extends Metadata> extends
      * 
      * @param acceptCharsetHeader
      *            The header to parse.
-     * @param client
-     *            The client preferences to update.
+     * @param clientInfo
+     *            The client info to update.
      */
     @SuppressWarnings("unchecked")
-    public static void readCharacterSets(String acceptCharsetHeader,
-            ClientInfo client) {
+    public static void addCharacterSets(String acceptCharsetHeader,
+            ClientInfo clientInfo) {
         if (acceptCharsetHeader != null) {
             // Implementation according to
             // http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.2
             if (acceptCharsetHeader.length() == 0) {
-                client.getAcceptedCharacterSets().add(
+                clientInfo.getAcceptedCharacterSets().add(
                         new Preference<CharacterSet>(CharacterSet.ISO_8859_1));
             } else {
                 PreferenceReader pr = new PreferenceReader(
                         PreferenceReader.TYPE_CHARACTER_SET,
                         acceptCharsetHeader);
-                pr.addValues(client.getAcceptedCharacterSets());
+                pr.addValues(clientInfo.getAcceptedCharacterSets());
             }
         } else {
-            client.getAcceptedCharacterSets().add(
+            clientInfo.getAcceptedCharacterSets().add(
                     new Preference(CharacterSet.ALL));
         }
     }
@@ -95,39 +95,39 @@ public class PreferenceReader<T extends Metadata> extends
      * 
      * @param acceptEncodingHeader
      *            The header to parse.
-     * @param preference
-     *            The client preferences to update.
+     * @param clientInfo
+     *            The client info to update.
      */
     @SuppressWarnings("unchecked")
-    public static void readEncodings(String acceptEncodingHeader,
-            ClientInfo preference) {
+    public static void addEncodings(String acceptEncodingHeader,
+            ClientInfo clientInfo) {
         if (acceptEncodingHeader != null) {
             PreferenceReader pr = new PreferenceReader(
                     PreferenceReader.TYPE_ENCODING, acceptEncodingHeader);
-            pr.addValues(preference.getAcceptedEncodings());
+            pr.addValues(clientInfo.getAcceptedEncodings());
         } else {
-            preference.getAcceptedEncodings().add(
+            clientInfo.getAcceptedEncodings().add(
                     new Preference(Encoding.IDENTITY));
         }
     }
 
     /**
-     * Parses language preferences from a header.
+     * Adds language preferences from a header.
      * 
      * @param acceptLanguageHeader
      *            The header to parse.
-     * @param preference
-     *            The client preferences to update.
+     * @param clientInfo
+     *            The client info to update.
      */
     @SuppressWarnings("unchecked")
-    public static void readLanguages(String acceptLanguageHeader,
-            ClientInfo preference) {
+    public static void addLanguages(String acceptLanguageHeader,
+            ClientInfo clientInfo) {
         if (acceptLanguageHeader != null) {
             PreferenceReader pr = new PreferenceReader(
                     PreferenceReader.TYPE_LANGUAGE, acceptLanguageHeader);
-            pr.addValues(preference.getAcceptedLanguages());
+            pr.addValues(clientInfo.getAcceptedLanguages());
         } else {
-            preference.getAcceptedLanguages().add(new Preference(Language.ALL));
+            clientInfo.getAcceptedLanguages().add(new Preference(Language.ALL));
         }
     }
 
@@ -136,18 +136,18 @@ public class PreferenceReader<T extends Metadata> extends
      * 
      * @param acceptMediaTypeHeader
      *            The header to parse.
-     * @param preference
-     *            The client preferences to update.
+     * @param clientInfo
+     *            The client info to update.
      */
     @SuppressWarnings("unchecked")
-    public static void readMediaTypes(String acceptMediaTypeHeader,
-            ClientInfo preference) {
+    public static void addMediaTypes(String acceptMediaTypeHeader,
+            ClientInfo clientInfo) {
         if (acceptMediaTypeHeader != null) {
             PreferenceReader pr = new PreferenceReader(
                     PreferenceReader.TYPE_MEDIA_TYPE, acceptMediaTypeHeader);
-            pr.addValues(preference.getAcceptedMediaTypes());
+            pr.addValues(clientInfo.getAcceptedMediaTypes());
         } else {
-            preference.getAcceptedMediaTypes().add(
+            clientInfo.getAcceptedMediaTypes().add(
                     new Preference(MediaType.ALL));
         }
     }
@@ -162,7 +162,7 @@ public class PreferenceReader<T extends Metadata> extends
      */
     public static float readQuality(String quality) {
         try {
-            final float result = Float.valueOf(quality);
+            float result = Float.valueOf(quality);
 
             if (PreferenceWriter.isValidQuality(result)) {
                 return result;

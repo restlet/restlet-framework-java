@@ -31,7 +31,9 @@
 package org.restlet.engine.http.header;
 
 import java.io.IOException;
+import java.util.Collection;
 
+import org.restlet.data.Parameter;
 import org.restlet.data.Status;
 import org.restlet.data.Warning;
 import org.restlet.engine.util.DateUtils;
@@ -42,6 +44,18 @@ import org.restlet.engine.util.DateUtils;
  * @author Thierry Boileau
  */
 public class WarningReader extends HeaderReader<Warning> {
+    /**
+     * Adds values to the given collection.
+     * 
+     * @param header
+     *            The header to read.
+     * @param collection
+     *            The collection to update.
+     */
+    public static void addValues(Parameter header,
+            Collection<Warning> collection) {
+        new WarningReader(header.getValue()).addValues(collection);
+    }
 
     /**
      * Constructor.
