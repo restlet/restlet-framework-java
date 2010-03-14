@@ -39,6 +39,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.restlet.data.CacheDirective;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
+import org.restlet.data.RecipientInfo;
 import org.restlet.data.Warning;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
@@ -68,6 +69,9 @@ public abstract class Message {
     /** Callback invoked after sending the response. */
     private volatile Uniform onSent;
 
+    /** The intermediary recipients info. */
+    private volatile List<RecipientInfo> recipientsInfo;
+
     /** The additional warnings information. */
     private volatile List<Warning> warnings;
 
@@ -96,6 +100,7 @@ public abstract class Message {
         // [ifndef gwt] instruction
         this.entityText = null;
         this.onSent = null;
+        this.recipientsInfo = null;
         this.warnings = null;
     }
 
@@ -246,6 +251,28 @@ public abstract class Message {
     }
 
     /**
+     * Returns the intermediary recipient information.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the "Via"
+     * headers.
+     * 
+     * @return The intermediary recipient information.
+     */
+    public List<RecipientInfo> getRecipientsInfo() {
+        // Lazy initialization with double-check.
+        List<RecipientInfo> r = this.recipientsInfo;
+        if (r == null) {
+            synchronized (this) {
+                r = this.recipientsInfo;
+                if (r == null) {
+                    this.recipientsInfo = r = new CopyOnWriteArrayList<RecipientInfo>();
+                }
+            }
+        }
+        return r;
+    }
+
+    /**
      * Returns the additional warnings information.<br>
      * <br>
      * Note that when used with HTTP connectors, this property maps to the
@@ -374,10 +401,23 @@ public abstract class Message {
     }
 
     /**
-     * Sets the additional warnings information.<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
-     * "Warning" headers.
+     * Sets the intermediary recipients. Note that when used with HTTP
+     * connectors, this property maps to the "Via" headers.
+     * 
+     * @param recipients
+     *            The intermediary recipients.
+     */
+    public void setRecipientsInfo(List<RecipientInfo> recipients) {
+        synchronized (this) {
+            List<RecipientInfo> cds = getRecipientsInfo();
+            cds.clear();
+            cds.addAll(recipients);
+        }
+    }
+
+    /**
+     * Sets the additional warnings information. Note that when used with HTTP
+     * connectors, this property maps to the "Warning" headers.
      * 
      * @param warnings
      *            The warnings.

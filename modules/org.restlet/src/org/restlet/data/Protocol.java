@@ -164,7 +164,7 @@ public final class Protocol {
      *            The scheme name.
      * @return The associated protocol.
      */
-    public static Protocol valueOf(final String name) {
+    public static Protocol valueOf(String name) {
         Protocol result = null;
 
         if ((name != null) && !name.equals("")) {
@@ -433,7 +433,7 @@ public final class Protocol {
      */
     @Override
     public String toString() {
-        return getName();
+        return getName() + ((getVersion() == null) ? "" : "/" + getVersion());
     }
 
 }

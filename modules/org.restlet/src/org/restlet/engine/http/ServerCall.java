@@ -289,10 +289,11 @@ public abstract class ServerCall extends Call {
      * Parses the "host" header to set the server host and port properties.
      */
     private void parseHost() {
-        final String host = getRequestHeaders().getFirstValue(
+        String host = getRequestHeaders().getFirstValue(
                 HeaderConstants.HEADER_HOST, true);
+
         if (host != null) {
-            final int colonIndex = host.indexOf(':');
+            int colonIndex = host.indexOf(':');
 
             if (colonIndex != -1) {
                 super.setHostDomain(host.substring(0, colonIndex));

@@ -308,6 +308,9 @@ public class HeaderUtils {
         addHeader(HeaderConstants.HEADER_DATE, DateWriter.write(message
                 .getDate()), headers);
 
+        addHeader(HeaderConstants.HEADER_VIA, RecipientInfoWriter.write(message
+                .getRecipientsInfo()), headers);
+
         addHeader(HeaderConstants.HEADER_WARNING, WarningWriter.write(message
                 .getWarnings()), headers);
     }
@@ -815,6 +818,10 @@ public class HeaderUtils {
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_VARY)) {
                 DimensionReader.addValues(header, response.getDimensions());
+            } else if (header.getName().equalsIgnoreCase(
+                    HeaderConstants.HEADER_VIA)) {
+                RecipientInfoReader.addValues(header, response
+                        .getRecipientsInfo());
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_WARNING)) {
                 WarningReader.addValues(header, response.getWarnings());

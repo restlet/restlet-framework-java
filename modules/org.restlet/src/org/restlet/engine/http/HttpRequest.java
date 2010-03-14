@@ -45,6 +45,7 @@ import org.restlet.data.Cookie;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Range;
+import org.restlet.data.RecipientInfo;
 import org.restlet.data.Reference;
 import org.restlet.data.Tag;
 import org.restlet.data.Warning;
@@ -55,6 +56,7 @@ import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.http.header.HeaderReader;
 import org.restlet.engine.http.header.PreferenceReader;
 import org.restlet.engine.http.header.RangeReader;
+import org.restlet.engine.http.header.RecipientInfoReader;
 import org.restlet.engine.http.header.WarningReader;
 import org.restlet.engine.security.AuthenticatorUtils;
 import org.restlet.engine.util.DateUtils;
@@ -120,6 +122,9 @@ public class HttpRequest extends Request {
     /** Indicates if the warning data was parsed and added. */
     private volatile boolean warningsAdded;
 
+    /** Indicates if the recipients info was parsed and added. */
+    private volatile boolean recipientsInfoAdded;
+
     /**
      * Constructor.
      * 
@@ -137,6 +142,7 @@ public class HttpRequest extends Request {
         this.referrerAdded = false;
         this.securityAdded = false;
         this.proxySecurityAdded = false;
+        this.recipientsInfoAdded = false;
         this.warningsAdded = false;
         this.httpCall = httpCall;
 
@@ -334,16 +340,16 @@ public class HttpRequest extends Request {
 
         if (!this.conditionAdded) {
             // Extract the header values
-            final String ifMatchHeader = getHttpCall().getRequestHeaders()
-                    .getValues(HeaderConstants.HEADER_IF_MATCH);
-            final String ifNoneMatchHeader = getHttpCall().getRequestHeaders()
+            String ifMatchHeader = getHttpCall().getRequestHeaders().getValues(
+                    HeaderConstants.HEADER_IF_MATCH);
+            String ifNoneMatchHeader = getHttpCall().getRequestHeaders()
                     .getValues(HeaderConstants.HEADER_IF_NONE_MATCH);
             Date ifModifiedSince = null;
             Date ifUnmodifiedSince = null;
             String ifRangeHeader = getHttpCall().getRequestHeaders()
                     .getFirstValue(HeaderConstants.HEADER_IF_RANGE);
 
-            for (final Parameter header : getHttpCall().getRequestHeaders()) {
+            for (Parameter header : getHttpCall().getRequestHeaders()) {
                 if (header.getName().equalsIgnoreCase(
                         HeaderConstants.HEADER_IF_MODIFIED_SINCE)) {
                     ifModifiedSince = HeaderReader.readDate(header.getValue(),
@@ -538,6 +544,19 @@ public class HttpRequest extends Request {
         return result;
     }
 
+    @Override
+    public List<RecipientInfo> getRecipientsInfo() {
+        List<RecipientInfo> result = super.getRecipientsInfo();
+        if (!recipientsInfoAdded) {
+            for (String header : getHttpCall().getRequestHeaders()
+                    .getValuesArray(HeaderConstants.HEADER_VIA)) {
+                new RecipientInfoReader(header).addValues(result);
+            }
+            setRecipientsInfo(result);
+        }
+        return result;
+    }
+
     /**
      * Returns the referrer reference if available.
      * 
@@ -587,6 +606,12 @@ public class HttpRequest extends Request {
     public void setProxyChallengeResponse(ChallengeResponse response) {
         super.setProxyChallengeResponse(response);
         this.proxySecurityAdded = true;
+    }
+
+    @Override
+    public void setRecipientsInfo(List<RecipientInfo> recipientsInfo) {
+        super.setRecipientsInfo(recipientsInfo);
+        this.recipientsInfoAdded = true;
     }
 
     @Override

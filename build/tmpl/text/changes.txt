@@ -74,6 +74,8 @@ Changes log
           request entities.
         - Renamed Variant#identifier property into "locationRef" to more
           close match HTTP terminology. 
+        - Added org.restlet.data.RecipientInfo class and property 
+          Message#recipientsInfo, supporting the "Via" HTTP header.
     - Enhancements
         - UniformResource#doCatch now extract the cause exception from
           caught ResourceException instance for easier debugging.

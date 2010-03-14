@@ -49,6 +49,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Range;
+import org.restlet.data.RecipientInfo;
 import org.restlet.data.Reference;
 import org.restlet.data.Tag;
 import org.restlet.data.Warning;
@@ -59,6 +60,7 @@ import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.http.header.HeaderReader;
 import org.restlet.engine.http.header.PreferenceReader;
 import org.restlet.engine.http.header.RangeReader;
+import org.restlet.engine.http.header.RecipientInfoReader;
 import org.restlet.engine.http.header.WarningReader;
 import org.restlet.engine.security.AuthenticatorUtils;
 import org.restlet.engine.util.DateUtils;
@@ -116,6 +118,9 @@ public class ConnectedRequest extends Request {
     /** Indicates if the security data was parsed and added. */
     private volatile boolean securityAdded;
 
+    /** Indicates if the recipients info was parsed and added. */
+    private volatile boolean recipientsInfoAdded;
+
     /** Indicates if the warning data was parsed and added. */
     private volatile boolean warningsAdded;
 
@@ -161,6 +166,7 @@ public class ConnectedRequest extends Request {
         this.securityAdded = false;
         this.userPrincipal = userPrincipal;
         this.proxySecurityAdded = false;
+        this.recipientsInfoAdded = false;
         this.warningsAdded = false;
 
         // Set the properties
@@ -654,6 +660,19 @@ public class ConnectedRequest extends Request {
         return result;
     }
 
+    @Override
+    public List<RecipientInfo> getRecipientsInfo() {
+        List<RecipientInfo> result = super.getRecipientsInfo();
+        if (!recipientsInfoAdded) {
+            for (String header : getHeaders().getValuesArray(
+                    HeaderConstants.HEADER_VIA)) {
+                new RecipientInfoReader(header).addValues(result);
+            }
+            setRecipientsInfo(result);
+        }
+        return result;
+    }
+
     /**
      * Returns the referrer reference if available.
      * 
@@ -707,6 +726,12 @@ public class ConnectedRequest extends Request {
     public void setProxyChallengeResponse(ChallengeResponse response) {
         super.setProxyChallengeResponse(response);
         this.proxySecurityAdded = true;
+    }
+
+    @Override
+    public void setRecipientsInfo(List<RecipientInfo> recipientsInfo) {
+        super.setRecipientsInfo(recipientsInfo);
+        this.recipientsInfoAdded = true;
     }
 
     @Override

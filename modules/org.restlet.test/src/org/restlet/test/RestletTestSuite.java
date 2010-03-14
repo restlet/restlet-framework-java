@@ -46,6 +46,7 @@ import org.restlet.test.data.LanguageTestCase;
 import org.restlet.test.data.MediaTypeTestCase;
 import org.restlet.test.data.ProductTokenTestCase;
 import org.restlet.test.data.RangeTestCase;
+import org.restlet.test.data.RecipientInfoTestCase;
 import org.restlet.test.data.ReferenceTestCase;
 import org.restlet.test.data.StatusTestCase;
 import org.restlet.test.engine.EngineTestSuite;
@@ -116,6 +117,7 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(RiapTestCase.class);
         addTestSuite(RouteListTestCase.class);
         addTestSuite(DigestVerifierTestCase.class);
+        addTestSuite(RecipientInfoTestCase.class);
         addTestSuite(StatusTestCase.class);
         addTestSuite(TemplateTestCase.class);
         addTestSuite(TransformerTestCase.class);

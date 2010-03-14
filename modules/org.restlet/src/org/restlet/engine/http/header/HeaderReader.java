@@ -32,6 +32,7 @@ package org.restlet.engine.http.header;
 
 import static org.restlet.engine.http.header.HeaderUtils.isCarriageReturn;
 import static org.restlet.engine.http.header.HeaderUtils.isComma;
+import static org.restlet.engine.http.header.HeaderUtils.isCommentText;
 import static org.restlet.engine.http.header.HeaderUtils.isDoubleQuote;
 import static org.restlet.engine.http.header.HeaderUtils.isLineFeed;
 import static org.restlet.engine.http.header.HeaderUtils.isLinearWhiteSpace;
@@ -343,6 +344,49 @@ public class HeaderReader<V> {
     }
 
     /**
+     * Reads the next comment. The first character must be a parenthesis.
+     * 
+     * @return The next comment.
+     * @throws IOException
+     */
+    public String readComment() throws IOException {
+        String result = null;
+        int next = read();
+
+        // First character must be a parenthesis
+        if (next == '(') {
+            StringBuilder buffer = new StringBuilder();
+
+            while (result == null) {
+                next = read();
+
+                if (isCommentText(next)) {
+                    buffer.append((char) next);
+                } else if (isQuoteCharacter(next)) {
+                    // Start of a quoted pair (escape sequence)
+                    buffer.append((char) read());
+                } else if (next == '(') {
+                    // Nested comment
+                    buffer.append('(').append(readComment()).append(')');
+                } else if (next == ')') {
+                    // End of comment
+                    result = buffer.toString();
+                } else if (next == -1) {
+                    throw new IOException(
+                            "Unexpected end of comment. Please check your value");
+                } else {
+                    throw new IOException("Invalid character \"" + next
+                            + "\" detected in comment. Please check your value");
+                }
+            }
+        } else {
+            throw new IOException("A comment must start with a parenthesis");
+        }
+
+        return result;
+    }
+
+    /**
      * Reads the next quoted string. The first character must be a double quote.
      * 
      * @return The next quoted string.
@@ -350,30 +394,30 @@ public class HeaderReader<V> {
      */
     public String readQuotedString() throws IOException {
         String result = null;
-        int nextChar = read();
+        int next = read();
 
         // First character must be a double quote
-        if (isDoubleQuote(nextChar)) {
+        if (isDoubleQuote(next)) {
             StringBuilder buffer = new StringBuilder();
 
             while (result == null) {
-                nextChar = read();
+                next = read();
 
-                if (isQuotedText(nextChar)) {
-                    buffer.append((char) nextChar);
-                } else if (isQuoteCharacter(nextChar)) {
+                if (isQuotedText(next)) {
+                    buffer.append((char) next);
+                } else if (isQuoteCharacter(next)) {
                     // Start of a quoted pair (escape sequence)
                     buffer.append((char) read());
-                } else if (isDoubleQuote(nextChar)) {
+                } else if (isDoubleQuote(next)) {
                     // End of quoted string
                     result = buffer.toString();
-                } else if (nextChar == -1) {
+                } else if (next == -1) {
                     throw new IOException(
                             "Unexpected end of quoted string. Please check your value");
                 } else {
                     throw new IOException(
                             "Invalid character \""
-                                    + nextChar
+                                    + next
                                     + "\" detected in quoted string. Please check your value");
                 }
             }
@@ -383,6 +427,33 @@ public class HeaderReader<V> {
         }
 
         return result;
+    }
+
+    /**
+     * Read the next text until a space separator is reached.
+     * 
+     * @return The next text.
+     */
+    public String readRawText() {
+        // Read value until end or space
+        StringBuilder sb = null;
+        int next = read();
+
+        while ((next != -1) && !isSpace(next) && !isComma(next)) {
+            if (sb == null) {
+                sb = new StringBuilder();
+            }
+
+            sb.append((char) next);
+            next = read();
+        }
+
+        // Unread the separator
+        if (isSpace(next) || isComma(next)) {
+            unread();
+        }
+
+        return (sb == null) ? null : sb.toString();
     }
 
     /**
@@ -496,14 +567,21 @@ public class HeaderReader<V> {
 
     /**
      * Skips the next spaces.
+     * 
+     * @return True if spaces were skipped.
      */
-    public void skipSpaces() {
-        while (isLinearWhiteSpace(read())) {
-            // Ignore
+    public boolean skipSpaces() {
+        boolean result = false;
+        int next = read();
+
+        while (isLinearWhiteSpace(next) && (next != -1)) {
+            result = result || isLinearWhiteSpace(next);
+            next = read();
         }
 
         // Restore the first non space character found
         unread();
+        return result;
     }
 
     /**
@@ -536,7 +614,9 @@ public class HeaderReader<V> {
      * Unreads the last character.
      */
     public void unread() {
-        this.index--;
+        if (this.index > 0) {
+            this.index--;
+        }
     }
 
 }
