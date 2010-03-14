@@ -62,8 +62,8 @@ public class RangeWriter extends HeaderWriter<Range> {
      *            Total size of the entity
      * @return {@code range} formatted
      */
-    public static String write(Range range, long size) throws Exception {
-        final StringBuilder b = new StringBuilder("bytes ");
+    public static String write(Range range, long size) {
+        StringBuilder b = new StringBuilder("bytes ");
 
         if (range.getIndex() >= Range.INDEX_FIRST) {
             b.append(range.getIndex());
@@ -109,7 +109,7 @@ public class RangeWriter extends HeaderWriter<Range> {
      * 
      * @param ranges
      *            List of ranges to format
-     * @return {@code ranges} formatted or null if the list is null or empty.
+     * @return This writer.
      */
     public RangeWriter append(List<Range> ranges) {
         if (ranges == null || ranges.isEmpty()) {
@@ -119,33 +119,33 @@ public class RangeWriter extends HeaderWriter<Range> {
         append("bytes=");
 
         for (int i = 0; i < ranges.size(); i++) {
-            Range range = ranges.get(i);
-
             if (i > 0) {
                 append(", ");
             }
 
-            if (range.getIndex() >= Range.INDEX_FIRST) {
-                append(range.getIndex());
-                append("-");
-
-                if (range.getSize() != Range.SIZE_MAX) {
-                    append(range.getIndex() + range.getSize() - 1);
-                }
-            } else if (range.getIndex() == Range.INDEX_LAST) {
-                append("-");
-
-                if (range.getSize() != Range.SIZE_MAX) {
-                    append(range.getSize());
-                }
-            }
+            append(ranges.get(i));
         }
 
         return this;
     }
 
     @Override
-    public HeaderWriter<Range> append(Range value) {
+    public HeaderWriter<Range> append(Range range) {
+        if (range.getIndex() >= Range.INDEX_FIRST) {
+            append(range.getIndex());
+            append("-");
+
+            if (range.getSize() != Range.SIZE_MAX) {
+                append(range.getIndex() + range.getSize() - 1);
+            }
+        } else if (range.getIndex() == Range.INDEX_LAST) {
+            append("-");
+
+            if (range.getSize() != Range.SIZE_MAX) {
+                append(range.getSize());
+            }
+        }
+
         return this;
     }
 

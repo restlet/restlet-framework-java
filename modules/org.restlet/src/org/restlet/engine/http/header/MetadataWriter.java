@@ -37,11 +37,11 @@ import org.restlet.data.Metadata;
  * 
  * @author Jerome Louvel
  */
-public class MetadataWriter extends HeaderWriter<Metadata> {
+public class MetadataWriter<M extends Metadata> extends HeaderWriter<M> {
 
     @Override
-    public MetadataWriter append(Metadata metadata) {
-        return (MetadataWriter) append(metadata.getName());
+    public MetadataWriter<M> append(M metadata) {
+        return (MetadataWriter<M>) append(metadata.getName());
     }
 
 }

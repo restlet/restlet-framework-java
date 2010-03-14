@@ -89,7 +89,7 @@ public class ChallengeWriter extends HeaderWriter<ChallengeRequest> {
      *            The parameter name.
      * @param value
      *            The parameter value.
-     * @return The current builder.
+     * @return This writer.
      */
     public ChallengeWriter appendChallengeParameter(String name, String value) {
         appendChallengeParameterSeparator();
@@ -110,7 +110,7 @@ public class ChallengeWriter extends HeaderWriter<ChallengeRequest> {
      * Appends a comma as a separator if the first parameter has already been
      * written.
      * 
-     * @return The current builder.
+     * @return This writer.
      */
     public ChallengeWriter appendChallengeParameterSeparator() {
         if (isFirstChallengeParameter()) {
@@ -128,7 +128,7 @@ public class ChallengeWriter extends HeaderWriter<ChallengeRequest> {
      * 
      * @param parameter
      *            The parameter.
-     * @return The current builder.
+     * @return This writer.
      */
     public ChallengeWriter appendQuotedChallengeParameter(Parameter parameter) {
         return appendQuotedChallengeParameter(parameter.getName(), parameter
@@ -143,7 +143,7 @@ public class ChallengeWriter extends HeaderWriter<ChallengeRequest> {
      *            The parameter name.
      * @param value
      *            The parameter value to quote.
-     * @return The current builder.
+     * @return This writer.
      */
     public ChallengeWriter appendQuotedChallengeParameter(String name,
             String value) {

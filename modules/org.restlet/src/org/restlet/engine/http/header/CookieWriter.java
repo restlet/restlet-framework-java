@@ -30,7 +30,6 @@
 
 package org.restlet.engine.http.header;
 
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -130,31 +129,30 @@ public class CookieWriter extends HeaderWriter<Cookie> {
     }
 
     /**
-     * Formats a list of cookies as an HTTP header.
+     * Appends a list of cookies as an HTTP header.
      * 
      * @param cookies
      *            The list of cookies to format.
      * @return This writer.
-     * @throws IllegalArgumentException
-     *             If one of the Cookies contains illegal values
      */
-    public CookieWriter append(List<Cookie> cookies)
-            throws IllegalArgumentException {
-        Cookie cookie;
+    public CookieWriter append(List<Cookie> cookies) {
+        if ((cookies != null) && !cookies.isEmpty()) {
+            Cookie cookie;
 
-        for (int i = 0; i < cookies.size(); i++) {
-            cookie = cookies.get(i);
+            for (int i = 0; i < cookies.size(); i++) {
+                cookie = cookies.get(i);
 
-            if (i == 0) {
-                if (cookie.getVersion() > 0) {
-                    append("$Version=\"").append(cookie.getVersion()).append(
-                            "\"; ");
+                if (i == 0) {
+                    if (cookie.getVersion() > 0) {
+                        append("$Version=\"").append(cookie.getVersion())
+                                .append("\"; ");
+                    }
+                } else {
+                    append("; ");
                 }
-            } else {
-                append("; ");
-            }
 
-            append(cookie);
+                append(cookie);
+            }
         }
 
         return this;
@@ -168,7 +166,6 @@ public class CookieWriter extends HeaderWriter<Cookie> {
      * @param version
      *            The cookie version.
      * @return This writer.
-     * @throws IOException
      */
     public CookieWriter appendValue(String value, int version) {
         if (version == 0) {

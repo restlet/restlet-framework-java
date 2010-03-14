@@ -48,17 +48,13 @@ public class WarningWriter extends HeaderWriter<Warning> {
      * @param warning
      *            The warning to format.
      * @return The formatted warning.
-     * @throws IllegalArgumentException
-     *             If the Cookie contains illegal values.
      */
-    public static String write(List<Warning> warnings)
-            throws IllegalArgumentException {
+    public static String write(List<Warning> warnings) {
         return new WarningWriter().append(warnings).toString();
     }
 
     @Override
-    public WarningWriter append(Warning warning)
-            throws IllegalArgumentException {
+    public WarningWriter append(Warning warning) {
         String agent = warning.getAgent();
         String text = warning.getText();
 

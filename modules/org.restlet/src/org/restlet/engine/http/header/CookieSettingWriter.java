@@ -30,8 +30,8 @@
 
 package org.restlet.engine.http.header;
 
-import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 import org.restlet.data.CookieSetting;
 import org.restlet.engine.util.DateUtils;
@@ -44,17 +44,25 @@ import org.restlet.engine.util.DateUtils;
 public class CookieSettingWriter extends HeaderWriter<CookieSetting> {
 
     /**
-     * Formats a cookie setting.
+     * Writes a cookie setting.
      * 
      * @param cookieSetting
      *            The cookie setting to format.
      * @return The formatted cookie setting.
-     * @throws IllegalArgumentException
-     *             If the CookieSetting can not be formatted to a String
      */
-    public static String write(CookieSetting cookieSetting)
-            throws IllegalArgumentException {
+    public static String write(CookieSetting cookieSetting) {
         return new CookieSettingWriter().append(cookieSetting).toString();
+    }
+
+    /**
+     * Writes a list of cookie settings.
+     * 
+     * @param cookieSettings
+     *            The cookie settings to write.
+     * @return The formatted cookie setting.
+     */
+    public static String write(List<CookieSetting> cookieSettings) {
+        return new CookieSettingWriter().append(cookieSettings).toString();
     }
 
     @Override
@@ -160,7 +168,7 @@ public class CookieSettingWriter extends HeaderWriter<CookieSetting> {
      *            The source string to format.
      * @param version
      *            The cookie version.
-     * @throws IOException
+     * @return This writer.
      */
     public CookieSettingWriter appendValue(String value, int version) {
         if (version == 0) {

@@ -40,7 +40,7 @@ import org.restlet.data.Product;
  * 
  * @author Thierry Boileau
  */
-public class UserAgentWriter {
+public class ProductWriter {
 
     /**
      * Formats the given List of Products to a String.
@@ -48,16 +48,14 @@ public class UserAgentWriter {
      * @param products
      *            The list of products to format.
      * @return the List of Products as String.
-     * @throws IllegalArgumentException
-     *             Thrown if the List of Products contains illegal values
      */
-    public static String write(List<Product> products)
-            throws IllegalArgumentException {
-        final StringBuilder builder = new StringBuilder();
+    public static String write(List<Product> products) {
+        StringBuilder builder = new StringBuilder();
 
-        for (final Iterator<Product> iterator = products.iterator(); iterator
+        for (Iterator<Product> iterator = products.iterator(); iterator
                 .hasNext();) {
-            final Product product = iterator.next();
+            Product product = iterator.next();
+
             if ((product.getName() == null)
                     || (product.getName().length() == 0)) {
                 throw new IllegalArgumentException(
@@ -65,9 +63,11 @@ public class UserAgentWriter {
             }
 
             builder.append(product.getName());
+
             if (product.getVersion() != null) {
                 builder.append("/").append(product.getVersion());
             }
+
             if (product.getComment() != null) {
                 builder.append(" (").append(product.getComment()).append(")");
             }
@@ -78,13 +78,6 @@ public class UserAgentWriter {
         }
 
         return builder.toString();
-    }
-
-    /**
-     * Private constructor to ensure that the class acts as a true utility class
-     * i.e. it isn't instantiable and extensible.
-     */
-    private UserAgentWriter() {
     }
 
 }

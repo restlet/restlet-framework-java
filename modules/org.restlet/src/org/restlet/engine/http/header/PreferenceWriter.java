@@ -126,8 +126,9 @@ public class PreferenceWriter extends HeaderWriter<Preference<?>> {
      * 
      * @param quality
      *            The quality value as a float.
+     * @return This writer.
      */
-    public void appendQuality(float quality) {
+    public PreferenceWriter appendQuality(float quality) {
         if (!isValidQuality(quality)) {
             throw new IllegalArgumentException(
                     "Invalid quality value detected. Value must be between 0 and 1.");
@@ -139,6 +140,8 @@ public class PreferenceWriter extends HeaderWriter<Preference<?>> {
         formatter.setMaximumFractionDigits(2);
         append(formatter.format(quality));
         // [enddef]
+
+        return this;
     }
 
 }

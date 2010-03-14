@@ -42,15 +42,13 @@ import org.restlet.data.Expectation;
 public class ExpectationWriter extends HeaderWriter<Expectation> {
 
     /**
-     * Formats a list of expectations with a comma separator.
+     * Writes a list of expectations with a comma separator.
      * 
      * @param expectations
      *            The list of expectations.
      * @return The formatted list of expectations.
-     * @throws IllegalArgumentException
      */
-    public static String write(List<Expectation> expectations)
-            throws IllegalArgumentException {
+    public static String write(List<Expectation> expectations) {
         return new ExpectationWriter().append(expectations).toString();
     }
 

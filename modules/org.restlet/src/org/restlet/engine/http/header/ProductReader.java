@@ -40,7 +40,7 @@ import org.restlet.data.Product;
  * 
  * @author Thierry Boileau
  */
-public class UserAgentReader {
+public class ProductReader {
 
     /**
      * Parses the given user agent String to a list of Product instances.
@@ -144,7 +144,7 @@ public class UserAgentReader {
      * Private constructor to ensure that the class acts as a true utility class
      * i.e. it isn't instantiable and extensible.
      */
-    private UserAgentReader() {
+    private ProductReader() {
     }
 
 }

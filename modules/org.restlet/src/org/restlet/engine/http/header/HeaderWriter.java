@@ -32,45 +32,29 @@ package org.restlet.engine.http.header;
 
 import java.io.StringWriter;
 import java.util.Collection;
-import java.util.Date;
 
 import org.restlet.data.CharacterSet;
+import org.restlet.data.Encoding;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
-import org.restlet.engine.util.DateUtils;
 
 /**
  * HTTP-style header writer.
  * 
+ * @param <V>
+ *            The value type.
  * @author Jerome Louvel
  */
-public abstract class HeaderWriter<T> extends StringWriter {
-
-    /**
-     * Formats a date as a header string.
-     * 
-     * @param date
-     *            The date to format.
-     * @param cookie
-     *            Indicates if the date should be in the cookie format.
-     * @return The formatted date.
-     */
-    public static String write(Date date, boolean cookie) {
-        if (cookie) {
-            return DateUtils.format(date, DateUtils.FORMAT_RFC_1036.get(0));
-        }
-
-        return DateUtils.format(date, DateUtils.FORMAT_RFC_1123.get(0));
-    }
+public abstract class HeaderWriter<V> extends StringWriter {
 
     @Override
-    public HeaderWriter<T> append(char c) {
+    public HeaderWriter<V> append(char c) {
         super.append(c);
         return this;
     }
 
     @Override
-    public HeaderWriter<T> append(CharSequence csq) {
+    public HeaderWriter<V> append(CharSequence csq) {
         super.append(csq);
         return this;
     }
@@ -82,18 +66,20 @@ public abstract class HeaderWriter<T> extends StringWriter {
      *            The collection of values to append.
      * @return This writer.
      */
-    public HeaderWriter<T> append(Collection<T> values) {
+    public HeaderWriter<V> append(Collection<V> values) {
         if ((values != null) && !values.isEmpty()) {
             boolean first = true;
 
-            for (T value : values) {
-                if (first) {
-                    first = false;
-                } else {
-                    appendValueSeparator();
-                }
+            for (V value : values) {
+                if (canWrite(value)) {
+                    if (first) {
+                        first = false;
+                    } else {
+                        appendValueSeparator();
+                    }
 
-                append(value);
+                    append(value);
+                }
             }
         }
 
@@ -107,7 +93,7 @@ public abstract class HeaderWriter<T> extends StringWriter {
      *            The value to append.
      * @return This writer.
      */
-    public HeaderWriter<T> append(int i) {
+    public HeaderWriter<V> append(int i) {
         return append(Integer.toString(i));
     }
 
@@ -118,7 +104,7 @@ public abstract class HeaderWriter<T> extends StringWriter {
      *            The value to append.
      * @return This writer.
      */
-    public HeaderWriter<T> append(long l) {
+    public HeaderWriter<V> append(long l) {
         return append(Long.toString(l));
     }
 
@@ -129,7 +115,7 @@ public abstract class HeaderWriter<T> extends StringWriter {
      *            The value.
      * @return This writer.
      */
-    public abstract HeaderWriter<T> append(T value);
+    public abstract HeaderWriter<V> append(V value);
 
     /**
      * Appends a string as an HTTP comment, surrounded by parenthesis and with
@@ -137,9 +123,9 @@ public abstract class HeaderWriter<T> extends StringWriter {
      * 
      * @param content
      *            The comment to write.
-     * @return The current builder.
+     * @return This writer.
      */
-    public HeaderWriter<T> appendComment(String content) {
+    public HeaderWriter<V> appendComment(String content) {
         append('(');
         char c;
 
@@ -166,7 +152,7 @@ public abstract class HeaderWriter<T> extends StringWriter {
      *            The appendable destination.
      * @return This writer.
      */
-    public HeaderWriter<T> appendExtension(Parameter extension) {
+    public HeaderWriter<V> appendExtension(Parameter extension) {
         if (extension != null) {
             return appendExtension(extension.getName(), extension.getValue());
         } else {
@@ -183,7 +169,7 @@ public abstract class HeaderWriter<T> extends StringWriter {
      *            The extension value.
      * @return This writer.
      */
-    public HeaderWriter<T> appendExtension(String name, String value) {
+    public HeaderWriter<V> appendExtension(String name, String value) {
         if ((name != null) && (name.length() > 0)) {
             append(name);
 
@@ -210,7 +196,7 @@ public abstract class HeaderWriter<T> extends StringWriter {
      *            The product version token.
      * @return This writer.
      */
-    public HeaderWriter<T> appendProduct(String name, String version) {
+    public HeaderWriter<V> appendProduct(String name, String version) {
         appendToken(name);
 
         if (version != null) {
@@ -225,9 +211,9 @@ public abstract class HeaderWriter<T> extends StringWriter {
      * 
      * @param character
      *            The character to quote.
-     * @return The current builder.
+     * @return This writer.
      */
-    public HeaderWriter<T> appendQuotedPair(char character) {
+    public HeaderWriter<V> appendQuotedPair(char character) {
         return append('\\').append(character);
     }
 
@@ -236,9 +222,9 @@ public abstract class HeaderWriter<T> extends StringWriter {
      * 
      * @param content
      *            The string to quote and write.
-     * @return The current builder.
+     * @return This writer.
      */
-    public HeaderWriter<T> appendQuotedString(String content) {
+    public HeaderWriter<V> appendQuotedString(String content) {
         if ((content != null) && (content.length() > 0)) {
             append('"');
             char c;
@@ -262,9 +248,9 @@ public abstract class HeaderWriter<T> extends StringWriter {
     /**
      * Appends a space character.
      * 
-     * @return The current builder.
+     * @return This writer.
      */
-    public HeaderWriter<T> appendSpace() {
+    public HeaderWriter<V> appendSpace() {
         return append(' ');
     }
 
@@ -273,9 +259,9 @@ public abstract class HeaderWriter<T> extends StringWriter {
      * 
      * @param token
      *            The token to write.
-     * @return The current builder.
+     * @return This writer.
      */
-    public HeaderWriter<T> appendToken(String token) {
+    public HeaderWriter<V> appendToken(String token) {
         if (HeaderUtils.isToken(token)) {
             return append(token);
         } else {
@@ -293,7 +279,7 @@ public abstract class HeaderWriter<T> extends StringWriter {
      *            The supported character encoding.
      * @return This writer.
      */
-    public HeaderWriter<T> appendUriEncoded(CharSequence source,
+    public HeaderWriter<V> appendUriEncoded(CharSequence source,
             CharacterSet characterSet) {
         return append(Reference.encode(source.toString(), characterSet));
     }
@@ -301,10 +287,23 @@ public abstract class HeaderWriter<T> extends StringWriter {
     /**
      * Appends a comma as a value separator.
      * 
-     * @return
+     * @return This writer.
      */
-    public HeaderWriter<T> appendValueSeparator() {
+    public HeaderWriter<V> appendValueSeparator() {
         return append(", ");
+    }
+
+    /**
+     * Indicates if the value can be written to the header. Useful to prevent
+     * the writing of {@link Encoding#IDENTITY} constants for example. By
+     * default it returns true for non null values.
+     * 
+     * @param value
+     *            The value to add.
+     * @return True if the value can be added.
+     */
+    protected boolean canWrite(V value) {
+        return (value != null);
     }
 
 }

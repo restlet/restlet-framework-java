@@ -32,30 +32,28 @@ package org.restlet.engine.http.header;
 
 import java.util.List;
 
-import org.restlet.data.CacheDirective;
+import org.restlet.data.Encoding;
 
 /**
- * Cache directive header writer.
+ * Encoding header writer.
  * 
- * @author Thierry Boileau
+ * @author Jerome Louvel
  */
-public class CacheDirectiveWriter extends HeaderWriter<CacheDirective> {
+public class EncodingWriter extends MetadataWriter<Encoding> {
 
     /**
-     * Writes a list of cache directives with a comma separator.
+     * Writes a list of encodings.
      * 
-     * @param directives
-     *            The list of cache directives.
-     * @return The formatted list of cache directives.
+     * @param encodings
+     *            The encodings to write.
+     * @return This writer.
      */
-    public static String write(List<CacheDirective> directives) {
-        return new CacheDirectiveWriter().append(directives).toString();
+    public static String write(List<Encoding> encodings) {
+        return new EncodingWriter().append(encodings).toString();
     }
 
     @Override
-    public CacheDirectiveWriter append(CacheDirective directive) {
-        appendExtension(directive);
-        return this;
+    protected boolean canWrite(Encoding encoding) {
+        return !encoding.equals(Encoding.IDENTITY);
     }
-
 }

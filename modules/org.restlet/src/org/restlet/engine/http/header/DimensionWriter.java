@@ -53,11 +53,11 @@ public class DimensionWriter extends HeaderWriter<Dimension> {
     }
 
     /**
-     * Creates a vary header from the given dimensions.
+     * Appends a collection of dimensions as a header.
      * 
      * @param dimensions
-     *            The dimensions to copy to the response.
-     * @return Returns the Vary header or null, if dimensions is null or empty.
+     *            The dimensions to format.
+     * @return This writer.
      */
     public DimensionWriter append(Collection<Dimension> dimensions) {
         if ((dimensions != null) && !dimensions.isEmpty()) {

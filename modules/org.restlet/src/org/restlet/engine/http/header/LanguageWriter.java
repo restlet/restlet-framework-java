@@ -32,30 +32,24 @@ package org.restlet.engine.http.header;
 
 import java.util.List;
 
-import org.restlet.data.CacheDirective;
+import org.restlet.data.Language;
 
 /**
- * Cache directive header writer.
+ * Language header writer.
  * 
- * @author Thierry Boileau
+ * @author Jerome Louvel
  */
-public class CacheDirectiveWriter extends HeaderWriter<CacheDirective> {
+public class LanguageWriter extends MetadataWriter<Language> {
 
     /**
-     * Writes a list of cache directives with a comma separator.
+     * Writes a list of languages.
      * 
-     * @param directives
-     *            The list of cache directives.
-     * @return The formatted list of cache directives.
+     * @param languages
+     *            The languages to write.
+     * @return This writer.
      */
-    public static String write(List<CacheDirective> directives) {
-        return new CacheDirectiveWriter().append(directives).toString();
-    }
-
-    @Override
-    public CacheDirectiveWriter append(CacheDirective directive) {
-        appendExtension(directive);
-        return this;
+    public static String write(List<Language> languages) {
+        return new LanguageWriter().append(languages).toString();
     }
 
 }

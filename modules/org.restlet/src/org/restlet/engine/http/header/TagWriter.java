@@ -32,30 +32,40 @@ package org.restlet.engine.http.header;
 
 import java.util.List;
 
-import org.restlet.data.CacheDirective;
+import org.restlet.data.Tag;
 
 /**
- * Cache directive header writer.
+ * Tag header writer.
  * 
- * @author Thierry Boileau
+ * @author Jerome Louvel
  */
-public class CacheDirectiveWriter extends HeaderWriter<CacheDirective> {
+public class TagWriter extends HeaderWriter<Tag> {
 
     /**
-     * Writes a list of cache directives with a comma separator.
+     * Writes a list of tags.
      * 
-     * @param directives
-     *            The list of cache directives.
-     * @return The formatted list of cache directives.
+     * @param tags
+     *            The tags to write.
+     * @return This writer.
      */
-    public static String write(List<CacheDirective> directives) {
-        return new CacheDirectiveWriter().append(directives).toString();
+    public static String write(List<Tag> tags) {
+        return new TagWriter().append(tags).toString();
+    }
+
+    /**
+     * Writes a tag.
+     * 
+     * @param tag
+     *            The tag to write.
+     * @return This writer.
+     */
+    public static String write(Tag tag) {
+        return tag.format();
     }
 
     @Override
-    public CacheDirectiveWriter append(CacheDirective directive) {
-        appendExtension(directive);
-        return this;
+    public HeaderWriter<Tag> append(Tag tag) {
+        return append(write(tag));
     }
 
 }
