@@ -213,8 +213,10 @@ public class ClientConnection extends Connection<Client> {
         HeaderUtils.copyResponseTransportHeaders(headers, response);
 
         // Put the headers in the response's attributes map
-        response.getAttributes()
-                .put(HeaderConstants.ATTRIBUTE_HEADERS, headers);
+        if (headers != null) {
+            response.getAttributes().put(HeaderConstants.ATTRIBUTE_HEADERS,
+                    headers);
+        }
 
         if (!response.getStatus().isInformational()) {
             getInboundMessages().poll();

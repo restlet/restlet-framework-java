@@ -631,79 +631,80 @@ public class HeaderUtils {
                 : representation;
         boolean entityHeaderFound = false;
 
-        for (Parameter header : responseHeaders) {
-            if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_CONTENT_TYPE)) {
-                ContentType contentType = new ContentType(header.getValue());
-                result.setMediaType(contentType.getMediaType());
+        if (responseHeaders != null) {
+            for (Parameter header : responseHeaders) {
+                if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_CONTENT_TYPE)) {
+                    ContentType contentType = new ContentType(header.getValue());
+                    result.setMediaType(contentType.getMediaType());
 
-                if ((result.getCharacterSet() == null)
-                        || (contentType.getCharacterSet() != null)) {
-                    result.setCharacterSet(contentType.getCharacterSet());
-                }
+                    if ((result.getCharacterSet() == null)
+                            || (contentType.getCharacterSet() != null)) {
+                        result.setCharacterSet(contentType.getCharacterSet());
+                    }
 
-                entityHeaderFound = true;
-            } else if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_CONTENT_LENGTH)) {
-                entityHeaderFound = true;
-            } else if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_EXPIRES)) {
-                result.setExpirationDate(HeaderReader.readDate(header
-                        .getValue(), false));
-                entityHeaderFound = true;
-            } else if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_CONTENT_ENCODING)) {
-                new EncodingReader(header.getValue()).addValues(result
-                        .getEncodings());
-                entityHeaderFound = true;
-            } else if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_CONTENT_LANGUAGE)) {
-                new LanguageReader(header.getValue()).addValues(result
-                        .getLanguages());
-                entityHeaderFound = true;
-            } else if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_LAST_MODIFIED)) {
-                result.setModificationDate(HeaderReader.readDate(header
-                        .getValue(), false));
-                entityHeaderFound = true;
-            } else if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_ETAG)) {
-                result.setTag(Tag.parse(header.getValue()));
-                entityHeaderFound = true;
-            } else if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_CONTENT_LOCATION)) {
-                result.setLocationRef(header.getValue());
-                entityHeaderFound = true;
-            } else if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_CONTENT_DISPOSITION)) {
-                try {
-                    result.setDisposition(new DispositionReader(header
-                            .getValue()).readValue());
                     entityHeaderFound = true;
-                } catch (IOException ioe) {
-                    Context.getCurrentLogger().log(
-                            Level.WARNING,
-                            "Error during Content-Disposition header parsing. Header: "
-                                    + header.getValue(), ioe);
+                } else if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_CONTENT_LENGTH)) {
+                    entityHeaderFound = true;
+                } else if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_EXPIRES)) {
+                    result.setExpirationDate(HeaderReader.readDate(header
+                            .getValue(), false));
+                    entityHeaderFound = true;
+                } else if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_CONTENT_ENCODING)) {
+                    new EncodingReader(header.getValue()).addValues(result
+                            .getEncodings());
+                    entityHeaderFound = true;
+                } else if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_CONTENT_LANGUAGE)) {
+                    new LanguageReader(header.getValue()).addValues(result
+                            .getLanguages());
+                    entityHeaderFound = true;
+                } else if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_LAST_MODIFIED)) {
+                    result.setModificationDate(HeaderReader.readDate(header
+                            .getValue(), false));
+                    entityHeaderFound = true;
+                } else if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_ETAG)) {
+                    result.setTag(Tag.parse(header.getValue()));
+                    entityHeaderFound = true;
+                } else if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_CONTENT_LOCATION)) {
+                    result.setLocationRef(header.getValue());
+                    entityHeaderFound = true;
+                } else if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_CONTENT_DISPOSITION)) {
+                    try {
+                        result.setDisposition(new DispositionReader(header
+                                .getValue()).readValue());
+                        entityHeaderFound = true;
+                    } catch (IOException ioe) {
+                        Context.getCurrentLogger().log(
+                                Level.WARNING,
+                                "Error during Content-Disposition header parsing. Header: "
+                                        + header.getValue(), ioe);
+                    }
+                } else if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_CONTENT_RANGE)) {
+                    // [ifndef gwt]
+                    org.restlet.engine.http.header.RangeReader.update(header
+                            .getValue(), result);
+                    entityHeaderFound = true;
+                    // [enddef]
+                } else if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_CONTENT_MD5)) {
+                    // [ifndef gwt]
+                    result.setDigest(new org.restlet.data.Digest(
+                            org.restlet.data.Digest.ALGORITHM_MD5,
+                            org.restlet.engine.util.Base64.decode(header
+                                    .getValue())));
+                    entityHeaderFound = true;
+                    // [enddef]
                 }
-            } else if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_CONTENT_RANGE)) {
-                // [ifndef gwt]
-                org.restlet.engine.http.header.RangeReader.update(header
-                        .getValue(), result);
-                entityHeaderFound = true;
-                // [enddef]
-            } else if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_CONTENT_MD5)) {
-                // [ifndef gwt]
-                result.setDigest(new org.restlet.data.Digest(
-                        org.restlet.data.Digest.ALGORITHM_MD5,
-                        org.restlet.engine.util.Base64
-                                .decode(header.getValue())));
-                entityHeaderFound = true;
-                // [enddef]
             }
-
         }
 
         // If no representation was initially expected and no entity header
@@ -725,114 +726,117 @@ public class HeaderUtils {
      */
     public static void copyResponseTransportHeaders(Series<Parameter> headers,
             Response response) {
-        // Read info from headers
-        for (Parameter header : headers) {
-            if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_LOCATION)) {
-                response.setLocationRef(header.getValue());
-            } else if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_AGE)) {
-                try {
-                    response.setAge(Integer.parseInt(header.getValue()));
-                } catch (NumberFormatException nfe) {
-                    Context.getCurrentLogger().log(
-                            Level.WARNING,
-                            "Error during Age header parsing. Header: "
-                                    + header.getValue(), nfe);
-                }
-            } else if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_DATE)) {
-                Date date = DateUtils.parse(header.getValue());
-
-                if (date == null) {
-                    date = new Date();
-                }
-
-                response.setDate(date);
-            } else if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_RETRY_AFTER)) {
-                // [ifndef gwt]
-                Date retryAfter = DateUtils.parse(header.getValue());
-
-                if (retryAfter == null) {
-                    // The date might be expressed as a number of seconds
+        if (headers != null) {
+            for (Parameter header : headers) {
+                if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_LOCATION)) {
+                    response.setLocationRef(header.getValue());
+                } else if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_AGE)) {
                     try {
-                        int retryAfterSecs = Integer
-                                .parseInt(header.getValue());
-                        java.util.Calendar calendar = java.util.Calendar
-                                .getInstance();
-                        calendar.add(java.util.Calendar.SECOND, retryAfterSecs);
-                        retryAfter = calendar.getTime();
+                        response.setAge(Integer.parseInt(header.getValue()));
                     } catch (NumberFormatException nfe) {
                         Context.getCurrentLogger().log(
                                 Level.WARNING,
-                                "Error during Retry-After header parsing. Header: "
+                                "Error during Age header parsing. Header: "
                                         + header.getValue(), nfe);
                     }
-                }
+                } else if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_DATE)) {
+                    Date date = DateUtils.parse(header.getValue());
 
-                response.setRetryAfter(retryAfter);
-                // [enddef]
-            } else if ((header.getName()
-                    .equalsIgnoreCase(HeaderConstants.HEADER_SET_COOKIE))
-                    || (header.getName()
-                            .equalsIgnoreCase(HeaderConstants.HEADER_SET_COOKIE2))) {
-                try {
-                    CookieSettingReader cr = new CookieSettingReader(header
-                            .getValue());
-                    response.getCookieSettings().add(cr.readValue());
-                } catch (Exception e) {
-                    Context.getCurrentLogger().log(
-                            Level.WARNING,
-                            "Error during cookie setting parsing. Header: "
-                                    + header.getValue(), e);
+                    if (date == null) {
+                        date = new Date();
+                    }
+
+                    response.setDate(date);
+                } else if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_RETRY_AFTER)) {
+                    // [ifndef gwt]
+                    Date retryAfter = DateUtils.parse(header.getValue());
+
+                    if (retryAfter == null) {
+                        // The date might be expressed as a number of seconds
+                        try {
+                            int retryAfterSecs = Integer.parseInt(header
+                                    .getValue());
+                            java.util.Calendar calendar = java.util.Calendar
+                                    .getInstance();
+                            calendar.add(java.util.Calendar.SECOND,
+                                    retryAfterSecs);
+                            retryAfter = calendar.getTime();
+                        } catch (NumberFormatException nfe) {
+                            Context.getCurrentLogger().log(
+                                    Level.WARNING,
+                                    "Error during Retry-After header parsing. Header: "
+                                            + header.getValue(), nfe);
+                        }
+                    }
+
+                    response.setRetryAfter(retryAfter);
+                    // [enddef]
+                } else if ((header.getName()
+                        .equalsIgnoreCase(HeaderConstants.HEADER_SET_COOKIE))
+                        || (header.getName()
+                                .equalsIgnoreCase(HeaderConstants.HEADER_SET_COOKIE2))) {
+                    try {
+                        CookieSettingReader cr = new CookieSettingReader(header
+                                .getValue());
+                        response.getCookieSettings().add(cr.readValue());
+                    } catch (Exception e) {
+                        Context.getCurrentLogger().log(
+                                Level.WARNING,
+                                "Error during cookie setting parsing. Header: "
+                                        + header.getValue(), e);
+                    }
+                } else if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_WWW_AUTHENTICATE)) {
+                    // [ifndef gwt]
+                    ChallengeRequest request = org.restlet.engine.security.AuthenticatorUtils
+                            .parseRequest(response, header.getValue(), headers);
+                    response.getChallengeRequests().add(request);
+                    // [enddef]
+                } else if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_PROXY_AUTHENTICATE)) {
+                    // [ifndef gwt]
+                    ChallengeRequest request = org.restlet.engine.security.AuthenticatorUtils
+                            .parseRequest(response, header.getValue(), headers);
+                    response.getProxyChallengeRequests().add(request);
+                    // [enddef]
+                } else if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_AUTHENTICATION_INFO)) {
+                    // [ifndef gwt]
+                    AuthenticationInfo authenticationInfo = org.restlet.engine.security.AuthenticatorUtils
+                            .parseAuthenticationInfo(header.getValue());
+                    response.setAuthenticationInfo(authenticationInfo);
+                    // [enddef]
+                } else if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_SERVER)) {
+                    response.getServerInfo().setAgent(header.getValue());
+                } else if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_ALLOW)) {
+                    MethodReader
+                            .addValues(header, response.getAllowedMethods());
+                } else if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_VARY)) {
+                    DimensionReader.addValues(header, response.getDimensions());
+                } else if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_VIA)) {
+                    RecipientInfoReader.addValues(header, response
+                            .getRecipientsInfo());
+                } else if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_WARNING)) {
+                    WarningReader.addValues(header, response.getWarnings());
+                } else if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_CACHE_CONTROL)) {
+                    CacheDirectiveReader.addValues(header, response
+                            .getCacheDirectives());
+                } else if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_ACCEPT_RANGES)) {
+                    TokenReader tr = new TokenReader(header.getValue());
+                    response.getServerInfo().setAcceptingRanges(
+                            tr.readValues().contains("bytes"));
                 }
-            } else if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_WWW_AUTHENTICATE)) {
-                // [ifndef gwt]
-                ChallengeRequest request = org.restlet.engine.security.AuthenticatorUtils
-                        .parseRequest(response, header.getValue(), headers);
-                response.getChallengeRequests().add(request);
-                // [enddef]
-            } else if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_PROXY_AUTHENTICATE)) {
-                // [ifndef gwt]
-                ChallengeRequest request = org.restlet.engine.security.AuthenticatorUtils
-                        .parseRequest(response, header.getValue(), headers);
-                response.getProxyChallengeRequests().add(request);
-                // [enddef]
-            } else if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_AUTHENTICATION_INFO)) {
-                // [ifndef gwt]
-                AuthenticationInfo authenticationInfo = org.restlet.engine.security.AuthenticatorUtils
-                        .parseAuthenticationInfo(header.getValue());
-                response.setAuthenticationInfo(authenticationInfo);
-                // [enddef]
-            } else if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_SERVER)) {
-                response.getServerInfo().setAgent(header.getValue());
-            } else if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_ALLOW)) {
-                MethodReader.addValues(header, response.getAllowedMethods());
-            } else if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_VARY)) {
-                DimensionReader.addValues(header, response.getDimensions());
-            } else if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_VIA)) {
-                RecipientInfoReader.addValues(header, response
-                        .getRecipientsInfo());
-            } else if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_WARNING)) {
-                WarningReader.addValues(header, response.getWarnings());
-            } else if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_CACHE_CONTROL)) {
-                CacheDirectiveReader.addValues(header, response
-                        .getCacheDirectives());
-            } else if (header.getName().equalsIgnoreCase(
-                    HeaderConstants.HEADER_ACCEPT_RANGES)) {
-                TokenReader tr = new TokenReader(header.getValue());
-                response.getServerInfo().setAcceptingRanges(
-                        tr.readValues().contains("bytes"));
             }
         }
     }
