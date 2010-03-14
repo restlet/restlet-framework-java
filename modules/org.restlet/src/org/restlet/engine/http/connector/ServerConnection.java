@@ -310,6 +310,8 @@ public class ServerConnection extends Connection<Server> {
                     response.setEntity(null);
                 }
             } else {
+                addGeneralHeaders(response, headers);
+                addResponseHeaders(response, headers);
                 addEntityHeaders(response.getEntity(), headers);
 
                 if ((response.getEntity() != null)
@@ -321,19 +323,6 @@ public class ServerConnection extends Connection<Server> {
                                             + request.getResourceRef() + "\".");
                     response.setEntity(null);
                 }
-            }
-
-            // Add the message headers
-            try {
-                addTransportHeaders(headers, response.getEntity());
-                addResponseHeaders(response, headers);
-            } catch (Exception e) {
-                getLogger()
-                        .log(
-                                Level.INFO,
-                                "Exception intercepted while adding the response headers",
-                                e);
-                response.setStatus(Status.SERVER_ERROR_INTERNAL);
             }
 
             // Write the response to the client
@@ -353,9 +342,9 @@ public class ServerConnection extends Connection<Server> {
             }
         } catch (Exception e) {
             getLogger().log(Level.INFO,
-                    "An exception occured writing the response entity", e);
+                    "An exception occured writing the response", e);
             response.setStatus(Status.SERVER_ERROR_INTERNAL,
-                    "An exception occured writing the response entity");
+                    "An exception occured writing the response");
             response.setEntity(null);
 
             try {

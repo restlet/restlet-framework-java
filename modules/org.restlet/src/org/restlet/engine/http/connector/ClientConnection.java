@@ -237,61 +237,22 @@ public class ClientConnection extends Connection<Client> {
         Request request = response.getRequest();
 
         try {
-            try {
-                addEntityHeaders(request.getEntity(), headers);
-                addTransportHeaders(headers, request.getEntity());
-                addRequestHeaders(request, headers);
-
-                // Prepare the host header
-                // String host = hostDomain;
-                //
-                // if (resourceRef.getHostPort() != -1) {
-                // host += ":" + resourceRef.getHostPort();
-                // }
-                //
-                // headers.set(HeaderConstants.HEADER_HOST, host, true);
-
-                // TODO may be replaced by an attribute on the Method class
-                // telling that a method requires an entity.
-                // Actually, since such classes are used in the context of
-                // clients and servers, there could be two attributes
-                // if ((request.getEntity() == null ||
-                // !request.isEntityAvailable() ||
-                // request
-                // .getEntity().getSize() == 0)
-                // && (Method.POST.equals(request.getMethod()) || Method.PUT
-                // .equals(request.getMethod()))) {
-                // HeaderUtils.writeHeader(new Parameter(
-                // HeaderConstants.HEADER_CONTENT_LENGTH, "0"),
-                // getOutboundStream());
-                // }
-
-                // if (result.equals(Status.CONNECTOR_ERROR_COMMUNICATION)) {
-                // return result;
-                // }
-            } catch (Exception e) {
-                getLogger()
-                        .log(
-                                Level.INFO,
-                                "Exception intercepted while adding the response headers",
-                                e);
-                response.setStatus(Status.SERVER_ERROR_INTERNAL);
-            }
-
-            // Write the request to the server
+            addGeneralHeaders(request, headers);
+            addRequestHeaders(request, headers);
+            addEntityHeaders(request.getEntity(), headers);
             writeMessage(response, headers);
         } catch (Exception e) {
             getLogger().log(Level.INFO,
-                    "An exception occured writing the request entity", e);
+                    "An exception occured writing the request", e);
             response.setStatus(Status.CONNECTOR_ERROR_COMMUNICATION,
-                    "An exception occured writing the request entity");
+                    "An exception occured writing the request");
             response.setEntity(null);
 
             try {
                 writeMessage(response, headers);
-            } catch (IOException ioe) {
-                getLogger().log(Level.WARNING, "Unable to send error response",
-                        ioe);
+            } catch (Exception ee) {
+                getLogger().log(Level.WARNING, "Unable to send error request",
+                        ee);
             }
         } finally {
             if (request.getOnSent() != null) {

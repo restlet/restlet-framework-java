@@ -160,7 +160,7 @@ public class HeaderUtils {
     public static void addExtensionHeaders(Series<Parameter> existingHeaders,
             Series<Parameter> additionalHeaders) {
         if (additionalHeaders != null) {
-            for (final Parameter param : additionalHeaders) {
+            for (Parameter param : additionalHeaders) {
                 if (param.getName().equalsIgnoreCase(
                         HeaderConstants.HEADER_ACCEPT)
                         || param.getName().equalsIgnoreCase(
@@ -250,6 +250,8 @@ public class HeaderUtils {
                         || param.getName().equalsIgnoreCase(
                                 HeaderConstants.HEADER_VARY)
                         || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_VIA)
+                        || param.getName().equalsIgnoreCase(
                                 HeaderConstants.HEADER_WARNING)
                         || param.getName().equalsIgnoreCase(
                                 HeaderConstants.HEADER_WWW_AUTHENTICATE)) {
@@ -269,9 +271,7 @@ public class HeaderUtils {
                         || param.getName().equalsIgnoreCase(
                                 HeaderConstants.HEADER_TRANSFER_EXTENSION)
                         || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_UPGRADE)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_VIA)) {
+                                HeaderConstants.HEADER_UPGRADE)) {
                     // Standard headers that shouldn't be overridden
                     Context
                             .getCurrentLogger()
@@ -288,8 +288,7 @@ public class HeaderUtils {
     }
 
     /**
-     * Writes the general headers from the {@link Representation} to the
-     * {@link Series}.
+     * Adds the general headers from the {@link Message} to the {@link Series}.
      * 
      * @param message
      *            The source {@link Message}.
@@ -344,21 +343,10 @@ public class HeaderUtils {
      *            The {@link Request} to copy the headers from.
      * @param headers
      *            The {@link Series} to copy the headers to.
-     * @throws IllegalArgumentException
      */
     @SuppressWarnings("unchecked")
     public static void addRequestHeaders(Request request,
-            Series<Parameter> headers) throws IllegalArgumentException {
-
-        // --------------------------
-        // 1) Add the general headers
-        // --------------------------
-        addGeneralHeaders(request, headers);
-
-        // --------------------------------
-        // 2) Add request specific headers
-        // --------------------------------
-
+            Series<Parameter> headers) {
         ClientInfo clientInfo = request.getClientInfo();
 
         if (clientInfo.getAcceptedMediaTypes().size() > 0) {
@@ -521,21 +509,10 @@ public class HeaderUtils {
      *            The {@link Response} to copy the headers from.
      * @param headers
      *            The {@link Series} to copy the headers to.
-     * @throws IllegalArgumentException
      */
     @SuppressWarnings("unchecked")
     public static void addResponseHeaders(Response response,
-            Series<Parameter> headers) throws IllegalArgumentException {
-
-        // --------------------------
-        // 1) Add the general headers
-        // --------------------------
-        addGeneralHeaders(response, headers);
-
-        // --------------------------------
-        // 2) Add response specific headers
-        // --------------------------------
-
+            Series<Parameter> headers) {
         if (response.getServerInfo().isAcceptingRanges()) {
             addHeader(HeaderConstants.HEADER_ACCEPT_RANGES, "bytes", headers);
         }

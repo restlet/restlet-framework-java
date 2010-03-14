@@ -86,7 +86,9 @@ public class ServerAdapter extends Adapter {
      */
     protected void addResponseHeaders(HttpResponse response) {
         try {
-            // Add all the necessary response headers
+            // Add all the necessary headers
+            HeaderUtils.addGeneralHeaders(response, response.getHttpCall()
+                    .getResponseHeaders());
             HeaderUtils.addResponseHeaders(response, response.getHttpCall()
                     .getResponseHeaders());
 
