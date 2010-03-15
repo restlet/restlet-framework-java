@@ -59,6 +59,17 @@ public class ReflectUtils {
     /** The internal logger. */
     private final static Logger logger = Context.getCurrentLogger();
 
+    /** List of reserved Java words. */
+    private final static List<String> reservedWords = Arrays.asList("abstract",
+            "assert", "boolean", "break", "byte", "case", "catch", "char",
+            "class", "const", "continue", "default", "do", "double", "double",
+            "else", "enum", "extends", "final", "finally", "float", "for",
+            "if", "goto", "implements", "import", "instanceof", "int",
+            "interface", "long", "native", "new", "package", "private",
+            "protected", "public", "return", "short", "static", "strictfp",
+            "super", "switch", "switch", "synchronized", "this", "throw",
+            "transient", "try", "void", "volatile", "while");
+
     /**
      * Returns the Java class of a set of entries contained inside a Feed.
      * 
@@ -339,15 +350,6 @@ public class ReflectUtils {
      * @return True if the given name is a Java reserved word.
      */
     public static boolean isReservedWord(String name) {
-        List<String> reservedWords = Arrays.asList("abstract", "assert",
-                "boolean", "break", "byte", "case", "catch", "char", "class",
-                "const", "continue", "default", "do", "double", "double",
-                "else", "enum", "extends", "final", "finally", "float", "for",
-                "if", "goto", "implements", "import", "instanceof", "int",
-                "interface", "long", "native", "new", "package", "private",
-                "protected", "public", "return", "short", "static", "strictfp",
-                "super", "switch", "switch", "synchronized", "this", "throw",
-                "transient", "try", "void", "volatile", "while");
         return reservedWords.contains(name);
     }
 
