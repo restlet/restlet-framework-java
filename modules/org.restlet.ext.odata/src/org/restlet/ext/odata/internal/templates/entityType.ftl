@@ -56,6 +56,9 @@ public <#if type.abstractType>abstract </#if>class ${className} {
 <#list type.properties?sort_by("name") as property>
     private ${property.type.className} ${property.propertyName}<#if property.defaultValue??> = property.defaultValue</#if>;
 </#list>
+<#list type.complexProperties?sort_by("name") as property>
+    private ${property.complexType.className} ${property.propertyName};
+</#list>
 <#list type.associations?sort_by("name") as association>
     private <#if association.toRole.toMany>List<${association.toRole.type.className}><#else>${association.toRole.type.className}</#if> ${association.normalizedName};
 </#list>
@@ -94,6 +97,17 @@ public <#if type.abstractType>abstract </#if>class ${className} {
     * @return The value of the "${property.propertyName}" attribute.
     */
    <#if property.getterAccess??>${property.getterAccess}<#else>public</#if> ${property.type.className} get${property.normalizedName?cap_first}() {
+      return ${property.propertyName};
+   }
+   
+</#list>
+<#list type.complexProperties?sort_by("name") as property>
+   /**
+    * Returns the value of the "${property.propertyName}" attribute.
+    *
+    * @return The value of the "${property.propertyName}" attribute.
+    */
+   <#if property.getterAccess??>${property.getterAccess}<#else>public</#if> ${property.complexType.className} get${property.normalizedName?cap_first}() {
       return ${property.propertyName};
    }
    
@@ -143,6 +157,18 @@ public <#if type.abstractType>abstract </#if>class ${className} {
     *     The value of the "${property.normalizedName}" attribute.
     */
    <#if property.setterAccess??>${property.setterAccess}<#else>public</#if> void set${property.normalizedName?cap_first}(${property.type.className} ${property.propertyName}) {
+      this.${property.propertyName} = ${property.propertyName};
+   }
+   
+</#list>
+<#list type.complexProperties?sort_by("name") as property>
+   /**
+    * Sets the value of the "${property.normalizedName}" attribute.
+    *
+    * @param ${property.propertyName}
+    *     The value of the "${property.normalizedName}" attribute.
+    */
+   <#if property.setterAccess??>${property.setterAccess}<#else>public</#if> void set${property.normalizedName?cap_first}(${property.complexType.className} ${property.propertyName}) {
       this.${property.propertyName} = ${property.propertyName};
    }
    

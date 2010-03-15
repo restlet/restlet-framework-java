@@ -60,6 +60,9 @@ public class EntityType extends ODataType {
     /** The property of the entity that stores the blob reference. */
     private Property blobValueRefProperty;
 
+    /** The list of complex properties. */
+    private List<ComplexProperty> complexProperties;
+
     /** The list of properties that identifies an instance of this type. */
     private List<Property> keys;
 
@@ -116,18 +119,15 @@ public class EntityType extends ODataType {
     }
 
     /**
-     * Returns the set of imported entity types.
+     * Returns the list of complex properties.
      * 
-     * @return The set of imported entity types.
+     * @return The list of complex properties.
      */
-    @Override
-    public Set<ODataType> getImportedTypes() {
-        Set<ODataType> result = super.getImportedTypes();
-
-        for (NavigationProperty property : getAssociations()) {
-            result.add(property.getToRole().getType());
+    public List<ComplexProperty> getComplexProperties() {
+        if (complexProperties == null) {
+            complexProperties = new ArrayList<ComplexProperty>();
         }
-        return result;
+        return complexProperties;
     }
 
     /**
@@ -145,6 +145,27 @@ public class EntityType extends ODataType {
             }
         }
 
+        for (ComplexProperty property : getComplexProperties()) {
+            if (!property.getComplexType().getSchema().equals(getSchema())) {
+                result.add(property.getComplexType().getFullClassName());
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the set of imported entity types.
+     * 
+     * @return The set of imported entity types.
+     */
+    @Override
+    public Set<ODataType> getImportedTypes() {
+        Set<ODataType> result = super.getImportedTypes();
+
+        for (NavigationProperty property : getAssociations()) {
+            result.add(property.getToRole().getType());
+        }
         return result;
     }
 
@@ -210,6 +231,16 @@ public class EntityType extends ODataType {
      */
     public void setBlobValueRefProperty(Property blobValueRefProperty) {
         this.blobValueRefProperty = blobValueRefProperty;
+    }
+
+    /**
+     * Sets the list of complex properties.
+     * 
+     * @param complexProperties
+     *            The list of complex properties.
+     */
+    public void setComplexProperties(List<ComplexProperty> complexProperties) {
+        this.complexProperties = complexProperties;
     }
 
     /**

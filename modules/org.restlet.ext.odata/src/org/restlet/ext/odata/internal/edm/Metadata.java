@@ -172,6 +172,38 @@ public class Metadata extends SaxRepresentation {
     }
 
     /**
+     * Returns the complectType that corresponds to a given entity class.
+     * 
+     * @param entityClass
+     *            The entity class.
+     * @return The ComplexType that corresponds to a given entity class.
+     */
+    public ComplexType getComplexType(Class<?> entityClass) {
+        ComplexType result = null;
+
+        // Try to match the entity class names (without package);
+        String className = entityClass.getName();
+        int index = className.lastIndexOf(".");
+        if (index != -1) {
+            className = className.substring(index + 1);
+        }
+
+        for (Iterator<Schema> iec = getSchemas().iterator(); result == null
+                && iec.hasNext();) {
+            Schema schema = iec.next();
+            for (Iterator<ComplexType> ies = schema.getComplexTypes()
+                    .iterator(); result == null && ies.hasNext();) {
+                ComplexType type = ies.next();
+                if (type.getClassName().equals(className)) {
+                    result = type;
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
      * Returns the String representation of the value of the key of the given
      * entity that should be used in all URIs.
      * 
@@ -289,9 +321,9 @@ public class Metadata extends SaxRepresentation {
     public Property getProperty(Object entity, String propertyName) {
         Property result = null;
         if (entity != null) {
-            EntityType type = getEntityType(entity.getClass());
-            if (type != null) {
-                for (Property property : type.getProperties()) {
+            EntityType et = getEntityType(entity.getClass());
+            if (et != null) {
+                for (Property property : et.getProperties()) {
                     if (property.getName().equals(propertyName)
                             || property.getNormalizedName()
                                     .equals(propertyName)) {
@@ -299,7 +331,20 @@ public class Metadata extends SaxRepresentation {
                         break;
                     }
                 }
+            } else {
+                ComplexType ct = getComplexType(entity.getClass());
+                if (ct != null) {
+                    for (Property property : ct.getProperties()) {
+                        if (property.getName().equals(propertyName)
+                                || property.getNormalizedName().equals(
+                                        propertyName)) {
+                            result = property;
+                            break;
+                        }
+                    }
+                }
             }
+
         }
 
         return result;

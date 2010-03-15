@@ -60,6 +60,7 @@ import org.restlet.ext.atom.Link;
 import org.restlet.ext.atom.Relation;
 import org.restlet.ext.odata.internal.EntryContentHandler;
 import org.restlet.ext.odata.internal.edm.AssociationEnd;
+import org.restlet.ext.odata.internal.edm.ComplexProperty;
 import org.restlet.ext.odata.internal.edm.EntityContainer;
 import org.restlet.ext.odata.internal.edm.EntityType;
 import org.restlet.ext.odata.internal.edm.FunctionImport;
@@ -1061,6 +1062,7 @@ public class Service {
             if (type != null) {
                 final SaxRepresentation r = new SaxRepresentation(
                         MediaType.APPLICATION_XML) {
+
                     @Override
                     public void write(XmlWriter writer) throws IOException {
                         try {
@@ -1076,74 +1078,77 @@ public class Service {
                             writer.startElement(
                                     WCF_DATASERVICES_METADATA_NAMESPACE,
                                     "properties");
-
-                            for (Field field : entity.getClass()
-                                    .getDeclaredFields()) {
-                                String getter = "get"
-                                        + field.getName().substring(0, 1)
-                                                .toUpperCase()
-                                        + field.getName().substring(1);
-                                Property prop = ((Metadata) getMetadata())
-                                        .getProperty(entity, field.getName());
-                                if (prop != null) {
-                                    for (Method method : entity.getClass()
-                                            .getDeclaredMethods()) {
-                                        if (method.getReturnType() != null
-                                                && getter.equals(method
-                                                        .getName())
-                                                && method.getParameterTypes().length == 0) {
-                                            Object value = null;
-                                            try {
-                                                value = method.invoke(entity,
-                                                        (Object[]) null);
-                                            } catch (Exception e) {
-
-                                            }
-                                            if (value != null) {
-                                                writer
-                                                        .startElement(
-                                                                WCF_DATASERVICES_NAMESPACE,
-                                                                prop.getName());
-                                                writer.characters(TypeUtils
-                                                        .toEdm(value, prop
-                                                                .getType()));
-                                                writer
-                                                        .endElement(
-                                                                WCF_DATASERVICES_NAMESPACE,
-                                                                prop.getName());
-                                            } else {
-                                                if (prop.isNullable()) {
-                                                    writer
-                                                            .emptyElement(
-                                                                    WCF_DATASERVICES_NAMESPACE,
-                                                                    prop
-                                                                            .getName(),
-                                                                    prop
-                                                                            .getName(),
-                                                                    nullAttrs);
-                                                } else {
-                                                    getLogger()
-                                                            .warning(
-                                                                    "The following property has a null value but is not marked as nullable: "
-                                                                            + prop
-                                                                                    .getName());
-                                                    writer
-                                                            .emptyElement(
-                                                                    WCF_DATASERVICES_NAMESPACE,
-                                                                    prop
-                                                                            .getName());
-                                                }
-                                            }
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
+                            write(writer, entity, nullAttrs);
                             writer.endElement(
                                     WCF_DATASERVICES_METADATA_NAMESPACE,
                                     "properties");
                         } catch (SAXException e) {
                             throw new IOException(e.getMessage());
+                        }
+                    }
+
+                    private void write(XmlWriter writer, Object entity,
+                            AttributesImpl nullAttrs) throws SAXException {
+                        for (Field field : entity.getClass()
+                                .getDeclaredFields()) {
+                            String getter = "get"
+                                    + field.getName().substring(0, 1)
+                                            .toUpperCase()
+                                    + field.getName().substring(1);
+                            Property prop = ((Metadata) getMetadata())
+                                    .getProperty(entity, field.getName());
+                            if (prop != null) {
+                                writeProperty(writer, entity, prop, getter,
+                                        nullAttrs);
+                            }
+                        }
+                    }
+
+                    private void writeProperty(XmlWriter writer, Object entity,
+                            Property prop, String getter,
+                            AttributesImpl nullAttrs) throws SAXException {
+                        for (Method method : entity.getClass()
+                                .getDeclaredMethods()) {
+                            if (method.getReturnType() != null
+                                    && getter.equals(method.getName())
+                                    && method.getParameterTypes().length == 0) {
+                                Object value = null;
+                                try {
+                                    value = method.invoke(entity,
+                                            (Object[]) null);
+                                } catch (Exception e) {
+
+                                }
+                                if (value != null) {
+                                    writer.startElement(
+                                            WCF_DATASERVICES_NAMESPACE, prop
+                                                    .getName());
+                                    if (prop instanceof ComplexProperty) {
+                                        write(writer, value, nullAttrs);
+                                    } else {
+                                        writer.characters(TypeUtils.toEdm(
+                                                value, prop.getType()));
+                                    }
+                                    writer.endElement(
+                                            WCF_DATASERVICES_NAMESPACE, prop
+                                                    .getName());
+                                } else {
+                                    if (prop.isNullable()) {
+                                        writer.emptyElement(
+                                                WCF_DATASERVICES_NAMESPACE,
+                                                prop.getName(), prop.getName(),
+                                                nullAttrs);
+                                    } else {
+                                        getLogger().warning(
+                                                "The following property has a null value but is not marked as nullable: "
+                                                        + prop.getName());
+                                        writer.emptyElement(
+                                                WCF_DATASERVICES_NAMESPACE,
+                                                prop.getName());
+                                    }
+                                }
+                                break;
+                            }
                         }
                     }
                 };

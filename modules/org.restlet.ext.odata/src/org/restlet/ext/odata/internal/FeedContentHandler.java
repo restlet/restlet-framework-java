@@ -30,6 +30,7 @@
 
 package org.restlet.ext.odata.internal;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -123,6 +124,12 @@ public class FeedContentHandler<T> extends FeedReader {
     /** Must the current property be set to null? */
     private boolean parsePropertyNull;
 
+    /** Used to handle property path. */
+    private List<String> propertyPath;
+
+    /** Used to handle property path. */
+    private int propertyPathDeep = -1;
+
     /** Used to glean text content. */
     StringBuilder sb = null;
 
@@ -198,16 +205,46 @@ public class FeedContentHandler<T> extends FeedReader {
             this.count = Integer.parseInt(sb.toString());
             parseCount = false;
         } else if (parseProperty) {
-            parseProperty = false;
+            parseProperty = propertyPathDeep > 0;
             if (!parsePropertyNull) {
-                Property property = metadata.getProperty(entity, localName);
+                Object obj = entity;
+                if (propertyPath.size() > 1) {
+                    for (int i = 0; i < propertyPath.size() - 1; i++) {
+                        try {
+                            Object o = ReflectUtils.invokeGetter(obj,
+                                    propertyPath.get(i));
+                            if (o == null) {
+                                // Try to instantiate it
+                                Field[] fields = obj.getClass()
+                                        .getDeclaredFields();
+                                for (Field field : fields) {
+                                    if (field.getName().equalsIgnoreCase(
+                                            propertyPath.get(i))) {
+                                        o = field.getType().newInstance();
+                                        break;
+                                    }
+                                }
+                            }
+                            ReflectUtils.invokeSetter(obj, propertyPath.get(i),
+                                    o);
+                            obj = o;
+                        } catch (Exception e) {
+                            obj = null;
+                        }
+                    }
+                }
+                Property property = metadata.getProperty(obj, localName);
                 try {
-                    ReflectUtils.setProperty(entity, property, sb.toString());
+                    ReflectUtils.setProperty(obj, property, sb.toString());
                 } catch (Exception e) {
                     getLogger().warning(
-                            "Cannot set " + localName + " property on "
-                                    + entity + " with value " + sb.toString());
+                            "Cannot set " + localName + " property on " + obj
+                                    + " with value " + sb.toString());
                 }
+            }
+            propertyPathDeep--;
+            if (propertyPath.size() > 0) {
+                propertyPath.remove(propertyPath.size() - 1);
             }
         } else if (parseProperties) {
             if (Service.WCF_DATASERVICES_METADATA_NAMESPACE.equals(uri)
@@ -437,6 +474,8 @@ public class FeedContentHandler<T> extends FeedReader {
         } else if (parseProperties) {
             if (Service.WCF_DATASERVICES_NAMESPACE.equals(uri)) {
                 sb = new StringBuilder();
+                propertyPathDeep++;
+                propertyPath.add(localName);
                 parseProperty = true;
                 parsePropertyNull = Boolean.parseBoolean(attrs.getValue(
                         Service.WCF_DATASERVICES_METADATA_NAMESPACE, "null"));
@@ -445,6 +484,8 @@ public class FeedContentHandler<T> extends FeedReader {
             if (Service.WCF_DATASERVICES_METADATA_NAMESPACE.equals(uri)
                     && "properties".equals(localName)) {
                 parseProperties = true;
+                propertyPathDeep = 0;
+                propertyPath = new ArrayList<String>();
             } else {
                 if (entityType.isBlob()
                         && entityType.getBlobValueRefProperty() != null) {
@@ -476,6 +517,8 @@ public class FeedContentHandler<T> extends FeedReader {
                 // in case of Media Link entries, the properties are directly
                 // inside the entry.
                 parseProperties = true;
+                propertyPathDeep = 0;
+                propertyPath = new ArrayList<String>();
             } else {
                 // Could be mapped value
                 eltPath.add(localName);
@@ -526,11 +569,11 @@ public class FeedContentHandler<T> extends FeedReader {
         // Instantiate the entity
         try {
             entity = entityClass.newInstance();
+            entities.add((T) entity);
         } catch (Exception e) {
             getLogger().warning(
                     "Error when instantiating  class " + entityClass);
         }
-        entities.add((T) entity);
     }
 
     @Override

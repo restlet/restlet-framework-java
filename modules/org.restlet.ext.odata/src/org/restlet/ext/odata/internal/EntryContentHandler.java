@@ -30,6 +30,7 @@
 
 package org.restlet.ext.odata.internal;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -89,11 +90,20 @@ public class EntryContentHandler<T> extends EntryReader {
     /** Are we parsing an entry? */
     private boolean parseEntry;
 
+    /** Are we parsing entity properties? */
+    private boolean parseProperties;
+
     /** Are we parsing an entity property? */
     private boolean parseProperty;
 
     /** Must the current be set to null? */
     private boolean parsePropertyNull;
+
+    /** Used to handle property path. */
+    private List<String> propertyPath;
+
+    /** Used to handle property path. */
+    private int propertyPathDeep = -1;
 
     /** Gleans text content. */
     StringBuilder sb = null;
@@ -134,17 +144,46 @@ public class EntryContentHandler<T> extends EntryReader {
     public void endElement(String uri, String localName, String qName)
             throws SAXException {
         if (parseProperty) {
-            parseProperty = false;
+            parseProperty = propertyPathDeep > 0;
             if (!parsePropertyNull) {
-                Property property = metadata.getProperty(entity, localName);
+                Object obj = entity;
+                if (propertyPath.size() > 1) {
+                    for (int i = 0; i < propertyPath.size() - 1; i++) {
+                        try {
+                            Object o = ReflectUtils.invokeGetter(obj,
+                                    propertyPath.get(i));
+                            if (o == null) {
+                                // Try to instantiate it
+                                Field[] fields = obj.getClass()
+                                        .getDeclaredFields();
+                                for (Field field : fields) {
+                                    if (field.getName().equalsIgnoreCase(
+                                            propertyPath.get(i))) {
+                                        o = field.getType().newInstance();
+                                        break;
+                                    }
+                                }
+                            }
+                            ReflectUtils.invokeSetter(obj, propertyPath.get(i),
+                                    o);
+                            obj = o;
+                        } catch (Exception e) {
+                            obj = null;
+                        }
+                    }
+                }
+                Property property = metadata.getProperty(obj, localName);
                 try {
-                    ReflectUtils.setProperty(entity, property, sb.toString());
+                    ReflectUtils.setProperty(obj, property, sb.toString());
                 } catch (Exception e) {
                     getLogger().warning(
-                            "Cannot set " + localName + " property on "
-                                    + entity + " with value " + sb.toString());
-
+                            "Cannot set " + localName + " property on " + obj
+                                    + " with value " + sb.toString());
                 }
+            }
+            propertyPathDeep--;
+            if (propertyPath.size() > 0) {
+                propertyPath.remove(propertyPath.size() - 1);
             }
         } else if (mapping != null) {
             if (sb != null) {
@@ -160,6 +199,11 @@ public class EntryContentHandler<T> extends EntryReader {
                 }
             }
             mapping = null;
+        } else if (parseProperties) {
+            if (Service.WCF_DATASERVICES_METADATA_NAMESPACE.equals(uri)
+                    && "properties".equals(localName)) {
+                parseProperties = false;
+            }
         }
 
         if (!eltPath.isEmpty()) {
@@ -226,7 +270,7 @@ public class EntryContentHandler<T> extends EntryReader {
                 }
             }
         }
-        
+
         // If the entity is a blob, get the edit reference
         if (entityType.isBlob()
                 && entityType.getBlobValueEditRefProperty() != null) {
@@ -269,69 +313,96 @@ public class EntryContentHandler<T> extends EntryReader {
     @Override
     public void startElement(String uri, String localName, String qName,
             Attributes attrs) throws SAXException {
-        if (parseContent) {
+        if (parseProperties) {
             if (Service.WCF_DATASERVICES_NAMESPACE.equals(uri)) {
                 sb = new StringBuilder();
+                propertyPathDeep++;
+                propertyPath.add(localName);
                 parseProperty = true;
                 parsePropertyNull = Boolean.parseBoolean(attrs.getValue(
                         Service.WCF_DATASERVICES_METADATA_NAMESPACE, "null"));
+            }
+        }
+        if (parseContent) {
+            if (Service.WCF_DATASERVICES_NAMESPACE.equals(uri)) {
+                sb = new StringBuilder();
+                parseProperties = true;
+                propertyPathDeep = 0;
+                propertyPath = new ArrayList<String>();
             } else {
-                if (entityType.isBlob()
-                        && entityType.getBlobValueRefProperty() != null) {
-                    String str = attrs.getValue("src");
-                    if (str != null) {
-                        try {
-                            ReflectUtils.invokeSetter(entity, entityType
-                                    .getBlobValueRefProperty().getName(),
-                                    new Reference(str));
-                        } catch (Exception e) {
-                            getLogger().warning(
-                                    "Cannot set "
-                                            + entityType
-                                                    .getBlobValueRefProperty()
-                                                    .getName()
-                                            + " property on " + entity
-                                            + " with value " + str);
+                if (Service.WCF_DATASERVICES_METADATA_NAMESPACE.equals(uri)
+                        && "properties".equals(localName)) {
+                    propertyPathDeep = 0;
+                    propertyPath = new ArrayList<String>();
+                } else {
+                    if (entityType.isBlob()
+                            && entityType.getBlobValueRefProperty() != null) {
+                        String str = attrs.getValue("src");
+                        if (str != null) {
+                            try {
+                                ReflectUtils.invokeSetter(entity, entityType
+                                        .getBlobValueRefProperty().getName(),
+                                        new Reference(str));
+                            } catch (Exception e) {
+                                getLogger()
+                                        .warning(
+                                                "Cannot set "
+                                                        + entityType
+                                                                .getBlobValueRefProperty()
+                                                                .getName()
+                                                        + " property on "
+                                                        + entity
+                                                        + " with value " + str);
+                            }
                         }
                     }
                 }
             }
         } else if (parseEntry) {
-            // Could be mapped value
-            eltPath.add(localName);
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < eltPath.size(); i++) {
-                if (i > 0) {
-                    sb.append("/");
-                }
-                sb.append(eltPath.get(i));
-            }
-            String str = sb.toString();
-
-            // Check if this path is mapped.
-            for (Mapping m : metadata.getMappings()) {
-                if (entityType != null && entityType.equals(m.getType())
-                        && m.getNsUri() != null && m.getNsUri().equals(uri)
-                        && str.equals(m.getValueNodePath())) {
-                    if (m.isAttributeValue()) {
-                        String value = attrs
-                                .getValue(m.getValueAttributeName());
-                        if (value != null) {
-                            try {
-                                ReflectUtils.invokeSetter(entity, m
-                                        .getPropertyPath(), value);
-                            } catch (Exception e) {
-                                getLogger().warning(
-                                        "Cannot set " + m.getPropertyPath()
-                                                + " property on " + entity
-                                                + " with value " + value);
-                            }
-                        }
-                    } else {
-                        this.sb = new StringBuilder();
-                        mapping = m;
+            if (Service.WCF_DATASERVICES_METADATA_NAMESPACE.equals(uri)
+                    && "properties".equals(localName) && entityType.isBlob()) {
+                // in case of Media Link entries, the properties are directly
+                // inside the entry.
+                parseProperties = true;
+                propertyPathDeep = 0;
+                propertyPath = new ArrayList<String>();
+            } else {
+                // Could be mapped value
+                eltPath.add(localName);
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < eltPath.size(); i++) {
+                    if (i > 0) {
+                        sb.append("/");
                     }
-                    break;
+                    sb.append(eltPath.get(i));
+                }
+                String str = sb.toString();
+
+                // Check if this path is mapped.
+                for (Mapping m : metadata.getMappings()) {
+                    if (entityType != null && entityType.equals(m.getType())
+                            && m.getNsUri() != null && m.getNsUri().equals(uri)
+                            && str.equals(m.getValueNodePath())) {
+                        if (m.isAttributeValue()) {
+                            String value = attrs.getValue(m
+                                    .getValueAttributeName());
+                            if (value != null) {
+                                try {
+                                    ReflectUtils.invokeSetter(entity, m
+                                            .getPropertyPath(), value);
+                                } catch (Exception e) {
+                                    getLogger().warning(
+                                            "Cannot set " + m.getPropertyPath()
+                                                    + " property on " + entity
+                                                    + " with value " + value);
+                                }
+                            }
+                        } else {
+                            this.sb = new StringBuilder();
+                            mapping = m;
+                        }
+                        break;
+                    }
                 }
             }
         }

@@ -276,7 +276,7 @@ public class MetadataReader extends DefaultHandler {
             }
             for (ComplexType complexType : schema.getComplexTypes()) {
                 // complexType.baseType
-                complexType.setBaseType((EntityType) resolve(complexType
+                complexType.setBaseType((ComplexType) resolve(complexType
                         .getBaseType(), registeredComplexTypes, schema));
             }
         }
@@ -312,6 +312,20 @@ public class MetadataReader extends DefaultHandler {
                 functionImport.setEntitySet((EntitySet) resolve(functionImport
                         .getEntitySet(), registeredEntitySets, container
                         .getSchema()));
+            }
+        }
+
+        for (Schema schema : currentMetadata.getSchemas()) {
+            for (EntityType entityType : schema.getEntityTypes()) {
+                // entityType.complexTypes
+                for (ComplexProperty property : entityType
+                        .getComplexProperties()) {
+                    ComplexType type = (ComplexType) resolve(property
+                            .getComplexType(), registeredComplexTypes, schema);
+                    if (type != null) {
+                        property.setComplexType(type);
+                    }
+                }
             }
         }
     }
@@ -519,7 +533,17 @@ public class MetadataReader extends DefaultHandler {
                         new Property(attrs.getValue("Name")));
             }
         } else if ("property".equalsIgnoreCase(localName)) {
-            Property property = new Property(attrs.getValue("Name"));
+            String type = attrs.getValue("Type");
+            Property property;
+            if (type.toLowerCase().startsWith("edm.")) {
+                property = new Property(attrs.getValue("Name"));
+                property.setType(new Type(attrs.getValue("Type")));
+            } else {
+                ComplexProperty p = new ComplexProperty(attrs.getValue("Name"));
+                p.setComplexType(new ComplexType(attrs.getValue("Type")));
+                property = p;
+            }
+
             property.setDefaultValue(attrs.getValue("Default"));
             property.setNullable(Boolean.parseBoolean(attrs
                     .getValue("Nullable")));
@@ -529,7 +553,7 @@ public class MetadataReader extends DefaultHandler {
             } else {
                 property.setConcurrent(false);
             }
-            property.setType(new Type(attrs.getValue("Type")));
+
             property.setGetterAccess(attrs.getValue("GetterAccess"));
             property.setSetterAccess(attrs.getValue("SetterAccess"));
             String str = attrs.getValue(
@@ -540,7 +564,12 @@ public class MetadataReader extends DefaultHandler {
 
             if (getState() == State.ENTITY_TYPE) {
                 pushState(State.ENTITY_TYPE_PROPERTY);
-                this.currentEntityType.getProperties().add(property);
+                if (property instanceof ComplexProperty) {
+                    this.currentEntityType.getComplexProperties().add(
+                            (ComplexProperty) property);
+                } else {
+                    this.currentEntityType.getProperties().add(property);
+                }
             } else {
                 pushState(State.COMPLEX_TYPE_PROPERTY);
                 this.currentComplexType.getProperties().add(property);

@@ -378,11 +378,24 @@ public class Query<T> implements Iterable<T> {
                     String string = rep.getText().substring(0,
                             Math.min(100, rep.getText().length()));
                     if (string.contains("<feed")) {
-                        setFeed(new Feed(rep));
+                        feedContentHandler = new FeedContentHandler<T>(
+                                entityClass, (Metadata) service.getMetadata(),
+                                getLogger());
+                        setFeed(new Feed(rep, feedContentHandler));
+                        this.count = feedContentHandler.getCount();
+                        this.entities = feedContentHandler.getEntities();
                     } else if (string.contains("<entry")) {
-                        Feed f = new Feed();
-                        f.getEntries().add(new Entry(result));
-                        setFeed(f);
+                        entryContentHandler = new EntryContentHandler<T>(
+                                entityClass, (Metadata) service.getMetadata(),
+                                getLogger());
+                        feed = new Feed();
+                        feed.getEntries().add(
+                                new Entry(rep, entryContentHandler));
+                        setFeed(feed);
+                        entities = new ArrayList<T>();
+                        if (entryContentHandler.getEntity() != null) {
+                            entities.add(entryContentHandler.getEntity());
+                        }
                     }
                 default:
                     // Can only guess entity and entity set, a priori.
