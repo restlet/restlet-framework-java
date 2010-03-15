@@ -53,7 +53,7 @@ import ${t.fullClassName};
 public <#if type.abstractType>abstract </#if>class ${className} {
 
 <#list type.properties?sort_by("name") as property>
-    private ${property.type.javaType} ${property.normalizedName}<#if property.defaultValue??> = property.defaultValue</#if>;
+    private ${property.type.javaType} ${property.propertyName}<#if property.defaultValue??> = property.defaultValue</#if>;
 </#list>
 
     /**
@@ -66,24 +66,24 @@ public <#if type.abstractType>abstract </#if>class ${className} {
     
 <#list type.properties?sort_by("name") as property>
    /**
-    * Returns the value of the ${property.normalizedName} attribute.
+    * Returns the value of the "${property.propertyName}" attribute.
     *
-    * @return The value of the ${property.normalizedName} attribute.
+    * @return The value of the "${property.propertyName}" attribute.
     */
    <#if property.getterAccess??>${property.getterAccess}<#else>public</#if> ${property.type.javaType} get${property.normalizedName?cap_first}() {
-      return ${property.normalizedName};
+      return ${property.propertyName};
    }
    
 </#list>
 <#list type.properties?sort_by("name") as property>
    /**
-    * Sets the value of the ${property.normalizedName} attribute.
+    * Sets the value of the "${property.propertyName}" attribute.
     *
-    * @param ${property.normalizedName}
-    *     The value of the ${property.normalizedName} attribute.
+    * @param ${property.propertyName}
+    *     The value of the "${property.normalizedName}" attribute.
     */
-   <#if property.setterAccess??>${property.setterAccess}<#else>public</#if> void set${property.normalizedName?cap_first}(${property.type.javaType} ${property.normalizedName}) {
-      this.${property.normalizedName} = ${property.normalizedName};
+   <#if property.setterAccess??>${property.setterAccess}<#else>public</#if> void set${property.normalizedName?cap_first}(${property.type.javaType} ${property.propertyName}) {
+      this.${property.propertyName} = ${property.propertyName};
    }
    
 </#list>

@@ -34,6 +34,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -328,6 +329,26 @@ public class ReflectUtils {
                 setter.invoke(o, setterParameter);
             }
         }
+    }
+
+    /**
+     * Returns true if the given name is a Java reserved word.
+     * 
+     * @param name
+     *            The name to test.
+     * @return True if the given name is a Java reserved word.
+     */
+    public static boolean isReservedWord(String name) {
+        List<String> reservedWords = Arrays.asList("abstract", "assert",
+                "boolean", "break", "byte", "case", "catch", "char", "class",
+                "const", "continue", "default", "do", "double", "double",
+                "else", "enum", "extends", "final", "finally", "float", "for",
+                "if", "goto", "implements", "import", "instanceof", "int",
+                "interface", "long", "native", "new", "package", "private",
+                "protected", "public", "return", "short", "static", "strictfp",
+                "super", "switch", "switch", "synchronized", "this", "throw",
+                "transient", "try", "void", "volatile", "while");
+        return reservedWords.contains(name);
     }
 
     /**

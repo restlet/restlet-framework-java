@@ -31,6 +31,7 @@
 package org.restlet.ext.odata.internal.edm;
 
 import org.restlet.data.MediaType;
+import org.restlet.ext.odata.internal.reflect.ReflectUtils;
 
 /**
  * Represents a property of an EntityType.
@@ -52,7 +53,7 @@ public class Property extends NamedObject {
 
     /** The media type stored in the content. */
     private MediaType mediaType;
-    
+
     /** True if this property is not mandatory. */
     private boolean nullable;
 
@@ -94,10 +95,25 @@ public class Property extends NamedObject {
 
     /**
      * Returns the media type stored in the content.
+     * 
      * @return The media type stored in the content.
      */
     public MediaType getMediaType() {
         return mediaType;
+    }
+
+    /**
+     * Returns the property name used as a class member.
+     * 
+     * @return The property name used as a class member.
+     */
+    public String getPropertyName() {
+        String result = super.getNormalizedName();
+        if (ReflectUtils.isReservedWord(result)) {
+            result = "_" + result;
+        }
+
+        return result;
     }
 
     /**
@@ -174,7 +190,9 @@ public class Property extends NamedObject {
 
     /**
      * Sets the media type stored in the content.
-     * @param mediaType The media type stored in the content.
+     * 
+     * @param mediaType
+     *            The media type stored in the content.
      */
     public void setMediaType(MediaType mediaType) {
         this.mediaType = mediaType;
