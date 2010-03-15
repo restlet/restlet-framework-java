@@ -1261,7 +1261,8 @@ public abstract class ServerResource extends UniformResource {
     /**
      * Indicates if the response has already been committed.
      * 
-     * @return True if the response has already been committed.
+     * @param committed
+     *            True if the response has already been committed.
      */
     public void setCommitted(boolean committed) {
         getResponse().setCommitted(committed);
