@@ -23,7 +23,7 @@ public class ODataCafeCustoFeedsTestCase extends RestletTestCase {
     private Component component = new Component();
 
     /** OData service used for all tests. */
-    private CafeCustoFeedsService service = new CafeCustoFeedsService();
+    private CafeCustoFeedsService service;
 
     @Override
     protected void setUp() throws Exception {
@@ -38,6 +38,7 @@ public class ODataCafeCustoFeedsTestCase extends RestletTestCase {
                         new org.restlet.test.ext.odata.cafecustofeeds.CafeCustoFeedsApplication());
 
         component.start();
+        service = new CafeCustoFeedsService();
     }
 
     @Override

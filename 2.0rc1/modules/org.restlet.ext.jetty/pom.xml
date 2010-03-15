@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.restlet.dev</groupId>
 		<artifactId>org.restlet.parent</artifactId>
-		<version>2.0-SNAPSHOT</version>
+		<version>2.0-RC1</version>
 	</parent>
 
 	<artifactId>org.restlet.ext.jetty</artifactId>
@@ -16,32 +16,32 @@
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-ajp</artifactId>
-			<version>7.0.0.v20091005</version>
+			<version>7.0.1.v20091125</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-continuation</artifactId>
-			<version>7.0.0.v20091005</version>
+			<version>7.0.1.v20091125</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-http</artifactId>
-			<version>7.0.0.v20091005</version>
+			<version>7.0.1.v20091125</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-io</artifactId>
-			<version>7.0.0.v20091005</version>
+			<version>7.0.1.v20091125</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-server</artifactId>
-			<version>7.0.0.v20091005</version>
+			<version>7.0.1.v20091125</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-util</artifactId>
-			<version>7.0.0.v20091005</version>
+			<version>7.0.1.v20091125</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -51,7 +51,7 @@
 		<dependency>
 			<groupId>org.restlet.dev</groupId>
 			<artifactId>org.restlet</artifactId>
-			<version>2.0-SNAPSHOT</version>
+			<version>2.0-RC1</version>
 			
 		</dependency>
 	</dependencies>

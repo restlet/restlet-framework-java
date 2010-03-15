@@ -5,11 +5,11 @@
 
 	<groupId>org.restlet.dev</groupId>
 	<artifactId>org.restlet.parent</artifactId>
-	<version>2.0-SNAPSHOT</version>
+	<version>2.0-RC1</version>
 	<packaging>pom</packaging>
 
-	<name>Restlet Framework</name>
-	<description>RESTful web framework for Java</description>
+	<name>Restlet project</name>
+	<description>Lightweight REST framework</description>
 	<url>http://www.restlet.org</url>
 	<inceptionYear>2005</inceptionYear>
 
@@ -48,92 +48,94 @@
 
 	<properties>
 		<lib-activation-version>1.1.1</lib-activation-version>
-		<lib-antlr-version>3.0</lib-antlr-version>
+		<lib-antlr-version>3.2</lib-antlr-version>
 		<lib-bloat-version>1.0</lib-bloat-version>
-		<lib-bouncycastle-version>1.34</lib-bouncycastle-version>
-		<lib-cglib-version>2.1_3</lib-cglib-version>
-		<lib-cli-version>1.1</lib-cli-version>
-		<lib-codec-version>1.3</lib-codec-version>
-		<lib-collections-version>3.2</lib-collections-version>
-		<lib-db4o-version>7.10.96</lib-db4o-version>
-		<lib-db4o-instrumentation-version>7.10.96</lib-db4o-instrumentation-version>
-		<lib-db4o-nativequery-version>7.10.96</lib-db4o-nativequery-version>
-		<lib-db4o-optional-version>7.10.96</lib-db4o-optional-version>
-		<lib-db4o-ta-version>7.10.96</lib-db4o-ta-version>
-		<lib-db4o-tools-version>7.10.96</lib-db4o-tools-version>
-		<lib-dbcp-version>1.2.2</lib-dbcp-version>
+		<lib-bouncycastle-version>1.45</lib-bouncycastle-version>
+		<lib-cglib-version>2.2</lib-cglib-version>
+		<lib-cli-version>1.2</lib-cli-version>
+		<lib-codec-version>1.4</lib-codec-version>
+		<lib-collections-version>3.2.1</lib-collections-version>
+		<lib-db4o-version>7.12.132</lib-db4o-version>
+		<lib-db4o-instrumentation-version>7.12.132</lib-db4o-instrumentation-version>
+		<lib-db4o-nativequery-version>7.12.132</lib-db4o-nativequery-version>
+		<lib-db4o-optional-version>7.12.132</lib-db4o-optional-version>
+		<lib-db4o-ta-version>7.12.132</lib-db4o-ta-version>
+		<lib-db4o-tools-version>7.12.132</lib-db4o-tools-version>
+		<lib-dbcp-version>1.3</lib-dbcp-version>
 		<lib-fileupload-version>1.2.1</lib-fileupload-version>
-		<lib-freemarker-version>2.3.15</lib-freemarker-version>
-		<lib-grizzly-version>1.9.18b</lib-grizzly-version>
-		<lib-grizzly-util-version>1.9.18b</lib-grizzly-util-version>
-		<lib-groovy-version>1.6.0</lib-groovy-version>
+		<lib-freemarker-version>2.3.16</lib-freemarker-version>
+		<lib-grizzly-version>1.9.18i</lib-grizzly-version>
+		<lib-grizzly-util-version>1.9.18i</lib-grizzly-util-version>
+		<lib-groovy-version>1.7.1</lib-groovy-version>
 		<lib-guice-version>1.0</lib-guice-version>
-		<lib-gwt-version>2.0.0</lib-gwt-version>
+		<lib-gwt-version>2.0.3</lib-gwt-version>
 		<lib-httpclient-version>4.0.1</lib-httpclient-version>
 		<lib-httpcore-version>4.0.1</lib-httpcore-version>
 		<lib-httpmime-version>4.0.1</lib-httpmime-version>
 		<lib-io-version>1.4</lib-io-version>
-		<lib-jackson-core-version>1.3.1</lib-jackson-core-version>
-		<lib-jackson-mapper-version>1.3.1</lib-jackson-mapper-version>
+		<lib-jackson-core-version>1.4.3</lib-jackson-core-version>
+		<lib-jackson-mapper-version>1.4.3</lib-jackson-mapper-version>
 		<lib-javamail-version>1.4.2</lib-javamail-version>
 		<lib-jaxb-api-version>2.1</lib-jaxb-api-version>
 		<lib-jaxb-ri-version>2.1.12</lib-jaxb-ri-version>
 		<lib-jaxrs-version>1.0</lib-jaxrs-version>
 		<lib-jcip-annotations-version>1.0</lib-jcip-annotations-version>
 		<lib-jdom-version>1.1</lib-jdom-version>
-		<lib-jettison-version>1.1</lib-jettison-version>
-		<lib-jetty-ajp-version>7.0.0.v20091005</lib-jetty-ajp-version>
-		<lib-jetty-continuation-version>7.0.0.v20091005</lib-jetty-continuation-version>
-		<lib-jetty-http-version>7.0.0.v20091005</lib-jetty-http-version>
-		<lib-jetty-io-version>7.0.0.v20091005</lib-jetty-io-version>
-		<lib-jetty-server-version>7.0.0.v20091005</lib-jetty-server-version>
-		<lib-jetty-util-version>7.0.0.v20091005</lib-jetty-util-version>
+		<lib-jettison-version>1.2</lib-jettison-version>
+		<lib-jetty-ajp-version>7.0.1.v20091125</lib-jetty-ajp-version>
+		<lib-jetty-continuation-version>7.0.1.v20091125</lib-jetty-continuation-version>
+		<lib-jetty-http-version>7.0.1.v20091125</lib-jetty-http-version>
+		<lib-jetty-io-version>7.0.1.v20091125</lib-jetty-io-version>
+		<lib-jetty-server-version>7.0.1.v20091125</lib-jetty-server-version>
+		<lib-jetty-util-version>7.0.1.v20091125</lib-jetty-util-version>
 		<lib-jetty4-version>4.2</lib-jetty4-version>
-		<lib-jibx-version>1.2.1</lib-jibx-version>
+		<lib-jibx-version>1.2.2</lib-jibx-version>
 		<lib-jline-version>0.9.94</lib-jline-version>
 		<lib-jpython-version>2.2.1</lib-jpython-version>
 		<lib-jpython-version>2.2.1</lib-jpython-version>
-		<lib-jruby-version>1.2.0</lib-jruby-version>
-		<lib-jruby-version>1.2.0</lib-jruby-version>
+		<lib-jruby-version>1.4.0</lib-jruby-version>
+		<lib-jruby-version>1.4.0</lib-jruby-version>
 		<lib-json-version>2.0</lib-json-version>
 		<lib-jsslutils-version>0.5.1</lib-jsslutils-version>
-		<lib-junit-version>4.4</lib-junit-version>
+		<lib-junit-version>4.8</lib-junit-version>
 		<lib-jxta-version>2.5</lib-jxta-version>
 		<lib-jxta-configuration-version>2.5</lib-jxta-configuration-version>
 		<lib-jxta-network-version>2.5</lib-jxta-network-version>
-		<lib-lang-version>2.3</lib-lang-version>
+		<lib-lang-version>2.5</lib-lang-version>
 		<lib-logging-version>1.1.1</lib-logging-version>
-		<lib-lucene-version>2.4.1</lib-lucene-version>
+		<lib-lucene-version>2.9.2</lib-lucene-version>
 		<lib-mime4j-version>0.6</lib-mime4j-version>
-		<lib-mina-version>1.1.0</lib-mina-version>
-		<lib-mina-ssl-version>1.1.0</lib-mina-ssl-version>
+		<lib-mina-version>1.1.7</lib-mina-version>
+		<lib-mina-ssl-version>1.1.7</lib-mina-ssl-version>
 		<lib-netty-version>3.1.5.GA</lib-netty-version>
 		<lib-oauth-version>20090617</lib-oauth-version>
 		<lib-osgi-version>4.0.0</lib-osgi-version>
-		<lib-pool-version>1.3</lib-pool-version>
+		<lib-pool-version>1.5</lib-pool-version>
 		<lib-quercus-version>3.2.1</lib-quercus-version>
 		<lib-resin-util-version>3.2.1</lib-resin-util-version>
-		<lib-rhino-version>1.7R1</lib-rhino-version>
-		<lib-rhino-version>1.7.0.rc1</lib-rhino-version>
+		<lib-rhino-version>1.7R2</lib-rhino-version>
+		<lib-rhino-version>1.7.0.rc2</lib-rhino-version>
 		<lib-rome-version>1.0</lib-rome-version>
 		<lib-rowset-version>1.0</lib-rowset-version>
 		<lib-com.sun.script-version>1.0</lib-com.sun.script-version>
 		<lib-javax.script-version>1.0</lib-javax.script-version>
 		<lib-servlet-version>2.5</lib-servlet-version>
-		<lib-simple-version>4.1.17</lib-simple-version>
+		<lib-simple-version>4.1.19</lib-simple-version>
 		<lib-slf4j-version>1.5.8</lib-slf4j-version>
-		<lib-solr-version>1.3.0</lib-solr-version>
-		<lib-solr-common-version>1.3.0</lib-solr-common-version>
-		<lib-spring-beans-version>2.5.6</lib-spring-beans-version>
-		<lib-spring-context-version>2.5.6</lib-spring-context-version>
-		<lib-spring-core-version>2.5.6</lib-spring-core-version>
-		<lib-spring-web-version>2.5.6</lib-spring-web-version>
-		<lib-spring-webmvc-version>2.5.6</lib-spring-webmvc-version>
+		<lib-solr-version>1.4.0</lib-solr-version>
+		<lib-solr-common-version>1.4.0</lib-solr-common-version>
+		<lib-spring-asm-version>3.0.1.RELEASE</lib-spring-asm-version>
+		<lib-spring-beans-version>3.0.1.RELEASE</lib-spring-beans-version>
+		<lib-spring-context-version>3.0.1.RELEASE</lib-spring-context-version>
+		<lib-spring-core-version>3.0.1.RELEASE</lib-spring-core-version>
+		<lib-spring-expression-version>3.0.1.RELEASE</lib-spring-expression-version>
+		<lib-spring-web-version>3.0.1.RELEASE</lib-spring-web-version>
+		<lib-spring-webmvc-version>3.0.1.RELEASE</lib-spring-webmvc-version>
 		<lib-spring-modules-db4o-version>0.9</lib-spring-modules-db4o-version>
 		<lib-stax-version>1.0-2</lib-stax-version>
-		<lib-tika-version>0.4</lib-tika-version>
-		<lib-tika-parsers-version>0.4</lib-tika-parsers-version>
-		<lib-velocity-version>1.6.2</lib-velocity-version>
+		<lib-tika-version>0.6</lib-tika-version>
+		<lib-tika-parsers-version>0.6</lib-tika-parsers-version>
+		<lib-velocity-version>1.6.3</lib-velocity-version>
 		<lib-wrapper-version>3.2.3</lib-wrapper-version>
 		<lib-xstream-version>1.3.1</lib-xstream-version>
 	</properties>
