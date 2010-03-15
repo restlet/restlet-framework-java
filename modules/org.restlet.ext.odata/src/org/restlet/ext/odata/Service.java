@@ -146,7 +146,20 @@ public class Service {
      *            The reference to the WCF service.
      */
     public Service(Reference serviceRef) {
-        this.serviceRef = serviceRef;
+        try {
+            ClientResource cr = new ClientResource(serviceRef);
+            cr.setFollowingRedirects(false);
+            cr.get();
+
+            if (cr.getStatus().isRedirection()) {
+                this.serviceRef = cr.getLocationRef();
+            } else {
+                this.serviceRef = cr.getReference();
+            }
+        } catch (Throwable e) {
+            this.serviceRef = serviceRef;
+        }
+
     }
 
     /**
