@@ -90,11 +90,6 @@ public class Response extends Message {
         CURRENT.set(response);
     }
 
-    /** Indicates if the response should be automatically committed. */
-    private volatile boolean autoCommitting;
-
-    private volatile boolean committed;
-
     /**
      * Estimated amount of time since a response was generated or revalidated by
      * the origin server.
@@ -104,11 +99,19 @@ public class Response extends Message {
     /** The set of methods allowed on the requested resource. */
     private volatile Set<Method> allowedMethods;
 
+    /**
+     * The authentication information sent by an origin server to a client in
+     * the case of a successful authentication attempt.
+     */
+    private volatile AuthenticationInfo authenticationInfo;
+
+    /** Indicates if the response should be automatically committed. */
+    private volatile boolean autoCommitting;
+
     /** The authentication requests sent by an origin server to a client. */
     private volatile List<ChallengeRequest> challengeRequests;
 
-    /** The authentication requests sent by a proxy to a client. */
-    private volatile List<ChallengeRequest> proxyChallengeRequests;
+    private volatile boolean committed;
 
     /** The cookie settings provided by the server. */
     private volatile Series<CookieSetting> cookieSettings;
@@ -119,26 +122,23 @@ public class Response extends Message {
     /** The reference used for redirections or creations. */
     private volatile Reference locationRef;
 
+    /** The authentication requests sent by a proxy to a client. */
+    private volatile List<ChallengeRequest> proxyChallengeRequests;
+
     /** The associated request. */
     private volatile Request request;
-
-    /** The server-specific information. */
-    private volatile ServerInfo serverInfo;
-
-    /** The status. */
-    private volatile Status status;
-
-    /**
-     * The authentication information sent by an origin server to a client in
-     * the case of a successful authentication attempt.
-     */
-    private volatile AuthenticationInfo authenticationInfo;
 
     /**
      * Indicates how long the service is expected to be unavailable to the
      * requesting client.
      */
     private volatile Date retryAfter;
+
+    /** The server-specific information. */
+    private volatile ServerInfo serverInfo;
+
+    /** The status. */
+    private volatile Status status;
 
     /**
      * Constructor.
@@ -598,7 +598,8 @@ public class Response extends Message {
     /**
      * Indicates if the response has already been committed.
      * 
-     * @return True if the response has already been committed.
+     * @param committed
+     *            True if the response has already been committed.
      */
     public void setCommitted(boolean committed) {
         this.committed = committed;
