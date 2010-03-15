@@ -580,8 +580,6 @@ public class HeaderReader<V> {
             next = peek();
         }
 
-        // Restore the first non space character found
-        // unread();
         return result;
     }
 
