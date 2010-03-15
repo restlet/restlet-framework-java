@@ -23,7 +23,7 @@ public class ODataCafeTestCase extends RestletTestCase {
     private Component component = new Component();
 
     /** OData service used for all tests. */
-    private CafeService service = new CafeService();
+    private CafeService service;
 
     @Override
     protected void setUp() throws Exception {
@@ -35,6 +35,8 @@ public class ODataCafeTestCase extends RestletTestCase {
                 new org.restlet.test.ext.odata.cafe.CafeApplication());
 
         component.start();
+
+        service = new CafeService();
     }
 
     @Override
@@ -47,6 +49,7 @@ public class ODataCafeTestCase extends RestletTestCase {
      * Tests the parsing of Feed element.
      */
     public void testQueryCafes() {
+
         Query<Cafe> query = service.createCafeQuery("/Cafes");
         Iterator<Cafe> iterator = query.iterator();
 
