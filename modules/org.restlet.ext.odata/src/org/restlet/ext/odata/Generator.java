@@ -108,6 +108,7 @@ public class Generator {
         if (errorMessage == null) {
             System.out.println("step 3 - get the metadata descriptor");
             String dataServiceUri = null;
+
             if (args[0].endsWith("$metadata")) {
                 dataServiceUri = args[0].substring(0, args[0].length() - 10);
             } else if (args[0].endsWith("/")) {

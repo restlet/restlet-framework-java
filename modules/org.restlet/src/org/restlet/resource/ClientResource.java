@@ -787,6 +787,7 @@ public class ClientResource extends UniformResource {
         if (isFollowingRedirects() && response.getStatus().isRedirection()
                 && (response.getLocationRef() != null)) {
             boolean doRedirection = false;
+
             if (request.getMethod().isSafe()) {
                 doRedirection = true;
             } else {
