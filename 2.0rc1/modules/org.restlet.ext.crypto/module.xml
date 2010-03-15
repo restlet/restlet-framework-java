@@ -1,0 +1,14 @@
+<module id="crypto" excludes="gwt" type="standard" package="org.restlet.ext.crypto">
+   <name>Restlet Extension - Crypto</name>
+   <description>
+      Support for cryptography.
+	</description>
+   <distributions>
+      <distribution id="classic" />
+      <distribution id="maven" />
+   </distributions>
+
+   <dependencies>
+      <dependency type="module" id="core" />
+   </dependencies>
+</module>

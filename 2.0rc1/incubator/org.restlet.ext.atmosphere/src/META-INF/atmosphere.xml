@@ -1,0 +1,7 @@
+<atmosphere-handlers>
+	<atmosphere-handler context-root="/"
+		class-name="org.atmosphere.handler.ReflectorServletProcessor">
+		<property name="servletClass"
+			value="org.restlet.ext.servlet.ServerServlet" />
+	</atmosphere-handler>
+</atmosphere-handlers>

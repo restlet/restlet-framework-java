@@ -1,0 +1,16 @@
+<module id="atmosphere" excludes="*" type="integration" package="org.restlet.ext.atmosphere">
+	<name>Restlet Extension - Atmosphere</name>
+	<description>
+		Integration with Atmosphere Comet Portable Runtime (CPR) layer.
+	</description>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+	</distributions>
+
+	<dependencies>
+		<dependency type="module">
+			<id>core</id>
+		</dependency>
+	</dependencies>
+</module>
