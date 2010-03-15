@@ -18,6 +18,6 @@
 		http://lucene.apache.org/tika/download.html
 	</downloadUri>
 	<javadocs>
-		<link href="http://lucene.apache.org/tika/apidocs/" />
+		<link href="http://lucene.apache.org/tika/0.6/api/" />
 	</javadocs>
 </library>

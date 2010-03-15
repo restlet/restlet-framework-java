@@ -16,6 +16,6 @@
 		http://www.apache.org/dyn/closer.cgi/lucene/java/
 	</downloadUri>
 	<javadocs>
-		<link href="http://lucene.apache.org/java/2_9_2/api/" />
+		<link href="http://lucene.apache.org/java/2_9_2/api/core/" />
 	</javadocs>
 </library>
