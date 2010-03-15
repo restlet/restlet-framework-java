@@ -60,7 +60,9 @@ import org.restlet.ext.atom.Link;
 import org.restlet.ext.atom.Relation;
 import org.restlet.ext.odata.internal.EntryContentHandler;
 import org.restlet.ext.odata.internal.edm.AssociationEnd;
+import org.restlet.ext.odata.internal.edm.EntityContainer;
 import org.restlet.ext.odata.internal.edm.EntityType;
+import org.restlet.ext.odata.internal.edm.FunctionImport;
 import org.restlet.ext.odata.internal.edm.Metadata;
 import org.restlet.ext.odata.internal.edm.Property;
 import org.restlet.ext.odata.internal.edm.Type;
@@ -489,6 +491,59 @@ public class Service {
     }
 
     /**
+     * Extracts a String value from the Representation of a property or a
+     * function, or a service operation, when this representation wraps an EDM
+     * simple type.
+     * 
+     * @param representation
+     *            The representation to parse
+     * @param tagName
+     *            The name of the property or function.
+     * @return The String value taken from the representation.
+     * @throws Exception
+     *             Thrown when a parsing error occurs.
+     */
+    private String getSimpleValue(Representation representation, String tagName)
+            throws Exception {
+        String result = null;
+
+        if (representation == null) {
+            return result;
+        }
+
+        if (MediaType.APPLICATION_ALL_XML.isCompatible(representation
+                .getMediaType())
+                || MediaType.TEXT_XML.isCompatible(representation
+                        .getMediaType())) {
+            DomRepresentation xmlRep = new DomRepresentation(representation);
+            // [ifndef android] instruction
+            Node node = xmlRep.getNode("//" + tagName);
+
+            // [ifdef android] uncomment
+            // Node node = null;
+            // try {
+            // org.w3c.dom.NodeList nl = xmlRep.getDocument()
+            // .getElementsByTagName(propertyName);
+            // node = (nl.getLength() > 0) ? nl.item(0) : null;
+            // } catch (IOException e1) {
+            // }
+            // [enddef]
+
+            if (node != null) {
+                // [ifndef android] instruction
+                result = node.getTextContent();
+                // [ifdef android] instruction uncomment
+                // result =
+                // org.restlet.ext.xml.XmlRepresentation.getTextContent(node);
+            }
+        } else {
+            result = representation.getText();
+        }
+
+        return result;
+    }
+
+    /**
      * According to the metadata of the service, returns the path of the given
      * entity relatively to the current WCF service.
      * 
@@ -704,6 +759,87 @@ public class Service {
     }
 
     /**
+     * Invokes a service operation and return the raw representation sent back
+     * by the service.
+     * 
+     * @param service
+     *            The name of the service.
+     * @param parameters
+     *            The list of required parameters.
+     * @return The representation returned by the invocation of the service.
+     * @throws ResourceException
+     *             Thrown when the service call is not successfull.
+     * @see <a
+     *      href="http://msdn.microsoft.com/en-us/library/cc668788.aspx">Service
+     *      Operations</a>
+     */
+    public Representation invokeComplex(String service,
+            Series<Parameter> parameters) throws ResourceException {
+        Representation result = null;
+        Metadata metadata = (Metadata) getMetadata();
+        if (metadata != null && service != null) {
+            // Look for the FunctionImport element.
+            FunctionImport function = null;
+            for (EntityContainer container : metadata.getContainers()) {
+                for (FunctionImport f : container.getFunctionImports()) {
+                    if (service.equals(f.getName())) {
+                        function = f;
+                        break;
+                    }
+                }
+                if (function != null) {
+                    break;
+                }
+            }
+
+            if (function != null) {
+                ClientResource resource = createResource(service);
+                resource.setMethod(function.getMethod());
+                if (parameters != null) {
+                    for (org.restlet.ext.odata.internal.edm.Parameter parameter : function
+                            .getParameters()) {
+                        resource.getReference().addQueryParameter(
+                                parameter.getName(),
+                                Type.getLiteralForm(parameters
+                                        .getFirstValue(parameter.getName()),
+                                        parameter.getType()));
+                    }
+                }
+
+                result = resource.handle();
+
+                if (resource.getStatus().isError()) {
+                    throw new ResourceException(resource.getStatus());
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Invokes a service operation and return the String value sent back by the
+     * service.
+     * 
+     * @param service
+     *            The name of the service.
+     * @param parameters
+     *            The list of required parameters.
+     * @return The value returned by the invocation of the service as a String.
+     * @throws ResourceException
+     *             Thrown when the service call is not successfull.
+     * @throws Exception
+     *             Thrown when the value cannot be parsed.
+     * @see <a
+     *      href="http://msdn.microsoft.com/en-us/library/cc668788.aspx">Service
+     *      Operations</a>
+     */
+    public String invokeSimple(String service, Series<Parameter> parameters)
+            throws ResourceException, Exception {
+        return getSimpleValue(invokeComplex(service, parameters), service);
+    }
+
+    /**
      * Updates the given entity object with the value of the specified property.
      * 
      * @param entity
@@ -749,37 +885,17 @@ public class Service {
             try {
                 Representation rep = resource.get();
 
-                DomRepresentation xmlRep = new DomRepresentation(rep);
-                // [ifndef android] instruction
-                Node node = xmlRep.getNode("//" + propertyName);
-
-                // [ifdef android] uncomment
-                // Node node = null;
-                // try {
-                // org.w3c.dom.NodeList nl = xmlRep.getDocument()
-                // .getElementsByTagName(propertyName);
-                // node = (nl.getLength() > 0) ? nl.item(0) : null;
-                // } catch (IOException e1) {
-                // }
-                // [enddef]
-
-                if (node != null) {
+                try {
+                    String value = getSimpleValue(rep, propertyName);
                     Property property = metadata.getProperty(entity,
                             propertyName);
-                    try {
-                        // [ifndef android] instruction
-                        ReflectUtils.setProperty(entity, property, node
-                                .getTextContent());
-                        // [ifdef android] instruction uncomment
-                        // ReflectUtils.setProperty(entity, property,
-                        // org.restlet.ext.xml.XmlRepresentation.getTextContent(node));
-                    } catch (Exception e) {
-                        getLogger().log(
-                                Level.WARNING,
-                                "Can't set the property " + propertyName
-                                        + " of " + entity.getClass()
-                                        + " for the service" + serviceRef, e);
-                    }
+                    ReflectUtils.setProperty(entity, property, value);
+                } catch (Exception e) {
+                    getLogger().log(
+                            Level.WARNING,
+                            "Can't set the property " + propertyName + " of "
+                                    + entity.getClass() + " for the service"
+                                    + serviceRef, e);
                 }
             } catch (ResourceException e) {
                 getLogger().log(

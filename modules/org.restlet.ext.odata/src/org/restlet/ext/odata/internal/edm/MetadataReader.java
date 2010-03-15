@@ -616,24 +616,26 @@ public class MetadataReader extends DefaultHandler {
             }
 
             pushState(State.FUNCTION_IMPORT);
-        } else if ("function".equalsIgnoreCase(localName)) {
-            Parameter parameter = new Parameter(attrs.getValue("Name"));
-            parameter.setType(attrs.getValue("Type"));
-            parameter.setMode(attrs.getValue("Mode"));
-            String str = attrs.getValue("MaxLength");
-            if (str != null) {
-                parameter.setMaxLength(Integer.parseInt(str));
-            }
-            str = attrs.getValue("Precision");
-            if (str != null) {
-                parameter.setPrecision(Integer.parseInt(str));
-            }
-            str = attrs.getValue("Scale");
-            if (str != null) {
-                parameter.setScale(Integer.parseInt(str));
-            }
+        } else if ("parameter".equalsIgnoreCase(localName)) {
+            if(State.FUNCTION_IMPORT == getState()){
+                Parameter parameter = new Parameter(attrs.getValue("Name"));
+                parameter.setType(attrs.getValue("Type"));
+                parameter.setMode(attrs.getValue("Mode"));
+                String str = attrs.getValue("MaxLength");
+                if (str != null) {
+                    parameter.setMaxLength(Integer.parseInt(str));
+                }
+                str = attrs.getValue("Precision");
+                if (str != null) {
+                    parameter.setPrecision(Integer.parseInt(str));
+                }
+                str = attrs.getValue("Scale");
+                if (str != null) {
+                    parameter.setScale(Integer.parseInt(str));
+                }
 
-            currentFunctionImport.getParameters().add(parameter);
+                currentFunctionImport.getParameters().add(parameter);
+            }
             pushState(State.PARAMETER);
         } else if ("function".equalsIgnoreCase(localName)) {
             pushState(State.FUNCTION);

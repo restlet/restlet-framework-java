@@ -173,6 +173,47 @@ public class Type {
     }
 
     /**
+     * Returns the literal form of the given value.
+     * 
+     * @param value
+     *            The value to convert.
+     * @param adoNetType
+     *            The type of the value.
+     * @return The literal form of the given value.
+     * @see <a
+     *      href="http://www.odata.org/docs/%5BMC-APDSU%5D.htm#z61934eae311a4af4b8f882c112248651">Abstract
+     *      Type System</a>
+     */
+    public static String getLiteralForm(String value, String adoNetType) {
+        if (value == null) {
+            return null;
+        }
+
+        String result = null;
+        try {
+            if (adoNetType.endsWith("Binary")) {
+                result = "'" + value + "'";
+            } else if (adoNetType.endsWith("DateTime")) {
+                result = "datetime'" + value + "'";
+            } else if (adoNetType.endsWith("DateTimeOffset")) {
+                result = "datetimeoffset'" + value + "'";
+            } else if (adoNetType.endsWith("Time")) {
+                result = "time'" + value + "'";
+            } else if (adoNetType.endsWith("Guid")) {
+                result = "guid'" + value + "'";
+            } else if (adoNetType.endsWith("String")) {
+                result = "'" + value + "'";
+            }
+        } catch (Exception e) {
+            Context.getCurrentLogger().warning(
+                    "Cannot convert " + value + " from this EDM type "
+                            + adoNetType);
+        }
+
+        return result;
+    }
+
+    /**
      * Returns the package name related to the given schema.
      * 
      * @param schema
@@ -497,6 +538,10 @@ public class Type {
         this.adoNetType = adoNetType;
     }
 
+    public String getAdoNetType() {
+        return adoNetType;
+    }
+
     public Class<?> getJavaClass() {
         Class<?> result = Object.class;
         if (adoNetType.endsWith("Binary")) {
@@ -565,10 +610,6 @@ public class Type {
         }
 
         return result;
-    }
-
-    public String getAdoNetType() {
-        return adoNetType;
     }
 
     public void setAdoNetType(String adoNetType) {
