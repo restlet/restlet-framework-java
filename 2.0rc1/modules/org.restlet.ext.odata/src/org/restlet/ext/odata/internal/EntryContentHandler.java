@@ -144,7 +144,6 @@ public class EntryContentHandler<T> extends EntryReader {
     public void endElement(String uri, String localName, String qName)
             throws SAXException {
         if (parseProperty) {
-            parseProperty = propertyPathDeep > 0;
             if (!parsePropertyNull) {
                 Object obj = entity;
                 if (propertyPath.size() > 1) {
@@ -182,6 +181,7 @@ public class EntryContentHandler<T> extends EntryReader {
                 }
             }
             propertyPathDeep--;
+            parseProperty = propertyPathDeep > 0;
             if (propertyPath.size() > 0) {
                 propertyPath.remove(propertyPath.size() - 1);
             }
@@ -332,6 +332,7 @@ public class EntryContentHandler<T> extends EntryReader {
             } else {
                 if (Service.WCF_DATASERVICES_METADATA_NAMESPACE.equals(uri)
                         && "properties".equals(localName)) {
+                    parseProperties = true;
                     propertyPathDeep = 0;
                     propertyPath = new ArrayList<String>();
                 } else {

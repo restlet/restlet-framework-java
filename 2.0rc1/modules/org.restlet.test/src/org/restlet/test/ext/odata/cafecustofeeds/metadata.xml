@@ -16,7 +16,7 @@
 				<Property Name="Name" Type="Edm.String" Nullable="true" />
 				<Property Name="ZipCode" Type="Edm.Int32" Nullable="false" />
 				<Property Name="City" Type="Edm.String" Nullable="true" />
-				<Property Name="CompanyName" Type="String" Nullable="false"
+				<Property Name="CompanyName" Type="Edm.String" Nullable="false"
 					MaxLength="40" Unicode="true" FixedLength="false" m:FC_TargetPath="Company/Name"
 					m:FC_NsPrefix="cafe" m:FC_NsUri="http://schemas.examples.microsoft.com/dataservices"
 					m:FC_KeepInContent="false" />
@@ -41,7 +41,7 @@
 				<Property Name="ID" Type="Edm.String" Nullable="false" />
 				<Property Name="Name" Type="Edm.String" MaxLength="30"
 					Unicode="true" FixedLength="false" />
-				<Property Name="Title" Type="String" MaxLength="30"
+				<Property Name="Title" Type="Edm.String" MaxLength="30"
 					Unicode="true" FixedLength="false" m:FC_TargetPath="contact/@title"
 					m:FC_NsPrefix="cafe" m:FC_NsUri="http://schemas.examples.microsoft.com/dataservices"
 					m:FC_KeepInContent="false" />
