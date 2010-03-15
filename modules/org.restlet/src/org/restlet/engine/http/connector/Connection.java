@@ -117,7 +117,6 @@ public abstract class Connection<T extends Connector> {
     /** The queue of outbound messages. */
     private final Queue<Response> outboundMessages;
 
-    private final String plonk;
     /**
      * Constructor.
      * 
@@ -131,7 +130,6 @@ public abstract class Connection<T extends Connector> {
      */
     public Connection(BaseHelper<T> helper, Socket socket,
             SocketChannel socketChannel) throws IOException {
-        plonk = " " + this;
         this.helper = helper;
         this.inboundMessages = new ConcurrentLinkedQueue<Response>();
         this.outboundMessages = new ConcurrentLinkedQueue<Response>();
@@ -310,7 +308,12 @@ public abstract class Connection<T extends Connector> {
         }
 
         if (headers != null) {
-            result = HeaderUtils.copyResponseEntityHeaders(headers, result);
+            try {
+                result = HeaderUtils.copyResponseEntityHeaders(headers, result);
+            } catch (Throwable t) {
+                getLogger().log(Level.WARNING,
+                        "Error while parsing entity headers", t);
+            }
         }
 
         return result;

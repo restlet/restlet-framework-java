@@ -216,7 +216,12 @@ public class ClientConnection extends Connection<Client> {
         response.getServerInfo().setPort(getSocket().getPort());
         response.setEntity(createInboundEntity(headers));
 
-        HeaderUtils.copyResponseTransportHeaders(headers, response);
+        try {
+            HeaderUtils.copyResponseTransportHeaders(headers, response);
+        } catch (Throwable t) {
+            getLogger()
+                    .log(Level.WARNING, "Error while parsing the headers", t);
+        }
 
         // Put the headers in the response's attributes map
         if (headers != null) {
