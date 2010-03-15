@@ -53,6 +53,23 @@ public abstract class HeaderWriter<V> extends StringWriter {
         return this;
     }
 
+    /**
+     * Appends an array of characters.
+     * 
+     * @param cs
+     *            The array of characters.
+     * @return This writer.
+     */
+    public HeaderWriter<V> append(char[] cs) {
+        if (cs != null) {
+            for (char c : cs) {
+                append(c);
+            }
+        }
+
+        return this;
+    }
+
     @Override
     public HeaderWriter<V> append(CharSequence csq) {
         super.append(csq);

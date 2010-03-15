@@ -89,6 +89,9 @@ Changes log
           Windows file locking issues.
         - Moved up the documentation on Resolver data model for Restlet
           calls at the top of Javadocs. Suggested by Tal Liron.
+        - SSL session IDs are now provided as an attribute of requests.
+          The attribute name is "org.restlet.https.sslSessionId".
+          Suggested by Stefan Meissner and contributed by Bruno Harbulot.
     - Bugs fixed
         - Fixed compilation issue in the ClientResource class for the
           GWT edition. Reported by Laszlo Megyer. 

@@ -270,6 +270,13 @@ public class ServerAdapter extends Adapter {
                 result.getAttributes().put(
                         HeaderConstants.ATTRIBUTE_HTTPS_KEY_SIZE, keySize);
             }
+
+            final String sslSessionId = httpCall.getSslSessionId();
+            if (sslSessionId != null) {
+                result.getAttributes().put(
+                        HeaderConstants.ATTRIBUTE_HTTPS_SSL_SESSION_ID,
+                        sslSessionId);
+            }
         }
 
         return result;

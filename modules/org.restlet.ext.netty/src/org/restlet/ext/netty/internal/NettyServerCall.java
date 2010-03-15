@@ -254,6 +254,20 @@ public class NettyServerCall extends ServerCall {
         return null;
     }
 
+    @Override
+    protected byte[] getSslSessionIdBytes() {
+        final SSLEngine sslEngine = getSslEngine();
+
+        if (sslEngine != null) {
+            final SSLSession sslSession = sslEngine.getSession();
+            if (sslSession != null) {
+                return sslSession.getId();
+            }
+        }
+
+        return null;
+    }
+
     /**
      * Returns the SSL engine.
      * 

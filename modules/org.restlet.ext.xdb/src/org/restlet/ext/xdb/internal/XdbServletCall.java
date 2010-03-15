@@ -278,6 +278,26 @@ public class XdbServletCall extends ServerCall {
         }
         return keySize;
     }
+    
+    @Override
+    public String getSslSessionId() {
+        Object sessionId = getRequest().getAttribute("javax.servlet.request.ssl_session_id");
+
+        if ((sessionId != null) && (sessionId instanceof String)) {
+            return (String)sessionId;
+        }
+
+        /*
+         * The following is for the non-standard, pre-Servlet 3 spec used by Tomcat/Coyote.
+         */
+        sessionId = getRequest().getAttribute("javax.servlet.request.ssl_session");
+
+        if (sessionId instanceof String) {
+            return (String)sessionId;
+        }
+
+        return null;
+    }
 
     @Override
     public String getVersion() {

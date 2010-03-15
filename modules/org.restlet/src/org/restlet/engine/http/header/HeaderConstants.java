@@ -199,4 +199,6 @@ public final class HeaderConstants {
     public static final String ATTRIBUTE_HTTPS_CIPHER_SUITE = "org.restlet.https.cipherSuite";
 
     public static final String ATTRIBUTE_HTTPS_KEY_SIZE = "org.restlet.https.keySize";
+    
+    public static final String ATTRIBUTE_HTTPS_SSL_SESSION_ID = "org.restlet.https.sslSessionId";
 }

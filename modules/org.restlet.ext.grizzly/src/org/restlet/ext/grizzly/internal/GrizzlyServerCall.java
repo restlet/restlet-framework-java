@@ -237,6 +237,22 @@ public class GrizzlyServerCall extends ServerCall {
         return null;
     }
 
+    @Override
+    protected byte[] getSslSessionIdBytes() {
+        Socket socket = getSocket();
+
+        if (socket instanceof SSLSocket) {
+            SSLSocket sslSocket = (SSLSocket) socket;
+            SSLSession sslSession = sslSocket.getSession();
+
+            if (sslSession != null) {
+                return sslSession.getId();
+            }
+        }
+
+        return null;
+    }
+
     /**
      * Return the underlying socket channel.
      * 

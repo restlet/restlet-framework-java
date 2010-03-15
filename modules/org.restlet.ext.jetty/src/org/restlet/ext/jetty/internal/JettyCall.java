@@ -271,6 +271,18 @@ public class JettyCall extends ServerCall {
         return keySize;
     }
 
+    @Override
+    public String getSslSessionId() {
+        Object sessionId = getConnection().getRequest().getAttribute(
+                "javax.servlet.request.ssl_session_id");
+
+        if (sessionId instanceof String) {
+            return (String) sessionId;
+        }
+
+        return null;
+    }
+
     /**
      * Indicates if the request was made using a confidential mean.<br>
      * 

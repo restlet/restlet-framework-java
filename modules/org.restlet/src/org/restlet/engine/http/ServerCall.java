@@ -275,6 +275,34 @@ public abstract class ServerCall extends Call {
         return keySize;
     }
 
+    /**
+     * Returns the SSL session ID, in hexadecimal encoding, if available and
+     * accessible.
+     * 
+     * @return The SSL session ID, in hexadecimal encoding, if available and
+     *         accessible.
+     */
+    public String getSslSessionId() {
+        byte[] byteArray = getSslSessionIdBytes();
+
+        if (byteArray != null) {
+            return SslUtils.toHexString(byteArray);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Returns the SSL session ID, as a byte array, if available and accessible
+     * in that format (to be used by getSslSessionId).
+     * 
+     * @return The SSL session ID, as a byte array, if available and accessible
+     *         in that format.
+     */
+    protected byte[] getSslSessionIdBytes() {
+        return null;
+    }
+
     @Override
     protected boolean isClientKeepAlive() {
         return !HeaderUtils.isConnectionClose(getRequestHeaders());
