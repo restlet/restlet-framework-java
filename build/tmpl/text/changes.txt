@@ -4,6 +4,8 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+
+- 2.0 Release Candidate 1 (2010-03-15)
     - API changes
         - Added a Router#getMatchingMode(Restlet) method which returns
           the default matching mode for the Router, except for target 
