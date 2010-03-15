@@ -65,7 +65,7 @@ import org.restlet.ext.odata.internal.edm.EntityType;
 import org.restlet.ext.odata.internal.edm.FunctionImport;
 import org.restlet.ext.odata.internal.edm.Metadata;
 import org.restlet.ext.odata.internal.edm.Property;
-import org.restlet.ext.odata.internal.edm.Type;
+import org.restlet.ext.odata.internal.edm.TypeUtils;
 import org.restlet.ext.odata.internal.reflect.ReflectUtils;
 import org.restlet.ext.xml.DomRepresentation;
 import org.restlet.ext.xml.SaxRepresentation;
@@ -812,7 +812,7 @@ public class Service {
                             .getParameters()) {
                         resource.getReference().addQueryParameter(
                                 parameter.getName(),
-                                Type.getLiteralForm(parameters
+                                TypeUtils.getLiteralForm(parameters
                                         .getFirstValue(parameter.getName()),
                                         parameter.getType()));
                     }
@@ -878,7 +878,7 @@ public class Service {
                 Class<?> propertyClass = ReflectUtils.getSimpleClass(entity,
                         propertyName);
                 if (propertyClass == null) {
-                    propertyClass = Type.getJavaClass(propertyEntityType);
+                    propertyClass = TypeUtils.getJavaClass(propertyEntityType);
                 }
                 Iterator<?> iterator = createQuery(
                         getSubpath(entity, propertyName), propertyClass)
@@ -1104,8 +1104,9 @@ public class Service {
                                                         .startElement(
                                                                 WCF_DATASERVICES_NAMESPACE,
                                                                 prop.getName());
-                                                writer.characters(Type.toEdm(
-                                                        value, prop.getType()));
+                                                writer.characters(TypeUtils
+                                                        .toEdm(value, prop
+                                                                .getType()));
                                                 writer
                                                         .endElement(
                                                                 WCF_DATASERVICES_NAMESPACE,

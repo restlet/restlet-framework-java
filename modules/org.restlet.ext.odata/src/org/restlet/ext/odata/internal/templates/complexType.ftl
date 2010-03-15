@@ -53,7 +53,7 @@ import ${t.fullClassName};
 public <#if type.abstractType>abstract </#if>class ${className} {
 
 <#list type.properties?sort_by("name") as property>
-    private ${property.type.javaType} ${property.propertyName}<#if property.defaultValue??> = property.defaultValue</#if>;
+    private ${property.type.className} ${property.propertyName}<#if property.defaultValue??> = property.defaultValue</#if>;
 </#list>
 
     /**
@@ -70,7 +70,7 @@ public <#if type.abstractType>abstract </#if>class ${className} {
     *
     * @return The value of the "${property.propertyName}" attribute.
     */
-   <#if property.getterAccess??>${property.getterAccess}<#else>public</#if> ${property.type.javaType} get${property.normalizedName?cap_first}() {
+   <#if property.getterAccess??>${property.getterAccess}<#else>public</#if> ${property.type.className} get${property.normalizedName?cap_first}() {
       return ${property.propertyName};
    }
    
@@ -82,7 +82,7 @@ public <#if type.abstractType>abstract </#if>class ${className} {
     * @param ${property.propertyName}
     *     The value of the "${property.normalizedName}" attribute.
     */
-   <#if property.setterAccess??>${property.setterAccess}<#else>public</#if> void set${property.normalizedName?cap_first}(${property.type.javaType} ${property.propertyName}) {
+   <#if property.setterAccess??>${property.setterAccess}<#else>public</#if> void set${property.normalizedName?cap_first}(${property.type.className} ${property.propertyName}) {
       this.${property.propertyName} = ${property.propertyName};
    }
    

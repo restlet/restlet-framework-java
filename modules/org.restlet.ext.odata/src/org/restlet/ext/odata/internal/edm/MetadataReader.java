@@ -90,14 +90,14 @@ public class MetadataReader extends DefaultHandler {
     /** The registered collection of associations. */
     private Map<String, NamedObject> registeredAssociations;
 
+    /** The registered collection of complex types. */
+    private Map<String, NamedObject> registeredComplexTypes;
+
     /** The registered collection of entity containers. */
     private Map<String, EntityContainer> registeredContainers;
 
     /** The registered collection of entity sets. */
     private Map<String, NamedObject> registeredEntitySets;
-
-    /** The registered collection of complex types. */
-    private Map<String, NamedObject> registeredComplexTypes;
 
     /** The registered collection of entity types. */
     private Map<String, NamedObject> registeredEntityTypes;
@@ -603,6 +603,7 @@ public class MetadataReader extends DefaultHandler {
                     .getValue("EntitySet")));
             currentFunctionImport.setMethodAccess(attrs
                     .getValue("MethodAccess"));
+            currentFunctionImport.setMetadata(currentMetadata);
 
             String str = attrs.getValue(
                     Service.WCF_DATASERVICES_METADATA_NAMESPACE, "HttpMethod");
@@ -617,7 +618,7 @@ public class MetadataReader extends DefaultHandler {
 
             pushState(State.FUNCTION_IMPORT);
         } else if ("parameter".equalsIgnoreCase(localName)) {
-            if(State.FUNCTION_IMPORT == getState()){
+            if (State.FUNCTION_IMPORT == getState()) {
                 Parameter parameter = new Parameter(attrs.getValue("Name"));
                 parameter.setType(attrs.getValue("Type"));
                 parameter.setMode(attrs.getValue("Mode"));

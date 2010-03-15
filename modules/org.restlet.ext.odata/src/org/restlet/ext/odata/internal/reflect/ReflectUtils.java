@@ -47,7 +47,7 @@ import org.restlet.ext.atom.Category;
 import org.restlet.ext.atom.Entry;
 import org.restlet.ext.atom.Feed;
 import org.restlet.ext.odata.internal.edm.Property;
-import org.restlet.ext.odata.internal.edm.Type;
+import org.restlet.ext.odata.internal.edm.TypeUtils;
 
 /**
  * Handles Java reflection operations.
@@ -87,8 +87,8 @@ public class ReflectUtils {
                         && !entry.getCategories().isEmpty()) {
                     Category category = entry.getCategories().get(0);
                     try {
-                        result = Class.forName(Type.getFullClassName(category
-                                .getTerm()));
+                        result = Class.forName(TypeUtils
+                                .getFullClassName(category.getTerm()));
                         break;
                     } catch (ClassNotFoundException e) {
                         continue;
@@ -421,8 +421,8 @@ public class ReflectUtils {
      */
     public static void setProperty(Object entity, Property property,
             String propertyValue) throws Exception {
-        invokeSetter(entity, property.getNormalizedName(), Type.fromEdm(
-                propertyValue, property.getType().getAdoNetType()));
+        invokeSetter(entity, property.getNormalizedName(), TypeUtils.fromEdm(
+                propertyValue, property.getType().getName()));
     }
 
     /**

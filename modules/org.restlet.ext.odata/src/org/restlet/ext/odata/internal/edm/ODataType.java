@@ -109,7 +109,7 @@ public class ODataType extends NamedObject implements Comparable<ODataType> {
      * @return The package name related to this entity type.
      */
     public String getFullClassName() {
-        return Type.getPackageName(getSchema()) + "." + getClassName();
+        return getPackageName() + "." + getClassName();
     }
 
     /**
@@ -121,19 +121,15 @@ public class ODataType extends NamedObject implements Comparable<ODataType> {
         Set<String> result = new TreeSet<String>();
 
         for (Property property : getProperties()) {
-            if (property.getType().getAdoNetType().endsWith("DateTime")) {
-                result.add(property.getType().getJavaClass().getName());
-            } else if (property.getType().getAdoNetType().endsWith(
-                    "DateTimeOffset")) {
-                result.add(property.getType().getJavaClass().getName());
-            }
+            result.addAll(property.getType().getImportedJavaClasses());
         }
 
         return result;
     }
 
     /**
-     * Returns the set of imported entity types.
+     * Returns the set of imported entity types. By default, returns an empty
+     * set.
      * 
      * @return The set of imported entity types.
      */
@@ -147,7 +143,7 @@ public class ODataType extends NamedObject implements Comparable<ODataType> {
      * @return The package name related to this entity type.
      */
     public String getPackageName() {
-        return Type.getPackageName(getSchema());
+        return TypeUtils.getPackageName(getSchema());
     }
 
     /**

@@ -54,7 +54,7 @@ import ${t.fullClassName};
 public <#if type.abstractType>abstract </#if>class ${className} {
 
 <#list type.properties?sort_by("name") as property>
-    private ${property.type.javaType} ${property.propertyName}<#if property.defaultValue??> = property.defaultValue</#if>;
+    private ${property.type.className} ${property.propertyName}<#if property.defaultValue??> = property.defaultValue</#if>;
 </#list>
 <#list type.associations?sort_by("name") as association>
     private <#if association.toRole.toMany>List<${association.toRole.type.className}><#else>${association.toRole.type.className}</#if> ${association.normalizedName};
@@ -80,7 +80,7 @@ public <#if type.abstractType>abstract </#if>class ${className} {
      * @param id
      *            The identifiant value of the entity.
      */
-    public ${className}(<#if type.keys??><#list type.keys as key>${key.type.javaType} ${key.normalizedName}<#if key_has_next>, </#if></#list></#if>) {
+    public ${className}(<#if type.keys??><#list type.keys as key>${key.type.className} ${key.normalizedName}<#if key_has_next>, </#if></#list></#if>) {
         this();
 <#if type.keys??><#list type.keys as key>
         this.${key.normalizedName} = ${key.normalizedName};
@@ -93,7 +93,7 @@ public <#if type.abstractType>abstract </#if>class ${className} {
     *
     * @return The value of the "${property.propertyName}" attribute.
     */
-   <#if property.getterAccess??>${property.getterAccess}<#else>public</#if> ${property.type.javaType} get${property.normalizedName?cap_first}() {
+   <#if property.getterAccess??>${property.getterAccess}<#else>public</#if> ${property.type.className} get${property.normalizedName?cap_first}() {
       return ${property.propertyName};
    }
    
@@ -142,7 +142,7 @@ public <#if type.abstractType>abstract </#if>class ${className} {
     * @param ${property.propertyName}
     *     The value of the "${property.normalizedName}" attribute.
     */
-   <#if property.setterAccess??>${property.setterAccess}<#else>public</#if> void set${property.normalizedName?cap_first}(${property.type.javaType} ${property.propertyName}) {
+   <#if property.setterAccess??>${property.setterAccess}<#else>public</#if> void set${property.normalizedName?cap_first}(${property.type.className} ${property.propertyName}) {
       this.${property.propertyName} = ${property.propertyName};
    }
    

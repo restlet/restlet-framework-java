@@ -44,7 +44,7 @@ import org.restlet.ext.odata.internal.edm.EntityContainer;
 import org.restlet.ext.odata.internal.edm.EntityType;
 import org.restlet.ext.odata.internal.edm.Metadata;
 import org.restlet.ext.odata.internal.edm.Schema;
-import org.restlet.ext.odata.internal.edm.Type;
+import org.restlet.ext.odata.internal.edm.TypeUtils;
 import org.restlet.ext.odata.internal.reflect.ReflectUtils;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
@@ -231,7 +231,7 @@ public class Generator {
                     .isEmpty())
                     || (schema.getComplexTypes() != null && !schema
                             .getComplexTypes().isEmpty())) {
-                String packageName = Type.getPackageName(schema);
+                String packageName = TypeUtils.getPackageName(schema);
                 File packageDir = new File(outputDir, packageName.replace(".",
                         System.getProperty("file.separator")));
                 packageDir.mkdirs();

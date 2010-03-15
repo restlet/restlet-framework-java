@@ -48,6 +48,9 @@ public class FunctionImport extends NamedObject {
     /** The entity set returned by this function, if applicable. */
     private EntitySet entitySet;
 
+    /** The metadata. */
+    private Metadata metadata;
+
     /** The method used to invoke this function. */
     private Method method;
 
@@ -62,9 +65,6 @@ public class FunctionImport extends NamedObject {
 
     /** The return type of this function. */
     private String returnType;
-
-    /** The schema. */
-    private Schema schema;
 
     /**
      * Constructor.
@@ -83,6 +83,15 @@ public class FunctionImport extends NamedObject {
      */
     public EntitySet getEntitySet() {
         return entitySet;
+    }
+
+    /**
+     * Returns the metadata.
+     * 
+     * @return The metadata.
+     */
+    public Metadata getMetadata() {
+        return metadata;
     }
 
     /**
@@ -127,12 +136,101 @@ public class FunctionImport extends NamedObject {
     }
 
     /**
-     * Returns the schema.
+     * Returns the return type as complex type, or null if it is not.
      * 
-     * @return The schema.
+     * @return The return type as complex type, or null if it is not.
      */
-    public Schema getSchema() {
-        return schema;
+    public ComplexType getReturnTypeAsComplexType() {
+        ComplexType result = null;
+        String rt = getSimpleReturnType();
+        if (getReturnType() != null && metadata != null) {
+            for (Schema schema : metadata.getSchemas()) {
+                for (ComplexType complexType : schema.getComplexTypes()) {
+                    if (rt.equalsIgnoreCase(complexType.getName())) {
+                        result = complexType;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Returns the return type as complex type, or null if it is not.
+     * 
+     * @return The return type as complex type, or null if it is not.
+     */
+    public EntityType getReturnTypeAsEntityType() {
+        EntityType result = null;
+        String rt = getSimpleReturnType();
+        if (getReturnType() != null && metadata != null) {
+            for (Schema schema : metadata.getSchemas()) {
+                for (EntityType entityType : schema.getEntityTypes()) {
+                    if (rt.equalsIgnoreCase(entityType.getName())) {
+                        result = entityType;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Returns the name of the return type, or if it's a collection, returns its
+     * element's type.
+     * 
+     * @return The name of the return type, or if it's a collection, returns its
+     *         element's type.
+     */
+    public String getSimpleReturnType() {
+        return returnType;
+    }
+
+    /**
+     * Returns true if the result of the invocation of the service is a
+     * collection.
+     * 
+     * @return True if the result of the invocation of the service is a
+     *         collection.
+     */
+    public boolean isReturningCollection() {
+        return getReturnType() != null
+                && getReturnType().toLowerCase().startsWith("collection(");
+    }
+
+    /**
+     * Returns true if the result of the invocation of the service is a complex
+     * type.
+     * 
+     * @return True if the result of the invocation of the service is a complex
+     *         type.
+     */
+    public boolean isReturningComplexType() {
+        return getReturnTypeAsComplexType() != null;
+    }
+
+    /**
+     * Returns true if the result of the invocation of the service is an EDM
+     * simple type.
+     * 
+     * @return True if the result of the invocation of the service is an EDM
+     *         simple type.
+     */
+    public boolean isReturningEdmSimpleType() {
+        return getReturnType() != null
+                && getReturnType().toLowerCase().startsWith("edm.");
+    }
+
+    /**
+     * Returns true if the result of the invocation of the service is an entity
+     * type.
+     * 
+     * @return True if the result of the invocation of the service is an entity
+     *         type.
+     */
+    public boolean isReturningEntityType() {
+        return getReturnType() != null
+                && getReturnType().toLowerCase().startsWith("edm.");
     }
 
     /**
@@ -143,6 +241,16 @@ public class FunctionImport extends NamedObject {
      */
     public void setEntitySet(EntitySet entitySet) {
         this.entitySet = entitySet;
+    }
+
+    /**
+     * Sets the metadata.
+     * 
+     * @param metadata
+     *            The metadata.
+     */
+    public void setMetadata(Metadata metadata) {
+        this.metadata = metadata;
     }
 
     /**
@@ -185,16 +293,6 @@ public class FunctionImport extends NamedObject {
      */
     public void setReturnType(String returnType) {
         this.returnType = returnType;
-    }
-
-    /**
-     * Sets the schema.
-     * 
-     * @param schema
-     *            The schema.
-     */
-    public void setSchema(Schema schema) {
-        this.schema = schema;
     }
 
 }
