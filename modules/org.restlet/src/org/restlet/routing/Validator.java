@@ -217,8 +217,6 @@ public class Validator extends Filter {
      * 
      * @param attribute
      *            Name of the attribute to look for.
-     * @param required
-     *            Indicates if the attribute presence is required.
      */
     public void validatePresence(String attribute) {
         getValidations().add(new ValidateInfo(attribute, true, null));

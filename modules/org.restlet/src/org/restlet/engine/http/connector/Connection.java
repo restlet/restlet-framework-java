@@ -117,6 +117,7 @@ public abstract class Connection<T extends Connector> {
     /** The queue of outbound messages. */
     private final Queue<Response> outboundMessages;
 
+    private final String plonk;
     /**
      * Constructor.
      * 
@@ -130,6 +131,7 @@ public abstract class Connection<T extends Connector> {
      */
     public Connection(BaseHelper<T> helper, Socket socket,
             SocketChannel socketChannel) throws IOException {
+        plonk = " " + this;
         this.helper = helper;
         this.inboundMessages = new ConcurrentLinkedQueue<Response>();
         this.outboundMessages = new ConcurrentLinkedQueue<Response>();
@@ -671,6 +673,7 @@ public abstract class Connection<T extends Connector> {
                             Level.FINE,
                             "Error while reading an HTTP message. Closing the connection.",
                             e);
+            // TODO quand une exception
             close(false);
         }
 

@@ -110,6 +110,15 @@ public abstract class ServerResource extends UniformResource {
     }
 
     /**
+     * Asks the response to immediately commit making it ready to be sent back
+     * to the client. Note that all server connectors don't necessarily support
+     * this feature.
+     */
+    public void commit() {
+        getResponse().commit();
+    }
+
+    /**
      * Deletes the resource and all its representations. This method is only
      * invoked if content negotiation has been disabled as indicated by the
      * {@link #isNegotiated()}, otherwise the {@link #delete(Variant)} method is

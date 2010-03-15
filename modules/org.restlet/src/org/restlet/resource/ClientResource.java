@@ -1399,7 +1399,7 @@ public class ClientResource extends UniformResource {
      * Sets the callback invoked on response reception. If the value is not
      * null, then the associated request will be executed asynchronously.
      * 
-     * @param onReceivedCallback
+     * @param onResponseCallback
      *            The callback invoked on response reception.
      */
     public void setOnResponse(Uniform onResponseCallback) {

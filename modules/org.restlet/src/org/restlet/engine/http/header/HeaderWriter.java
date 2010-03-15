@@ -165,8 +165,6 @@ public abstract class HeaderWriter<V> extends StringWriter {
      * 
      * @param extension
      *            The parameter to format as an extension.
-     * @param destination
-     *            The appendable destination.
      * @return This writer.
      */
     public HeaderWriter<V> appendExtension(Parameter extension) {
@@ -182,7 +180,7 @@ public abstract class HeaderWriter<V> extends StringWriter {
      * 
      * @param name
      *            The extension name.
-     * @param destination
+     * @param value
      *            The extension value.
      * @return This writer.
      */

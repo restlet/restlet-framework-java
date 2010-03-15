@@ -245,7 +245,7 @@ public class Router extends Restlet {
     /**
      * Attaches a target Restlet to this router with an empty URI pattern. A new
      * route using the matching mode returned by
-     * {@link #getMatchingMode(Restlet))} will be added routing to the target
+     * {@link #getMatchingMode(Restlet)} will be added routing to the target
      * when any call is received.
      * 
      * @param target

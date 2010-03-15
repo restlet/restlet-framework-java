@@ -150,7 +150,13 @@ public class ClientConnection extends Connection<Client> {
                     "Unable to parse the response status. End of stream reached too early.");
         }
 
-        statusCode = Integer.parseInt(sb.toString());
+        try {
+            statusCode = Integer.parseInt(sb.toString());
+        } catch (NumberFormatException e) {
+            throw new IOException(
+                    "Unable to parse the status code. Non numeric value: "
+                            + sb.toString());
+        }
         sb.delete(0, sb.length());
 
         // Parse the reason phrase

@@ -154,6 +154,7 @@ public class ServerConnection extends Connection<Server> {
         // Parse the request method
         StringBuilder sb = new StringBuilder();
         int next = getInboundStream().read();
+
         while ((next != -1) && !HeaderUtils.isSpace(next)) {
             sb.append((char) next);
             next = getInboundStream().read();

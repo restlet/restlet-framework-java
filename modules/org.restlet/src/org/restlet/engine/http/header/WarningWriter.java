@@ -45,8 +45,8 @@ public class WarningWriter extends HeaderWriter<Warning> {
     /**
      * Writes a warning.
      * 
-     * @param warning
-     *            The warning to format.
+     * @param warnings
+     *            The list of warnings to format.
      * @return The formatted warning.
      */
     public static String write(List<Warning> warnings) {
