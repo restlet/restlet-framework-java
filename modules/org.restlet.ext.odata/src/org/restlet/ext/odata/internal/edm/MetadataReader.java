@@ -176,7 +176,7 @@ public class MetadataReader extends DefaultHandler {
         String nsUri = null;
         String propertyPath = null;
         String valuePath = null;
-        boolean keepInContent = false;
+        boolean keepInContent = true;
 
         atomContentKind = attributes.getValue(
                 Service.WCF_DATASERVICES_METADATA_NAMESPACE, "FC_ContentKind");

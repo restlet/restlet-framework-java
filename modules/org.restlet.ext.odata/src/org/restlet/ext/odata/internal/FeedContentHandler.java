@@ -235,7 +235,9 @@ public class FeedContentHandler<T> extends FeedReader {
                 }
                 Property property = metadata.getProperty(obj, localName);
                 try {
-                    ReflectUtils.setProperty(obj, property, sb.toString());
+                    if (property != null) {
+                        ReflectUtils.setProperty(obj, property, sb.toString());
+                    }
                 } catch (Exception e) {
                     getLogger().warning(
                             "Cannot set " + localName + " property on " + obj
