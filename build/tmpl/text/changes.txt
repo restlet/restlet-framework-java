@@ -92,6 +92,17 @@ Changes log
         - SSL session IDs are now provided as an attribute of requests.
           The attribute name is "org.restlet.https.sslSessionId".
           Suggested by Stefan Meissner and contributed by Bruno Harbulot.
+        - Added support of projections to the OData extension.
+        - Added support of server-paging to the OData extension.
+        - Added support of media link resources (blobs) to the OData 
+          extension.
+        - Added support of row count to the OData extension.
+        - Added support of customizable feeds to the OData extension.
+        - Added support of generation and parsing of request/response 
+          version header to the OData extension.
+        - Added support of service operations to the OData extension.
+        - Added support of SetLink method to the OData extension.
+        - Added support of NTML secured services to the OData extension.
     - Bugs fixed
         - Fixed compilation issue in the ClientResource class for the
           GWT edition. Reported by Laszlo Megyer. 
