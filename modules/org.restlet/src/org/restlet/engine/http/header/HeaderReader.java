@@ -572,15 +572,16 @@ public class HeaderReader<V> {
      */
     public boolean skipSpaces() {
         boolean result = false;
-        int next = read();
+        int next = peek();
 
         while (isLinearWhiteSpace(next) && (next != -1)) {
             result = result || isLinearWhiteSpace(next);
-            next = read();
+            read();
+            next = peek();
         }
 
         // Restore the first non space character found
-        unread();
+        // unread();
         return result;
     }
 
