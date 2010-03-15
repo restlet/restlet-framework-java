@@ -205,7 +205,6 @@ public class FeedContentHandler<T> extends FeedReader {
             this.count = Integer.parseInt(sb.toString());
             parseCount = false;
         } else if (parseProperty) {
-            parseProperty = propertyPathDeep > 0;
             if (!parsePropertyNull) {
                 Object obj = entity;
                 if (propertyPath.size() > 1) {
@@ -245,6 +244,7 @@ public class FeedContentHandler<T> extends FeedReader {
                 }
             }
             propertyPathDeep--;
+            parseProperty = propertyPathDeep > 0;
             if (propertyPath.size() > 0) {
                 propertyPath.remove(propertyPath.size() - 1);
             }
