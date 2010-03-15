@@ -536,7 +536,7 @@ public class Service {
             // Node node = null;
             // try {
             // org.w3c.dom.NodeList nl = xmlRep.getDocument()
-            // .getElementsByTagName(propertyName);
+            // .getElementsByTagName(tagName);
             // node = (nl.getLength() > 0) ? nl.item(0) : null;
             // } catch (IOException e1) {
             // }
