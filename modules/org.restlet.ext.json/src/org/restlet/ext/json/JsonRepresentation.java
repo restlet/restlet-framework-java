@@ -171,7 +171,7 @@ public class JsonRepresentation extends WriterRepresentation {
      * Returns the number of spaces to use for indentation.
      * 
      * @return The number of spaces to use for indentation.
-     * @deprecated Use ~{@link #getIndentingSize()} instead.
+     * @deprecated Use {@link #getIndentingSize()} instead.
      */
     @Deprecated
     public int getIndentSize() {
@@ -359,7 +359,7 @@ public class JsonRepresentation extends WriterRepresentation {
      * 
      * @return The converted JSON array.
      * @throws JSONException
-     * @deprecated Use {@link #getJsonArray() instead.
+     * @deprecated Use {@link #getJsonArray()} instead.
      */
     @Deprecated
     public JSONArray toJsonArray() throws JSONException {
@@ -372,7 +372,7 @@ public class JsonRepresentation extends WriterRepresentation {
      * 
      * @return The converted JSON object.
      * @throws JSONException
-     * @deprecated Use {@link #getJsonObject() instead.
+     * @deprecated Use {@link #getJsonObject()} instead.
      */
     @Deprecated
     public JSONObject toJsonObject() throws JSONException {
@@ -385,7 +385,7 @@ public class JsonRepresentation extends WriterRepresentation {
      * 
      * @return The converted JSON tokener.
      * @throws JSONException
-     * @deprecated Use {@link #getJsonTokener() instead.
+     * @deprecated Use {@link #getJsonTokener()} instead.
      */
     @Deprecated
     public JSONTokener toJsonTokener() throws JSONException {
