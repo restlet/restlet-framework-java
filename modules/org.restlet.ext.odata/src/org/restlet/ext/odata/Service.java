@@ -178,7 +178,6 @@ public class Service {
      *            The path of the entity set relatively to the service URI.
      * @param entity
      *            The entity to put.
-     * @return The reference of the newly created entity.
      * @throws Exception
      */
     public void addEntity(String entitySetName, Object entity) throws Exception {
