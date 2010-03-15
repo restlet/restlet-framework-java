@@ -375,10 +375,12 @@ public class HeaderUtils {
                     .write(clientInfo.getAcceptedLanguages()), headers);
         }
 
+        // [ifndef gwt]
         if (!clientInfo.getExpectations().isEmpty()) {
             addHeader(HeaderConstants.HEADER_EXPECT, ExpectationWriter
                     .write(clientInfo.getExpectations()), headers);
         }
+        // [enddef]
 
         if (clientInfo.getFrom() != null) {
             addHeader(HeaderConstants.HEADER_FROM, request.getClientInfo()

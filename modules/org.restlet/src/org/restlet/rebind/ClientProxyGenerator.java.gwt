@@ -439,8 +439,10 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
                         } else {
                             // Callback type, inspect the "inner" type.
                             if (parameterizedType.getTypeArgs().length > 0) {
-                                getStob().addRootType(getLogger(),
-                                        parameterizedType.getTypeArgs()[0]);
+                                if (!(parameterizedType.getTypeArgs()[0]).toString().contains("java.lang.Void")) {
+                                    getStob().addRootType(getLogger(),
+                                            parameterizedType.getTypeArgs()[0]);
+                                }
                             }
                         }
                     }

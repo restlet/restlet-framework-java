@@ -121,7 +121,8 @@
          <exclude name="src/org/restlet/engine/http/Server*" />
          <exclude name="src/org/restlet/engine/http/connector/**" />
          <exclude name="src/org/restlet/engine/http/header/ExpectationUtils.java" />
-         <exclude name="src/org/restlet/engine/http/header/ExpectReader.java" />
+         <exclude name="src/org/restlet/engine/http/header/ExpectationReader.java" />
+         <exclude name="src/org/restlet/engine/http/header/ExpectationWriter.java" />
          <exclude name="src/org/restlet/engine/http/io/**" />
          <exclude name="src/org/restlet/engine/http/security/**" />
          <exclude name="src/org/restlet/engine/internal/**" />
