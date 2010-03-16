@@ -153,7 +153,7 @@ public class ODataCafeTestCase extends RestletTestCase {
         assertTrue(iterator2.hasNext());
         item = iterator2.next();
         assertEquals("4", item.getId());
-        assertEquals("Cote du Rhone", item.getDescription());
+        assertEquals("Cotes du Rhone", item.getDescription());
     }
 
     /**

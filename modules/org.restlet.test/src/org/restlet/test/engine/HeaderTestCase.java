@@ -40,6 +40,7 @@ import org.restlet.data.MediaType;
 import org.restlet.engine.http.header.EncodingReader;
 import org.restlet.engine.http.header.HeaderReader;
 import org.restlet.engine.http.header.PreferenceReader;
+import org.restlet.engine.http.header.TokenReader;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.test.RestletTestCase;
 
@@ -64,14 +65,35 @@ public class HeaderTestCase extends RestletTestCase {
         assertEquals(list.size(), 2);
         assertEquals(list.get(0), Encoding.GZIP);
         assertEquals(list.get(1), Encoding.DEFLATE);
-        
+
         list = new ArrayList<Encoding>();
         new EncodingReader("identity").addValues(list);
         assertTrue(list.isEmpty());
-        
+
         list = new ArrayList<Encoding>();
         new EncodingReader("identity,").addValues(list);
         assertTrue(list.isEmpty());
+
+        list = new ArrayList<Encoding>();
+        new EncodingReader("").addValues(list);
+        assertTrue(list.isEmpty());
+
+        list = new ArrayList<Encoding>();
+        new EncodingReader(null).addValues(list);
+        assertTrue(list.isEmpty());
+
+        TokenReader tr = new TokenReader("bytes");
+        List<String> l = tr.readValues();
+        assertTrue(l.contains("bytes"));
+
+        tr = new TokenReader("bytes,");
+        l = tr.readValues();
+        assertTrue(l.contains("bytes"));
+        assertEquals(l.size(), 1);
+
+        tr = new TokenReader("");
+        l = tr.readValues();
+        assertEquals(l.size(), 1);
     }
 
     public void testInvalidDate() {

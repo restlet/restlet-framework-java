@@ -52,6 +52,6 @@ public class ODataTestSuite extends TestSuite {
     /** Constructor. */
     public ODataTestSuite() {
         addTestSuite(ODataCafeTestCase.class);
-        //addTestSuite(ODataCafeCustoFeedsTestCase.class);
+        addTestSuite(ODataCafeCustoFeedsTestCase.class);
     }
 }

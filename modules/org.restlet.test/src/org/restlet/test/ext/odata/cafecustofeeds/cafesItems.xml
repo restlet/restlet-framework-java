@@ -54,7 +54,7 @@
 						<content type="application/xml">
 							<m:properties>
 								<d:ID>2</d:ID>
-								<d:Description>Pâté</d:Description>
+								<d:Description>Pate</d:Description>
 							</m:properties>
 						</content>
 					</entry>
@@ -66,7 +66,7 @@
 		<content type="application/xml">
 			<m:properties>
 				<d:ID>1</d:ID>
-				<d:Name>Le Café Louis</d:Name>
+				<d:Name>Le Cafe Louis</d:Name>
 				<d:ZipCode m:type="Edm.Int32">92300</d:ZipCode>
 				<d:City>Levallois-Perret</d:City>
 			</m:properties>
@@ -122,7 +122,7 @@
 						<content type="application/xml">
 							<m:properties>
 								<d:ID>4</d:ID>
-								<d:Description>Côte du Rhone</d:Description>
+								<d:Description>Cotes du Rhone</d:Description>
 							</m:properties>
 						</content>
 					</entry>
