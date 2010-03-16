@@ -178,10 +178,9 @@ public class HeaderReader<V> {
             // Skip leading spaces
             skipSpaces();
 
-            // Read the first value
-            V nextValue = readValue();
-
-            while (nextValue != null) {
+            do {
+                // Read the first value
+                V nextValue = readValue();
                 if (canAdd(nextValue, values)) {
                     // Add the value to the list
                     values.add(nextValue);
@@ -189,9 +188,7 @@ public class HeaderReader<V> {
 
                 // Attempt to skip the value separator
                 skipValueSeparator();
-                // Read the next value
-                nextValue = readValue();
-            }
+            } while (peek() != -1);
         } catch (IOException ioe) {
             Context.getCurrentLogger().log(Level.INFO,
                     "Unable to read a header", ioe);
