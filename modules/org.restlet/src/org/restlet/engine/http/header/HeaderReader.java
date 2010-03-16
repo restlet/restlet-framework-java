@@ -181,15 +181,16 @@ public class HeaderReader<V> {
             // Read the first value
             V nextValue = readValue();
 
-            while (canAdd(nextValue, values)) {
-                // Add the value to the list
-                values.add(nextValue);
+            while (nextValue != null) {
+                if (canAdd(nextValue, values)) {
+                    // Add the value to the list
+                    values.add(nextValue);
+                }
 
                 // Attempt to skip the value separator
-                if (skipValueSeparator()) {
-                    // Read the next value
-                    nextValue = readValue();
-                }
+                skipValueSeparator();
+                // Read the next value
+                nextValue = readValue();
             }
         } catch (IOException ioe) {
             Context.getCurrentLogger().log(Level.INFO,
@@ -210,7 +211,7 @@ public class HeaderReader<V> {
      * @return True if the value can be added.
      */
     protected boolean canAdd(V value, Collection<V> values) {
-        return (value != null) && !values.contains(value);
+        return value != null && !values.contains(value);
     }
 
     /**

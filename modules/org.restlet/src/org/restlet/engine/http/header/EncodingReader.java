@@ -54,7 +54,7 @@ public class EncodingReader extends HeaderReader<Encoding> {
 
     @Override
     protected boolean canAdd(Encoding value, Collection<Encoding> values) {
-        return !Encoding.IDENTITY.equals(value);
+        return value != null && !Encoding.IDENTITY.equals(value);
     }
 
     @Override

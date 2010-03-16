@@ -30,11 +30,14 @@
 
 package org.restlet.test.engine;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Encoding;
 import org.restlet.data.MediaType;
+import org.restlet.engine.http.header.EncodingReader;
 import org.restlet.engine.http.header.HeaderReader;
 import org.restlet.engine.http.header.PreferenceReader;
 import org.restlet.engine.util.DateUtils;
@@ -46,6 +49,31 @@ import org.restlet.test.RestletTestCase;
  * @author Jerome Louvel
  */
 public class HeaderTestCase extends RestletTestCase {
+    /**
+     * Test the {@link HeaderReader#addValues(java.util.Collection)} method.
+     */
+    public void testAddValues() {
+        List<Encoding> list = new ArrayList<Encoding>();
+        new EncodingReader("gzip,deflate").addValues(list);
+        assertEquals(list.size(), 2);
+        assertEquals(list.get(0), Encoding.GZIP);
+        assertEquals(list.get(1), Encoding.DEFLATE);
+
+        list = new ArrayList<Encoding>();
+        new EncodingReader("gzip,identity, deflate").addValues(list);
+        assertEquals(list.size(), 2);
+        assertEquals(list.get(0), Encoding.GZIP);
+        assertEquals(list.get(1), Encoding.DEFLATE);
+        
+        list = new ArrayList<Encoding>();
+        new EncodingReader("identity").addValues(list);
+        assertTrue(list.isEmpty());
+        
+        list = new ArrayList<Encoding>();
+        new EncodingReader("identity,").addValues(list);
+        assertTrue(list.isEmpty());
+    }
+
     public void testInvalidDate() {
         final String headerValue = "-1";
         final Date date = DateUtils.parse(headerValue,
@@ -149,5 +177,4 @@ public class HeaderTestCase extends RestletTestCase {
             value = hr.readRawValue();
         }
     }
-
 }
