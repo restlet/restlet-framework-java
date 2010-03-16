@@ -4,7 +4,10 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
-
+    - Bugs fixed
+        - Fixed HeaderReader#addValues method.
+          Reported by Carsten Lohmann. 
+          
 - 2.0 Release Candidate 1 (2010-03-15)
     - API changes
         - Added a Router#getMatchingMode(Restlet) method which returns
