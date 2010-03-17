@@ -105,7 +105,7 @@ public class AnnotationInfo {
      * 
      * @param metadataService
      *            The metadata service to use.
-     * @return A list of response variants.
+     * @return A list of request variants.
      */
     public List<Variant> getRequestVariants(MetadataService metadataService) {
         List<Variant> result = null;
@@ -171,8 +171,6 @@ public class AnnotationInfo {
             }
 
             if (value != null) {
-                String[] extensions = value.split("\\|");
-
                 if (requestEntity != null) {
                     List<Variant> requestVariants = getRequestVariants(metadataService);
 
@@ -189,19 +187,18 @@ public class AnnotationInfo {
                 }
 
                 if (compatibleRequestEntity) {
-                    if (extensions != null) {
-                        for (String extension : extensions) {
-                            List<MediaType> mediaTypes = metadataService
-                                    .getAllMediaTypes(extension);
+                    String[] extensions = value.split("\\|");
+                    for (String extension : extensions) {
+                        List<MediaType> mediaTypes = metadataService
+                                .getAllMediaTypes(extension);
 
-                            if (mediaTypes != null) {
-                                if (result == null) {
-                                    result = new ArrayList<Variant>();
-                                }
+                        if (mediaTypes != null) {
+                            if (result == null) {
+                                result = new ArrayList<Variant>();
+                            }
 
-                                for (MediaType mediaType : mediaTypes) {
-                                    result.add(new Variant(mediaType));
-                                }
+                            for (MediaType mediaType : mediaTypes) {
+                                result.add(new Variant(mediaType));
                             }
                         }
                     }
