@@ -171,15 +171,19 @@ public class MetadataReader extends DefaultHandler {
      */
     private void discoverMapping(EntityType type, Property property,
             Metadata metadata, Attributes attributes) {
-        String atomContentKind = null;
+        String contentKind = null;
         String nsPrefix = null;
         String nsUri = null;
         String propertyPath = null;
         String valuePath = null;
         boolean keepInContent = true;
 
-        atomContentKind = attributes.getValue(
+        contentKind = attributes.getValue(
                 Service.WCF_DATASERVICES_METADATA_NAMESPACE, "FC_ContentKind");
+        if (contentKind == null) {
+            contentKind = "text";
+        }
+
         nsPrefix = attributes.getValue(
                 Service.WCF_DATASERVICES_METADATA_NAMESPACE, "FC_NsPrefix");
         nsUri = attributes.getValue(
@@ -209,13 +213,13 @@ public class MetadataReader extends DefaultHandler {
             // The mapping is really defined between a property and an XML
             // element, and the value is only available in a customized part of
             // the feed.
-            if ((atomContentKind != null && nsUri == null && nsPrefix == null)
-                    || (atomContentKind == null && nsUri != null && nsPrefix != null)) {
+            if ((nsUri == null && nsPrefix == null)
+                    || (nsUri != null && nsPrefix != null)) {
                 // The mapping is correctly declared (either in an ATOM or a
                 // customized XML element).
                 metadata.getMappings().add(
                         new Mapping(type, nsPrefix, nsUri, propertyPath,
-                                valuePath));
+                                valuePath, contentKind));
             }
         }
     }

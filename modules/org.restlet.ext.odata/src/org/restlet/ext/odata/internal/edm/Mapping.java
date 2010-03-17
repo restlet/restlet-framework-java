@@ -43,6 +43,9 @@ public class Mapping {
     /** Is the value taken from an attribute or not. */
     private boolean attributeValue;
 
+    /** The content type of the value of the mapped property. */
+    private String contentKind;
+
     /** The namespace prefix of the feed's XML element that stores the value. */
     private String nsPrefix;
 
@@ -74,15 +77,19 @@ public class Mapping {
      * @param valuePath
      *            The path of the XML element of the feed that stores the value
      *            to set.
+     * @param contentKind
+     *            The content type of the value of the mapped property..
      */
     public Mapping(EntityType type, String nsPrefix, String nsUri,
-            String propertyPath, String valuePath) {
+            String propertyPath, String valuePath, String contentKind) {
         super();
         this.type = type;
         this.nsPrefix = nsPrefix;
         this.nsUri = nsUri;
         this.propertyPath = propertyPath;
         this.valuePath = valuePath;
+        this.contentKind = contentKind;
+
         this.attributeValue = false;
         if (this.valuePath != null) {
             int index = valuePath.lastIndexOf("/");
@@ -90,6 +97,15 @@ public class Mapping {
                 attributeValue = ('@' == valuePath.charAt(index + 1));
             }
         }
+    }
+
+    /**
+     * Returns the content type of the value of the mapped property.
+     * 
+     * @return The content type of the value of the mapped property.
+     */
+    public String getContentKind() {
+        return contentKind;
     }
 
     /**
@@ -133,17 +149,6 @@ public class Mapping {
     }
 
     /**
-     * Returns the path of the XML element of the feed that stores the value to
-     * set.
-     * 
-     * @return The path of the XML element of the feed that stores the value to
-     *         set.
-     */
-    public String getValuePath() {
-        return valuePath;
-    }
-
-    /**
      * Returns the name of the attribute that stores the value to set, if
      * pertinent, and null otherwise.
      * 
@@ -167,6 +172,17 @@ public class Mapping {
     public String getValueNodePath() {
         return (isAttributeValue()) ? valuePath.substring(0, valuePath
                 .lastIndexOf("/")) : valuePath;
+    }
+
+    /**
+     * Returns the path of the XML element of the feed that stores the value to
+     * set.
+     * 
+     * @return The path of the XML element of the feed that stores the value to
+     *         set.
+     */
+    public String getValuePath() {
+        return valuePath;
     }
 
     /**

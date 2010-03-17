@@ -12,8 +12,9 @@ Changes log
           values and allowed access to Freemarker configuration shared 
           variables. Reported by sirthias.
         - Fixed the StringWriter implementation for the GWT edition.
-          Reported by Kelly McLaughlin. 
-          
+          Reported by Kelly McLaughlin.
+        - Fixed potential bug with ATOM mappings (customizable feeds 
+          feature). Reported by Thomas Conté.
           
 - 2.0 Release Candidate 1 (2010-03-15)
     - API changes
