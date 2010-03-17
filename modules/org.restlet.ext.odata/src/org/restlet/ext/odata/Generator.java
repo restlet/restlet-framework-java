@@ -62,10 +62,11 @@ import freemarker.template.Configuration;
 public class Generator {
 
     /**
-     * Takes two parameters :<br>
+     * Takes two (or three) parameters:<br>
      * <ol>
      * <li>The URI of the OData service</li>
      * <li>The output directory</li>
+     * <li>The name of the generated service class name (optional)</li>
      * </ol>
      * 
      * @param args
@@ -84,7 +85,6 @@ public class Generator {
         }
 
         File outputDir = null;
-        Metadata metadata;
 
         if (errorMessage == null) {
             outputDir = new File(args[1]);
@@ -118,17 +118,16 @@ public class Generator {
             }
 
             Service service = new Service(dataServiceUri);
-            if ((metadata = ((Metadata) service.getMetadata())) == null) {
+            if (service.getMetadata() == null) {
                 errorMessage = "Cannot retrieve the metadata.";
             } else {
                 System.out.println("step 4 - generate source code");
                 Generator svcUtil = null;
                 if (args.length == 3) {
                     svcUtil = new Generator(new Reference(dataServiceUri),
-                            metadata, args[2]);
+                            args[2]);
                 } else {
-                    svcUtil = new Generator(new Reference(dataServiceUri),
-                            metadata);
+                    svcUtil = new Generator(new Reference(dataServiceUri));
                 }
 
                 try {
@@ -157,44 +156,35 @@ public class Generator {
         }
     }
 
-    /** The URI of the target data service. */
-    private Reference dataServiceRef;
-
-    /** The OData service metadata. */
-    private Metadata metadata;
-
     /** The name of the service class (in case there is only one in the schema). */
     private String serviceClassName;
+
+    /** The URI of the target data service. */
+    private Reference serviceRef;
 
     /**
      * Constructor.
      * 
-     * @param dataServiceRef
+     * @param serviceRef
      *            The URI of the OData service.
-     * @param metadata
-     *            The metadata descriptor.
      */
-    public Generator(Reference dataServiceRef, Metadata metadata) {
-        this(dataServiceRef, metadata, null);
+    public Generator(Reference serviceRef) {
+        this(serviceRef, null);
     }
 
     /**
      * Constructor. The name of the service class can be provided if there is
      * only one service defined in the metadata.
      * 
-     * @param dataServiceRef
+     * @param serviceRef
      *            The URI of the OData service.
-     * @param metadata
-     *            The metadata descriptor.
      * @param serviceClassName
      *            The name of the service class (in case there is only one in
      *            the metadata).
      */
-    public Generator(Reference dataServiceRef, Metadata metadata,
-            String serviceClassName) {
+    public Generator(Reference serviceRef, String serviceClassName) {
         super();
-        this.metadata = metadata;
-        this.dataServiceRef = dataServiceRef;
+        this.serviceRef = serviceRef;
         if (serviceClassName != null) {
             this.serviceClassName = ReflectUtils.normalize(serviceClassName);
             this.serviceClassName = this.serviceClassName.substring(0, 1)
@@ -205,6 +195,30 @@ public class Generator {
     }
 
     /**
+     * Constructor.
+     * 
+     * @param serviceUri
+     *            The URI of the OData service.
+     */
+    public Generator(String serviceUri) {
+        this(serviceUri, null);
+    }
+
+    /**
+     * Constructor. The name of the service class can be provided if there is
+     * only one service defined in the metadata.
+     * 
+     * @param serviceUri
+     *            The URI of the OData service.
+     * @param serviceClassName
+     *            The name of the service class (in case there is only one in
+     *            the metadata).
+     */
+    public Generator(String serviceUri, String serviceClassName) {
+        this(new Reference(serviceUri), serviceClassName);
+    }
+
+    /**
      * Generates the client code to the given output directory.
      * 
      * @param outputDir
@@ -212,6 +226,13 @@ public class Generator {
      * @throws Exception
      */
     public void generate(File outputDir) throws Exception {
+        Service service = new Service(serviceRef);
+        Metadata metadata = (Metadata) service.getMetadata();
+        if (metadata == null) {
+            throw new Exception("Can't get the metadata for this service: "
+                    + serviceRef);
+        }
+
         Configuration fmc = new Configuration();
         fmc.setDefaultEncoding(CharacterSet.UTF_8.getName());
 
@@ -307,8 +328,7 @@ public class Generator {
                 dataModel.put("schema", schema);
                 dataModel.put("metadata", metadata);
                 dataModel.put("className", className);
-                dataModel.put("dataServiceUri", this.dataServiceRef
-                        .getTargetRef());
+                dataModel.put("dataServiceUri", this.serviceRef.getTargetRef());
                 dataModel.put("entityContainer", entityContainer);
 
                 TemplateRepresentation templateRepresentation = new TemplateRepresentation(
@@ -320,5 +340,16 @@ public class Generator {
                         outputDir, className + ".java")));
             }
         }
+    }
+
+    /**
+     * Generates the client code to the given output directory.
+     * 
+     * @param outputDir
+     *            The output directory.
+     * @throws Exception
+     */
+    public void generate(String outputDir) throws Exception {
+        generate(new File(outputDir));
     }
 }
