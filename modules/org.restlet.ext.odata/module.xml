@@ -1,8 +1,8 @@
-<module id="odata" excludes="gwt" type="integration"
+<module id="odata" excludes="gwt" type="standard"
 	package="org.restlet.ext.odata">
-	<name>Restlet Extension - WCF Data Services</name>
+	<name>Restlet Extension - OData service</name>
 	<description>
-		Integration with WCF Data Services 1.0.
+		Integration with OData services.
    </description>
 	<distributions>
 		<distribution id="classic" />
