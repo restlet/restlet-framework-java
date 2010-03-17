@@ -175,7 +175,7 @@ public class ODataCafeTestCase extends RestletTestCase {
      */
     public void testServerPaging() {
         Query<Cafe> query1 = service.createCafeQuery("/Cafes");
-        Query<Cafe> query2 = query1.skiptoken("Skip1");
+        Query<Cafe> query2 = query1.skipToken("Skip1");
 
         Iterator<Cafe> iterator = query2.iterator();
 
