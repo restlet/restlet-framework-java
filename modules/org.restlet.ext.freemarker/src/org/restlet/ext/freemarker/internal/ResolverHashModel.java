@@ -61,7 +61,14 @@ public class ResolverHashModel implements TemplateHashModel {
      * according to the key.
      */
     public TemplateModel get(String key) throws TemplateModelException {
-        return new ScalarModel(this.resolver.resolve(key));
+        Object value = this.resolver.resolve(key);
+        if (value == null) {
+            return null;
+        } else if (value instanceof TemplateModel) {
+            return (TemplateModel) value;
+        }
+
+        return new ScalarModel(value);
     }
 
     /**

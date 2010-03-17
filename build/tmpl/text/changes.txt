@@ -7,6 +7,10 @@ Changes log
     - Bugs fixed
         - Fixed HeaderReader#addValues method.
           Reported by Carsten Lohmann. 
+        - Fixed the resolver hash model provided by the Freemarker 
+          extension when underlying resolvers return TemplateModel 
+          values and allowed access to Freemarker configuration shared 
+          variables. Reported by sirthias.
           
 - 2.0 Release Candidate 1 (2010-03-15)
     - API changes
