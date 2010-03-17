@@ -53,5 +53,9 @@ public abstract class StringWriter implements Appendable {
     public Appendable append(CharSequence csq) {
         return sb.append(csq);
     }
-
+    
+    @Override
+    public String toString() {
+        return sb.toString();
+    }
 }
