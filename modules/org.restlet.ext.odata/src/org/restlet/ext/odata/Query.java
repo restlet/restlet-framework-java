@@ -343,9 +343,6 @@ public class Query<T> implements Iterable<T> {
                 throw e;
             }
 
-            service.setLatestRequest(resource.getRequest());
-            service.setLatestResponse(resource.getResponse());
-
             if (resource.getStatus().isSuccess()) {
                 // Guess the type of query based on the URI structure
                 switch (guessType(targetUri)) {
@@ -408,6 +405,9 @@ public class Query<T> implements Iterable<T> {
                     break;
                 }
             }
+
+            service.setLatestRequest(resource.getRequest());
+            service.setLatestResponse(resource.getResponse());
 
             setExecuted(true);
         }
