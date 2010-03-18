@@ -17,6 +17,8 @@ Changes log
           feature). Reported by Thomas Conté.
         - Fixed generation of HTML representations for WADL resources.
           Reported by Carsten Lohmann.
+        - Fixed formatting of Date instances for the GWT edition.
+          Reported by Kelly McLaughlin.
           
 - 2.0 Release Candidate 1 (2010-03-15)
     - API changes

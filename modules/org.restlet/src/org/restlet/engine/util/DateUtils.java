@@ -64,6 +64,9 @@ public final class DateUtils {
     private static final java.util.TimeZone TIMEZONE_GMT = java.util.TimeZone
             .getTimeZone("GMT");
 
+    // [ifdef gwt] member uncomment
+    // private static final com.google.gwt.i18n.client.TimeZone TIMEZONE_GMT =
+    // com.google.gwt.i18n.client.TimeZone.createTimeZone(0);
     /**
      * Compares two date with a precision of one second.
      * 
@@ -158,12 +161,13 @@ public final class DateUtils {
                     java.util.Locale.US);
             formatter.setTimeZone(TIMEZONE_GMT);
         }
+        return formatter.format(date);
         // [enddef]
         // [ifdef gwt]
         /*
-         * GWT difference: DateTimeFormat parser is is not passed a Locale in
-         * the same way as SimpleDateFormat. It derives locale information from
-         * the GWT application's locale.
+         * GWT difference: DateTimeFormat parser is not passed a Locale in the
+         * same way as SimpleDateFormat. It derives locale information from the
+         * GWT application's locale.
          * 
          * Default timezone is GMT unless specified via a GMT:hhmm, GMT:+hhmm,
          * or GMT:-hhmm string.
@@ -172,8 +176,8 @@ public final class DateUtils {
         // [ifdef gwt] uncomment
         // final com.google.gwt.i18n.client.DateTimeFormat formatter =
         // com.google.gwt.i18n.client.DateTimeFormat.getFormat(format);
+        // return formatter.format(date, TIMEZONE_GMT);
         // [enddef]
-        return formatter.format(date);
     }
 
     /**
@@ -222,9 +226,9 @@ public final class DateUtils {
             // [enddef]
             // [ifdef gwt]
             /*
-             * GWT difference: DateTimeFormat parser is is not passed a Locale
-             * in the same way as SimpleDateFormat. It derives locale
-             * information from the GWT application's locale.
+             * GWT difference: DateTimeFormat parser is not passed a Locale in
+             * the same way as SimpleDateFormat. It derives locale information
+             * from the GWT application's locale.
              * 
              * Default timezone is GMT unless specified via a GMT:hhmm,
              * GMT:+hhmm, or GMT:-hhmm string.
