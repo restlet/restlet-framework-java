@@ -47,7 +47,7 @@
         doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"
     />
 
-    <xsl:variable name="wadl-ns">http://research.sun.com/wadl/2006/10</xsl:variable>
+    <xsl:variable name="wadl-ns">http://wadl.dev.java.net/2009/02</xsl:variable>
 
     
     <!-- expand @hrefs, @types into a full tree -->
