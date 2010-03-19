@@ -9,8 +9,8 @@
 	</parent>
 
 	<artifactId>org.restlet.ext.odata</artifactId>
-	<name>Restlet Extension - WCF Data Services</name>
-	<description>Integration with WCF Data Services 1.0.</description>
+	<name>Restlet Extension - OData service</name>
+	<description>Integration with OData services.</description>
 
 	<dependencies>
 		<dependency>

@@ -36,14 +36,18 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.restlet.Context;
+import org.restlet.data.Language;
+import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.ext.atom.Content;
 import org.restlet.ext.atom.Entry;
 import org.restlet.ext.atom.EntryReader;
+import org.restlet.ext.atom.Feed;
 import org.restlet.ext.atom.Link;
 import org.restlet.ext.atom.Person;
 import org.restlet.ext.atom.Relation;
 import org.restlet.ext.odata.Service;
+import org.restlet.ext.odata.internal.edm.AssociationEnd;
 import org.restlet.ext.odata.internal.edm.EntityType;
 import org.restlet.ext.odata.internal.edm.Mapping;
 import org.restlet.ext.odata.internal.edm.Metadata;
@@ -63,7 +67,14 @@ import org.xml.sax.SAXException;
  */
 public class EntryContentHandler<T> extends EntryReader {
 
-    /** The path of the current XML element relatively to an Entry. */
+    private enum State {
+        ASSOCIATION, CONTENT, ENTRY, PROPERTIES, PROPERTY
+    }
+
+    /** The currently parsed association. */
+    private AssociationEnd association;
+
+    /** The path of the current XML element relatively to the Entry. */
     List<String> eltPath;
 
     /** The entity targeted by this entry. */
@@ -75,6 +86,12 @@ public class EntryContentHandler<T> extends EntryReader {
     /** The OData type of the parsed entity. */
     private EntityType entityType;
 
+    /** Used to parsed Atom link elements that contains entries. */
+    EntryContentHandler<T> extraEntryHandler;
+
+    /** Used to parsed Atom link elements that contains feeds. */
+    FeedContentHandler<T> extraFeedHandler;
+
     /** Internal logger. */
     private Logger logger;
 
@@ -84,29 +101,37 @@ public class EntryContentHandler<T> extends EntryReader {
     /** The metadata of the WCF service. */
     private Metadata metadata;
 
-    /** Are we parsing an entry content element? */
-    private boolean parseContent;
-
-    /** Are we parsing an entry? */
-    private boolean parseEntry;
-
-    /** Are we parsing entity properties? */
-    private boolean parseProperties;
-
-    /** Are we parsing an entity property? */
-    private boolean parseProperty;
-
-    /** Must the current be set to null? */
+    /** Must the current property be set to null? */
     private boolean parsePropertyNull;
 
-    /** Used to handle property path. */
+    /** Used to handle complex types. */
     private List<String> propertyPath;
-
-    /** Used to handle property path. */
-    private int propertyPathDeep = -1;
 
     /** Gleans text content. */
     StringBuilder sb = null;
+
+    /** Heap of states. */
+    List<State> states;
+
+    /**
+     * Constructor.
+     * 
+     * @param entityClass
+     *            The class of the parsed entities.
+     * @param entityType
+     *            The entity type of the parsed entities.
+     * @param metadata
+     *            The metadata of the remote OData service.
+     * @param logger
+     *            The logger.
+     */
+    public EntryContentHandler(Class<?> entityClass, EntityType entityType,
+            Metadata metadata, Logger logger) {
+        this.entityClass = entityClass;
+        this.entityType = entityType;
+        this.metadata = metadata;
+        this.logger = logger;
+    }
 
     /**
      * Constructor.
@@ -122,31 +147,82 @@ public class EntryContentHandler<T> extends EntryReader {
             Logger logger) {
         super();
         this.entityClass = entityClass;
+        this.entityType = metadata.getEntityType(entityClass);
         this.metadata = metadata;
-        entityType = metadata.getEntityType(entityClass);
         this.logger = logger;
     }
 
     @Override
     public void characters(char[] ch, int start, int length)
             throws SAXException {
-        if (parseProperty || mapping != null) {
+        if (State.ASSOCIATION == getState()) {
+            // Delegates to the extra content handler
+            if (association.isToMany()) {
+                extraFeedHandler.characters(ch, start, length);
+            } else {
+                extraEntryHandler.characters(ch, start, length);
+            }
+        } else if (State.PROPERTY == getState() || mapping != null) {
             sb.append(ch, start, length);
         }
     }
 
     @Override
     public void endContent(Content content) {
-        parseContent = false;
+        if (State.ASSOCIATION == getState()) {
+            // Delegates to the extra content handler
+            if (association.isToMany()) {
+                extraFeedHandler.endContent(content);
+            } else {
+                extraEntryHandler.endContent(content);
+            }
+        } else {
+            popState();
+        }
     }
 
     @Override
     public void endElement(String uri, String localName, String qName)
             throws SAXException {
-        if (parseProperty) {
-            if (!parsePropertyNull) {
+        if (State.ASSOCIATION == getState()) {
+            // Delegates to the extra content handler
+            if (uri.equalsIgnoreCase(Feed.ATOM_NAMESPACE)) {
+                if (localName.equals("feed")) {
+                    extraFeedHandler.endFeed(null);
+                } else if (localName.equals("link")) {
+                    if (association.isToMany()) {
+                        extraFeedHandler.endLink(null);
+                    } else {
+                        extraEntryHandler.endLink(null);
+                    }
+                } else if (localName.equalsIgnoreCase("entry")) {
+                    if (association.isToMany()) {
+                        extraFeedHandler.endEntry(null);
+                    } else {
+                        extraEntryHandler.endEntry(null);
+                    }
+                } else if (localName.equalsIgnoreCase("content")) {
+                    if (association.isToMany()) {
+                        extraFeedHandler.endContent(null);
+                    } else {
+                        extraEntryHandler.endContent(null);
+                    }
+                }
+            }
+
+            if (association.isToMany()) {
+                extraFeedHandler.endElement(uri, localName, qName);
+            } else {
+                extraEntryHandler.endElement(uri, localName, qName);
+            }
+        } else if (State.PROPERTY == getState()) {
+            if (parsePropertyNull) {
+                popState();
+                parsePropertyNull = false;
+            } else {
                 Object obj = entity;
                 if (propertyPath.size() > 1) {
+                    // Complex property.
                     for (int i = 0; i < propertyPath.size() - 1; i++) {
                         try {
                             Object o = ReflectUtils.invokeGetter(obj,
@@ -179,13 +255,17 @@ public class EntryContentHandler<T> extends EntryReader {
                             "Cannot set " + localName + " property on " + obj
                                     + " with value " + sb.toString());
                 }
+                popState();
+                if (!propertyPath.isEmpty()) {
+                    propertyPath.remove(propertyPath.size() - 1);
+                }
             }
-            propertyPathDeep--;
-            parseProperty = propertyPathDeep > 0;
-            if (propertyPath.size() > 0) {
-                propertyPath.remove(propertyPath.size() - 1);
-            }
+        } else if (State.PROPERTIES == getState()) {
+            popState();
+        } else if (State.CONTENT == getState()) {
+            popState();
         } else if (mapping != null) {
+            // A mapping has been discovered
             if (sb != null) {
                 try {
                     ReflectUtils.invokeSetter(entity,
@@ -199,21 +279,16 @@ public class EntryContentHandler<T> extends EntryReader {
                 }
             }
             mapping = null;
-        } else if (parseProperties) {
-            if (Service.WCF_DATASERVICES_METADATA_NAMESPACE.equals(uri)
-                    && "properties".equals(localName)) {
-                parseProperties = false;
+        } else if (State.ENTRY == getState()) {
+            if (!eltPath.isEmpty()) {
+                eltPath.remove(eltPath.size() - 1);
             }
-        }
-
-        if (!eltPath.isEmpty()) {
-            eltPath.remove(eltPath.size() - 1);
         }
     }
 
     @Override
     public void endEntry(Entry entry) {
-        parseEntry = false;
+        this.states = new ArrayList<State>();
 
         // Handle Atom mapped values.
         for (Mapping m : metadata.getMappings()) {
@@ -289,6 +364,42 @@ public class EntryContentHandler<T> extends EntryReader {
         }
     }
 
+    @Override
+    public void endLink(Link link) {
+        if (State.ASSOCIATION == getState()) {
+            String propertyName = ReflectUtils.normalize(link.getTitle());
+            if (association.isToMany()) {
+                extraFeedHandler.endLink(link);
+                try {
+                    ReflectUtils.setProperty(entity, propertyName, association
+                            .isToMany(), extraFeedHandler.getEntities()
+                            .iterator(), ReflectUtils.getSimpleClass(entity,
+                            propertyName));
+                } catch (Exception e) {
+                    getLogger().warning(
+                            "Cannot set " + propertyName + " property on "
+                                    + entity + " from link");
+                }
+                extraFeedHandler = null;
+            } else {
+                extraEntryHandler.endLink(link);
+                try {
+                    ReflectUtils.invokeSetter(entity, propertyName,
+                            extraEntryHandler.getEntity());
+                } catch (Exception e) {
+                    getLogger().warning(
+                            "Cannot set " + propertyName + " property on "
+                                    + entity + " from link");
+                }
+                extraEntryHandler = null;
+            }
+
+            // This works if the extra entries does not contain links as well...
+            popState();
+            association = null;
+        }
+    }
+
     public T getEntity() {
         return entity;
     }
@@ -305,68 +416,176 @@ public class EntryContentHandler<T> extends EntryReader {
         return logger;
     }
 
+    /**
+     * Returns a media type from an Atom type attribute.
+     * 
+     * @param type
+     *            The Atom type attribute.
+     * @return The media type.
+     */
+    private MediaType getMediaType(String type) {
+        MediaType result = null;
+
+        if (type == null) {
+            // No type defined
+        } else if (type.equals("text")) {
+            result = MediaType.TEXT_PLAIN;
+        } else if (type.equals("html")) {
+            result = MediaType.TEXT_HTML;
+        } else if (type.equals("xhtml")) {
+            result = MediaType.APPLICATION_XHTML;
+        } else {
+            result = new MediaType(type);
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the state at the top of the heap.
+     * 
+     * @return The state at the top of the heap.
+     */
+    private State getState() {
+        State result = null;
+        if (this.states != null) {
+            int size = this.states.size();
+            if (size > 0) {
+                result = this.states.get(size - 1);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Returns the state at the top of the heap and removes it from the heap.
+     * 
+     * @return The state at the top of the heap.
+     */
+    private State popState() {
+        State result = null;
+        int size = this.states.size();
+        if (size > 0) {
+            result = this.states.remove(size - 1);
+        }
+
+        return result;
+    }
+
+    /**
+     * Adds a new state at the top of the heap.
+     * 
+     * @param state
+     *            The state to add.
+     */
+    private void pushState(State state) {
+        this.states.add(state);
+    }
+
     @Override
     public void startContent(Content content) {
-        this.parseContent = true;
+        if (State.ENTRY == getState()) {
+            pushState(State.CONTENT);
+            if (entityType.isBlob()
+                    && entityType.getBlobValueRefProperty() != null) {
+                Reference ref = content.getExternalRef();
+                if (ref != null) {
+                    try {
+                        ReflectUtils.invokeSetter(entity, entityType
+                                .getBlobValueRefProperty().getName(), ref);
+                    } catch (Exception e) {
+                        getLogger().warning(
+                                "Cannot set "
+                                        + entityType.getBlobValueRefProperty()
+                                                .getName() + " property on "
+                                        + entity + " with value " + ref);
+                    }
+                }
+            }
+
+        }
     }
 
     @Override
     public void startElement(String uri, String localName, String qName,
             Attributes attrs) throws SAXException {
-        if (parseProperties) {
-            if (Service.WCF_DATASERVICES_NAMESPACE.equals(uri)) {
-                sb = new StringBuilder();
-                propertyPathDeep++;
-                propertyPath.add(localName);
-                parseProperty = true;
-                parsePropertyNull = Boolean.parseBoolean(attrs.getValue(
-                        Service.WCF_DATASERVICES_METADATA_NAMESPACE, "null"));
-            }
-        }
-        if (parseContent) {
-            if (Service.WCF_DATASERVICES_NAMESPACE.equals(uri)) {
-                sb = new StringBuilder();
-                parseProperties = true;
-                propertyPathDeep = 0;
-                propertyPath = new ArrayList<String>();
-            } else {
-                if (Service.WCF_DATASERVICES_METADATA_NAMESPACE.equals(uri)
-                        && "properties".equals(localName)) {
-                    parseProperties = true;
-                    propertyPathDeep = 0;
-                    propertyPath = new ArrayList<String>();
-                } else {
-                    if (entityType.isBlob()
-                            && entityType.getBlobValueRefProperty() != null) {
-                        String str = attrs.getValue("src");
-                        if (str != null) {
-                            try {
-                                ReflectUtils.invokeSetter(entity, entityType
-                                        .getBlobValueRefProperty().getName(),
-                                        new Reference(str));
-                            } catch (Exception e) {
-                                getLogger()
-                                        .warning(
-                                                "Cannot set "
-                                                        + entityType
-                                                                .getBlobValueRefProperty()
-                                                                .getName()
-                                                        + " property on "
-                                                        + entity
-                                                        + " with value " + str);
-                            }
-                        }
+        if (State.ASSOCIATION == getState()) {
+            // Delegates to the extra content handler
+            if (uri.equalsIgnoreCase(Feed.ATOM_NAMESPACE)) {
+                if (localName.equals("feed")) {
+                    Feed feed = new Feed();
+                    String attr = attrs.getValue("xml:base");
+                    if (attr != null) {
+                        feed.setBaseReference(new Reference(attr));
+                    }
+                    this.extraFeedHandler.startFeed(feed);
+                } else if (localName.equals("link")) {
+                    Link link = new Link();
+                    link.setHref(new Reference(attrs.getValue("", "href")));
+                    link.setRel(Relation.valueOf(attrs.getValue("", "rel")));
+                    String type = attrs.getValue("", "type");
+                    if (type != null && type.length() > 0) {
+                        link.setType(new MediaType(type));
+                    }
+
+                    link.setHrefLang(new Language(attrs
+                            .getValue("", "hreflang")));
+                    link.setTitle(attrs.getValue("", "title"));
+                    String attr = attrs.getValue("", "length");
+                    link.setLength((attr == null) ? -1L : Long.parseLong(attr));
+
+                    if (association.isToMany()) {
+                        extraFeedHandler.startLink(link);
+                    } else {
+                        extraEntryHandler.startLink(link);
+                    }
+                } else if (localName.equalsIgnoreCase("entry")) {
+                    Entry entry = new Entry();
+                    if (association.isToMany()) {
+                        extraFeedHandler.startEntry(entry);
+                    } else {
+                        extraEntryHandler.startEntry(entry);
+                    }
+                } else if (localName.equalsIgnoreCase("content")) {
+                    Content content = new Content();
+                    MediaType type = getMediaType(attrs.getValue("", "type"));
+                    String srcAttr = attrs.getValue("", "src");
+                    if (srcAttr != null)
+                        // Content available externally
+                        content.setExternalRef(new Reference(srcAttr));
+                    content.setExternalType(type);
+                    if (association.isToMany()) {
+                        extraFeedHandler.startContent(content);
+                    } else {
+                        extraEntryHandler.startContent(content);
                     }
                 }
             }
-        } else if (parseEntry) {
-            if (Service.WCF_DATASERVICES_METADATA_NAMESPACE.equals(uri)
-                    && "properties".equals(localName) && entityType.isBlob()) {
-                // in case of Media Link entries, the properties are directly
-                // inside the entry.
-                parseProperties = true;
-                propertyPathDeep = 0;
-                propertyPath = new ArrayList<String>();
+
+            if (association.isToMany()) {
+                extraFeedHandler.startElement(uri, localName, qName, attrs);
+            } else {
+                extraEntryHandler.startElement(uri, localName, qName, attrs);
+            }
+        } else if (Service.WCF_DATASERVICES_METADATA_NAMESPACE.equals(uri)
+                && "properties".equals(localName)) {
+            pushState(State.PROPERTIES);
+            propertyPath = new ArrayList<String>();
+        } else if (State.PROPERTIES == getState()) {
+            pushState(State.PROPERTY);
+
+            if (Boolean.parseBoolean(attrs.getValue(
+                    Service.WCF_DATASERVICES_METADATA_NAMESPACE, "null"))) {
+                parsePropertyNull = true;
+            } else {
+                sb = new StringBuilder();
+                propertyPath.add(localName);
+            }
+        } else if (State.PROPERTY == getState()) {
+            propertyPath.add(localName);
+        } else if (State.ENTRY == getState()) {
+            if (localName.equalsIgnoreCase("link") && association != null) {
+                pushState(State.ASSOCIATION);
             } else {
                 // Could be mapped value
                 eltPath.add(localName);
@@ -412,7 +631,8 @@ public class EntryContentHandler<T> extends EntryReader {
     @SuppressWarnings("unchecked")
     @Override
     public void startEntry(Entry entry) {
-        parseEntry = true;
+        this.states = new ArrayList<State>();
+        pushState(State.ENTRY);
         eltPath = new ArrayList<String>();
         // Instantiate the entity
         try {
@@ -423,4 +643,32 @@ public class EntryContentHandler<T> extends EntryReader {
         }
     }
 
+    @Override
+    public void startLink(Link link) {
+        if (State.ASSOCIATION == getState()) {
+            // Delegates to the extra content handler
+            if (association.isToMany()) {
+                extraFeedHandler.startLink(link);
+            } else {
+                extraEntryHandler.startLink(link);
+            }
+        } else {
+            if (link.getTitle() != null && entityType != null) {
+                String propertyName = ReflectUtils.normalize(link.getTitle());
+                // Get the associated entity
+                association = metadata.getAssociation(entityType, propertyName);
+                if (association != null) {
+                    if (association.isToMany()) {
+                        extraFeedHandler = new FeedContentHandler<T>(
+                                ReflectUtils.getSimpleClass(entity,
+                                        propertyName), metadata, getLogger());
+                    } else {
+                        extraEntryHandler = new EntryContentHandler<T>(
+                                ReflectUtils.getSimpleClass(entity,
+                                        propertyName), metadata, getLogger());
+                    }
+                }
+            }
+        }
+    }
 }

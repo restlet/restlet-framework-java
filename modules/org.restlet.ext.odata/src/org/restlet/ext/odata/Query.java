@@ -46,6 +46,7 @@ import org.restlet.ext.atom.Link;
 import org.restlet.ext.atom.Relation;
 import org.restlet.ext.odata.internal.EntryContentHandler;
 import org.restlet.ext.odata.internal.FeedContentHandler;
+import org.restlet.ext.odata.internal.edm.EntityType;
 import org.restlet.ext.odata.internal.edm.Metadata;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
@@ -180,8 +181,11 @@ public class Query<T> implements Iterable<T> {
 
     private List<T> entities;
 
-    /** Class of the entity targeted by this query. */
+    /** Class of the entities targeted by this query. */
     private Class<?> entityClass;
+
+    /** The entity type of the entities targeted by this query. */
+    private EntityType entityType;
 
     /** Has the query been executed? */
     private boolean executed;
@@ -219,6 +223,11 @@ public class Query<T> implements Iterable<T> {
      *            The class of the target entity.
      */
     public Query(Service service, String subpath, Class<T> entityClass) {
+        this.count = -1;
+        this.executed = false;
+        this.entityClass = entityClass;
+        this.entityType = ((Metadata) service.getMetadata())
+                .getEntityType(entityClass);
         this.service = service;
         Reference ref = new Reference(subpath);
         if (ref.isAbsolute()) {
@@ -227,10 +236,6 @@ public class Query<T> implements Iterable<T> {
         } else {
             this.subpath = subpath;
         }
-
-        this.executed = false;
-        this.entityClass = entityClass;
-        this.count = -1;
     }
 
     /**
@@ -348,16 +353,16 @@ public class Query<T> implements Iterable<T> {
                 switch (guessType(targetUri)) {
                 case TYPE_ENTITY_SET:
                     FeedContentHandler<T> feedContentHandler = new FeedContentHandler<T>(
-                            entityClass, (Metadata) service.getMetadata(),
-                            getLogger());
+                            entityClass, entityType, (Metadata) service
+                                    .getMetadata(), getLogger());
                     setFeed(new Feed(result, feedContentHandler));
                     this.count = feedContentHandler.getCount();
                     this.entities = feedContentHandler.getEntities();
                     break;
                 case TYPE_ENTITY:
                     EntryContentHandler<T> entryContentHandler = new EntryContentHandler<T>(
-                            entityClass, (Metadata) service.getMetadata(),
-                            getLogger());
+                            entityClass, entityType, (Metadata) service
+                                    .getMetadata(), getLogger());
                     Feed feed = new Feed();
                     feed.getEntries().add(
                             new Entry(result, entryContentHandler));
@@ -376,14 +381,14 @@ public class Query<T> implements Iterable<T> {
                             Math.min(100, rep.getText().length()));
                     if (string.contains("<feed")) {
                         feedContentHandler = new FeedContentHandler<T>(
-                                entityClass, (Metadata) service.getMetadata(),
+                                entityClass, entityType, (Metadata) service.getMetadata(),
                                 getLogger());
                         setFeed(new Feed(rep, feedContentHandler));
                         this.count = feedContentHandler.getCount();
                         this.entities = feedContentHandler.getEntities();
                     } else if (string.contains("<entry")) {
                         entryContentHandler = new EntryContentHandler<T>(
-                                entityClass, (Metadata) service.getMetadata(),
+                                entityClass, entityType, (Metadata) service.getMetadata(),
                                 getLogger());
                         feed = new Feed();
                         feed.getEntries().add(
