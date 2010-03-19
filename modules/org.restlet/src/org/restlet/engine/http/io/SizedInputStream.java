@@ -122,7 +122,10 @@ public class SizedInputStream extends InputEntityStream {
             } else {
                 onEndReached();
             }
-        } else {
+        }
+
+        // The stream has been fully read.
+        if (this.availableSize <= 0) {
             onEndReached();
         }
 
@@ -142,7 +145,9 @@ public class SizedInputStream extends InputEntityStream {
             } else if (result == -1) {
                 onEndReached();
             }
-        } else {
+        }
+
+        if (this.availableSize <= 0) {
             onEndReached();
         }
 
