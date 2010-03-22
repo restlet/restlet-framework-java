@@ -31,11 +31,9 @@ import org.restlet.Client;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 
-import com.noelios.restlet.Engine;
-
 /**
- * HTTP client helper based on BIO sockets. Here is the list of parameters that are
- * supported:
+ * HTTP client helper based on BIO sockets. Here is the list of parameters that
+ * are supported:
  * <table>
  * <tr>
  * <th>Parameter name</th>
@@ -67,7 +65,6 @@ public class StreamClientHelper extends HttpClientHelper {
 
     @Override
     public HttpClientCall create(Request request) {
-        request.getClientInfo().setAgent(Engine.VERSION_HEADER);
         return new StreamClientCall(this, request);
     }
 
@@ -87,10 +84,10 @@ public class StreamClientHelper extends HttpClientHelper {
         super.start();
         getLogger().info("Starting the HTTP client");
     }
-    
+
     @Override
     public synchronized void stop() throws Exception {
         super.stop();
         getLogger().info("Stopping the HTTP client");
-    }  
+    }
 }
