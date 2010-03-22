@@ -74,6 +74,18 @@ public class EntryContentHandler<T> extends EntryReader {
     /** The currently parsed association. */
     private AssociationEnd association;
 
+    /** The currently parsed inline content. */
+    private Content inlineContent;
+
+    /** The currently parsed inline entry. */
+    private Entry inlineEntry;
+
+    /** The currently parsed inline feed. */
+    private Feed inlineFeed;
+
+    /** The currently parsed inline link. */
+    private Link inlineLink;
+
     /** The path of the current XML element relatively to the Entry. */
     List<String> eltPath;
 
@@ -87,10 +99,10 @@ public class EntryContentHandler<T> extends EntryReader {
     private EntityType entityType;
 
     /** Used to parsed Atom link elements that contains entries. */
-    EntryContentHandler<T> extraEntryHandler;
+    EntryContentHandler<T> inlineEntryHandler;
 
     /** Used to parsed Atom link elements that contains feeds. */
-    FeedContentHandler<T> extraFeedHandler;
+    FeedContentHandler<T> inlineFeedHandler;
 
     /** Internal logger. */
     private Logger logger;
@@ -156,11 +168,11 @@ public class EntryContentHandler<T> extends EntryReader {
     public void characters(char[] ch, int start, int length)
             throws SAXException {
         if (State.ASSOCIATION == getState()) {
-            // Delegates to the extra content handler
+            // Delegates to the inline content handler
             if (association.isToMany()) {
-                extraFeedHandler.characters(ch, start, length);
+                inlineFeedHandler.characters(ch, start, length);
             } else {
-                extraEntryHandler.characters(ch, start, length);
+                inlineEntryHandler.characters(ch, start, length);
             }
         } else if (State.PROPERTY == getState() || mapping != null) {
             sb.append(ch, start, length);
@@ -170,11 +182,11 @@ public class EntryContentHandler<T> extends EntryReader {
     @Override
     public void endContent(Content content) {
         if (State.ASSOCIATION == getState()) {
-            // Delegates to the extra content handler
+            // Delegates to the inline content handler
             if (association.isToMany()) {
-                extraFeedHandler.endContent(content);
+                inlineFeedHandler.endContent(content);
             } else {
-                extraEntryHandler.endContent(content);
+                inlineEntryHandler.endContent(content);
             }
         } else {
             popState();
@@ -185,35 +197,35 @@ public class EntryContentHandler<T> extends EntryReader {
     public void endElement(String uri, String localName, String qName)
             throws SAXException {
         if (State.ASSOCIATION == getState()) {
-            // Delegates to the extra content handler
+            // Delegates to the inline content handler
             if (uri.equalsIgnoreCase(Feed.ATOM_NAMESPACE)) {
                 if (localName.equals("feed")) {
-                    extraFeedHandler.endFeed(null);
+                    inlineFeedHandler.endFeed(inlineFeed);
                 } else if (localName.equals("link")) {
                     if (association.isToMany()) {
-                        extraFeedHandler.endLink(null);
+                        inlineFeedHandler.endLink(inlineLink);
                     } else {
-                        extraEntryHandler.endLink(null);
+                        inlineEntryHandler.endLink(inlineLink);
                     }
                 } else if (localName.equalsIgnoreCase("entry")) {
                     if (association.isToMany()) {
-                        extraFeedHandler.endEntry(null);
+                        inlineFeedHandler.endEntry(inlineEntry);
                     } else {
-                        extraEntryHandler.endEntry(null);
+                        inlineEntryHandler.endEntry(inlineEntry);
                     }
                 } else if (localName.equalsIgnoreCase("content")) {
                     if (association.isToMany()) {
-                        extraFeedHandler.endContent(null);
+                        inlineFeedHandler.endContent(inlineContent);
                     } else {
-                        extraEntryHandler.endContent(null);
+                        inlineEntryHandler.endContent(inlineContent);
                     }
                 }
             }
 
             if (association.isToMany()) {
-                extraFeedHandler.endElement(uri, localName, qName);
+                inlineFeedHandler.endElement(uri, localName, qName);
             } else {
-                extraEntryHandler.endElement(uri, localName, qName);
+                inlineEntryHandler.endElement(uri, localName, qName);
             }
         } else if (State.PROPERTY == getState()) {
             if (parsePropertyNull) {
@@ -369,10 +381,10 @@ public class EntryContentHandler<T> extends EntryReader {
         if (State.ASSOCIATION == getState()) {
             String propertyName = ReflectUtils.normalize(link.getTitle());
             if (association.isToMany()) {
-                extraFeedHandler.endLink(link);
+                inlineFeedHandler.endLink(link);
                 try {
                     ReflectUtils.setProperty(entity, propertyName, association
-                            .isToMany(), extraFeedHandler.getEntities()
+                            .isToMany(), inlineFeedHandler.getEntities()
                             .iterator(), ReflectUtils.getSimpleClass(entity,
                             propertyName));
                 } catch (Exception e) {
@@ -380,21 +392,22 @@ public class EntryContentHandler<T> extends EntryReader {
                             "Cannot set " + propertyName + " property on "
                                     + entity + " from link");
                 }
-                extraFeedHandler = null;
+                inlineFeedHandler = null;
             } else {
-                extraEntryHandler.endLink(link);
+                inlineEntryHandler.endLink(link);
                 try {
                     ReflectUtils.invokeSetter(entity, propertyName,
-                            extraEntryHandler.getEntity());
+                            inlineEntryHandler.getEntity());
                 } catch (Exception e) {
                     getLogger().warning(
                             "Cannot set " + propertyName + " property on "
                                     + entity + " from link");
                 }
-                extraEntryHandler = null;
+                inlineEntryHandler = null;
             }
 
-            // This works if the extra entries does not contain links as well...
+            // This works if the inline entries does not contain links as
+            // well...
             popState();
             association = null;
         }
@@ -510,7 +523,7 @@ public class EntryContentHandler<T> extends EntryReader {
     public void startElement(String uri, String localName, String qName,
             Attributes attrs) throws SAXException {
         if (State.ASSOCIATION == getState()) {
-            // Delegates to the extra content handler
+            // Delegates to the inline content handler
             if (uri.equalsIgnoreCase(Feed.ATOM_NAMESPACE)) {
                 if (localName.equals("feed")) {
                     Feed feed = new Feed();
@@ -518,7 +531,8 @@ public class EntryContentHandler<T> extends EntryReader {
                     if (attr != null) {
                         feed.setBaseReference(new Reference(attr));
                     }
-                    this.extraFeedHandler.startFeed(feed);
+                    inlineFeed = feed;
+                    this.inlineFeedHandler.startFeed(feed);
                 } else if (localName.equals("link")) {
                     Link link = new Link();
                     link.setHref(new Reference(attrs.getValue("", "href")));
@@ -534,18 +548,20 @@ public class EntryContentHandler<T> extends EntryReader {
                     String attr = attrs.getValue("", "length");
                     link.setLength((attr == null) ? -1L : Long.parseLong(attr));
 
+                    inlineLink = link;
                     if (association.isToMany()) {
-                        extraFeedHandler.startLink(link);
+                        inlineFeedHandler.startLink(link);
                     } else {
-                        extraEntryHandler.startLink(link);
+                        inlineEntryHandler.startLink(link);
                     }
                 } else if (localName.equalsIgnoreCase("entry")) {
                     Entry entry = new Entry();
                     if (association.isToMany()) {
-                        extraFeedHandler.startEntry(entry);
+                        inlineFeedHandler.startEntry(entry);
                     } else {
-                        extraEntryHandler.startEntry(entry);
+                        inlineEntryHandler.startEntry(entry);
                     }
+                    inlineEntry = entry;
                 } else if (localName.equalsIgnoreCase("content")) {
                     Content content = new Content();
                     MediaType type = getMediaType(attrs.getValue("", "type"));
@@ -555,17 +571,18 @@ public class EntryContentHandler<T> extends EntryReader {
                         content.setExternalRef(new Reference(srcAttr));
                     content.setExternalType(type);
                     if (association.isToMany()) {
-                        extraFeedHandler.startContent(content);
+                        inlineFeedHandler.startContent(content);
                     } else {
-                        extraEntryHandler.startContent(content);
+                        inlineEntryHandler.startContent(content);
                     }
+                    inlineContent = content;
                 }
             }
 
             if (association.isToMany()) {
-                extraFeedHandler.startElement(uri, localName, qName, attrs);
+                inlineFeedHandler.startElement(uri, localName, qName, attrs);
             } else {
-                extraEntryHandler.startElement(uri, localName, qName, attrs);
+                inlineEntryHandler.startElement(uri, localName, qName, attrs);
             }
         } else if (Service.WCF_DATASERVICES_METADATA_NAMESPACE.equals(uri)
                 && "properties".equals(localName)) {
@@ -646,11 +663,11 @@ public class EntryContentHandler<T> extends EntryReader {
     @Override
     public void startLink(Link link) {
         if (State.ASSOCIATION == getState()) {
-            // Delegates to the extra content handler
+            // Delegates to the inline content handler
             if (association.isToMany()) {
-                extraFeedHandler.startLink(link);
+                inlineFeedHandler.startLink(link);
             } else {
-                extraEntryHandler.startLink(link);
+                inlineEntryHandler.startLink(link);
             }
         } else {
             if (link.getTitle() != null && entityType != null) {
@@ -659,11 +676,11 @@ public class EntryContentHandler<T> extends EntryReader {
                 association = metadata.getAssociation(entityType, propertyName);
                 if (association != null) {
                     if (association.isToMany()) {
-                        extraFeedHandler = new FeedContentHandler<T>(
+                        inlineFeedHandler = new FeedContentHandler<T>(
                                 ReflectUtils.getSimpleClass(entity,
                                         propertyName), metadata, getLogger());
                     } else {
-                        extraEntryHandler = new EntryContentHandler<T>(
+                        inlineEntryHandler = new EntryContentHandler<T>(
                                 ReflectUtils.getSimpleClass(entity,
                                         propertyName), metadata, getLogger());
                     }
