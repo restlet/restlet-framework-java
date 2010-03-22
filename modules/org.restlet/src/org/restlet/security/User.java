@@ -30,6 +30,8 @@
 
 package org.restlet.security;
 
+import java.security.Principal;
+
 /**
  * User part of a security realm. Note the same user can be member of several
  * groups.
@@ -38,7 +40,7 @@ package org.restlet.security;
  * @see Group
  * @author Jerome Louvel
  */
-public class User {
+public class User implements Principal {
 
     /** The email. */
     private volatile String email;
@@ -172,6 +174,15 @@ public class User {
      */
     public String getLastName() {
         return lastName;
+    }
+
+    /**
+     * Returns the user identifier.
+     * 
+     * @see #getIdentifier()
+     */
+    public String getName() {
+        return getIdentifier();
     }
 
     /**

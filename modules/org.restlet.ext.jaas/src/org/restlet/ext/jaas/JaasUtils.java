@@ -30,6 +30,8 @@
 
 package org.restlet.ext.jaas;
 
+import java.security.Principal;
+
 import javax.security.auth.Subject;
 
 import org.restlet.data.ClientInfo;
@@ -44,8 +46,9 @@ public final class JaasUtils {
 
     /**
      * Creates a JAAS subject based on a given {@link ClientInfo}. It adds a
-     * {@link UserPrincipal} based on the {@link ClientInfo#getUser()} and a
-     * {@link RolePrincipal} for each role in {@link ClientInfo#getRoles()}.
+     * {@link ClientInfo#getUser()}, all the entries in
+     * {@link ClientInfo#getRoles()} and all other principals in
+     * {@link ClientInfo#getPrincipals()}.
      * 
      * @param clientInfo
      *            The client info to expose as a subject.
@@ -56,12 +59,15 @@ public final class JaasUtils {
 
         if (clientInfo != null) {
             if (clientInfo.getUser() != null) {
-                result.getPrincipals().add(
-                        new UserPrincipal(clientInfo.getUser()));
+                result.getPrincipals().add(clientInfo.getUser());
             }
 
             for (Role role : clientInfo.getRoles()) {
-                result.getPrincipals().add(new RolePrincipal(role));
+                result.getPrincipals().add(role);
+            }
+
+            for (Principal principal : clientInfo.getPrincipals()) {
+                result.getPrincipals().add(principal);
             }
         }
 

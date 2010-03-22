@@ -30,6 +30,7 @@
 
 package org.restlet.security;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -41,7 +42,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * 
  * @author Jerome Louvel
  */
-public class Role {
+public class Role implements Principal {
 
     /**
      * Unmodifiable role that covers all existing roles. Its name is "*" by

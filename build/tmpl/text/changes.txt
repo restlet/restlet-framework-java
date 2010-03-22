@@ -12,6 +12,11 @@ Changes log
         DefaultSslContextFactory (which is initialized with the same 
         attributes as the individual connectors were using).
         Contributed by Bruno Harbulot.
+      - User and Role classes now implement java.security.Principal
+        interface. Removed UserPrincipal and RolePrincipal classes
+        from the JAAS extension. The JaasUtils#createSubject() now
+        also adds the ClientInfo#principals entries. 
+        Suggested (in part) by Bruno Harbulot.
     - Bugs fixed
         - Fixed HeaderReader#addValues method.
           Reported by Carsten Lohmann. 

@@ -243,7 +243,7 @@ public final class ClientInfo {
     private volatile int port;
 
     // [ifndef gwt] member
-    /** List of security principals. */
+    /** List of additional client principals. */
     private volatile List<java.security.Principal> principals;
 
     // [ifndef gwt] member
@@ -716,9 +716,10 @@ public final class ClientInfo {
 
     // [ifndef gwt] method
     /**
-     * Returns the client principals.
+     * Returns the additional client principals. Note that {@link #getUser()}
+     * and {@link #getRoles()} methods already return user and role principals.
      * 
-     * @return The client principals.
+     * @return The additional client principals.
      */
     public List<java.security.Principal> getPrincipals() {
         // Lazy initialization with double-check.
@@ -996,10 +997,11 @@ public final class ClientInfo {
 
     // [ifndef gwt] method
     /**
-     * Sets the user principals.
+     * Sets the additional client principals.
      * 
      * @param principals
-     *            The user principals.
+     *            The additional client principals.
+     * @see #getPrincipals()
      */
     public void setPrincipals(List<java.security.Principal> principals) {
         synchronized (this) {
