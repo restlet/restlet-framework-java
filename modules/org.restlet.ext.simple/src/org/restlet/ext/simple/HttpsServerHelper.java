@@ -31,14 +31,10 @@
 package org.restlet.ext.simple;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.security.KeyStore;
 
-import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManagerFactory;
 
 import org.restlet.Server;
 import org.restlet.data.Protocol;
@@ -171,6 +167,7 @@ public class HttpsServerHelper extends SimpleServerHelper {
      * 
      * @return The SSL certificate algorithm.
      */
+    @Deprecated
     public String getCertAlgorithm() {
         return getHelpedParameters().getFirstValue("certAlgorithm", "SunX509");
     }
@@ -180,6 +177,7 @@ public class HttpsServerHelper extends SimpleServerHelper {
      * 
      * @return The SSL key password.
      */
+    @Deprecated
     public String getKeyPassword() {
         return getHelpedParameters().getFirstValue("keyPassword",
                 getKeystorePassword());
@@ -190,6 +188,7 @@ public class HttpsServerHelper extends SimpleServerHelper {
      * 
      * @return The SSL keystore password.
      */
+    @Deprecated
     public String getKeystorePassword() {
         return getHelpedParameters().getFirstValue("keystorePassword", "");
     }
@@ -199,6 +198,7 @@ public class HttpsServerHelper extends SimpleServerHelper {
      * 
      * @return The SSL keystore path.
      */
+    @Deprecated
     public String getKeystorePath() {
         return getHelpedParameters().getFirstValue("keystorePath",
                 System.getProperty("user.home") + File.separator + ".keystore");
@@ -209,6 +209,7 @@ public class HttpsServerHelper extends SimpleServerHelper {
      * 
      * @return The SSL keystore type.
      */
+    @Deprecated
     public String getKeystoreType() {
         return getHelpedParameters().getFirstValue("keystoreType", "JKS");
     }
@@ -218,6 +219,7 @@ public class HttpsServerHelper extends SimpleServerHelper {
      * 
      * @return The SSL keystore type.
      */
+    @Deprecated
     public String getSslProtocol() {
         return getHelpedParameters().getFirstValue("sslProtocol", "TLS");
     }
@@ -267,37 +269,7 @@ public class HttpsServerHelper extends SimpleServerHelper {
         // Initialize the SSL context
         final SslContextFactory sslContextFactory = SslUtils
                 .getSslContextFactory(this);
-        SSLContext sslContext;
-        /*
-         * If an SslContextFactory has been set up, its settings take priority
-         * over the other parameters (which are otherwise used to build and
-         * initialize an SSLContext).
-         */
-        if (sslContextFactory == null) {
-            final KeyStore keyStore = KeyStore.getInstance(getKeystoreType());
-            final FileInputStream fis = getKeystorePath() == null ? null
-                    : new FileInputStream(getKeystorePath());
-            final char[] password = getKeystorePassword() == null ? null
-                    : getKeystorePassword().toCharArray();
-            keyStore.load(fis, password);
-            if (fis != null) {
-                fis.close();
-            }
-
-            final KeyManagerFactory keyManagerFactory = KeyManagerFactory
-                    .getInstance(getCertAlgorithm());
-            keyManagerFactory.init(keyStore, getKeyPassword().toCharArray());
-
-            final TrustManagerFactory trustManagerFactory = TrustManagerFactory
-                    .getInstance(getCertAlgorithm());
-            trustManagerFactory.init(keyStore);
-
-            sslContext = SSLContext.getInstance(getSslProtocol());
-            sslContext.init(keyManagerFactory.getKeyManagers(),
-                    trustManagerFactory.getTrustManagers(), null);
-        } else {
-            sslContext = sslContextFactory.createSslContext();
-        }
+        SSLContext sslContext = sslContextFactory.createSslContext();
 
         final String addr = getHelped().getAddress();
         if (addr != null) {
@@ -334,5 +306,4 @@ public class HttpsServerHelper extends SimpleServerHelper {
         setEphemeralPort(address.getPort());
         super.start();
     }
-
 }

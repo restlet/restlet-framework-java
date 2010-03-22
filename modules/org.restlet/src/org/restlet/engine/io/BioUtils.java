@@ -58,6 +58,9 @@ import org.restlet.representation.WriterRepresentation;
  */
 public final class BioUtils {
 
+    /** Support for byte to hexa conversions. */
+    private static final char[] HEXDIGITS = "0123456789ABCDEF".toCharArray();
+
     /**
      * Copies an input stream to an output stream. When the reading is done, the
      * input stream is closed.
@@ -447,6 +450,25 @@ public final class BioUtils {
         char[] r = new char[cb.remaining()];
         cb.get(r);
         return r;
+    }
+
+    /**
+     * Converts a byte array into an hexadecimal string.
+     * 
+     * @param byteArray
+     *            The byte array to convert.
+     * @return The hexadecimal string.
+     */
+    public static String toHexString(byte[] byteArray) {
+        final char[] hexChars = new char[2 * byteArray.length];
+        int i = 0;
+
+        for (final byte b : byteArray) {
+            hexChars[i++] = HEXDIGITS[(b >> 4) & 0xF];
+            hexChars[i++] = HEXDIGITS[b & 0xF];
+        }
+
+        return new String(hexChars);
     }
 
     /**

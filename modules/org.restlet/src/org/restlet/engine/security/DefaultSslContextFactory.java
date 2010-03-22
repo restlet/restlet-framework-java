@@ -30,7 +30,6 @@
 
 package org.restlet.engine.security;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.security.KeyStore;
 import java.security.SecureRandom;
@@ -331,9 +330,7 @@ public class DefaultSslContextFactory extends SslContextFactory {
     @Override
     public void init(Series<Parameter> helperParameters) {
         setKeyStorePath(helperParameters.getFirstValue("keystorePath", System
-                .getProperty("javax.net.ssl.keyStore", System
-                        .getProperty("user.home")
-                        + File.separator + ".keystore")));
+                .getProperty("javax.net.ssl.keyStore")));
         setKeyStorePassword(helperParameters.getFirstValue("keystorePassword",
                 System.getProperty("javax.net.ssl.keyStorePassword", "")));
         setKeyStoreType(helperParameters.getFirstValue("keystoreType", System

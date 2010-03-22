@@ -31,11 +31,8 @@
 package org.restlet.ext.grizzly;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.net.InetAddress;
-import java.security.KeyStore;
 
-import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 
 import org.restlet.Server;
@@ -146,27 +143,9 @@ public class HttpsServerHelper extends GrizzlyServerHelper {
     @Override
     protected void configure(Controller controller) throws Exception {
         // Initialize the SSL context
-        final SslContextFactory sslContextFactory = SslUtils
+        SslContextFactory sslContextFactory = SslUtils
                 .getSslContextFactory(this);
-        SSLContext sslContext;
-
-        /*
-         * If an SslContextFactory has been set up, its settings take priority
-         * over the other parameters (which are otherwise used to build and
-         * initialize an SSLContext).
-         */
-        if (sslContextFactory == null) {
-            final KeyStore keyStore = KeyStore.getInstance(getKeystoreType());
-            final FileInputStream fis = new FileInputStream(getKeystorePath());
-            keyStore.load(fis, getKeystorePassword().toCharArray());
-            final KeyManagerFactory keyManagerFactory = KeyManagerFactory
-                    .getInstance(getCertAlgorithm());
-            keyManagerFactory.init(keyStore, getKeyPassword().toCharArray());
-            sslContext = SSLContext.getInstance(getSslProtocol());
-            sslContext.init(keyManagerFactory.getKeyManagers(), null, null);
-        } else {
-            sslContext = sslContextFactory.createSslContext();
-        }
+        SSLContext sslContext = sslContextFactory.createSslContext();
 
         // Get the TCP select handler of the controller
         final TCPSelectorHandler selectorHandler = getSelectorHandler();
@@ -217,6 +196,7 @@ public class HttpsServerHelper extends GrizzlyServerHelper {
      * 
      * @return The SSL certificate algorithm.
      */
+    @Deprecated
     public String getCertAlgorithm() {
         return getHelpedParameters().getFirstValue("certAlgorithm", "SunX509");
     }
@@ -226,6 +206,7 @@ public class HttpsServerHelper extends GrizzlyServerHelper {
      * 
      * @return The SSL key password.
      */
+    @Deprecated
     public String getKeyPassword() {
         return getHelpedParameters().getFirstValue("keyPassword",
                 getKeystorePassword());
@@ -236,6 +217,7 @@ public class HttpsServerHelper extends GrizzlyServerHelper {
      * 
      * @return The SSL keystore password.
      */
+    @Deprecated
     public String getKeystorePassword() {
         return getHelpedParameters().getFirstValue("keystorePassword", "");
     }
@@ -245,6 +227,7 @@ public class HttpsServerHelper extends GrizzlyServerHelper {
      * 
      * @return The SSL keystore path.
      */
+    @Deprecated
     public String getKeystorePath() {
         return getHelpedParameters().getFirstValue("keystorePath",
                 System.getProperty("user.home") + File.separator + ".keystore");
@@ -255,6 +238,7 @@ public class HttpsServerHelper extends GrizzlyServerHelper {
      * 
      * @return The SSL keystore type.
      */
+    @Deprecated
     public String getKeystoreType() {
         return getHelpedParameters().getFirstValue("keystoreType", "JKS");
     }
@@ -264,6 +248,7 @@ public class HttpsServerHelper extends GrizzlyServerHelper {
      * 
      * @return The SSL keystore type.
      */
+    @Deprecated
     public String getSslProtocol() {
         return getHelpedParameters().getFirstValue("sslProtocol", "TLS");
     }
@@ -287,5 +272,4 @@ public class HttpsServerHelper extends GrizzlyServerHelper {
         return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
                 "wantClientAuthentication", "false"));
     }
-
 }

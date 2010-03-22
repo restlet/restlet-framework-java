@@ -4,6 +4,14 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - API changes
+      - Left an unspecified key stores 'null' to prevent troubles 
+        with HTTP client connectors. Contributed by Bruno Harbulot.
+      - Deprecated the getters for the keystore-related attributes in 
+        each connector. Lets these values be read from the 
+        DefaultSslContextFactory (which is initialized with the same 
+        attributes as the individual connectors were using).
+        Contributed by Bruno Harbulot.
     - Bugs fixed
         - Fixed HeaderReader#addValues method.
           Reported by Carsten Lohmann. 

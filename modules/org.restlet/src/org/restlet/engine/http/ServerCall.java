@@ -51,6 +51,7 @@ import org.restlet.engine.http.header.HeaderReader;
 import org.restlet.engine.http.header.HeaderUtils;
 import org.restlet.engine.http.header.LanguageReader;
 import org.restlet.engine.http.header.RangeReader;
+import org.restlet.engine.io.BioUtils;
 import org.restlet.engine.security.SslUtils;
 import org.restlet.engine.util.Base64;
 import org.restlet.representation.InputRepresentation;
@@ -286,7 +287,7 @@ public abstract class ServerCall extends Call {
         byte[] byteArray = getSslSessionIdBytes();
 
         if (byteArray != null) {
-            return SslUtils.toHexString(byteArray);
+            return BioUtils.toHexString(byteArray);
         } else {
             return null;
         }

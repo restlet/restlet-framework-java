@@ -175,36 +175,13 @@ public class HttpsServerHelper extends JettyServerHelper {
         switch (getType()) {
         case 1:
             // Selecting NIO connector
-            /*
-             * If an SslContextFactory has been set up, its settings take
-             * priority over the other parameters (which would otherwise be used
-             * to build and initialise an SSLContext internally). Jetty's
-             * SslSelectChannelConnector does not have a setSslContext method
-             * yet, so we override its createSSLContext() method for this
-             * purpose.
-             */
             SslSelectChannelConnector nioResult;
-            if (sslContextFactory == null) {
-                nioResult = new SslSelectChannelConnector();
-                nioResult.setKeyPassword(getKeyPassword());
-                nioResult.setKeystore(getKeystorePath());
-                nioResult.setKeystoreType(getKeystoreType());
-                nioResult.setPassword(getKeystorePassword());
-                nioResult.setProtocol(getSslProtocol());
-                nioResult.setProvider(getSecurityProvider());
-                nioResult.setSecureRandomAlgorithm(getSecureRandomAlgorithm());
-                nioResult.setSslKeyManagerFactoryAlgorithm(getCertAlgorithm());
-                nioResult
-                        .setSslTrustManagerFactoryAlgorithm(getCertAlgorithm());
-                nioResult.setTrustPassword(getKeystorePassword());
-            } else {
-                nioResult = new SslSelectChannelConnector() {
-                    @Override
-                    protected SSLContext createSSLContext() throws Exception {
-                        return sslContextFactory.createSslContext();
-                    }
-                };
-            }
+            nioResult = new SslSelectChannelConnector() {
+                @Override
+                protected SSLContext createSSLContext() throws Exception {
+                    return sslContextFactory.createSslContext();
+                }
+            };
 
             if (isNeedClientAuthentication()) {
                 nioResult.setNeedClientAuth(true);
@@ -220,39 +197,15 @@ public class HttpsServerHelper extends JettyServerHelper {
             break;
         case 2:
             // Blocking BIO connector
-            /*
-             * If an SslContextFactory has been set up, its settings take
-             * priority over the other parameters (which would otherwise be used
-             * to build and initialise an SSLContext internally). Jetty's
-             * SslSocketConnector does not have a setSslContext method yet, so
-             * we override its createFactory() method for this purpose.
-             */
-            SslSocketConnector bioResult;
-            if (sslContextFactory == null) {
-                bioResult = new SslSocketConnector();
-                bioResult.setKeyPassword(getKeyPassword());
-                bioResult.setKeystore(getKeystorePath());
-                bioResult.setKeystoreType(getKeystoreType());
-                bioResult.setPassword(getKeystorePassword());
-                bioResult.setProtocol(getSslProtocol());
-                bioResult.setProvider(getSecurityProvider());
-                bioResult.setSecureRandomAlgorithm(getSecureRandomAlgorithm());
-                bioResult.setSslKeyManagerFactoryAlgorithm(getCertAlgorithm());
-                bioResult
-                        .setSslTrustManagerFactoryAlgorithm(getCertAlgorithm());
-                bioResult.setTrustPassword(getKeystorePassword());
-            } else {
-                bioResult = new SslSocketConnector() {
-                    @Override
-                    protected SSLServerSocketFactory createFactory()
-                            throws Exception {
-                        final SSLContext sslContext = sslContextFactory
-                                .createSslContext();
-                        return sslContext.getServerSocketFactory();
-                    }
-
-                };
-            }
+            SslSocketConnector bioResult = new SslSocketConnector() {
+                @Override
+                protected SSLServerSocketFactory createFactory()
+                        throws Exception {
+                    final SSLContext sslContext = sslContextFactory
+                            .createSslContext();
+                    return sslContext.getServerSocketFactory();
+                }
+            };
 
             if (isNeedClientAuthentication()) {
                 bioResult.setNeedClientAuth(true);
@@ -276,6 +229,7 @@ public class HttpsServerHelper extends JettyServerHelper {
      * 
      * @return The SSL certificate algorithm.
      */
+    @Deprecated
     public String getCertAlgorithm() {
         return getHelpedParameters().getFirstValue("certAlgorithm", "SunX509");
     }
@@ -285,6 +239,7 @@ public class HttpsServerHelper extends JettyServerHelper {
      * 
      * @return The SSL key password.
      */
+    @Deprecated
     public String getKeyPassword() {
         return getHelpedParameters().getFirstValue("keyPassword",
                 getKeystorePassword());
@@ -295,6 +250,7 @@ public class HttpsServerHelper extends JettyServerHelper {
      * 
      * @return The SSL keystore password.
      */
+    @Deprecated
     public String getKeystorePassword() {
         return getHelpedParameters().getFirstValue("keystorePassword", "");
     }
@@ -304,6 +260,7 @@ public class HttpsServerHelper extends JettyServerHelper {
      * 
      * @return The SSL keystore path.
      */
+    @Deprecated
     public String getKeystorePath() {
         return getHelpedParameters().getFirstValue("keystorePath",
                 System.getProperty("user.home") + File.separator + ".keystore");
@@ -314,6 +271,7 @@ public class HttpsServerHelper extends JettyServerHelper {
      * 
      * @return The SSL keystore type.
      */
+    @Deprecated
     public String getKeystoreType() {
         return getHelpedParameters().getFirstValue("keystoreType", "JKS");
     }
@@ -323,6 +281,7 @@ public class HttpsServerHelper extends JettyServerHelper {
      * 
      * @return The name of the RNG algorithm.
      */
+    @Deprecated
     public String getSecureRandomAlgorithm() {
         return getHelpedParameters().getFirstValue("secureRandomAlgorithm",
                 null);
@@ -333,6 +292,7 @@ public class HttpsServerHelper extends JettyServerHelper {
      * 
      * @return The Java security provider name.
      */
+    @Deprecated
     public String getSecurityProvider() {
         return getHelpedParameters().getFirstValue("securityProvider", null);
     }
@@ -342,6 +302,7 @@ public class HttpsServerHelper extends JettyServerHelper {
      * 
      * @return The SSL keystore type.
      */
+    @Deprecated
     public String getSslProtocol() {
         return getHelpedParameters().getFirstValue("sslProtocol", "TLS");
     }

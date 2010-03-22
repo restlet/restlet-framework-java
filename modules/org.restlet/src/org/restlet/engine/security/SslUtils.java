@@ -50,8 +50,6 @@ public class SslUtils {
 
     /** Cache of SSL key sizes for various cipher suites. */
     private final static ConcurrentMap<String, Integer> keySizesCache = new ConcurrentHashMap<String, Integer>();
-    
-    private static final char[] HEXDIGITS = "0123456789ABCDEF".toCharArray();
 
     /**
      * Extract the SSL key size of a given cipher suite.
@@ -218,19 +216,11 @@ public class SslUtils {
             }
         }
 
-        return result;
-    }
-    
-    public static String toHexString(byte[] byteArray) {
-        final char[] hexChars = new char[2 * byteArray.length];
-        int i = 0;
-
-        for (final byte b : byteArray) {
-            hexChars[i++] = HEXDIGITS[(b >> 4) & 0xF];
-            hexChars[i++] = HEXDIGITS[b & 0xF];
+        if (result == null) {
+            result = new DefaultSslContextFactory();
         }
 
-        return new String(hexChars);
+        return result;
     }
 
     /**
