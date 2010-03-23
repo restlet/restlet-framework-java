@@ -33,9 +33,6 @@ package org.restlet.engine.http.io;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.restlet.Connector;
-import org.restlet.engine.http.connector.Connection;
-
 // [excludes gwt]
 /**
  * Input stream based on a source stream that must only be partially read.
@@ -53,31 +50,18 @@ public class SizedInputStream extends InputEntityStream {
     /**
      * Constructor.
      * 
-     * @param connection
-     *            The connection.
+     * @param notifiable
+     *            The notifiable connection.
      * @param inboundStream
-     *            The source stream.
+     *            The inbound stream.
      * @param size
      *            The total size that should be read from the source stream.
      */
-    public SizedInputStream(Connection<? extends Connector> connection,
-            InputStream inboundStream, long size) {
-        super(connection, inboundStream);
+    public SizedInputStream(Notifiable notifiable, InputStream inboundStream,
+            long size) {
+        super(notifiable, inboundStream);
         this.availableSize = size;
         this.markedAvailableSize = -1;
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param connection
-     *            The connection instance that holds the source stream.
-     * @param size
-     *            The total size that should be read from the source stream.
-     */
-    public SizedInputStream(Connection<? extends Connector> connection,
-            long size) {
-        this(connection, connection.getInboundStream(), size);
     }
 
     @Override

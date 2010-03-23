@@ -35,9 +35,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
 
-import org.restlet.Connector;
-import org.restlet.engine.http.connector.Connection;
-
 /**
  * {@link InputStream} to wrap a source {@link InputStream} that has been
  * chunked. See section 3.6.1 of HTTP Protocol for more information on chunked
@@ -70,30 +67,19 @@ public class ChunkedInputStream extends InputEntityStream {
     /**
      * Constructor.
      * 
-     * @param connection
-     *            The underlying connection.
+     * @param notifiable
+     *            The notifiable connection.
      * @param inboundStream
      *            The inbound stream.
      */
-    public ChunkedInputStream(Connection<? extends Connector> connection,
-            InputStream inboundStream) {
-        super(connection, inboundStream);
+    public ChunkedInputStream(Notifiable notifiable, InputStream inboundStream) {
+        super(notifiable, inboundStream);
         this.source = new PushbackInputStream(inboundStream,
                 PUSHBBACK_BUFFER_SIZE);
         this.initialized = false;
         this.endReached = false;
         this.position = 0;
         this.chunkSize = 0;
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param connection
-     *            The connection with its own inbound stream.
-     */
-    public ChunkedInputStream(Connection<? extends Connector> connection) {
-        this(connection, connection.getInboundStream());
     }
 
     /**

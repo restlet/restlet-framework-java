@@ -32,7 +32,6 @@ package org.restlet.engine.http.io;
 
 import java.io.InputStream;
 
-import org.restlet.Connector;
 import org.restlet.engine.http.connector.Connection;
 import org.restlet.engine.http.connector.ConnectionState;
 
@@ -42,8 +41,8 @@ import org.restlet.engine.http.connector.ConnectionState;
  */
 public abstract class InputEntityStream extends InputStream {
 
-    /** The connection. */
-    private volatile Connection<? extends Connector> connection;
+    /** The notifiable connection. */
+    private volatile Notifiable notifiable;
 
     /** The inbound stream. */
     private InputStream inboundStream;
@@ -51,25 +50,14 @@ public abstract class InputEntityStream extends InputStream {
     /**
      * Constructor.
      * 
-     * @param connection
-     *            The connection with its own inbound stream.
-     */
-    public InputEntityStream(Connection<? extends Connector> connection) {
-        this(connection, connection.getInboundStream());
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param connection
-     *            The underlying connection.
+     * @param notifiable
+     *            The notifiable connection.
      * @param inboundStream
      *            The inbound stream.
      */
-    public InputEntityStream(Connection<? extends Connector> connection,
-            InputStream inboundStream) {
+    public InputEntityStream(Notifiable notifiable, InputStream inboundStream) {
         super();
-        this.connection = connection;
+        this.notifiable = notifiable;
         this.inboundStream = inboundStream;
     }
 
@@ -88,8 +76,8 @@ public abstract class InputEntityStream extends InputStream {
      * {@link Connection#setInboundBusy(boolean)}) .
      */
     protected void onEndReached() {
-        if (connection != null) {
-            connection.setInboundBusy(false);
+        if (notifiable != null) {
+            notifiable.onEndReached();
         }
     }
 
@@ -99,10 +87,8 @@ public abstract class InputEntityStream extends InputStream {
      * {@link ConnectionState#CLOSING} in order to release this stream.
      */
     protected void onError() {
-        onEndReached();
-        if (connection != null) {
-            connection.setState(ConnectionState.CLOSING);
+        if (notifiable != null) {
+            notifiable.onError();
         }
     }
-
 }

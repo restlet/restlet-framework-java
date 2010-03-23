@@ -31,9 +31,7 @@
 package org.restlet.engine.http.io;
 
 import java.io.IOException;
-
-import org.restlet.Connector;
-import org.restlet.engine.http.connector.Connection;
+import java.io.InputStream;
 
 /**
  * Input stream based on a source stream that must only be totally read before
@@ -46,10 +44,13 @@ public class ClosingInputStream extends InputEntityStream {
     /**
      * Constructor.
      * 
-     * @param connection
+     * @param notifiable
+     *            The notifiable connection.
+     * @param inboundStream
+     *            The inbound stream.
      */
-    public ClosingInputStream(Connection<? extends Connector> connection) {
-        super(connection);
+    public ClosingInputStream(Notifiable notifiable, InputStream inboundStream) {
+        super(notifiable, inboundStream);
     }
 
     @Override

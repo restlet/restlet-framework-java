@@ -60,6 +60,7 @@ import org.restlet.engine.http.io.ChunkedInputStream;
 import org.restlet.engine.http.io.ChunkedOutputStream;
 import org.restlet.engine.http.io.ClosingInputStream;
 import org.restlet.engine.http.io.InboundStream;
+import org.restlet.engine.http.io.Notifiable;
 import org.restlet.engine.http.io.OutboundStream;
 import org.restlet.engine.http.io.SizedInputStream;
 import org.restlet.engine.io.TraceInputStream;
@@ -80,7 +81,7 @@ import org.restlet.util.Series;
  *            The parent connector type.
  * @author Jerome Louvel
  */
-public abstract class Connection<T extends Connector> {
+public abstract class Connection<T extends Connector> implements Notifiable {
     /** Indicates if the input of the socket is busy. */
     private volatile boolean inboundBusy;
 
@@ -363,11 +364,11 @@ public abstract class Connection<T extends Connector> {
         InputStream result = null;
 
         if (chunked) {
-            result = new ChunkedInputStream(this);
+            result = new ChunkedInputStream(this, getInboundStream());
         } else if (size >= 0) {
-            result = new SizedInputStream(this, size);
+            result = new SizedInputStream(this, getInboundStream(), size);
         } else {
-            result = new ClosingInputStream(this);
+            result = new ClosingInputStream(this, getInboundStream());
         }
 
         return result;
@@ -623,6 +624,22 @@ public abstract class Connection<T extends Connector> {
      */
     public boolean isServerSide() {
         return getHelper().isServerSide();
+    }
+
+    /**
+     * Set the inbound busy state to false.
+     */
+    public void onEndReached() {
+        setInboundBusy(false);
+    }
+
+    /**
+     * Set the inbound busy state to false and the connection state to
+     * {@link ConnectionState#CLOSING}.
+     */
+    public void onError() {
+        setInboundBusy(false);
+        setState(ConnectionState.CLOSING);
     }
 
     /**
