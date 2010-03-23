@@ -135,6 +135,15 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
     }
 
     /**
+     * Returns the server socket.
+     * 
+     * @return The server socket.
+     */
+    public ServerSocket getServerSocket() {
+        return serverSocket;
+    }
+
+    /**
      * Handles a call by invoking the helped Server's
      * {@link Server#handle(Request, Response)} method.
      * 
@@ -241,8 +250,7 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
 
         // Start the socket listener service
         this.latch = new CountDownLatch(1);
-        this.acceptorTask = new AcceptorTask(this, this.serverSocket,
-                this.latch);
+        this.acceptorTask = new AcceptorTask(this, this.latch);
         this.acceptorService.submit(this.acceptorTask);
 
         // Wait for the listener to start up and count down the latch
@@ -264,13 +272,12 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
 
         // Stop accepting connections
         if (this.acceptorService != null) {
-            // This must be forcefully interrupted because the thread
-            // is most likely blocked on channel.accept()
-            this.acceptorTask.setRunning(false);
-            this.acceptorTask.getServerSocket().close();
-            this.acceptorService.shutdown();
-
             try {
+                // This must be forcefully interrupted because the thread
+                // is most likely blocked on channel.accept()
+                getServerSocket().close();
+                this.acceptorTask.setRunning(false);
+                this.acceptorService.shutdown();
                 this.acceptorService.awaitTermination(30, TimeUnit.SECONDS);
             } catch (Exception ex) {
                 getLogger()
