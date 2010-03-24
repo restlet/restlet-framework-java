@@ -270,7 +270,7 @@ public class GrizzlyServerCall extends ServerCall {
                 }
 
                 public int write(ByteBuffer src) throws IOException {
-                    final int nWrite = src.limit();
+                    int nWrite = src.limit();
                     SSLOutputWriter.flushChannel(getSocketChannel(), src);
                     return nWrite;
                 }

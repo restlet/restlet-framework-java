@@ -46,9 +46,6 @@ import java.nio.channels.Selector;
  */
 public class NbChannelInputStream extends InputStream {
 
-    /** The buffer size. */
-    private static final int BUFFER_SIZE = 8192;
-
     /** The internal byte buffer. */
     private final ByteBuffer bb;
 
@@ -76,7 +73,7 @@ public class NbChannelInputStream extends InputStream {
             this.selectableChannel = null;
         }
 
-        this.bb = ByteBuffer.allocate(BUFFER_SIZE);
+        this.bb = ByteBuffer.allocate(NioUtils.BUFFER_SIZE);
         this.bb.flip();
         this.endReached = false;
     }

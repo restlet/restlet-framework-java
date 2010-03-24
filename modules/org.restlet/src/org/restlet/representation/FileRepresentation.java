@@ -300,7 +300,7 @@ public class FileRepresentation extends Representation {
      */
     @Override
     public void write(WritableByteChannel writableChannel) throws IOException {
-        NioUtils.write(getChannel(), writableChannel);
+        NioUtils.copy(getChannel(), writableChannel);
     }
 
     @Override

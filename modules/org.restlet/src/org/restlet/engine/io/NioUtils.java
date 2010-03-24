@@ -56,6 +56,54 @@ public class NioUtils {
     /** The number of milliseconds after which NIO operation will time out. */
     public static final int NIO_TIMEOUT = 60000;
 
+    /** The buffer size. */
+    public static final int BUFFER_SIZE = 8192;
+
+    /**
+     * Writes the representation to a byte channel. Optimizes using the file
+     * channel transferTo method.
+     * 
+     * @param fileChannel
+     *            The readable file channel.
+     * @param writableChannel
+     *            A writable byte channel.
+     */
+    public static void copy(FileChannel fileChannel,
+            WritableByteChannel writableChannel) throws IOException {
+        long position = 0;
+        long count = fileChannel.size();
+        long written = 0;
+        SelectableChannel selectableChannel = null;
+
+        if (writableChannel instanceof SelectableChannel) {
+            selectableChannel = (SelectableChannel) writableChannel;
+        }
+
+        while (count > 0) {
+            NioUtils.waitForState(selectableChannel, SelectionKey.OP_WRITE);
+            written = fileChannel.transferTo(position, count, writableChannel);
+            position += written;
+            count -= written;
+        }
+    }
+
+    /**
+     * Writes a readable channel to a writable channel.
+     * 
+     * @param readableChannel
+     *            The readable channel.
+     * @param writableChannel
+     *            The writable channel.
+     * @throws IOException
+     */
+    public static void copy(ReadableByteChannel readableChannel,
+            WritableByteChannel writableChannel) throws IOException {
+        if ((readableChannel != null) && (writableChannel != null)) {
+            BioUtils.copy(new NbChannelInputStream(readableChannel),
+                    new NbChannelOutputStream(writableChannel));
+        }
+    }
+
     /**
      * Returns a readable byte channel based on a given inputstream. If it is
      * supported by a file a read-only instance of FileChannel is returned.
@@ -222,51 +270,6 @@ public class NioUtils {
             } finally {
                 NioUtils.release(selector, selectionKey);
             }
-        }
-    }
-
-    /**
-     * Writes the representation to a byte channel. Optimizes using the file
-     * channel transferTo method.
-     * 
-     * @param fileChannel
-     *            The readable file channel.
-     * @param writableChannel
-     *            A writable byte channel.
-     */
-    public static void write(FileChannel fileChannel,
-            WritableByteChannel writableChannel) throws IOException {
-        long position = 0;
-        long count = fileChannel.size();
-        long written = 0;
-        SelectableChannel selectableChannel = null;
-
-        if (writableChannel instanceof SelectableChannel) {
-            selectableChannel = (SelectableChannel) writableChannel;
-        }
-
-        while (count > 0) {
-            NioUtils.waitForState(selectableChannel, SelectionKey.OP_WRITE);
-            written = fileChannel.transferTo(position, count, writableChannel);
-            position += written;
-            count -= written;
-        }
-    }
-
-    /**
-     * Writes a readable channel to a writable channel.
-     * 
-     * @param readableChannel
-     *            The readable channel.
-     * @param writableChannel
-     *            The writable channel.
-     * @throws IOException
-     */
-    public static void write(ReadableByteChannel readableChannel,
-            WritableByteChannel writableChannel) throws IOException {
-        if ((readableChannel != null) && (writableChannel != null)) {
-            BioUtils.copy(new NbChannelInputStream(readableChannel),
-                    new NbChannelOutputStream(writableChannel));
         }
     }
 

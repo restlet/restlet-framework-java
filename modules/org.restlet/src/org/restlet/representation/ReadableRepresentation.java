@@ -83,7 +83,7 @@ public class ReadableRepresentation extends ChannelRepresentation {
 
     @Override
     public ReadableByteChannel getChannel() throws IOException {
-        final ReadableByteChannel result = this.channel;
+        ReadableByteChannel result = this.channel;
         setAvailable(false);
         return result;
     }
@@ -118,7 +118,7 @@ public class ReadableRepresentation extends ChannelRepresentation {
 
     @Override
     public void write(WritableByteChannel writableChannel) throws IOException {
-        NioUtils.write(getChannel(), writableChannel);
+        NioUtils.copy(getChannel(), writableChannel);
     }
 
 }

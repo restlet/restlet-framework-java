@@ -69,16 +69,16 @@ public class HttpParserFilter implements ProtocolFilter {
      */
     public boolean execute(Context context) throws IOException {
         // Create the HTTP call
-        final ByteBuffer byteBuffer = ((WorkerThread) Thread.currentThread())
+        ByteBuffer byteBuffer = ((WorkerThread) Thread.currentThread())
                 .getByteBuffer();
         byteBuffer.flip();
-        if (byteBuffer.hasRemaining()) {
-            final SelectionKey key = context.getSelectionKey();
-            final GrizzlyServerCall serverCall = new GrizzlyServerCall(
-                    this.helper.getHelped(), byteBuffer, key,
-                    (this.helper instanceof HttpsServerHelper));
 
-            final boolean keepAlive = false;
+        if (byteBuffer.hasRemaining()) {
+            boolean keepAlive = false;
+            SelectionKey key = context.getSelectionKey();
+            GrizzlyServerCall serverCall = new GrizzlyServerCall(this.helper
+                    .getHelped(), byteBuffer, key,
+                    (this.helper instanceof HttpsServerHelper));
 
             // Handle the call
             this.helper.handle(serverCall);

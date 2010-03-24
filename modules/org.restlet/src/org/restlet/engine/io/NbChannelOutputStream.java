@@ -47,11 +47,8 @@ import java.nio.channels.WritableByteChannel;
  */
 public class NbChannelOutputStream extends OutputStream {
 
-    /** The buffer size. */
-    private static final int BUFFER_SIZE = 8192;
-
     /** The internal byte buffer. */
-    private final ByteBuffer bb = ByteBuffer.allocate(BUFFER_SIZE);
+    private final ByteBuffer bb = ByteBuffer.allocate(NioUtils.BUFFER_SIZE);
 
     /** The channel to write to. */
     private final WritableByteChannel channel;
@@ -147,8 +144,9 @@ public class NbChannelOutputStream extends OutputStream {
 
     @Override
     public void write(byte b[], int off, int len) throws IOException {
-        for (int index = 0; index < len; index = index + BUFFER_SIZE) {
-            int size = len - index > BUFFER_SIZE ? BUFFER_SIZE : len - index;
+        for (int index = 0; index < len; index = index + NioUtils.BUFFER_SIZE) {
+            int size = len - index > NioUtils.BUFFER_SIZE ? NioUtils.BUFFER_SIZE
+                    : len - index;
             this.bb.clear();
             this.bb.put(b, index, size);
             this.bb.flip();
