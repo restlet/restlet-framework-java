@@ -113,10 +113,10 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
      * @throws IOException
      */
     protected ServerSocket createServerSocket() throws IOException {
-        ServerSocket server = new ServerSocket();
-        server.setReuseAddress(true);
-        server.bind(createSocketAddress());
-        return server;
+        ServerSocket result = new ServerSocket();
+        result.setReuseAddress(true);
+        result.bind(createSocketAddress());
+        return result;
     }
 
     /**
