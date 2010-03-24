@@ -161,58 +161,45 @@ public class HeaderReader<V> {
     public static Parameter readHeader(CharSequence header) throws IOException {
         Parameter result = null;
 
-        // Detect the end of headers
-        int start = 0;
-        int index = 0;
-        int next = header.charAt(index++);
+        if (header.length() > 0) {
+            // Detect the end of headers
+            int start = 0;
+            int index = 0;
+            int next = header.charAt(index++);
 
-        if (isCarriageReturn(next)) {
-            next = header.charAt(index++);
-
-            if (!isLineFeed(next)) {
-                throw new IOException(
-                        "Invalid end of headers. Line feed missing after the carriage return.");
-            }
-        } else {
-            result = new Parameter();
-
-            // Parse the header name
-            while ((next != -1) && (next != ':')) {
+            if (isCarriageReturn(next)) {
                 next = header.charAt(index++);
-            }
 
-            if (next == -1) {
-                throw new IOException(
-                        "Unable to parse the header name. End of line reached too early.");
-            }
-
-            result.setName(header.subSequence(start, index).toString());
-            next = header.charAt(index++);
-
-            while (isSpace(next)) {
-                // Skip any separator space between colon and header value
-                next = header.charAt(index++);
-            }
-
-            start = index;
-
-            // Parse the header value
-            while ((next != -1) && (!isCarriageReturn(next))) {
-                next = header.charAt(index++);
-            }
-
-            if (next == -1) {
-                throw new IOException(
-                        "Unable to parse the header value. End of stream reached too early.");
-            }
-
-            next = header.charAt(index++);
-
-            if (isLineFeed(next)) {
-                result.setValue(header.subSequence(start, index).toString());
+                if (!isLineFeed(next)) {
+                    throw new IOException(
+                            "Invalid end of headers. Line feed missing after the carriage return.");
+                }
             } else {
-                throw new IOException(
-                        "Unable to parse the HTTP header value. The carriage return must be followed by a line feed.");
+                result = new Parameter();
+
+                // Parse the header name
+                while ((index < header.length()) && (next != ':')) {
+                    next = header.charAt(index++);
+                }
+
+                if (index == header.length()) {
+                    throw new IOException(
+                            "Unable to parse the header name. End of line reached too early.");
+                }
+
+                result.setName(header.subSequence(start, index - 1).toString());
+                next = header.charAt(index++);
+
+                while (isSpace(next)) {
+                    // Skip any separator space between colon and header value
+                    next = header.charAt(index++);
+                }
+
+                start = index - 1;
+
+                // Parse the header value
+                result.setValue(header.subSequence(start, header.length())
+                        .toString());
             }
         }
 
