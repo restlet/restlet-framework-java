@@ -6,6 +6,8 @@ Changes log
 - @version-full@ (@release-date@)
     - Bugs fixed
         - Allowed to specify its own user agent.
+        - Fixed support of latin1 characters in credentials for 
+          the HTTP_BASIC scheme.
 
 - 1.1.8 (2010-01-29)
     - NRE and Extension Enhancements

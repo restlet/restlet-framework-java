@@ -59,7 +59,7 @@ public class HttpBasicHelper extends AuthenticationHelper {
         try {
             final String credentials = challenge.getIdentifier() + ':'
                     + new String(challenge.getSecret());
-            sb.append(Base64.encode(credentials.getBytes("US-ASCII"), false));
+            sb.append(Base64.encode(credentials.getBytes("ISO-8859-1"), false));
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(
                     "Unsupported encoding, unable to encode credentials");
@@ -69,6 +69,7 @@ public class HttpBasicHelper extends AuthenticationHelper {
     @Override
     public void parseResponse(ChallengeResponse cr, Request request) {
         try {
+            System.out.println("cr.getCredentials()" + cr.getCredentials());
             final byte[] credentialsEncoded = Base64
                     .decode(cr.getCredentials());
             if (credentialsEncoded == null) {
@@ -77,7 +78,7 @@ public class HttpBasicHelper extends AuthenticationHelper {
             }
 
             final String credentials = new String(credentialsEncoded,
-                    "US-ASCII");
+                    "ISO-8859-1");
             final int separator = credentials.indexOf(':');
 
             if (separator == -1) {
