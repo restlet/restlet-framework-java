@@ -49,7 +49,6 @@ import org.restlet.engine.Engine;
 import org.restlet.engine.ServerHelper;
 import org.restlet.engine.io.BioUtils;
 import org.restlet.engine.local.ClapClientHelper;
-import org.restlet.engine.security.DefaultSslContextFactory;
 import org.restlet.test.RestletTestCase;
 import org.restlet.util.Series;
 
@@ -79,29 +78,23 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
     private final File testDir = new File(System.getProperty("java.io.tmpdir"),
             "SslBaseConnectorsTestCase");
 
-    private final File testKeystoreFile = new File(testDir, "dummy.jks");
+    protected final File testKeystoreFile = new File(testDir, "dummy.jks");
 
     protected abstract void call(String uri) throws Exception;
 
     protected void configureSslServerParameters(Context context) {
         Series<Parameter> parameters = context.getParameters();
-        parameters.add("sslContextFactory",
-                "org.restlet.engine.security.DefaultSslContextFactory");
         parameters.add("keystorePath", testKeystoreFile.getPath());
         parameters.add("keystorePassword", "testtest");
         parameters.add("keyPassword", "testtest");
-
         parameters.add("truststorePath", testKeystoreFile.getPath());
         parameters.add("truststorePassword", "testtest");
     }
 
     protected void configureSslClientParameters(Context context) {
-        DefaultSslContextFactory sslContextFactory = new DefaultSslContextFactory();
-        sslContextFactory.setKeyStorePath(null);
-        sslContextFactory.setTrustStorePath(testKeystoreFile.getPath());
-        sslContextFactory.setTrustStorePassword("testtest");
-
-        context.getAttributes().put("sslContextFactory", sslContextFactory);
+        Series<Parameter> parameters = context.getParameters();
+        parameters.add("truststorePath", testKeystoreFile.getPath());
+        parameters.add("truststorePassword", "testtest");
     }
 
     protected abstract Application createApplication(Component component);

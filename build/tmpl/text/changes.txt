@@ -45,7 +45,7 @@ Changes log
           object without serializing/deserializing it.
           Reported by Valdis Rigdon.
         - Fixed support of latin1 characters in writing headers.
-          
+        
 - 2.0 Release Candidate 1 (2010-03-15)
     - API changes
         - Added a Router#getMatchingMode(Restlet) method which returns

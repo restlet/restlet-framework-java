@@ -218,6 +218,7 @@ public class SslUtils {
 
         if (result == null) {
             result = new DefaultSslContextFactory();
+            result.init(helper.getHelpedParameters());
         }
 
         return result;

@@ -336,7 +336,10 @@ public class DefaultSslContextFactory extends SslContextFactory {
         setKeyStoreType(helperParameters.getFirstValue("keystoreType", System
                 .getProperty("javax.net.ssl.keyStoreType")));
         setKeyStoreKeyPassword(helperParameters.getFirstValue("keyPassword",
-                System.getProperty("javax.net.ssl.keyPassword", "")));
+                System.getProperty("javax.net.ssl.keyPassword")));
+        if (this.keyStoreKeyPassword == null) {
+            this.keyStoreKeyPassword = this.keyStorePassword;
+        }
 
         setTrustStorePath(helperParameters.getFirstValue("truststorePath",
                 System.getProperty("javax.net.ssl.trustStore")));
