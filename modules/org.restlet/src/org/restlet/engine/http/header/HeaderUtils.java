@@ -1007,6 +1007,18 @@ public class HeaderUtils {
     }
 
     /**
+     * Indicates if the given character is in ISO Latin 1 (8859-1) range. Note
+     * that this range is a superset of ASCII and a subrange of Unicode (UTF-8).
+     * 
+     * @param character
+     *            The character to test.
+     * @return True if the given character is in ISO Latin 1 range.
+     */
+    public static boolean isLatin1Char(int character) {
+        return (character >= 0) && (character <= 255);
+    }
+
+    /**
      * Indicates if the given character is a value separator.
      * 
      * @param character
@@ -1124,16 +1136,15 @@ public class HeaderUtils {
     }
 
     /**
-     * Indicates if the given character is textual (ASCII and not a control
-     * character).
+     * Indicates if the given character is textual (ISO Latin 1 and not a
+     * control character).
      * 
      * @param character
      *            The character to test.
-     * @return True if the given character is textual (ASCII and not a control
-     *         character).
+     * @return True if the given character is textual.
      */
     public static boolean isText(int character) {
-        return isAsciiChar(character) && !isControlChar(character);
+        return isLatin1Char(character) && !isControlChar(character);
     }
 
     /**
@@ -1164,7 +1175,7 @@ public class HeaderUtils {
      *         separator).
      */
     public static boolean isTokenChar(int character) {
-        return isText(character) && !isSeparator(character);
+        return isAsciiChar(character) && !isSeparator(character);
     }
 
     /**
