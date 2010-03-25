@@ -17,6 +17,8 @@ Changes log
         from the JAAS extension. The JaasUtils#createSubject() now
         also adds the ClientInfo#principals entries. 
         Suggested (in part) by Bruno Harbulot.
+      - Added ServletUtils class to the Servlet extension with two
+        methods to easily retrieve the Servlet request/response.
     - Bugs fixed
         - Fixed HeaderReader#addValues method.
           Reported by Carsten Lohmann. 

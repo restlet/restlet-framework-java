@@ -53,8 +53,6 @@ import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
-import org.restlet.engine.http.Call;
-import org.restlet.engine.http.HttpRequest;
 import org.restlet.engine.http.ServerCall;
 import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.util.Series;
@@ -73,19 +71,11 @@ public class ServletCall extends ServerCall {
      * @param request
      *            The Restlet request.
      * @return The Servlet request or null.
+     * @deprecated Use {@link ServletUtils#getRequest(Request)} instead.
      */
+    @Deprecated
     public static HttpServletRequest getRequest(Request request) {
-        HttpServletRequest result = null;
-
-        if (request instanceof HttpRequest) {
-            final Call call = ((HttpRequest) request).getHttpCall();
-
-            if (call instanceof ServletCall) {
-                result = ((ServletCall) call).getRequest();
-            }
-        }
-
-        return result;
+        return ServletUtils.getRequest(request);
     }
 
     /** The HTTP Servlet request to wrap. */
