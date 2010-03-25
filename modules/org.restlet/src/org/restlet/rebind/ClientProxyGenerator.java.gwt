@@ -33,7 +33,9 @@ package org.restlet.rebind;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 
@@ -134,6 +136,39 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
         this.sto = null;
     }
 
+    /**
+     * Generates the name of the given type into the given StringBuilder.
+     * 
+     * @param type
+     *            The type.
+     * @param sb
+     *            The stringBuilder to complete.
+     */
+    private void buildTypeName(java.lang.reflect.Type type, StringBuilder sb) {
+        if (type instanceof Class<?>) {
+            sb.append(((Class<?>) type).getName());
+        } else if (type instanceof GenericArrayType) {
+            buildTypeName(((GenericArrayType) type).getGenericComponentType(),
+                    sb);
+            sb.append("[]");
+        } else if (type instanceof ParameterizedType) {
+            ParameterizedType t = (ParameterizedType) type;
+            buildTypeName(t.getRawType(), sb);
+            sb.append("<");
+            if (t.getActualTypeArguments().length >= 1) {
+                buildTypeName(t.getActualTypeArguments()[0], sb);
+                for (int i = 1; i < t.getActualTypeArguments().length; i++) {
+                    sb.append(", ");
+                    buildTypeName(t.getActualTypeArguments()[i], sb);
+                }
+            }
+
+            sb.append(">");
+        } else {
+            sb.append(type.toString());
+        }
+    }
+
     @Override
     public String generate(TreeLogger logger, GeneratorContext context,
             String typeQName) throws UnableToCompleteException {
@@ -225,8 +260,9 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
             Class<?> parameterType;
             java.lang.reflect.Type genericParameterType;
             ParameterizedType parameterizedType;
-            Class<?> actualType = null;
-            Class<?> callbackType = null;
+
+            // The return type of the callback method.
+            java.lang.reflect.Type callbackType = null;
 
             for (int i = 0; i < parameterTypes.length; i++) {
                 parameterType = parameterTypes[i];
@@ -234,27 +270,39 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
                 parameterizedType = (genericParameterType instanceof ParameterizedType) ? (ParameterizedType) genericParameterType
                         : null;
 
-                if (parameterizedType != null) {
-                    actualType = (parameterizedType.getActualTypeArguments()[0] instanceof Class<?>) ? (Class<?>) parameterizedType
-                            .getActualTypeArguments()[0]
-                            : null;
-                } else {
-                    actualType = null;
-                }
-
                 if (i == (parameterTypes.length - 1)) {
+                    // By convention, only the last parameter can describe the
+                    // return clause of the callback method.
                     if (AsyncCallback.class.isAssignableFrom(parameterType)
                             || Result.class.isAssignableFrom(parameterType)) {
-                        callbackType = actualType;
-
-                        if (callbackType == null) {
-                            print("final " + parameterType.getSimpleName()
-                                    + " callback");
+                        if (parameterizedType != null) {
+                            callbackType = parameterizedType
+                                    .getActualTypeArguments()[0];
                         } else {
-                            print("final " + parameterType.getSimpleName()
-                                    + "<" + callbackType.getName() + ">"
-                                    + " callback");
+                            callbackType = null;
                         }
+
+                        print("final ");
+                        if (callbackType == null) {
+                            print(parameterType.getSimpleName());
+                        } else {
+                            if (!Void.class.equals(callbackType)
+                                    && !isSerializable(callbackType)) {
+                                StringBuilder sb = new StringBuilder();
+                                buildTypeName(callbackType, sb);
+                                throw new IllegalArgumentException(
+                                        "The "
+                                                + getTypeQName()
+                                                + " interface contains a \""
+                                                + method.getName()
+                                                + "\" method with a callback that does not implement the Serializable interface: "
+                                                + sb.toString());
+                            }
+                            StringBuilder sb = new StringBuilder();
+                            buildTypeName(genericParameterType, sb);
+                            print(sb.toString());
+                        }
+                        print(" callback");
                     } else {
                         getLogger()
                                 .log(
@@ -274,6 +322,8 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
             indent();
 
             if (parameterTypes.length > 1) {
+                // By convention, only the first parameter can be passed as
+                // single parameter of the callback method.
                 parameterType = parameterTypes[0];
                 println("Representation requestEntity = new ObjectRepresentation<"
                         + parameterType.getName()
@@ -295,14 +345,16 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
             println("} else {");
             indent();
 
-            if (Void.class.equals(callbackType)) {
+            if (Void.class.equals(callbackType) || callbackType == null) {
                 println("callback.onSuccess(null);");
             } else {
-                println(callbackType.getName() + " result;");
+                StringBuilder sb = new StringBuilder();
+                buildTypeName(callbackType, sb);
+                println(sb.toString() + " result;");
                 println("try {");
                 indent();
-                println("result = new ObjectRepresentation<"
-                        + callbackType.getName() + ">(");
+                println("result = new ObjectRepresentation<" + sb.toString()
+                        + ">(");
                 indent();
                 println("response.getEntity().getText(),");
                 println("(SerializationStreamFactory) " + getClassName()
@@ -374,7 +426,7 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
 
             for (java.lang.reflect.Method method : interfaceClass.getMethods()) {
                 if (!"getClientResource".equals(method.getName())) {
-                    if ("void".equals(method.getReturnType().toString())) {
+                    if ("void".equals(method.getReturnType().getName())) {
                         generateMethod(method);
                         println();
                     } else {
@@ -439,9 +491,14 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
                         } else {
                             // Callback type, inspect the "inner" type.
                             if (parameterizedType.getTypeArgs().length > 0) {
-                                if (!(parameterizedType.getTypeArgs()[0]).toString().contains("java.lang.Void")) {
-                                    getStob().addRootType(getLogger(),
-                                            parameterizedType.getTypeArgs()[0]);
+                                JClassType t = parameterizedType.getTypeArgs()[0];
+                                // Add the enclosed type if it not
+                                // java.lang.Void.
+                                if (t != null
+                                        && !("Void".equals(t.getName()) && "java.lang"
+                                                .equals(t.getPackage()
+                                                        .getName()))) {
+                                    getStob().addRootType(getLogger(), t);
                                 }
                             }
                         }
@@ -663,6 +720,28 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
      */
     protected void indent() {
         getSourceWriter().indent();
+    }
+
+    /**
+     * Indicates if the given type is serializable.
+     * 
+     * @param type
+     *            The type.
+     * 
+     * @return True if the given type is serializable.
+     */
+    private boolean isSerializable(java.lang.reflect.Type type) {
+        boolean result = false;
+        if (type instanceof Class<?>) {
+            result = Serializable.class.isAssignableFrom((Class<?>) type);
+        } else if (type instanceof GenericArrayType) {
+            result = isSerializable(((GenericArrayType) type)
+                    .getGenericComponentType());
+        } else if (type instanceof ParameterizedType) {
+            result = isSerializable(((ParameterizedType) type).getRawType());
+        }
+
+        return result;
     }
 
     /**

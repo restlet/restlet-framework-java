@@ -37,6 +37,7 @@ package org.restlet.engine.util;
  */
 public class StringUtils {
 
+	// [ifndef gwt] method
     /**
      * Encodes the given String into a sequence of bytes using the Ascii
      * character set.
@@ -58,6 +59,7 @@ public class StringUtils {
         return null;
     }
 
+	// [ifndef gwt] method
     /**
      * Encodes the given String into a sequence of bytes using the Latin1
      * character set.
