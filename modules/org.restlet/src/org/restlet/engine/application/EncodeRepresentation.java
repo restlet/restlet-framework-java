@@ -289,14 +289,13 @@ public class EncodeRepresentation extends WrapperRepresentation {
                 if (getWrappedRepresentation().getDisposition() != null) {
                     name = getWrappedRepresentation().getDisposition()
                             .getParameters().getFirstValue(
-                                    Disposition.NAME_FILENAME,
-                                    true, name);
+                                    Disposition.NAME_FILENAME, true, name);
                 }
                 stream.putNextEntry(new ZipEntry(name));
 
                 encoderOutputStream = stream;
             } else if (this.encoding.equals(Encoding.IDENTITY)) {
-                // Encoder unecessary for identity encoding
+                // Encoder unnecessary for identity encoding
             }
 
             if (encoderOutputStream != null) {

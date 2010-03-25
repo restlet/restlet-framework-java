@@ -131,7 +131,9 @@ public class JaxbConverter extends ConverterHelper {
         float result = -1.0F;
 
         if (source != null) {
-            if (JaxbRepresentation.class.isAssignableFrom(target)) {
+            if (source instanceof JaxbRepresentation<?>) {
+                result = 1.0F;
+            } else if (JaxbRepresentation.class.isAssignableFrom(target)) {
                 result = 1.0F;
             } else if (isJaxbRootElementClass(target)
                     || JaxbRepresentation.class.isAssignableFrom(source
@@ -152,6 +154,10 @@ public class JaxbConverter extends ConverterHelper {
             result = new JaxbRepresentation<T>(source, target);
         } else if (isJaxbRootElementClass(target)) {
             result = new JaxbRepresentation<T>(source, target).getObject();
+        } else if (target == null) {
+            if (source instanceof JaxbRepresentation<?>) {
+                result = ((JaxbRepresentation<?>) source).getObject();
+            }
         }
 
         return target.cast(result);

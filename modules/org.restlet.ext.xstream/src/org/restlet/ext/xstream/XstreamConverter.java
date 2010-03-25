@@ -141,7 +141,9 @@ public class XstreamConverter extends ConverterHelper {
         float result = -1.0F;
 
         if (target != null) {
-            if (XstreamRepresentation.class.isAssignableFrom(target)) {
+            if (source instanceof XstreamRepresentation<?>) {
+                result = 1.0F;
+            } else if (XstreamRepresentation.class.isAssignableFrom(target)) {
                 result = 1.0F;
             } else if (VARIANT_JSON.isCompatible(source)) {
                 result = 0.8F;
@@ -163,7 +165,7 @@ public class XstreamConverter extends ConverterHelper {
             UniformResource resource) throws IOException {
         Object result = null;
 
-        // The source for the Xstream conversion
+        // The source for the XStream conversion
         XstreamRepresentation xstreamSource = null;
         if (source instanceof XstreamRepresentation) {
             xstreamSource = (XstreamRepresentation) source;
@@ -177,7 +179,8 @@ public class XstreamConverter extends ConverterHelper {
 
         if (xstreamSource != null) {
             // Handle the conversion
-            if (XstreamRepresentation.class.isAssignableFrom(target)) {
+            if ((target != null)
+                    && XstreamRepresentation.class.isAssignableFrom(target)) {
                 result = xstreamSource;
             } else {
                 result = xstreamSource.getObject();

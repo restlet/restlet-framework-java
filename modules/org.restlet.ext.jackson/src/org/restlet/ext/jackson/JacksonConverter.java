@@ -124,12 +124,13 @@ public class JacksonConverter extends ConverterHelper {
             UniformResource resource) {
         float result = -1.0F;
 
-        if (target != null) {
-            if (JacksonRepresentation.class.isAssignableFrom(target)) {
-                result = 1.0F;
-            } else if (VARIANT_JSON.isCompatible(source)) {
-                result = 0.8F;
-            }
+        if (source instanceof JacksonRepresentation<?>) {
+            result = 1.0F;
+        } else if ((target != null)
+                && JacksonRepresentation.class.isAssignableFrom(target)) {
+            result = 1.0F;
+        } else if (VARIANT_JSON.isCompatible(source)) {
+            result = 0.8F;
         }
 
         return result;
@@ -143,15 +144,17 @@ public class JacksonConverter extends ConverterHelper {
 
         // The source for the Jackson conversion
         JacksonRepresentation jacksonSource = null;
+
         if (source instanceof JacksonRepresentation) {
             jacksonSource = (JacksonRepresentation) source;
         } else if (VARIANT_JSON.isCompatible(source)) {
             jacksonSource = create(source, target);
         }
-        
-        if(jacksonSource!=null){
+
+        if (jacksonSource != null) {
             // Handle the conversion
-            if (JacksonRepresentation.class.isAssignableFrom(target)) {
+            if ((target != null)
+                    && JacksonRepresentation.class.isAssignableFrom(target)) {
                 result = jacksonSource;
             } else {
                 result = jacksonSource.getObject();

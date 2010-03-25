@@ -92,8 +92,10 @@ public class RdfConverter extends ConverterHelper {
             UniformResource resource) {
         float result = -1.0f;
 
-        if (Graph.class.isAssignableFrom(target)) {
-            result = 1.0f;
+        if (target != null) {
+            if (Graph.class.isAssignableFrom(target)) {
+                result = 1.0f;
+            }
         }
 
         return result;

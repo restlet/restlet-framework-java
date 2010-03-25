@@ -144,7 +144,9 @@ public class JibxConverter extends ConverterHelper {
         float result = -1.0F;
 
         if (source != null) {
-            if (JibxRepresentation.class.isAssignableFrom(target)) {
+            if (source instanceof JibxRepresentation<?>) {
+                result = 1.0F;
+            } else if (JibxRepresentation.class.isAssignableFrom(target)) {
                 result = 1.0F;
             } else if (isJibxBoundClass(target)
                     || JibxRepresentation.class.isAssignableFrom(source
@@ -170,6 +172,16 @@ public class JibxConverter extends ConverterHelper {
                 throw new IOException(
                         "Cannot convert the given representation to  an object of this class using Jibx converter "
                                 + target + " due to " + e.getMessage());
+            }
+        } else if (target == null) {
+            if (source instanceof JibxRepresentation<?>) {
+                try {
+                    result = ((JibxRepresentation<?>) source).getObject();
+                } catch (JiBXException e) {
+                    throw new IOException(
+                            "Cannot retrieve the wrapped object inside the JiBX representation due to "
+                                    + e.getMessage());
+                }
             }
         }
 

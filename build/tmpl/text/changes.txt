@@ -37,6 +37,11 @@ Changes log
         - ResourceException caught by UniformResource where not setting
           the response status properly, always using a 500 status code.
           Reported by Tal Liron.
+        - Fixed issues with local conversions using RIAP for example.
+          Now, the object converters (default, JAXB, JiBX, XStream, 
+          Jackson and GWT) know about to retrieve the wrapped local
+          object without serializing/deserializing it.
+          Reported by Valdis Rigdon.
           
 - 2.0 Release Candidate 1 (2010-03-15)
     - API changes

@@ -220,6 +220,8 @@ public class DefaultConverter extends ConverterHelper {
                     result = 0.5F;
                 }
             }
+        } else if (source instanceof ObjectRepresentation<?>) {
+            result = 1.0F;
         }
 
         return result;
@@ -229,44 +231,51 @@ public class DefaultConverter extends ConverterHelper {
     @Override
     public <T> T toObject(Representation source, Class<T> target,
             UniformResource resource) throws IOException {
-        Object result;
+        Object result = null;
 
-        if (target.isAssignableFrom(source.getClass())) {
-            result = source;
-        } else if (String.class.isAssignableFrom(target)) {
-            result = source.getText();
-        } else if (StringRepresentation.class.isAssignableFrom(target)) {
-            result = new StringRepresentation(source.getText(), source
-                    .getMediaType());
-        } else if (EmptyRepresentation.class.isAssignableFrom(target)) {
-            result = null;
-        } else if (File.class.isAssignableFrom(target)) {
-            if (source instanceof FileRepresentation) {
-                result = ((FileRepresentation) source).getFile();
-            } else {
+        if (target != null) {
+            if (target.isAssignableFrom(source.getClass())) {
+                result = source;
+            } else if (String.class.isAssignableFrom(target)) {
+                result = source.getText();
+            } else if (StringRepresentation.class.isAssignableFrom(target)) {
+                result = new StringRepresentation(source.getText(), source
+                        .getMediaType());
+            } else if (EmptyRepresentation.class.isAssignableFrom(target)) {
                 result = null;
+            } else if (File.class.isAssignableFrom(target)) {
+                if (source instanceof FileRepresentation) {
+                    result = ((FileRepresentation) source).getFile();
+                } else {
+                    result = null;
+                }
+            } else if (Form.class.isAssignableFrom(target)) {
+                result = new Form(source);
+            } else if (InputStream.class.isAssignableFrom(target)) {
+                result = source.getStream();
+            } else if (InputRepresentation.class.isAssignableFrom(target)) {
+                result = new InputRepresentation(source.getStream());
+            } else if (Reader.class.isAssignableFrom(target)) {
+                result = source.getReader();
+            } else if (ReaderRepresentation.class.isAssignableFrom(target)) {
+                result = new ReaderRepresentation(source.getReader());
+            } else if (Serializable.class.isAssignableFrom(target)
+                    || (target == null)) {
+                if (source instanceof ObjectRepresentation<?>) {
+                    result = ((ObjectRepresentation<?>) source).getObject();
+                } else {
+                    try {
+                        result = new ObjectRepresentation(source).getObject();
+                    } catch (Exception e) {
+                        IOException ioe = new IOException(
+                                "Unable to create the Object representation");
+                        ioe.initCause(e);
+                        result = null;
+                    }
+                }
             }
-        } else if (Form.class.isAssignableFrom(target)) {
-            result = new Form(source);
-        } else if (InputStream.class.isAssignableFrom(target)) {
-            result = source.getStream();
-        } else if (InputRepresentation.class.isAssignableFrom(target)) {
-            result = new InputRepresentation(source.getStream());
-        } else if (Reader.class.isAssignableFrom(target)) {
-            result = source.getReader();
-        } else if (ReaderRepresentation.class.isAssignableFrom(target)) {
-            result = new ReaderRepresentation(source.getReader());
-        } else if (Serializable.class.isAssignableFrom(target)) {
-            try {
-                result = new ObjectRepresentation(source).getObject();
-            } catch (Exception e) {
-                IOException ioe = new IOException(
-                        "Unable to create the Object representation");
-                ioe.initCause(e);
-                result = null;
-            }
-        } else {
-            result = null;
+        } else if (source instanceof ObjectRepresentation<?>) {
+            result = ((ObjectRepresentation<?>) source).getObject();
         }
 
         return (T) result;

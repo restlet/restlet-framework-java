@@ -101,17 +101,19 @@ public class GwtConverter extends ConverterHelper {
             UniformResource resource) {
         float result = -1.0F;
 
-        if (target != null) {
-            if (ObjectRepresentation.class.isAssignableFrom(target)) {
+        if (source instanceof ObjectRepresentation<?>) {
+            result = 1.0F;
+        } else if ((target != null)
+                && ObjectRepresentation.class.isAssignableFrom(target)) {
+            result = 1.0F;
+        } else if ((target != null)
+                && Serializable.class.isAssignableFrom(target)) {
+            if (MediaType.APPLICATION_JAVA_OBJECT_GWT.equals(source
+                    .getMediaType())) {
                 result = 1.0F;
-            } else if (Serializable.class.isAssignableFrom(target)) {
-                if (MediaType.APPLICATION_JAVA_OBJECT_GWT.equals(source
-                        .getMediaType())) {
-                    result = 1.0F;
-                } else if (MediaType.APPLICATION_JAVA_OBJECT_GWT
-                        .isCompatible(source.getMediaType())) {
-                    result = 0.6F;
-                }
+            } else if (MediaType.APPLICATION_JAVA_OBJECT_GWT
+                    .isCompatible(source.getMediaType())) {
+                result = 0.6F;
             }
         }
 
@@ -124,11 +126,19 @@ public class GwtConverter extends ConverterHelper {
             UniformResource resource) throws IOException {
         Object result = null;
 
-        if (ObjectRepresentation.class.isAssignableFrom(target)) {
-            ObjectRepresentation.class.isAssignableFrom(target);
-        } else if (Serializable.class.isAssignableFrom(target)) {
-            result = new ObjectRepresentation(source.getText(), target)
-                    .getObject();
+        if (target != null) {
+            if (ObjectRepresentation.class.isAssignableFrom(target)) {
+                if (source instanceof ObjectRepresentation<?>) {
+                    result = (ObjectRepresentation<?>) source;
+                } else {
+                    result = new ObjectRepresentation(source.getText(), target);
+                }
+            } else if (Serializable.class.isAssignableFrom(target)) {
+                result = new ObjectRepresentation(source.getText(), target)
+                        .getObject();
+            }
+        } else if (source instanceof ObjectRepresentation<?>) {
+            result = ((ObjectRepresentation<?>) source).getObject();
         }
 
         return (T) result;
