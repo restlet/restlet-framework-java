@@ -125,30 +125,33 @@ public abstract class UniformResource {
      */
     protected void doCatch(Throwable throwable) {
         Level level = Level.INFO;
+        Status status = null;
 
         if (throwable instanceof ResourceException) {
             ResourceException re = (ResourceException) throwable;
-
-            if (re.getStatus().isServerError()) {
-                level = Level.WARNING;
-            } else if (re.getStatus().isConnectorError()) {
-                level = Level.INFO;
-            } else if (re.getStatus().isClientError()) {
-                level = Level.FINE;
-            }
+            status = re.getStatus();
 
             if (re.getCause() != null) {
                 // What is most interesting is the embedded cause
                 throwable = re.getCause();
             }
+        } else {
+            status = getStatusService().getStatus(throwable, this);
+        }
+
+        if (status.isServerError()) {
+            level = Level.WARNING;
+        } else if (status.isConnectorError()) {
+            level = Level.INFO;
+        } else if (status.isClientError()) {
+            level = Level.FINE;
         }
 
         getLogger().log(level, "Exception or error caught in resource",
                 throwable);
 
         if (getResponse() != null) {
-            getResponse().setStatus(
-                    getStatusService().getStatus(throwable, this));
+            getResponse().setStatus(status);
         }
     }
 

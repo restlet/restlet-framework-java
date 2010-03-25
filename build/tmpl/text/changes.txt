@@ -34,6 +34,9 @@ Changes log
           Reported by Kelly McLaughlin.
         - Fixed support of accentuated characters in credentials for 
           the HTTP_BASIC scheme.
+        - ResourceException caught by UniformResource where not setting
+          the response status properly, always using a 500 status code.
+          Reported by Tal Liron.
           
 - 2.0 Release Candidate 1 (2010-03-15)
     - API changes
