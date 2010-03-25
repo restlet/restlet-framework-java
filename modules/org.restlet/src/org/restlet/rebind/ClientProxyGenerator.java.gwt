@@ -492,7 +492,7 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
                             // Callback type, inspect the "inner" type.
                             if (parameterizedType.getTypeArgs().length > 0) {
                                 JClassType t = parameterizedType.getTypeArgs()[0];
-                                // Add the enclosed type if it not
+                                // Add the enclosed type if it is not equals to
                                 // java.lang.Void.
                                 if (t != null
                                         && !("Void".equals(t.getName()) && "java.lang"
