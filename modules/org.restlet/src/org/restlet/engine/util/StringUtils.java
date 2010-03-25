@@ -36,6 +36,48 @@ package org.restlet.engine.util;
  * @author Jerome Louvel
  */
 public class StringUtils {
+
+    /**
+     * Encodes the given String into a sequence of bytes using the Ascii
+     * character set.
+     * 
+     * @param string
+     *            The string to encode.
+     * @return The String encoded with the Ascii character set as an array of
+     *         bytes.
+     */
+    public static byte[] getAsciiBytes(String string) {
+        if (string != null) {
+            try {
+                return string.getBytes("US-ASCII");
+            } catch (Exception e) {
+                // Should not happen.
+                return null;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Encodes the given String into a sequence of bytes using the Latin1
+     * character set.
+     * 
+     * @param string
+     *            The string to encode.
+     * @return The String encoded with the Latin1 character set as an array of
+     *         bytes.
+     */
+    public static byte[] getLatin1Bytes(String string) {
+        if (string != null) {
+            try {
+                return string.getBytes("ISO-8859-1");
+            } catch (Exception e) {
+                // Should not happen.
+                return null;
+            }
+        }
+        return null;
+    }
     /**
      * Strips a delimiter character from both ends of the source string.
      * 

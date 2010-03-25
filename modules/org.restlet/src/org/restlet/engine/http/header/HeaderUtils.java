@@ -54,6 +54,7 @@ import org.restlet.data.Status;
 import org.restlet.data.Tag;
 import org.restlet.engine.Engine;
 import org.restlet.engine.util.DateUtils;
+import org.restlet.engine.util.StringUtils;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
@@ -1214,12 +1215,12 @@ public class HeaderUtils {
      */
     public static void writeHeaderLine(Parameter header, OutputStream os)
             throws IOException {
-        os.write(header.getName().getBytes());
+        os.write(StringUtils.getAsciiBytes(header.getName()));
         os.write(':');
         os.write(' ');
 
         if (header.getValue() != null) {
-            os.write(header.getValue().getBytes());
+            os.write(StringUtils.getLatin1Bytes(header.getValue()));
         }
 
         os.write(13); // CR

@@ -39,6 +39,7 @@ import java.util.StringTokenizer;
 import java.util.logging.Level;
 
 import org.restlet.Context;
+import org.restlet.engine.util.StringUtils;
 
 /**
  * Simple IDENT client. Follow the RFC 1413.
@@ -85,7 +86,8 @@ public class IdentClient {
                 socket.setSoTimeout(SO_TIMEOUT);
                 socket.connect(new InetSocketAddress(clientAddress, 113),
                         CONNECT_TIMEOUT);
-                socket.getOutputStream().write(request.getBytes());
+                socket.getOutputStream().write(
+                        StringUtils.getAsciiBytes(request));
 
                 // Read the response
                 in = new BufferedReader(new InputStreamReader(socket

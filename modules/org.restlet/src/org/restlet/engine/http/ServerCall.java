@@ -54,6 +54,7 @@ import org.restlet.engine.http.header.RangeReader;
 import org.restlet.engine.io.BioUtils;
 import org.restlet.engine.security.SslUtils;
 import org.restlet.engine.util.Base64;
+import org.restlet.engine.util.StringUtils;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.ReadableRepresentation;
 import org.restlet.representation.Representation;
@@ -527,15 +528,17 @@ public abstract class ServerCall extends Call {
             throws IOException {
         // Write the status line
         String version = (getVersion() == null) ? "1.1" : getVersion();
-        headStream.write(version.getBytes());
+        headStream.write(StringUtils.getAsciiBytes(version));
         headStream.write(' ');
-        headStream.write(Integer.toString(getStatusCode()).getBytes());
+        headStream.write(StringUtils.getAsciiBytes(Integer
+                .toString(getStatusCode())));
         headStream.write(' ');
 
         if (getReasonPhrase() != null) {
-            headStream.write(getReasonPhrase().getBytes());
+            headStream.write(StringUtils.getLatin1Bytes(getReasonPhrase()));
         } else {
-            headStream.write(("Status " + getStatusCode()).getBytes());
+            headStream.write(StringUtils
+                    .getAsciiBytes(("Status " + getStatusCode())));
         }
 
         headStream.write(13); // CR

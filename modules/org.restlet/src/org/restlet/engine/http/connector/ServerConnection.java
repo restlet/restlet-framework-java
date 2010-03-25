@@ -47,6 +47,7 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.engine.http.header.HeaderReader;
 import org.restlet.engine.http.header.HeaderUtils;
+import org.restlet.engine.util.StringUtils;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 
@@ -372,17 +373,18 @@ public class ServerConnection extends Connection<Server> {
         String protocolVersion = protocol.getVersion();
         String version = protocol.getTechnicalName() + '/'
                 + ((protocolVersion == null) ? "1.1" : protocolVersion);
-        headStream.write(version.getBytes());
+        headStream.write(StringUtils.getAsciiBytes(version));
         headStream.write(' ');
-        headStream.write(Integer.toString(response.getStatus().getCode())
-                .getBytes());
+        headStream.write(StringUtils.getAsciiBytes(Integer.toString(response
+                .getStatus().getCode())));
         headStream.write(' ');
 
         if (response.getStatus().getDescription() != null) {
-            headStream.write(response.getStatus().getDescription().getBytes());
+            headStream.write(StringUtils.getLatin1Bytes(response.getStatus()
+                    .getDescription()));
         } else {
-            headStream.write(("Status " + response.getStatus().getCode())
-                    .getBytes());
+            headStream.write(StringUtils.getAsciiBytes(("Status " + response
+                    .getStatus().getCode())));
         }
 
         headStream.write(13); // CR

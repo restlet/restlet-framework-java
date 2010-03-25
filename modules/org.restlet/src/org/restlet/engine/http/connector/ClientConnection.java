@@ -47,6 +47,7 @@ import org.restlet.engine.Engine;
 import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.http.header.HeaderReader;
 import org.restlet.engine.http.header.HeaderUtils;
+import org.restlet.engine.util.StringUtils;
 import org.restlet.util.Series;
 
 /**
@@ -288,13 +289,17 @@ public class ClientConnection extends Connection<Client> {
     protected void writeMessageHeadLine(Response message,
             OutputStream headStream) throws IOException {
         Request request = message.getRequest();
-        headStream.write(request.getMethod().getName().getBytes());
+        headStream.write(StringUtils.getAsciiBytes(request.getMethod()
+                .getName()));
         headStream.write(' ');
-        headStream.write(getRequestUri(request.getResourceRef()).getBytes());
+        headStream.write(StringUtils.getAsciiBytes(getRequestUri(request
+                .getResourceRef())));
         headStream.write(' ');
-        headStream.write(request.getProtocol().getName().getBytes());
+        headStream.write(StringUtils.getAsciiBytes(request.getProtocol()
+                .getName()));
         headStream.write('/');
-        headStream.write(request.getProtocol().getVersion().getBytes());
+        headStream.write(StringUtils.getAsciiBytes(request.getProtocol()
+                .getVersion()));
         HeaderUtils.writeCRLF(getOutboundStream());
     }
 

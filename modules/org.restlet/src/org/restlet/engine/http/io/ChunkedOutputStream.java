@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import org.restlet.engine.http.header.HeaderUtils;
+import org.restlet.engine.util.StringUtils;
 
 /**
  * OutputStream to write data in the HTTP chunked encoding format to a
@@ -140,8 +141,8 @@ public class ChunkedOutputStream extends OutputStream {
     private void writeChunk() throws IOException {
         if (this.bytesWritten > 0) {
             // Write the current position in hexadecimal format followed by CRLF
-            this.destination.write(Integer.toHexString(this.bytesWritten)
-                    .getBytes());
+            this.destination.write(StringUtils.getAsciiBytes(Integer
+                    .toHexString(this.bytesWritten)));
             HeaderUtils.writeCRLF(this.destination);
 
             // Write the chunk content
