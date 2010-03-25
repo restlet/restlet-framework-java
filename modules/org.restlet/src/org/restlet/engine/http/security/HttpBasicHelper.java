@@ -80,7 +80,7 @@ public class HttpBasicHelper extends AuthenticatorHelper {
             credentials.write(challenge.getIdentifier());
             credentials.write(":");
             credentials.write(challenge.getSecret());
-            cw.append(Base64.encode(credentials.toCharArray(), "US-ASCII",
+            cw.append(Base64.encode(credentials.toCharArray(), "ISO-8859-1",
                     false));
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(
@@ -147,7 +147,7 @@ public class HttpBasicHelper extends AuthenticatorHelper {
                                         + challenge.getRawValue());
             }
 
-            String credentials = new String(credentialsEncoded, "US-ASCII");
+            String credentials = new String(credentialsEncoded, "ISO-8859-1");
             int separator = credentials.indexOf(':');
 
             if (separator == -1) {
