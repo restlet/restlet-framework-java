@@ -32,7 +32,7 @@ Changes log
           Reported by Carsten Lohmann.
         - Fixed formatting of Date instances for the GWT edition.
           Reported by Kelly McLaughlin.
-        - Fixed support of accentuated characters in credentials for 
+        - Fixed support of latin1 characters in credentials for 
           the HTTP_BASIC scheme.
         - ResourceException caught by UniformResource where not setting
           the response status properly, always using a 500 status code.
@@ -42,6 +42,7 @@ Changes log
           Jackson and GWT) know about to retrieve the wrapped local
           object without serializing/deserializing it.
           Reported by Valdis Rigdon.
+        - Fixed support of latin1 characters in writing headers.
           
 - 2.0 Release Candidate 1 (2010-03-15)
     - API changes
