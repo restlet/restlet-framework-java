@@ -116,6 +116,12 @@ public class ClientConnection extends Connection<Client> {
     }
 
     @Override
+    public boolean canWrite() {
+        return super.canWrite()
+                && ((getInboundMessages().size() == 0) || isPipelining());
+    }
+
+    @Override
     protected void readMessage() throws IOException {
         @SuppressWarnings("unused")
         String version = null;
