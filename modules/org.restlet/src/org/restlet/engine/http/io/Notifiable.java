@@ -30,11 +30,9 @@
 
 package org.restlet.engine.http.io;
 
-import org.restlet.engine.http.connector.Connection;
-import org.restlet.engine.http.connector.ConnectionState;
-
 /**
- * Marker class for objects such as {@link Connection} that can be notified of
+ * Marker class for objects such as
+ * {@link org.restlet.engine.http.connector.Connection} that can be notified of
  * stream events.
  * 
  * @author Jerome Louvel
@@ -44,14 +42,16 @@ public interface Notifiable {
     /**
      * To be called when the end of the stream is reached. By default, it
      * updates the state of the connection (
-     * {@link Connection#setInboundBusy(boolean)}) .
+     * {@link org.restlet.engine.http.connector.Connection#setInboundBusy(boolean)}
+     * ) .
      */
     public void onEndReached();
 
     /**
      * To be called when there is an error when handling the stream. By default
      * it calls {@link #onEndReached()} and set the state of the connection to
-     * {@link ConnectionState#CLOSING} in order to release this stream.
+     * {@link org.restlet.engine.http.connector.ConnectionState#CLOSING} in
+     * order to release this stream.
      */
     public void onError();
 
