@@ -664,11 +664,13 @@ public class ConnectedRequest extends Request {
     public List<RecipientInfo> getRecipientsInfo() {
         List<RecipientInfo> result = super.getRecipientsInfo();
         if (!recipientsInfoAdded) {
-            for (String header : getHeaders().getValuesArray(
-                    HeaderConstants.HEADER_VIA)) {
-                new RecipientInfoReader(header).addValues(result);
+            if (getHeaders() != null) {
+                for (String header : getHeaders().getValuesArray(
+                        HeaderConstants.HEADER_VIA)) {
+                    new RecipientInfoReader(header).addValues(result);
+                }
             }
-            setRecipientsInfo(result);
+            this.recipientsInfoAdded = true;
         }
         return result;
     }
