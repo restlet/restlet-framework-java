@@ -208,7 +208,7 @@ public class HttpRequest extends Request {
                 CacheDirectiveReader.addValues(header, result);
             }
 
-            setCacheDirectives(result);
+            cacheDirectivesAdded = true;
         }
 
         return result;
@@ -552,7 +552,7 @@ public class HttpRequest extends Request {
                     .getValuesArray(HeaderConstants.HEADER_VIA)) {
                 new RecipientInfoReader(header).addValues(result);
             }
-            setRecipientsInfo(result);
+            recipientsInfoAdded = true;
         }
         return result;
     }
@@ -585,7 +585,7 @@ public class HttpRequest extends Request {
                     .getValuesArray(HeaderConstants.HEADER_WARNING)) {
                 new WarningReader(header).addValues(result);
             }
-            setWarnings(result);
+            warningsAdded = true;
         }
         return result;
     }
