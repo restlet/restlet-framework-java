@@ -286,18 +286,6 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
                         if (callbackType == null) {
                             print(parameterType.getSimpleName());
                         } else {
-                            if (!Void.class.equals(callbackType)
-                                    && !isSerializable(callbackType)) {
-                                StringBuilder sb = new StringBuilder();
-                                buildTypeName(callbackType, sb);
-                                throw new IllegalArgumentException(
-                                        "The "
-                                                + getTypeQName()
-                                                + " interface contains a \""
-                                                + method.getName()
-                                                + "\" method with a callback that does not implement the Serializable interface: "
-                                                + sb.toString());
-                            }
                             StringBuilder sb = new StringBuilder();
                             buildTypeName(genericParameterType, sb);
                             print(sb.toString());
@@ -720,28 +708,6 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
      */
     protected void indent() {
         getSourceWriter().indent();
-    }
-
-    /**
-     * Indicates if the given type is serializable.
-     * 
-     * @param type
-     *            The type.
-     * 
-     * @return True if the given type is serializable.
-     */
-    private boolean isSerializable(java.lang.reflect.Type type) {
-        boolean result = false;
-        if (type instanceof Class<?>) {
-            result = Serializable.class.isAssignableFrom((Class<?>) type);
-        } else if (type instanceof GenericArrayType) {
-            result = isSerializable(((GenericArrayType) type)
-                    .getGenericComponentType());
-        } else if (type instanceof ParameterizedType) {
-            result = isSerializable(((ParameterizedType) type).getRawType());
-        }
-
-        return result;
     }
 
     /**

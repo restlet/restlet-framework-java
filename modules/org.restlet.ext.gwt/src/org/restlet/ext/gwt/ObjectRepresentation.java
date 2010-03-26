@@ -30,8 +30,6 @@
 
 package org.restlet.ext.gwt;
 
-import java.io.Serializable;
-
 import org.restlet.data.MediaType;
 import org.restlet.engine.Engine;
 import org.restlet.representation.StringRepresentation;
@@ -48,10 +46,9 @@ import com.google.gwt.user.server.rpc.impl.ServerSerializationStreamWriter;
  * 
  * @author Jerome Louvel
  * @param <T>
- *            The class to serialize, see {@link Serializable}
+ *            The class to serialize.
  */
-public class ObjectRepresentation<T extends Serializable> extends
-        StringRepresentation {
+public class ObjectRepresentation<T> extends StringRepresentation {
 
     /** The wrapped object. */
     private T object;

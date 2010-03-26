@@ -46,9 +46,9 @@ import com.google.gwt.user.client.rpc.SerializationStreamWriter;
  * 
  * @author Jerome Louvel
  * @param <T>
- *            The class to serialize, see {@link Serializable}
+ *            The class to serialize.
  */
-public class ObjectRepresentation<T extends Serializable> extends
+public class ObjectRepresentation<T> extends
         StringRepresentation {
 
     /** The wrapped object. */
