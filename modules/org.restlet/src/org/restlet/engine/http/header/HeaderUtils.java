@@ -44,6 +44,7 @@ import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
+import org.restlet.data.CookieSetting;
 import org.restlet.data.Digest;
 import org.restlet.data.Disposition;
 import org.restlet.data.MediaType;
@@ -601,8 +602,12 @@ public class HeaderUtils {
                                     .getAuthenticationInfo()), headers);
         }
 
-        addHeader(HeaderConstants.HEADER_SET_COOKIE, CookieSettingWriter
-                .write(response.getCookieSettings()), headers);
+        // Cookies settings should be written in a single header, but Web
+        // browsers does not seem to support it.
+        for (CookieSetting cookieSetting : response.getCookieSettings()) {
+            addHeader(HeaderConstants.HEADER_SET_COOKIE, CookieSettingWriter
+                    .write(cookieSetting), headers);
+        }
 
         // -------------------------------------
         // 4) Add user-defined extension headers
