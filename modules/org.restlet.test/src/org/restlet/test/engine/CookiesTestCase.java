@@ -58,8 +58,8 @@ public class CookiesTestCase extends RestletTestCase {
      * @throws IOException
      */
     private void testCookie(String headerValue) throws IOException {
-        final CookieReader cr = new CookieReader(headerValue);
-        final List<Cookie> cookies = new ArrayList<Cookie>();
+        CookieReader cr = new CookieReader(headerValue);
+        List<Cookie> cookies = new ArrayList<Cookie>();
         Cookie cookie = cr.readValue();
 
         while (cookie != null) {
@@ -68,10 +68,46 @@ public class CookiesTestCase extends RestletTestCase {
         }
 
         // Rewrite the header
-        final String newHeaderValue = CookieWriter.write(cookies);
+        String newHeaderValue = CookieWriter.write(cookies);
 
         // Compare initial and new headers
         assertEquals(headerValue, newHeaderValue);
+    }
+
+    /**
+     * Test one cookie header.
+     * 
+     * @param headerValue
+     *            The cookie header value.
+     * @throws IOException
+     */
+    private void testCookieValues(String headerValue) throws IOException {
+        CookieReader cr = new CookieReader(headerValue);
+        List<Cookie> cookies = new ArrayList<Cookie>();
+        Cookie cookie = cr.readValue();
+        while (cookie != null) {
+            cookies.add(cookie);
+            cookie = cr.readValue();
+        }
+
+        // Rewrite the header
+        String newHeaderValue = CookieWriter.write(cookies);
+
+        // Reparse
+        List<Cookie> cookies2 = new ArrayList<Cookie>();
+        cr = new CookieReader(newHeaderValue);
+        cookie = cr.readValue();
+        while (cookie != null) {
+            cookies2.add(cookie);
+            cookie = cr.readValue();
+        }
+
+        // Compare initial and new cookies
+        assertEquals(cookies.size(), cookies2.size());
+        for (int i = 0; i < cookies.size(); i++) {
+            assertEquals(cookies.get(i).getName(), cookies2.get(i).getName());
+            assertEquals(cookies.get(i).getValue(), cookies2.get(i).getValue());
+        }
     }
 
     /**
@@ -159,6 +195,7 @@ public class CookiesTestCase extends RestletTestCase {
         testCookieSetting(
                 "RMS_ADMETA_VISITOR_RMS=27756847%3A240105; expires=Thu, 02 Mar 2006 21:09:00 GMT; path=/; domain=.admeta.com",
                 false);
+        testCookieValues("Cookie 1=One; Cookie 2=Two; Cookie 3=Three; Cookie 4=Four; Cookie 5=\"Five\"; Cookie 6=\"Six\"");
     }
 
 }

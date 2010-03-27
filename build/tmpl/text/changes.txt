@@ -47,6 +47,7 @@ Changes log
         - Fixed support of latin1 characters in writing headers.
         - Internal client connector was always pipelining requests.
         - Fixed support of generic types and arrays for the GWT edition.
+        - Fixed handling of Cookies. Reported by Rob Heittman.
         
 - 2.0 Release Candidate 1 (2010-03-15)
     - API changes
