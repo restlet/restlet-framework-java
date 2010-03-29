@@ -48,7 +48,9 @@ Changes log
         - Internal client connector was always pipelining requests.
         - Fixed support of generic types and arrays for the GWT edition.
         - Fixed handling of Cookies. Reported by Rob Heittman.
-        
+    - Misc
+        - Updated Simple framework library to version 4.1.19.
+                
 - 2.0 Release Candidate 1 (2010-03-15)
     - API changes
         - Added a Router#getMatchingMode(Restlet) method which returns
