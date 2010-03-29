@@ -49,7 +49,7 @@ Changes log
         - Fixed support of generic types and arrays for the GWT edition.
         - Fixed handling of Cookies. Reported by Rob Heittman.
     - Misc
-        - Updated Simple framework library to version 4.1.19.
+        - Updated Simple framework library to version 4.1.20.
                 
 - 2.0 Release Candidate 1 (2010-03-15)
     - API changes
