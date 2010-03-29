@@ -32,45 +32,20 @@ package org.restlet.ext.sip;
 
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
+import org.restlet.data.RecipientInfo;
 import org.restlet.util.Series;
 
-/**
- * Used by the "Event" header.
- * 
- * @author Thierry Boileau
- * 
- */
-public class Event {
+public class SipRecipientInfo extends RecipientInfo {
 
-    /** The event identifier. */
-    private String id;
-
-    /** The event parameters. */
+    /** The list of recipient info parameters. */
     private Series<Parameter> parameters;
 
-    /** The type of the event. */
-    private EventType type;
+    /** The transport protocol name. */
+    private String transport;
 
     /**
-     * Constructor.
-     */
-    public Event() {
-        super();
-    }
-
-    /**
-     * Returns the event identifier.
-     * 
-     * @return The event identifier.
-     */
-    public String getId() {
-        return id;
-    }
-
-    /**
-     * Returns the event parameters.
-     * 
-     * @return The event parameters.
+     * Returns the list of recipient info parameters.
+     * @return The list of recipient info parameters.
      */
     public Series<Parameter> getParameters() {
         if (parameters == null) {
@@ -80,42 +55,27 @@ public class Event {
     }
 
     /**
-     * Returns the type of the event.
-     * 
-     * @return The type of the event.
+     * Returns the transport protocol name.
+     * @return The transport protocol name.
      */
-    public EventType getType() {
-        return type;
+    public String getTransport() {
+        return transport;
     }
 
     /**
-     * Sets the event identifier.
-     * 
-     * @param id
-     *            The event identifier.
-     */
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    /**
-     * Sets the event parameters.
-     * 
-     * @param parameters
-     *            The event parameters.
+     * Sets the list of recipient info parameters.
+     * @param parameters The list of recipient info parameters.
      */
     public void setParameters(Series<Parameter> parameters) {
         this.parameters = parameters;
     }
 
     /**
-     * Sets the type of the event.
-     * 
-     * @param type
-     *            The type of the event.
+     * Sets the transport protocol name.
+     * @param transport The transport protocol name.
      */
-    public void setType(EventType type) {
-        this.type = type;
+    public void setTransport(String transport) {
+        this.transport = transport;
     }
 
 }

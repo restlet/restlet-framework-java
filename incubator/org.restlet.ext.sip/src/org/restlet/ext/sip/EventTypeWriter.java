@@ -30,33 +30,37 @@
 
 package org.restlet.ext.sip;
 
-import java.io.IOException;
-
-import org.restlet.engine.http.header.HeaderReader;
+import org.restlet.engine.http.header.HeaderWriter;
 
 /**
- * Option tag like header reader.
+ * Event type like header writer.
  * 
  * @author Thierry Boileau
  */
-public class OptionTagReader extends HeaderReader<OptionTag> {
+public class EventTypeWriter extends HeaderWriter<EventType> {
 
     /**
-     * Constructor.
+     * Writes an event type.
      * 
-     * @param header
-     *            The header to read.
+     * @param eventType
+     *            The event type.
+     * @return The formatted event type.
      */
-    public OptionTagReader(String header) {
-        super(header);
+    public static String write(EventType eventType) {
+        return new EventTypeWriter().append(eventType).toString();
     }
 
     @Override
-    public OptionTag readValue() throws IOException {
-        String token = readToken();
-        if(token != null){
-            return OptionTag.valueOf(token); 
+    public HeaderWriter<EventType> append(EventType value) {
+        if (value != null && value.getPackage() != null) {
+            append(value.getPackage());
+            for (String template : value.getEventTemplates()) {
+                append(".");
+                append(template);
+            }
         }
-        return null;
+
+        return this;
     }
+
 }

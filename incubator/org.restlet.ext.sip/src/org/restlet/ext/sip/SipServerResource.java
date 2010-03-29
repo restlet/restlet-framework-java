@@ -42,7 +42,7 @@ public class SipServerResource extends ServerResource {
         return getRequest().getCallSeq();
     }
 
-    public String getFrom() {
+    public Address getFrom() {
         return getRequest().getFrom();
     }
 
@@ -56,7 +56,7 @@ public class SipServerResource extends ServerResource {
         return (SipResponse) super.getResponse();
     }
 
-    public String getTo() {
+    public Address getTo() {
         return getRequest().getTo();
     }
 

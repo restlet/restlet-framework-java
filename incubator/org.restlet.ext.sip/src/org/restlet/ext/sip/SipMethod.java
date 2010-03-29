@@ -41,6 +41,8 @@ public final class SipMethod {
 
     private static final String BASE_SIP = "http://tools.ietf.org/html/rfc3261";
 
+    private static final String SIP_REFER = "http://tools.ietf.org/html/rfc3515";
+
     /**
      * Confirms that the client has received a final response to an INVITE
      * request.
@@ -96,6 +98,16 @@ public final class SipMethod {
      */
     public static final Method REGISTER = new Method("REGISTER",
             "User registration", BASE_SIP + "#section-10");
+
+    /**
+     * The recipient should refer to a resource provided in the Refer-To header
+     * field of the request.
+     * 
+     * @see <a href="http://tools.ietf.org/html/rfc3515#section-2">SIP REFER RFC
+     *      - 2 REFER</a>
+     */
+    public static final Method REFER = new Method("REFER",
+            "Contact a third-party", SIP_REFER + "#section-2");
 
     /**
      * Returns the method associated to a given method name. If an existing

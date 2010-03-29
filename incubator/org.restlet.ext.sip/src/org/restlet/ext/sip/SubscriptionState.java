@@ -41,12 +41,35 @@ import org.restlet.util.Series;
  * 
  */
 public class SubscriptionState {
+    public static final String REASON_DEACTIVATED = "deactivated";
+
+    public static final String REASON_GIVEUP = "giveup";
+
+    public static final String REASON_NORESOURCE = "noresource";
+
+    public static final String REASON_PROBATION = "probation";
+
+    public static final String REASON_REJECTED = "rejected";
+
+    public static final String REASON_TIMEOUT = "timeout";
+
+    public static final String STATE_ACTIVE = "active";
+
+    public static final String STATE_PENDING = "pending";
+
+    public static final String STATE_TERMINATED = "terminated";
+
+    /** The expiration delay in seconds. */
+    private long expires;
 
     /** The subscription state parameters. */
     private Series<Parameter> parameters;
 
     /** The subscription state reason. */
     private String reason;
+
+    /** How long the service is expected to be unavailable. */
+    private long retryAfter;
 
     /** The subscription state value. */
     private String value;
@@ -60,6 +83,15 @@ public class SubscriptionState {
     public SubscriptionState(String value) {
         super();
         this.value = value;
+    }
+
+    /**
+     * Returns the expiration delay in seconds.
+     * 
+     * @return The expiration delay in seconds.
+     */
+    public long getExpires() {
+        return expires;
     }
 
     /**
@@ -84,12 +116,31 @@ public class SubscriptionState {
     }
 
     /**
+     * Returns how long the service is expected to be unavailable.
+     * 
+     * @return How long the service is expected to be unavailable.
+     */
+    public long getRetryAfter() {
+        return retryAfter;
+    }
+
+    /**
      * Returns the subscription state value.
      * 
      * @return The subscription state value.
      */
     public String getValue() {
         return value;
+    }
+
+    /**
+     * Sets the expiration delay in seconds.
+     * 
+     * @param expires
+     *            The expiration delay in seconds.
+     */
+    public void setExpires(long expires) {
+        this.expires = expires;
     }
 
     /**
@@ -110,6 +161,16 @@ public class SubscriptionState {
      */
     public void setReason(String reason) {
         this.reason = reason;
+    }
+
+    /**
+     * Sets how long the service is expected to be unavailable.
+     * 
+     * @param retryAfter
+     *            How long the service is expected to be unavailable
+     */
+    public void setRetryAfter(long retryAfter) {
+        this.retryAfter = retryAfter;
     }
 
     /**

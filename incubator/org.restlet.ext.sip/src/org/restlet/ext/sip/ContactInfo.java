@@ -30,33 +30,56 @@
 
 package org.restlet.ext.sip;
 
-import java.io.IOException;
-
-import org.restlet.engine.http.header.HeaderReader;
-
 /**
- * Option tag like header reader.
+ * Used by the header "Contact".
  * 
  * @author Thierry Boileau
+ * 
  */
-public class OptionTagReader extends HeaderReader<OptionTag> {
+public class ContactInfo extends Address {
+
+    /** The delay of expiration. */
+    private String expires;
+
+    /** The quality/preference level. */
+    private float quality;
 
     /**
-     * Constructor.
+     * Returns the delay of expiration.
      * 
-     * @param header
-     *            The header to read.
+     * @return The delay of expiration.
      */
-    public OptionTagReader(String header) {
-        super(header);
+    public String getExpires() {
+        return expires;
     }
 
-    @Override
-    public OptionTag readValue() throws IOException {
-        String token = readToken();
-        if(token != null){
-            return OptionTag.valueOf(token); 
-        }
-        return null;
+    /**
+     * Returns the quality/preference level.
+     * 
+     * @return The quality/preference level.
+     */
+    public float getQuality() {
+        return quality;
     }
+
+    /**
+     * Sets the delay of expiration.
+     * 
+     * @param expires
+     *            The delay of expiration.
+     */
+    public void setExpires(String expires) {
+        this.expires = expires;
+    }
+
+    /**
+     * Sets the quality/preference level.
+     * 
+     * @param quality
+     *            The quality/preference level.
+     */
+    public void setQuality(float quality) {
+        this.quality = quality;
+    }
+
 }

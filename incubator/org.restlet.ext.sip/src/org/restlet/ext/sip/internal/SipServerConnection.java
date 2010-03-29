@@ -43,6 +43,7 @@ import org.restlet.engine.http.connector.BaseHelper;
 import org.restlet.engine.http.connector.ConnectedRequest;
 import org.restlet.engine.http.connector.ServerConnection;
 import org.restlet.engine.http.header.HeaderConstants;
+import org.restlet.ext.sip.AddressWriter;
 import org.restlet.ext.sip.SipConstants;
 import org.restlet.ext.sip.SipRequest;
 import org.restlet.representation.Representation;
@@ -88,11 +89,13 @@ public class SipServerConnection extends ServerConnection {
         }
 
         if (sipRequest.getFrom() != null) {
-            headers.add(HeaderConstants.HEADER_FROM, sipRequest.getFrom());
+            headers.add(HeaderConstants.HEADER_FROM, AddressWriter
+                    .write(sipRequest.getFrom()));
         }
 
         if (sipRequest.getTo() != null) {
-            headers.add(SipConstants.HEADER_TO, sipRequest.getTo());
+            headers.add(SipConstants.HEADER_TO, AddressWriter.write(sipRequest
+                    .getTo()));
         }
 
         if (sipRequest.getVia() != null) {
