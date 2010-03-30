@@ -33,6 +33,7 @@ package org.restlet.ext.sip.example;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.restlet.Context;
 import org.restlet.Response;
@@ -93,7 +94,7 @@ public class UacServerResource extends SipServerResource implements UacResource 
         server.start();
     }
 
-    // private static AtomicLong TAG = new AtomicLong(1000);
+    private static AtomicLong TAG = new AtomicLong(1000);
 
     public void acknowledge() {
         trace();
@@ -123,19 +124,18 @@ public class UacServerResource extends SipServerResource implements UacResource 
         // Indicate that the user phone is ringing
         provisionalResponse = new Response(getRequest());
         provisionalResponse.setStatus(SipStatus.INFO_RINGING);
-//        provisionalResponse.commit();
+        provisionalResponse.commit();
 
         sleep();
 
         // Indicate that the session is progressing
         provisionalResponse = new Response(getRequest());
         provisionalResponse.setStatus(SipStatus.INFO_SESSION_PROGRESS);
-  //      provisionalResponse.commit();
+        provisionalResponse.commit();
 
         sleep();
         Address to = getTo();
-        // to.getParameters().add("tag", "restlet"& + TAG.incrementAndGet());
-        to.getParameters().add("tag", "restlet1");
+        to.getParameters().add("tag", "restlet" + TAG.incrementAndGet());
 
         // Set the final response
         setStatus(SipStatus.SUCCESS_OK);
