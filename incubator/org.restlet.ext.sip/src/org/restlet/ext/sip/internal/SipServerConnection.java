@@ -43,7 +43,6 @@ import org.restlet.engine.http.connector.BaseHelper;
 import org.restlet.engine.http.connector.ConnectedRequest;
 import org.restlet.engine.http.connector.ServerConnection;
 import org.restlet.engine.http.header.HeaderConstants;
-import org.restlet.ext.sip.AddressWriter;
 import org.restlet.ext.sip.SipConstants;
 import org.restlet.ext.sip.SipRequest;
 import org.restlet.representation.Representation;

@@ -41,6 +41,7 @@ import org.restlet.data.Tag;
 import org.restlet.engine.http.connector.ConnectedRequest;
 import org.restlet.engine.http.connector.ServerConnection;
 import org.restlet.engine.http.header.HeaderConstants;
+import org.restlet.ext.sip.internal.AddressReader;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 
