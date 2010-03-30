@@ -69,7 +69,7 @@ public class SipRecipientInfoWriter extends HeaderWriter<SipRecipientInfo> {
             }
 
             if (recipientInfo.getName() != null) {
-                appendToken(recipientInfo.getName());
+                append(recipientInfo.getName());
 
                 if (!recipientInfo.getParameters().isEmpty()) {
                     for (Parameter param : recipientInfo.getParameters()) {

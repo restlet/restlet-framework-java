@@ -88,6 +88,21 @@ public class SipRecipientInfoReader extends HeaderReader<SipRecipientInfo> {
                     .println(parameter.getName() + "/" + parameter.getValue());
         }
         System.out.println(s.getComment());
+
+        str = "SIP/2.0/TCP 127.0.0.1:5061;branch=z9hG4bK-6503-1-0";
+        r = new SipRecipientInfoReader(str);
+        s = r.readValue();
+        System.out.println(s.getProtocol());
+        System.out.println(s.getTransport());
+
+        System.out.println(s.getName());
+
+        for (Parameter parameter : s.getParameters()) {
+            System.out
+                    .println(parameter.getName() + "/" + parameter.getValue());
+        }
+        System.out.println(s.getComment());
+
     }
 
     /**
@@ -123,7 +138,12 @@ public class SipRecipientInfoReader extends HeaderReader<SipRecipientInfo> {
 
         // Move to the next text
         if (skipSpaces()) {
-            result.setName(readRawText());
+            StringBuilder sb = new StringBuilder(readToken());
+            if (read() == ':') {
+                sb.append(":");
+                sb.append(readToken());
+            }
+            result.setName(sb.toString());
 
             // Read address parameters.
             if (skipParameterSeparator()) {
