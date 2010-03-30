@@ -52,6 +52,8 @@ public class RecipientInfoTestCase extends RestletTestCase {
                 "1.0 fred, 1.1 nowhere.com (Apache/1.1)");
         Parameter via1b = new Parameter(HeaderConstants.HEADER_VIA,
                 "HTTP/1.0 fred, HTTP/1.1 nowhere.com (Apache/1.1)");
+        Parameter via1c = new Parameter(HeaderConstants.HEADER_VIA,
+                "HTTP/1.0 fred (Apache/1.1), HTTP/1.1 nowhere.com");
 
         List<RecipientInfo> recipients = new ArrayList<RecipientInfo>();
         RecipientInfoReader.addValues(via1a, recipients);
@@ -72,5 +74,20 @@ public class RecipientInfoTestCase extends RestletTestCase {
 
         String header = RecipientInfoWriter.write(recipients);
         assertEquals(via1b.getValue(), header);
+
+        recipients = new ArrayList<RecipientInfo>();
+        RecipientInfoReader.addValues(via1c, recipients);
+        recipient1 = recipients.get(0);
+        recipient2 = recipients.get(1);
+
+        assertEquals("1.0", recipient1.getProtocol().getVersion());
+        assertEquals("1.1", recipient2.getProtocol().getVersion());
+
+        assertEquals("fred", recipient1.getName());
+        assertEquals("nowhere.com", recipient2.getName());
+
+        assertEquals("Apache/1.1", recipient1.getComment());
+        assertNull(recipient2.getComment());
+
     }
 }
