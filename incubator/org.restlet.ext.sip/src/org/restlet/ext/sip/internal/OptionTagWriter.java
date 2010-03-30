@@ -30,6 +30,8 @@
 
 package org.restlet.ext.sip.internal;
 
+import java.util.List;
+
 import org.restlet.engine.http.header.HeaderWriter;
 import org.restlet.ext.sip.OptionTag;
 
@@ -39,6 +41,17 @@ import org.restlet.ext.sip.OptionTag;
  * @author Thierry Boileau
  */
 public class OptionTagWriter extends HeaderWriter<OptionTag> {
+
+    /**
+     * Writes a list of option tags.
+     * 
+     * @param optionTags
+     *            The list of option tags.
+     * @return The formatted list of option tags.
+     */
+    public static String write(List<OptionTag> optionTags) {
+        return new OptionTagWriter().append(optionTags).toString();
+    }
 
     /**
      * Writes an option tag.

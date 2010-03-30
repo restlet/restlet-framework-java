@@ -30,6 +30,8 @@
 
 package org.restlet.ext.sip.internal;
 
+import java.util.List;
+
 import org.restlet.engine.http.header.HeaderWriter;
 import org.restlet.ext.sip.EventType;
 
@@ -39,6 +41,17 @@ import org.restlet.ext.sip.EventType;
  * @author Thierry Boileau
  */
 public class EventTypeWriter extends HeaderWriter<EventType> {
+
+    /**
+     * Writes a list of event types.
+     * 
+     * @param eventTypes
+     *            The list of event types.
+     * @return The formatted list of event types.
+     */
+    public static String write(List<EventType> eventTypes) {
+        return new EventTypeWriter().append(eventTypes).toString();
+    }
 
     /**
      * Writes an event type.
