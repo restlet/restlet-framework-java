@@ -97,25 +97,24 @@ public class SipResponse extends Response {
      * {@link SipRequest#from} attribute.
      */
     private volatile Address replyTo;
-    
+
     /**
      * Indicates how long the service is expected to be unavailable to the
      * requesting client.
      */
     private volatile Availability retryAfter;
-    
+
     /** The tag of the returned representation. */
     private volatile Tag sipTag;
-    
+
     /** The extensions supported by the UAS. */
     private volatile List<OptionTag> supported;
 
     /** The logical recipient of the request. */
     private volatile Address to;
-    
+
     /** The extensions not supported by the UAS. */
     private volatile List<OptionTag> unsupported;
-
 
     /**
      * Constructor.
@@ -182,6 +181,7 @@ public class SipResponse extends Response {
     public String getCallId() {
         return callId;
     }
+
     /**
      * Returns the identifier of a transaction.
      * 
@@ -230,6 +230,7 @@ public class SipResponse extends Response {
 
     /**
      * Returns the description of the request's initiator.
+     * 
      * @return The description of the request's initiator.
      */
     public Address getFrom() {
@@ -301,6 +302,7 @@ public class SipResponse extends Response {
 
     /**
      * Returns the tag of the returned representation.
+     * 
      * @return The tag of the returned representation.
      */
     public Tag getSipTag() {
@@ -309,6 +311,7 @@ public class SipResponse extends Response {
 
     /**
      * Returns the extensions supported by the UAS.
+     * 
      * @return The extensions supported by the UAS.
      */
     public List<OptionTag> getSupported() {
@@ -327,6 +330,7 @@ public class SipResponse extends Response {
 
     /**
      * Returns the logical recipient of the request.
+     * 
      * @return The logical recipient of the request.
      */
     public Address getTo() {
@@ -335,6 +339,7 @@ public class SipResponse extends Response {
 
     /**
      * Returns the extensions not supported by the UAS.
+     * 
      * @return The extensions not supported by the UAS.
      */
     public List<OptionTag> getUnsupported() {
@@ -434,7 +439,9 @@ public class SipResponse extends Response {
 
     /**
      * Sets the description of the request's initiator.
-     * @param from The description of the request's initiator.
+     * 
+     * @param from
+     *            The description of the request's initiator.
      */
     public void setFrom(Address from) {
         this.from = from;
@@ -502,7 +509,9 @@ public class SipResponse extends Response {
 
     /**
      * Sets the tag of the returned representation.
-     * @param sipTag The tag of the returned representation.
+     * 
+     * @param sipTag
+     *            The tag of the returned representation.
      */
     public void setSipTag(Tag sipTag) {
         this.sipTag = sipTag;
@@ -510,7 +519,9 @@ public class SipResponse extends Response {
 
     /**
      * Sets the extensions supported by the UAS.
-     * @param supported The extensions supported by the UAS.
+     * 
+     * @param supported
+     *            The extensions supported by the UAS.
      */
     public void setSupported(List<OptionTag> supported) {
         this.supported = supported;
@@ -518,7 +529,9 @@ public class SipResponse extends Response {
 
     /**
      * Sets the logical recipient of the request.
-     * @param to The logical recipient of the request.
+     * 
+     * @param to
+     *            The logical recipient of the request.
      */
     public void setTo(Address to) {
         this.to = to;
@@ -526,7 +539,9 @@ public class SipResponse extends Response {
 
     /**
      * Sets the extensions not supported by the UAS.
-     * @param unsupported The extensions not supported by the UAS.
+     * 
+     * @param unsupported
+     *            The extensions not supported by the UAS.
      */
     public void setUnsupported(List<OptionTag> unsupported) {
         this.unsupported = unsupported;
