@@ -326,6 +326,12 @@ public class Redirector extends Restlet {
         }
 
         serverRedirect(next, targetRef, request, response);
+        if (response.getEntity() != null
+                && !request.getResourceRef().getScheme().equalsIgnoreCase(
+                        targetRef.getScheme())) {
+            // Distinct protocol, this data cannot be exposed.
+            response.getEntity().setLocationRef((Reference) null);
+        }
     }
 
     /**
@@ -383,7 +389,8 @@ public class Redirector extends Restlet {
     protected void serverRedirect(Restlet next, Reference targetRef,
             Request request, Response response) {
         // Save the base URI if it exists as we might need it for redirections
-        Reference baseRef = request.getResourceRef().getBaseRef();
+        Reference resourceRef = request.getResourceRef();
+        Reference baseRef = resourceRef.getBaseRef();
 
         // Reset the protocol and let the dispatcher handle the protocol
         request.setProtocol(null);
@@ -396,6 +403,7 @@ public class Redirector extends Restlet {
         // Allow for response rewriting and clean the headers
         response.setEntity(rewrite(response.getEntity()));
         response.getAttributes().remove(HeaderConstants.ATTRIBUTE_HEADERS);
+        request.setResourceRef(resourceRef);
 
         // In case of redirection, we may have to rewrite the redirect URI
         if (response.getLocationRef() != null) {
