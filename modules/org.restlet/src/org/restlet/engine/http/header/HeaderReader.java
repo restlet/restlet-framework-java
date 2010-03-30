@@ -84,6 +84,62 @@ public class HeaderReader<V> {
     /**
      * Read a header. Return null if the last header was already read.
      * 
+     * @param header
+     *            The header line to parse.
+     * @return The header read or null.
+     * @throws IOException
+     */
+    public static Parameter readHeader(CharSequence header) throws IOException {
+        Parameter result = null;
+
+        if (header.length() > 0) {
+            // Detect the end of headers
+            int start = 0;
+            int index = 0;
+            int next = header.charAt(index++);
+
+            if (isCarriageReturn(next)) {
+                next = header.charAt(index++);
+
+                if (!isLineFeed(next)) {
+                    throw new IOException(
+                            "Invalid end of headers. Line feed missing after the carriage return.");
+                }
+            } else {
+                result = new Parameter();
+
+                // Parse the header name
+                while ((index < header.length()) && (next != ':')) {
+                    next = header.charAt(index++);
+                }
+
+                if (index == header.length()) {
+                    throw new IOException(
+                            "Unable to parse the header name. End of line reached too early.");
+                }
+
+                result.setName(header.subSequence(start, index - 1).toString());
+                next = header.charAt(index++);
+
+                while (isSpace(next)) {
+                    // Skip any separator space between colon and header value
+                    next = header.charAt(index++);
+                }
+
+                start = index - 1;
+
+                // Parse the header value
+                result.setValue(header.subSequence(start, header.length())
+                        .toString());
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Read a header. Return null if the last header was already read.
+     * 
      * @param is
      *            The message input stream.
      * @param sb
@@ -150,67 +206,14 @@ public class HeaderReader<V> {
         return result;
     }
 
-    /**
-     * Read a header. Return null if the last header was already read.
-     * 
-     * @param header
-     *            The header line to parse.
-     * @return The header read or null.
-     * @throws IOException
-     */
-    public static Parameter readHeader(CharSequence header) throws IOException {
-        Parameter result = null;
-
-        if (header.length() > 0) {
-            // Detect the end of headers
-            int start = 0;
-            int index = 0;
-            int next = header.charAt(index++);
-
-            if (isCarriageReturn(next)) {
-                next = header.charAt(index++);
-
-                if (!isLineFeed(next)) {
-                    throw new IOException(
-                            "Invalid end of headers. Line feed missing after the carriage return.");
-                }
-            } else {
-                result = new Parameter();
-
-                // Parse the header name
-                while ((index < header.length()) && (next != ':')) {
-                    next = header.charAt(index++);
-                }
-
-                if (index == header.length()) {
-                    throw new IOException(
-                            "Unable to parse the header name. End of line reached too early.");
-                }
-
-                result.setName(header.subSequence(start, index - 1).toString());
-                next = header.charAt(index++);
-
-                while (isSpace(next)) {
-                    // Skip any separator space between colon and header value
-                    next = header.charAt(index++);
-                }
-
-                start = index - 1;
-
-                // Parse the header value
-                result.setValue(header.subSequence(start, header.length())
-                        .toString());
-            }
-        }
-
-        return result;
-    }
-
     /** The header to read. */
     private final String header;
 
     /** The current read index (or -1 if not reading anymore). */
     private volatile int index;
+
+    /** The current mark. */
+    private volatile int mark;
 
     /**
      * Constructor.
@@ -221,6 +224,7 @@ public class HeaderReader<V> {
     public HeaderReader(String header) {
         this.header = header;
         this.index = ((header == null) || (header.length() == 0)) ? -1 : 0;
+        this.mark = index;
     }
 
     /**
@@ -292,6 +296,15 @@ public class HeaderReader<V> {
     }
 
     /**
+     * Marks the current position in this reader. A subsequent call to the
+     * <code>reset</code> method repositions this reader at the last marked
+     * position.
+     */
+    public void mark() {
+        mark = index;
+    }
+
+    /**
      * Reads the next character.
      * 
      * @return The next character.
@@ -320,6 +333,49 @@ public class HeaderReader<V> {
             if (this.index >= this.header.length()) {
                 this.index = -1;
             }
+        }
+
+        return result;
+    }
+
+    /**
+     * Reads the next comment. The first character must be a parenthesis.
+     * 
+     * @return The next comment.
+     * @throws IOException
+     */
+    public String readComment() throws IOException {
+        String result = null;
+        int next = read();
+
+        // First character must be a parenthesis
+        if (next == '(') {
+            StringBuilder buffer = new StringBuilder();
+
+            while (result == null) {
+                next = read();
+
+                if (isCommentText(next)) {
+                    buffer.append((char) next);
+                } else if (isQuoteCharacter(next)) {
+                    // Start of a quoted pair (escape sequence)
+                    buffer.append((char) read());
+                } else if (next == '(') {
+                    // Nested comment
+                    buffer.append('(').append(readComment()).append(')');
+                } else if (next == ')') {
+                    // End of comment
+                    result = buffer.toString();
+                } else if (next == -1) {
+                    throw new IOException(
+                            "Unexpected end of comment. Please check your value");
+                } else {
+                    throw new IOException("Invalid character \"" + next
+                            + "\" detected in comment. Please check your value");
+                }
+            }
+        } else {
+            throw new IOException("A comment must start with a parenthesis");
         }
 
         return result;
@@ -392,49 +448,6 @@ public class HeaderReader<V> {
             result = readQuotedString();
         } else if (isTokenChar(nextChar)) {
             result = readToken();
-        }
-
-        return result;
-    }
-
-    /**
-     * Reads the next comment. The first character must be a parenthesis.
-     * 
-     * @return The next comment.
-     * @throws IOException
-     */
-    public String readComment() throws IOException {
-        String result = null;
-        int next = read();
-
-        // First character must be a parenthesis
-        if (next == '(') {
-            StringBuilder buffer = new StringBuilder();
-
-            while (result == null) {
-                next = read();
-
-                if (isCommentText(next)) {
-                    buffer.append((char) next);
-                } else if (isQuoteCharacter(next)) {
-                    // Start of a quoted pair (escape sequence)
-                    buffer.append((char) read());
-                } else if (next == '(') {
-                    // Nested comment
-                    buffer.append('(').append(readComment()).append(')');
-                } else if (next == ')') {
-                    // End of comment
-                    result = buffer.toString();
-                } else if (next == -1) {
-                    throw new IOException(
-                            "Unexpected end of comment. Please check your value");
-                } else {
-                    throw new IOException("Invalid character \"" + next
-                            + "\" detected in comment. Please check your value");
-                }
-            }
-        } else {
-            throw new IOException("A comment must start with a parenthesis");
         }
 
         return result;
@@ -591,6 +604,14 @@ public class HeaderReader<V> {
         List<V> result = new CopyOnWriteArrayList<V>();
         addValues(result);
         return result;
+    }
+
+    /**
+     * Repositions this stream to the position at the time the <code>mark</code>
+     * method was last called on this input stream.
+     */
+    public void reset() {
+        index = mark;
     }
 
     /**

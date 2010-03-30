@@ -31,13 +31,14 @@
 package org.restlet.engine.security;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.AuthenticationInfo;
-import org.restlet.data.ChallengeMessage;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
@@ -45,6 +46,7 @@ import org.restlet.data.Digest;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.engine.Engine;
+import org.restlet.engine.http.header.ChallengeRequestReader;
 import org.restlet.engine.http.header.ChallengeWriter;
 import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.http.header.ParameterReader;
@@ -363,78 +365,38 @@ public class AuthenticatorUtils {
     }
 
     /**
-     * Parses an authorization header into a challenge response. The header is
-     * {@link HeaderConstants#HEADER_AUTHORIZATION}.
-     * 
-     * @param challenge
-     *            The challenge response to update.
-     * @param request
-     *            The parent request.
-     * @param httpHeaders
-     *            The current request HTTP headers.
-     * @return The parsed challenge response.
-     */
-    private static ChallengeMessage parseMessage(boolean isChallengeResponse,
-            Request request, Response response, String header,
-            Series<Parameter> httpHeaders) {
-        ChallengeMessage result = null;
-
-        if (header != null) {
-            int space = header.indexOf(' ');
-
-            if (space != -1) {
-                String scheme = header.substring(0, space);
-                String rawValue = header.substring(space + 1);
-
-                if (isChallengeResponse) {
-                    result = new ChallengeResponse(new ChallengeScheme("HTTP_"
-                            + scheme, scheme));
-                } else {
-                    result = new ChallengeRequest(new ChallengeScheme("HTTP_"
-                            + scheme, scheme));
-                }
-
-                result.setRawValue(rawValue);
-            }
-        }
-
-        if (result != null) {
-            // Give a chance to the authenticator helper to do further parsing
-            AuthenticatorHelper helper = Engine.getInstance().findHelper(
-                    result.getScheme(), true, false);
-
-            if (helper != null) {
-                if (isChallengeResponse) {
-                    helper.parseResponse((ChallengeResponse) result, request,
-                            httpHeaders);
-                } else {
-                    helper.parseRequest((ChallengeRequest) result, response,
-                            httpHeaders);
-                }
-            } else {
-                Context.getCurrentLogger().warning(
-                        "Couldn't find any helper support the "
-                                + result.getScheme() + " challenge scheme.");
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * Parses an authenticate header into a challenge request. The header is
-     * {@link HeaderConstants#HEADER_WWW_AUTHENTICATE}.
+     * Parses an authenticate header into a list of challenge request. The
+     * header is {@link HeaderConstants#HEADER_WWW_AUTHENTICATE}.
      * 
      * @param header
      *            The HTTP header value to parse.
      * @param httpHeaders
      *            The current response HTTP headers.
-     * @return The parsed challenge request.
+     * @return The list of parsed challenge request.
      */
-    public static ChallengeRequest parseRequest(Response response,
+    public static List<ChallengeRequest> parseRequest(Response response,
             String header, Series<Parameter> httpHeaders) {
-        return (ChallengeRequest) parseMessage(false, null, response, header,
-                httpHeaders);
+        List<ChallengeRequest> result = new ArrayList<ChallengeRequest>();
+
+        if (header != null) {
+            result = new ChallengeRequestReader(header).readValues();
+            for (ChallengeRequest cr : result) {
+                // Give a chance to the authenticator helper to do further
+                // parsing
+                AuthenticatorHelper helper = Engine.getInstance().findHelper(
+                        cr.getScheme(), true, false);
+
+                if (helper != null) {
+                    helper.parseRequest(cr, response, httpHeaders);
+                } else {
+                    Context.getCurrentLogger().warning(
+                            "Couldn't find any helper support the "
+                                    + cr.getScheme() + " challenge scheme.");
+                }
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -451,8 +413,37 @@ public class AuthenticatorUtils {
      */
     public static ChallengeResponse parseResponse(Request request,
             String header, Series<Parameter> httpHeaders) {
-        return (ChallengeResponse) parseMessage(true, request, null, header,
-                httpHeaders);
+        ChallengeResponse result = null;
+
+        if (header != null) {
+            int space = header.indexOf(' ');
+
+            if (space != -1) {
+                String scheme = header.substring(0, space);
+                String rawValue = header.substring(space + 1);
+
+                result = new ChallengeResponse(new ChallengeScheme("HTTP_"
+                        + scheme, scheme));
+                result.setRawValue(rawValue);
+            }
+        }
+
+        if (result != null) {
+            // Give a chance to the authenticator helper to do further parsing
+            AuthenticatorHelper helper = Engine.getInstance().findHelper(
+                    result.getScheme(), true, false);
+
+            if (helper != null) {
+                helper.parseResponse(result, request, httpHeaders);
+            } else {
+                Context.getCurrentLogger().warning(
+                        "Couldn't find any helper support the "
+                                + result.getScheme() + " challenge scheme.");
+            }
+        }
+
+        return result;
+
     }
 
     /**

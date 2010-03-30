@@ -33,6 +33,7 @@ package org.restlet.engine.http.header;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 
 import org.restlet.Context;
@@ -800,16 +801,16 @@ public class HeaderUtils {
                 } else if (header.getName().equalsIgnoreCase(
                         HeaderConstants.HEADER_WWW_AUTHENTICATE)) {
                     // [ifndef gwt]
-                    ChallengeRequest request = org.restlet.engine.security.AuthenticatorUtils
+                    List<ChallengeRequest> crs = org.restlet.engine.security.AuthenticatorUtils
                             .parseRequest(response, header.getValue(), headers);
-                    response.getChallengeRequests().add(request);
+                    response.getChallengeRequests().addAll(crs);
                     // [enddef]
                 } else if (header.getName().equalsIgnoreCase(
                         HeaderConstants.HEADER_PROXY_AUTHENTICATE)) {
                     // [ifndef gwt]
-                    ChallengeRequest request = org.restlet.engine.security.AuthenticatorUtils
+                    List<ChallengeRequest> crs = org.restlet.engine.security.AuthenticatorUtils
                             .parseRequest(response, header.getValue(), headers);
-                    response.getProxyChallengeRequests().add(request);
+                    response.getProxyChallengeRequests().addAll(crs);
                     // [enddef]
                 } else if (header.getName().equalsIgnoreCase(
                         HeaderConstants.HEADER_AUTHENTICATION_INFO)) {

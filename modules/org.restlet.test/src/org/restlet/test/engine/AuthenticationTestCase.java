@@ -31,6 +31,7 @@
 package org.restlet.test.engine;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.restlet.Request;
 import org.restlet.data.ChallengeRequest;
@@ -96,15 +97,17 @@ public class AuthenticationTestCase extends RestletTestCase {
      * @throws IOException
      */
     public void testParsingBasic() throws IOException {
-        final String authenticate1 = "Basic realm=\"Restlet tutorial\"";
-        final String authorization1 = "Basic c2NvdHQ6dGlnZXI=";
+        String authenticate1 = "Basic realm=\"Restlet tutorial\"";
+        String authorization1 = "Basic c2NvdHQ6dGlnZXI=";
 
         assertEquals(authorization1, AuthenticatorUtils.formatResponse(
                 AuthenticatorUtils.parseResponse(null, authorization1, null),
                 null, null));
-        assertEquals(authenticate1, AuthenticatorUtils.formatRequest(
-                AuthenticatorUtils.parseRequest(null, authenticate1, null),
-                null, null));
+        List<ChallengeRequest> creq = AuthenticatorUtils.parseRequest(null,
+                authenticate1, null);
+        assertEquals(creq.size(), 1);
+        assertEquals(authenticate1, AuthenticatorUtils.formatRequest(creq
+                .get(0), null, null));
     }
 
     /**
@@ -113,18 +116,39 @@ public class AuthenticationTestCase extends RestletTestCase {
      * @throws IOException
      */
     public void testParsingDigest() throws IOException {
-        final String authorization1 = "Digest username=\"admin\", nonce=\"MTE3NzEwMzIwMjg0Mjo2NzFjODQyMjAyOWRlNWQ1YjFjNmEzYzJmOWRlZmE2Mw==\", uri=\"/protected/asdass\", response=\"a891ebedebb2046b83a9b7540f4e9554\", cnonce=\"MTE3NzEwMzIwMjkwMDoxNmMzODFiYzRjNWRjMmMyOTVkMWFhNDdkMTQ4OGFlMw==\", qop=auth, nc=00000001";
-        final String authenticate1 = "Digest realm=\"realm\", domain=\"/protected/ /alsoProtected/\", qop=\"auth\", algorithm=MD5, nonce=\"MTE3NzEwMzIwMjg0Mjo2NzFjODQyMjAyOWRlNWQ1YjFjNmEzYzJmOWRlZmE2Mw==\"";
+        String authorization1 = "Digest username=\"admin\", nonce=\"MTE3NzEwMzIwMjg0Mjo2NzFjODQyMjAyOWRlNWQ1YjFjNmEzYzJmOWRlZmE2Mw==\", uri=\"/protected/asdass\", response=\"a891ebedebb2046b83a9b7540f4e9554\", cnonce=\"MTE3NzEwMzIwMjkwMDoxNmMzODFiYzRjNWRjMmMyOTVkMWFhNDdkMTQ4OGFlMw==\", qop=auth, nc=00000001";
+        String authenticate1 = "Digest realm=realm, domain=\"/protected/ /alsoProtected/\", qop=auth, algorithm=MD5, nonce=\"MTE3NzEwMzIwMjg0Mjo2NzFjODQyMjAyOWRlNWQ1YjFjNmEzYzJmOWRlZmE2Mw==\"";
 
-        final ChallengeResponse cres = AuthenticatorUtils.parseResponse(null,
+        ChallengeResponse cres = AuthenticatorUtils.parseResponse(null,
                 authorization1, null);
         cres.setRawValue(null);
         assertEquals(authorization1, AuthenticatorUtils.formatResponse(cres,
                 null, null));
 
-        final ChallengeRequest creq = AuthenticatorUtils.parseRequest(null,
+        List<ChallengeRequest> creq = AuthenticatorUtils.parseRequest(null,
                 authenticate1, null);
-        assertEquals(authenticate1, AuthenticatorUtils.formatRequest(creq,
-                null, null));
+        assertEquals(creq.size(), 1);
+        assertEquals(authenticate1, AuthenticatorUtils.formatRequest(creq
+                .get(0), null, null));
+    }
+
+    /**
+     * Tests the authentication parsing for HTTP DIGEST.
+     * 
+     * @throws IOException
+     */
+    public void testParsingMultiValuedAuthenticate() throws IOException {
+        String authenticate0 = "Basic realm=\"Restlet tutorial\"";
+        String authenticate1 = "Digest realm=realm, domain=\"/protected/ /alsoProtected/\", qop=auth, algorithm=MD5, nonce=\"MTE3NzEwMzIwMjg0Mjo2NzFjODQyMjAyOWRlNWQ1YjFjNmEzYzJmOWRlZmE2Mw==\"";
+        String authenticate = authenticate0 + "," + authenticate1;
+
+        List<ChallengeRequest> creq = AuthenticatorUtils.parseRequest(null,
+                authenticate, null);
+        assertEquals(creq.size(), 2);
+        assertEquals(authenticate0, AuthenticatorUtils.formatRequest(creq
+                .get(0), null, null));
+        assertEquals(authenticate1, AuthenticatorUtils.formatRequest(creq
+                .get(1), null, null));
+
     }
 }

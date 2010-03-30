@@ -50,6 +50,7 @@ Changes log
         - Fixed handling of Cookies. Reported by Rob Heittman.
         - Fixed potential NPE in DimensionReader class.
           Reported and contributed by Rob Heittman.
+        - Fixed parsing of multi valued "www-authenticate" headers.
     - Misc
         - Updated Simple framework library to version 4.1.20.
                 
