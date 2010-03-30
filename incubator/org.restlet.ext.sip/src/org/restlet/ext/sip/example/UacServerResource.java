@@ -38,6 +38,7 @@ import org.restlet.Context;
 import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
+import org.restlet.ext.sip.Address;
 import org.restlet.ext.sip.SipServerResource;
 import org.restlet.ext.sip.SipStatus;
 
@@ -122,18 +123,19 @@ public class UacServerResource extends SipServerResource implements UacResource 
         // Indicate that the user phone is ringing
         provisionalResponse = new Response(getRequest());
         provisionalResponse.setStatus(SipStatus.INFO_RINGING);
-        provisionalResponse.commit();
+//        provisionalResponse.commit();
 
         sleep();
 
         // Indicate that the session is progressing
-        // provisionalResponse = new Response(getRequest());
-        // provisionalResponse.setStatus(SipStatus.INFO_SESSION_PROGRESS);
-        // provisionalResponse.commit();
-        // 
-        // sleep();
+        provisionalResponse = new Response(getRequest());
+        provisionalResponse.setStatus(SipStatus.INFO_SESSION_PROGRESS);
+  //      provisionalResponse.commit();
 
-        // getRequest().setTo(getTo() + ";tag=restlet" + TAG.incrementAndGet());
+        sleep();
+        Address to = getTo();
+        // to.getParameters().add("tag", "restlet"& + TAG.incrementAndGet());
+        to.getParameters().add("tag", "restlet1");
 
         // Set the final response
         setStatus(SipStatus.SUCCESS_OK);
