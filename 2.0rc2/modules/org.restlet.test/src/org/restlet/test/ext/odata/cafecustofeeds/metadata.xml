@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<edmx:Edmx Version="1.0"
+	xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx">
+	<edmx:DataServices>
+		<Schema Namespace="org.restlet.test.ext.odata.cafeCustoFeeds"
+			xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices"
+			xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata"
+			xmlns="http://schemas.microsoft.com/ado/2006/04/edm">
+			<EntityType Name="Cafe" m:FC_SourcePath="Contact/Name"
+				m:FC_TargetPath="SyndicationAuthorName" m:FC_ContentKind="text"
+				m:FC_KeepInContent="false">
+				<Key>
+					<PropertyRef Name="ID" />
+				</Key>
+				<Property Name="ID" Type="Edm.String" Nullable="false" />
+				<Property Name="Name" Type="Edm.String" Nullable="true" />
+				<Property Name="ZipCode" Type="Edm.Int32" Nullable="false" />
+				<Property Name="City" Type="Edm.String" Nullable="true" />
+				<Property Name="CompanyName" Type="Edm.String" Nullable="false"
+					MaxLength="40" Unicode="true" FixedLength="false" m:FC_TargetPath="Company/Name"
+					m:FC_NsPrefix="cafe" m:FC_NsUri="http://schemas.examples.microsoft.com/dataservices"
+					m:FC_KeepInContent="false" />
+				<NavigationProperty Name="Items"
+					Relationship="org.restlet.test.ext.odata.cafeCustoFeeds.Cafe_Items" FromRole="Cafe"
+					ToRole="Items" />
+				<NavigationProperty Name="Contact"
+					Relationship="org.restlet.test.ext.odata.cafeCustoFeeds.Cafe_Contact" FromRole="Cafe"
+					ToRole="Contact" />
+			</EntityType>
+			<EntityType Name="Item">
+				<Key>
+					<PropertyRef Name="ID" />
+				</Key>
+				<Property Name="ID" Type="Edm.String" Nullable="false" />
+				<Property Name="Description" Type="Edm.String" Nullable="true" />
+			</EntityType>
+			<EntityType Name="Contact">
+				<Key>
+					<PropertyRef Name="ID" />
+				</Key>
+				<Property Name="ID" Type="Edm.String" Nullable="false" />
+				<Property Name="Name" Type="Edm.String" MaxLength="30"
+					Unicode="true" FixedLength="false" />
+				<Property Name="Title" Type="Edm.String" MaxLength="30"
+					Unicode="true" FixedLength="false" m:FC_TargetPath="contact/@title"
+					m:FC_NsPrefix="cafe" m:FC_NsUri="http://schemas.examples.microsoft.com/dataservices"
+					m:FC_KeepInContent="false" />
+			</EntityType>
+			<Association Name="Cafe_Items">
+				<End Role="Items" Type="org.restlet.test.ext.odata.cafeCustoFeeds.Item" Multiplicity="*" />
+				<End Role="Cafe" Type="org.restlet.test.ext.odata.cafeCustoFeeds.Cafe" Multiplicity="*" />
+			</Association>
+			<Association Name="Cafe_Contact">
+				<End Role="Contact" Type="org.restlet.test.ext.odata.cafeCustoFeeds.Contact"
+					Multiplicity="0..1" />
+				<End Role="Cafe" Type="org.restlet.test.ext.odata.cafeCustoFeeds.Cafe" Multiplicity="*" />
+			</Association>
+			<EntityContainer Name="CafeServiceDataModel"
+				m:IsDefaultEntityContainer="true">
+				<EntitySet Name="Cafes" EntityType="org.restlet.test.ext.odata.cafeCustoFeeds.Cafe" />
+				<EntitySet Name="Items" EntityType="org.restlet.test.ext.odata.cafeCustoFeeds.Item" />
+				<EntitySet Name="Contacts" EntityType="org.restlet.test.ext.odata.cafeCustoFeeds.Contact" />
+				<AssociationSet Name="Cafe_Items" Association="org.restlet.test.ext.odata.cafeCustoFeeds.Cafe_Items">
+					<End Role="Items" EntitySet="Items" />
+					<End Role="Cafe" EntitySet="Cafes" />
+				</AssociationSet>
+				<AssociationSet Name="Cafe_Contact"
+					Association="org.restlet.test.ext.odata.cafeCustoFeeds.Cafe_Contact">
+					<End Role="Contact" EntitySet="Contacts" />
+					<End Role="Cafe" EntitySet="Cafes" />
+				</AssociationSet>
+			</EntityContainer>
+		</Schema>
+	</edmx:DataServices>
+</edmx:Edmx>
