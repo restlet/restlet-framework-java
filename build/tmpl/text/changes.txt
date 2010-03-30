@@ -4,6 +4,8 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+
+- 2.0 Release Candidate 2 (2010-03-30)
     - API changes
       - Left an unspecified key stores 'null' to prevent troubles 
         with HTTP client connectors. Contributed by Bruno Harbulot.
