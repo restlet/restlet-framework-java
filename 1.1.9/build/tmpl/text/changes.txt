@@ -3,7 +3,7 @@
 Changes log  
 ===========
 
-- @version-full@ (@release-date@)
+- 1.1.9 (2010-03-30)
     - Bugs fixed
         - Allowed to specify its own user agent.
         - Fixed support of latin1 characters in credentials for 
