@@ -83,8 +83,9 @@ public class SipServerConnection extends ServerConnection {
             headers.add(SipConstants.HEADER_CALL_ID, sipRequest.getCallId());
         }
 
-        if (sipRequest.getCallSeq() != null) {
-            headers.add(SipConstants.HEADER_CALL_SEQ, sipRequest.getCallSeq());
+        if (sipRequest.getCallSequence() != null) {
+            headers.add(SipConstants.HEADER_CALL_SEQ, sipRequest
+                    .getCallSequence());
         }
 
         if (sipRequest.getFrom() != null) {
@@ -97,8 +98,9 @@ public class SipServerConnection extends ServerConnection {
                     .getTo()));
         }
 
-        if (sipRequest.getVia() != null) {
-            headers.add(HeaderConstants.HEADER_VIA, sipRequest.getVia());
+        if (!sipRequest.getSipRecipientsInfo().isEmpty()) {
+            headers.add(HeaderConstants.HEADER_VIA, SipRecipientInfoWriter
+                    .write(sipRequest.getSipRecipientsInfo()));
         }
     }
 

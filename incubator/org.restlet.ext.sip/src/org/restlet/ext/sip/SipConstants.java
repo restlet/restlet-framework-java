@@ -41,9 +41,63 @@ public final class SipConstants {
     // --- Header names ---
     // ---------------------
 
-    public static final String HEADER_TO = "To";
+    public static final String HEADER_ALERT_INFO = "Alert-Info";
+
+    public static final String HEADER_ALLOW_EVENTS = "Allow-Events";
+
+    public static final String HEADER_CALL_ID = "Call-ID";
+
+    public static final String HEADER_CALL_INFO = "Call-Info";
 
     public static final String HEADER_CALL_SEQ = "CSeq";
 
-    public static final String HEADER_CALL_ID = "Call-ID";
+    public static final String HEADER_CONTACT = "Contact";
+
+    public static final String HEADER_ENCRYPTION = "Encryption";
+
+    public static final String HEADER_ERROR_INFO = "Error-Info";
+
+    public static final String HEADER_EVENT = "Event";
+
+    public static final String HEADER_IN_REPLY_TO = "In-Reply-To";
+
+    public static final String HEADER_MIME_VERSION = "MIME-Version";
+
+    public static final String HEADER_MIN_EXPIRES = "Min-Expires";
+
+    public static final String HEADER_ORGANIZATION = "Organization";
+
+    public static final String HEADER_PRIORITY = "Priority";
+
+    public static final String HEADER_PROXY_REQUIRE = "Proxy-Require";
+
+    public static final String HEADER_RECORD_ROUTE = "Record-Route";
+
+    public static final String HEADER_REFER_TO = "Refer-To";
+
+    public static final String HEADER_REPLY_TO = "Reply-To";
+
+    public static final String HEADER_REQUIRE = "Require";
+
+    public static final String HEADER_RETRY_AFTER = "Retry-After";
+
+    public static final String HEADER_ROUTE = "Route";
+
+    public static final String HEADER_RSEQ = "RSeq";
+
+    public static final String HEADER_SERVER = "Server";
+
+    public static final String HEADER_SIP_ETAG = "SIP-ETag";
+
+    public static final String HEADER_SIP_IF_MATCH = "SIP-If-Match";
+
+    public static final String HEADER_SUBJECT = "Subject";
+
+    public static final String HEADER_SUBSCRIPTION_STATE = "Subscription-State";
+
+    public static final String HEADER_SUPPORTED = "Supported";
+
+    public static final String HEADER_TO = "To";
+
+    public static final String HEADER_UNSUPPORTED = "Unsupported";
 }

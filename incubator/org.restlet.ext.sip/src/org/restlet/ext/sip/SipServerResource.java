@@ -30,6 +30,8 @@
 
 package org.restlet.ext.sip;
 
+import java.util.List;
+
 import org.restlet.resource.ServerResource;
 
 public class SipServerResource extends ServerResource {
@@ -38,8 +40,8 @@ public class SipServerResource extends ServerResource {
         return getRequest().getCallId();
     }
 
-    public String getCallSeq() {
-        return getRequest().getCallSeq();
+    public String getCallSequence() {
+        return getRequest().getCallSequence();
     }
 
     public Address getFrom() {
@@ -56,11 +58,11 @@ public class SipServerResource extends ServerResource {
         return (SipResponse) super.getResponse();
     }
 
-    public Address getTo() {
-        return getRequest().getTo();
+    public List<SipRecipientInfo> getSipRecipientsInfo() {
+        return getRequest().getSipRecipientsInfo();
     }
 
-    public String getVia() {
-        return getRequest().getVia();
+    public Address getTo() {
+        return getRequest().getTo();
     }
 }

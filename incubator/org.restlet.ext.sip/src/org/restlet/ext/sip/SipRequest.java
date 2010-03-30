@@ -41,7 +41,13 @@ import org.restlet.data.Tag;
 import org.restlet.engine.http.connector.ConnectedRequest;
 import org.restlet.engine.http.connector.ServerConnection;
 import org.restlet.engine.http.header.HeaderConstants;
+import org.restlet.engine.http.header.HeaderReader;
 import org.restlet.ext.sip.internal.AddressReader;
+import org.restlet.ext.sip.internal.ContactInfoReader;
+import org.restlet.ext.sip.internal.EventTypeReader;
+import org.restlet.ext.sip.internal.OptionTagReader;
+import org.restlet.ext.sip.internal.SipRecipientInfoReader;
+import org.restlet.ext.sip.internal.SubscriptionStateReader;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 
@@ -55,11 +61,17 @@ public class SipRequest extends ConnectedRequest {
     /** Alternative ring tone for the UAS. */
     private volatile Address alertInfo;
 
+    private volatile boolean alertInfoAdded;
+
     /** The list of supported event packages. */
     private volatile List<EventType> allowedEventTypes;
 
+    private volatile boolean allowedEventTypesAdded;
+
     /** The description of the current caller. */
     private volatile List<Address> callerInfo;
+
+    private volatile boolean callerInfoAdded;
 
     /**
      * Identifies a particular invitation or all registrations of a particular
@@ -73,14 +85,20 @@ public class SipRequest extends ConnectedRequest {
     /** The data about the contact. */
     private volatile List<ContactInfo> contact;
 
+    private volatile boolean contactAdded;
+
     /** The description of an event notification. */
     private volatile Event event;
+
+    private volatile boolean eventAdded;
 
     /** The description of the request's initiator. */
     private volatile Address from;
 
     /** The list of references to call-ids. */
     private volatile List<String> inReplyTo;
+
+    private volatile boolean inReplyToAdded;
 
     /** The version of the MIME protocol used to construct the message. */
     private volatile String mimeVersion;
@@ -94,8 +112,17 @@ public class SipRequest extends ConnectedRequest {
     /** The urgency of the request as perceived by the client. */
     private volatile Priority priority;
 
+    private volatile boolean priorityAdded;
+
     /** The proxy-sensitive features that the proxy must support. */
     private volatile List<OptionTag> proxyRequires;
+
+    private volatile boolean proxyRequiresAdded;
+
+    /** The intermediary recipients information. */
+    private volatile List<SipRecipientInfo> recipientsInfo;
+
+    private volatile boolean recipientsInfoAdded;
 
     /**
      * The list of routes completed by proxies to force future requests to go
@@ -103,11 +130,15 @@ public class SipRequest extends ConnectedRequest {
      */
     private volatile List<Address> recordedRoutes;
 
+    private volatile boolean recordedRoutesAdded;
+
     /**
      * The reference that the recipient of a {@link SipMethod#REFER} method
      * should contact.
      */
     private volatile Address referTo;
+
+    private volatile boolean referToAdded;
 
     /**
      * A logical return URI that may be different from the
@@ -115,14 +146,22 @@ public class SipRequest extends ConnectedRequest {
      */
     private volatile Address replyTo;
 
+    private volatile boolean replyToAdded;
+
     /** The sensitive features that the server must support. */
     private volatile List<OptionTag> requires;
+
+    private volatile boolean requiresAdded;
 
     /** The set of proxies used to force routing for a request. */
     private volatile List<Address> routes;
 
-    /** */
+    private volatile boolean routesAdded;
+
+    /** Identifies the specific event state that the request is refreshing. */
     private volatile Tag sipIfMatch;
+
+    private volatile boolean sipIfMatchAdded;
 
     /** The subject of the call. */
     private volatile String subject;
@@ -130,27 +169,44 @@ public class SipRequest extends ConnectedRequest {
     /** The state of the subscription. */
     private volatile SubscriptionState subscriptionState;
 
+    private volatile boolean subscriptionStateAdded;
+
     /** The extensions supported by the UAC. */
     private volatile List<OptionTag> supported;
+
+    private volatile boolean supportedAdded;
 
     /** The logical recipient of the request. */
     private volatile Address to;
 
-    private volatile String via;
-
+    /**
+     * Constructor.
+     * 
+     * @param context
+     *            The context of the parent connector.
+     * @param connection
+     *            The associated network connection.
+     * @param methodName
+     *            The protocol method name.
+     * @param resourceUri
+     *            The target resource URI.
+     * @param version
+     *            The protocol version.
+     * @param headers
+     *            The request headers.
+     * @param entity
+     *            The request entity.
+     * @param confidential
+     *            True if received confidentially.
+     * @param userPrincipal
+     *            The user principal.
+     */
     public SipRequest(Context context, ServerConnection connection,
             String methodName, String resourceUri, String version,
             Series<Parameter> headers, Representation entity,
             boolean confidential, Principal userPrincipal) {
         super(context, connection, methodName, resourceUri, version, headers,
                 entity, confidential, userPrincipal);
-
-        // Set the "via" property
-        String viaHeader = (getHeaders() == null) ? null : getHeaders()
-                .getFirstValue(HeaderConstants.HEADER_VIA);
-        if (viaHeader != null) {
-            setVia(viaHeader);
-        }
 
         // Set the "callId" property
         String callIdHeader = (getHeaders() == null) ? null : getHeaders()
@@ -163,7 +219,7 @@ public class SipRequest extends ConnectedRequest {
         String callSeqHeader = (getHeaders() == null) ? null : getHeaders()
                 .getFirstValue(SipConstants.HEADER_CALL_SEQ);
         if (callSeqHeader != null) {
-            setCallSeq(callSeqHeader);
+            setCallSequence(callSeqHeader);
         }
 
         // Set the "to" property
@@ -188,6 +244,19 @@ public class SipRequest extends ConnectedRequest {
             }
         }
 
+        // Set the "mime-version" property
+        String mimeVersionHeader = (getHeaders() == null) ? null : getHeaders()
+                .getFirstValue(SipConstants.HEADER_MIME_VERSION);
+        setMimeVersion(mimeVersionHeader);
+
+        // Set the "mime-version" property
+        String organizationHeader = (getHeaders() == null) ? null
+                : getHeaders().getFirstValue(SipConstants.HEADER_ORGANIZATION);
+        setOrganization(organizationHeader);
+
+        String subjectHeader = (getHeaders() == null) ? null : getHeaders()
+                .getFirstValue(SipConstants.HEADER_SUBJECT);
+        setSubject(subjectHeader);
     }
 
     /**
@@ -196,6 +265,16 @@ public class SipRequest extends ConnectedRequest {
      * @return The alternative ring tone for the UAS.
      */
     public Address getAlertInfo() {
+        if (!alertInfoAdded) {
+            String header = getHeaders().getValues(
+                    SipConstants.HEADER_ALERT_INFO);
+            try {
+                setAlertInfo(new AddressReader(header).readValue());
+            } catch (Exception e) {
+                Context.getCurrentLogger().info(e.getMessage());
+            }
+        }
+
         return alertInfo;
     }
 
@@ -215,6 +294,18 @@ public class SipRequest extends ConnectedRequest {
                 }
             }
         }
+        if (!allowedEventTypesAdded) {
+            String header = getHeaders().getValues(
+                    SipConstants.HEADER_ALLOW_EVENTS);
+            try {
+                this.allowedEventTypes.addAll(new EventTypeReader(header)
+                        .readValues());
+                allowedEventTypesAdded = true;
+            } catch (Exception e) {
+                Context.getCurrentLogger().info(e.getMessage());
+            }
+        }
+
         return aet;
     }
 
@@ -234,6 +325,17 @@ public class SipRequest extends ConnectedRequest {
                 }
             }
         }
+        if (!callerInfoAdded) {
+            String header = getHeaders().getValues(
+                    SipConstants.HEADER_CALL_INFO);
+            try {
+                this.callerInfo.addAll(new AddressReader(header).readValues());
+                callerInfoAdded = true;
+            } catch (Exception e) {
+                Context.getCurrentLogger().info(e.getMessage());
+            }
+        }
+
         return ci;
     }
 
@@ -244,10 +346,6 @@ public class SipRequest extends ConnectedRequest {
      */
     public String getCallId() {
         return callId;
-    }
-
-    public String getCallSeq() {
-        return callSequence;
     }
 
     /**
@@ -275,6 +373,16 @@ public class SipRequest extends ConnectedRequest {
                 }
             }
         }
+        if (!contactAdded) {
+            String header = getHeaders().getValues(SipConstants.HEADER_CONTACT);
+            try {
+                this.contact.addAll(new ContactInfoReader(header).readValues());
+                contactAdded = true;
+            } catch (Exception e) {
+                Context.getCurrentLogger().info(e.getMessage());
+            }
+        }
+
         return c;
     }
 
@@ -284,6 +392,15 @@ public class SipRequest extends ConnectedRequest {
      * @return The description of an event notification.
      */
     public Event getEvent() {
+        if (!eventAdded) {
+            String header = getHeaders().getValues(SipConstants.HEADER_EVENT);
+            try {
+                setEvent(new EventReader(header).readValue());
+            } catch (Exception e) {
+                Context.getCurrentLogger().info(e.getMessage());
+            }
+        }
+
         return event;
     }
 
@@ -312,6 +429,19 @@ public class SipRequest extends ConnectedRequest {
                 }
             }
         }
+
+        if (!inReplyToAdded) {
+            String header = getHeaders().getValues(
+                    SipConstants.HEADER_ALLOW_EVENTS);
+            try {
+                this.inReplyTo.addAll(new HeaderReader<String>(header)
+                        .readValues());
+                inReplyToAdded = true;
+            } catch (Exception e) {
+                Context.getCurrentLogger().info(e.getMessage());
+            }
+        }
+
         return irt;
     }
 
@@ -341,6 +471,16 @@ public class SipRequest extends ConnectedRequest {
      * @return The urgency of the request as perceived by the client.
      */
     public Priority getPriority() {
+        if (!priorityAdded) {
+            String header = getHeaders()
+                    .getValues(SipConstants.HEADER_PRIORITY);
+            try {
+                setPriority(Priority.valueOf(header));
+            } catch (Exception e) {
+                Context.getCurrentLogger().info(e.getMessage());
+            }
+        }
+
         return priority;
     }
 
@@ -360,6 +500,18 @@ public class SipRequest extends ConnectedRequest {
                 }
             }
         }
+        if (!proxyRequiresAdded) {
+            String header = getHeaders().getValues(
+                    SipConstants.HEADER_PROXY_REQUIRE);
+            try {
+                this.proxyRequires.addAll(new OptionTagReader(header)
+                        .readValues());
+                proxyRequiresAdded = true;
+            } catch (Exception e) {
+                Context.getCurrentLogger().info(e.getMessage());
+            }
+        }
+
         return pr;
     }
 
@@ -381,6 +533,17 @@ public class SipRequest extends ConnectedRequest {
                 }
             }
         }
+        if (!recordedRoutesAdded) {
+            String header = getHeaders().getValues(
+                    SipConstants.HEADER_RECORD_ROUTE);
+            try {
+                this.recordedRoutes.addAll(new AddressReader(header)
+                        .readValues());
+                recordedRoutesAdded = true;
+            } catch (Exception e) {
+                Context.getCurrentLogger().info(e.getMessage());
+            }
+        }
         return rr;
     }
 
@@ -392,6 +555,16 @@ public class SipRequest extends ConnectedRequest {
      *         method should contact.
      */
     public Address getReferTo() {
+        if (!referToAdded) {
+            String header = getHeaders()
+                    .getValues(SipConstants.HEADER_REFER_TO);
+            try {
+                setReferTo(new AddressReader(header).readValue());
+            } catch (Exception e) {
+                Context.getCurrentLogger().info(e.getMessage());
+            }
+        }
+
         return referTo;
     }
 
@@ -401,6 +574,16 @@ public class SipRequest extends ConnectedRequest {
      * @return A logical return URI.
      */
     public Address getReplyTo() {
+        if (!replyToAdded) {
+            String header = getHeaders()
+                    .getValues(SipConstants.HEADER_REPLY_TO);
+            try {
+                setReplyTo(new AddressReader(header).readValue());
+            } catch (Exception e) {
+                Context.getCurrentLogger().info(e.getMessage());
+            }
+        }
+
         return replyTo;
     }
 
@@ -420,6 +603,16 @@ public class SipRequest extends ConnectedRequest {
                 }
             }
         }
+        if (!requiresAdded) {
+            String header = getHeaders().getValues(SipConstants.HEADER_REQUIRE);
+            try {
+                this.requires.addAll(new OptionTagReader(header).readValues());
+                requiresAdded = true;
+            } catch (Exception e) {
+                Context.getCurrentLogger().info(e.getMessage());
+            }
+        }
+
         return r;
     }
 
@@ -439,11 +632,68 @@ public class SipRequest extends ConnectedRequest {
                 }
             }
         }
+        if (!routesAdded) {
+            String header = getHeaders().getValues(SipConstants.HEADER_ROUTE);
+            try {
+                this.routes.addAll(new AddressReader(header).readValues());
+                routesAdded = true;
+            } catch (Exception e) {
+                Context.getCurrentLogger().info(e.getMessage());
+            }
+        }
+
         return r;
     }
 
+    /**
+     * Returns the identifier of the specific event state that the request is
+     * refreshing.
+     * 
+     * @return The identifier of the specific event state that the request is
+     *         refreshing.
+     */
     public Tag getSipIfMatch() {
+        if (!sipIfMatchAdded) {
+            String header = getHeaders().getValues(
+                    SipConstants.HEADER_SIP_IF_MATCH);
+            try {
+                setSipIfMatch(Tag.parse(header));
+            } catch (Exception e) {
+                Context.getCurrentLogger().info(e.getMessage());
+            }
+        }
+
         return sipIfMatch;
+    }
+
+    /**
+     * Returns the intermediary recipients information.
+     * 
+     * @return The intermediary recipients information.
+     */
+    public List<SipRecipientInfo> getSipRecipientsInfo() {
+        // Lazy initialization with double-check.
+        List<SipRecipientInfo> sri = this.recipientsInfo;
+        if (sri == null) {
+            synchronized (this) {
+                sri = this.recipientsInfo;
+                if (sri == null) {
+                    this.recipientsInfo = sri = new CopyOnWriteArrayList<SipRecipientInfo>();
+                }
+            }
+        }
+        if (!recipientsInfoAdded) {
+            String header = getHeaders().getValues(HeaderConstants.HEADER_VIA);
+            try {
+                this.recipientsInfo.addAll(new SipRecipientInfoReader(header)
+                        .readValues());
+                recipientsInfoAdded = true;
+            } catch (Exception e) {
+                Context.getCurrentLogger().info(e.getMessage());
+            }
+        }
+
+        return sri;
     }
 
     /**
@@ -461,6 +711,17 @@ public class SipRequest extends ConnectedRequest {
      * @return The state of the subscription.
      */
     public SubscriptionState getSubscriptionState() {
+        if (!subscriptionStateAdded) {
+            String header = getHeaders().getValues(
+                    SipConstants.HEADER_SUBSCRIPTION_STATE);
+            try {
+                setSubscriptionState(new SubscriptionStateReader(header)
+                        .readValue());
+            } catch (Exception e) {
+                Context.getCurrentLogger().info(e.getMessage());
+            }
+        }
+
         return subscriptionState;
     }
 
@@ -480,6 +741,16 @@ public class SipRequest extends ConnectedRequest {
                 }
             }
         }
+        if (!supportedAdded) {
+            String header = getHeaders().getValues(SipConstants.HEADER_SUPPORTED);
+            try {
+                this.supported.addAll(new OptionTagReader(header).readValues());
+                supportedAdded = true;
+            } catch (Exception e) {
+                Context.getCurrentLogger().info(e.getMessage());
+            }
+        }
+
         return s;
     }
 
@@ -492,10 +763,6 @@ public class SipRequest extends ConnectedRequest {
         return to;
     }
 
-    public String getVia() {
-        return via;
-    }
-
     /**
      * Sets the alternative ring tone for the UAS.
      * 
@@ -504,6 +771,7 @@ public class SipRequest extends ConnectedRequest {
      */
     public void setAlertInfo(Address alertInfo) {
         this.alertInfo = alertInfo;
+        this.alertInfoAdded = true;
     }
 
     /**
@@ -514,6 +782,7 @@ public class SipRequest extends ConnectedRequest {
      */
     public void setAllowedEventTypes(List<EventType> allowedEventTypes) {
         this.allowedEventTypes = allowedEventTypes;
+        allowedEventTypesAdded = true;
     }
 
     /**
@@ -524,6 +793,7 @@ public class SipRequest extends ConnectedRequest {
      */
     public void setCallerInfo(List<Address> callerInfo) {
         this.callerInfo = callerInfo;
+        callerInfoAdded = true;
     }
 
     /**
@@ -534,10 +804,6 @@ public class SipRequest extends ConnectedRequest {
      */
     public void setCallId(String callId) {
         this.callId = callId;
-    }
-
-    public void setCallSeq(String callSeq) {
-        this.callSequence = callSeq;
     }
 
     /**
@@ -558,6 +824,7 @@ public class SipRequest extends ConnectedRequest {
      */
     public void setContact(List<ContactInfo> contact) {
         this.contact = contact;
+        this.contactAdded = true;
     }
 
     /**
@@ -568,6 +835,7 @@ public class SipRequest extends ConnectedRequest {
      */
     public void setEvent(Event event) {
         this.event = event;
+        eventAdded = true;
     }
 
     /**
@@ -582,6 +850,7 @@ public class SipRequest extends ConnectedRequest {
 
     public void setInReplyTo(List<String> inReplyTo) {
         this.inReplyTo = inReplyTo;
+        this.inReplyToAdded = true;
     }
 
     /**
@@ -615,6 +884,7 @@ public class SipRequest extends ConnectedRequest {
      */
     public void setPriority(Priority priority) {
         this.priority = priority;
+        this.priorityAdded = true;
     }
 
     /**
@@ -625,6 +895,7 @@ public class SipRequest extends ConnectedRequest {
      */
     public void setProxyRequires(List<OptionTag> proxyRequires) {
         this.proxyRequires = proxyRequires;
+        this.proxyRequiresAdded = true;
     }
 
     /**
@@ -637,6 +908,7 @@ public class SipRequest extends ConnectedRequest {
      */
     public void setRecordedRoutes(List<Address> recordedRoutes) {
         this.recordedRoutes = recordedRoutes;
+        this.recordedRoutesAdded = true;
     }
 
     /**
@@ -649,6 +921,7 @@ public class SipRequest extends ConnectedRequest {
      */
     public void setReferTo(Address referTo) {
         this.referTo = referTo;
+        this.referToAdded = true;
     }
 
     /**
@@ -659,6 +932,7 @@ public class SipRequest extends ConnectedRequest {
      */
     public void setReplyTo(Address replyTo) {
         this.replyTo = replyTo;
+        this.replyToAdded = true;
     }
 
     /**
@@ -669,6 +943,7 @@ public class SipRequest extends ConnectedRequest {
      */
     public void setRequires(List<OptionTag> requires) {
         this.requires = requires;
+        this.requiresAdded = true;
     }
 
     /**
@@ -679,10 +954,31 @@ public class SipRequest extends ConnectedRequest {
      */
     public void setRoutes(List<Address> routes) {
         this.routes = routes;
+        this.routesAdded = true;
     }
 
+    /**
+     * Sets the identifier of the specific event state that the request is
+     * refreshing.
+     * 
+     * @param sipIfMatch
+     *            The identifier of the specific event state that the request is
+     *            refreshing.
+     */
     public void setSipIfMatch(Tag sipIfMatch) {
         this.sipIfMatch = sipIfMatch;
+        this.sipIfMatchAdded = true;
+    }
+
+    /**
+     * Sets the intermediary recipients information.
+     * 
+     * @param recipientsInfo
+     *            The intermediary recipients information.
+     */
+    public void setSipRecipientsInfo(List<SipRecipientInfo> recipientsInfo) {
+        this.recipientsInfo = recipientsInfo;
+        this.recipientsInfoAdded = true;
     }
 
     /**
@@ -703,6 +999,7 @@ public class SipRequest extends ConnectedRequest {
      */
     public void setSubscriptionState(SubscriptionState subscriptionState) {
         this.subscriptionState = subscriptionState;
+        this.subscriptionStateAdded = true;
     }
 
     /**
@@ -713,6 +1010,7 @@ public class SipRequest extends ConnectedRequest {
      */
     public void setSupported(List<OptionTag> supported) {
         this.supported = supported;
+        this.supportedAdded = true;
     }
 
     /**
@@ -723,10 +1021,6 @@ public class SipRequest extends ConnectedRequest {
      */
     public void setTo(Address to) {
         this.to = to;
-    }
-
-    public void setVia(String via) {
-        this.via = via;
     }
 
 }
