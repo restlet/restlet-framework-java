@@ -48,6 +48,8 @@ Changes log
         - Internal client connector was always pipelining requests.
         - Fixed support of generic types and arrays for the GWT edition.
         - Fixed handling of Cookies. Reported by Rob Heittman.
+        - Fixed potential NPE in DimensionReader class.
+          Reported and contributed by Rob Heittman.
     - Misc
         - Updated Simple framework library to version 4.1.20.
                 
