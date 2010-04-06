@@ -824,11 +824,11 @@ public final class MediaType extends Metadata {
 
         // if obj == this no need to go further
         if (!result) {
-            // test for equality at Metadata level i.e. name and value.
-            if (super.equals(obj)) {
-                // if obj isn't a mediatype or is null don't evaluate further
-                if (obj instanceof MediaType) {
-                    final MediaType that = (MediaType) obj;
+            // if obj isn't a mediatype or is null don't evaluate further
+            if (obj instanceof MediaType) {
+                final MediaType that = (MediaType) obj;
+                if (getMainType().equals(that.getMainType())
+                        && getSubType().equals(that.getSubType())) {
                     result = ignoreParameters
                             || getParameters().equals(that.getParameters());
                 }
