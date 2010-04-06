@@ -59,11 +59,11 @@ public class ContentTypeTestCase extends TestCase {
         ContentType ct1 = new ContentType(h1);
         ContentType ct2 = new ContentType(h2);
 
-        assertEquals("application/docbook+xml", ct1.getMediaType().getName());
+        assertEquals(h1, ct1.getMediaType().getName());
         assertEquals("my version 1.0", ct1.getMediaType().getParameters()
                 .getFirstValue("version"));
 
-        assertEquals("application/docbook+xml", ct2.getMediaType().getName());
+        assertEquals(h2, ct2.getMediaType().getName());
         assertEquals("'my%20version%201.0'", ct2.getMediaType().getParameters()
                 .getFirstValue("version"));
     }
