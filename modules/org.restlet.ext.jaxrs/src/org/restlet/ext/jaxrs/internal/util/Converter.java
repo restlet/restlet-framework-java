@@ -119,7 +119,7 @@ public class Converter {
         if ((parameters == null) || parameters.isEmpty()) {
             return mediaType;
         }
-        return new org.restlet.data.MediaType(mediaType.getName());
+        return mediaType.getParent();
     }
 
     /**
