@@ -34,7 +34,6 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
-import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
 
@@ -71,28 +70,6 @@ public class PreferenceWriter extends HeaderWriter<Preference<?>> {
     @Override
     public PreferenceWriter append(Preference<?> pref) {
         append(pref.getMetadata().getName());
-
-        if (pref.getMetadata() instanceof MediaType) {
-            MediaType mediaType = (MediaType) pref.getMetadata();
-
-            if (mediaType.getParameters() != null) {
-                Parameter param;
-
-                for (Iterator<Parameter> iter = mediaType.getParameters()
-                        .iterator(); iter.hasNext();) {
-                    param = iter.next();
-
-                    if (param.getName() != null) {
-                        append(';').append(param.getName());
-
-                        if ((param.getValue() != null)
-                                && (param.getValue().length() > 0)) {
-                            append('=').append(param.getValue());
-                        }
-                    }
-                }
-            }
-        }
 
         if (pref.getQuality() < 1F) {
             append(";q=");
