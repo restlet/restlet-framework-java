@@ -33,6 +33,7 @@ package org.restlet.data;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.restlet.engine.http.header.HeaderWriter;
 import org.restlet.engine.util.SystemUtils;
 import org.restlet.util.Series;
 
@@ -689,13 +690,19 @@ public final class MediaType extends Metadata {
             if (params == null) {
                 params = new StringBuilder();
             }
+            HeaderWriter<Parameter> hw = new HeaderWriter<Parameter>() {
+                @Override
+                public HeaderWriter<Parameter> append(Parameter value) {
+                    return appendExtension(value);
+                }
+            };
             for (int i = 0; i < parameters.size(); i++) {
                 Parameter p = parameters.get(i);
-                params.append(";");
-                params.append(p.getName());
-                params.append("=");
-                params.append(p.getValue());
+                hw.appendParameterSeparator();
+                hw.appendSpace();
+                hw.append(p);
             }
+            params.append(hw.toString());
         }
 
         return (params == null) ? mainType + '/' + subType : mainType + '/'
