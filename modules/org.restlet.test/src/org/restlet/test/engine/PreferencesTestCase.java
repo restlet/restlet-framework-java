@@ -58,13 +58,20 @@ public class PreferencesTestCase extends RestletTestCase {
                 PreferenceReader.TYPE_MEDIA_TYPE, headerValue);
         List<Preference<MediaType>> prefs = new ArrayList<Preference<MediaType>>();
         pr.addValues(prefs);
-        
+
         // Rewrite the header
         String newHeaderValue = PreferenceWriter.write(prefs);
 
+        // Reread and rewrite the header (prevent formatting issues)
+        pr = new PreferenceReader<MediaType>(PreferenceReader.TYPE_MEDIA_TYPE,
+                headerValue);
+        prefs = new ArrayList<Preference<MediaType>>();
+        pr.addValues(prefs);
+        String newHeaderValue2 = PreferenceWriter.write(prefs);
+
         if (testEquals) {
             // Compare initial and new headers
-            assertEquals(headerValue, newHeaderValue);
+            assertEquals(newHeaderValue, newHeaderValue2);
         }
     }
 
