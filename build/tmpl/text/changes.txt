@@ -4,7 +4,11 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
-
+    - Bugs fixed
+        - Fixed support of parameters with the MediaType class. The 
+          name contains the the main and sub types, plus the parameters.
+          Reported by Carsten Lohmann. 
+          
 - 2.0 Release Candidate 2 (2010-03-30)
     - API changes
       - Left an unspecified key stores 'null' to prevent troubles 

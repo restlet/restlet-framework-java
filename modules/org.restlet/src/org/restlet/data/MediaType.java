@@ -37,7 +37,9 @@ import org.restlet.engine.util.SystemUtils;
 import org.restlet.util.Series;
 
 /**
- * Media type used in representations and preferences.
+ * Media type used in representations and preferences. The {@link #getName()}
+ * method returns a full String representation of the media type including the
+ * parameters.
  * 
  * @see <a href="http://en.wikipedia.org/wiki/MIME">MIME types on Wikipedia</a>
  * @author Jerome Louvel
@@ -121,13 +123,13 @@ public final class MediaType extends Metadata {
     public static final MediaType APPLICATION_JAVA_OBJECT = register(
             "application/x-java-serialized-object", "Java serialized object");
 
-    public static final MediaType APPLICATION_JAVA_OBJECT_XML = register(
-            "application/x-java-serialized-object+xml",
-            "Java serialized object (using JavaBeans XML encoder)");
-
     public static final MediaType APPLICATION_JAVA_OBJECT_GWT = register(
             "application/x-java-serialized-object+gwt",
             "Java serialized object (using GWT-RPC encoder)");
+
+    public static final MediaType APPLICATION_JAVA_OBJECT_XML = register(
+            "application/x-java-serialized-object+xml",
+            "Java serialized object (using JavaBeans XML encoder)");
 
     public static final MediaType APPLICATION_JAVASCRIPT = register(
             "application/x-javascript", "Javascript document");
@@ -426,11 +428,11 @@ public final class MediaType extends Metadata {
     public static final MediaType APPLICATION_XHTML_XML = register(
             "application/xhtml+xml", "XHTML document");
 
-    public static final MediaType APPLICATION_XML = register("application/xml",
-            "XML document");
-
     public static final MediaType APPLICATION_XMI_XML = register(
             "application/xmi+xml", "XMI document");
+
+    public static final MediaType APPLICATION_XML = register("application/xml",
+            "XML document");
 
     public static final MediaType APPLICATION_XML_DTD = register(
             "application/xml-dtd", "XML DTD");
@@ -584,7 +586,7 @@ public final class MediaType extends Metadata {
         MediaType mostSpecific = mediaTypes[mediaTypes.length - 1];
 
         for (int i = mediaTypes.length - 2; i >= 0; i--) {
-            final MediaType mediaType = mediaTypes[i];
+            MediaType mediaType = mediaTypes[i];
 
             if (mediaType.getMainType().equals("*")) {
                 continue;
@@ -650,14 +652,17 @@ public final class MediaType extends Metadata {
      * 
      * @param name
      *            The name of the type to normalize.
+     * @param parameters
+     *            The parameters of the type to normalize.
      * @return The normalized type.
      */
-    private static String normalizeType(String name) {
+    private static String normalizeType(String name,
+            Series<Parameter> parameters) {
         int slashIndex;
         int colonIndex;
         String mainType;
         String subType;
-        String parameters = null;
+        StringBuilder params = null;
 
         // Ignore null names (backward compatibility).
         if (name == null)
@@ -665,7 +670,7 @@ public final class MediaType extends Metadata {
 
         // Check presence of parameters
         if ((colonIndex = name.indexOf(';')) != -1) {
-            parameters = name.substring(colonIndex + 1);
+            params = new StringBuilder(name.substring(colonIndex));
             name = name.substring(0, colonIndex);
         }
 
@@ -673,16 +678,28 @@ public final class MediaType extends Metadata {
         if ((slashIndex = name.indexOf('/')) == -1) {
             mainType = normalizeToken(name);
             subType = "*";
-        }
-
-        // Normalizes the main and sub types.
-        else {
+        } else {
+            // Normalizes the main and sub types.
             mainType = normalizeToken(name.substring(0, slashIndex));
             subType = normalizeToken(name.substring(slashIndex + 1));
         }
 
-        return (parameters == null) ? mainType + '/' + subType : mainType + '/'
-                + subType + ";" + parameters;
+        // Merge parameters taken from the name and the method argument.
+        if (parameters != null && !parameters.isEmpty()) {
+            if (params == null) {
+                params = new StringBuilder();
+            }
+            for (int i = 0; i < parameters.size(); i++) {
+                Parameter p = parameters.get(i);
+                params.append(";");
+                params.append(p.getName());
+                params.append("=");
+                params.append(p.getValue());
+            }
+        }
+
+        return (params == null) ? mainType + '/' + subType : mainType + '/'
+                + subType + params.toString();
     }
 
     /**
@@ -766,7 +783,7 @@ public final class MediaType extends Metadata {
     @SuppressWarnings("unchecked")
     public MediaType(String name, Series<Parameter> parameters,
             String description) {
-        super(normalizeType(name), description);
+        super(normalizeType(name, parameters), description);
 
         if (parameters != null) {
             this.parameters = (Series<Parameter>) Series
@@ -884,6 +901,14 @@ public final class MediaType extends Metadata {
         return p;
     }
 
+    /**
+     * {@inheritDoc}<br>
+     * In case the media type has parameters, this method returns the
+     * concatenation of the main type and the subtype. If the subtype is not
+     * equal to "*", it returns the concatenation of the main type and "*".
+     * Otherwise, it returns either the {@link #ALL} media type if it is already
+     * the {@link #ALL} media type, or null.
+     */
     @Override
     public MediaType getParent() {
         MediaType result = null;
