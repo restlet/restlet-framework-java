@@ -308,17 +308,17 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
 
             println("){");
             indent();
-
+            println("Representation requestEntity = null;"
             if (parameterTypes.length > 1) {
                 // By convention, only the first parameter can be passed as
                 // single parameter of the callback method.
                 parameterType = parameterTypes[0];
-                println("Representation requestEntity = new ObjectRepresentation<"
+                println("requestEntity = new ObjectRepresentation<"
                         + parameterType.getName()
                         + ">(param1,(SerializationStreamFactory) "
                         + getClassName() + ".this);");
-                println("getClientResource().getRequest().setEntity(requestEntity);");
             }
+            println("getClientResource().getRequest().setEntity(requestEntity);");
 
             println("getClientResource().setMethod(Method."
                     + info.getRestletMethod().toString() + ");");
