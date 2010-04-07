@@ -7,7 +7,10 @@ Changes log
     - Bugs fixed
         - Fixed support of parameters with the MediaType class. The 
           name contains the the main and sub types, plus the parameters.
-          Reported by Carsten Lohmann. 
+          Reported by Carsten Lohmann.
+        - Fixed generation of GET request sent by the internal 
+          connector just after a request with an entity.
+
           
 - 2.0 Release Candidate 2 (2010-03-30)
     - API changes

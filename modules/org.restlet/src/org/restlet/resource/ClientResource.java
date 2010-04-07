@@ -1640,6 +1640,7 @@ public class ClientResource extends UniformResource {
                 Object result = null;
 
                 if (javaMethod.equals(Object.class.getMethod("toString"))) {
+                    // Help debug
                     result = "ClientProxy for resource: " + clientResource;
                 } else if (javaMethod.equals(ClientProxy.class
                         .getMethod("getClientResource"))) {
@@ -1709,11 +1710,11 @@ public class ClientResource extends UniformResource {
                                         setOnResponse(callback);
                                     } else {
                                         requestEntity = toRepresentation(args[i]);
-                                        getRequest().setEntity(requestEntity);
                                     }
                                 }
                             }
 
+                            getRequest().setEntity(requestEntity);
                             List<org.restlet.representation.Variant> responseVariants = annotation
                                     .getResponseVariants(requestEntity,
                                             getMetadataService(),
