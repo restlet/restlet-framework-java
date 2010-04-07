@@ -141,8 +141,10 @@ public class Extractor extends Filter {
             if (form != null) {
                 for (final ExtractInfo ei : getQueryExtracts()) {
                     if (ei.first) {
-                        request.getAttributes().put(ei.attribute,
-                                form.getFirstValue(ei.parameter));
+                        String value = form.getFirstValue(ei.parameter);
+                        if (value != null) {
+                            request.getAttributes().put(ei.attribute, value);
+                        }
                     } else {
                         request.getAttributes().put(ei.attribute,
                                 form.subList(ei.parameter));
@@ -159,8 +161,10 @@ public class Extractor extends Filter {
 
                 for (final ExtractInfo ei : getEntityExtracts()) {
                     if (ei.first) {
-                        request.getAttributes().put(ei.attribute,
-                                form.getFirstValue(ei.parameter));
+                        String value = form.getFirstValue(ei.parameter);
+                        if (value != null) {
+                            request.getAttributes().put(ei.attribute, value);
+                        }
                     } else {
                         request.getAttributes().put(ei.attribute,
                                 form.subList(ei.parameter));
@@ -176,8 +180,10 @@ public class Extractor extends Filter {
             if (cookies != null) {
                 for (final ExtractInfo ei : getCookieExtracts()) {
                     if (ei.first) {
-                        request.getAttributes().put(ei.attribute,
-                                cookies.getFirstValue(ei.parameter));
+                        String value = cookies.getFirstValue(ei.parameter);
+                        if (value != null) {
+                            request.getAttributes().put(ei.attribute, value);
+                        }
                     } else {
                         request.getAttributes().put(ei.attribute,
                                 cookies.subList(ei.parameter));
@@ -200,7 +206,8 @@ public class Extractor extends Filter {
      *            Indicates if only the first cookie should be set. Otherwise as
      *            a List instance might be set in the attribute value.
      */
-    public void extractFromCookie(String attribute, String cookieName, boolean first) {
+    public void extractFromCookie(String attribute, String cookieName,
+            boolean first) {
         getCookieExtracts().add(new ExtractInfo(attribute, cookieName, first));
     }
 
@@ -215,7 +222,8 @@ public class Extractor extends Filter {
      *            Indicates if only the first cookie should be set. Otherwise as
      *            a List instance might be set in the attribute value.
      */
-    public void extractFromEntity(String attribute, String parameter, boolean first) {
+    public void extractFromEntity(String attribute, String parameter,
+            boolean first) {
         getEntityExtracts().add(new ExtractInfo(attribute, parameter, first));
     }
 
@@ -230,7 +238,8 @@ public class Extractor extends Filter {
      *            Indicates if only the first cookie should be set. Otherwise as
      *            a List instance might be set in the attribute value.
      */
-    public void extractFromQuery(String attribute, String parameter, boolean first) {
+    public void extractFromQuery(String attribute, String parameter,
+            boolean first) {
         getQueryExtracts().add(new ExtractInfo(attribute, parameter, first));
     }
 

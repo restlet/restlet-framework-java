@@ -12,6 +12,8 @@ Changes log
           connector just after a request with an entity.
         - Moved ServletUtils class introduced in RC2 into the 
           org.restlet.ext.servlet package.
+        - Fixed potential NPE with the Extractor.
+          Reported by Graham Smith.
           
 - 2.0 Release Candidate 2 (2010-03-30)
     - API changes
