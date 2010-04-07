@@ -193,12 +193,15 @@ public class AnnotationInfo {
                                 .getAllMediaTypes(extension);
 
                         if (mediaTypes != null) {
-                            if (result == null) {
-                                result = new ArrayList<Variant>();
-                            }
-
                             for (MediaType mediaType : mediaTypes) {
-                                result.add(new Variant(mediaType));
+                                if ((result == null)
+                                        || (!result.contains(mediaType))) {
+                                    if (result == null) {
+                                        result = new ArrayList<Variant>();
+                                    }
+
+                                    result.add(new Variant(mediaType));
+                                }
                             }
                         }
                     }

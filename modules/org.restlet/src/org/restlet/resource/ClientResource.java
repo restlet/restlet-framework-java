@@ -1655,7 +1655,8 @@ public class ClientResource extends UniformResource {
 
                         try {
                             Representation requestEntity = null;
-                            boolean isSynchrone = true;
+                            boolean isSynchronous = true;
+
                             if ((args != null) && args.length > 0) {
                                 // Checks if the user has defined its own
                                 // callback.
@@ -1668,7 +1669,7 @@ public class ClientResource extends UniformResource {
                                             .getClass())) {
                                         // Asynchronous mode where a callback
                                         // object is to be called.
-                                        isSynchrone = false;
+                                        isSynchronous = false;
 
                                         // Get the kind of result expected.
                                         final Result rCallback = (Result) o;
@@ -1707,6 +1708,7 @@ public class ClientResource extends UniformResource {
                                                 }
                                             }
                                         };
+                                        
                                         setOnResponse(callback);
                                     } else {
                                         requestEntity = toRepresentation(args[i]);
@@ -1729,7 +1731,7 @@ public class ClientResource extends UniformResource {
 
                             handle();
 
-                            if (isSynchrone) {
+                            if (isSynchronous) {
                                 if (getStatus().isError()) {
                                     throw new ResourceException(getStatus());
                                 }

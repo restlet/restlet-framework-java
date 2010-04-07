@@ -55,6 +55,7 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.engine.http.ServerCall;
 import org.restlet.engine.http.header.HeaderConstants;
+import org.restlet.ext.servlet.ServletUtils;
 import org.restlet.util.Series;
 
 /**
