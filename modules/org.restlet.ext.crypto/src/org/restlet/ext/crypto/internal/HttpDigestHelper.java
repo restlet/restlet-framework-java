@@ -474,24 +474,23 @@ public class HttpDigestHelper extends AuthenticatorHelper {
                         } else if ("qop".equals(param.getName())) {
                             challenge.setQuality(param.getValue());
                         } else if ("nc".equals(param.getName())) {
-                            challenge.setServerNounceCount(Integer
-                                    .valueOf(param.getValue()));
+                            challenge.setServerNounceCount(Integer.valueOf(
+                                    param.getValue(), 16));
                         } else {
                             challenge.getParameters().add(param);
                         }
-
-                        if (hr.skipValueSeparator()) {
-                            param = hr.readParameter();
-                        } else {
-                            param = null;
-                        }
-                    } catch (Exception e) {
+                    } catch (Throwable e) {
                         Context
                                 .getCurrentLogger()
                                 .log(
                                         Level.WARNING,
                                         "Unable to parse the challenge request header parameter",
                                         e);
+                    }
+                    if (hr.skipValueSeparator()) {
+                        param = hr.readParameter();
+                    } else {
+                        param = null;
                     }
                 }
             } catch (Exception e) {
