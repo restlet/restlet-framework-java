@@ -7,6 +7,8 @@ import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
 
+import firstResource.Item;
+
 public class FirstResourceClientMain {
 
     public static void main(String[] args) throws IOException,
@@ -18,10 +20,15 @@ public class FirstResourceClientMain {
 
         // Create a new item
         Item item = new Item("item1", "this is an item.");
-        Representation r = itemsResource.post(getRepresentation(item));
-        if (itemsResource.getStatus().isSuccess()) {
+        try {
+            Representation r = itemsResource.post(getRepresentation(item));
             itemResource = new ClientResource(r.getLocationRef());
+        } catch (ResourceException e) {
+            System.out.println("Error  status: " + e.getStatus());
+            System.out.println("Error message: " + e.getMessage());
         }
+        // Consume the response's entity which releases the connection
+        itemsResource.getResponseEntity().exhaust();
 
         if (itemResource != null) {
             // Prints the representation of the newly created resource.
@@ -55,10 +62,13 @@ public class FirstResourceClientMain {
      */
     public static void get(ClientResource clientResource) throws IOException,
             ResourceException {
-        clientResource.get();
-        if (clientResource.getStatus().isSuccess()
-                && clientResource.getResponseEntity().isAvailable()) {
-            clientResource.getResponseEntity().write(System.out);
+        try {
+            clientResource.get().write(System.out);
+        } catch (ResourceException e) {
+            System.out.println("Error  status: " + e.getStatus());
+            System.out.println("Error message: " + e.getMessage());
+            // Consume the response's entity which releases the connection
+            clientResource.getResponseEntity().exhaust();
         }
     }
 
