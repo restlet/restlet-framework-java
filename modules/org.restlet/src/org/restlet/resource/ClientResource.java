@@ -47,7 +47,6 @@ import org.restlet.data.Conditions;
 import org.restlet.data.Cookie;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
-import org.restlet.data.Preference;
 import org.restlet.data.Protocol;
 import org.restlet.data.Range;
 import org.restlet.data.Reference;
@@ -361,14 +360,7 @@ public class ClientResource extends UniformResource {
      *      DELETE method</a>
      */
     public Representation delete() throws ResourceException {
-        setMethod(Method.DELETE);
-        Representation result = handle();
-
-        if (getStatus().isError()) {
-            throw new ResourceException(getStatus());
-        }
-
-        return result;
+        return handle(Method.DELETE);
     }
 
     // [ifndef gwt] method
@@ -386,20 +378,7 @@ public class ClientResource extends UniformResource {
      *      DELETE method</a>
      */
     public <T> T delete(Class<T> resultClass) throws ResourceException {
-        T result = null;
-
-        // Save the current client info
-        ClientInfo currentClientInfo = getClientInfo();
-
-        try {
-            updateClientInfo(resultClass);
-            result = toObject(delete(), resultClass);
-        } finally {
-            // Restore the current client info
-            setClientInfo(currentClientInfo);
-        }
-
-        return result;
+        return handle(Method.DELETE, resultClass);
     }
 
     /**
@@ -415,25 +394,7 @@ public class ClientResource extends UniformResource {
      *      DELETE method</a>
      */
     public Representation delete(MediaType mediaType) throws ResourceException {
-        Representation result = null;
-
-        // Save the current client info
-        ClientInfo currentClientInfo = getClientInfo();
-
-        // Create a fresh one for this request
-        ClientInfo newClientInfo = new ClientInfo();
-        newClientInfo.getAcceptedMediaTypes().add(
-                new Preference<MediaType>(mediaType));
-        setClientInfo(newClientInfo);
-
-        try {
-            result = delete();
-        } finally {
-            // Restore the current client info
-            setClientInfo(currentClientInfo);
-        }
-
-        return result;
+        return handle(Method.DELETE, mediaType);
     }
 
     /**
@@ -452,14 +413,7 @@ public class ClientResource extends UniformResource {
      *      GET method</a>
      */
     public Representation get() throws ResourceException {
-        setMethod(Method.GET);
-        Representation result = handle();
-
-        if (getStatus().isError()) {
-            throw new ResourceException(getStatus());
-        }
-
-        return result;
+        return handle(Method.GET);
     }
 
     // [ifndef gwt] method
@@ -482,20 +436,7 @@ public class ClientResource extends UniformResource {
      *      GET method</a>
      */
     public <T> T get(Class<T> resultClass) throws ResourceException {
-        T result = null;
-
-        // Save the current client info
-        ClientInfo currentClientInfo = getClientInfo();
-
-        try {
-            updateClientInfo(resultClass);
-            result = toObject(get(), resultClass);
-        } finally {
-            // Restore the current client info
-            setClientInfo(currentClientInfo);
-        }
-
-        return result;
+        return handle(Method.GET, resultClass);
     }
 
     /**
@@ -515,25 +456,7 @@ public class ClientResource extends UniformResource {
      *      GET method</a>
      */
     public Representation get(MediaType mediaType) throws ResourceException {
-        Representation result = null;
-
-        // Save the current client info
-        ClientInfo currentClientInfo = getClientInfo();
-
-        // Create a fresh one for this request
-        ClientInfo newClientInfo = new ClientInfo();
-        newClientInfo.getAcceptedMediaTypes().add(
-                new Preference<MediaType>(mediaType));
-        setClientInfo(newClientInfo);
-
-        try {
-            result = get();
-        } finally {
-            // Restore the current client info
-            setClientInfo(currentClientInfo);
-        }
-
-        return result;
+        return handle(Method.GET, mediaType);
     }
 
     /**
@@ -559,6 +482,33 @@ public class ClientResource extends UniformResource {
         } else {
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST,
                     "The child URI is not relative.");
+        }
+
+        return result;
+    }
+
+    // [ifndef gwt] method
+    /**
+     * Wraps the child client resource to proxy calls to the given Java
+     * interface into Restlet method calls. The child resource is defined in the
+     * sense of hierarchical URIs. If the resource URI is not hierarchical, then
+     * an exception is thrown.
+     * 
+     * @param <T>
+     * @param relativeRef
+     *            The URI reference of the child resource relatively to the
+     *            current resource seen as the parent resource.
+     * @param resourceInterface
+     *            The annotated resource interface class to proxy.
+     * @return The proxy instance.
+     */
+    public <T> T getChild(Reference relativeRef,
+            Class<? extends T> resourceInterface) throws ResourceException {
+        T result = null;
+        ClientResource childResource = getChild(relativeRef);
+
+        if (childResource != null) {
+            result = childResource.wrap(resourceInterface);
         }
 
         return result;
@@ -598,33 +548,6 @@ public class ClientResource extends UniformResource {
     public <T> T getChild(String relativeUri,
             Class<? extends T> resourceInterface) throws ResourceException {
         return getChild(new Reference(relativeUri), resourceInterface);
-    }
-
-    // [ifndef gwt] method
-    /**
-     * Wraps the child client resource to proxy calls to the given Java
-     * interface into Restlet method calls. The child resource is defined in the
-     * sense of hierarchical URIs. If the resource URI is not hierarchical, then
-     * an exception is thrown.
-     * 
-     * @param <T>
-     * @param relativeRef
-     *            The URI reference of the child resource relatively to the
-     *            current resource seen as the parent resource.
-     * @param resourceInterface
-     *            The annotated resource interface class to proxy.
-     * @return The proxy instance.
-     */
-    public <T> T getChild(Reference relativeRef,
-            Class<? extends T> resourceInterface) throws ResourceException {
-        T result = null;
-        ClientResource childResource = getChild(relativeRef);
-
-        if (childResource != null) {
-            result = childResource.wrap(resourceInterface);
-        }
-
-        return result;
     }
 
     /**
@@ -722,16 +645,161 @@ public class ClientResource extends UniformResource {
     }
 
     /**
-     * Handles the call by invoking the next handler.
+     * Handles the call by invoking the next handler. The prototype request is
+     * retrieved via {@link #getRequest()} and cloned and the response is set as
+     * the latest with {@link #setResponse(Response)}. If necessary the
+     * {@link #setNext(Uniform)} method is called as well with a {@link Client}
+     * instance matching the request protocol.
      * 
      * @return The optional response entity.
      * @see #getNext()
      */
     @Override
     public Representation handle() {
+        Response response = handle(new Request(getRequest()));
+        return (response == null) ? null : response.getEntity();
+    }
+
+    /**
+     * Handles the call by cloning the prototype request, setting the method and
+     * entity.
+     * 
+     * @param method
+     *            The request method to use.
+     * @return The optional response entity.
+     */
+    private Representation handle(Method method) {
+        return handle(method, (Representation) null, getClientInfo());
+    }
+
+    // [ifndef gwt] method
+    /**
+     * Handles the call by cloning the prototype request, setting the method and
+     * entity.
+     * 
+     * @param <T>
+     *            The expected type for the response entity.
+     * @param method
+     *            The request method to use.
+     * @param resultClass
+     *            The expected class for the response entity object.
+     * @return The response entity object.
+     * @throws ResourceException
+     */
+    private <T> T handle(Method method, Class<T> resultClass)
+            throws ResourceException {
+        return handle(method, null, resultClass);
+    }
+
+    /**
+     * Handles the call by cloning the prototype request, setting the method and
+     * entity.
+     * 
+     * @param method
+     *            The request method to use.
+     * @param mediaType
+     *            The preferred result media type.
+     * @return The optional response entity.
+     */
+    private Representation handle(Method method, MediaType mediaType) {
+        return handle(method, (Representation) null, mediaType);
+    }
+
+    // [ifndef gwt] method
+    /**
+     * Handles an object entity. Automatically serializes the object using the
+     * {@link org.restlet.service.ConverterService}.
+     * 
+     * @param method
+     *            The request method to use.
+     * @param entity
+     *            The object entity to post.
+     * @param resultClass
+     *            The class of the response entity.
+     * @return The response object entity.
+     * @throws ResourceException
+     */
+    private <T> T handle(Method method, Object entity, Class<T> resultClass)
+            throws ResourceException {
+        T result = null;
+
+        org.restlet.service.ConverterService cs = getConverterService();
+        ClientInfo clientInfo = new ClientInfo(cs
+                .getVariants(resultClass, null));
+
+        result = toObject(handle(method, (entity == null) ? null
+                : toRepresentation(entity), clientInfo), resultClass);
+
+        return result;
+    }
+
+    /**
+     * Handles the call by cloning the prototype request, setting the method and
+     * entity.
+     * 
+     * @param method
+     *            The request method to use.
+     * @param entity
+     *            The request entity to set.
+     * @param clientInfo
+     *            The client preferences.
+     * @return The optional response entity.
+     */
+    private Representation handle(Method method, Representation entity,
+            ClientInfo clientInfo) {
         Representation result = null;
 
-        if (!hasNext()) {
+        // Prepare the request by cloning the prototype request
+        Request request = new Request(getRequest());
+        request.setMethod(method);
+        request.setEntity(entity);
+        request.setClientInfo(clientInfo);
+
+        // Actually handle the call
+        Response response = handle(request);
+
+        if (response.getStatus().isError()) {
+            throw new ResourceException(response.getStatus());
+        } else {
+            result = (response == null) ? null : response.getEntity();
+        }
+
+        return result;
+    }
+
+    /**
+     * Handles the call by cloning the prototype request, setting the method and
+     * entity.
+     * 
+     * @param method
+     *            The request method to use.
+     * @param entity
+     *            The request entity to set.
+     * @param mediaType
+     *            The preferred result media type.
+     * @return The optional response entity.
+     */
+    private Representation handle(Method method, Representation entity,
+            MediaType mediaType) {
+        return handle(method, entity, new ClientInfo(mediaType));
+    }
+
+    /**
+     * Handles the call by invoking the next handler. Then a new response is
+     * created and the {@link #handle(Request, Response)} method is invoked and
+     * the response set as the latest response with
+     * {@link #setResponse(Response)}.
+     * 
+     * @param request
+     *            The request to handle.
+     * @return The response created.
+     * @see #getNext()
+     */
+    private Response handle(Request request) {
+        Response response = new Response(request);
+        Uniform next = getNext();
+
+        if (next == null) {
             // [ifdef gwt] uncomment
             // if (getReference().isRelative()) {
             // getReference().setBaseRef(
@@ -740,31 +808,33 @@ public class ClientResource extends UniformResource {
             // }
             // [enddef]
 
-            Protocol protocol = (getProtocol() != null) ? getProtocol()
-                    : (getReference() != null) ? getReference()
-                            .getSchemeProtocol() : null;
+            Protocol rProtocol = request.getProtocol();
+            Reference rReference = request.getResourceRef();
+            Protocol protocol = (rProtocol != null) ? rProtocol
+                    : (rReference != null) ? rReference.getSchemeProtocol()
+                            : null;
 
             if (protocol != null) {
-                setNext(new Client(protocol));
+                next = new Client(protocol);
+
+                // Set the next handler for reuse
+                setNext(next);
             }
         }
 
-        if (hasNext()) {
-            // Create the request and response from the prototype.
-            Request request = new Request(getRequest());
-            Response response = new Response(request);
-            handle(request, response, null, 0);
+        if (next != null) {
+            // Effectively handle the call
+            handle(request, response, null, 0, next);
 
             // Update the last received response.
             setResponse(response);
-            result = getResponse().getEntity();
         } else {
             getLogger()
                     .warning(
                             "Unable to process the call for a client resource. No next Restlet has been provided.");
         }
 
-        return result;
+        return response;
     }
 
     /**
@@ -777,89 +847,97 @@ public class ClientResource extends UniformResource {
      * @param references
      *            The references that caused a redirection to prevent infinite
      *            loops.
+     * @param retryAttempt
+     *            The number of remaining attempts.
+     * @param next
+     *            The next handler handling the call.
      */
     private void handle(Request request, Response response,
-            List<Reference> references, int retryAttempt) {
-        // Actually handle the call
-        getNext().handle(request, response);
+            List<Reference> references, int retryAttempt, Uniform next) {
+        if (next != null) {
+            // Actually handle the call
+            next.handle(request, response);
 
-        // Check for redirections
-        if (isFollowingRedirects() && response.getStatus().isRedirection()
-                && (response.getLocationRef() != null)) {
-            boolean doRedirection = false;
+            // Check for redirections
+            if (isFollowingRedirects() && response.getStatus().isRedirection()
+                    && (response.getLocationRef() != null)) {
+                boolean doRedirection = false;
 
-            if (request.getMethod().isSafe()) {
-                doRedirection = true;
-            } else {
-                if (Status.REDIRECTION_SEE_OTHER.equals(response.getStatus())) {
-                    // The user agent is redirected using the GET method
-                    request.setMethod(Method.GET);
-                    request.setEntity(null);
+                if (request.getMethod().isSafe()) {
                     doRedirection = true;
-                } else if (Status.REDIRECTION_USE_PROXY.equals(response
-                        .getStatus())) {
-                    doRedirection = true;
-                }
-            }
-
-            if (doRedirection) {
-                Reference newTargetRef = response.getLocationRef();
-
-                if ((references != null) && references.contains(newTargetRef)) {
-                    getLogger().warning(
-                            "Infinite redirection loop detected with URI: "
-                                    + newTargetRef);
-                } else if (request.getEntity() != null
-                        && !request.isEntityAvailable()) {
-                    getLogger()
-                            .warning(
-                                    "Unable to follow the redirection because the request entity isn't available anymore.");
                 } else {
-                    if (references == null) {
-                        references = new ArrayList<Reference>();
+                    if (Status.REDIRECTION_SEE_OTHER.equals(response
+                            .getStatus())) {
+                        // The user agent is redirected using the GET method
+                        request.setMethod(Method.GET);
+                        request.setEntity(null);
+                        doRedirection = true;
+                    } else if (Status.REDIRECTION_USE_PROXY.equals(response
+                            .getStatus())) {
+                        doRedirection = true;
                     }
-
-                    // Add to the list of redirection reference
-                    // to prevent infinite loops
-                    references.add(request.getResourceRef());
-                    request.setResourceRef(newTargetRef);
-                    handle(request, response, references, 0);
                 }
-            }
-        } else if (isRetryOnError()
-                && response.getStatus().isRecoverableError()
-                && request.getMethod().isIdempotent()
-                && (retryAttempt < getRetryAttempts())
-                && ((getRequestEntity() == null) || getRequestEntity()
-                        .isAvailable())) {
-            getLogger().log(
-                    Level.INFO,
-                    "A recoverable error was detected ("
-                            + response.getStatus().getCode()
-                            + "), attempting again in " + getRetryDelay()
-                            + " ms.");
 
-            // Wait before attempting again
-            if (getRetryDelay() > 0) {
-                // [ifndef gwt]
-                try {
-                    Thread.sleep(getRetryDelay());
-                } catch (InterruptedException e) {
-                    getLogger().log(Level.FINE,
-                            "Retry delay sleep was interrupted", e);
+                if (doRedirection) {
+                    Reference newTargetRef = response.getLocationRef();
+
+                    if ((references != null)
+                            && references.contains(newTargetRef)) {
+                        getLogger().warning(
+                                "Infinite redirection loop detected with URI: "
+                                        + newTargetRef);
+                    } else if (request.getEntity() != null
+                            && !request.isEntityAvailable()) {
+                        getLogger()
+                                .warning(
+                                        "Unable to follow the redirection because the request entity isn't available anymore.");
+                    } else {
+                        if (references == null) {
+                            references = new ArrayList<Reference>();
+                        }
+
+                        // Add to the list of redirection reference
+                        // to prevent infinite loops
+                        references.add(request.getResourceRef());
+                        request.setResourceRef(newTargetRef);
+                        handle(request, response, references, 0, next);
+                    }
                 }
-                // [enddef]
-                // [ifdef gwt] uncomment
-                // com.google.gwt.user.client.Timer timer = new
-                // com.google.gwt.user.client.Timer() {
-                // public void run() {}
-                // };
-                // timer.schedule((int) getRetryDelay());
-                // [enddef]
-            }
+            } else if (isRetryOnError()
+                    && response.getStatus().isRecoverableError()
+                    && request.getMethod().isIdempotent()
+                    && (retryAttempt < getRetryAttempts())
+                    && ((getRequestEntity() == null) || getRequestEntity()
+                            .isAvailable())) {
+                getLogger().log(
+                        Level.INFO,
+                        "A recoverable error was detected ("
+                                + response.getStatus().getCode()
+                                + "), attempting again in " + getRetryDelay()
+                                + " ms.");
 
-            // Retry the call
-            handle(request, response, references, ++retryAttempt);
+                // Wait before attempting again
+                if (getRetryDelay() > 0) {
+                    // [ifndef gwt]
+                    try {
+                        Thread.sleep(getRetryDelay());
+                    } catch (InterruptedException e) {
+                        getLogger().log(Level.FINE,
+                                "Retry delay sleep was interrupted", e);
+                    }
+                    // [enddef]
+                    // [ifdef gwt] uncomment
+                    // com.google.gwt.user.client.Timer timer = new
+                    // com.google.gwt.user.client.Timer() {
+                    // public void run() {}
+                    // };
+                    // timer.schedule((int) getRetryDelay());
+                    // [enddef]
+                }
+
+                // Retry the call
+                handle(request, response, references, ++retryAttempt, next);
+            }
         }
     }
 
@@ -891,14 +969,7 @@ public class ClientResource extends UniformResource {
      *      HEAD method</a>
      */
     public Representation head() throws ResourceException {
-        setMethod(Method.HEAD);
-        Representation result = handle();
-
-        if (getStatus().isError()) {
-            throw new ResourceException(getStatus());
-        }
-
-        return result;
+        return handle(Method.HEAD);
     }
 
     /**
@@ -921,25 +992,7 @@ public class ClientResource extends UniformResource {
      *      HEAD method</a>
      */
     public Representation head(MediaType mediaType) throws ResourceException {
-        Representation result = null;
-
-        // Save the current client info
-        ClientInfo currentClientInfo = getClientInfo();
-
-        // Create a fresh one for this request
-        ClientInfo newClientInfo = new ClientInfo();
-        newClientInfo.getAcceptedMediaTypes().add(
-                new Preference<MediaType>(mediaType));
-        setClientInfo(newClientInfo);
-
-        try {
-            result = head();
-        } finally {
-            // Restore the current client info
-            setClientInfo(currentClientInfo);
-        }
-
-        return result;
+        return handle(Method.HEAD, mediaType);
     }
 
     /**
@@ -973,14 +1026,7 @@ public class ClientResource extends UniformResource {
      *      OPTIONS method</a>
      */
     public Representation options() throws ResourceException {
-        setMethod(Method.OPTIONS);
-        Representation result = handle();
-
-        if (getStatus().isError()) {
-            throw new ResourceException(getStatus());
-        }
-
-        return result;
+        return handle(Method.OPTIONS);
     }
 
     // [ifndef gwt] method
@@ -999,20 +1045,7 @@ public class ClientResource extends UniformResource {
      *      OPTIONS method</a>
      */
     public <T> T options(Class<T> resultClass) throws ResourceException {
-        T result = null;
-
-        // Save the current client info
-        ClientInfo currentClientInfo = getClientInfo();
-
-        try {
-            updateClientInfo(resultClass);
-            result = toObject(options(), resultClass);
-        } finally {
-            // Restore the current client info
-            setClientInfo(currentClientInfo);
-        }
-
-        return result;
+        return handle(Method.OPTIONS, resultClass);
     }
 
     /**
@@ -1028,25 +1061,7 @@ public class ClientResource extends UniformResource {
      *      OPTIONS method</a>
      */
     public Representation options(MediaType mediaType) throws ResourceException {
-        Representation result = null;
-
-        // Save the current client info
-        ClientInfo currentClientInfo = getClientInfo();
-
-        // Create a fresh one for this request
-        ClientInfo newClientInfo = new ClientInfo();
-        newClientInfo.getAcceptedMediaTypes().add(
-                new Preference<MediaType>(mediaType));
-        setClientInfo(newClientInfo);
-
-        try {
-            result = options();
-        } finally {
-            // Restore the current client info
-            setClientInfo(currentClientInfo);
-        }
-
-        return result;
+        return handle(Method.OPTIONS, mediaType);
     }
 
     /**
@@ -1082,20 +1097,7 @@ public class ClientResource extends UniformResource {
      */
     public <T> T post(Object entity, Class<T> resultClass)
             throws ResourceException {
-        T result = null;
-
-        // Save the current client info
-        ClientInfo currentClientInfo = getClientInfo();
-
-        try {
-            updateClientInfo(resultClass);
-            result = toObject(post(toRepresentation(entity)), resultClass);
-        } finally {
-            // Restore the current client info
-            setClientInfo(currentClientInfo);
-        }
-
-        return result;
+        return handle(Method.POST, entity, resultClass);
     }
 
     /**
@@ -1114,25 +1116,7 @@ public class ClientResource extends UniformResource {
      */
     public Representation post(Object entity, MediaType mediaType)
             throws ResourceException {
-        Representation result = null;
-
-        // Save the current client info
-        ClientInfo currentClientInfo = getClientInfo();
-
-        // Create a fresh one for this request
-        ClientInfo newClientInfo = new ClientInfo();
-        newClientInfo.getAcceptedMediaTypes().add(
-                new Preference<MediaType>(mediaType));
-        setClientInfo(newClientInfo);
-
-        try {
-            result = post(toRepresentation(entity));
-        } finally {
-            // Restore the current client info
-            setClientInfo(currentClientInfo);
-        }
-
-        return result;
+        return handle(Method.POST, toRepresentation(entity), mediaType);
     }
 
     /**
@@ -1148,15 +1132,7 @@ public class ClientResource extends UniformResource {
      *      POST method</a>
      */
     public Representation post(Representation entity) throws ResourceException {
-        setMethod(Method.POST);
-        getRequest().setEntity(entity);
-        Representation result = handle();
-
-        if (getStatus().isError()) {
-            throw new ResourceException(getStatus());
-        }
-
-        return result;
+        return handle(Method.POST, entity, getClientInfo());
     }
 
     /**
@@ -1192,20 +1168,7 @@ public class ClientResource extends UniformResource {
      */
     public <T> T put(Object entity, Class<T> resultClass)
             throws ResourceException {
-        T result = null;
-
-        // Save the current client info
-        ClientInfo currentClientInfo = getClientInfo();
-
-        try {
-            updateClientInfo(resultClass);
-            result = toObject(put(toRepresentation(entity)), resultClass);
-        } finally {
-            // Restore the current client info
-            setClientInfo(currentClientInfo);
-        }
-
-        return result;
+        return handle(Method.PUT, entity, resultClass);
     }
 
     /**
@@ -1224,25 +1187,7 @@ public class ClientResource extends UniformResource {
      */
     public Representation put(Object entity, MediaType mediaType)
             throws ResourceException {
-        Representation result = null;
-
-        // Save the current client info
-        ClientInfo currentClientInfo = getClientInfo();
-
-        // Create a fresh one for this request
-        ClientInfo newClientInfo = new ClientInfo();
-        newClientInfo.getAcceptedMediaTypes().add(
-                new Preference<MediaType>(mediaType));
-        setClientInfo(newClientInfo);
-
-        try {
-            result = put(toRepresentation(entity));
-        } finally {
-            // Restore the current client info
-            setClientInfo(currentClientInfo);
-        }
-
-        return result;
+        return handle(Method.PUT, toRepresentation(entity), mediaType);
     }
 
     /**
@@ -1250,25 +1195,16 @@ public class ClientResource extends UniformResource {
      * to be stored. If a success status is not returned, then a resource
      * exception is thrown.
      * 
-     * @param representation
-     *            The representation to store.
+     * @param entity
+     *            The request entity to store.
      * @return The optional result entity.
      * @throws ResourceException
      * @see <a
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6">HTTP
      *      PUT method</a>
      */
-    public Representation put(Representation representation)
-            throws ResourceException {
-        setMethod(Method.PUT);
-        getRequest().setEntity(representation);
-        Representation result = handle();
-
-        if (getStatus().isError()) {
-            throw new ResourceException(getStatus());
-        }
-
-        return result;
+    public Representation put(Representation entity) throws ResourceException {
+        return handle(Method.PUT, entity, getClientInfo());
     }
 
     /**
@@ -1580,40 +1516,6 @@ public class ClientResource extends UniformResource {
 
     // [ifndef gwt] method
     /**
-     * Updates the client preferences to match the given response class.
-     * 
-     * @param resultClass
-     *            The result class to match.
-     */
-    private <T> void updateClientInfo(Class<T> resultClass) {
-        org.restlet.service.ConverterService cs = getConverterService();
-        updateClientInfo(cs.getVariants(resultClass, null));
-    }
-
-    // [ifndef gwt] method
-    /**
-     * Updates the client preferences to match the given response class.
-     * 
-     * @param resultClass
-     *            The result class to match.
-     */
-    private <T> void updateClientInfo(
-            List<? extends org.restlet.representation.Variant> variants) {
-        // Create a fresh one for this request
-        ClientInfo newClientInfo = new ClientInfo();
-
-        if (variants != null) {
-            for (org.restlet.representation.Variant variant : variants) {
-                newClientInfo.getAcceptedMediaTypes().add(
-                        new Preference<MediaType>(variant.getMediaType()));
-            }
-        }
-
-        setClientInfo(newClientInfo);
-    }
-
-    // [ifndef gwt] method
-    /**
      * Wraps the client resource to proxy calls to the given Java interface into
      * Restlet method calls.
      * 
@@ -1646,104 +1548,105 @@ public class ClientResource extends UniformResource {
                         .getMethod("getClientResource"))) {
                     result = clientResource;
                 } else {
-                    final org.restlet.engine.resource.AnnotationInfo annotation = org.restlet.engine.resource.AnnotationUtils
+                    org.restlet.engine.resource.AnnotationInfo annotation = org.restlet.engine.resource.AnnotationUtils
                             .getAnnotation(annotations, javaMethod);
 
                     if (annotation != null) {
-                        // Save the current client info
-                        ClientInfo currentClientInfo = getClientInfo();
+                        Representation requestEntity = null;
+                        boolean isSynchronous = true;
 
-                        try {
-                            Representation requestEntity = null;
-                            boolean isSynchronous = true;
+                        if ((args != null) && args.length > 0) {
+                            // Checks if the user has defined its own
+                            // callback.
+                            for (int i = 0; i < args.length; i++) {
+                                Object o = args[i];
 
-                            if ((args != null) && args.length > 0) {
-                                // Checks if the user has defined its own
-                                // callback.
-                                for (int i = 0; i < args.length; i++) {
-                                    Object o = args[i];
+                                if (o == null) {
+                                    requestEntity = null;
+                                } else if (Result.class.isAssignableFrom(o
+                                        .getClass())) {
+                                    // Asynchronous mode where a callback
+                                    // object is to be called.
+                                    isSynchronous = false;
 
-                                    if (o == null) {
-                                        requestEntity = null;
-                                    } else if (Result.class.isAssignableFrom(o
-                                            .getClass())) {
-                                        // Asynchronous mode where a callback
-                                        // object is to be called.
-                                        isSynchronous = false;
+                                    // Get the kind of result expected.
+                                    final Result rCallback = (Result) o;
+                                    java.lang.reflect.Type[] genericParameterTypes = javaMethod
+                                            .getGenericParameterTypes();
+                                    java.lang.reflect.Type genericParameterType = genericParameterTypes[i];
+                                    java.lang.reflect.ParameterizedType parameterizedType = (genericParameterType instanceof java.lang.reflect.ParameterizedType) ? (java.lang.reflect.ParameterizedType) genericParameterType
+                                            : null;
+                                    final Class<?> actualType = (parameterizedType
+                                            .getActualTypeArguments()[0] instanceof Class<?>) ? (Class<?>) parameterizedType
+                                            .getActualTypeArguments()[0]
+                                            : null;
 
-                                        // Get the kind of result expected.
-                                        final Result rCallback = (Result) o;
-                                        java.lang.reflect.Type[] genericParameterTypes = javaMethod
-                                                .getGenericParameterTypes();
-                                        java.lang.reflect.Type genericParameterType = genericParameterTypes[i];
-                                        java.lang.reflect.ParameterizedType parameterizedType = (genericParameterType instanceof java.lang.reflect.ParameterizedType) ? (java.lang.reflect.ParameterizedType) genericParameterType
-                                                : null;
-                                        final Class<?> actualType = (parameterizedType
-                                                .getActualTypeArguments()[0] instanceof Class<?>) ? (Class<?>) parameterizedType
-                                                .getActualTypeArguments()[0]
-                                                : null;
-
-                                        // Define the callback
-                                        Uniform callback = new Uniform() {
-                                            public void handle(Request request,
-                                                    Response response) {
-                                                if (response.getStatus()
-                                                        .isError()) {
+                                    // Define the callback
+                                    Uniform callback = new Uniform() {
+                                        public void handle(Request request,
+                                                Response response) {
+                                            if (response.getStatus().isError()) {
+                                                rCallback
+                                                        .onFailure(new ResourceException(
+                                                                response
+                                                                        .getStatus()));
+                                            } else {
+                                                if (actualType != null) {
                                                     rCallback
-                                                            .onFailure(new ResourceException(
+                                                            .onSuccess(toObject(
                                                                     response
-                                                                            .getStatus()));
+                                                                            .getEntity(),
+                                                                    actualType
+                                                                            .getClass()));
                                                 } else {
-                                                    if (actualType != null) {
-                                                        rCallback
-                                                                .onSuccess(toObject(
-                                                                        response
-                                                                                .getEntity(),
-                                                                        actualType
-                                                                                .getClass()));
-                                                    } else {
-                                                        rCallback
-                                                                .onSuccess(null);
-                                                    }
+                                                    rCallback.onSuccess(null);
                                                 }
                                             }
-                                        };
-                                        
-                                        setOnResponse(callback);
-                                    } else {
-                                        requestEntity = toRepresentation(args[i]);
-                                    }
+                                        }
+                                    };
+
+                                    setOnResponse(callback);
+                                } else {
+                                    requestEntity = toRepresentation(args[i]);
                                 }
                             }
+                        }
 
-                            getRequest().setEntity(requestEntity);
-                            List<org.restlet.representation.Variant> responseVariants = annotation
-                                    .getResponseVariants(requestEntity,
-                                            getMetadataService(),
-                                            getConverterService());
+                        // Clone the prototype request
+                        Request request = new Request(getRequest());
 
-                            if (responseVariants != null) {
-                                updateClientInfo(responseVariants);
+                        // The Java method was annotated
+                        request.setMethod(annotation.getRestletMethod());
+
+                        // Set the entity
+                        request.setEntity(requestEntity);
+
+                        // Updates the client preferences
+                        List<org.restlet.representation.Variant> responseVariants = annotation
+                                .getResponseVariants(requestEntity,
+                                        getMetadataService(),
+                                        getConverterService());
+
+                        if (responseVariants != null) {
+                            request.setClientInfo(new ClientInfo(
+                                    responseVariants));
+                        }
+
+                        // Effectively handle the call
+                        Response response = handle(request);
+
+                        // Handle the response
+                        if (isSynchronous) {
+                            if (response.getStatus().isError()) {
+                                throw new ResourceException(response
+                                        .getStatus());
                             }
 
-                            // The Java method was annotated
-                            setMethod(annotation.getRestletMethod());
-
-                            handle();
-
-                            if (isSynchronous) {
-                                if (getStatus().isError()) {
-                                    throw new ResourceException(getStatus());
-                                }
-
-                                if (annotation.getJavaOutputType() != null) {
-                                    result = toObject(getResponseEntity(),
-                                            annotation.getJavaOutputType());
-                                }
+                            if (annotation.getJavaOutputType() != null) {
+                                result = toObject((response == null ? null
+                                        : response.getEntity()), annotation
+                                        .getJavaOutputType());
                             }
-                        } finally {
-                            // Restore the current client info
-                            setClientInfo(currentClientInfo);
                         }
                     }
                 }
@@ -1760,5 +1663,4 @@ public class ClientResource extends UniformResource {
 
         return result;
     }
-
 }

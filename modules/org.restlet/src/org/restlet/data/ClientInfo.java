@@ -280,6 +280,34 @@ public final class ClientInfo {
         // [enddef]
     }
 
+    // [ifndef gwt] method
+    /**
+     * Constructor from a list of variants. Note that only media types are taken
+     * into account.
+     * 
+     * @param variants
+     *            The variants corresponding to the accepted media types.
+     */
+    public ClientInfo(
+            List<? extends org.restlet.representation.Variant> variants) {
+        if (variants != null) {
+            for (org.restlet.representation.Variant variant : variants) {
+                getAcceptedMediaTypes().add(
+                        new Preference<MediaType>(variant.getMediaType()));
+            }
+        }
+    }
+
+    /**
+     * Constructor from a media type.
+     * 
+     * @param mediaType
+     *            The preferred media type.
+     */
+    public ClientInfo(MediaType mediaType) {
+        getAcceptedMediaTypes().add(new Preference<MediaType>(mediaType));
+    }
+
     /**
      * Returns the modifiable list of character set preferences. Creates a new
      * instance if no one has been set.<br>

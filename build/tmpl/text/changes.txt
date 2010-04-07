@@ -16,6 +16,8 @@ Changes log
           Reported by Graham Smith.
         - Fixed parsing of nc parameter and fixed potential endless 
           loop in HttpDigestHelper. Reported by Mark Drew.
+        - Fixed issues preventing multi-threaded usage of ClientResource
+          and dynamic client proxies.
           
 - 2.0 Release Candidate 2 (2010-03-30)
     - API changes
