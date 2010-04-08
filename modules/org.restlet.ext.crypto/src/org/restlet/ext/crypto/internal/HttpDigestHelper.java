@@ -171,6 +171,7 @@ public class HttpDigestHelper extends AuthenticatorHelper {
                 if (a1 != null) {
                     String a2 = DigestUtils.toMd5(request.getMethod() + ":"
                             + requestUri);
+
                     StringBuffer expectedResponse = new StringBuffer(a1)
                             .append(':').append(nonce);
 
@@ -348,8 +349,8 @@ public class HttpDigestHelper extends AuthenticatorHelper {
 
     @Override
     public char[] formatSecret(ChallengeResponse challengeResponse,
-            Request previousRequest, Response previousResponse,
-            String identifier, char[] baseSecret, String baseSecretAlgorithm) {
+            Request request, Response response, String identifier,
+            char[] baseSecret, String baseSecretAlgorithm) {
         String a1 = null;
         if (!Digest.ALGORITHM_HTTP_DIGEST.equals(baseSecretAlgorithm)) {
             if (!AuthenticatorUtils.anyNull(challengeResponse.getIdentifier(),
@@ -358,28 +359,28 @@ public class HttpDigestHelper extends AuthenticatorHelper {
                         challengeResponse.getRealm());
             }
         } else {
-            new String(baseSecret);
+            a1 = new String(baseSecret);
         }
 
         if (a1 != null) {
-            String a2 = DigestUtils.toMd5(previousRequest.getMethod() + ":"
+            String a2 = DigestUtils.toMd5(request.getMethod().toString() + ":"
                     + challengeResponse.getDigestRef().toString());
-            StringBuilder response = new StringBuilder().append(a1).append(':')
+            StringBuilder sb = new StringBuilder().append(a1).append(':')
                     .append(challengeResponse.getServerNonce());
 
             if (!AuthenticatorUtils.anyNull(challengeResponse.getQuality(),
                     challengeResponse.getClientNonce(), challengeResponse
                             .getServerNounceCount())) {
-                response.append(':').append(
+                sb.append(':').append(
                         AuthenticatorUtils.formatNonceCount(challengeResponse
                                 .getServerNounceCount())).append(':').append(
                         challengeResponse.getClientNonce()).append(':').append(
                         challengeResponse.getQuality());
             }
 
-            response.append(':').append(a2);
+            sb.append(':').append(a2);
 
-            return DigestUtils.toMd5(response.toString()).toCharArray();
+            return DigestUtils.toMd5(sb.toString()).toCharArray();
         }
 
         return null;

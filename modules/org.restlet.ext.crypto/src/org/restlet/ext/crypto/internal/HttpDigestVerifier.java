@@ -162,13 +162,12 @@ public class HttpDigestVerifier extends DigestVerifier<LocalVerifier> {
 
                     if (uri.equals(requestUri)) {
                         char[] a1 = getWrappedSecretDigest(username);
-
                         if (a1 != null) {
                             String a2 = DigestUtils.toMd5(request.getMethod()
+                                    .toString()
                                     + ":" + requestUri);
                             StringBuilder expectedResponse = new StringBuilder()
                                     .append(a1).append(':').append(nonce);
-
                             if (!AuthenticatorUtils.anyNull(qop, cnonce, nc)) {
                                 expectedResponse.append(':')
                                         .append(
@@ -177,7 +176,6 @@ public class HttpDigestVerifier extends DigestVerifier<LocalVerifier> {
                                         .append(':').append(cnonce).append(':')
                                         .append(qop);
                             }
-
                             expectedResponse.append(':').append(a2);
 
                             if (!DigestUtils.toMd5(expectedResponse.toString())
