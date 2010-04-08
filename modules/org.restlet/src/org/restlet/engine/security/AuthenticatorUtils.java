@@ -488,10 +488,10 @@ public class AuthenticatorUtils {
      * 
      * @param challengeResponse
      *            The challengeResponse to update.
-     * @param previousRequest
-     *            The previous request if available.
-     * @param previousResponse
-     *            The previous response if available.
+     * @param request
+     *            The request if available.
+     * @param response
+     *            The response if available.
      * @param identifier
      *            The identifier.
      * @param baseSecret
@@ -501,16 +501,16 @@ public class AuthenticatorUtils {
      *            class).
      */
     public static void update(ChallengeResponse challengeResponse,
-            Request previousRequest, Response previousResponse,
-            String identifier, char[] baseSecret, String baseSecretAlgorithm) {
-        update(challengeResponse, previousRequest, previousResponse);
+            Request request, Response response, String identifier,
+            char[] baseSecret, String baseSecretAlgorithm) {
+        update(challengeResponse, request, response);
 
         // Compute the new secret.
         final AuthenticatorHelper helper = Engine.getInstance().findHelper(
                 challengeResponse.getScheme(), false, true);
-        challengeResponse.setSecret(helper.formatSecret(challengeResponse,
-                previousRequest, previousResponse, identifier, baseSecret,
-                baseSecretAlgorithm));
+        challengeResponse
+                .setSecret(helper.formatSecret(challengeResponse, request,
+                        response, identifier, baseSecret, baseSecretAlgorithm));
     }
 
     /**

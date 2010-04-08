@@ -235,10 +235,10 @@ public abstract class AuthenticatorHelper extends Helper {
      * 
      * @param challengeResponse
      *            The challenge response.
-     * @param previousRequest
-     *            The previous request if available.
-     * @param previousResponse
-     *            The previous response if available.
+     * @param request
+     *            The request if available.
+     * @param response
+     *            The response if available.
      * @param identifier
      *            The identifier.
      * @param baseSecret
@@ -249,8 +249,8 @@ public abstract class AuthenticatorHelper extends Helper {
      * @return The formatted secret of a challenge response.
      */
     public char[] formatSecret(ChallengeResponse challengeResponse,
-            Request previousRequest, Response previousResponse,
-            String identifier, char[] baseSecret, String baseSecretAlgorithm) {
+            Request request, Response response, String identifier,
+            char[] baseSecret, String baseSecretAlgorithm) {
         if (baseSecret != null) {
             return baseSecret;
         }
