@@ -43,6 +43,7 @@ import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
+import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.ext.crypto.DigestAuthenticator;
@@ -133,6 +134,7 @@ public class HttpDigestTestCase extends TestCase {
             // assertEquals("auth", qop);
 
             // Try authenticated request
+            cr.getRequest().setMethod(Method.GET);
             ChallengeResponse c2 = new ChallengeResponse(c1, cr.getRequest(),
                     cr.getResponse(), "scott", "tiger".toCharArray());
             cr.setChallengeResponse(c2);
