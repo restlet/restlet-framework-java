@@ -161,10 +161,6 @@ public class SipServerConnection extends ServerConnection {
             headers.add(SipConstants.HEADER_SUPPORTED, OptionTagWriter
                     .write(sipResponse.getSupported()));
         }
-        if (sipResponse.getTo() != null) {
-            headers.add(SipConstants.HEADER_TO, AddressWriter.write(sipResponse
-                    .getTo()));
-        }
         if (!sipResponse.getUnsupported().isEmpty()) {
             headers.add(SipConstants.HEADER_UNSUPPORTED, OptionTagWriter
                     .write(sipResponse.getUnsupported()));

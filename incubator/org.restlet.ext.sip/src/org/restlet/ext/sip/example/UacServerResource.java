@@ -36,9 +36,9 @@ import java.util.Properties;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.restlet.Context;
-import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
+import org.restlet.ext.sip.SipResponse;
 import org.restlet.ext.sip.SipServerResource;
 import org.restlet.ext.sip.SipStatus;
 
@@ -114,21 +114,21 @@ public class UacServerResource extends SipServerResource implements UacResource 
         trace();
 
         // Indicate successful reception
-        Response provisionalResponse = new Response(getRequest());
+        SipResponse provisionalResponse = new SipResponse(getRequest());
         provisionalResponse.setStatus(SipStatus.INFO_TRYING);
         provisionalResponse.commit();
 
         sleep();
 
         // Indicate that the user phone is ringing
-        provisionalResponse = new Response(getRequest());
+        provisionalResponse = new SipResponse(getRequest());
         provisionalResponse.setStatus(SipStatus.INFO_RINGING);
         provisionalResponse.commit();
 
         sleep();
 
         // Indicate that the session is progressing
-        provisionalResponse = new Response(getRequest());
+        provisionalResponse = new SipResponse(getRequest());
         provisionalResponse.setStatus(SipStatus.INFO_SESSION_PROGRESS);
         provisionalResponse.commit();
 
