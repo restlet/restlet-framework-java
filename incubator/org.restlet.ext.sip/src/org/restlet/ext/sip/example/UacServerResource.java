@@ -39,7 +39,6 @@ import org.restlet.Context;
 import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
-import org.restlet.ext.sip.Address;
 import org.restlet.ext.sip.SipServerResource;
 import org.restlet.ext.sip.SipStatus;
 
@@ -134,8 +133,10 @@ public class UacServerResource extends SipServerResource implements UacResource 
         provisionalResponse.commit();
 
         sleep();
-        Address to = getTo();
-        to.getParameters().add("tag", "restlet" + TAG.incrementAndGet());
+        if (getTo() != null) {
+            getTo().getParameters().add("tag",
+                    "restlet" + TAG.incrementAndGet());
+        }
 
         // Set the final response
         setStatus(SipStatus.SUCCESS_OK);

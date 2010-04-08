@@ -117,53 +117,56 @@ public class SipRecipientInfoReader extends HeaderReader<SipRecipientInfo> {
 
     @Override
     public SipRecipientInfo readValue() throws IOException {
-        SipRecipientInfo result = new SipRecipientInfo();
+        SipRecipientInfo result = null;
 
         skipSpaces();
 
-        String protocolToken = readToken();
+        if (peek() != -1) {
+            result = new SipRecipientInfo();
+            String protocolToken = readToken();
 
-        if (peek() == '/') {
-            read();
-            result.setProtocol(new Protocol(protocolToken, protocolToken, null,
-                    -1, readToken()));
             if (peek() == '/') {
                 read();
-                result.setTransport(readToken());
-            }
-        } else {
-            result.setProtocol(new Protocol("HTTP", "HTTP", null, -1,
-                    protocolToken));
-        }
-
-        // Move to the next text
-        if (skipSpaces()) {
-            StringBuilder sb = new StringBuilder(readToken());
-            if (read() == ':') {
-                sb.append(":");
-                sb.append(readToken());
-            }
-            result.setName(sb.toString());
-
-            // Read address parameters.
-            if (skipParameterSeparator()) {
-                Parameter param = readParameter();
-
-                while (param != null) {
-                    result.getParameters().add(param);
-
-                    if (skipParameterSeparator()) {
-                        param = readParameter();
-                    } else {
-                        param = null;
-                    }
+                result.setProtocol(new Protocol(protocolToken, protocolToken,
+                        null, -1, readToken()));
+                if (peek() == '/') {
+                    read();
+                    result.setTransport(readToken());
                 }
+            } else {
+                result.setProtocol(new Protocol("HTTP", "HTTP", null, -1,
+                        protocolToken));
             }
 
             // Move to the next text
-            skipSpaces();
-            if (peek() == '(') {
-                result.setComment(readComment());
+            if (skipSpaces()) {
+                StringBuilder sb = new StringBuilder(readToken());
+                if (read() == ':') {
+                    sb.append(":");
+                    sb.append(readToken());
+                }
+                result.setName(sb.toString());
+
+                // Read address parameters.
+                if (skipParameterSeparator()) {
+                    Parameter param = readParameter();
+
+                    while (param != null) {
+                        result.getParameters().add(param);
+
+                        if (skipParameterSeparator()) {
+                            param = readParameter();
+                        } else {
+                            param = null;
+                        }
+                    }
+                }
+
+                // Move to the next text
+                skipSpaces();
+                if (peek() == '(') {
+                    result.setComment(readComment());
+                }
             }
         }
 
