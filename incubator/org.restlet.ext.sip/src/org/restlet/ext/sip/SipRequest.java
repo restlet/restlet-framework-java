@@ -268,11 +268,14 @@ public class SipRequest extends ConnectedRequest {
         if (!alertInfoAdded) {
             String header = getHeaders().getValues(
                     SipConstants.HEADER_ALERT_INFO);
-            try {
-                setAlertInfo(new AddressReader(header).readValue());
-            } catch (Exception e) {
-                Context.getCurrentLogger().info(e.getMessage());
+            if (header != null) {
+                try {
+                    setAlertInfo(new AddressReader(header).readValue());
+                } catch (Exception e) {
+                    Context.getCurrentLogger().info(e.getMessage());
+                }
             }
+            alertInfoAdded = true;
         }
 
         return alertInfo;
@@ -297,13 +300,16 @@ public class SipRequest extends ConnectedRequest {
         if (!allowedEventTypesAdded) {
             String header = getHeaders().getValues(
                     SipConstants.HEADER_ALLOW_EVENTS);
-            try {
-                this.allowedEventTypes.addAll(new EventTypeReader(header)
-                        .readValues());
-                allowedEventTypesAdded = true;
-            } catch (Exception e) {
-                Context.getCurrentLogger().info(e.getMessage());
+            if (header != null) {
+                try {
+                    this.allowedEventTypes.addAll(new EventTypeReader(header)
+                            .readValues());
+                    allowedEventTypesAdded = true;
+                } catch (Exception e) {
+                    Context.getCurrentLogger().info(e.getMessage());
+                }
             }
+            allowedEventTypesAdded = true;
         }
 
         return aet;
@@ -328,12 +334,15 @@ public class SipRequest extends ConnectedRequest {
         if (!callerInfoAdded) {
             String header = getHeaders().getValues(
                     SipConstants.HEADER_CALL_INFO);
-            try {
-                this.callerInfo.addAll(new AddressReader(header).readValues());
-                callerInfoAdded = true;
-            } catch (Exception e) {
-                Context.getCurrentLogger().info(e.getMessage());
+            if (header != null) {
+                try {
+                    this.callerInfo.addAll(new AddressReader(header)
+                            .readValues());
+                } catch (Exception e) {
+                    Context.getCurrentLogger().info(e.getMessage());
+                }
             }
+            callerInfoAdded = true;
         }
 
         return ci;
@@ -375,12 +384,15 @@ public class SipRequest extends ConnectedRequest {
         }
         if (!contactAdded) {
             String header = getHeaders().getValues(SipConstants.HEADER_CONTACT);
-            try {
-                this.contact.addAll(new ContactInfoReader(header).readValues());
-                contactAdded = true;
-            } catch (Exception e) {
-                Context.getCurrentLogger().info(e.getMessage());
+            if (header != null) {
+                try {
+                    this.contact.addAll(new ContactInfoReader(header)
+                            .readValues());
+                } catch (Exception e) {
+                    Context.getCurrentLogger().info(e.getMessage());
+                }
             }
+            contactAdded = true;
         }
 
         return c;
@@ -394,11 +406,14 @@ public class SipRequest extends ConnectedRequest {
     public Event getEvent() {
         if (!eventAdded) {
             String header = getHeaders().getValues(SipConstants.HEADER_EVENT);
-            try {
-                setEvent(new EventReader(header).readValue());
-            } catch (Exception e) {
-                Context.getCurrentLogger().info(e.getMessage());
+            if (header != null) {
+                try {
+                    setEvent(new EventReader(header).readValue());
+                } catch (Exception e) {
+                    Context.getCurrentLogger().info(e.getMessage());
+                }
             }
+            eventAdded = true;
         }
 
         return event;
@@ -433,13 +448,15 @@ public class SipRequest extends ConnectedRequest {
         if (!inReplyToAdded) {
             String header = getHeaders().getValues(
                     SipConstants.HEADER_ALLOW_EVENTS);
-            try {
-                this.inReplyTo.addAll(new HeaderReader<String>(header)
-                        .readValues());
-                inReplyToAdded = true;
-            } catch (Exception e) {
-                Context.getCurrentLogger().info(e.getMessage());
+            if (header != null) {
+                try {
+                    this.inReplyTo.addAll(new HeaderReader<String>(header)
+                            .readValues());
+                } catch (Exception e) {
+                    Context.getCurrentLogger().info(e.getMessage());
+                }
             }
+            inReplyToAdded = true;
         }
 
         return irt;
@@ -474,11 +491,14 @@ public class SipRequest extends ConnectedRequest {
         if (!priorityAdded) {
             String header = getHeaders()
                     .getValues(SipConstants.HEADER_PRIORITY);
-            try {
-                setPriority(Priority.valueOf(header));
-            } catch (Exception e) {
-                Context.getCurrentLogger().info(e.getMessage());
+            if (header != null) {
+                try {
+                    setPriority(Priority.valueOf(header));
+                } catch (Exception e) {
+                    Context.getCurrentLogger().info(e.getMessage());
+                }
             }
+            priorityAdded = true;
         }
 
         return priority;
@@ -503,13 +523,15 @@ public class SipRequest extends ConnectedRequest {
         if (!proxyRequiresAdded) {
             String header = getHeaders().getValues(
                     SipConstants.HEADER_PROXY_REQUIRE);
-            try {
-                this.proxyRequires.addAll(new OptionTagReader(header)
-                        .readValues());
-                proxyRequiresAdded = true;
-            } catch (Exception e) {
-                Context.getCurrentLogger().info(e.getMessage());
+            if (header != null) {
+                try {
+                    this.proxyRequires.addAll(new OptionTagReader(header)
+                            .readValues());
+                } catch (Exception e) {
+                    Context.getCurrentLogger().info(e.getMessage());
+                }
             }
+            proxyRequiresAdded = true;
         }
 
         return pr;
@@ -536,13 +558,15 @@ public class SipRequest extends ConnectedRequest {
         if (!recordedRoutesAdded) {
             String header = getHeaders().getValues(
                     SipConstants.HEADER_RECORD_ROUTE);
-            try {
-                this.recordedRoutes.addAll(new AddressReader(header)
-                        .readValues());
-                recordedRoutesAdded = true;
-            } catch (Exception e) {
-                Context.getCurrentLogger().info(e.getMessage());
+            if (header != null) {
+                try {
+                    this.recordedRoutes.addAll(new AddressReader(header)
+                            .readValues());
+                } catch (Exception e) {
+                    Context.getCurrentLogger().info(e.getMessage());
+                }
             }
+            recordedRoutesAdded = true;
         }
         return rr;
     }
@@ -558,11 +582,14 @@ public class SipRequest extends ConnectedRequest {
         if (!referToAdded) {
             String header = getHeaders()
                     .getValues(SipConstants.HEADER_REFER_TO);
-            try {
-                setReferTo(new AddressReader(header).readValue());
-            } catch (Exception e) {
-                Context.getCurrentLogger().info(e.getMessage());
+            if (header != null) {
+                try {
+                    setReferTo(new AddressReader(header).readValue());
+                } catch (Exception e) {
+                    Context.getCurrentLogger().info(e.getMessage());
+                }
             }
+            referToAdded = true;
         }
 
         return referTo;
@@ -577,11 +604,14 @@ public class SipRequest extends ConnectedRequest {
         if (!replyToAdded) {
             String header = getHeaders()
                     .getValues(SipConstants.HEADER_REPLY_TO);
-            try {
-                setReplyTo(new AddressReader(header).readValue());
-            } catch (Exception e) {
-                Context.getCurrentLogger().info(e.getMessage());
+            if (header != null) {
+                try {
+                    setReplyTo(new AddressReader(header).readValue());
+                } catch (Exception e) {
+                    Context.getCurrentLogger().info(e.getMessage());
+                }
             }
+            replyToAdded = true;
         }
 
         return replyTo;
@@ -605,12 +635,15 @@ public class SipRequest extends ConnectedRequest {
         }
         if (!requiresAdded) {
             String header = getHeaders().getValues(SipConstants.HEADER_REQUIRE);
-            try {
-                this.requires.addAll(new OptionTagReader(header).readValues());
-                requiresAdded = true;
-            } catch (Exception e) {
-                Context.getCurrentLogger().info(e.getMessage());
+            if (header != null) {
+                try {
+                    this.requires.addAll(new OptionTagReader(header)
+                            .readValues());
+                } catch (Exception e) {
+                    Context.getCurrentLogger().info(e.getMessage());
+                }
             }
+            requiresAdded = true;
         }
 
         return r;
@@ -634,12 +667,14 @@ public class SipRequest extends ConnectedRequest {
         }
         if (!routesAdded) {
             String header = getHeaders().getValues(SipConstants.HEADER_ROUTE);
-            try {
-                this.routes.addAll(new AddressReader(header).readValues());
-                routesAdded = true;
-            } catch (Exception e) {
-                Context.getCurrentLogger().info(e.getMessage());
+            if (header != null) {
+                try {
+                    this.routes.addAll(new AddressReader(header).readValues());
+                } catch (Exception e) {
+                    Context.getCurrentLogger().info(e.getMessage());
+                }
             }
+            routesAdded = true;
         }
 
         return r;
@@ -656,11 +691,14 @@ public class SipRequest extends ConnectedRequest {
         if (!sipIfMatchAdded) {
             String header = getHeaders().getValues(
                     SipConstants.HEADER_SIP_IF_MATCH);
-            try {
-                setSipIfMatch(Tag.parse(header));
-            } catch (Exception e) {
-                Context.getCurrentLogger().info(e.getMessage());
+            if (header != null) {
+                try {
+                    setSipIfMatch(Tag.parse(header));
+                } catch (Exception e) {
+                    Context.getCurrentLogger().info(e.getMessage());
+                }
             }
+            sipIfMatchAdded = true;
         }
 
         return sipIfMatch;
@@ -684,13 +722,16 @@ public class SipRequest extends ConnectedRequest {
         }
         if (!recipientsInfoAdded) {
             String header = getHeaders().getValues(HeaderConstants.HEADER_VIA);
-            try {
-                this.recipientsInfo.addAll(new SipRecipientInfoReader(header)
-                        .readValues());
-                recipientsInfoAdded = true;
-            } catch (Exception e) {
-                Context.getCurrentLogger().info(e.getMessage());
+            if (header != null) {
+                try {
+                    this.recipientsInfo.addAll(new SipRecipientInfoReader(
+                            header).readValues());
+                    recipientsInfoAdded = true;
+                } catch (Exception e) {
+                    Context.getCurrentLogger().info(e.getMessage());
+                }
             }
+            recipientsInfoAdded = true;
         }
 
         return sri;
@@ -714,12 +755,15 @@ public class SipRequest extends ConnectedRequest {
         if (!subscriptionStateAdded) {
             String header = getHeaders().getValues(
                     SipConstants.HEADER_SUBSCRIPTION_STATE);
-            try {
-                setSubscriptionState(new SubscriptionStateReader(header)
-                        .readValue());
-            } catch (Exception e) {
-                Context.getCurrentLogger().info(e.getMessage());
+            if (header != null) {
+                try {
+                    setSubscriptionState(new SubscriptionStateReader(header)
+                            .readValue());
+                } catch (Exception e) {
+                    Context.getCurrentLogger().info(e.getMessage());
+                }
             }
+            subscriptionStateAdded = true;
         }
 
         return subscriptionState;
@@ -742,13 +786,17 @@ public class SipRequest extends ConnectedRequest {
             }
         }
         if (!supportedAdded) {
-            String header = getHeaders().getValues(SipConstants.HEADER_SUPPORTED);
-            try {
-                this.supported.addAll(new OptionTagReader(header).readValues());
-                supportedAdded = true;
-            } catch (Exception e) {
-                Context.getCurrentLogger().info(e.getMessage());
+            String header = getHeaders().getValues(
+                    SipConstants.HEADER_SUPPORTED);
+            if (header != null) {
+                try {
+                    this.supported.addAll(new OptionTagReader(header)
+                            .readValues());
+                } catch (Exception e) {
+                    Context.getCurrentLogger().info(e.getMessage());
+                }
             }
+            supportedAdded = true;
         }
 
         return s;
