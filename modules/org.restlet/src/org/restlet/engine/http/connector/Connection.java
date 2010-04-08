@@ -682,18 +682,17 @@ public abstract class Connection<T extends Connector> implements Notifiable {
             if (doRead) {
                 readMessage();
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             getLogger()
                     .log(
-                            Level.FINE,
-                            "Error while reading an HTTP message. Closing the connection: ",
+                            Level.WARNING,
+                            "Error while reading an HTTP message. Closing the connection.",
                             e.getMessage());
             getLogger()
                     .log(
                             Level.FINE,
                             "Error while reading an HTTP message. Closing the connection.",
                             e);
-            // TODO quand une exception
             close(false);
         }
 
@@ -945,7 +944,7 @@ public abstract class Connection<T extends Connector> implements Notifiable {
                     close(true);
                 }
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             getLogger().log(Level.WARNING,
                     "Error while writing an HTTP message: ", e.getMessage());
             getLogger().log(Level.INFO, "Error while writing an HTTP message",
