@@ -544,36 +544,42 @@ public class BaseClientHelper extends BaseHelper<Client> {
             try {
                 // Try to reuse an existing connection for the same host and
                 // port
-                InetSocketAddress socketAddress = new InetSocketAddress(
-                        hostDomain, hostPort);
-                if (socketAddress.getAddress() == null) {
-                    throw new UnknownHostException(hostDomain);
-                }
-                
                 int hostConnectionCount = 0;
                 int bestCount = 0;
                 Connection<Client> bestConn = null;
                 boolean foundConn = false;
 
-                for (Connection<Client> currConn : getConnections()) {
-                    if (socketAddress.getAddress().equals(
-                            currConn.getSocket().getInetAddress())
-                            && socketAddress.getPort() == currConn.getSocket()
-                                    .getPort()) {
-                        hostConnectionCount++;
+                // TODO The host domain may be null, for some protocols.
+                // This should not avoid connection reuse.
+                if (hostDomain != null) {
+                    InetSocketAddress socketAddress = new InetSocketAddress(
+                            hostDomain, hostPort);
+                    if (socketAddress.getAddress() == null) {
+                        throw new UnknownHostException(hostDomain);
+                    }
 
-                        if (currConn.getState().equals(ConnectionState.OPEN)
-                                && !currConn.isOutboundBusy()) {
-                            bestConn = currConn;
-                            foundConn = true;
-                            continue;
-                        }
+                    for (Connection<Client> currConn : getConnections()) {
+                        if (socketAddress.getAddress().equals(
+                                currConn.getSocket().getInetAddress())
+                                && socketAddress.getPort() == currConn
+                                        .getSocket().getPort()) {
+                            hostConnectionCount++;
 
-                        int currCount = currConn.getOutboundMessages().size();
+                            if (currConn.getState()
+                                    .equals(ConnectionState.OPEN)
+                                    && !currConn.isOutboundBusy()) {
+                                bestConn = currConn;
+                                foundConn = true;
+                                continue;
+                            }
 
-                        if (bestCount > currCount) {
-                            bestCount = currCount;
-                            bestConn = currConn;
+                            int currCount = currConn.getOutboundMessages()
+                                    .size();
+
+                            if (bestCount > currCount) {
+                                bestCount = currCount;
+                                bestConn = currConn;
+                            }
                         }
                     }
                 }
