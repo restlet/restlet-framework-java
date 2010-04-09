@@ -800,7 +800,6 @@ public class ClientResource extends UniformResource {
         Uniform next = getNext();
 
         if (next == null) {
-
             // [ifdef gwt] uncomment
             // if (getReference().isRelative()) {
             // getReference().setBaseRef(
