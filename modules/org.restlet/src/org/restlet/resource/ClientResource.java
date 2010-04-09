@@ -800,11 +800,13 @@ public class ClientResource extends UniformResource {
         Uniform next = getNext();
 
         if (next == null) {
+
             // [ifdef gwt] uncomment
             // if (getReference().isRelative()) {
             // getReference().setBaseRef(
             // com.google.gwt.core.client.GWT.getHostPageBaseURL());
             // setReference(getReference().getTargetRef());
+            // request.setResourceRef(getReference());
             // }
             // [enddef]
 
