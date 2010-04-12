@@ -56,11 +56,20 @@ public class MemoryRealm extends Realm {
             User user = findUser(clientInfo.getUser().getIdentifier());
 
             if (user != null) {
-                // Add a principal for the user roles
+                // Find all the inherited groups of this user
                 Set<Group> userGroups = findGroups(user);
-                Set<Role> userRoles = findRoles(userGroups, user);
+
+                // Add roles specific to this user
+                Set<Role> userRoles = findRoles(user);
 
                 for (Role role : userRoles) {
+                    clientInfo.getRoles().add(role);
+                }
+
+                // Add roles common to group members
+                Set<Role> groupRoles = findRoles(userGroups);
+
+                for (Role role : groupRoles) {
                     clientInfo.getRoles().add(role);
                 }
             }
@@ -86,11 +95,11 @@ public class MemoryRealm extends Realm {
         }
     }
 
-    /** The modifiable list of root groups. */
-    private final List<Group> rootGroups;
-
     /** The modifiable list of role mappings. */
     private final List<RoleMapping> roleMappings;
+
+    /** The modifiable list of root groups. */
+    private final List<Group> rootGroups;
 
     /** The modifiable list of users. */
     private final List<User> users;
@@ -183,22 +192,64 @@ public class MemoryRealm extends Realm {
     }
 
     /**
-     * Finds the roles mapped to a specific user/groups couple.
+     * Finds the roles mapped to given user group.
      * 
-     * @param userGroups
-     *            The user groups.
-     * @param user
-     *            The user.
+     * @param userGroup
+     *            The user group.
      * @return The roles found.
      */
-    public Set<Role> findRoles(Set<Group> userGroups, User user) {
+    public Set<Role> findRoles(Group userGroup) {
         Set<Role> result = new HashSet<Role>();
 
         Object source;
         for (RoleMapping mapping : getRoleMappings()) {
             source = mapping.getSource();
 
-            if (user.equals(source) || userGroups.contains(source)) {
+            if ((userGroup != null) && userGroup.equals(source)) {
+                result.add(mapping.getTarget());
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Finds the roles mapped to given user groups.
+     * 
+     * @param userGroups
+     *            The user groups.
+     * @return The roles found.
+     */
+    public Set<Role> findRoles(Set<Group> userGroups) {
+        Set<Role> result = new HashSet<Role>();
+
+        Object source;
+        for (RoleMapping mapping : getRoleMappings()) {
+            source = mapping.getSource();
+
+            if ((userGroups != null) && userGroups.contains(source)) {
+                result.add(mapping.getTarget());
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Finds the roles mapped to a given user.
+     * 
+     * @param user
+     *            The user.
+     * @return The roles found.
+     */
+    public Set<Role> findRoles(User user) {
+        Set<Role> result = new HashSet<Role>();
+
+        Object source;
+        for (RoleMapping mapping : getRoleMappings()) {
+            source = mapping.getSource();
+
+            if ((user != null) && user.equals(source)) {
                 result.add(mapping.getTarget());
             }
         }

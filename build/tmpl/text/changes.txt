@@ -4,20 +4,24 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - API changes
+      - Replaced MemoryRealm#findRoles(Set<Group>, User) method by
+        findRoles(Set<Group>), findRoles(Group) and findRoles(User)
+        to clarify contract. Suggested by Brunon Harbulot. 
     - Bugs fixed
-        - Fixed support of parameters with the MediaType class. The 
-          name contains the the main and sub types, plus the parameters.
-          Reported by Carsten Lohmann.
-        - Fixed generation of GET request sent by the internal 
-          connector just after a request with an entity.
-        - Moved ServletUtils class introduced in RC2 into the 
-          org.restlet.ext.servlet package.
-        - Fixed potential NPE with the Extractor.
-          Reported by Graham Smith.
-        - Fixed parsing of nc parameter and fixed potential endless 
-          loop in HttpDigestHelper. Reported by Mark Drew.
-        - Fixed issues preventing multi-threaded usage of ClientResource
-          and dynamic client proxies.
+      - Fixed support of parameters with the MediaType class. The 
+        name contains the the main and sub types, plus the parameters.
+        Reported by Carsten Lohmann.
+      - Fixed generation of GET request sent by the internal 
+        connector just after a request with an entity.
+      - Moved ServletUtils class introduced in RC2 into the 
+        org.restlet.ext.servlet package.
+      - Fixed potential NPE with the Extractor.
+        Reported by Graham Smith.
+      - Fixed parsing of "nc" parameter and fixed potential endless 
+        loop in HttpDigestHelper. Reported by Mark Drew.
+      - Fixed issues preventing multi-threaded usage of ClientResource
+        and dynamic client proxies.
           
 - 2.0 Release Candidate 2 (2010-03-30)
     - API changes

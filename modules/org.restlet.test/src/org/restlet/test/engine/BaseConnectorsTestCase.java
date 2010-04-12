@@ -74,14 +74,14 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
     // Helper methods
     private void runTest(ConnectorHelper<Server> server,
             ConnectorHelper<Client> client) throws Exception {
-        final Engine nre = new Engine(false);
+        Engine nre = new Engine(false);
         nre.getRegisteredServers().add(server);
         nre.getRegisteredClients().add(client);
         nre.registerDefaultAuthentications();
         nre.registerDefaultConverters();
         org.restlet.engine.Engine.setInstance(nre);
 
-        final String uri = start();
+        String uri = start();
         try {
             call(uri);
         } finally {
