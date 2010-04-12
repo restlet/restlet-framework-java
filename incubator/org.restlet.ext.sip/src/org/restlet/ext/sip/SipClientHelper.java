@@ -33,10 +33,14 @@ package org.restlet.ext.sip;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.nio.channels.SocketChannel;
 
 import org.restlet.Client;
 import org.restlet.data.Protocol;
 import org.restlet.engine.http.connector.BaseClientHelper;
+import org.restlet.engine.http.connector.BaseHelper;
+import org.restlet.engine.http.connector.Connection;
+import org.restlet.ext.sip.internal.SipClientConnection;
 
 /**
  * SIP client helper based on NIO blocking sockets.
@@ -58,10 +62,19 @@ public class SipClientHelper extends BaseClientHelper {
     }
 
     @Override
+    protected Connection<Client> createConnection(BaseHelper<Client> helper,
+            Socket socket, SocketChannel socketChannel) throws IOException {
+        return new SipClientConnection(helper, socket, socketChannel);
+    }
+
+    @Override
     public Socket createSocket(boolean secure, String hostDomain, int hostPort)
             throws UnknownHostException, IOException {
         // TODO: parameterize the SIP proxy !
-        return super.createSocket(secure, "localhost", 5060);
+        String domain = getHelpedParameters().getFirstValue("hostDomain",
+                "localhost");
+        String port = getHelpedParameters().getFirstValue("hostPort", "5060");
+        return super.createSocket(secure, domain, Integer.parseInt(port));
     }
 
     @Override

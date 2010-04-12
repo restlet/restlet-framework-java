@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.restlet.Context;
+import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Tag;
 import org.restlet.engine.http.connector.ConnectedRequest;
@@ -186,8 +187,8 @@ public class SipRequest extends ConnectedRequest {
      *            The context of the parent connector.
      * @param connection
      *            The associated network connection.
-     * @param methodName
-     *            The protocol method name.
+     * @param method
+     *            The protocol method.
      * @param resourceUri
      *            The target resource URI.
      * @param version
@@ -202,10 +203,10 @@ public class SipRequest extends ConnectedRequest {
      *            The user principal.
      */
     public SipRequest(Context context, ServerConnection connection,
-            String methodName, String resourceUri, String version,
+            Method method, String resourceUri, String version,
             Series<Parameter> headers, Representation entity,
             boolean confidential, Principal userPrincipal) {
-        super(context, connection, methodName, resourceUri, version, headers,
+        super(context, connection, method, resourceUri, version, headers,
                 entity, confidential, userPrincipal);
 
         // Set the "callId" property

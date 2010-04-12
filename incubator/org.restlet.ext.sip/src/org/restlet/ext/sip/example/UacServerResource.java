@@ -54,8 +54,14 @@ public class UacServerResource extends SipServerResource implements UacResource 
     private static boolean TRACE;
 
     public static void main(String[] args) throws Exception {
-        Server server = new Server(new Context(), Protocol.SIP,
-                UacServerResource.class);
+        Server server = null;
+        if (args.length == 1) {
+            server = new Server(new Context(), Protocol.SIP, Integer
+                    .parseInt(args[0]), UacServerResource.class);
+        } else {
+            server = new Server(new Context(), Protocol.SIP,
+                    UacServerResource.class);
+        }
 
         ClassLoader cl = UacServerResource.class.getClassLoader();
         InputStream is = cl.getResourceAsStream("UacServerResource.properties");

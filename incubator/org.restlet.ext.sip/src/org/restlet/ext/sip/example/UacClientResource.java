@@ -30,6 +30,9 @@
 
 package org.restlet.ext.sip.example;
 
+import org.restlet.Client;
+import org.restlet.Context;
+import org.restlet.data.Protocol;
 import org.restlet.resource.ClientResource;
 
 /**
@@ -40,7 +43,7 @@ import org.restlet.resource.ClientResource;
 public class UacClientResource implements UacResource {
 
     public static void main(String[] args) {
-        UacClientResource client = new UacClientResource("sip:bob@biloxi.com");
+        UacClientResource client = new UacClientResource("sip:bob@locahost");
         client.start();
         client.acknowledge();
         client.stop();
@@ -60,19 +63,37 @@ public class UacClientResource implements UacResource {
      */
     public UacClientResource(String uri) {
         this.clientResource = new ClientResource(uri);
+        Client client = new Client(new Context(), Protocol.SIP);
+        client.getContext().getParameters().add("tracing", "true");
+        this.clientResource.setNext(client);
         this.proxy = this.clientResource.wrap(UacResource.class);
     }
 
     public void acknowledge() {
         this.proxy.acknowledge();
+        try {
+            this.clientResource.getResponseEntity().exhaust();
+        } catch (Exception e) {
+            System.out.println("acknowledge " + e.getMessage());
+        }
     }
 
     public void start() {
         this.proxy.start();
+        try {
+            this.clientResource.getResponseEntity().exhaust();
+        } catch (Exception e) {
+            System.out.println("start " + e.getMessage());
+        }
     }
 
     public void stop() {
         this.proxy.stop();
+        try {
+            this.clientResource.getResponseEntity().exhaust();
+        } catch (Exception e) {
+            System.out.println("stop " + e.getMessage());
+        }
     }
 
 }

@@ -838,7 +838,7 @@ public final class SipStatus {
             break;
 
         default:
-            result = new Status(code);
+            result = Status.valueOf(code);
         }
 
         return result;

@@ -45,13 +45,14 @@ import org.restlet.engine.http.connector.ServerConnection;
 import org.restlet.engine.http.header.DateWriter;
 import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.ext.sip.SipConstants;
+import org.restlet.ext.sip.SipMethod;
 import org.restlet.ext.sip.SipRequest;
 import org.restlet.ext.sip.SipResponse;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 
 /**
- * SIP server connector for the SIP connector.
+ * SIP server connection for the SIP connector.
  * 
  * @author Jerome Louvel
  */
@@ -172,8 +173,8 @@ public class SipServerConnection extends ServerConnection {
             ServerConnection connection, String methodName, String resourceUri,
             String version, Series<Parameter> headers, Representation entity,
             boolean confidential, Principal userPrincipal) {
-        return new SipRequest(getHelper().getContext(), this, methodName,
-                resourceUri, version, headers, createInboundEntity(headers),
-                false, null);
+        return new SipRequest(getHelper().getContext(), this, SipMethod
+                .valueOf(methodName), resourceUri, version, headers,
+                createInboundEntity(headers), false, null);
     }
 }
