@@ -121,6 +121,17 @@ public class ClientConnection extends Connection<Client> {
                 && ((getInboundMessages().size() == 0) || isPipelining());
     }
 
+    /**
+     * Returns the status corresponding to a given status code.
+     * 
+     * @param code
+     *            The status code.
+     * @return The status corresponding to a given status code.
+     */
+    protected Status createStatus(int code) {
+        return Status.valueOf(code);
+    }
+
     @Override
     protected void readMessage() throws IOException {
         @SuppressWarnings("unused")
@@ -207,7 +218,7 @@ public class ClientConnection extends Connection<Client> {
         // Prepare the response
         Response finalResponse = getInboundMessages().peek();
         Response response = null;
-        Status status = Status.valueOf(statusCode);
+        Status status = createStatus(statusCode);
 
         if (status.isInformational()) {
             response = new Response(finalResponse.getRequest());

@@ -133,9 +133,9 @@ public class ServerConnection extends Connection<Server> {
             ServerConnection connection, String methodName, String resourceUri,
             String version, Series<Parameter> headers, Representation entity,
             boolean confidential, Principal userPrincipal) {
-        return new ConnectedRequest(getHelper().getContext(), this, methodName,
-                resourceUri, version, headers, createInboundEntity(headers),
-                false, null);
+        return new ConnectedRequest(getHelper().getContext(), this, Method
+                .valueOf(methodName), resourceUri, version, headers,
+                createInboundEntity(headers), false, null);
     }
 
     /**
