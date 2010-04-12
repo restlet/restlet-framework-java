@@ -46,7 +46,7 @@ public class EmptyRepresentation extends Representation {
      * Constructor.
      */
     public EmptyRepresentation() {
-        setAvailable(false);
+        setAvailable(true);
         setTransient(true);
         setSize(0);
     }
