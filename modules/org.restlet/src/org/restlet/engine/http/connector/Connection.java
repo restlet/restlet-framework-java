@@ -759,7 +759,7 @@ public abstract class Connection<T extends Connector> implements Notifiable {
      * @return True if the entity should be chunked.
      */
     protected boolean shouldBeChunked(Representation entity) {
-        return (entity != null)
+        return (entity != null && entity.isAvailable())
                 && (entity.getSize() == Representation.UNKNOWN_SIZE);
     }
 

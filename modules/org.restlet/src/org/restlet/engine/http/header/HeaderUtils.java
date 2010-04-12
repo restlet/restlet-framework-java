@@ -79,7 +79,7 @@ public class HeaderUtils {
      */
     public static void addEntityHeaders(Representation entity,
             Series<Parameter> headers) {
-        if (entity == null) {
+        if (entity == null || !entity.isAvailable()) {
             addHeader(HeaderConstants.HEADER_CONTENT_LENGTH, "0", headers);
         } else {
             addHeader(HeaderConstants.HEADER_CONTENT_ENCODING, EncodingWriter
