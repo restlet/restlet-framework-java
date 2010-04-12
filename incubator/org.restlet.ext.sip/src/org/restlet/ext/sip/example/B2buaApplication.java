@@ -9,6 +9,7 @@ import org.restlet.Restlet;
 import org.restlet.Uniform;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
+import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.ext.sip.SipRecipientInfo;
 import org.restlet.ext.sip.SipRequest;
 import org.restlet.ext.sip.SipResponse;
@@ -50,17 +51,18 @@ public class B2buaApplication {
 
             // Reset the protocol and let the dispatcher handle the protocol
             // request.setProtocol(null);
-
             // Update the request to cleanly go to the target URI
             request.setResourceRef(targetRef);
+            request.getAttributes().remove(HeaderConstants.ATTRIBUTE_HEADERS);
 
             request.setOnResponse(new Uniform() {
                 public void handle(Request req, Response resp) {
-                    System.err.println("callback " + req.getResourceRef() + " "
-                            + req.getMethod() + "/" + resp.getStatus());
+                    System.err.println(req.getMethod() + "resp.getStatus() " + resp.getStatus());
                     if (!resp.getStatus().isInformational()) {
                         // Allow for response rewriting and clean the headers
                         response.setEntity(rewrite(response.getEntity()));
+                        request.getAttributes().remove(
+                                HeaderConstants.ATTRIBUTE_HEADERS);
                         request.setResourceRef(resourceRef);
 
                         // In case of redirection, we may have to rewrite the
@@ -82,8 +84,6 @@ public class B2buaApplication {
                             }
                         }
                     } else {
-                        System.out.println("resp.getStatus() "
-                                + resp.getStatus());
                         SipResponse provisionalResponse = new SipResponse(req);
                         provisionalResponse.setStatus(resp.getStatus());
                         provisionalResponse.commit();
@@ -107,8 +107,8 @@ public class B2buaApplication {
         Client client = new Client(new Context(), Protocol.SIP);
         client.getContext().getParameters().add("hostDomain", "localhost");
         client.getContext().getParameters().add("hostPort", arguments[0]);
-        client.getContext().getParameters().add("pipeliningConnections",
-                "true");
+        client.getContext().getParameters()
+                .add("pipeliningConnections", "true");
         c.getClients().add(client);
 
         c.getDefaultHost().attachDefault(
