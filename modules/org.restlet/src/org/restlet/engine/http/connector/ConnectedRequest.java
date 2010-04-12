@@ -246,8 +246,10 @@ public class ConnectedRequest extends Request {
         Protocol protocol = getConnection().getHelper().getHelped()
                 .getProtocols().get(0);
         StringBuilder sb = new StringBuilder();
-        sb.append(protocol.getSchemeName()).append("://");
-        sb.append(hostDomain);
+        sb.append(protocol.getSchemeName()).append(":");
+        if (hostDomain != null) {
+            sb.append("//").append(hostDomain);
+        }
 
         if ((hostPort != -1) && (hostPort != protocol.getDefaultPort())) {
             sb.append(':').append(hostPort);
