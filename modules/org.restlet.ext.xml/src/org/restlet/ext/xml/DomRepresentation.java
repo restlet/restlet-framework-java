@@ -31,6 +31,7 @@
 package org.restlet.ext.xml;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.restlet.data.MediaType;
@@ -97,6 +98,7 @@ public class DomRepresentation extends XmlRepresentation {
     public DomRepresentation(Representation xmlRepresentation) {
         super((xmlRepresentation == null) ? null : xmlRepresentation
                 .getMediaType());
+        this.setAvailable(xmlRepresentation.isAvailable());
         this.xmlRepresentation = xmlRepresentation;
     }
 
@@ -181,7 +183,10 @@ public class DomRepresentation extends XmlRepresentation {
 
     @Override
     public InputSource getInputSource() throws IOException {
-        return new InputSource(this.xmlRepresentation.getStream());
+        if (this.xmlRepresentation.isAvailable()) {
+            return new InputSource(this.xmlRepresentation.getStream());
+        }
+        return new InputSource((InputStream) null);
     }
 
     /**
