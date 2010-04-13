@@ -103,6 +103,15 @@ public class SipRecipientInfoReader extends HeaderReader<SipRecipientInfo> {
         }
         System.out.println(s.getComment());
 
+        System.out.println("*********");
+        str = "SIP/2.0/TCP [fe80::223:dfff:fe7f:7b1a%en0]:5061;branch=z9hG4bK-409-1-0";
+        r = new SipRecipientInfoReader(str);
+        s = r.readValue();
+        System.out.println(s.getProtocol());
+        System.out.println(s.getTransport());
+
+        System.out.println(s.getName());
+
     }
 
     /**
@@ -113,6 +122,42 @@ public class SipRecipientInfoReader extends HeaderReader<SipRecipientInfo> {
      */
     public SipRecipientInfoReader(String header) {
         super(header);
+    }
+
+    /**
+     * Reads the next IPv6 URI. The first character must be a "[".
+     * 
+     * @return The next IPv6 URI.
+     * @throws IOException
+     */
+    public String readIpv6Address() throws IOException {
+        String result = null;
+        int next = read();
+
+        // First character must be a parenthesis
+        if (next == '[') {
+            StringBuilder buffer = new StringBuilder("[");
+
+            while (result == null) {
+                next = read();
+
+                if (next == ']') {
+                    // End of address
+                    buffer.append(']');
+                    result = buffer.toString();
+                } else if (next == -1) {
+                    throw new IOException(
+                            "Unexpected end of comment. Please check your value");
+                } else {
+                    buffer.append((char) next);
+                }
+            }
+        } else {
+            throw new IOException(
+                    "An IPv6 address must start with a square bracket.");
+        }
+
+        return result;
     }
 
     @Override
@@ -140,7 +185,12 @@ public class SipRecipientInfoReader extends HeaderReader<SipRecipientInfo> {
 
             // Move to the next text
             if (skipSpaces()) {
-                StringBuilder sb = new StringBuilder(readToken());
+                StringBuilder sb = new StringBuilder();
+                if (peek() == '[') {
+                    sb.append(readIpv6Address());
+                } else {
+                    sb.append(readToken());
+                }
                 if (read() == ':') {
                     sb.append(":");
                     sb.append(readToken());
