@@ -50,32 +50,6 @@ public class AnnotationUtils {
     private static final ConcurrentMap<Class<?>, List<AnnotationInfo>> cache = new ConcurrentHashMap<Class<?>, List<AnnotationInfo>>();
 
     /**
-     * Computes the annotation descriptors for the given class or interface.
-     * 
-     * @param descriptors
-     *            The annotation descriptors to update or null to create a new
-     *            one.
-     * @param clazz
-     *            The class or interface to introspect.
-     * @return The annotation descriptors.
-     */
-    private static List<AnnotationInfo> addAnnotations(
-            List<AnnotationInfo> descriptors, Class<?> clazz) {
-        List<AnnotationInfo> result = descriptors;
-
-        // Add the annotation descriptor
-        if (result == null) {
-            result = new CopyOnWriteArrayList<AnnotationInfo>();
-        }
-
-        for (java.lang.reflect.Method javaMethod : clazz.getMethods()) {
-            addAnnotationDescriptors(result, javaMethod);
-        }
-
-        return result;
-    }
-
-    /**
      * Computes the annotation descriptors for the given Java method.
      * 
      * @param descriptors
@@ -122,6 +96,32 @@ public class AnnotationUtils {
                         .add(new AnnotationInfo(restletMethod, javaMethod,
                                 value));
             }
+        }
+
+        return result;
+    }
+
+    /**
+     * Computes the annotation descriptors for the given class or interface.
+     * 
+     * @param descriptors
+     *            The annotation descriptors to update or null to create a new
+     *            one.
+     * @param clazz
+     *            The class or interface to introspect.
+     * @return The annotation descriptors.
+     */
+    private static List<AnnotationInfo> addAnnotations(
+            List<AnnotationInfo> descriptors, Class<?> clazz) {
+        List<AnnotationInfo> result = descriptors;
+
+        // Add the annotation descriptor
+        if (result == null) {
+            result = new CopyOnWriteArrayList<AnnotationInfo>();
+        }
+
+        for (java.lang.reflect.Method javaMethod : clazz.getMethods()) {
+            addAnnotationDescriptors(result, javaMethod);
         }
 
         return result;
@@ -191,12 +191,8 @@ public class AnnotationUtils {
         List<AnnotationInfo> result = cache.get(clazz);
 
         if (result == null) {
+            // Inspect the class itself for annotation
             result = addAnnotations(result, clazz);
-            List<AnnotationInfo> prev = cache.putIfAbsent(clazz, result);
-
-            if (prev != null) {
-                result = prev;
-            }
 
             // Inspect the implemented interfaces for annotations
             Class<?>[] interfaces = clazz.getInterfaces();
@@ -205,6 +201,14 @@ public class AnnotationUtils {
                 for (Class<?> interfaceClass : interfaces) {
                     result = addAnnotations(result, interfaceClass);
                 }
+            }
+
+            // Put the list in the cache if no one was previously present
+            List<AnnotationInfo> prev = cache.putIfAbsent(clazz, result);
+
+            if (prev != null) {
+                // Reuse the previous entry
+                result = prev;
             }
         }
 
