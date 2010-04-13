@@ -51,11 +51,10 @@ public class B2buaApplication {
 
             // Reset the protocol and let the dispatcher handle the protocol
             // request.setProtocol(null);
+            request.getAttributes().remove(HeaderConstants.ATTRIBUTE_HEADERS);
             // Update the request to cleanly go to the target URI
             request.setOnResponse(new Uniform() {
                 public void handle(Request req, Response resp) {
-                    System.err.println(req.getMethod() + " resp.getStatus() "
-                            + resp.getStatus());
                     if (!resp.getStatus().isInformational()) {
                         // Allow for response rewriting and clean the headers
                         response.setEntity(rewrite(response.getEntity()));
@@ -92,7 +91,6 @@ public class B2buaApplication {
             });
             Request r = new Request(request);
             r.setResourceRef(targetRef);
-            r.getAttributes().remove(HeaderConstants.ATTRIBUTE_HEADERS);
 
             response.setAutoCommitting(false);
             next.handle(r, response);
