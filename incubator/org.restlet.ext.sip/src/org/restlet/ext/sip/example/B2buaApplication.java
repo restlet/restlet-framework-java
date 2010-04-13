@@ -52,12 +52,10 @@ public class B2buaApplication {
             // Reset the protocol and let the dispatcher handle the protocol
             // request.setProtocol(null);
             // Update the request to cleanly go to the target URI
-            request.setResourceRef(targetRef);
-            request.getAttributes().remove(HeaderConstants.ATTRIBUTE_HEADERS);
-
             request.setOnResponse(new Uniform() {
                 public void handle(Request req, Response resp) {
-                    System.err.println(req.getMethod() + "resp.getStatus() " + resp.getStatus());
+                    System.err.println(req.getMethod() + " resp.getStatus() "
+                            + resp.getStatus());
                     if (!resp.getStatus().isInformational()) {
                         // Allow for response rewriting and clean the headers
                         response.setEntity(rewrite(response.getEntity()));
@@ -83,15 +81,21 @@ public class B2buaApplication {
                                 }
                             }
                         }
+                        resp.commit();
                     } else {
-                        SipResponse provisionalResponse = new SipResponse(req);
+                        SipResponse provisionalResponse = new SipResponse(
+                                request);
                         provisionalResponse.setStatus(resp.getStatus());
                         provisionalResponse.commit();
                     }
                 }
             });
+            Request r = new Request(request);
+            r.setResourceRef(targetRef);
+            r.getAttributes().remove(HeaderConstants.ATTRIBUTE_HEADERS);
 
-            next.handle(request, response);
+            response.setAutoCommitting(false);
+            next.handle(r, response);
         }
 
     }
