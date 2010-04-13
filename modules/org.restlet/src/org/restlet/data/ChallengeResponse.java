@@ -137,7 +137,7 @@ public final class ChallengeResponse extends ChallengeMessage {
      * @param baseSecret
      *            The base secret used to compute the secret.
      * @param baseSecretAlgorithm
-     *            The digest algorithm of the base secret (@see {@link Digest}
+     *            The digest algorithm of the base secret (see {@link Digest}
      *            class).
      */
     public ChallengeResponse(final ChallengeRequest challengeRequest,
