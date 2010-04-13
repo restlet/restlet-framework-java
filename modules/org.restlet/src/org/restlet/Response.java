@@ -111,6 +111,7 @@ public class Response extends Message {
     /** The authentication requests sent by an origin server to a client. */
     private volatile List<ChallengeRequest> challengeRequests;
 
+    /** Indicates if the response has been committed. */
     private volatile boolean committed;
 
     /** The cookie settings provided by the server. */
