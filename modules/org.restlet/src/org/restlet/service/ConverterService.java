@@ -144,7 +144,7 @@ public class ConverterService extends Service {
             UniformResource resource) throws IOException {
         T result = null;
 
-        if ((source != null) && source.isAvailable() && source.getSize() > 0) {
+        if ((source != null) && source.isAvailable()) {
             ConverterHelper ch = ConverterUtils.getBestHelper(source, target,
                     resource);
 
