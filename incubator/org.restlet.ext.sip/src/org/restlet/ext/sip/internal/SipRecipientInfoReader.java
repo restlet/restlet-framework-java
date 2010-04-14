@@ -59,8 +59,6 @@ public class SipRecipientInfoReader extends HeaderReader<SipRecipientInfo> {
     }
 
     public static void main(String[] args) throws Exception {
-        // 
-
         String str = "SIP/2.0/UDP 192.0.2.1:5060 ;received=192.0.2.207;branch=z9hG4bK77asjd";
         SipRecipientInfoReader r = new SipRecipientInfoReader(str);
         SipRecipientInfo s = r.readValue();
@@ -125,9 +123,9 @@ public class SipRecipientInfoReader extends HeaderReader<SipRecipientInfo> {
     }
 
     /**
-     * Reads the next IPv6 URI. The first character must be a "[".
+     * Reads the next IPv6 address. The first character must be a "[".
      * 
-     * @return The next IPv6 URI.
+     * @return The next IPv6 address.
      * @throws IOException
      */
     public String readIpv6Address() throws IOException {
@@ -147,7 +145,7 @@ public class SipRecipientInfoReader extends HeaderReader<SipRecipientInfo> {
                     result = buffer.toString();
                 } else if (next == -1) {
                     throw new IOException(
-                            "Unexpected end of comment. Please check your value");
+                            "Unexpected end of IPv6 address. Please check your value");
                 } else {
                     buffer.append((char) next);
                 }
