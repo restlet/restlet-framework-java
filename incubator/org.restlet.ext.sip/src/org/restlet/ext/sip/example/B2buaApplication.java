@@ -58,7 +58,7 @@ public class B2buaApplication {
                     if (!resp.getStatus().isInformational()) {
                         // Allow for response rewriting and clean the headers
                         response.setEntity(rewrite(response.getEntity()));
-                        request.getAttributes().remove(
+                        response.getAttributes().remove(
                                 HeaderConstants.ATTRIBUTE_HEADERS);
                         request.setResourceRef(resourceRef);
 
