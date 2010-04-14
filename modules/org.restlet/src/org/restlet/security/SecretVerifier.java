@@ -33,6 +33,7 @@ package org.restlet.security;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.ChallengeResponse;
+import org.restlet.data.ClientInfo;
 
 /**
  * Verifier of identifier/secret couples. By default, it extracts the identifier
@@ -104,8 +105,8 @@ public abstract class SecretVerifier implements Verifier {
      * Verifies that the proposed secret is correct for the specified request.
      * By default, it compares the inputSecret of the request's authentication
      * response with the one obtain by the {@link ChallengeResponse#getSecret()}
-     * method and adds a new {@link org.restlet.ext.jaas.RolePrincipal} instance
-     * to the subject if successful.
+     * method and sets the {@link org.restlet.security.User} instance of the
+     * request's {@link ClientInfo} if successful.
      * 
      * @param request
      *            The request to inspect.
