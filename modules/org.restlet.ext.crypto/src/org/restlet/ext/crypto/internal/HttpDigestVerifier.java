@@ -40,6 +40,7 @@ import org.restlet.ext.crypto.DigestAuthenticator;
 import org.restlet.ext.crypto.DigestUtils;
 import org.restlet.ext.crypto.DigestVerifier;
 import org.restlet.security.LocalVerifier;
+import org.restlet.security.User;
 
 /**
  * Verifier for the HTTP DIGEST authentication scheme. Note that the "A1" hash
@@ -191,6 +192,10 @@ public class HttpDigestVerifier extends DigestVerifier<LocalVerifier> {
                         result = RESULT_INVALID;
                     }
                 }
+            }
+
+            if (result == RESULT_VALID) {
+                request.getClientInfo().setUser(new User(username));
             }
         }
 

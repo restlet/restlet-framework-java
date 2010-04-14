@@ -23,7 +23,10 @@ Changes log
       - Fixed issues preventing multi-threaded usage of ClientResource
         and dynamic client proxies.
       - Fixed concurrency bug with annotated interfaces causing
-        405 errors (method not allowed). Reported by Antonio Fiestas. 
+        405 errors (method not allowed). Reported by Antonio Fiestas.
+      - Fixed bug in HttpDigestVerifier which didn't create the User
+        into the request's ClientInfo property. 
+        Reported by Bruno Harbulot.  
           
 - 2.0 Release Candidate 2 (2010-03-30)
     - API changes
