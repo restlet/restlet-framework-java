@@ -34,11 +34,13 @@ import java.io.IOException;
 import java.net.Socket;
 import java.nio.channels.SocketChannel;
 import java.security.Principal;
+import java.util.ArrayList;
 
 import org.restlet.Context;
 import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Parameter;
+import org.restlet.data.RecipientInfo;
 import org.restlet.engine.http.connector.BaseHelper;
 import org.restlet.engine.http.connector.ConnectedRequest;
 import org.restlet.engine.http.connector.ServerConnection;
@@ -100,12 +102,6 @@ public class SipServerConnection extends ServerConnection {
             headers.add(SipConstants.HEADER_TO, AddressWriter.write(sipRequest
                     .getTo()));
         }
-
-        if (!sipRequest.getSipRecipientsInfo().isEmpty()) {
-            headers.add(HeaderConstants.HEADER_VIA, SipRecipientInfoWriter
-                    .write(sipRequest.getSipRecipientsInfo()));
-        }
-
         if (sipResponse.getAlertInfo() != null) {
             headers.add(SipConstants.HEADER_ALERT_INFO, AddressWriter
                     .write(sipResponse.getAlertInfo()));
@@ -166,6 +162,10 @@ public class SipServerConnection extends ServerConnection {
             headers.add(SipConstants.HEADER_UNSUPPORTED, OptionTagWriter
                     .write(sipResponse.getUnsupported()));
         }
+        if (!sipResponse.getSipRecipientsInfo().isEmpty()) {
+            headers.add(HeaderConstants.HEADER_VIA, SipRecipientInfoWriter
+                    .write(sipResponse.getSipRecipientsInfo()));
+        }
     }
 
     @Override
@@ -173,8 +173,12 @@ public class SipServerConnection extends ServerConnection {
             ServerConnection connection, String methodName, String resourceUri,
             String version, Series<Parameter> headers, Representation entity,
             boolean confidential, Principal userPrincipal) {
-        return new SipRequest(getHelper().getContext(), this, SipMethod
-                .valueOf(methodName), resourceUri, version, headers,
+        SipRequest request = new SipRequest(getHelper().getContext(), this,
+                SipMethod.valueOf(methodName), resourceUri, version, headers,
                 createInboundEntity(headers), false, null);
+        // The via header is linked with the sipRecipientsInfo attribute, due to
+        // distinct formats.
+        request.setRecipientsInfo(new ArrayList<RecipientInfo>());
+        return request;
     }
 }

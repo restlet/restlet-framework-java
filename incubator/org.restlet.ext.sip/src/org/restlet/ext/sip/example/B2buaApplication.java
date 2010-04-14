@@ -80,6 +80,7 @@ public class B2buaApplication {
                                 }
                             }
                         }
+
                         resp.commit();
                     } else {
                         SipResponse provisionalResponse = new SipResponse(
@@ -89,11 +90,12 @@ public class B2buaApplication {
                     }
                 }
             });
-            //SipRequest r = new SipRequest((SipRequest) request);
-            request.setResourceRef(targetRef);
+            SipRequest r = new SipRequest((SipRequest) request);
+            r.setResourceRef(targetRef);
+            //request.setResourceRef(targetRef);
 
             response.setAutoCommitting(false);
-            next.handle(request, response);
+            next.handle(r, response);
         }
 
     }

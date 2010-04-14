@@ -36,6 +36,8 @@ import java.net.UnknownHostException;
 import java.nio.channels.SocketChannel;
 
 import org.restlet.Client;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.Protocol;
 import org.restlet.engine.http.connector.BaseClientHelper;
 import org.restlet.engine.http.connector.BaseHelper;
@@ -75,6 +77,11 @@ public class SipClientHelper extends BaseClientHelper {
                 "localhost");
         String port = getHelpedParameters().getFirstValue("hostPort", "5060");
         return super.createSocket(secure, domain, Integer.parseInt(port));
+    }
+
+    @Override
+    protected Response createResponse(Request request) {
+        return new SipResponse(request);
     }
 
     @Override
