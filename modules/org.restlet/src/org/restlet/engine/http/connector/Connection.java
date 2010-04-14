@@ -798,33 +798,55 @@ public abstract class Connection<T extends Connector> implements Notifiable {
             }
 
             try {
-                writeMessageHead(message, headers);
+                try {
+                    writeMessageHead(message, headers);
+                } catch (IOException ioe) {
+                    getLogger()
+                            .log(
+                                    Level.WARNING,
+                                    "Exception while writing the message headers.",
+                                    ioe);
+                    throw ioe;
+                }
 
                 if (entity != null) {
-                    // In order to workaround bug #6472250
-                    // (http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6472250),
-                    // it is very important to reuse that exact same
-                    // "entityStream" reference when manipulating the entity
-                    // stream, otherwise "insufficient data sent" exceptions
-                    // will occur in "fixedLengthMode"
                     boolean chunked = HeaderUtils.isChunkedEncoding(headers);
-                    WritableByteChannel entityChannel = getOutboundEntityChannel(chunked);
-                    OutputStream entityStream = getOutboundEntityStream(chunked);
-                    writeMessageBody(entity, entityChannel, entityStream);
+                    OutputStream entityStream = null;
+                    WritableByteChannel entityChannel = null;
+                    try {
+                        // In order to workaround bug #6472250
+                        // (http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6472250),
+                        // it is very important to reuse that exact same
+                        // "entityStream" reference when manipulating the entity
+                        // stream, otherwise "insufficient data sent" exceptions
+                        // will occur in "fixedLengthMode"
+                        entityChannel = getOutboundEntityChannel(chunked);
+                        entityStream = getOutboundEntityStream(chunked);
+                        writeMessageBody(entity, entityChannel, entityStream);
+                    } catch (IOException ioe) {
+                        getLogger().log(Level.WARNING,
+                                "Exception while writing the message body.",
+                                ioe);
+                        throw ioe;
+                    }
 
-                    if (entityStream != null) {
-                        entityStream.flush();
-                        entityStream.close();
+                    try {
+                        if (entityStream != null) {
+                            entityStream.flush();
+                            entityStream.close();
+                        }
+                    } catch (IOException ioe) {
+                        // The stream was probably already closed by the
+                        // connector. Probably OK, low message priority.
+                        getLogger()
+                                .log(
+                                        Level.FINE,
+                                        "Exception while flushing and closing the entity stream.",
+                                        ioe);
                     }
                 }
             } catch (IOException ioe) {
-                // The stream was probably already closed by the
-                // connector. Probably OK, low message priority.
-                getLogger()
-                        .log(
-                                Level.FINE,
-                                "Exception while flushing and closing the entity stream.",
-                                ioe);
+                throw ioe;
             } finally {
                 if (entity != null) {
                     entity.release();

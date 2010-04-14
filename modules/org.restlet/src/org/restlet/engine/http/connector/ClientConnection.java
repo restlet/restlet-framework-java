@@ -272,7 +272,7 @@ public class ClientConnection extends Connection<Client> {
             addRequestHeaders(request, headers);
             addEntityHeaders(request.getEntity(), headers);
             writeMessage(response, headers);
-        } catch (Exception e) {
+        } catch (IOException e) {
             getLogger().log(Level.INFO,
                     "An exception occured writing the request", e);
             response.setStatus(Status.CONNECTOR_ERROR_COMMUNICATION,
@@ -281,7 +281,7 @@ public class ClientConnection extends Connection<Client> {
 
             try {
                 writeMessage(response, headers);
-            } catch (Exception ee) {
+            } catch (IOException ee) {
                 getLogger().log(Level.WARNING, "Unable to send error request",
                         ee);
             }

@@ -331,7 +331,20 @@ public class ServerConnection extends Connection<Server> {
 
             // Write the response to the client
             writeMessage(response, headers);
+        } catch (Exception e) {
+            getLogger().log(Level.INFO,
+                    "An exception occured while writing the response", e);
+            response.setStatus(Status.SERVER_ERROR_INTERNAL,
+                    "An exception occured while writing the response");
+            response.setEntity(null);
 
+            try {
+                writeMessage(response, headers);
+            } catch (IOException ioe) {
+                getLogger().log(Level.WARNING, "Unable to send error response",
+                        ioe);
+            }
+        } finally {
             // Make sure that the optional request entity is released
             if (!response.getStatus().isInformational()
                     && (request.getEntity() != null)) {
@@ -344,20 +357,7 @@ public class ServerConnection extends Connection<Server> {
                     request.getEntity().release();
                 }
             }
-        } catch (Exception e) {
-            getLogger().log(Level.INFO,
-                    "An exception occured writing the response", e);
-            response.setStatus(Status.SERVER_ERROR_INTERNAL,
-                    "An exception occured writing the response");
-            response.setEntity(null);
 
-            try {
-                writeMessage(response, headers);
-            } catch (IOException ioe) {
-                getLogger().log(Level.WARNING, "Unable to send error response",
-                        ioe);
-            }
-        } finally {
             if (response.getOnSent() != null) {
                 response.getOnSent().handle(request, response);
             }
