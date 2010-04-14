@@ -16,12 +16,12 @@
 		<dependency>
 			<groupId>com.sun.grizzly</groupId>
 			<artifactId>grizzly-framework</artifactId>
-			<version>1.9.18b</version>
+			<version>1.9.18i</version>
 		</dependency>
 		<dependency>
 			<groupId>com.sun.grizzly</groupId>
 			<artifactId>grizzly-utils</artifactId>
-			<version>1.9.18b</version>
+			<version>1.9.18i</version>
 		</dependency>
 		<dependency>
 			<groupId>org.restlet.dev</groupId>
