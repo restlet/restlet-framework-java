@@ -100,6 +100,9 @@ public class ConnectedRequest extends Request {
     /** Indicates if the conditions were parsed and added. */
     private volatile boolean conditionAdded;
 
+    /** The parent network connection. */
+    private final ServerConnection connection;
+
     /** The context of the parent connector. */
     private final Context context;
 
@@ -112,23 +115,33 @@ public class ConnectedRequest extends Request {
     /** Indicates if the ranges data was parsed and added. */
     private volatile boolean rangesAdded;
 
+    /** Indicates if the recipients info was parsed and added. */
+    private volatile boolean recipientsInfoAdded;
+
     /** Indicates if the referrer was parsed and added. */
     private volatile boolean referrerAdded;
 
     /** Indicates if the security data was parsed and added. */
     private volatile boolean securityAdded;
 
-    /** Indicates if the recipients info was parsed and added. */
-    private volatile boolean recipientsInfoAdded;
+    /** The user principal. */
+    private final Principal userPrincipal;
 
     /** Indicates if the warning data was parsed and added. */
     private volatile boolean warningsAdded;
 
-    /** The parent network connection. */
-    private final ServerConnection connection;
-
-    /** The user principal. */
-    private final Principal userPrincipal;
+    /**
+     * Copy constructor.
+     * 
+     * @param request
+     *            The request to copy.
+     */
+    public ConnectedRequest(ConnectedRequest request) {
+        super(request);
+        this.connection = request.getConnection();
+        this.context = request.context;
+        this.userPrincipal = request.getUserPrincipal();
+    }
 
     /**
      * Constructor.
