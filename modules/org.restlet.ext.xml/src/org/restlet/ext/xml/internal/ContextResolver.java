@@ -89,8 +89,7 @@ public class ContextResolver implements URIResolver {
                     new Request(Method.GET, targetUri));
 
             if (response.getStatus().isSuccess()
-                    && response.isEntityAvailable()
-                    && response.getEntity().getSize() > 0) {
+                    && response.isEntityAvailable()) {
                 try {
                     result = new StreamSource(response.getEntity().getStream());
                     result.setSystemId(targetUri);
