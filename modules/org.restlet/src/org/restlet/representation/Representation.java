@@ -484,7 +484,7 @@ public abstract class Representation extends RepresentationInfo {
     public String getText() throws IOException {
         String result = null;
 
-        if (isAvailable() && getSize() > 0) {
+        if (isAvailable() && getSize() != 0) {
             final java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
             write(baos);
 
