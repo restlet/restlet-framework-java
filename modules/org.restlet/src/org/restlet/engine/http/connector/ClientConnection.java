@@ -109,6 +109,19 @@ public class ClientConnection extends Connection<Client> {
         HeaderUtils.addRequestHeaders(request, headers);
     }
 
+    /**
+     * Copies headers into a response.
+     * 
+     * @param headers
+     *            The headers to copy.
+     * @param response
+     *            The response to update.
+     */
+    protected void copyResponseTransportHeaders(Series<Parameter> headers,
+            Response response) {
+        HeaderUtils.copyResponseTransportHeaders(headers, response);
+    }
+
     @Override
     public boolean canRead() {
         // There should be at least one call to read/update
@@ -221,7 +234,7 @@ public class ClientConnection extends Connection<Client> {
         Status status = createStatus(statusCode);
 
         if (status.isInformational()) {
-            response = new Response(finalResponse.getRequest());
+            response = getHelper().createResponse(finalResponse.getRequest());
         } else {
             response = finalResponse;
         }
@@ -235,7 +248,7 @@ public class ClientConnection extends Connection<Client> {
         response.setEntity(createInboundEntity(headers));
 
         try {
-            HeaderUtils.copyResponseTransportHeaders(headers, response);
+            copyResponseTransportHeaders(headers, response);
         } catch (Throwable t) {
             getLogger()
                     .log(Level.WARNING, "Error while parsing the headers", t);
