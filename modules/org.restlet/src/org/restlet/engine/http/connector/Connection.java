@@ -683,15 +683,13 @@ public abstract class Connection<T extends Connector> implements Notifiable {
                 readMessage();
             }
         } catch (Throwable e) {
-            getLogger()
-                    .log(
-                            Level.WARNING,
-                            "Error while reading an HTTP message. Closing the connection.",
-                            e.getMessage());
+            getLogger().log(Level.WARNING,
+                    "Error while reading a message. Closing the connection.",
+                    e.getMessage());
             getLogger()
                     .log(
                             Level.FINE,
-                            "Error while reading an HTTP message. Closing the connection.",
+                            "Error while reading a message. Closing the connection.",
                             e);
             close(false);
         }
