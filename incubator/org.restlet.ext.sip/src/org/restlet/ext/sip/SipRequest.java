@@ -261,14 +261,48 @@ public class SipRequest extends ConnectedRequest {
     }
 
     /**
+     * Copy constructor.
+     * 
+     * @param request
+     *            The request to copy.
+     */
+    public SipRequest(SipRequest request) {
+        super(request);
+        this.alertInfo = request.getAlertInfo();
+        this.allowedEventTypes = request.getAllowedEventTypes();
+        this.callerInfo = request.getCallerInfo();
+        this.callId = request.getCallId();
+        this.callSequence = request.getCallSequence();
+        this.contact = request.getContact();
+        this.event = request.getEvent();
+        this.from = request.getFrom();
+        this.inReplyTo = request.getInReplyTo();
+        this.mimeVersion = request.getMimeVersion();
+        this.organization = request.getOrganization();
+        this.priority = request.getPriority();
+        this.proxyRequires = request.getProxyRequires();
+        this.recipientsInfo = request.getSipRecipientsInfo();
+        this.recordedRoutes = request.getRecordedRoutes();
+        this.referTo = request.getReferTo();
+        this.replyTo = request.getReplyTo();
+        this.requires = request.getRequires();
+        this.routes = request.getRoutes();
+        this.sipIfMatch = request.getSipIfMatch();
+        this.subject = request.getSubject();
+        this.subscriptionState = request.getSubscriptionState();
+        this.supported = request.getSupported();
+        this.to = request.getTo();
+    }
+
+    /**
      * Returns the alternative ring tone for the UAS.
      * 
      * @return The alternative ring tone for the UAS.
      */
     public Address getAlertInfo() {
         if (!alertInfoAdded) {
-            String header = getHeaders().getValues(
-                    SipConstants.HEADER_ALERT_INFO);
+            String header = (getHeaders() == null) ? null : getHeaders()
+                    .getValues(SipConstants.HEADER_ALERT_INFO);
             if (header != null) {
                 try {
                     setAlertInfo(new AddressReader(header).readValue());
@@ -299,8 +333,8 @@ public class SipRequest extends ConnectedRequest {
             }
         }
         if (!allowedEventTypesAdded) {
-            String header = getHeaders().getValues(
-                    SipConstants.HEADER_ALLOW_EVENTS);
+            String header = (getHeaders() == null) ? null : getHeaders()
+                    .getValues(SipConstants.HEADER_ALLOW_EVENTS);
             if (header != null) {
                 try {
                     this.allowedEventTypes.addAll(new EventTypeReader(header)
@@ -333,8 +367,8 @@ public class SipRequest extends ConnectedRequest {
             }
         }
         if (!callerInfoAdded) {
-            String header = getHeaders().getValues(
-                    SipConstants.HEADER_CALL_INFO);
+            String header = (getHeaders() == null) ? null : getHeaders()
+                    .getValues(SipConstants.HEADER_CALL_INFO);
             if (header != null) {
                 try {
                     this.callerInfo.addAll(new AddressReader(header)
@@ -384,7 +418,8 @@ public class SipRequest extends ConnectedRequest {
             }
         }
         if (!contactAdded) {
-            String header = getHeaders().getValues(SipConstants.HEADER_CONTACT);
+            String header = (getHeaders() == null) ? null : getHeaders()
+                    .getValues(SipConstants.HEADER_CONTACT);
             if (header != null) {
                 try {
                     this.contact.addAll(new ContactInfoReader(header)
@@ -406,7 +441,8 @@ public class SipRequest extends ConnectedRequest {
      */
     public Event getEvent() {
         if (!eventAdded) {
-            String header = getHeaders().getValues(SipConstants.HEADER_EVENT);
+            String header = (getHeaders() == null) ? null : getHeaders()
+                    .getValues(SipConstants.HEADER_EVENT);
             if (header != null) {
                 try {
                     setEvent(new EventReader(header).readValue());
@@ -447,8 +483,8 @@ public class SipRequest extends ConnectedRequest {
         }
 
         if (!inReplyToAdded) {
-            String header = getHeaders().getValues(
-                    SipConstants.HEADER_ALLOW_EVENTS);
+            String header = (getHeaders() == null) ? null : getHeaders()
+                    .getValues(SipConstants.HEADER_ALLOW_EVENTS);
             if (header != null) {
                 try {
                     this.inReplyTo.addAll(new HeaderReader<String>(header)
@@ -490,7 +526,7 @@ public class SipRequest extends ConnectedRequest {
      */
     public Priority getPriority() {
         if (!priorityAdded) {
-            String header = getHeaders()
+            String header = (getHeaders() == null) ? null : getHeaders()
                     .getValues(SipConstants.HEADER_PRIORITY);
             if (header != null) {
                 try {
@@ -522,8 +558,8 @@ public class SipRequest extends ConnectedRequest {
             }
         }
         if (!proxyRequiresAdded) {
-            String header = getHeaders().getValues(
-                    SipConstants.HEADER_PROXY_REQUIRE);
+            String header = (getHeaders() == null) ? null : getHeaders()
+                    .getValues(SipConstants.HEADER_PROXY_REQUIRE);
             if (header != null) {
                 try {
                     this.proxyRequires.addAll(new OptionTagReader(header)
@@ -557,8 +593,8 @@ public class SipRequest extends ConnectedRequest {
             }
         }
         if (!recordedRoutesAdded) {
-            String header = getHeaders().getValues(
-                    SipConstants.HEADER_RECORD_ROUTE);
+            String header = (getHeaders() == null) ? null : getHeaders()
+                    .getValues(SipConstants.HEADER_RECORD_ROUTE);
             if (header != null) {
                 try {
                     this.recordedRoutes.addAll(new AddressReader(header)
@@ -581,7 +617,7 @@ public class SipRequest extends ConnectedRequest {
      */
     public Address getReferTo() {
         if (!referToAdded) {
-            String header = getHeaders()
+            String header = (getHeaders() == null) ? null : getHeaders()
                     .getValues(SipConstants.HEADER_REFER_TO);
             if (header != null) {
                 try {
@@ -603,7 +639,7 @@ public class SipRequest extends ConnectedRequest {
      */
     public Address getReplyTo() {
         if (!replyToAdded) {
-            String header = getHeaders()
+            String header = (getHeaders() == null) ? null : getHeaders()
                     .getValues(SipConstants.HEADER_REPLY_TO);
             if (header != null) {
                 try {
@@ -635,7 +671,8 @@ public class SipRequest extends ConnectedRequest {
             }
         }
         if (!requiresAdded) {
-            String header = getHeaders().getValues(SipConstants.HEADER_REQUIRE);
+            String header = (getHeaders() == null) ? null : getHeaders()
+                    .getValues(SipConstants.HEADER_REQUIRE);
             if (header != null) {
                 try {
                     this.requires.addAll(new OptionTagReader(header)
@@ -667,7 +704,8 @@ public class SipRequest extends ConnectedRequest {
             }
         }
         if (!routesAdded) {
-            String header = getHeaders().getValues(SipConstants.HEADER_ROUTE);
+            String header = (getHeaders() == null) ? null : getHeaders()
+                    .getValues(SipConstants.HEADER_ROUTE);
             if (header != null) {
                 try {
                     this.routes.addAll(new AddressReader(header).readValues());
@@ -690,8 +728,8 @@ public class SipRequest extends ConnectedRequest {
      */
     public Tag getSipIfMatch() {
         if (!sipIfMatchAdded) {
-            String header = getHeaders().getValues(
-                    SipConstants.HEADER_SIP_IF_MATCH);
+            String header = (getHeaders() == null) ? null : getHeaders()
+                    .getValues(SipConstants.HEADER_SIP_IF_MATCH);
             if (header != null) {
                 try {
                     setSipIfMatch(Tag.parse(header));
@@ -722,7 +760,8 @@ public class SipRequest extends ConnectedRequest {
             }
         }
         if (!recipientsInfoAdded) {
-            String header = getHeaders().getValues(HeaderConstants.HEADER_VIA);
+            String header = (getHeaders() == null) ? null : getHeaders()
+                    .getValues(HeaderConstants.HEADER_VIA);
             if (header != null) {
                 try {
                     this.recipientsInfo.addAll(new SipRecipientInfoReader(
@@ -754,8 +793,8 @@ public class SipRequest extends ConnectedRequest {
      */
     public SubscriptionState getSubscriptionState() {
         if (!subscriptionStateAdded) {
-            String header = getHeaders().getValues(
-                    SipConstants.HEADER_SUBSCRIPTION_STATE);
+            String header = (getHeaders() == null) ? null : getHeaders()
+                    .getValues(SipConstants.HEADER_SUBSCRIPTION_STATE);
             if (header != null) {
                 try {
                     setSubscriptionState(new SubscriptionStateReader(header)
@@ -787,8 +826,8 @@ public class SipRequest extends ConnectedRequest {
             }
         }
         if (!supportedAdded) {
-            String header = getHeaders().getValues(
-                    SipConstants.HEADER_SUPPORTED);
+            String header = (getHeaders() == null) ? null : getHeaders()
+                    .getValues(SipConstants.HEADER_SUPPORTED);
             if (header != null) {
                 try {
                     this.supported.addAll(new OptionTagReader(header)

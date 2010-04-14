@@ -89,11 +89,11 @@ public class B2buaApplication {
                     }
                 }
             });
-            Request r = new Request(request);
-            r.setResourceRef(targetRef);
+            //SipRequest r = new SipRequest((SipRequest) request);
+            request.setResourceRef(targetRef);
 
             response.setAutoCommitting(false);
-            next.handle(r, response);
+            next.handle(request, response);
         }
 
     }
@@ -102,15 +102,16 @@ public class B2buaApplication {
         // Start the origin server on port 8182
         String[] arguments = new String[1];
         arguments[0] = "8182";
-        UacServerResource.main(arguments);
+        //UacServerResource.main(arguments);
 
         Component c = new Component();
         c.getServers().add(Protocol.SIP);
         Client client = new Client(new Context(), Protocol.SIP);
         client.getContext().getParameters().add("hostDomain", "localhost");
         client.getContext().getParameters().add("hostPort", arguments[0]);
-        client.getContext().getParameters()
-                .add("pipeliningConnections", "true");
+        client.getContext().getParameters().add("tracing", "true");
+        client.getContext().getParameters().add("pipeliningConnections",
+                "false");
         c.getClients().add(client);
 
         c.getDefaultHost().attachDefault(
