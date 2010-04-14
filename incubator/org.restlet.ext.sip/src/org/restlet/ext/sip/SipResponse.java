@@ -86,6 +86,9 @@ public class SipResponse extends Response {
      */
     private volatile String organization;
 
+    /** The intermediary recipients information. */
+    private volatile List<SipRecipientInfo> recipientsInfo;
+
     /**
      * The list of routes completed by proxies to force future requests to go
      * through the proxy.
@@ -296,6 +299,26 @@ public class SipResponse extends Response {
         return replyTo;
     }
 
+    /**
+     * Returns the intermediary recipients information.
+     * 
+     * @return The intermediary recipients information.
+     */
+    public List<SipRecipientInfo> getSipRecipientsInfo() {
+        // Lazy initialization with double-check.
+        List<SipRecipientInfo> sri = this.recipientsInfo;
+        if (sri == null) {
+            synchronized (this) {
+                sri = this.recipientsInfo;
+                if (sri == null) {
+                    this.recipientsInfo = sri = new CopyOnWriteArrayList<SipRecipientInfo>();
+                }
+            }
+        }
+
+        return sri;
+    }
+
     public Availability getSipRetryAfter() {
         return retryAfter;
     }
@@ -501,6 +524,16 @@ public class SipResponse extends Response {
      */
     public void setReplyTo(Address replyTo) {
         this.replyTo = replyTo;
+    }
+
+    /**
+     * Sets the intermediary recipients information.
+     * 
+     * @param recipientsInfo
+     *            The intermediary recipients information.
+     */
+    public void setSipRecipientsInfo(List<SipRecipientInfo> recipientsInfo) {
+        this.recipientsInfo = recipientsInfo;
     }
 
     public void setSipRetryAfter(Availability retryAfter) {
