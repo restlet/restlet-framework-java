@@ -484,7 +484,7 @@ public abstract class Representation extends RepresentationInfo {
     public String getText() throws IOException {
         String result = null;
 
-        if (isAvailable()) {
+        if (isAvailable() && getSize() > 0) {
             final java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
             write(baos);
 
@@ -508,7 +508,7 @@ public abstract class Representation extends RepresentationInfo {
      * @return True if some fresh content is available.
      */
     public boolean isAvailable() {
-        return (getSize() != 0) && this.available;
+        return this.available;
     }
 
     // [ifdef gwt] method uncomment

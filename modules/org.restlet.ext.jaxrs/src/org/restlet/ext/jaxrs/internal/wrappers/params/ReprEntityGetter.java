@@ -211,7 +211,8 @@ public abstract class ReprEntityGetter implements ParamGetter {
             ConvertRepresentationException, WebApplicationException {
         try {
             final Request request = Request.getCurrent();
-            if (!request.isEntityAvailable()) {
+            if (!request.isEntityAvailable()
+                    || request.getEntity().getSize() == 0) {
                 return null;
             }
             final Representation entity = request.getEntity();

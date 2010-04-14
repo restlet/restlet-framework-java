@@ -786,8 +786,8 @@ public abstract class Connection<T extends Connector> implements Notifiable {
             Representation entity = isClientSide() ? message.getRequest()
                     .getEntity() : message.getEntity();
 
-            if (entity != null) {
-                entity = entity.isAvailable() ? entity : null;
+            if (entity != null && !entity.isAvailable()) {
+                entity = null;
             }
 
             ConnectorService connectorService = ConnectorHelper
