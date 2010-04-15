@@ -8,7 +8,11 @@ Changes log
         - Removed debug trace when using the Basic authentication.
         - Fixed generation of the Content-length header in requests 
           when using ranges.
-        
+        - Fixed generation of Resource tags in a WADL document 
+          according to the 2009 WADL RNC (generate the Parameter 
+          elements before the Method ones).
+          Reported by Leigh Klotz.
+
 - 1.1.9 (2010-03-30)
     - Bugs fixed
         - Allowed to specify its own user agent.

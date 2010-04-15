@@ -342,12 +342,12 @@ public class ResourceInfo extends DocumentedInfo {
                 documentationInfo.writeElement(writer);
             }
 
-            for (final MethodInfo methodInfo : getMethods()) {
-                methodInfo.writeElement(writer);
-            }
-
             for (final ParameterInfo parameterInfo : getParameters()) {
                 parameterInfo.writeElement(writer);
+            }
+
+            for (final MethodInfo methodInfo : getMethods()) {
+                methodInfo.writeElement(writer);
             }
 
             writer.endElement(APP_NAMESPACE, "resource");
