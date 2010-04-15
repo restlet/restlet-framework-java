@@ -178,7 +178,8 @@ public class RequestTest extends JaxRsTestCase {
         conditions.setModifiedSince(AFTER);
         final Response response = get("date", conditions);
         assertEquals(Status.REDIRECTION_NOT_MODIFIED, response.getStatus());
-        assertFalse(response.isEntityAvailable());
+        assertFalse(response.isEntityAvailable()
+                && response.getEntity().getSize() != 0);
         // from RFC 2616, Section 10.3.5
         // The 304 response MUST include the following header fields:
         // - ETag and/or Content-Location, if the header would have been sent
