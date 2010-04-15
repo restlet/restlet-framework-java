@@ -82,14 +82,23 @@ import org.restlet.util.Series;
  * @author Jerome Louvel
  */
 public abstract class Connection<T extends Connector> implements Notifiable {
+    /** The parent connector helper. */
+    private final BaseHelper<T> helper;
+
     /** Indicates if the input of the socket is busy. */
     private volatile boolean inboundBusy;
+
+    /** The queue of inbound messages. */
+    private final Queue<Response> inboundMessages;
+
+    /** The inbound BIO stream. */
+    private final InputStream inboundStream;
 
     /** Indicates if the output of the socket is busy. */
     private volatile boolean outboundBusy;
 
-    /** The inbound BIO stream. */
-    private final InputStream inboundStream;
+    /** The queue of outbound messages. */
+    private final Queue<Response> outboundMessages;
 
     /** The outbound BIO stream. */
     private final OutputStream outboundStream;
@@ -100,23 +109,14 @@ public abstract class Connection<T extends Connector> implements Notifiable {
     /** Indicates if idempotent sequences of requests can be pipelined. */
     private volatile boolean pipelining;
 
-    /** The state of the connection. */
-    private volatile ConnectionState state;
-
     /** The underlying BIO socket. */
     private final Socket socket;
 
     /** The underlying NIO socket channel. */
     private final SocketChannel socketChannel;
 
-    /** The parent connector helper. */
-    private final BaseHelper<T> helper;
-
-    /** The queue of inbound messages. */
-    private final Queue<Response> inboundMessages;
-
-    /** The queue of outbound messages. */
-    private final Queue<Response> outboundMessages;
+    /** The state of the connection. */
+    private volatile ConnectionState state;
 
     /**
      * Constructor.
@@ -683,15 +683,21 @@ public abstract class Connection<T extends Connector> implements Notifiable {
                 readMessage();
             }
         } catch (Throwable e) {
-            getLogger().log(Level.WARNING,
-                    "Error while reading a message. Closing the connection.",
-                    e.getMessage());
-            getLogger()
-                    .log(
-                            Level.FINE,
-                            "Error while reading a message. Closing the connection.",
-                            e);
-            close(false);
+            if (ConnectionState.CLOSING != getState()
+                    && ConnectionState.CLOSED != getState()) {
+                // Abnormal exception, close the connection and trace the event.
+                getLogger()
+                        .log(
+                                Level.WARNING,
+                                "Error while reading a message. Closing the connection.",
+                                e.getMessage());
+                getLogger()
+                        .log(
+                                Level.FINE,
+                                "Error while reading a message. Closing the connection.",
+                                e);
+                close(false);
+            }
         }
 
         // Immediately attempt to handle the next pending message, trying to
