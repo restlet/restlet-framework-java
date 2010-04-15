@@ -256,7 +256,7 @@ public final class Method implements Comparable<Method> {
      *            The method to register.
      */
     public static void register(Method method) {
-        String name = (method == null) ? null : method.getName();
+        String name = (method == null) ? null : method.getName().toLowerCase();
         if ((name != null) && !name.equals("")) {
             _methods.put(name, method);
         }
@@ -274,9 +274,8 @@ public final class Method implements Comparable<Method> {
         Method result = null;
 
         if ((name != null) && !name.equals("")) {
-            if (Method._methods.containsKey(name)) {
-                result = Method._methods.get(name);
-            } else {
+            result = Method._methods.get(name.toLowerCase());
+            if (result == null) {
                 result = new Method(name);
             }
         }

@@ -24,6 +24,7 @@ Changes log
         and dynamic client proxies.
       - Fixed concurrency bug with annotated interfaces causing
         405 errors (method not allowed). Reported by Antonio Fiestas.
+      - Fixed regression about the method filtering (ignore case).
       - Fixed bug in HttpDigestVerifier which didn't create the User
         into the request's ClientInfo property. 
         Reported by Bruno Harbulot.  
