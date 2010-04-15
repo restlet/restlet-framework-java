@@ -133,7 +133,7 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
                         this.jsonRepresentation.getStream(), this.objectClass);
             } catch (IOException e) {
                 Context.getCurrentLogger().log(Level.WARNING,
-                        "Unable to parse the object with XStream.", e);
+                        "Unable to parse the object with Jackson.", e);
             }
         }
 
