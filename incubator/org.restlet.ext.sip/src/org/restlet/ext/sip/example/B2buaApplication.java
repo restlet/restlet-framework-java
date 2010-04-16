@@ -92,7 +92,7 @@ public class B2buaApplication {
             });
             SipRequest r = new SipRequest((SipRequest) request);
             r.setResourceRef(targetRef);
-            //request.setResourceRef(targetRef);
+            // request.setResourceRef(targetRef);
 
             response.setAutoCommitting(false);
             next.handle(r, response);
@@ -104,13 +104,13 @@ public class B2buaApplication {
         // Start the origin server on port 8182
         String[] arguments = new String[1];
         arguments[0] = "8182";
-        //UacServerResource.main(arguments);
+        // UacServerResource.main(arguments);
 
         Component c = new Component();
         c.getServers().add(Protocol.SIP);
         Client client = new Client(new Context(), Protocol.SIP);
-        client.getContext().getParameters().add("hostDomain", "localhost");
-        client.getContext().getParameters().add("hostPort", arguments[0]);
+        client.getContext().getParameters().add("proxyHost", "localhost");
+        client.getContext().getParameters().add("proxyPort", arguments[0]);
         client.getContext().getParameters().add("tracing", "true");
         client.getContext().getParameters().add("pipeliningConnections",
                 "false");

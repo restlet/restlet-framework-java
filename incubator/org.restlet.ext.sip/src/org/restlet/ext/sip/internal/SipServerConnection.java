@@ -48,6 +48,7 @@ import org.restlet.engine.http.header.DateWriter;
 import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.ext.sip.SipConstants;
 import org.restlet.ext.sip.SipMethod;
+import org.restlet.ext.sip.SipRecipientInfo;
 import org.restlet.ext.sip.SipRequest;
 import org.restlet.ext.sip.SipResponse;
 import org.restlet.representation.Representation;
@@ -163,8 +164,12 @@ public class SipServerConnection extends ServerConnection {
                     .write(sipResponse.getUnsupported()));
         }
         if (!sipResponse.getSipRecipientsInfo().isEmpty()) {
-            headers.add(HeaderConstants.HEADER_VIA, SipRecipientInfoWriter
-                    .write(sipResponse.getSipRecipientsInfo()));
+            for (SipRecipientInfo recipient : sipResponse
+                    .getSipRecipientsInfo()) {
+                // Generate one Via header per recipient
+                headers.add(HeaderConstants.HEADER_VIA, SipRecipientInfoWriter
+                        .write(recipient));
+            }
         }
     }
 

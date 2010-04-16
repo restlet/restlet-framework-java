@@ -54,6 +54,17 @@ public class SipRecipientInfoWriter extends HeaderWriter<SipRecipientInfo> {
         return new SipRecipientInfoWriter().append(recipientsInfo).toString();
     }
 
+    /**
+     * Creates a via header from the given recipient info.
+     * 
+     * @param recipientInfo
+     *            The recipient info.
+     * @return Returns the Via header.
+     */
+    public static String write(SipRecipientInfo recipientInfo) {
+        return new SipRecipientInfoWriter().append(recipientInfo).toString();
+    }
+
     @Override
     public SipRecipientInfoWriter append(SipRecipientInfo recipientInfo) {
         if (recipientInfo.getProtocol() != null) {

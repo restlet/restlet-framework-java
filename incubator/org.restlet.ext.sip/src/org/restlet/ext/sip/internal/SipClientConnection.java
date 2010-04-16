@@ -44,6 +44,7 @@ import org.restlet.engine.http.connector.ClientConnection;
 import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.http.header.TagWriter;
 import org.restlet.ext.sip.SipConstants;
+import org.restlet.ext.sip.SipRecipientInfo;
 import org.restlet.ext.sip.SipRequest;
 import org.restlet.ext.sip.SipResponse;
 import org.restlet.ext.sip.SipStatus;
@@ -88,8 +89,12 @@ public class SipClientConnection extends ClientConnection {
             }
 
             if (!sipRequest.getSipRecipientsInfo().isEmpty()) {
-                headers.add(HeaderConstants.HEADER_VIA, SipRecipientInfoWriter
-                        .write(sipRequest.getSipRecipientsInfo()));
+                for (SipRecipientInfo recipient : sipRequest
+                        .getSipRecipientsInfo()) {
+                    // Generate one Via header per recipient
+                    headers.add(HeaderConstants.HEADER_VIA,
+                            SipRecipientInfoWriter.write(recipient));
+                }
             }
             if (sipRequest.getAlertInfo() != null) {
                 headers.add(SipConstants.HEADER_ALERT_INFO, AddressWriter
