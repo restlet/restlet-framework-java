@@ -68,7 +68,7 @@ public @interface Post {
      * Specifies the media type of the request and response entities as
      * extensions. If only one extension is provided, the extension applies to
      * both request and response entities. If two extensions are provided,
-     * separated by a comma, then the first one is for the request entity and
+     * separated by a colon, then the first one is for the request entity and
      * the second one for the response entity.<br>
      * <br>
      * If several media types are supported, their extension can be specified
