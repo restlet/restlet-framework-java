@@ -69,6 +69,18 @@ import org.restlet.data.Status;
  * <th>Description</th>
  * </tr>
  * <tr>
+ * <td>proxyHost</td>
+ * <td>String</td>
+ * <td>System property "http.proxyHost"</td>
+ * <td>The host name of the HTTP proxy.</td>
+ * </tr>
+ * <tr>
+ * <td>proxyPort</td>
+ * <td>int</td>
+ * <td>System property "http.proxyPort"</td>
+ * <td>The port of the HTTP proxy.</td>
+ * </tr>
+ * <tr>
  * <td>tcpNoDelay</td>
  * <td>boolean</td>
  * <td>false</td>
@@ -144,6 +156,8 @@ import org.restlet.data.Status;
  * @author Jerome Louvel
  */
 public class BaseClientHelper extends BaseHelper<Client> {
+
+    private static final String CONNECTOR_LATCH = "org.restlet.engine.http.connector.latch";
 
     /** The regular socket factory. */
     private volatile SocketFactory regularSocketFactory;
@@ -262,8 +276,33 @@ public class BaseClientHelper extends BaseHelper<Client> {
 
     /**
      * Creates the socket that will be used to send the request and get the
+     * response. This method is called by {@link #getBestConnection(Request)}
+     * when a new connection is to be created. By default, calls the
+     * {@link #createSocket(boolean, String, int)} method.
+     * 
+     * @param secure
+     *            Indicates if messages will be exchanged confidentially, for
+     *            example via a SSL-secured connection.
+     * @param socketAddress
+     *            The holder of a host/port pair.
+     * @return The created socket.
+     * @throws UnknownHostException
+     * @throws IOException
+     */
+    protected Socket createSocket(boolean secure,
+            InetSocketAddress socketAddress) throws UnknownHostException,
+            IOException {
+        return createSocket(secure, socketAddress.getHostName(), socketAddress
+                .getPort());
+    }
+
+    /**
+     * Creates the socket that will be used to send the request and get the
      * response.
      * 
+     * @param secure
+     *            Indicates if messages will be exchanged confidentially, for
+     *            example via a SSL-secured connection.
      * @param hostDomain
      *            The target host domain name.
      * @param hostPort
@@ -272,8 +311,8 @@ public class BaseClientHelper extends BaseHelper<Client> {
      * @throws UnknownHostException
      * @throws IOException
      */
-    public Socket createSocket(boolean secure, String hostDomain, int hostPort)
-            throws UnknownHostException, IOException {
+    protected Socket createSocket(boolean secure, String hostDomain,
+            int hostPort) throws UnknownHostException, IOException {
         Socket result = null;
         SocketFactory factory = getSocketFactory(secure);
 
@@ -314,6 +353,77 @@ public class BaseClientHelper extends BaseHelper<Client> {
             }
         } else {
             result = SocketFactory.getDefault();
+        }
+
+        return result;
+    }
+
+    /**
+     * Tries to reuse an existing connection for the given request, or creates a
+     * new one. It may return null if the maximum number of connections per host
+     * or in general is reached.
+     * 
+     * @param request
+     *            The request to handle.
+     * @return An existing connection able to handle the request or new one.
+     * @throws UnknownHostException
+     * @throws IOException
+     */
+    protected Connection<Client> getBestConnection(Request request)
+            throws UnknownHostException, IOException {
+        Connection<Client> result = null;
+
+        // Try to reuse an existing connection for the same host and
+        // port
+        int hostConnectionCount = 0;
+        int bestCount = 0;
+        boolean foundConn = false;
+
+        // Determine the target host domain and port of the request.
+        InetSocketAddress socketAddress = getSocketAddress(request);
+
+        if (socketAddress == null) {
+            getLogger()
+                    .log(Level.WARNING,
+                            "Unable to create a socket address related to the request.");
+        } else {
+            // Associate the given request to the first available connection
+            // opened on the same host domain and port.
+            for (Connection<Client> currConn : getConnections()) {
+                if (socketAddress.getAddress().equals(
+                        currConn.getSocket().getInetAddress())
+                        && socketAddress.getPort() == currConn.getSocket()
+                                .getPort()) {
+                    if (currConn.getState().equals(ConnectionState.OPEN)
+                            && !currConn.isOutboundBusy()) {
+                        result = currConn;
+                        foundConn = true;
+                        break;
+                    }
+                    // Assign the request to the busy connection that handles
+                    // the less number of messages. This is usefull in case the
+                    // maximum number of connections has been reached. As a
+                    // drawback, the message will only be handled as soon as
+                    // possible.
+                    int currCount = currConn.getOutboundMessages().size();
+                    if (bestCount > currCount) {
+                        bestCount = currCount;
+                        result = currConn;
+                    }
+                    hostConnectionCount++;
+                }
+            }
+            // No connection has been found, try to create a new one that will
+            // handle the message soon.
+            if (!foundConn
+                    && ((getMaxTotalConnections() == -1) || (getConnections()
+                            .size() < getMaxTotalConnections()))
+                    && ((getMaxConnectionsPerHost() == -1) || (hostConnectionCount < getMaxConnectionsPerHost()))) {
+                // Create a new connection
+                result = createConnection(this, createSocket(request
+                        .isConfidential(), socketAddress), null);
+                result.open();
+            }
         }
 
         return result;
@@ -377,6 +487,26 @@ public class BaseClientHelper extends BaseHelper<Client> {
     }
 
     /**
+     * Returns the host name of the HTTP proxy, if specified.
+     * 
+     * @return the host name of the HTTP proxy, if specified.
+     */
+    public String getProxyHost() {
+        return getHelpedParameters().getFirstValue("proxyHost",
+                System.getProperty("http.proxyHost"));
+    }
+
+    /**
+     * Returns the port of the HTTP proxy, if specified, 3128 otherwise.
+     * 
+     * @return the port of the HTTP proxy.
+     */
+    public int getProxyPort() {
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "proxyPort", System.getProperty("http.proxyPort")));
+    }
+
+    /**
      * Returns the regular socket factory.
      * 
      * @return The regular socket factory.
@@ -411,6 +541,65 @@ public class BaseClientHelper extends BaseHelper<Client> {
      */
     public String getSecurityProvider() {
         return getHelpedParameters().getFirstValue("securityProvider", null);
+    }
+
+    /**
+     * Returns an IP socket address representing the target host domain and port
+     * for a given request. If the helper relies on a proxy, the socket
+     * represents the domain and port of the proxy host. Used by the
+     * {@link #getBestConnection(Request)} method.
+     * 
+     * @param request
+     *            The given request
+     * @return The IP socket address representing the target host domain and
+     *         port for a given request.
+     * @throws UnknownHostException
+     *             If the proxy port is invalid or the host unresolved.
+     */
+    protected InetSocketAddress getSocketAddress(Request request)
+            throws UnknownHostException {
+        InetSocketAddress result = null;
+        String hostDomain = null;
+        int hostPort = 0;
+
+        // Does this helper relies on a proxy?
+        String proxyDomain = getProxyHost();
+
+        if (proxyDomain != null) {
+            hostDomain = proxyDomain;
+            try {
+                hostPort = getProxyPort();
+            } catch (NumberFormatException nfe) {
+                getLogger().log(Level.WARNING,
+                        "The proxy port must be a valid numeric value.", nfe);
+                throw new UnknownHostException();
+            }
+        } else {
+            // Resolve relative references
+            Reference resourceRef = request.getResourceRef().isRelative() ? request
+                    .getResourceRef().getTargetRef()
+                    : request.getResourceRef();
+
+            // Extract the host info
+            hostDomain = resourceRef.getHostDomain();
+            hostPort = resourceRef.getHostPort();
+            if (hostPort == -1) {
+                if (resourceRef.getSchemeProtocol() != null) {
+                    hostPort = resourceRef.getSchemeProtocol().getDefaultPort();
+                } else {
+                    hostPort = getProtocols().get(0).getDefaultPort();
+                }
+            }
+        }
+
+        if (hostDomain != null) {
+            result = new InetSocketAddress(hostDomain, hostPort);
+            if (result != null && result.getAddress() == null) {
+                throw new UnknownHostException(hostDomain);
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -479,8 +668,7 @@ public class BaseClientHelper extends BaseHelper<Client> {
             if (request.getOnResponse() == null) {
                 // Synchronous mode
                 CountDownLatch latch = new CountDownLatch(1);
-                request.getAttributes().put(
-                        "org.restlet.engine.http.connector.latch", latch);
+                request.getAttributes().put(CONNECTOR_LATCH, latch);
 
                 // Add the message to the outbound queue for processing
                 getOutboundMessages().add(response);
@@ -509,12 +697,7 @@ public class BaseClientHelper extends BaseHelper<Client> {
             }
 
             if (!response.getStatus().isInformational()) {
-                CountDownLatch latch = (CountDownLatch) response.getRequest()
-                        .getAttributes().get(
-                                "org.restlet.engine.http.connector.latch");
-                if (latch != null) {
-                    latch.countDown();
-                }
+                unblock(response);
             }
         }
     }
@@ -522,115 +705,34 @@ public class BaseClientHelper extends BaseHelper<Client> {
     @Override
     public void handleOutbound(Response response) {
         if ((response != null) && (response.getRequest() != null)) {
-            Request request = response.getRequest();
-
-            // Resolve relative references
-            Reference resourceRef = request.getResourceRef().isRelative() ? request
-                    .getResourceRef().getTargetRef()
-                    : request.getResourceRef();
-
-            // Extract the host info
-            String hostDomain = resourceRef.getHostDomain();
-            int hostPort = resourceRef.getHostPort();
-
-            if (hostPort == -1) {
-                if (resourceRef.getSchemeProtocol() != null) {
-                    hostPort = resourceRef.getSchemeProtocol().getDefaultPort();
-                } else {
-                    hostPort = getProtocols().get(0).getDefaultPort();
-                }
-            }
-
             try {
-                // Try to reuse an existing connection for the same host and
-                // port
-                int hostConnectionCount = 0;
-                int bestCount = 0;
-                Connection<Client> bestConn = null;
-                boolean foundConn = false;
-
-                // TODO The host domain may be null, for some protocols.
-                // This should not avoid connection reuse.
-                if (hostDomain != null) {
-                    InetSocketAddress socketAddress = new InetSocketAddress(
-                            hostDomain, hostPort);
-                    if (socketAddress.getAddress() == null) {
-                        throw new UnknownHostException(hostDomain);
-                    }
-
-                    for (Connection<Client> currConn : getConnections()) {
-                        if (socketAddress.getAddress().equals(
-                                currConn.getSocket().getInetAddress())
-                                && socketAddress.getPort() == currConn
-                                        .getSocket().getPort()) {
-                            hostConnectionCount++;
-
-                            if (currConn.getState()
-                                    .equals(ConnectionState.OPEN)
-                                    && !currConn.isOutboundBusy()) {
-                                bestConn = currConn;
-                                foundConn = true;
-                                continue;
-                            }
-
-                            int currCount = currConn.getOutboundMessages()
-                                    .size();
-
-                            if (bestCount > currCount) {
-                                bestCount = currCount;
-                                bestConn = currConn;
-                            }
-                        }
-                    }
-                }
-
-                if (!foundConn
-                        && ((getMaxTotalConnections() == -1) || (getConnections()
-                                .size() < getMaxTotalConnections()))
-                        && ((getMaxConnectionsPerHost() == -1) || (hostConnectionCount < getMaxConnectionsPerHost()))) {
-                    // Create a new connection
-                    bestConn = createConnection(this, createSocket(request
-                            .isConfidential(), hostDomain, hostPort), null);
-                    bestConn.open();
-                    bestCount = 0;
-                }
+                Connection<Client> bestConn = getBestConnection(response
+                        .getRequest());
 
                 if (bestConn != null) {
                     bestConn.getOutboundMessages().add(response);
                     getConnections().add(bestConn);
 
-                    if (!request.isExpectingResponse()) {
+                    if (!response.getRequest().isExpectingResponse()) {
                         // Attempt to directly write the response, preventing a
                         // thread context switch
                         bestConn.writeMessages();
                         // Unblock the possibly waiting thread.
                         // NB : the request may not be written at this time.
-                        CountDownLatch latch = (CountDownLatch) response
-                                .getRequest().getAttributes()
-                                .get("org.restlet.engine.http.connector.latch");
-                        if (latch != null) {
-                            latch.countDown();
-                        }
+                        unblock(response);
                     }
                 } else {
-                    getLogger().warning(
+                    getLogger().log(Level.WARNING,
                             "Unable to find a connection to send the request");
                 }
-            } catch (IOException ioe) {
+            } catch (Throwable t) {
                 getLogger()
                         .log(
                                 Level.FINE,
                                 "An error occured during the communication with the remote server.",
-                                ioe);
-                response.setStatus(Status.CONNECTOR_ERROR_COMMUNICATION, ioe);
-                // Unblock the possibly waiting thread.
-                // NB : the request may not be written at this time.
-                CountDownLatch latch = (CountDownLatch) response.getRequest()
-                        .getAttributes().get(
-                                "org.restlet.engine.http.connector.latch");
-                if (latch != null) {
-                    latch.countDown();
-                }
+                                t);
+                response.setStatus(Status.CONNECTOR_ERROR_COMMUNICATION, t);
+                unblock(response);
             }
         }
     }
@@ -667,6 +769,20 @@ public class BaseClientHelper extends BaseHelper<Client> {
         setRegularSocketFactory(null);
         setSecureSocketFactory(null);
         super.stop();
+    }
+
+    /**
+     * Unblocks the thread that handles the given request/response pair.
+     * 
+     * @param response
+     *            The response.
+     */
+    private void unblock(Response response) {
+        CountDownLatch latch = (CountDownLatch) response.getRequest()
+                .getAttributes().get(CONNECTOR_LATCH);
+        if (latch != null) {
+            latch.countDown();
+        }
     }
 
 }
