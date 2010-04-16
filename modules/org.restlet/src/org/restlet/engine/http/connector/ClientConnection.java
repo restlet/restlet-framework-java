@@ -110,16 +110,13 @@ public class ClientConnection extends Connection<Client> {
     }
 
     /**
-     * Copies headers into a response.
+     * Indicates whether the client connection can accept a new message.
      * 
-     * @param headers
-     *            The headers to copy.
-     * @param response
-     *            The response to update.
+     * @return True if the client connection can accept a new message.
      */
-    protected void copyResponseTransportHeaders(Series<Parameter> headers,
-            Response response) {
-        HeaderUtils.copyResponseTransportHeaders(headers, response);
+    public boolean canEnqueue() {
+        return !isBusy() && getOutboundMessages().isEmpty()
+                && getInboundMessages().isEmpty();
     }
 
     @Override
@@ -132,6 +129,19 @@ public class ClientConnection extends Connection<Client> {
     public boolean canWrite() {
         return super.canWrite()
                 && ((getInboundMessages().size() == 0) || isPipelining());
+    }
+
+    /**
+     * Copies headers into a response.
+     * 
+     * @param headers
+     *            The headers to copy.
+     * @param response
+     *            The response to update.
+     */
+    protected void copyResponseTransportHeaders(Series<Parameter> headers,
+            Response response) {
+        HeaderUtils.copyResponseTransportHeaders(headers, response);
     }
 
     /**

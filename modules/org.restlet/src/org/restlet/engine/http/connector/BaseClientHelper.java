@@ -41,6 +41,7 @@ import java.nio.channels.SocketChannel;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.SecureRandom;
+import java.util.Iterator;
 import java.util.concurrent.CountDownLatch;
 import java.util.logging.Level;
 
@@ -389,30 +390,34 @@ public class BaseClientHelper extends BaseHelper<Client> {
         } else {
             // Associate the given request to the first available connection
             // opened on the same host domain and port.
-            for (Connection<Client> currConn : getConnections()) {
+            for (Iterator<Connection<Client>> iterator = getConnections()
+                    .iterator(); !foundConn && iterator.hasNext();) {
+                ClientConnection currConn = (ClientConnection) iterator.next();
+
                 if (socketAddress.getAddress().equals(
                         currConn.getSocket().getInetAddress())
                         && socketAddress.getPort() == currConn.getSocket()
                                 .getPort()) {
                     if (currConn.getState().equals(ConnectionState.OPEN)
-                            && !currConn.isOutboundBusy()) {
+                            && currConn.canEnqueue()) {
                         result = currConn;
                         foundConn = true;
-                        break;
+                    } else {
+                        // Assign the request to the busy connection that
+                        // handles the less number of messages. This is usefull
+                        // in case the maximum number of connections has been
+                        // reached. As a drawback, the message will only be
+                        // handled as soon as possible.
+                        int currCount = currConn.getOutboundMessages().size();
+                        if (bestCount > currCount) {
+                            bestCount = currCount;
+                            result = currConn;
+                        }
+                        hostConnectionCount++;
                     }
-                    // Assign the request to the busy connection that handles
-                    // the less number of messages. This is usefull in case the
-                    // maximum number of connections has been reached. As a
-                    // drawback, the message will only be handled as soon as
-                    // possible.
-                    int currCount = currConn.getOutboundMessages().size();
-                    if (bestCount > currCount) {
-                        bestCount = currCount;
-                        result = currConn;
-                    }
-                    hostConnectionCount++;
                 }
             }
+
             // No connection has been found, try to create a new one that will
             // handle the message soon.
             if (!foundConn
