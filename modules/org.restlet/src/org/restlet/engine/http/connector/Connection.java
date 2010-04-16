@@ -686,9 +686,10 @@ public abstract class Connection<T extends Connector> implements Notifiable {
             if (ConnectionState.CLOSING != getState()
                     && ConnectionState.CLOSED != getState()) {
                 // Abnormal exception, close the connection and trace the event.
+                // NB : may be due to a client that closes the connection.
                 getLogger()
                         .log(
-                                Level.WARNING,
+                                Level.FINE,
                                 "Error while reading a message. Closing the connection.",
                                 e.getMessage());
                 getLogger()
