@@ -66,6 +66,34 @@ public class Availability {
     }
 
     /**
+     * Constructor.
+     * 
+     * @param delay
+     *            The time the service is expected to be unavailable.
+     * @param duration
+     *            The time the service will be available.
+     */
+    public Availability(int delay, int duration) {
+        this(delay);
+        this.duration = duration;
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param delay
+     *            The time the service is expected to be unavailable.
+     * @param duration
+     *            The time the service will be available.
+     * @param comment
+     *            Additional information about the time of callback.
+     */
+    public Availability(int delay, int duration, String comment) {
+        this(duration);
+        this.comment = comment;
+    }
+
+    /**
      * Returns additional information about the time of callback.
      * 
      * @return Additional information about the time of callback.

@@ -58,6 +58,30 @@ public class Event {
     }
 
     /**
+     * Constructor.
+     * 
+     * @param id
+     *            The event identifier.
+     * 
+     */
+    public Event(String id) {
+        super();
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param id
+     *            The event identifier.
+     * @param type
+     *            The type of the event.
+     */
+    public Event(String id, EventType type) {
+        this(id);
+        this.type = type;
+    }
+
+    /**
      * Returns the event identifier.
      * 
      * @return The event identifier.

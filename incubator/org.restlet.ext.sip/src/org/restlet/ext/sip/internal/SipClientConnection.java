@@ -65,11 +65,12 @@ public class SipClientConnection extends ClientConnection {
     @Override
     protected void addGeneralHeaders(Message message, Series<Parameter> headers) {
         if (message instanceof SipRequest) {
+            // Put the VIA header at the top most level.
             SipRequest sipRequest = (SipRequest) message;
             if (!sipRequest.getSipRecipientsInfo().isEmpty()) {
                 for (SipRecipientInfo recipient : sipRequest
                         .getSipRecipientsInfo()) {
-                    // Generate one Via header per recipient
+                    // Generate one VIA header per recipient
                     headers.add(HeaderConstants.HEADER_VIA,
                             SipRecipientInfoWriter.write(recipient));
                 }
@@ -199,6 +200,8 @@ public class SipClientConnection extends ClientConnection {
                         .getSipRecipientsInfo());
             }
         }
+        // Don't let the parent code handle the VIA header according to HTTP
+        // syntax.
         headers.removeAll(HeaderConstants.HEADER_VIA, true);
         super.copyResponseTransportHeaders(headers, response);
     }

@@ -53,6 +53,37 @@ public class Address {
     private Reference reference;
 
     /**
+     * Default constructor.
+     */
+    public Address() {
+        super();
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param reference
+     *            The address reference.
+     */
+    public Address(Reference reference) {
+        super();
+        this.reference = reference;
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param reference
+     *            The address reference.
+     * @param displayName
+     *            The name displayed.
+     */
+    public Address(Reference reference, String displayName) {
+        this.reference = reference;
+        this.displayName = displayName;
+    }
+
+    /**
      * Returns the optional name displayed.
      * 
      * @return The optional name displayed.

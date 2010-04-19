@@ -30,6 +30,8 @@
 
 package org.restlet.ext.sip;
 
+import org.restlet.data.Reference;
+
 /**
  * Information on a SIP contact. Used by the SIP "Contact" header.
  * 
@@ -42,6 +44,70 @@ public class ContactInfo extends Address {
 
     /** The quality/preference level. */
     private float quality;
+
+    /**
+     * Default constructor.
+     */
+    public ContactInfo() {
+        super();
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param reference
+     *            The address reference.
+     */
+    public ContactInfo(Reference reference) {
+        super(reference);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param reference
+     *            The address reference.
+     * @param displayName
+     *            The name displayed.
+     */
+    public ContactInfo(Reference reference, String displayName) {
+        super(reference, displayName);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param reference
+     *            The address reference.
+     * @param expires
+     *            The delay of expiration.
+     * @param quality
+     *            The quality/preference level.
+     */
+    public ContactInfo(Reference reference, String expires, int quality) {
+        super(reference);
+        this.expires = expires;
+        this.quality = quality;
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param reference
+     *            The address reference.
+     * @param displayName
+     *            The name displayed.
+     * @param expires
+     *            The delay of expiration.
+     * @param quality
+     *            The quality/preference level.
+     */
+    public ContactInfo(Reference reference, String displayName, String expires,
+            int quality) {
+        super(reference, displayName);
+        this.expires = expires;
+        this.quality = quality;
+    }
 
     /**
      * Returns the delay of expiration.

@@ -66,7 +66,7 @@ public class OptionTag {
 
     public static final OptionTag MULTIPLE_REFER = register("multiple-refer");
 
-    public static final OptionTag NOREFERSUB = register("norefersub");
+    public static final OptionTag NO_REFER_SUB = register("norefersub");
 
     public static final OptionTag OUTBOUND = register("outbound");
 
@@ -94,7 +94,7 @@ public class OptionTag {
 
     public static final OptionTag TAG_100REL = register("100rel");
 
-    public static final OptionTag TDIALOG = register("tdialog");
+    public static final OptionTag T_DIALOG = register("tdialog");
 
     public static final OptionTag TIMER = register("timer");
 

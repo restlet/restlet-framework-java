@@ -47,12 +47,36 @@ public class Priority {
      */
     private static volatile Map<String, Priority> _priorities = null;
 
+    /**
+     * Highest level of priority.
+     * 
+     * @see <a http://tools.ietf.org/html/rfc3261#section-20.26">Priority
+     *      header</a>
+     */
     public static final Priority EMERGENCY = register("emergency");
 
+    /**
+     * Lowest level of priority.
+     * 
+     * @see <a http://tools.ietf.org/html/rfc3261#section-20.26">Priority
+     *      header</a>
+     */
     public static final Priority NON_URGENT = register("non-urgent");
 
+    /**
+     * Normal level of priority.
+     * 
+     * @see <a http://tools.ietf.org/html/rfc3261#section-20.26">Priority
+     *      header</a>
+     */
     public static final Priority NORMAL = register("normal");
 
+    /**
+     * Urgent level of priority.
+     * 
+     * @see <a http://tools.ietf.org/html/rfc3261#section-20.26">Priority
+     *      header</a>
+     */
     public static final Priority URGENT = register("urgent");
 
     /**

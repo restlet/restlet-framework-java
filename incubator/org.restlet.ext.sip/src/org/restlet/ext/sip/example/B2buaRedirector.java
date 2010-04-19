@@ -11,7 +11,6 @@ import org.restlet.Uniform;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.engine.http.header.HeaderConstants;
-import org.restlet.ext.sip.Address;
 import org.restlet.ext.sip.SipRecipientInfo;
 import org.restlet.ext.sip.SipRequest;
 import org.restlet.ext.sip.SipResponse;
@@ -84,13 +83,7 @@ public class B2buaRedirector extends Redirector {
         sri.setName("127.0.0.1:5060");
         sri.getParameters().add("branch", "z9hG4bK-20369-1-0");
         r.getSipRecipientsInfo().add(0, sri);
-        
-        Address to = new Address();
-        to.setReference(new Reference("127.0.0.1:8182"));
-        to.setDisplayName("test");
-        to.getParameters().add("tag", "aTag");
-        r.setTo(to);
-        
+
         super.outboundServerRedirect(targetRef, r, response);
     };
 
@@ -150,7 +143,7 @@ public class B2buaRedirector extends Redirector {
         });
         request.setResourceRef(targetRef);
         SipRequest r = new SipRequest((SipRequest) request);
-        //r.setResourceRef(targetRef);
+        // r.setResourceRef(targetRef);
 
         response.setAutoCommitting(false);
         next.handle(r, response);
