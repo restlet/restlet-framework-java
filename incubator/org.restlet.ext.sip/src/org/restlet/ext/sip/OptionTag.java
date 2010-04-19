@@ -48,14 +48,45 @@ public class OptionTag {
      */
     private static volatile Map<String, OptionTag> _optionTags = null;
 
+    /**
+     * Indicates support of the "Answer mode" extension.
+     * 
+     * @see <a http://tools.ietf.org/html/rfc5373">Requesting Answering Modes
+     *      for SIP</a>
+     */
     public static final OptionTag ANSWER_MODE = register("answermode");
 
+    /**
+     * "Early session" content-disposition type.
+     * 
+     * @see <a http://www.ietf.org/rfc/rfc3959.txt">The Early Session
+     *      Disposition Type for SIP</a>
+     */
     public static final OptionTag EARLY_SESSION = register("early-session");
 
+    /**
+     * Extension for the registry to allow subscriptions to lists of resources.
+     * 
+     * @see <a https://tools.ietf.org/html/rfc4662">A Session Initiation
+     *      Protocol (SIP) Event Notification Extension for Resource Lists</a>
+     */
     public static final OptionTag EVENT_LIST = register("eventlist");
 
+    /**
+     * Used to indicate that a UA supports changes to URIs in From and To header
+     * fields during a dialog.
+     * 
+     * @see <a http://tools.ietf.org/html/rfc4916">Connected Identity in the
+     *      SIP</a>
+     */
     public static final OptionTag FROM_CHANGE = register("from-change");
 
+    /**
+     * Used to identify the Globally Routable User Agent URI (GRUU) extension.
+     * 
+     * @see <a http://tools.ietf.org/html/rfc5627">Obtaining and Using Globally
+     *      Routable User Agent URIs (GRUUs) in the SIP</a>
+     */
     public static final OptionTag GRUU = register("gruu");
 
     public static final OptionTag HIST_INFO = register("histinfo");
