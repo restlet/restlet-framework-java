@@ -34,7 +34,9 @@ public class B2buaApplication {
             SipRequest r = (SipRequest) request;
             SipRecipientInfo sri = new SipRecipientInfo();
             sri.setProtocol(Protocol.SIP);
-            sri.setName("b2bua");
+            sri.setTransport("TCP");
+            sri.setName("127.0.0.1:5060");
+            sri.getParameters().add("branch", "z9hG4bK-20369-1-0");
             r.getSipRecipientsInfo().add(0, sri);
 
             super.outboundServerRedirect(targetRef, r, response);
