@@ -70,10 +70,11 @@ public class AddressWriter extends HeaderWriter<Address> {
         if (address != null) {
             if (address.getDisplayName() != null) {
                 appendQuotedString(address.getDisplayName());
-                append(" <");
-                append(address.getReference().toString());
-                append("> ");
+                append(" ");
             }
+            append("<");
+            append(address.getReference().toString());
+            append("> ");
             if (!address.getParameters().isEmpty()) {
                 for (Parameter param : address.getParameters()) {
                     appendParameterSeparator();

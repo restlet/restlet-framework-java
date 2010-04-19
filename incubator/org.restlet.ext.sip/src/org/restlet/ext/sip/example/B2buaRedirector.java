@@ -11,6 +11,7 @@ import org.restlet.Uniform;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.engine.http.header.HeaderConstants;
+import org.restlet.ext.sip.Address;
 import org.restlet.ext.sip.SipRecipientInfo;
 import org.restlet.ext.sip.SipRequest;
 import org.restlet.ext.sip.SipResponse;
@@ -31,13 +32,13 @@ public class B2buaRedirector extends Redirector {
         Component c = new Component();
         Server server = new Server(Protocol.SIP);
         c.getServers().add(server);
-        server.getContext().getParameters().add("tracing", "false");
+        server.getContext().getParameters().add("tracing", "true");
 
         Client client = new Client(Protocol.SIP);
         c.getClients().add(client);
         client.getContext().getParameters().add("proxyHost", "localhost");
         client.getContext().getParameters().add("proxyPort", arguments[0]);
-        client.getContext().getParameters().add("tracing", "false");
+        client.getContext().getParameters().add("tracing", "true");
         client.getContext().getParameters().add("pipeliningConnections",
                 "false");
 
@@ -83,7 +84,13 @@ public class B2buaRedirector extends Redirector {
         sri.setName("127.0.0.1:5060");
         sri.getParameters().add("branch", "z9hG4bK-20369-1-0");
         r.getSipRecipientsInfo().add(0, sri);
-
+        
+        Address to = new Address();
+        to.setReference(new Reference("127.0.0.1:8182"));
+        to.setDisplayName("test");
+        to.getParameters().add("tag", "aTag");
+        r.setTo(to);
+        
         super.outboundServerRedirect(targetRef, r, response);
     };
 

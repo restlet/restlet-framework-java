@@ -43,24 +43,6 @@ import org.restlet.ext.sip.Availability;
  */
 public class AvailabilityReader extends HeaderReader<Availability> {
 
-    public static void main(String[] args) throws Exception {
-        String str = "18000;duration=3600;tag=hyh8";
-        AvailabilityReader r = new AvailabilityReader(str);
-        Availability a = r.readValue();
-        System.out.println(a.getDelay() + ".");
-        System.out.println(a.getDuration() + ".");
-        System.out.println(a.getComment() + ".");
-        System.out.println(a.getParameters());
-
-        str = "120 (I'm in a meeting)";
-        r = new AvailabilityReader(str);
-        a = r.readValue();
-        System.out.println(a.getDelay() + ".");
-        System.out.println(a.getDuration() + ".");
-        System.out.println(a.getComment() + ".");
-        System.out.println(a.getParameters());
-    }
-    
     /**
      * Constructor.
      * 

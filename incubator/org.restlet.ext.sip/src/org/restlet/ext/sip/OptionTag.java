@@ -48,17 +48,17 @@ public class OptionTag {
      */
     private static volatile Map<String, OptionTag> _optionTags = null;
 
-    public static final OptionTag ANSWERMODE = register("answermode");
+    public static final OptionTag ANSWER_MODE = register("answermode");
 
     public static final OptionTag EARLY_SESSION = register("early-session");
 
-    public static final OptionTag EVENTLIST = register("eventlist");
+    public static final OptionTag EVENT_LIST = register("eventlist");
 
     public static final OptionTag FROM_CHANGE = register("from-change");
 
     public static final OptionTag GRUU = register("gruu");
 
-    public static final OptionTag HISTINFO = register("histinfo");
+    public static final OptionTag HIST_INFO = register("histinfo");
 
     public static final OptionTag ICE = register("ice");
 

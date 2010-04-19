@@ -58,60 +58,6 @@ public class SipRecipientInfoReader extends HeaderReader<SipRecipientInfo> {
         new SipRecipientInfoReader(header.getValue()).addValues(collection);
     }
 
-    public static void main(String[] args) throws Exception {
-        String str = "SIP/2.0/UDP 192.0.2.1:5060 ;received=192.0.2.207;branch=z9hG4bK77asjd";
-        SipRecipientInfoReader r = new SipRecipientInfoReader(str);
-        SipRecipientInfo s = r.readValue();
-        System.out.println(s.getProtocol());
-        System.out.println(s.getTransport());
-
-        System.out.println(s.getName());
-
-        for (Parameter parameter : s.getParameters()) {
-            System.out
-                    .println(parameter.getName() + "/" + parameter.getValue());
-        }
-        System.out.println(s.getComment());
-
-        str = "SIP/2.0/UDP 192.0.2.1:5060 ;received=192.0.2.207;branch=z9hG4bK77asjd (this is a comment)";
-        r = new SipRecipientInfoReader(str);
-        s = r.readValue();
-        System.out.println(s.getProtocol());
-        System.out.println(s.getTransport());
-
-        System.out.println(s.getName());
-
-        for (Parameter parameter : s.getParameters()) {
-            System.out
-                    .println(parameter.getName() + "/" + parameter.getValue());
-        }
-        System.out.println(s.getComment());
-
-        str = "SIP/2.0/TCP 127.0.0.1:5061;branch=z9hG4bK-6503-1-0";
-        r = new SipRecipientInfoReader(str);
-        s = r.readValue();
-        System.out.println(s.getProtocol());
-        System.out.println(s.getTransport());
-
-        System.out.println(s.getName());
-
-        for (Parameter parameter : s.getParameters()) {
-            System.out
-                    .println(parameter.getName() + "/" + parameter.getValue());
-        }
-        System.out.println(s.getComment());
-
-        System.out.println("*********");
-        str = "SIP/2.0/TCP [fe80::223:dfff:fe7f:7b1a%en0]:5061;branch=z9hG4bK-409-1-0";
-        r = new SipRecipientInfoReader(str);
-        s = r.readValue();
-        System.out.println(s.getProtocol());
-        System.out.println(s.getTransport());
-
-        System.out.println(s.getName());
-
-    }
-
     /**
      * Constructor.
      * 

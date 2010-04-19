@@ -181,7 +181,7 @@ public class SipClientConnection extends ClientConnection {
             }
             if (sipRequest.getSubscriptionState() != null) {
                 headers.add(SipConstants.HEADER_SUBSCRIPTION_STATE,
-                        SubscriptionStateWriter.write(sipRequest
+                        SubscriptionWriter.write(sipRequest
                                 .getSubscriptionState()));
             }
         }

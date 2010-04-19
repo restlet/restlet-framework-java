@@ -50,7 +50,7 @@ import org.restlet.ext.sip.internal.EventTypeReader;
 import org.restlet.ext.sip.internal.OptionTagReader;
 import org.restlet.ext.sip.internal.SipConstants;
 import org.restlet.ext.sip.internal.SipRecipientInfoReader;
-import org.restlet.ext.sip.internal.SubscriptionStateReader;
+import org.restlet.ext.sip.internal.SubscriptionReader;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 
@@ -799,7 +799,7 @@ public class SipRequest extends ConnectedRequest {
                     .getValues(SipConstants.HEADER_SUBSCRIPTION_STATE);
             if (header != null) {
                 try {
-                    setSubscriptionState(new SubscriptionStateReader(header)
+                    setSubscriptionState(new SubscriptionReader(header)
                             .readValue());
                 } catch (Exception e) {
                     Context.getCurrentLogger().info(e.getMessage());

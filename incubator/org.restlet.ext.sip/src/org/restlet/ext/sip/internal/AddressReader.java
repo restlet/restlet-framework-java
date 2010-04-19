@@ -49,36 +49,6 @@ import org.restlet.ext.sip.Address;
  */
 public class AddressReader extends HeaderReader<Address> {
 
-    public static void main(String[] args) throws Exception {
-        String str = "Anonymous <sip:c8oqz84zk7z@privacy.org>;tag=hyh8";
-        AddressReader r = new AddressReader(str);
-        Address a = r.readValue();
-        System.out.println(a.getDisplayName() + ".");
-        System.out.println(a.getReference() + ".");
-        System.out.println(a.getParameters());
-
-        str = "sip:+12125551212@server.phone2net.com;tag=887s";
-        r = new AddressReader(str);
-        a = r.readValue();
-        System.out.println(a.getDisplayName() + ".");
-        System.out.println(a.getReference() + ".");
-        System.out.println(a.getParameters());
-
-        str = "\"A. G. Bell\" <sip:agb@bell-telephone.com> ;tag=a48s";
-        r = new AddressReader(str);
-        a = r.readValue();
-        System.out.println(a.getDisplayName() + ".");
-        System.out.println(a.getReference() + ".");
-        System.out.println(a.getParameters());
-
-        str = "A. G. Bell <sip:agb@bell-telephone.com> ;tag=a48s";
-        r = new AddressReader(str);
-        a = r.readValue();
-        System.out.println(a.getDisplayName() + ".");
-        System.out.println(a.getReference() + ".");
-        System.out.println(a.getParameters());
-    }
-
     /**
      * Constructor.
      * 

@@ -39,7 +39,7 @@ import org.restlet.ext.sip.Subscription;
  * 
  * @author Thierry Boileau
  */
-public class SubscriptionStateWriter extends HeaderWriter<Subscription> {
+public class SubscriptionWriter extends HeaderWriter<Subscription> {
 
     /**
      * Writes a subscription state.
@@ -49,7 +49,7 @@ public class SubscriptionStateWriter extends HeaderWriter<Subscription> {
      * @return The formatted subscription state.
      */
     public static String write(Subscription subscription) {
-        return new SubscriptionStateWriter().append(subscription)
+        return new SubscriptionWriter().append(subscription)
                 .toString();
     }
 

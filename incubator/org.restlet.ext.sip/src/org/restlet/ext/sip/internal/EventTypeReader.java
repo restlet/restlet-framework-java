@@ -45,21 +45,6 @@ import org.restlet.ext.sip.EventType;
  */
 public class EventTypeReader extends HeaderReader<EventType> {
 
-    public static void main(String[] args) throws Exception {
-        String str = "presence";
-
-        EventTypeReader r = new EventTypeReader(str);
-        EventType e = r.readValue();
-        System.out.println(e.getPackage());
-        System.out.println(e.getEventTemplates());
-
-        str = "presence.template1.template2 ";
-        r = new EventTypeReader(str);
-        e = r.readValue();
-        System.out.println(e.getPackage());
-        System.out.println(e.getEventTemplates());
-    }
-
     /**
      * Constructor.
      * 

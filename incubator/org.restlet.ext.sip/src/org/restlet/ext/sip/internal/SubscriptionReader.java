@@ -41,7 +41,7 @@ import org.restlet.ext.sip.Subscription;
  * 
  * @author Thierry Boileau
  */
-public class SubscriptionStateReader extends HeaderReader<Subscription> {
+public class SubscriptionReader extends HeaderReader<Subscription> {
 
     /**
      * Constructor.
@@ -49,7 +49,7 @@ public class SubscriptionStateReader extends HeaderReader<Subscription> {
      * @param header
      *            The header to read.
      */
-    public SubscriptionStateReader(String header) {
+    public SubscriptionReader(String header) {
         super(header);
     }
 
