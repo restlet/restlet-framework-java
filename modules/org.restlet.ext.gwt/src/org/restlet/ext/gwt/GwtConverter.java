@@ -42,13 +42,14 @@ import org.restlet.representation.Variant;
 import org.restlet.resource.UniformResource;
 
 /**
- * Converter between the XML/JSON and Representation classes based on XStream.
+ * Converter between Object instances and Representations based on GWT
+ * serialization format.
  * 
  * @author Jerome Louvel
  */
 public class GwtConverter extends ConverterHelper {
 
-    /** JSON variant. */
+    /** GWT variant. */
     private static final VariantInfo VARIANT_GWT = new VariantInfo(
             MediaType.APPLICATION_JAVA_OBJECT_GWT);
 
