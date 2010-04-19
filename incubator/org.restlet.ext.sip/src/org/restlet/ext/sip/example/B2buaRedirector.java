@@ -6,6 +6,7 @@ import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
+import org.restlet.Server;
 import org.restlet.Uniform;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
@@ -28,14 +29,17 @@ public class B2buaRedirector extends Redirector {
         // UacServerResource.main(arguments);
 
         Component c = new Component();
-        c.getServers().add(Protocol.SIP);
-        Client client = new Client(new Context(), Protocol.SIP);
+        Server server = new Server(Protocol.SIP);
+        c.getServers().add(server);
+        server.getContext().getParameters().add("tracing", "false");
+
+        Client client = new Client(Protocol.SIP);
+        c.getClients().add(client);
         client.getContext().getParameters().add("proxyHost", "localhost");
         client.getContext().getParameters().add("proxyPort", arguments[0]);
         client.getContext().getParameters().add("tracing", "false");
         client.getContext().getParameters().add("pipeliningConnections",
                 "false");
-        c.getClients().add(client);
 
         c.getDefaultHost().attachDefault(
                 new B2buaRedirector(null, "sip:localhost:8182"));
@@ -98,6 +102,7 @@ public class B2buaRedirector extends Redirector {
         // Update the request to cleanly go to the target URI
         request.setOnResponse(new Uniform() {
             public void handle(Request req, Response resp) {
+                SipResponse r = (SipResponse) resp;
                 if (!resp.getStatus().isInformational()) {
                     // Allow for response rewriting and clean the headers
                     response.setEntity(rewrite(response.getEntity()));
@@ -122,6 +127,10 @@ public class B2buaRedirector extends Redirector {
                                         + remainingPart);
                             }
                         }
+                    }
+
+                    if (!r.getSipRecipientsInfo().isEmpty()) {
+                        r.getSipRecipientsInfo().remove(0);
                     }
 
                     resp.commit();
