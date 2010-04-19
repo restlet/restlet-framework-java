@@ -136,6 +136,19 @@ public class ReferenceTestCase extends RestletTestCase {
         reference.setSegments(segments); // must not produce NPE
     }
 
+    public void testEncoding() {
+        // String uri1 = "/workspaces/W1​/content/Sin título.xml";
+        // String uri1rfe =
+        // "%2Fworkspaces%2FW1%E2%80%8B%2Fcontent%2FSin%20t%C3%ADtulo.xml";
+        // String uri1xxe =
+        // "/workspaces/W1​/content/Sin%20t%C3%83%C2%ADtulo.xml";
+        // String uri1msd = "/workspaces/W1/conte​nt/Sin%20t%EDtulo.xm​l";
+
+        // assertEquals(uri1, Reference.decode(uri1rfe));
+        // assertEquals(uri1, Reference.decode(uri1xxe));
+        // assertEquals(uri1, Reference.decode(uri1msd));
+    }
+
     /**
      * Equality tests.
      */

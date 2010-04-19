@@ -38,7 +38,7 @@ import org.restlet.Response;
 import org.restlet.data.Tag;
 
 /**
- * SIP specific response.
+ * Response part of a SIP transaction.
  * 
  * @author Jerome Louvel
  */

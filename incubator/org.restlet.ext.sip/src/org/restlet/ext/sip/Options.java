@@ -40,10 +40,12 @@ import org.restlet.engine.Method;
 import org.restlet.service.MetadataService;
 
 /**
- * Annotation for methods that query servers about their capabilities. Its
- * semantics is equivalent to a SIP OPTIONS method.
+ * Queries the capabilities of servers. Its semantics is equivalent to a SIP
+ * OPTIONS method.
  * 
  * @author Jerome Louvel
+ * @see <a href="http://tools.ietf.org/html/rfc3261#section-11">RFC 3261 - 11
+ *      Querying for Capabilities</a>
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

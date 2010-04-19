@@ -40,10 +40,12 @@ import org.restlet.engine.Method;
 import org.restlet.service.MetadataService;
 
 /**
- * Annotation for methods that set up sessions. Its semantics is equivalent to a
- * SIP ACK method.
+ * Confirms that the client has received a final response to an {@link Invite}
+ * request. Its semantics is equivalent to a SIP ACK method.
  * 
  * @author Jerome Louvel
+ * @see <a href="http://tools.ietf.org/html/rfc3261#section-17.1.1.3">RFC 3261 -
+ *      17.1.1.3 Construction of the ACK Request</a>
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

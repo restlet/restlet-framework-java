@@ -35,12 +35,12 @@ import org.restlet.data.Parameter;
 import org.restlet.util.Series;
 
 /**
- * Used by the "Subscription-State" header.
+ * Used by the SIP "Subscription-State" header.
  * 
  * @author Thierry Boileau
- * 
  */
 public class SubscriptionState {
+
     public static final String REASON_DEACTIVATED = "deactivated";
 
     public static final String REASON_GIVEUP = "giveup";

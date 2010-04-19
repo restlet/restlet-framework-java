@@ -44,7 +44,7 @@ import org.restlet.engine.http.connector.Connection;
 import org.restlet.ext.sip.internal.SipClientConnection;
 
 /**
- * SIP client helper based on NIO blocking sockets.
+ * Standalone SIP client helper.
  * 
  * @author Jerome Louvel
  */

@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.sip;
+package org.restlet.ext.sip.internal;
 
 import static org.restlet.engine.http.header.HeaderUtils.isComma;
 import static org.restlet.engine.http.header.HeaderUtils.isSpace;
@@ -37,6 +37,8 @@ import java.io.IOException;
 
 import org.restlet.data.Parameter;
 import org.restlet.engine.http.header.HeaderReader;
+import org.restlet.ext.sip.Event;
+import org.restlet.ext.sip.EventType;
 
 /**
  * Event header reader.

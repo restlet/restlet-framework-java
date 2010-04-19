@@ -35,10 +35,10 @@ import org.restlet.data.Parameter;
 import org.restlet.util.Series;
 
 /**
- * Used by the "retry-after" header.
+ * Provides availability details on a SIP agent. Used by the SIP "Retry-After"
+ * header.
  * 
  * @author Thierry Boileau
- * 
  */
 public class Availability {
 

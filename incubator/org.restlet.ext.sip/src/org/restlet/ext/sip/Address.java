@@ -36,11 +36,10 @@ import org.restlet.data.Reference;
 import org.restlet.util.Series;
 
 /**
- * Used by the headers "Alert-Info", "Contact", "Error-info", "From",
- * "Record-Route", "Reply-To", "Route", "To".
+ * Address of a SIP agent. Used by the SIP "Alert-Info", "Contact",
+ * "Error-info", "From", "Record-Route", "Reply-To", "Route" and "To" headers.
  * 
  * @author Thierry Boileau
- * 
  */
 public class Address {
 

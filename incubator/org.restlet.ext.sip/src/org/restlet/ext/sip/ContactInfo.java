@@ -31,10 +31,9 @@
 package org.restlet.ext.sip;
 
 /**
- * Used by the header "Contact".
+ * Used by the SIP "Contact" header.
  * 
  * @author Thierry Boileau
- * 
  */
 public class ContactInfo extends Address {
 

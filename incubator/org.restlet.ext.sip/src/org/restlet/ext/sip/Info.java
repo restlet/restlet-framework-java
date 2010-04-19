@@ -40,18 +40,18 @@ import org.restlet.engine.Method;
 import org.restlet.service.MetadataService;
 
 /**
- * Indicates a client is being invited to participate in a call session. Its
- * semantics is equivalent to a SIP INVITE method.
+ * Allow for the carrying of session related control information that is
+ * generated during a session. Its semantics is equivalent to a SIP INFO method.
  * 
  * @author Jerome Louvel
- * @see <a href="http://tools.ietf.org/html/rfc3261#section-9">RFC 3261 - 15.1
- *      Canceling a Request</a>
+ * @see <a href="http://tools.ietf.org/html/rfc2976">RFC 2976 - The SIP INFO
+ *      Method</a>
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-@Method("INVITE")
-public @interface Invite {
+@Method("INFO")
+public @interface Info {
 
     /**
      * Specifies the media type extension of the response entity. If several

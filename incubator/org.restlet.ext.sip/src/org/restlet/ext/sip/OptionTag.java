@@ -34,7 +34,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Used by the "supported", "unsupported", "proxy-require", "require" headers.
+ * Used by the SIP "supported", "unsupported", "proxy-require", "require"
+ * headers.
  * 
  * @author Thierry Boileau
  */

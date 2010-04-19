@@ -40,10 +40,12 @@ import org.restlet.engine.Method;
 import org.restlet.service.MetadataService;
 
 /**
- * Annotation for methods that set up sessions. Its semantics is equivalent to a
- * SIP CANCEL method.
+ * Cancels any pending request. Its semantics is equivalent to a SIP CANCEL
+ * method.
  * 
  * @author Jerome Louvel
+ * @see <a href="http://tools.ietf.org/html/rfc3261#section-9">RFC 3261 - 15.1
+ *      Canceling a Request</a>
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

@@ -40,10 +40,12 @@ import org.restlet.engine.Method;
 import org.restlet.service.MetadataService;
 
 /**
- * Annotation for methods that set up sessions. Its semantics is equivalent to a
- * SIP INVITE method.
+ * Provides a mechanism allowing the sending party to be notified of the outcome
+ * of the referenced request. Its semantics is equivalent to a SIP REFER method.
  * 
  * @author Jerome Louvel
+ * @see <a href="http://tools.ietf.org/html/rfc3515">RFC 3515 - The SIP REFER
+ *      method</a>
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

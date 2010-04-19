@@ -34,6 +34,11 @@ import java.util.List;
 
 import org.restlet.resource.ServerResource;
 
+/**
+ * SIP server resource handling a received SIP transaction.
+ * 
+ * @author Thierry Boileau
+ */
 public class SipServerResource extends ServerResource {
 
     public String getCallId() {

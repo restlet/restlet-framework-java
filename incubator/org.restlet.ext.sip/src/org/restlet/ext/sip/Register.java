@@ -40,10 +40,12 @@ import org.restlet.engine.Method;
 import org.restlet.service.MetadataService;
 
 /**
- * Annotation for methods that for register contact information. Its semantics
- * is equivalent to a SIP REGISTER method.
+ * Registers the address listed in the To header field with a SIP server. Its
+ * semantics is equivalent to a SIP REGISTER method.
  * 
  * @author Jerome Louvel
+ * @see <a href="http://tools.ietf.org/html/rfc3515">RFC 3515 - The SIP REFER
+ *      method</a>
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

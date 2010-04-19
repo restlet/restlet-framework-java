@@ -44,7 +44,6 @@ import org.restlet.engine.http.connector.BaseHelper;
 import org.restlet.engine.http.connector.ClientConnection;
 import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.http.header.TagWriter;
-import org.restlet.ext.sip.SipConstants;
 import org.restlet.ext.sip.SipRecipientInfo;
 import org.restlet.ext.sip.SipRequest;
 import org.restlet.ext.sip.SipResponse;

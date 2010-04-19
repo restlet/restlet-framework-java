@@ -35,6 +35,11 @@ import org.restlet.data.Parameter;
 import org.restlet.data.RecipientInfo;
 import org.restlet.util.Series;
 
+/**
+ * Used by the SIP "Via" header.
+ * 
+ * @author Thierry Boileau
+ */
 public class SipRecipientInfo extends RecipientInfo {
 
     /** The list of recipient info parameters. */
@@ -45,6 +50,7 @@ public class SipRecipientInfo extends RecipientInfo {
 
     /**
      * Returns the list of recipient info parameters.
+     * 
      * @return The list of recipient info parameters.
      */
     public Series<Parameter> getParameters() {
@@ -56,6 +62,7 @@ public class SipRecipientInfo extends RecipientInfo {
 
     /**
      * Returns the transport protocol name.
+     * 
      * @return The transport protocol name.
      */
     public String getTransport() {
@@ -64,7 +71,9 @@ public class SipRecipientInfo extends RecipientInfo {
 
     /**
      * Sets the list of recipient info parameters.
-     * @param parameters The list of recipient info parameters.
+     * 
+     * @param parameters
+     *            The list of recipient info parameters.
      */
     public void setParameters(Series<Parameter> parameters) {
         this.parameters = parameters;
@@ -72,7 +81,9 @@ public class SipRecipientInfo extends RecipientInfo {
 
     /**
      * Sets the transport protocol name.
-     * @param transport The transport protocol name.
+     * 
+     * @param transport
+     *            The transport protocol name.
      */
     public void setTransport(String transport) {
         this.transport = transport;

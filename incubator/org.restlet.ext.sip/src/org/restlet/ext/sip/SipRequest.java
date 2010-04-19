@@ -45,15 +45,17 @@ import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.http.header.HeaderReader;
 import org.restlet.ext.sip.internal.AddressReader;
 import org.restlet.ext.sip.internal.ContactInfoReader;
+import org.restlet.ext.sip.internal.EventReader;
 import org.restlet.ext.sip.internal.EventTypeReader;
 import org.restlet.ext.sip.internal.OptionTagReader;
+import org.restlet.ext.sip.internal.SipConstants;
 import org.restlet.ext.sip.internal.SipRecipientInfoReader;
 import org.restlet.ext.sip.internal.SubscriptionStateReader;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 
 /**
- * SIP specific request.
+ * Request part of a SIP transaction.
  * 
  * @author Jerome Louvel
  */

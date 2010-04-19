@@ -34,7 +34,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Used by the "Priority" header.
+ * Used by the SIP "Priority" header.
  * 
  * @author Thierry Boileau
  */

@@ -40,18 +40,18 @@ import org.restlet.engine.Method;
 import org.restlet.service.MetadataService;
 
 /**
- * Indicates a client is being invited to participate in a call session. Its
- * semantics is equivalent to a SIP INVITE method.
+ * Used to request current state and state updates from a remote node. Its
+ * semantics is equivalent to a SIP SUBSCRIBE method.
  * 
  * @author Jerome Louvel
- * @see <a href="http://tools.ietf.org/html/rfc3261#section-9">RFC 3261 - 15.1
- *      Canceling a Request</a>
+ * @see <a href="http://tools.ietf.org/html/rfc3265#section-3.1">RFC 3265 - 3.1.
+ *      Description of SUBSCRIBE Behavior</a>
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-@Method("INVITE")
-public @interface Invite {
+@Method("SUBSCRIBE")
+public @interface Subscribe {
 
     /**
      * Specifies the media type extension of the response entity. If several

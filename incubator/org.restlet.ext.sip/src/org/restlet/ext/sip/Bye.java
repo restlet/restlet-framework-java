@@ -40,10 +40,13 @@ import org.restlet.engine.Method;
 import org.restlet.service.MetadataService;
 
 /**
- * Annotation for methods that terminate sessions. Its semantics is equivalent
- * to a SIP BYE method.
+ * Terminates a call and can be sent by either the caller or the callee. Can be
+ * sent by either the caller or the callee. Its semantics is equivalent to a SIP
+ * BYE method.
  * 
  * @author Jerome Louvel
+ * @see <a href="http://tools.ietf.org/html/rfc3261#section-15.1">RFC 3261 -
+ *      15.1 Terminating a Session with a BYE Request</a>
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
