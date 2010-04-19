@@ -32,7 +32,10 @@ Changes log
         Reported by Bruno Harbulot.
       - Prevented threads to block when other requests's entities are
         not consummed.
-          
+      - Allowed to set entity headers even when conditions are not 
+        fulfilled with GET and HEAD request.
+        Reported by Leigh Klotz. 
+
 - 2.0 Release Candidate 2 (2010-03-30)
     - API changes
       - Left an unspecified key stores 'null' to prevent troubles 

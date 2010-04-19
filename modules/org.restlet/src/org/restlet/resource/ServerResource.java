@@ -248,21 +248,17 @@ public abstract class ServerResource extends UniformResource {
                 }
             }
 
-            if ((getStatus() != null) && getStatus().isSuccess()) {
+            if ((Method.GET.equals(getMethod()) || Method.HEAD
+                    .equals(getMethod()))
+                    && resultInfo instanceof Representation) {
+                result = (Representation) resultInfo;
+            } else if ((getStatus() != null) && getStatus().isSuccess()) {
                 // Conditions were passed successfully, continue the normal
-                // processing. If the representation info obtained to test
-                // the conditions is in fact a full representation, return
-                // it immediately for optimization purpose
-                if ((Method.GET.equals(getMethod()) || Method.HEAD
-                        .equals(getMethod()))
-                        && resultInfo instanceof Representation) {
-                    result = (Representation) resultInfo;
+                // processing.
+                if (isNegotiated()) {
+                    result = doNegotiatedHandle();
                 } else {
-                    if (isNegotiated()) {
-                        result = doNegotiatedHandle();
-                    } else {
-                        result = doHandle();
-                    }
+                    result = doHandle();
                 }
             }
         } else {
