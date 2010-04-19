@@ -170,79 +170,93 @@ public class OptionTag {
     public static final OptionTag PREF = register("pref");
 
     /**
-     * Support for the SIP Join Header.
+     * Indicates support for the Privacy mechanism.
      * 
-     * @see <a http://tools.ietf.org/html/3911">The SIP "Join" Header</a>
+     * @see <a http://tools.ietf.org/html/rfc3323">A Privacy Mechanism for the
+     *      SIP</a>
      */
     public static final OptionTag PRIVACY = register("privacy");
 
     /**
-     * Support for the SIP Join Header.
+     * The body contains a list of URIs that indicates the recipients of the SIP
+     * INVITE request.
      * 
-     * @see <a http://tools.ietf.org/html/3911">The SIP "Join" Header</a>
+     * @see <a http://tools.ietf.org/html/rfc5366">Conference Establishment
+     *      Using Request-Contained Lists in the SIP</a>
      */
     public static final OptionTag RECIPIENT_LIST_INVITE = register("recipient-list-invite");
 
     /**
-     * Support for the SIP Join Header.
+     * The body contains a list of URIs that indicates the recipients of the SIP
+     * MESSAGE request.
      * 
-     * @see <a http://tools.ietf.org/html/3911">The SIP "Join" Header</a>
+     * @see <a http://tools.ietf.org/html/rfc5365">Multiple-Recipient MESSAGE
+     *      Requests in the SIP</a>
      */
     public static final OptionTag RECIPIENT_LIST_MESSAGE = register("recipient-list-message");
 
     /**
-     * Support for the SIP Join Header.
+     * Used to ensurethat a server can process the recipient-list body used in a
+     * SUBSCRIBE request.
      * 
-     * @see <a http://tools.ietf.org/html/3911">The SIP "Join" Header</a>
+     * @see <a http://tools.ietf.org/html/rfc5367">Subscriptions to
+     *      Request-Contained Resource Lists</a>
      */
     public static final OptionTag RECIPIENT_LIST_SUBSCRIBE = register("recipient-list-subscribe");
 
     /**
-     * Support for the SIP Join Header.
+     * Indicates support for the SIP Replaces header.
      * 
-     * @see <a http://tools.ietf.org/html/3911">The SIP "Join" Header</a>
+     * @see <a http://tools.ietf.org/html/rfc3891">the SIP "Replaces" Header</a>
      */
     public static final OptionTag REPLACES = register("replaces");
 
     /**
-     * Support for the SIP Join Header.
+     * Indicates or requests support for the resource priority mechanism.
      * 
-     * @see <a http://tools.ietf.org/html/3911">The SIP "Join" Header</a>
+     * @see <a http://tools.ietf.org/html/rfc4412">Communications Resource
+     *      Priority for the SIP</a>
      */
     public static final OptionTag RESOURCE_PRIORITY = register("resource-priority");
 
     /**
-     * Support for the SIP Join Header.
+     * When used in a Supported header field it indicates the support of the
+     * ANAT semantics.
      * 
-     * @see <a http://tools.ietf.org/html/3911">The SIP "Join" Header</a>
+     * @see <a http://tools.ietf.org/html/rfc4092">Usage of the Session
+     *      Description Protocol (SDP) Alternative Network Address Types (ANAT)
+     *      Semantics in the SIP</a>
      */
     public static final OptionTag SDP_ANAT = register("sdp-anat");
 
     /**
-     * Support for the SIP Join Header.
+     * Indicates support for the Security Agreement mechanism.
      * 
-     * @see <a http://tools.ietf.org/html/3911">The SIP "Join" Header</a>
+     * @see <a http://tools.ietf.org/html/rfc3329">Security Mechanism Agreement
+     *      for the SIP</a>
      */
     public static final OptionTag SEC_AGREE = register("sec-agree");
 
     /**
-     * Support for the SIP Join Header.
+     * Used to identify the target dialog header field extension.
      * 
-     * @see <a http://tools.ietf.org/html/3911">The SIP "Join" Header</a>
-     */
-    public static final OptionTag TAG_100REL = register("100rel");
-
-    /**
-     * Support for the SIP Join Header.
-     * 
-     * @see <a http://tools.ietf.org/html/3911">The SIP "Join" Header</a>
+     * @see <a http://tools.ietf.org/html/rfc4538">Request Authorization through
+     *      Dialog Identification in the SIP</a>
      */
     public static final OptionTag T_DIALOG = register("tdialog");
 
     /**
-     * Support for the SIP Join Header.
+     * Used for reliability of provisional responses.
      * 
-     * @see <a http://tools.ietf.org/html/3911">The SIP "Join" Header</a>
+     * @see <a http://tools.ietf.org/html/rfc3262">Reliability of Provisional
+     *      Responses in the SIP</a>
+     */
+    public static final OptionTag TAG_100REL = register("100rel");
+
+    /**
+     * Indicates the support of the session timer extension.
+     * 
+     * @see <a http://tools.ietf.org/html/rfc4028">Session Timers in the SIP</a>
      */
     public static final OptionTag TIMER = register("timer");
 
