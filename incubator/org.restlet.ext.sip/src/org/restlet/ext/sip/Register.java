@@ -44,8 +44,8 @@ import org.restlet.service.MetadataService;
  * semantics is equivalent to a SIP REGISTER method.
  * 
  * @author Jerome Louvel
- * @see <a href="http://tools.ietf.org/html/rfc3515">RFC 3515 - The SIP REFER
- *      method</a>
+ * @see <a href="http://tools.ietf.org/html/rfc3261#section-10.2">RFC 3261 -
+ *      10.2 Constructing the REGISTER Request</a>
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

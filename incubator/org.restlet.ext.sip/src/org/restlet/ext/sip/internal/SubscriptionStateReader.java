@@ -34,14 +34,14 @@ import java.io.IOException;
 
 import org.restlet.data.Parameter;
 import org.restlet.engine.http.header.HeaderReader;
-import org.restlet.ext.sip.SubscriptionState;
+import org.restlet.ext.sip.Subscription;
 
 /**
  * Subscription state header reader.
  * 
  * @author Thierry Boileau
  */
-public class SubscriptionStateReader extends HeaderReader<SubscriptionState> {
+public class SubscriptionStateReader extends HeaderReader<Subscription> {
 
     /**
      * Constructor.
@@ -54,15 +54,15 @@ public class SubscriptionStateReader extends HeaderReader<SubscriptionState> {
     }
 
     @Override
-    public SubscriptionState readValue() throws IOException {
-        SubscriptionState result = null;
+    public Subscription readValue() throws IOException {
+        Subscription result = null;
 
         skipSpaces();
 
         if (peek() != -1) {
             String value = readToken();
             if (value != null) {
-                result = new SubscriptionState(value);
+                result = new Subscription(value);
 
                 // Read subscription parameters.
                 if (skipParameterSeparator()) {

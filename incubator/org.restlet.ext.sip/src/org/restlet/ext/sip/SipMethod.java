@@ -41,7 +41,13 @@ public final class SipMethod {
 
     private static final String BASE_SIP = "http://tools.ietf.org/html/rfc3261";
 
-    private static final String SIP_REFER = "http://tools.ietf.org/html/rfc3515";
+    private static final String BASE_SIP_EVENT = "http://tools.ietf.org/html/rfc3903";
+
+    private static final String BASE_SIP_INFO = "http://tools.ietf.org/html/rfc2976";
+
+    private static final String BASE_SIP_NOTIFICATION = "http://tools.ietf.org/html/rfc3265";
+
+    private static final String BASE_SIP_REFER = "http://tools.ietf.org/html/rfc3515";
 
     /**
      * Confirms that the client has received a final response to an INVITE
@@ -73,6 +79,16 @@ public final class SipMethod {
             "Cancels any pending request", BASE_SIP + "#section-9");
 
     /**
+     * Allow for the carrying of session related control information that is
+     * generated during a session.
+     * 
+     * @see <a href="http://tools.ietf.org/html/rfc2976">RFC 2976 - The SIP INFO
+     *      Method</a>
+     */
+    public static final Method INFO = new Method("INFO", "Information message",
+            BASE_SIP_INFO, false, false, false);
+
+    /**
      * Indicates a client is being invited to participate in a call session.
      * 
      * @see <a href="http://tools.ietf.org/html/rfc3261#section-17">SIP RFC - 17
@@ -80,6 +96,17 @@ public final class SipMethod {
      */
     public static final Method INVITE = new Method("INVITE",
             "Call session invitation", BASE_SIP + "#section-17");
+
+    /**
+     * Sent to inform subscribers of changes in state to which the subscriber
+     * has a subscription.
+     * 
+     * @see <a href="http://tools.ietf.org/html/rfc3265#section-3.2">RFC 3265 -
+     *      3.2. Description of NOTIFY Behavior</a>
+     */
+    public static final Method NOTIFY = new Method("NOTIFY",
+            "Notification message", BASE_SIP_NOTIFICATION + "#section-3.2",
+            false, false, false);
 
     /**
      * Queries the capabilities of servers.
@@ -91,13 +118,13 @@ public final class SipMethod {
             "Capabilities query", BASE_SIP + "#section-11");
 
     /**
-     * Registers the address listed in the To header field with a SIP server.
+     * Publishes event state.
      * 
-     * @see <a href="http://tools.ietf.org/html/rfc3261#section-10">SIP RFC - 10
-     *      REGISTER</a>
+     * @see <a href="http://tools.ietf.org/html/rfc3903#section-4">RFC 3903 - 4.
+     *      Constructing PUBLISH Requests</a>
      */
-    public static final Method REGISTER = new Method("REGISTER",
-            "User registration", BASE_SIP + "#section-10");
+    public static final Method PUBLISH = new Method("PUBLISH",
+            "Publication message", BASE_SIP_EVENT + "#section-4");
 
     /**
      * The recipient should refer to a resource provided in the Refer-To header
@@ -107,7 +134,26 @@ public final class SipMethod {
      *      - 2 REFER</a>
      */
     public static final Method REFER = new Method("REFER",
-            "Contact a third-party", SIP_REFER + "#section-2");
+            "Contact a third-party", BASE_SIP_REFER + "#section-2");
+
+    /**
+     * Registers the address listed in the To header field with a SIP server.
+     * 
+     * @see <a href="http://tools.ietf.org/html/rfc3261#section-10">SIP RFC - 10
+     *      REGISTER</a>
+     */
+    public static final Method REGISTER = new Method("REGISTER",
+            "User registration", BASE_SIP + "#section-10");
+
+    /**
+     * Used to request current state and state updates from a remote node.
+     * 
+     * @see <a href="http://tools.ietf.org/html/rfc3265#section-3.1">RFC 3265 -
+     *      3.1. Description of SUBSCRIBE Behavior</a>
+     */
+    public static final Method SUBSCRIBE = new Method("SUBSCRIBE",
+            "Subscription message", BASE_SIP_NOTIFICATION + "#section-3.1",
+            false, false, false);
 
     /**
      * Returns the method associated to a given method name. If an existing

@@ -32,29 +32,29 @@ package org.restlet.ext.sip.internal;
 
 import org.restlet.data.Parameter;
 import org.restlet.engine.http.header.HeaderWriter;
-import org.restlet.ext.sip.SubscriptionState;
+import org.restlet.ext.sip.Subscription;
 
 /**
  * Subscription state header writer.
  * 
  * @author Thierry Boileau
  */
-public class SubscriptionStateWriter extends HeaderWriter<SubscriptionState> {
+public class SubscriptionStateWriter extends HeaderWriter<Subscription> {
 
     /**
      * Writes a subscription state.
      * 
-     * @param subscriptionState
+     * @param subscription
      *            The subscription state.
      * @return The formatted subscription state.
      */
-    public static String write(SubscriptionState subscriptionState) {
-        return new SubscriptionStateWriter().append(subscriptionState)
+    public static String write(Subscription subscription) {
+        return new SubscriptionStateWriter().append(subscription)
                 .toString();
     }
 
     @Override
-    public HeaderWriter<SubscriptionState> append(SubscriptionState value) {
+    public HeaderWriter<Subscription> append(Subscription value) {
         append(value.getValue());
         if (value.getReason() != null) {
             appendParameterSeparator();

@@ -34,14 +34,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Used by the SIP "Priority" header.
+ * Describes level of SIP message importance. Used by the SIP "Priority" header.
  * 
  * @author Thierry Boileau
  */
 public class Priority {
 
     /**
-     * The known prioritiess registered with {@link #register(String)},
+     * The known priorities registered with {@link #register(String)},
      * retrievable using {@link #valueOf(String)}.<br>
      * Keep the underscore for the ordering.
      */
@@ -109,6 +109,12 @@ public class Priority {
     /** The priority value. */
     private String value;
 
+    /**
+     * Constructor.
+     * 
+     * @param value
+     *            The priority value.
+     */
     public Priority(String value) {
         super();
         this.value = value;

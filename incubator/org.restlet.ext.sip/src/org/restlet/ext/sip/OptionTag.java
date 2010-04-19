@@ -34,8 +34,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Used by the SIP "supported", "unsupported", "proxy-require", "require"
- * headers.
+ * Describes SIP agent capabilities. Used by the SIP "supported", "unsupported",
+ * "proxy-require", "require" headers.
  * 
  * @author Thierry Boileau
  */
@@ -152,6 +152,12 @@ public class OptionTag {
     /** The tag value. */
     private String tag;
 
+    /**
+     * Constructor.
+     * 
+     * @param tag
+     *            The tag value.
+     */
     public OptionTag(String tag) {
         super();
         this.tag = tag;

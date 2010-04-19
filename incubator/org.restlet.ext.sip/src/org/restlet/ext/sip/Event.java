@@ -35,7 +35,7 @@ import org.restlet.data.Parameter;
 import org.restlet.util.Series;
 
 /**
- * Used by the SIP "Event" header.
+ * Describes a SIP event. Used by the SIP "Event" header.
  * 
  * @author Thierry Boileau
  */

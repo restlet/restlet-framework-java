@@ -44,8 +44,8 @@ import org.restlet.service.MetadataService;
  * semantics is equivalent to a SIP INVITE method.
  * 
  * @author Jerome Louvel
- * @see <a href="http://tools.ietf.org/html/rfc3261#section-9">RFC 3261 - 15.1
- *      Canceling a Request</a>
+ * @see <a href="http://tools.ietf.org/html/rfc3261#section-13.2.1">RFC 3261 -
+ *      13.2.1 Creating the Initial INVITE</a>
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

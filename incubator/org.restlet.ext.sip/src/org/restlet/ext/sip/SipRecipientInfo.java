@@ -36,7 +36,7 @@ import org.restlet.data.RecipientInfo;
 import org.restlet.util.Series;
 
 /**
- * Used by the SIP "Via" header.
+ * Describes a SIP intermediary such as a proxy. Used by the SIP "Via" header.
  * 
  * @author Thierry Boileau
  */

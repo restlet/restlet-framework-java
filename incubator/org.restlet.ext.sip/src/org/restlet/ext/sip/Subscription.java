@@ -35,11 +35,12 @@ import org.restlet.data.Parameter;
 import org.restlet.util.Series;
 
 /**
- * Used by the SIP "Subscription-State" header.
+ * Describes the state of a subscription. Used by the SIP "Subscription-State"
+ * header.
  * 
  * @author Thierry Boileau
  */
-public class SubscriptionState {
+public class Subscription {
 
     public static final String REASON_DEACTIVATED = "deactivated";
 
@@ -62,25 +63,25 @@ public class SubscriptionState {
     /** The expiration delay in seconds. */
     private long expires;
 
-    /** The subscription state parameters. */
+    /** The subscription parameters. */
     private Series<Parameter> parameters;
 
-    /** The subscription state reason. */
+    /** The subscription reason. */
     private String reason;
 
     /** How long the service is expected to be unavailable. */
     private long retryAfter;
 
-    /** The subscription state value. */
+    /** The subscription value. */
     private String value;
 
     /**
      * Constructor.
      * 
      * @param value
-     *            The subscription state value.
+     *            The subscription value.
      */
-    public SubscriptionState(String value) {
+    public Subscription(String value) {
         super();
         this.value = value;
     }
@@ -95,9 +96,9 @@ public class SubscriptionState {
     }
 
     /**
-     * Returns the subscription state parameters.
+     * Returns the subscription parameters.
      * 
-     * @return The subscription state parameters.
+     * @return The subscription parameters.
      */
     public Series<Parameter> getParameters() {
         if (parameters == null) {
@@ -107,9 +108,9 @@ public class SubscriptionState {
     }
 
     /**
-     * Returns the subscription state reason.
+     * Returns the subscription reason.
      * 
-     * @return The subscription state reason.
+     * @return The subscription reason.
      */
     public String getReason() {
         return reason;
@@ -125,9 +126,9 @@ public class SubscriptionState {
     }
 
     /**
-     * Returns the subscription state value.
+     * Returns the subscription value.
      * 
-     * @return The subscription state value.
+     * @return The subscription value.
      */
     public String getValue() {
         return value;
@@ -144,20 +145,20 @@ public class SubscriptionState {
     }
 
     /**
-     * Sets the subscription state parameters.
+     * Sets the subscription parameters.
      * 
      * @param parameters
-     *            The subscription state parameters.
+     *            The subscription parameters.
      */
     public void setParameters(Series<Parameter> parameters) {
         this.parameters = parameters;
     }
 
     /**
-     * Sets the subscription state reason.
+     * Sets the subscription reason.
      * 
      * @param reason
-     *            The subscription state reason.
+     *            The subscription reason.
      */
     public void setReason(String reason) {
         this.reason = reason;

@@ -31,7 +31,7 @@
 package org.restlet.ext.sip;
 
 /**
- * Used by the SIP "Contact" header.
+ * Information on a SIP contact. Used by the SIP "Contact" header.
  * 
  * @author Thierry Boileau
  */

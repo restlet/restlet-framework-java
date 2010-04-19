@@ -170,7 +170,7 @@ public class SipRequest extends ConnectedRequest {
     private volatile String subject;
 
     /** The state of the subscription. */
-    private volatile SubscriptionState subscriptionState;
+    private volatile Subscription subscription;
 
     private volatile boolean subscriptionStateAdded;
 
@@ -291,7 +291,7 @@ public class SipRequest extends ConnectedRequest {
         this.routes = request.getRoutes();
         this.sipIfMatch = request.getSipIfMatch();
         this.subject = request.getSubject();
-        this.subscriptionState = request.getSubscriptionState();
+        this.subscription = request.getSubscriptionState();
         this.supported = request.getSupported();
         this.to = request.getTo();
     }
@@ -793,7 +793,7 @@ public class SipRequest extends ConnectedRequest {
      * 
      * @return The state of the subscription.
      */
-    public SubscriptionState getSubscriptionState() {
+    public Subscription getSubscriptionState() {
         if (!subscriptionStateAdded) {
             String header = (getHeaders() == null) ? null : getHeaders()
                     .getValues(SipConstants.HEADER_SUBSCRIPTION_STATE);
@@ -808,7 +808,7 @@ public class SipRequest extends ConnectedRequest {
             subscriptionStateAdded = true;
         }
 
-        return subscriptionState;
+        return subscription;
     }
 
     /**
@@ -1084,11 +1084,11 @@ public class SipRequest extends ConnectedRequest {
     /**
      * Sets the state of the subscription.
      * 
-     * @param subscriptionState
+     * @param subscription
      *            The state of the subscription.
      */
-    public void setSubscriptionState(SubscriptionState subscriptionState) {
-        this.subscriptionState = subscriptionState;
+    public void setSubscriptionState(Subscription subscription) {
+        this.subscription = subscription;
         this.subscriptionStateAdded = true;
     }
 

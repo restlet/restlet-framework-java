@@ -34,7 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Used by the SIP "Event" and "Allow-Events" headers.
+ * Described an event type. Used by the SIP "Event" and "Allow-Events" headers.
  * 
  * @author Thierry Boileau
  */
