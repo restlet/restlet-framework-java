@@ -64,11 +64,17 @@ public class SipClientConnection extends ClientConnection {
 
     @Override
     protected void addRequestHeaders(Request request, Series<Parameter> headers) {
-        super.addRequestHeaders(request, headers);
-
         SipRequest sipRequest = null;
         if (request instanceof SipRequest) {
             sipRequest = (SipRequest) request;
+            if (!sipRequest.getSipRecipientsInfo().isEmpty()) {
+                for (SipRecipientInfo recipient : sipRequest
+                        .getSipRecipientsInfo()) {
+                    // Generate one Via header per recipient
+                    headers.add(HeaderConstants.HEADER_VIA,
+                            SipRecipientInfoWriter.write(recipient));
+                }
+            }
             if (sipRequest.getCallId() != null) {
                 headers
                         .add(SipConstants.HEADER_CALL_ID, sipRequest
@@ -88,14 +94,6 @@ public class SipClientConnection extends ClientConnection {
                         .write(sipRequest.getTo()));
             }
 
-            if (!sipRequest.getSipRecipientsInfo().isEmpty()) {
-                for (SipRecipientInfo recipient : sipRequest
-                        .getSipRecipientsInfo()) {
-                    // Generate one Via header per recipient
-                    headers.add(HeaderConstants.HEADER_VIA,
-                            SipRecipientInfoWriter.write(recipient));
-                }
-            }
             if (sipRequest.getAlertInfo() != null) {
                 headers.add(SipConstants.HEADER_ALERT_INFO, AddressWriter
                         .write(sipRequest.getAlertInfo()));
@@ -177,8 +175,9 @@ public class SipClientConnection extends ClientConnection {
                         SubscriptionStateWriter.write(sipRequest
                                 .getSubscriptionState()));
             }
-
         }
+
+        super.addRequestHeaders(request, headers);
     }
 
     @Override

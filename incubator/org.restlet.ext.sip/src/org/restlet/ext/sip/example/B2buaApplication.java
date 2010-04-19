@@ -35,7 +35,7 @@ public class B2buaApplication {
             SipRecipientInfo sri = new SipRecipientInfo();
             sri.setProtocol(Protocol.SIP);
             sri.setName("b2bua");
-            r.getSipRecipientsInfo().add(sri);
+            r.getSipRecipientsInfo().add(0, sri);
 
             super.outboundServerRedirect(targetRef, r, response);
         };
@@ -111,7 +111,7 @@ public class B2buaApplication {
         Client client = new Client(new Context(), Protocol.SIP);
         client.getContext().getParameters().add("proxyHost", "localhost");
         client.getContext().getParameters().add("proxyPort", arguments[0]);
-        client.getContext().getParameters().add("tracing", "false");
+        client.getContext().getParameters().add("tracing", "true");
         client.getContext().getParameters().add("pipeliningConnections",
                 "false");
         c.getClients().add(client);

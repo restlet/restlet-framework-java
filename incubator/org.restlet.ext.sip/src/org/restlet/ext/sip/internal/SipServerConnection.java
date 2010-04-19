@@ -80,10 +80,17 @@ public class SipServerConnection extends ServerConnection {
     @Override
     protected void addResponseHeaders(Response response,
             Series<Parameter> headers) {
-        super.addResponseHeaders(response, headers);
-
         SipRequest sipRequest = (SipRequest) response.getRequest();
         SipResponse sipResponse = (SipResponse) response;
+
+        if (!sipResponse.getSipRecipientsInfo().isEmpty()) {
+            for (SipRecipientInfo recipient : sipResponse
+                    .getSipRecipientsInfo()) {
+                // Generate one Via header per recipient
+                headers.add(HeaderConstants.HEADER_VIA, SipRecipientInfoWriter
+                        .write(recipient));
+            }
+        }
 
         if (sipRequest.getCallId() != null) {
             headers.add(SipConstants.HEADER_CALL_ID, sipRequest.getCallId());
@@ -163,14 +170,8 @@ public class SipServerConnection extends ServerConnection {
             headers.add(SipConstants.HEADER_UNSUPPORTED, OptionTagWriter
                     .write(sipResponse.getUnsupported()));
         }
-        if (!sipResponse.getSipRecipientsInfo().isEmpty()) {
-            for (SipRecipientInfo recipient : sipResponse
-                    .getSipRecipientsInfo()) {
-                // Generate one Via header per recipient
-                headers.add(HeaderConstants.HEADER_VIA, SipRecipientInfoWriter
-                        .write(recipient));
-            }
-        }
+
+        super.addResponseHeaders(response, headers);
     }
 
     @Override
