@@ -141,9 +141,9 @@ public class B2buaRedirector extends Redirector {
                 }
             }
         });
+        request.setResourceRef(targetRef);
         SipRequest r = new SipRequest((SipRequest) request);
-        r.setResourceRef(targetRef);
-        // request.setResourceRef(targetRef);
+        //r.setResourceRef(targetRef);
 
         response.setAutoCommitting(false);
         next.handle(r, response);
