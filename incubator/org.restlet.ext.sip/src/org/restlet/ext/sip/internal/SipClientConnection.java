@@ -35,6 +35,7 @@ import java.net.Socket;
 import java.nio.channels.SocketChannel;
 
 import org.restlet.Client;
+import org.restlet.Message;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Parameter;
@@ -63,10 +64,9 @@ public class SipClientConnection extends ClientConnection {
     }
 
     @Override
-    protected void addRequestHeaders(Request request, Series<Parameter> headers) {
-        SipRequest sipRequest = null;
-        if (request instanceof SipRequest) {
-            sipRequest = (SipRequest) request;
+    protected void addGeneralHeaders(Message message, Series<Parameter> headers) {
+        if (message instanceof SipRequest) {
+            SipRequest sipRequest = (SipRequest) message;
             if (!sipRequest.getSipRecipientsInfo().isEmpty()) {
                 for (SipRecipientInfo recipient : sipRequest
                         .getSipRecipientsInfo()) {
@@ -75,6 +75,16 @@ public class SipClientConnection extends ClientConnection {
                             SipRecipientInfoWriter.write(recipient));
                 }
             }
+        }
+
+        super.addGeneralHeaders(message, headers);
+    }
+
+    @Override
+    protected void addRequestHeaders(Request request, Series<Parameter> headers) {
+        SipRequest sipRequest = null;
+        if (request instanceof SipRequest) {
+            sipRequest = (SipRequest) request;
             if (sipRequest.getCallId() != null) {
                 headers
                         .add(SipConstants.HEADER_CALL_ID, sipRequest
