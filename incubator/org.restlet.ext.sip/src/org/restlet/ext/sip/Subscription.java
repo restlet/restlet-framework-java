@@ -42,22 +42,92 @@ import org.restlet.util.Series;
  */
 public class Subscription {
 
+    /**
+     * The subscription has been terminated, but the subscriber SHOULD retry
+     * immediately with a new subscription.
+     * 
+     * @see <a
+     *      http://tools.ietf.org/html/rfc3265#section-7.2.3">Subscription-State
+     *      header</a>
+     */
     public static final String REASON_DEACTIVATED = "deactivated";
 
+    /**
+     * The subscription has been terminated because the notifier could not
+     * obtain authorization in a timely fashion.
+     * 
+     * @see <a
+     *      http://tools.ietf.org/html/rfc3265#section-7.2.3">Subscription-State
+     *      header</a>
+     */
     public static final String REASON_GIVEUP = "giveup";
 
+    /**
+     * The subscription has been terminated because the resource state which was
+     * being monitored no longer exists.
+     * 
+     * @see <a
+     *      http://tools.ietf.org/html/rfc3265#section-7.2.3">Subscription-State
+     *      header</a>
+     */
     public static final String REASON_NORESOURCE = "noresource";
 
+    /**
+     * The subscription has been terminated, but the client SHOULD retry at some
+     * later time.
+     * 
+     * @see <a
+     *      http://tools.ietf.org/html/rfc3265#section-7.2.3">Subscription-State
+     *      header</a>
+     */
     public static final String REASON_PROBATION = "probation";
 
+    /**
+     * The subscription has been terminated due to change in authorization
+     * policy.
+     * 
+     * @see <a
+     *      http://tools.ietf.org/html/rfc3265#section-7.2.3">Subscription-State
+     *      header</a>
+     */
     public static final String REASON_REJECTED = "rejected";
 
+    /**
+     * The subscription has been terminated because it was not refreshed before
+     * it expired.
+     * 
+     * @see <a
+     *      http://tools.ietf.org/html/rfc3265#section-7.2.3">Subscription-State
+     *      header</a>
+     */
     public static final String REASON_TIMEOUT = "timeout";
 
+    /**
+     * The subscription has been accepted and (in general) has been authorized.
+     * 
+     * @see <a
+     *      http://tools.ietf.org/html/rfc3265#section-7.2.3">Subscription-State
+     *      header</a>
+     */
     public static final String STATE_ACTIVE = "active";
 
+    /**
+     * The subscription has been received by the notifier, but there is
+     * insufficient policy information to grant or deny the subscription yet.
+     * 
+     * @see <a
+     *      http://tools.ietf.org/html/rfc3265#section-7.2.3">Subscription-State
+     *      header</a>
+     */
     public static final String STATE_PENDING = "pending";
 
+    /**
+     * The subscription has been terminated.
+     * 
+     * @see <a
+     *      http://tools.ietf.org/html/rfc3265#section-7.2.3">Subscription-State
+     *      header</a>
+     */
     public static final String STATE_TERMINATED = "terminated";
 
     /** The expiration delay in seconds. */
@@ -84,6 +154,52 @@ public class Subscription {
     public Subscription(String value) {
         super();
         this.value = value;
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param value
+     *            The subscription value.
+     * @param reason
+     *            The subscription reason.
+     */
+    public Subscription(String value, String reason) {
+        super();
+        this.value = value;
+        this.reason = reason;
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param value
+     *            The subscription value.
+     * @param reason
+     *            The subscription reason.
+     * @param expires
+     *            The expiration delay in seconds.
+     */
+    public Subscription(String value, String reason, int expires) {
+        super();
+        this.value = value;
+        this.reason = reason;
+        this.expires = expires;
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param value
+     *            The subscription value.
+     * @param reason
+     *            The subscription reason.
+     * @param expires
+     *            The expiration delay in seconds.
+     */
+    public Subscription(String value, String reason, int expires, int retryAfter) {
+        this(value, reason, expires);
+        this.retryAfter = retryAfter;
     }
 
     /**

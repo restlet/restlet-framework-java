@@ -32,6 +32,7 @@ package org.restlet.ext.sip;
 
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
+import org.restlet.data.Protocol;
 import org.restlet.data.RecipientInfo;
 import org.restlet.util.Series;
 
@@ -47,6 +48,45 @@ public class SipRecipientInfo extends RecipientInfo {
 
     /** The transport protocol name. */
     private String transport;
+
+    /**
+     * Constructor.
+     */
+    public SipRecipientInfo() {
+        super();
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param protocol
+     *            The protocol used to communicate with the recipient.
+     * @param name
+     *            The host name and port number or a pseudonym.
+     * @param agent
+     *            The software agent.
+     */
+    public SipRecipientInfo(Protocol protocol, String name, String agent) {
+        super(protocol, name, agent);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param protocol
+     *            The protocol used to communicate with the recipient.
+     * @param param
+     *            The transport protocol name.
+     * @param name
+     *            The host name and port number or a pseudonym.
+     * @param agent
+     *            The software agent.
+     */
+    public SipRecipientInfo(Protocol protocol, String transport, String name,
+            String agent) {
+        super(protocol, name, agent);
+        this.transport = transport;
+    }
 
     /**
      * Returns the list of recipient info parameters.

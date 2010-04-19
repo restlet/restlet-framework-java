@@ -64,16 +64,19 @@ public class SipRequest extends ConnectedRequest {
     /** Alternative ring tone for the UAS. */
     private volatile Address alertInfo;
 
+    /** Indicates if the alert info data was parsed and added. */
     private volatile boolean alertInfoAdded;
 
     /** The list of supported event packages. */
     private volatile List<EventType> allowedEventTypes;
 
+    /** Indicates if the allowed event types data was parsed and added. */
     private volatile boolean allowedEventTypesAdded;
 
     /** The description of the current caller. */
     private volatile List<Address> callerInfo;
 
+    /** Indicates if the caller data was parsed and added. */
     private volatile boolean callerInfoAdded;
 
     /**
@@ -88,11 +91,13 @@ public class SipRequest extends ConnectedRequest {
     /** The data about the contact. */
     private volatile List<ContactInfo> contact;
 
+    /** Indicates if the contact data was parsed and added. */
     private volatile boolean contactAdded;
 
     /** The description of an event notification. */
     private volatile Event event;
 
+    /** Indicates if the event data was parsed and added. */
     private volatile boolean eventAdded;
 
     /** The description of the request's initiator. */
@@ -101,6 +106,7 @@ public class SipRequest extends ConnectedRequest {
     /** The list of references to call-ids. */
     private volatile List<String> inReplyTo;
 
+    /** Indicates if the "in reply to" data was parsed and added. */
     private volatile boolean inReplyToAdded;
 
     /** The version of the MIME protocol used to construct the message. */
@@ -115,16 +121,19 @@ public class SipRequest extends ConnectedRequest {
     /** The urgency of the request as perceived by the client. */
     private volatile Priority priority;
 
+    /** Indicates if the priority data was parsed and added. */
     private volatile boolean priorityAdded;
 
     /** The proxy-sensitive features that the proxy must support. */
     private volatile List<OptionTag> proxyRequires;
 
+    /** Indicates if the proxy data was parsed and added. */
     private volatile boolean proxyRequiresAdded;
 
     /** The intermediary recipients information. */
     private volatile List<SipRecipientInfo> recipientsInfo;
 
+    /** Indicates if the recipients data was parsed and added. */
     private volatile boolean recipientsInfoAdded;
 
     /**
@@ -133,6 +142,7 @@ public class SipRequest extends ConnectedRequest {
      */
     private volatile List<Address> recordedRoutes;
 
+    /** Indicates if the recorded routes data was parsed and added. */
     private volatile boolean recordedRoutesAdded;
 
     /**
@@ -141,6 +151,7 @@ public class SipRequest extends ConnectedRequest {
      */
     private volatile Address referTo;
 
+    /** Indicates if the refer-to data was parsed and added. */
     private volatile boolean referToAdded;
 
     /**
@@ -149,21 +160,25 @@ public class SipRequest extends ConnectedRequest {
      */
     private volatile Address replyTo;
 
+    /** Indicates if the reply-to data was parsed and added. */
     private volatile boolean replyToAdded;
 
     /** The sensitive features that the server must support. */
     private volatile List<OptionTag> requires;
 
+    /** Indicates if the requires data was parsed and added. */
     private volatile boolean requiresAdded;
 
     /** The set of proxies used to force routing for a request. */
     private volatile List<Address> routes;
 
+    /** Indicates if the routes data was parsed and added. */
     private volatile boolean routesAdded;
 
     /** Identifies the specific event state that the request is refreshing. */
     private volatile Tag sipIfMatch;
 
+    /** Indicates if the if-match data was parsed and added. */
     private volatile boolean sipIfMatchAdded;
 
     /** The subject of the call. */
@@ -172,11 +187,13 @@ public class SipRequest extends ConnectedRequest {
     /** The state of the subscription. */
     private volatile Subscription subscription;
 
-    private volatile boolean subscriptionStateAdded;
+    /** Indicates if the subscription data was parsed and added. */
+    private volatile boolean subscriptionAdded;
 
     /** The extensions supported by the UAC. */
     private volatile List<OptionTag> supported;
 
+    /** Indicates if the supported data was parsed and added. */
     private volatile boolean supportedAdded;
 
     /** The logical recipient of the request. */
@@ -794,7 +811,7 @@ public class SipRequest extends ConnectedRequest {
      * @return The state of the subscription.
      */
     public Subscription getSubscriptionState() {
-        if (!subscriptionStateAdded) {
+        if (!subscriptionAdded) {
             String header = (getHeaders() == null) ? null : getHeaders()
                     .getValues(SipConstants.HEADER_SUBSCRIPTION_STATE);
             if (header != null) {
@@ -805,7 +822,7 @@ public class SipRequest extends ConnectedRequest {
                     Context.getCurrentLogger().info(e.getMessage());
                 }
             }
-            subscriptionStateAdded = true;
+            subscriptionAdded = true;
         }
 
         return subscription;
@@ -1089,7 +1106,7 @@ public class SipRequest extends ConnectedRequest {
      */
     public void setSubscriptionState(Subscription subscription) {
         this.subscription = subscription;
-        this.subscriptionStateAdded = true;
+        this.subscriptionAdded = true;
     }
 
     /**
