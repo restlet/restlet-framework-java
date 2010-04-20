@@ -173,12 +173,22 @@ public final class SipMethod {
                 result = BYE;
             } else if (name.equalsIgnoreCase(CANCEL.getName())) {
                 result = CANCEL;
+            } else if (name.equalsIgnoreCase(INFO.getName())) {
+                result = INFO;
             } else if (name.equalsIgnoreCase(INVITE.getName())) {
                 result = INVITE;
+            } else if (name.equalsIgnoreCase(NOTIFY.getName())) {
+                result = NOTIFY;
             } else if (name.equalsIgnoreCase(OPTIONS.getName())) {
                 result = OPTIONS;
+            } else if (name.equalsIgnoreCase(PUBLISH.getName())) {
+                result = PUBLISH;
+            } else if (name.equalsIgnoreCase(REFER.getName())) {
+                result = REFER;
             } else if (name.equalsIgnoreCase(REGISTER.getName())) {
                 result = REGISTER;
+            } else if (name.equalsIgnoreCase(SUBSCRIBE.getName())) {
+                result = SUBSCRIBE;
             } else {
                 result = new Method(name);
             }

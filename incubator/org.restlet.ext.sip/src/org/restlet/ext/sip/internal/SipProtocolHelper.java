@@ -47,9 +47,14 @@ public class SipProtocolHelper extends ProtocolHelper {
         Method.register(SipMethod.ACK);
         Method.register(SipMethod.BYE);
         Method.register(SipMethod.CANCEL);
+        Method.register(SipMethod.INFO);
         Method.register(SipMethod.INVITE);
+        Method.register(SipMethod.NOTIFY);
         Method.register(SipMethod.OPTIONS);
+        Method.register(SipMethod.PUBLISH);
+        Method.register(SipMethod.REFER);
         Method.register(SipMethod.REGISTER);
+        Method.register(SipMethod.SUBSCRIBE);
     }
 
 }
