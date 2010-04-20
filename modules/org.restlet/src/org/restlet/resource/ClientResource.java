@@ -199,22 +199,7 @@ public class ClientResource extends UniformResource {
      *            The target reference.
      */
     public ClientResource(Context context, Method method, Reference reference) {
-        Request request = new Request(method, reference);
-        Response response = new Response(request);
-
-        if (context == null) {
-            context = Context.getCurrent();
-        }
-
-        if (context != null) {
-            this.next = context.getClientDispatcher();
-        }
-
-        this.followingRedirects = true;
-        this.retryOnError = true;
-        this.retryDelay = 2000L;
-        this.retryAttempts = 2;
-        init(context, request, response);
+        this(context, new Request(method, reference), new Response(null));
     }
 
     /**
@@ -254,7 +239,22 @@ public class ClientResource extends UniformResource {
      *            The handled response.
      */
     public ClientResource(Context context, Request request, Response response) {
+        if (context == null) {
+            context = Context.getCurrent();
+        }
+
+        if (context != null) {
+            this.next = context.getClientDispatcher();
+        }
+
+        // Don't remove this line.
+        // See other constructor ClientResource(Context, Method, Reference)
+        response.setRequest(request);
+
         this.followingRedirects = true;
+        this.retryOnError = true;
+        this.retryDelay = 2000L;
+        this.retryAttempts = 2;
         init(context, request, response);
     }
 
