@@ -34,7 +34,10 @@ Changes log
         not consummed.
       - Allowed to set entity headers even when conditions are not 
         fulfilled with GET and HEAD request.
-        Reported by Leigh Klotz. 
+        Reported by Leigh Klotz.
+    - Enhancements
+      - Added support of request#onSent and #onResponse callbacks for 
+        the net and httpClient extensions.
 
 - 2.0 Release Candidate 2 (2010-03-30)
     - API changes

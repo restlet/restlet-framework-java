@@ -54,6 +54,8 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.message.BasicHeader;
 import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.Uniform;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
@@ -121,6 +123,11 @@ public class HttpMethodCall extends ClientCall {
                 this.httpRequest = new HttpEntityEnclosingRequestBase() {
 
                     @Override
+                    public String getMethod() {
+                        return method;
+                    }
+
+                    @Override
                     public URI getURI() {
                         try {
                             return new URI(requestUri);
@@ -129,11 +136,6 @@ public class HttpMethodCall extends ClientCall {
                                     "Invalid URI syntax", e);
                             return null;
                         }
-                    }
-
-                    @Override
-                    public String getMethod() {
-                        return method;
                     }
                 };
             }
@@ -295,6 +297,11 @@ public class HttpMethodCall extends ClientCall {
                     && (getHttpRequest() instanceof HttpEntityEnclosingRequestBase)) {
                 final HttpEntityEnclosingRequestBase eem = (HttpEntityEnclosingRequestBase) getHttpRequest();
                 eem.setEntity(new AbstractHttpEntity() {
+                    public InputStream getContent() throws IOException,
+                            IllegalStateException {
+                        return entity.getStream();
+                    }
+
                     public long getContentLength() {
                         return entity.getSize();
                     }
@@ -306,9 +313,8 @@ public class HttpMethodCall extends ClientCall {
                                         .getMediaType().toString() : null);
                     }
 
-                    public InputStream getContent() throws IOException,
-                            IllegalStateException {
-                        return entity.getStream();
+                    public boolean isRepeatable() {
+                        return !entity.isTransient();
                     }
 
                     public boolean isStreaming() {
@@ -317,10 +323,6 @@ public class HttpMethodCall extends ClientCall {
 
                     public void writeTo(OutputStream os) throws IOException {
                         entity.write(os);
-                    }
-
-                    public boolean isRepeatable() {
-                        return !entity.isTransient();
                     }
                 });
             }
@@ -346,5 +348,20 @@ public class HttpMethodCall extends ClientCall {
         }
 
         return result;
+    }
+
+    @Override
+    public void sendRequest(Request request, Response response, Uniform callback)
+            throws Exception {
+        // Send the request
+        sendRequest(request);
+        if(request.getOnSent() != null){
+            request.getOnSent().handle(request, response);
+        }
+
+        if (callback != null) {
+            // Transmit to the callback, if any.
+            callback.handle(request, response);
+        }
     }
 }

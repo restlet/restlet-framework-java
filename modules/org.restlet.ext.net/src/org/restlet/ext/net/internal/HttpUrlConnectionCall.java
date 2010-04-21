@@ -47,6 +47,8 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 
 import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.Uniform;
 import org.restlet.data.Parameter;
 import org.restlet.data.Status;
 import org.restlet.engine.Edition;
@@ -391,4 +393,20 @@ public class HttpUrlConnectionCall extends ClientCall {
 
         return result;
     }
+
+    @Override
+    public void sendRequest(Request request, Response response, Uniform callback)
+            throws Exception {
+        // Send the request
+        sendRequest(request);
+        if(request.getOnSent() != null){
+            request.getOnSent().handle(request, response);
+        }
+
+        if (callback != null) {
+            // Transmit to the callback, if any.
+            callback.handle(request, response);
+        }
+    }
+
 }
