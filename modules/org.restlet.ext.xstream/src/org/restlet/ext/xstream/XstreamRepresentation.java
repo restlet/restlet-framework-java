@@ -129,6 +129,7 @@ public class XstreamRepresentation<T> extends OutputRepresentation {
             if (MediaType.APPLICATION_JSON.isCompatible(mediaType)) {
                 result = new XStream(getJsonDriverClass().newInstance());
                 result.setMode(XStream.NO_REFERENCES);
+                result.autodetectAnnotations(true);
             } else {
                 result = new XStream(getXmlDriverClass().newInstance());
             }

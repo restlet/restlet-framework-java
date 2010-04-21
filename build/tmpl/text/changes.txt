@@ -37,6 +37,8 @@ Changes log
       - Allowed to set entity headers even when conditions are not 
         fulfilled with GET and HEAD request.
         Reported by Leigh Klotz.
+      - XStream annotations are now automatically detected.
+        Suggested by Dan Simpson.
     - Enhancements
       - Added support of request#onSent and #onResponse callbacks for 
         the net and httpClient extensions.
