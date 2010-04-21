@@ -39,6 +39,7 @@ Changes log
         Reported by Leigh Klotz.
       - XStream annotations are now automatically detected.
         Suggested by Dan Simpson.
+      - Fixed support of HTTPS by the internal client connector.
     - Enhancements
       - Added support of request#onSent and #onResponse callbacks for 
         the net and httpClient extensions.

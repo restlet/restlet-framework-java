@@ -336,7 +336,7 @@ public class ClientConnection extends Connection<Client> {
                 .getResourceRef())));
         headStream.write(' ');
         headStream.write(StringUtils.getAsciiBytes(request.getProtocol()
-                .getName()));
+                .getTechnicalName()));
         headStream.write('/');
         headStream.write(StringUtils.getAsciiBytes(request.getProtocol()
                 .getVersion()));
