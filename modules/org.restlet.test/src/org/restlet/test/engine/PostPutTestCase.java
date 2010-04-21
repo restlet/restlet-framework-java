@@ -53,7 +53,6 @@ public class PostPutTestCase extends BaseConnectorsTestCase {
         Client client = new Client(Protocol.HTTP);
         testCall(client, Method.POST, uri);
         testCall(client, Method.PUT, uri);
-        client.stop();
     }
 
     @Override
@@ -69,7 +68,6 @@ public class PostPutTestCase extends BaseConnectorsTestCase {
                             Form form = new Form(entity);
                             response.setEntity(form.getWebRepresentation());
                         }
-
                     }
                 };
 

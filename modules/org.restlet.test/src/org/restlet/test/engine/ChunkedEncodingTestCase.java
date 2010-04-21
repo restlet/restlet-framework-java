@@ -198,9 +198,7 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
             assertXML(new DomRepresentation(r.getEntity()));
         } finally {
             r.release();
-            c.stop();
         }
-
     }
 
     private void sendPut(String uri) throws Exception {
@@ -217,7 +215,6 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
             assertXML(new DomRepresentation(r.getEntity()));
         } finally {
             r.release();
-            c.stop();
         }
 
     }
