@@ -10,6 +10,8 @@ Changes log
         to clarify contract. Suggested by Brunon Harbulot.
       - Added proxy configuration to the internal client connector 
         (necessary for the sip connector).
+      - Added "ftl" extension to MetadataService for FreeMarker 
+        templates. 
     - Bugs fixed
       - Fixed support of parameters with the MediaType class. The 
         name contains the the main and sub types, plus the parameters.

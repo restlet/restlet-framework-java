@@ -112,6 +112,7 @@ public class MetadataService extends Service {
      * <li>exe: Executable File (Microsoft Corporation)</li>
      * <li>fmt: FreeMarker encoding</li>
      * <li>form: Web forms (URL encoded)</li>
+     * <li>ftl: FreeMarker encoding</li>
      * <li>gif: GIF image</li>
      * <li>hqx: BinHex 4 Compressed Archive (Macintosh)</li>
      * <li>htm, html: HTML document</li>
@@ -236,6 +237,7 @@ public class MetadataService extends Service {
         ext(dm, "exe", MediaType.APPLICATION_OCTET_STREAM);
         ext(dm, "fmt", Encoding.FREEMARKER);
         ext(dm, "form", MediaType.APPLICATION_WWW_FORM);
+        ext(dm, "ftl", Encoding.FREEMARKER, true);
         ext(dm, "gif", MediaType.IMAGE_GIF);
         ext(dm, "hqx", MediaType.APPLICATION_MAC_BINHEX40);
         ext(dm, "htm", MediaType.TEXT_HTML);
