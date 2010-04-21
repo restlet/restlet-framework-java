@@ -344,7 +344,7 @@ public class HttpUrlConnectionCall extends ClientCall {
                         header.getValue());
             }
 
-            // Ensure that the connections is active
+            // Ensure that the connection is active
             getConnection().connect();
 
             // Send the optional entity
