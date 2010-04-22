@@ -214,6 +214,7 @@ public class MetadataService extends Service {
         ext(dm, "es", Language.SPANISH);
         ext(dm, "fr", Language.FRENCH);
 
+        // [ifndef gwt]
         ext(dm, "ai", MediaType.APPLICATION_POSTSCRIPT);
         ext(dm, "ascii", CharacterSet.US_ASCII);
         ext(dm, "atom", MediaType.APPLICATION_ATOM);
@@ -240,8 +241,6 @@ public class MetadataService extends Service {
         ext(dm, "ftl", Encoding.FREEMARKER, true);
         ext(dm, "gif", MediaType.IMAGE_GIF);
         ext(dm, "hqx", MediaType.APPLICATION_MAC_BINHEX40);
-        ext(dm, "htm", MediaType.TEXT_HTML);
-        ext(dm, "html", MediaType.TEXT_HTML);
         ext(dm, "ico", MediaType.IMAGE_ICON);
         ext(dm, "jad", MediaType.TEXT_J2ME_APP_DESCRIPTOR);
         ext(dm, "jar", MediaType.APPLICATION_JAVA_ARCHIVE);
@@ -252,7 +251,6 @@ public class MetadataService extends Service {
         ext(dm, "jpg", MediaType.IMAGE_JPEG);
         ext(dm, "js", MediaType.APPLICATION_JAVASCRIPT);
         ext(dm, "jsf", MediaType.TEXT_PLAIN);
-        ext(dm, "json", MediaType.APPLICATION_JSON);
         ext(dm, "kar", MediaType.AUDIO_MIDI);
         ext(dm, "latex", MediaType.APPLICATION_LATEX);
         ext(dm, "latin1", CharacterSet.ISO_8859_1);
@@ -319,7 +317,6 @@ public class MetadataService extends Service {
         ext(dm, "tif", MediaType.IMAGE_TIFF);
         ext(dm, "tiff", MediaType.IMAGE_TIFF);
         ext(dm, "tsv", MediaType.TEXT_TSV);
-        ext(dm, "txt", MediaType.TEXT_PLAIN, true);
         ext(dm, "ulw", MediaType.AUDIO_BASIC);
         ext(dm, "utf16", CharacterSet.UTF_16);
         ext(dm, "utf8", CharacterSet.UTF_8);
@@ -331,7 +328,6 @@ public class MetadataService extends Service {
         ext(dm, "win", CharacterSet.WINDOWS_1252);
         ext(dm, "wrl", MediaType.MODEL_VRML);
         ext(dm, "xht", MediaType.APPLICATION_XHTML);
-        ext(dm, "xhtml", MediaType.APPLICATION_XHTML);
         ext(dm, "xls", MediaType.APPLICATION_EXCEL);
         ext(dm, "xlsx", MediaType.APPLICATION_MSOFFICE_XLSX);
         ext(dm, "xlsm", MediaType.APPLICATION_MSOFFICE_XLSM);
@@ -340,14 +336,20 @@ public class MetadataService extends Service {
         ext(dm, "xlsb", MediaType.APPLICATION_MSOFFICE_XLSB);
         ext(dm, "xlam", MediaType.APPLICATION_MSOFFICE_XLAM);
         ext(dm, "xmi", MediaType.APPLICATION_XMI_XML);
-        ext(dm, "xml", MediaType.TEXT_XML);
-        ext(dm, "xml", MediaType.APPLICATION_XML);
         ext(dm, "xsd", MediaType.APPLICATION_W3C_SCHEMA);
         ext(dm, "xsl", MediaType.APPLICATION_W3C_XSLT);
         ext(dm, "xslt", MediaType.APPLICATION_W3C_XSLT);
         ext(dm, "xul", MediaType.APPLICATION_XUL);
         ext(dm, "z", MediaType.APPLICATION_COMPRESS);
         ext(dm, "zip", MediaType.APPLICATION_ZIP);
+        // [enddef]
+        ext(dm, "htm", MediaType.TEXT_HTML);
+        ext(dm, "html", MediaType.TEXT_HTML);
+        ext(dm, "json", MediaType.APPLICATION_JSON);
+        ext(dm, "txt", MediaType.TEXT_PLAIN, true);
+        ext(dm, "xhtml", MediaType.APPLICATION_XHTML);
+        ext(dm, "xml", MediaType.TEXT_XML);
+        ext(dm, "xml", MediaType.APPLICATION_XML);
 
         // Add all those mappings
         this.mappings.addAll(dm);
