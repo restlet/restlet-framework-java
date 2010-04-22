@@ -217,7 +217,7 @@ public abstract class ServerResource extends UniformResource {
 
             if (existing) {
                 if (isNegotiated()) {
-                    resultInfo = doGetInfo(getPreferredVariant(getVariants()));
+                    resultInfo = doGetInfo(getPreferredVariant(getVariants(Method.GET)));
                 } else {
                     resultInfo = doGetInfo();
                 }
@@ -692,7 +692,7 @@ public abstract class ServerResource extends UniformResource {
     }
 
     /**
-     * Return a modifiable list of exposed variants for the current request
+     * Returns a modifiable list of exposed variants for the current request
      * method. You can declare variants manually by updating the result list ,
      * by overriding this method. By default, the variants will be provided
      * based on annotated methods.
@@ -700,6 +700,20 @@ public abstract class ServerResource extends UniformResource {
      * @return The modifiable list of variants.
      */
     public List<Variant> getVariants() {
+        return getVariants(getMethod());
+    }
+
+    /**
+     * Returns a modifiable list of exposed variants for the given method. You
+     * can declare variants manually by updating the result list , by overriding
+     * this method. By default, the variants will be provided based on annotated
+     * methods.
+     * 
+     * @param method
+     *            The method.
+     * @return The modifiable list of variants.
+     */
+    private List<Variant> getVariants(Method method) {
         List<Variant> result = this.variants;
 
         if (result == null) {
@@ -710,7 +724,7 @@ public abstract class ServerResource extends UniformResource {
                 List<Variant> annoVariants = null;
 
                 for (AnnotationInfo annotationInfo : getAnnotations()) {
-                    if (getMethod().equals(annotationInfo.getRestletMethod())) {
+                    if (method.equals(annotationInfo.getRestletMethod())) {
                         annoVariants = annotationInfo.getResponseVariants(
                                 getRequestEntity(), getMetadataService(),
                                 getConverterService());
