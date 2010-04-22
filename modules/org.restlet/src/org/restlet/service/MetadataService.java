@@ -76,7 +76,10 @@ public class MetadataService extends Service {
         this.defaultCharacterSet = CharacterSet.DEFAULT;
         this.defaultEncoding = Encoding.IDENTITY;
         this.defaultLanguage = Language.DEFAULT;
+        // [ifndef gwt] instruction
         this.defaultMediaType = MediaType.APPLICATION_OCTET_STREAM;
+        // [ifdef gwt] instruction uncomment
+        // this.defaultMediaType = MediaType.APPLICATION_JSON;
         this.mappings = new CopyOnWriteArrayList<MetadataExtension>();
         addCommonExtensions();
     }

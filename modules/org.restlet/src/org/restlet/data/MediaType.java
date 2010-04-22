@@ -74,6 +74,7 @@ public final class MediaType extends Metadata {
     public static final MediaType APPLICATION_ATOM = register(
             "application/atom+xml", "Atom document");
 
+    // [ifndef gwt] member
     /**
      * @deprecated Use {@link #APPLICATION_ATOMPUB_SERVICE} instead.
      */
@@ -81,6 +82,7 @@ public final class MediaType extends Metadata {
     public static final MediaType APPLICATION_ATOM_SERVICE_XML = register(
             "application/atomsvc+xml", "Atom service document");
 
+    // [ifndef gwt] member
     /**
      * @deprecated Use {@link #APPLICATION_ATOMPUB_SERVICE} instead.
      */
@@ -88,39 +90,51 @@ public final class MediaType extends Metadata {
     public static final MediaType APPLICATION_ATOM_XML = register(
             "application/atom+xml", "Atom document");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_ATOMPUB_CATEGORY = register(
             "application/atomcat+xml", "Atom category document");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_ATOMPUB_SERVICE = register(
             "application/atomsvc+xml", "Atom service document");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_CAB = register(
             "application/vnd.ms-cab-compressed", "Microsoft Cabinet archive");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_COMPRESS = register(
             "application/x-compress", "Compressed file");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_EXCEL = register(
             "application/vnd.ms-excel", "Microsoft Excel document");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_FLASH = register(
             "application/x-shockwave-flash", "Shockwave Flash object");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_GNU_TAR = register(
             "application/x-gtar", "GNU Tar archive");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_GNU_ZIP = register(
             "application/x-gzip", "GNU Zip archive");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_HTTP_COOKIES = register(
             "application/x-http-cookies", "HTTP cookies");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_JAVA = register(
             "application/java", "Java class");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_JAVA_ARCHIVE = register(
             "application/java-archive", "Java archive");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_JAVA_OBJECT = register(
             "application/x-java-serialized-object", "Java serialized object");
 
@@ -128,6 +142,7 @@ public final class MediaType extends Metadata {
             "application/x-java-serialized-object+gwt",
             "Java serialized object (using GWT-RPC encoder)");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_JAVA_OBJECT_XML = register(
             "application/x-java-serialized-object+xml",
             "Java serialized object (using JavaBeans XML encoder)");
@@ -135,29 +150,36 @@ public final class MediaType extends Metadata {
     public static final MediaType APPLICATION_JAVASCRIPT = register(
             "application/x-javascript", "Javascript document");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_JNLP = register(
             "application/x-java-jnlp-file", "JNLP");
 
     public static final MediaType APPLICATION_JSON = register(
             "application/json", "JavaScript Object Notation document");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_KML = register(
             "application/vnd.google-earth.kml+xml",
             "Google Earth/Maps KML document");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_KMZ = register(
             "application/vnd.google-earth.kmz",
             "Google Earth/Maps KMZ document");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_LATEX = register(
             "application/x-latex", "LaTeX");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_MAC_BINHEX40 = register(
             "application/mac-binhex40", "Mac binhex40");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_MATHML = register(
             "application/mathml+xml", "MathML XML document");
 
+    // [ifndef gwt] member
     /**
      * @deprecated Use {@link #APPLICATION_MATHML} instead.
      */
@@ -165,187 +187,236 @@ public final class MediaType extends Metadata {
     public static final MediaType APPLICATION_MATHML_XML = register(
             "application/mathml+xml", "MathML XML document");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_MSOFFICE_DOCM = register(
             "application/vnd.ms-word.document.macroEnabled.12",
             "Office Word 2007 macro-enabled document");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_MSOFFICE_DOCX = register(
             "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             "Microsoft Office Word 2007 document");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_MSOFFICE_DOTM = register(
             "application/vnd.ms-word.template.macroEnabled.12",
             "Office Word 2007 macro-enabled document template");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_MSOFFICE_DOTX = register(
             "application/vnd.openxmlformats-officedocument.wordprocessingml.template",
             "Office Word 2007 template");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_MSOFFICE_ONETOC = register(
             "application/onenote", "Microsoft Office OneNote 2007 TOC");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_MSOFFICE_ONETOC2 = register(
             "application/onenote", "Office OneNote 2007 TOC");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_MSOFFICE_POTM = register(
             "application/vnd.ms-powerpoint.template.macroEnabled.12",
             "Office PowerPoint 2007 macro-enabled presentation template");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_MSOFFICE_POTX = register(
             "application/vnd.openxmlformats-officedocument.presentationml.template",
             "Office PowerPoint 2007 template");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_MSOFFICE_PPAM = register(
             "application/vnd.ms-powerpoint.addin.macroEnabled.12",
             "Office PowerPoint 2007 add-in");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_MSOFFICE_PPSM = register(
             "application/vnd.ms-powerpoint.slideshow.macroEnabled.12",
             "Office PowerPoint 2007 macro-enabled slide show");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_MSOFFICE_PPSX = register(
             "application/vnd.openxmlformats-officedocument.presentationml.slideshow",
             "Office PowerPoint 2007 slide show");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_MSOFFICE_PPTM = register(
             "application/vnd.ms-powerpoint.presentation.macroEnabled.12",
             "Office PowerPoint 2007 macro-enabled presentation");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_MSOFFICE_PPTX = register(
             "application/vnd.openxmlformats-officedocument.presentationml.presentation",
             "Microsoft Office PowerPoint 2007 presentation");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_MSOFFICE_SLDM = register(
             "application/vnd.ms-powerpoint.slide.macroEnabled.12",
             "Office PowerPoint 2007 macro-enabled slide");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_MSOFFICE_SLDX = register(
             "application/vnd.openxmlformats-officedocument.presentationml.slide",
             "Office PowerPoint 2007 slide");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_MSOFFICE_XLAM = register(
             "application/vnd.ms-excel.addin.macroEnabled.12",
             "Office Excel 2007 add-in");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_MSOFFICE_XLSB = register(
             "application/vnd.ms-excel.sheet.binary.macroEnabled.12",
             "Office Excel 2007 binary workbook");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_MSOFFICE_XLSM = register(
             "application/vnd.ms-excel.sheet.macroEnabled.12",
             "Office Excel 2007 macro-enabled workbook");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_MSOFFICE_XLSX = register(
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             "Microsoft Office Excel 2007 workbook");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_MSOFFICE_XLTM = register(
             "application/vnd.ms-excel.template.macroEnabled.12",
             "Office Excel 2007 macro-enabled workbook template");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_MSOFFICE_XLTX = register(
             "application/vnd.openxmlformats-officedocument.spreadsheetml.template",
             "Office Excel 2007 template");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_OCTET_STREAM = register(
             "application/octet-stream", "Raw octet stream");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_OPENOFFICE_ODB = register(
             "application/vnd.oasis.opendocument.database",
             "OpenDocument Database");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_OPENOFFICE_ODC = register(
             "application/vnd.oasis.opendocument.chart", "OpenDocument Chart");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_OPENOFFICE_ODF = register(
             "application/vnd.oasis.opendocument.formula",
             "OpenDocument Formula");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_OPENOFFICE_ODG = register(
             "application/vnd.oasis.opendocument.graphics",
             "OpenDocument Drawing");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_OPENOFFICE_ODI = register(
             "application/vnd.oasis.opendocument.image", "OpenDocument Image ");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_OPENOFFICE_ODM = register(
             "application/vnd.oasis.opendocument.text-master",
             "OpenDocument Master Document");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_OPENOFFICE_ODP = register(
             "application/vnd.oasis.opendocument.presentation",
             "OpenDocument Presentation ");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_OPENOFFICE_ODS = register(
             "application/vnd.oasis.opendocument.spreadsheet",
             "OpenDocument Spreadsheet");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_OPENOFFICE_ODT = register(
             "application/vnd.oasis.opendocument.text ", "OpenDocument Text");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_OPENOFFICE_OTG = register(
             "application/vnd.oasis.opendocument.graphics-template",
             "OpenDocument Drawing Template");
-
+    
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_OPENOFFICE_OTH = register(
             "application/vnd.oasis.opendocument.text-web",
             "HTML Document Template");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_OPENOFFICE_OTP = register(
             "application/vnd.oasis.opendocument.presentation-template",
             "OpenDocument Presentation Template");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_OPENOFFICE_OTS = register(
             "application/vnd.oasis.opendocument.spreadsheet-template",
             "OpenDocument Spreadsheet Template");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_OPENOFFICE_OTT = register(
             "application/vnd.oasis.opendocument.text-template",
             "OpenDocument Text Template");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_OPENOFFICE_OXT = register(
             "application/vnd.openofficeorg.extension",
             "OpenOffice.org extension");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_PDF = register("application/pdf",
             "Adobe PDF document");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_POSTSCRIPT = register(
             "application/postscript", "Postscript document");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_POWERPOINT = register(
             "application/vnd.ms-powerpoint", "Microsoft Powerpoint document");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_PROJECT = register(
             "application/vnd.ms-project", "Microsoft Project document");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_RDF_TRIG = register(
             "application/x-trig",
             "Plain text serialized Resource Description Framework document");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_RDF_TRIX = register(
             "application/trix",
             "Simple XML serialized Resource Description Framework document");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_RDF_TURTLE = register(
             "application/x-turtle",
             "Plain text serialized Resource Description Framework document");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_RDF_XML = register(
             "application/rdf+xml",
             "Normalized XML serialized Resource Description Framework document");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_RELAXNG_COMPACT = register(
             "application/relax-ng-compact-syntax",
             "Relax NG Schema document, Compact syntax");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_RELAXNG_XML = register(
             "application/x-relax-ng+xml",
             "Relax NG Schema document, XML syntax");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_RSS = register(
             "application/rss+xml", "Really Simple Syndication document");
 
+    // [ifndef gwt] member
     /**
      * @deprecated Use {@link #APPLICATION_RSS} instead.
      */
@@ -353,44 +424,57 @@ public final class MediaType extends Metadata {
     public static final MediaType APPLICATION_RSS_XML = register(
             "application/rss+xml", "Really Simple Syndication document");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_RTF = register("application/rtf",
             "Rich Text Format document");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_SPARQL_RESULTS_JSON = register(
             "application/sparql-results+json",
             "SPARQL Query Results JSON document");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_SPARQL_RESULTS_XML = register(
             "application/sparql-results+xml",
             "SPARQL Query Results XML document");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_SPSS_SAV = register(
             "application/x-spss-sav", "SPSS Data");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_SPSS_SPS = register(
             "application/x-spss-sps", "SPSS Script Syntax");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_STATA_STA = register(
             "application/x-stata", "Stata data file");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_STUFFIT = register(
             "application/x-stuffit", "Stuffit archive");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_TAR = register(
             "application/x-tar", "Tar archive");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_TEX = register(
             "application/x-tex", "Tex file");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_TROFF_MAN = register(
             "application/x-troff-man", "LaTeX");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_VOICEXML = register(
             "application/voicexml+xml", "VoiceXML");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_W3C_SCHEMA = register(
             "application/x-xsd+xml", "W3C XML Schema document");
 
+    // [ifndef gwt] member
     /**
      * @deprecated Use {@link #APPLICATION_W3C_SCHEMA} instead.
      */
@@ -398,13 +482,16 @@ public final class MediaType extends Metadata {
     public static final MediaType APPLICATION_W3C_SCHEMA_XML = register(
             "application/x-xsd+xml", "W3C XML Schema document");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_W3C_XSLT = register(
             "application/xslt+xml", "W3C XSLT Stylesheet");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_WADL = register(
             "application/vnd.sun.wadl+xml",
             "Web Application Description Language document");
 
+    // [ifndef gwt] member
     /**
      * @deprecated Use {@link #APPLICATION_WADL} instead.
      */
@@ -413,6 +500,7 @@ public final class MediaType extends Metadata {
             "application/vnd.sun.wadl+xml",
             "Web Application Description Language document");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_WORD = register(
             "application/msword", "Microsoft Word document");
 
@@ -435,83 +523,109 @@ public final class MediaType extends Metadata {
     public static final MediaType APPLICATION_XML = register("application/xml",
             "XML document");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_XML_DTD = register(
             "application/xml-dtd", "XML DTD");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_XUL = register(
             "application/vnd.mozilla.xul+xml", "XUL document");
 
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_ZIP = register("application/zip",
             "Zip archive");
 
+    // [ifndef gwt] member
     public static final MediaType AUDIO_ALL = register("audio/*", "All audios");
 
+    // [ifndef gwt] member
     public static final MediaType AUDIO_BASIC = register("audio/basic",
             "AU audio");
 
+    // [ifndef gwt] member
     public static final MediaType AUDIO_MIDI = register("audio/midi",
             "MIDI audio");
 
+    // [ifndef gwt] member
     public static final MediaType AUDIO_MPEG = register("audio/mpeg",
             "MPEG audio (MP3)");
 
+    // [ifndef gwt] member
     public static final MediaType AUDIO_REAL = register("audio/x-pn-realaudio",
             "Real audio");
 
+    // [ifndef gwt] member
     public static final MediaType AUDIO_WAV = register("audio/x-wav",
             "Waveform audio");
 
+    // [ifndef gwt] member
     public static final MediaType IMAGE_ALL = register("image/*", "All images");
 
+    // [ifndef gwt] member
     public static final MediaType IMAGE_BMP = register("image/bmp",
             "Windows bitmap");
 
+    // [ifndef gwt] member
     public static final MediaType IMAGE_GIF = register("image/gif", "GIF image");
 
+    // [ifndef gwt] member
     public static final MediaType IMAGE_ICON = register("image/x-icon",
             "Windows icon (Favicon)");
 
+    // [ifndef gwt] member
     public static final MediaType IMAGE_JPEG = register("image/jpeg",
             "JPEG image");
 
+    // [ifndef gwt] member
     public static final MediaType IMAGE_PNG = register("image/png", "PNG image");
 
+    // [ifndef gwt] member
     public static final MediaType IMAGE_SVG = register("image/svg+xml",
             "Scalable Vector Graphics");
 
+    // [ifndef gwt] member
     public static final MediaType IMAGE_TIFF = register("image/tiff",
             "TIFF image");
 
+    // [ifndef gwt] member
     public static final MediaType MESSAGE_ALL = register("message/*",
             "All messages");
 
+    // [ifndef gwt] member
     public static final MediaType MODEL_ALL = register("model/*", "All models");
 
+    // [ifndef gwt] member
     public static final MediaType MODEL_VRML = register("model/vrml", "VRML");
 
+    // [ifndef gwt] member
     public static final MediaType MULTIPART_ALL = register("multipart/*",
             "All multipart data");
 
+    // [ifndef gwt] member
     public static final MediaType MULTIPART_FORM_DATA = register(
             "multipart/form-data", "Multipart form data");
 
     public static final MediaType TEXT_ALL = register("text/*", "All texts");
 
+    // [ifndef gwt] member
     public static final MediaType TEXT_CALENDAR = register("text/calendar",
             "iCalendar event");
 
     public static final MediaType TEXT_CSS = register("text/css",
             "CSS stylesheet");
 
+    // [ifndef gwt] member
     public static final MediaType TEXT_CSV = register("text/csv",
             "Comma-separated Values");
 
+    // [ifndef gwt] member
     public static final MediaType TEXT_DAT = register("text/x-fixed-field",
             "Fixed-width Values");
 
     public static final MediaType TEXT_HTML = register("text/html",
             "HTML document");
 
+    // [ifndef gwt] member
     public static final MediaType TEXT_J2ME_APP_DESCRIPTOR = register(
             "text/vnd.sun.j2me.app-descriptor", "J2ME Application Descriptor");
 
@@ -521,37 +635,48 @@ public final class MediaType extends Metadata {
     public static final MediaType TEXT_PLAIN = register("text/plain",
             "Plain text");
 
+    // [ifndef gwt] member
     public static final MediaType TEXT_RDF_N3 = register("text/n3",
             "N3 serialized Resource Description Framework document");
 
+    // [ifndef gwt] member
     public static final MediaType TEXT_RDF_NTRIPLES = register(
             "text/n-triples",
             "N-Triples serialized Resource Description Framework document");
 
+    // [ifndef gwt] member
     public static final MediaType TEXT_TSV = register(
             "text/tab-separated-values", "Tab-separated Values");
 
+    // [ifndef gwt] member
     public static final MediaType TEXT_URI_LIST = register("text/uri-list",
             "List of URIs");
 
+    // [ifndef gwt] member
     public static final MediaType TEXT_VCARD = register("text/x-vcard", "vCard");
 
     public static final MediaType TEXT_XML = register("text/xml", "XML text");
 
+    // [ifndef gwt] member
     public static final MediaType VIDEO_ALL = register("video/*", "All videos");
 
+    // [ifndef gwt] member
     public static final MediaType VIDEO_AVI = register("video/x-msvideo",
             "AVI video");
 
+    // [ifndef gwt] member
     public static final MediaType VIDEO_MP4 = register("video/mp4",
             "MPEG-4 video");
 
+    // [ifndef gwt] member
     public static final MediaType VIDEO_MPEG = register("video/mpeg",
             "MPEG video");
 
+    // [ifndef gwt] member
     public static final MediaType VIDEO_QUICKTIME = register("video/quicktime",
             "Quicktime video");
 
+    // [ifndef gwt] member
     public static final MediaType VIDEO_WMV = register("video/x-ms-wmv",
             "Windows movie");
 
