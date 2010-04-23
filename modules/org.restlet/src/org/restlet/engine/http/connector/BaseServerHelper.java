@@ -75,7 +75,7 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
     private volatile ExecutorService acceptorService;
 
     /** The acceptor task. */
-    private volatile AcceptorTask acceptorTask;
+    private volatile Acceptor acceptor;
 
     /** The synchronization aid between listener and handler service. */
     private volatile CountDownLatch latch;
@@ -250,8 +250,8 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
 
         // Start the socket listener service
         this.latch = new CountDownLatch(1);
-        this.acceptorTask = new AcceptorTask(this, this.latch);
-        this.acceptorService.submit(this.acceptorTask);
+        this.acceptor = new Acceptor(this, this.latch);
+        this.acceptorService.submit(this.acceptor);
 
         // Wait for the listener to start up and count down the latch
         // This blocks until the server is ready to receive connections
@@ -276,7 +276,7 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
                 // This must be forcefully interrupted because the thread
                 // is most likely blocked on channel.accept()
                 getServerSocket().close();
-                this.acceptorTask.setRunning(false);
+                this.acceptor.setRunning(false);
                 this.acceptorService.shutdown();
                 this.acceptorService.awaitTermination(30, TimeUnit.SECONDS);
             } catch (Exception ex) {

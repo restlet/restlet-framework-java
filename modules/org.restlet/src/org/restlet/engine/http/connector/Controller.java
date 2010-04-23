@@ -41,7 +41,7 @@ import org.restlet.Response;
  * 
  * @author Jerome Louvel
  */
-public class ControllerTask extends BaseTask {
+public class Controller extends BaseTask {
 
     /** The parent server helper. */
     private final BaseHelper<?> helper;
@@ -55,7 +55,7 @@ public class ControllerTask extends BaseTask {
      * @param helper
      *            The parent connector helper.
      */
-    public ControllerTask(BaseHelper<?> helper) {
+    public Controller(BaseHelper<?> helper) {
         this.helper = helper;
         this.overloaded = false;
     }

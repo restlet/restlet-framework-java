@@ -139,7 +139,7 @@ public abstract class BaseHelper<T extends Connector> extends
     private volatile ExecutorService controllerService;
 
     /** The controller task. */
-    private final ControllerTask controllerTask;
+    private final Controller controller;
 
     /** The queue of inbound messages. */
     private final Queue<Response> inboundMessages;
@@ -164,7 +164,7 @@ public abstract class BaseHelper<T extends Connector> extends
         this.connections = new CopyOnWriteArraySet<Connection<T>>();
         this.inboundMessages = new ConcurrentLinkedQueue<Response>();
         this.outboundMessages = new ConcurrentLinkedQueue<Response>();
-        this.controllerTask = new ControllerTask(this);
+        this.controller = new Controller(this);
     }
 
     /**
@@ -458,7 +458,7 @@ public abstract class BaseHelper<T extends Connector> extends
         super.start();
         this.controllerService = createControllerService();
         this.workerService = createWorkerService();
-        this.controllerService.submit(this.controllerTask);
+        this.controllerService.submit(this.controller);
     }
 
     @Override
@@ -491,7 +491,7 @@ public abstract class BaseHelper<T extends Connector> extends
 
         // Stops the controller
         if (this.controllerService != null) {
-            this.controllerTask.setRunning(false);
+            this.controller.setRunning(false);
             this.controllerService.shutdown();
 
             try {

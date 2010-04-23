@@ -46,7 +46,7 @@ import org.restlet.Server;
  * 
  * @author Jerome Louvel
  */
-public class AcceptorTask extends BaseTask {
+public class Acceptor extends BaseTask {
 
     /** The parent server helper. */
     private final BaseServerHelper helper;
@@ -65,7 +65,7 @@ public class AcceptorTask extends BaseTask {
      *            The latch to countdown when the socket is ready to accept
      *            connections.
      */
-    public AcceptorTask(BaseServerHelper helper, CountDownLatch latch) {
+    public Acceptor(BaseServerHelper helper, CountDownLatch latch) {
         this.helper = helper;
         this.latch = latch;
     }
