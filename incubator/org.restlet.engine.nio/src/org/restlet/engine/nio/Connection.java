@@ -84,10 +84,10 @@ public abstract class Connection<T extends Connector> implements Notifiable {
     private final BaseHelper<T> helper;
 
     /** The inbound way. */
-    private final ConnectionWay inboundWay;
+    private final Way inboundWay;
 
     /** The outbound way. */
-    private final ConnectionWay outboundWay;
+    private final Way outboundWay;
 
     /** Indicates if the connection should be persisted across calls. */
     private volatile boolean persistent;
@@ -115,8 +115,8 @@ public abstract class Connection<T extends Connector> implements Notifiable {
     public Connection(BaseHelper<T> helper, SocketChannel socketChannel)
             throws IOException {
         this.helper = helper;
-        this.inboundWay = new ConnectionWay();
-        this.outboundWay = new ConnectionWay();
+        this.inboundWay = new Way();
+        this.outboundWay = new Way();
         this.persistent = helper.isPersistingConnections();
         this.pipelining = helper.isPipeliningConnections();
         this.state = ConnectionState.OPENING;
@@ -629,13 +629,13 @@ public abstract class Connection<T extends Connector> implements Notifiable {
         int entityInterest = 0;
 
         try {
-            if (getIoState() == IoState.READ_INTEREST) {
+            if (getIoState() == WayIoState.READ_INTEREST) {
                 socketInterest = socketInterest | SelectionKey.OP_READ;
             }
 
-            if (getOutboundIoState() == IoState.WRITE_INTEREST) {
+            if (getOutboundIoState() == WayIoState.WRITE_INTEREST) {
                 socketInterest = socketInterest | SelectionKey.OP_WRITE;
-            } else if (getOutboundIoState() == IoState.READ_INTEREST) {
+            } else if (getOutboundIoState() == WayIoState.READ_INTEREST) {
                 entityInterest = entityInterest | SelectionKey.OP_READ;
             }
 

@@ -126,14 +126,14 @@ public class ServerConnection extends Connection<Server> {
     @Override
     public void readMessage() throws IOException {
         if (getMessageState() == null) {
-            setMessageState(MessageState.START_LINE);
+            setMessageState(WayMessageState.START_LINE);
             getBuilder().delete(0, getBuilder().length());
         }
 
         while (getBuffer().hasRemaining()) {
-            if (getMessageState() == MessageState.START_LINE) {
+            if (getMessageState() == WayMessageState.START_LINE) {
                 readMessageStart();
-            } else if (getMessageState() == MessageState.HEADERS) {
+            } else if (getMessageState() == WayMessageState.HEADERS) {
                 readMessageHeaders();
             }
         }
@@ -180,10 +180,10 @@ public class ServerConnection extends Connection<Server> {
                         Representation entity = createInboundEntity(headers);
 
                         if (entity instanceof EmptyRepresentation) {
-                            setMessageState(MessageState.END);
+                            setMessageState(WayMessageState.END);
                         } else {
                             request.setEntity(entity);
-                            setMessageState(MessageState.BODY);
+                            setMessageState(WayMessageState.BODY);
                         }
 
                         // Update the response
@@ -281,7 +281,7 @@ public class ServerConnection extends Connection<Server> {
                 Response response = getHelper().createResponse(request);
                 setMessage(response);
 
-                setMessageState(MessageState.HEADERS);
+                setMessageState(WayMessageState.HEADERS);
                 getBuilder().delete(0, getBuilder().length());
             }
         } else {
@@ -298,14 +298,14 @@ public class ServerConnection extends Connection<Server> {
     @Override
     protected void writeMessage(Response response) {
         if (getOutboundMessageState() == null) {
-            setOutboundMessageState(MessageState.START_LINE);
+            setOutboundMessageState(WayMessageState.START_LINE);
             getOutboundBuilder().delete(0, getOutboundBuilder().length());
         }
 
         while (getOutboundBuffer().hasRemaining()) {
-            if (getOutboundMessageState() == MessageState.START_LINE) {
+            if (getOutboundMessageState() == WayMessageState.START_LINE) {
                 writeMessageStart();
-            } else if (getMessageState() == MessageState.HEADERS) {
+            } else if (getMessageState() == WayMessageState.HEADERS) {
                 readMessageHeaders();
             }
         }

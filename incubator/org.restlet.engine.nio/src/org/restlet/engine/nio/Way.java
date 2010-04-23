@@ -45,7 +45,7 @@ import org.restlet.engine.io.NioUtils;
  * 
  * @author Jerome Louvel
  */
-public class ConnectionWay {
+public class Way {
 
     /** The byte buffer. */
     private final ByteBuffer buffer;
@@ -60,7 +60,7 @@ public class ConnectionWay {
     private volatile int headerIndex;
 
     /** The IO state. */
-    private volatile IoState ioState;
+    private volatile WayIoState ioState;
 
     /** The current message read. */
     private volatile Response message;
@@ -69,16 +69,16 @@ public class ConnectionWay {
     private final Queue<Response> messages;
 
     /** The message state. */
-    private volatile MessageState messageState;
+    private volatile WayMessageState messageState;
 
     /**
      * Constructor.
      */
-    public ConnectionWay() {
+    public Way() {
         this.buffer = ByteBuffer.allocate(NioUtils.BUFFER_SIZE);
         this.builder = new StringBuilder();
-        this.messageState = MessageState.NONE;
-        this.ioState = IoState.IDLE;
+        this.messageState = WayMessageState.NONE;
+        this.ioState = WayIoState.IDLE;
         this.message = null;
         this.messages = new ConcurrentLinkedQueue<Response>();
     }
@@ -159,7 +159,7 @@ public class ConnectionWay {
      * 
      * @return The IO state.
      */
-    public IoState getIoState() {
+    public WayIoState getIoState() {
         return ioState;
     }
 
@@ -186,7 +186,7 @@ public class ConnectionWay {
      * 
      * @return The message state.
      */
-    public MessageState getMessageState() {
+    public WayMessageState getMessageState() {
         return messageState;
     }
 
@@ -213,11 +213,11 @@ public class ConnectionWay {
     /**
      * Sets the IO state.
      * 
-     * @param ioState
+     * @param wayIoState
      *            The IO state.
      */
-    public void setIoState(IoState ioState) {
-        this.ioState = ioState;
+    public void setIoState(WayIoState wayIoState) {
+        this.ioState = wayIoState;
     }
 
     /**
@@ -233,11 +233,11 @@ public class ConnectionWay {
     /**
      * Sets the message state.
      * 
-     * @param messageState
+     * @param wayMessageState
      *            The message state.
      */
-    public void setMessageState(MessageState messageState) {
-        this.messageState = messageState;
+    public void setMessageState(WayMessageState wayMessageState) {
+        this.messageState = wayMessageState;
     }
 
 }
