@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Java Service Wrapper Plug-in
+Bundle-SymbolicName: org.tanukisoftware.wrapper
+Bundle-Version: 3.2.3
+Bundle-ClassPath: wrapper.jar
+Bundle-Vendor: Tanuki Software
+Export-Package: org.tanukisoftware.wrapper;uses:="new org.tanukisoftware.wrapper,org.tanukisoftware.wrapper.event",
+ org.tanukisoftware.wrapper.event,
+ org.tanukisoftware.wrapper.jmx,
+ org.tanukisoftware.wrapper.resources,
+ org.tanukisoftware.wrapper.security
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

@@ -1,0 +1,15 @@
+<project>
+   <modelVersion>4.0.0</modelVersion>
+   <groupId>@group-id@</groupId>
+   <artifactId>@artifact-id@</artifactId>
+   <version>@version@</version>
+   <dependencies>
+      <dependency>
+         <groupId>edu.purdue.cs.bloat</groupId>
+         <artifactId>edu.purdue.cs.bloat</artifactId>
+         <version>@lib-bloat-version@</version>
+      </dependency>
+   </dependencies>
+   <name>Db4o - object database framework</name>
+   <description>Db4o - object database framework.</description>
+</project>

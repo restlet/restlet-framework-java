@@ -1,0 +1,71 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: FreeMarker template engine
+Bundle-SymbolicName: org.freemarker
+Bundle-Version: 2.3.15
+Bundle-ClassPath: org.freemarker.jar
+Bundle-Vendor: FreeMarker project
+Export-Package: freemarker,
+ freemarker.cache;uses:="freemarker.template,freemarker.core,javax.servlet",
+ freemarker.core;
+  uses:="freemarker.template,
+   new freemarker.core,
+   javax.swing.tree,
+   javax.swing",
+ freemarker.debug,
+ freemarker.debug.impl;
+  uses:="freemarker.template,
+   freemarker.core,
+   freemarker.debug,
+   freemarker.log",
+ freemarker.ext.ant;uses:="org.apache.tools.ant.taskdefs,org.apache.tools.ant",
+ freemarker.ext.beans;
+  uses:="freemarker.template,
+   new new freemarker.ext.beans,
+   freemarker.ext.util,
+   new freemarker.ext.beans",
+ freemarker.ext.dom;
+  uses:="org.xml.sax,
+   org.w3c.dom,
+   freemarker.ext.util,
+   freemarker.log,
+   org.jaxen.dom,
+   org.apache.xml.utils,
+   freemarker.template,
+   freemarker.core,
+   com.sun.org.apache.xml.internal.utils,
+   org.jaxen,
+   javax.xml.parsers",
+ freemarker.ext.jdom;uses:="freemarker.template,new freemarker.ext.jdom,org.jdom",
+ freemarker.ext.jsp;
+  uses:="javax.servlet.http,
+   javax.servlet.jsp.tagext,
+   javax.servlet.jsp.el,
+   javax.servlet.jsp,
+   freemarker.log,
+   freemarker.template,
+   freemarker.core,
+   javax.servlet,
+   javax.el",
+ freemarker.ext.jython;uses:="freemarker.template,org.python.core,freemarker.ext.util",
+ freemarker.ext.rhino;
+  uses:="freemarker.template,
+   freemarker.ext.beans,
+   org.mozilla.javascript,
+   freemarker.ext.util",
+ freemarker.ext.servlet;uses:="javax.servlet.http,freemarker.template,javax.servlet",
+ freemarker.ext.util;uses:="freemarker.template",
+ freemarker.ext.xml;uses:="freemarker.template,org.jaxen",
+ freemarker.log,
+ freemarker.template;
+  uses:="freemarker.ext.beans,
+   freemarker.core,
+   freemarker.cache,
+   javax.swing.tree",
+ freemarker.template.utility;
+  uses:="org.python.util,
+   freemarker.template,
+   freemarker.core,
+   org.python.core,
+   org.w3c.dom"
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

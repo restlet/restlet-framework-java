@@ -1,0 +1,32 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Noelios Restlet Engine - Extension - JDBC
+Bundle-SymbolicName: com.noelios.restlet.ext.jdbc
+Bundle-Version: 1.1
+Bundle-Vendor: Noelios Technologies
+Export-Package: com.noelios.restlet.ext.jdbc;
+  uses:="javax.sql.rowset,
+   org.restlet,
+   org.restlet.resource,
+   org.apache.commons.pool,
+   org.restlet.data,
+   com.noelios.restlet"
+Import-Package: com.noelios.restlet,
+ com.noelios.restlet.application,
+ com.noelios.restlet.authentication,
+ com.noelios.restlet.component,
+ com.noelios.restlet.http,
+ com.noelios.restlet.local,
+ com.noelios.restlet.util,
+ com.sun.rowset,
+ com.sun.rowset.internal,
+ com.sun.rowset.providers,
+ org.apache.commons.dbcp,
+ org.apache.commons.pool,
+ org.apache.commons.pool.impl,
+ org.restlet,
+ org.restlet.data,
+ org.restlet.resource,
+ org.restlet.service,
+ org.restlet.util
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
