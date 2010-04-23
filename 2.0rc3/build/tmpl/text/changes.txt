@@ -3,7 +3,7 @@
 Changes log  
 ===========
 
-- @version-full@ (@release-date@)
+- 2.0 Release Candidate 3 (2010-04-23)
     - API changes
       - Replaced MemoryRealm#findRoles(Set<Group>, User) method by
         findRoles(Set<Group>), findRoles(Group) and findRoles(User)
@@ -11,7 +11,9 @@ Changes log
       - Added proxy configuration to the internal client connector 
         (necessary for the sip connector).
       - Added "ftl" extension to MetadataService for FreeMarker 
-        templates. 
+        templates.
+      - Keeped few MediaType constants for the GWT edition in order 
+        to reduce size.
     - Bugs fixed
       - Fixed support of parameters with the MediaType class. The 
         name contains the the main and sub types, plus the parameters.
@@ -29,6 +31,7 @@ Changes log
       - Fixed concurrency bug with annotated interfaces causing
         405 errors (method not allowed). Reported by Antonio Fiestas.
       - Fixed regression about the method filtering (ignore case).
+        Reported by Jean-Baptiste Dusseaut.
       - Fixed bug in HttpDigestVerifier which didn't create the User
         into the request's ClientInfo property. 
         Reported by Bruno Harbulot.
