@@ -125,15 +125,15 @@ public class ServerConnection extends Connection<Server> {
      */
     @Override
     public void readMessage() throws IOException {
-        if (getInboundMessageState() == null) {
-            setInboundMessageState(MessageState.START_LINE);
-            getInboundBuilder().delete(0, getInboundBuilder().length());
+        if (getMessageState() == null) {
+            setMessageState(MessageState.START_LINE);
+            getBuilder().delete(0, getBuilder().length());
         }
 
-        while (getInboundBuffer().hasRemaining()) {
-            if (getInboundMessageState() == MessageState.START_LINE) {
+        while (getBuffer().hasRemaining()) {
+            if (getMessageState() == MessageState.START_LINE) {
                 readMessageStart();
-            } else if (getInboundMessageState() == MessageState.HEADERS) {
+            } else if (getMessageState() == MessageState.HEADERS) {
                 readMessageHeaders();
             }
         }
@@ -146,15 +146,15 @@ public class ServerConnection extends Connection<Server> {
      * @throws IOException
      */
     protected Parameter readMessageHeader() throws IOException {
-        Parameter header = HeaderReader.readHeader(getInboundBuilder());
-        getInboundBuilder().delete(0, getInboundBuilder().length());
+        Parameter header = HeaderReader.readHeader(getBuilder());
+        getBuilder().delete(0, getBuilder().length());
         return header;
     }
 
     @Override
     public void readMessageHeaders() throws IOException {
         if (readMessageLine()) {
-            ConnectedRequest request = (ConnectedRequest) getInboundMessage()
+            ConnectedRequest request = (ConnectedRequest) getMessage()
                     .getRequest();
             Series<Parameter> headers = request.getHeaders();
             Parameter header = readMessageHeader();
@@ -180,27 +180,27 @@ public class ServerConnection extends Connection<Server> {
                         Representation entity = createInboundEntity(headers);
 
                         if (entity instanceof EmptyRepresentation) {
-                            setInboundMessageState(MessageState.END);
+                            setMessageState(MessageState.END);
                         } else {
                             request.setEntity(entity);
-                            setInboundMessageState(MessageState.BODY);
+                            setMessageState(MessageState.BODY);
                         }
 
                         // Update the response
-                        getInboundMessage().getServerInfo().setAddress(
+                        getMessage().getServerInfo().setAddress(
                                 getHelper().getHelped().getAddress());
-                        getInboundMessage().getServerInfo().setPort(
+                        getMessage().getServerInfo().setPort(
                                 getHelper().getHelped().getPort());
 
                         if (request != null) {
                             if (request.isExpectingResponse()) {
                                 // Add it to the connection queue
-                                getInboundMessages().add(getInboundMessage());
+                                getMessages().add(getMessage());
                             }
 
                             // Add it to the helper queue
                             getHelper().getInboundMessages().add(
-                                    getInboundMessage());
+                                    getMessage());
                         }
                     }
                 } else {
@@ -221,7 +221,7 @@ public class ServerConnection extends Connection<Server> {
 
             int i = 0;
             int start = 0;
-            int size = getInboundBuilder().length();
+            int size = getBuilder().length();
             char next;
 
             if (size == 0) {
@@ -229,10 +229,10 @@ public class ServerConnection extends Connection<Server> {
             } else {
                 // Parse the request method
                 for (i = start; (requestMethod == null) && (i < size); i++) {
-                    next = getInboundBuilder().charAt(i);
+                    next = getBuilder().charAt(i);
 
                     if (HeaderUtils.isSpace(next)) {
-                        requestMethod = getInboundBuilder().substring(start, i);
+                        requestMethod = getBuilder().substring(start, i);
                         start = i + 1;
                     }
                 }
@@ -244,10 +244,10 @@ public class ServerConnection extends Connection<Server> {
 
                 // Parse the request URI
                 for (i = start; (requestUri == null) && (i < size); i++) {
-                    next = getInboundBuilder().charAt(i);
+                    next = getBuilder().charAt(i);
 
                     if (HeaderUtils.isSpace(next)) {
-                        requestUri = getInboundBuilder().substring(start, i);
+                        requestUri = getBuilder().substring(start, i);
                         start = i + 1;
                     }
                 }
@@ -263,11 +263,11 @@ public class ServerConnection extends Connection<Server> {
 
                 // Parse the protocol version
                 for (i = start; (version == null) && (i < size); i++) {
-                    next = getInboundBuilder().charAt(i);
+                    next = getBuilder().charAt(i);
                 }
 
                 if (i == size) {
-                    version = getInboundBuilder().substring(start, i);
+                    version = getBuilder().substring(start, i);
                     start = i + 1;
                 }
 
@@ -279,10 +279,10 @@ public class ServerConnection extends Connection<Server> {
                 ConnectedRequest request = createRequest(getHelper()
                         .getContext(), this, requestMethod, requestUri, version);
                 Response response = getHelper().createResponse(request);
-                setInboundMessage(response);
+                setMessage(response);
 
-                setInboundMessageState(MessageState.HEADERS);
-                getInboundBuilder().delete(0, getInboundBuilder().length());
+                setMessageState(MessageState.HEADERS);
+                getBuilder().delete(0, getBuilder().length());
             }
         } else {
             // We need more characters before parsing
@@ -305,7 +305,7 @@ public class ServerConnection extends Connection<Server> {
         while (getOutboundBuffer().hasRemaining()) {
             if (getOutboundMessageState() == MessageState.START_LINE) {
                 writeMessageStart();
-            } else if (getInboundMessageState() == MessageState.HEADERS) {
+            } else if (getMessageState() == MessageState.HEADERS) {
                 readMessageHeaders();
             }
         }

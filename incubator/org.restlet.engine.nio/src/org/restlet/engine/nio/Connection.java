@@ -72,8 +72,8 @@ import org.restlet.service.ConnectorService;
 import org.restlet.util.Series;
 
 /**
- * A network connection though which requests and responses are exchanged by
- * connectors.
+ * A network connection though which messages are exchanged by connectors.
+ * Messages can be either requests or responses.
  * 
  * @param <T>
  *            The parent connector type.
@@ -83,41 +83,11 @@ public abstract class Connection<T extends Connector> implements Notifiable {
     /** The parent connector helper. */
     private final BaseHelper<T> helper;
 
-    /** The inbound byte buffer. */
-    private final ByteBuffer inboundBuffer;
+    /** The inbound way. */
+    private final ConnectionWay inboundWay;
 
-    /** The inbound line builder. */
-    private final StringBuilder inboundBuilder;
-
-    /** The inbound IO state. */
-    private volatile IoState inboundIoState;
-
-    /** The current inbound message read. */
-    private volatile Response inboundMessage;
-
-    /** The queue of inbound messages. */
-    private final Queue<Response> inboundMessages;
-
-    /** The inbound message state. */
-    private volatile MessageState inboundMessageState;
-
-    /** The outbound byte buffer. */
-    private final ByteBuffer outboundBuffer;
-
-    /** The outbound line builder. */
-    private final StringBuilder outboundBuilder;
-
-    /** The outbound IO state. */
-    private volatile IoState outboundIoState;
-
-    /** The current outbound message written. */
-    private volatile Response outboundMessage;
-
-    /** The queue of outbound messages. */
-    private final Queue<Response> outboundMessages;
-
-    /** The outbound message state. */
-    private volatile MessageState outboundMessageState;
+    /** The outbound way. */
+    private final ConnectionWay outboundWay;
 
     /** Indicates if the connection should be persisted across calls. */
     private volatile boolean persistent;
@@ -145,21 +115,8 @@ public abstract class Connection<T extends Connector> implements Notifiable {
     public Connection(BaseHelper<T> helper, SocketChannel socketChannel)
             throws IOException {
         this.helper = helper;
-
-        this.inboundBuffer = ByteBuffer.allocate(NioUtils.BUFFER_SIZE);
-        this.inboundBuilder = new StringBuilder();
-        this.inboundMessageState = MessageState.NONE;
-        this.inboundIoState = IoState.IDLE;
-        this.inboundMessage = null;
-        this.inboundMessages = new ConcurrentLinkedQueue<Response>();
-
-        this.outboundBuffer = ByteBuffer.allocate(NioUtils.BUFFER_SIZE);
-        this.outboundBuilder = new StringBuilder();
-        this.outboundMessageState = MessageState.NONE;
-        this.outboundIoState = IoState.IDLE;
-        this.outboundMessage = null;
-        this.outboundMessages = new ConcurrentLinkedQueue<Response>();
-
+        this.inboundWay = new ConnectionWay();
+        this.outboundWay = new ConnectionWay();
         this.persistent = helper.isPersistingConnections();
         this.pipelining = helper.isPipeliningConnections();
         this.state = ConnectionState.OPENING;
@@ -344,120 +301,12 @@ public abstract class Connection<T extends Connector> implements Notifiable {
     }
 
     /**
-     * Returns the inbound byte buffer.
-     * 
-     * @return The inbound byte buffer.
-     */
-    public ByteBuffer getInboundBuffer() {
-        return inboundBuffer;
-    }
-
-    /**
-     * Returns the inbound line builder.
-     * 
-     * @return The inbound line builder.
-     */
-    public StringBuilder getInboundBuilder() {
-        return inboundBuilder;
-    }
-
-    /**
-     * Returns the inbound message entity channel if it exists.
-     * 
-     * @param size
-     *            The expected entity size or -1 if unknown.
-     * 
-     * @return The inbound message entity channel if it exists.
-     */
-    public ReadableByteChannel getInboundEntityChannel(long size,
-            boolean chunked) {
-        return getSocketChannel();
-    }
-
-    /**
-     * Returns the inbound message entity stream if it exists.
-     * 
-     * @param size
-     *            The expected entity size or -1 if unknown.
-     * 
-     * @return The inbound message entity stream if it exists.
-     */
-    public InputStream getInboundEntityStream(long size, boolean chunked) {
-        // InputStream result = null;
-        //
-        // if (chunked) {
-        // result = new ChunkedInputStream(this, getInboundStream());
-        // } else if (size >= 0) {
-        // result = new SizedInputStream(this, getInboundStream(), size);
-        // } else {
-        // result = new ClosingInputStream(this, getInboundStream());
-        // }
-        //
-        // return result;
-        return null;
-    }
-
-    /**
-     * Returns the inbound IO state.
-     * 
-     * @return The inbound IO state.
-     */
-    public IoState getInboundIoState() {
-        return inboundIoState;
-    }
-
-    /**
-     * Returns the current inbound message read.
-     * 
-     * @return The current inbound message read.
-     */
-    public Response getInboundMessage() {
-        return inboundMessage;
-    }
-
-    /**
-     * Returns the queue of inbound messages.
-     * 
-     * @return The queue of inbound messages.
-     */
-    public Queue<Response> getInboundMessages() {
-        return inboundMessages;
-    }
-
-    /**
-     * Returns the inbound message state.
-     * 
-     * @return The inbound message state.
-     */
-    public MessageState getInboundMessageState() {
-        return inboundMessageState;
-    }
-
-    /**
      * Returns the logger.
      * 
      * @return The logger.
      */
     public Logger getLogger() {
         return getHelper().getLogger();
-    }
-
-    /**
-     * Returns the outbound byte buffer.
-     * 
-     * @return The outbound byte buffer.
-     */
-    public ByteBuffer getOutboundBuffer() {
-        return outboundBuffer;
-    }
-
-    /**
-     * Returns the outbound line builder.
-     * 
-     * @return The outbound line builder.
-     */
-    public StringBuilder getOutboundBuilder() {
-        return outboundBuilder;
     }
 
     /**
@@ -483,42 +332,6 @@ public abstract class Connection<T extends Connector> implements Notifiable {
         //
         // return result;
         return null;
-    }
-
-    /**
-     * Returns the outbound IO state.
-     * 
-     * @return The outbound IO state.
-     */
-    public IoState getOutboundIoState() {
-        return outboundIoState;
-    }
-
-    /**
-     * Returns the current outbound message written.
-     * 
-     * @return The current outbound message written.
-     */
-    public Response getOutboundMessage() {
-        return outboundMessage;
-    }
-
-    /**
-     * Returns the queue of outbound messages.
-     * 
-     * @return The queue of outbound messages.
-     */
-    public Queue<Response> getOutboundMessages() {
-        return outboundMessages;
-    }
-
-    /**
-     * Returns the outbound message state.
-     * 
-     * @return The outbound message state.
-     */
-    public MessageState getOutboundMessageState() {
-        return outboundMessageState;
     }
 
     /**
@@ -713,9 +526,9 @@ public abstract class Connection<T extends Connector> implements Notifiable {
      * @throws IOException
      */
     public int readBytes() throws IOException {
-        getInboundBuffer().clear();
-        int result = getSocketChannel().read(getInboundBuffer());
-        getInboundBuffer().flip();
+        getBuffer().clear();
+        int result = getSocketChannel().read(getBuffer());
+        getBuffer().flip();
         return result;
     }
 
@@ -744,11 +557,11 @@ public abstract class Connection<T extends Connector> implements Notifiable {
         boolean result = false;
         int next;
 
-        while (!result && getInboundBuffer().hasRemaining()) {
-            next = (int) getInboundBuffer().get();
+        while (!result && getBuffer().hasRemaining()) {
+            next = (int) getBuffer().get();
 
             if (HeaderUtils.isCarriageReturn(next)) {
-                next = (int) getInboundBuffer().get();
+                next = (int) getBuffer().get();
 
                 if (HeaderUtils.isLineFeed(next)) {
                     result = true;
@@ -757,7 +570,7 @@ public abstract class Connection<T extends Connector> implements Notifiable {
                             "Missing carriage return character at the end of HTTP line");
                 }
             } else {
-                getInboundBuilder().append((char) next);
+                getBuilder().append((char) next);
             }
         }
 
@@ -773,10 +586,10 @@ public abstract class Connection<T extends Connector> implements Notifiable {
             if (canRead()) {
                 int result = readBytes();
 
-                while (getInboundBuffer().hasRemaining()) {
+                while (getBuffer().hasRemaining()) {
                     readMessage();
 
-                    if (!getInboundBuffer().hasRemaining()) {
+                    if (!getBuffer().hasRemaining()) {
                         // Attempt to read more
                         result = readBytes();
                     }
@@ -816,7 +629,7 @@ public abstract class Connection<T extends Connector> implements Notifiable {
         int entityInterest = 0;
 
         try {
-            if (getInboundIoState() == IoState.READ_INTEREST) {
+            if (getIoState() == IoState.READ_INTEREST) {
                 socketInterest = socketInterest | SelectionKey.OP_READ;
             }
 
@@ -856,66 +669,6 @@ public abstract class Connection<T extends Connector> implements Notifiable {
                             cce);
             setState(ConnectionState.CLOSING);
         }
-    }
-
-    /**
-     * Sets the inbound IO state.
-     * 
-     * @param inboundIoState
-     *            The inbound IO state.
-     */
-    public void setInboundIoState(IoState inboundIoState) {
-        this.inboundIoState = inboundIoState;
-    }
-
-    /**
-     * Sets the current inbound message read.
-     * 
-     * @param inboundMessage
-     *            The current inbound message read.
-     */
-    public void setInboundMessage(Response inboundMessage) {
-        this.inboundMessage = inboundMessage;
-    }
-
-    /**
-     * Sets the inbound message state.
-     * 
-     * @param inboundState
-     *            The inbound message state.
-     */
-    public void setInboundMessageState(MessageState inboundState) {
-        this.inboundMessageState = inboundState;
-    }
-
-    /**
-     * Sets the outbound IO state.
-     * 
-     * @param outboundIoState
-     *            The outbound IO state.
-     */
-    public void setOutboundIoState(IoState outboundIoState) {
-        this.outboundIoState = outboundIoState;
-    }
-
-    /**
-     * Sets the current outbound message written.
-     * 
-     * @param outboundMessage
-     *            The current outbound message written.
-     */
-    public void setOutboundMessage(Response outboundMessage) {
-        this.outboundMessage = outboundMessage;
-    }
-
-    /**
-     * Sets the outbound message state.
-     * 
-     * @param outboundState
-     *            The outbound message state.
-     */
-    public void setOutboundMessageState(MessageState outboundState) {
-        this.outboundMessageState = outboundState;
     }
 
     /**
