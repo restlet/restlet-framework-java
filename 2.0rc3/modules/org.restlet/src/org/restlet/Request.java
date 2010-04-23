@@ -30,7 +30,6 @@
 
 package org.restlet;
 
-import java.security.Principal;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -42,7 +41,6 @@ import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
 import org.restlet.data.Cookie;
 import org.restlet.data.Encoding;
-import org.restlet.data.Expectation;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -54,7 +52,6 @@ import org.restlet.data.Tag;
 import org.restlet.data.Warning;
 import org.restlet.engine.util.CookieSeries;
 import org.restlet.representation.Representation;
-import org.restlet.security.Role;
 import org.restlet.util.Series;
 
 /**
@@ -233,24 +230,26 @@ public class Request extends Message {
             clientInfo.getAcceptedMediaTypes().add(o);
         }
         clientInfo.setAddress(rci.getAddress());
-        clientInfo.setAgent(rci.getAgent());
-        clientInfo.setAgentAttributes(rci.getAgentAttributes());
-        clientInfo.setAgentProducts(rci.getAgentProducts());
-        clientInfo.setAuthenticated(rci.isAuthenticated());
-        for (Expectation o : rci.getExpectations()) {
-            clientInfo.getExpectations().add(o);
-        }
         for (String o : rci.getForwardedAddresses()) {
             clientInfo.getForwardedAddresses().add(o);
         }
+        clientInfo.setAgent(rci.getAgent());
         clientInfo.setFrom(rci.getFrom());
         clientInfo.setPort(rci.getPort());
-        for (Principal o : rci.getPrincipals()) {
+        // [ifndef gwt]
+        clientInfo.setAgentAttributes(rci.getAgentAttributes());
+        clientInfo.setAgentProducts(rci.getAgentProducts());
+        clientInfo.setAuthenticated(rci.isAuthenticated());
+        for (org.restlet.data.Expectation o : rci.getExpectations()) {
+            clientInfo.getExpectations().add(o);
+        }
+        for (java.security.Principal o : rci.getPrincipals()) {
             clientInfo.getPrincipals().add(o);
         }
-        for (Role o : rci.getRoles()) {
+        for (org.restlet.security.Role o : rci.getRoles()) {
             clientInfo.getRoles().add(o);
         }
+        // [enddef]
 
         // Copy conditions
         conditions = new Conditions();
@@ -267,7 +266,7 @@ public class Request extends Message {
                 .getUnmodifiedSince());
 
         for (Cookie o : request.getCookies()) {
-            getCookies().add(o);            
+            getCookies().add(o);
         }
 
         this.hostRef = request.getHostRef();
