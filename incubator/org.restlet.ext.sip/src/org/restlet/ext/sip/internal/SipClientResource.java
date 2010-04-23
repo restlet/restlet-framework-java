@@ -411,6 +411,7 @@ public class SipClientResource extends ClientResource {
      * @return The response created.
      * @see #getNext()
      */
+    @SuppressWarnings("unused")
     private SipResponse handle(SipRequest request) {
         // TODO refactor ClientResource.
         return null;
@@ -431,6 +432,7 @@ public class SipClientResource extends ClientResource {
      * @param next
      *            The next handler handling the call.
      */
+    @SuppressWarnings("unused")
     private void handle(SipRequest request, SipResponse response,
             List<Reference> references, int retryAttempt, Uniform next) {
         if (next != null) {
