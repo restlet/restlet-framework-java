@@ -41,6 +41,8 @@ Changes log
         Suggested by Dan Simpson.
       - Fixed support of HTTPS by the internal client connector.
       - Fixed support of conditions on non-GET methods.
+      - Fixed generation of ChallengeResponse instances for DIGEST
+        authentication scheme.
     - Enhancements
       - Added support of request#onSent and #onResponse callbacks for 
         the net and httpClient extensions.

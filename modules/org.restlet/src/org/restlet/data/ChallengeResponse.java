@@ -80,58 +80,53 @@ public final class ChallengeResponse extends ChallengeMessage {
 
     // [ifndef gwt] method
     /**
-     * Constructor.
+     * Constructor. It leverages the latest server response and challenge
+     * request in order to compute the credentials.
      * 
      * @param challengeRequest
-     *            The challenge request.
-     * @param request
-     *            The request.
+     *            The challenge request sent by the origin server.
      * @param response
-     *            The response.
+     *            The latest server response.
      * @param identifier
      *            The user identifier, such as a login name or an access key.
      * @param baseSecret
      *            The user secret, such as a password or a secret key.
      */
     public ChallengeResponse(final ChallengeRequest challengeRequest,
-            final Request request, final Response response,
-            final String identifier, char[] baseSecret) {
-        this(challengeRequest, request, response, identifier, baseSecret,
+            final Response response, final String identifier, char[] baseSecret) {
+        this(challengeRequest, response, identifier, baseSecret,
                 Digest.ALGORITHM_NONE);
     }
 
     // [ifndef gwt] method
     /**
-     * Constructor.
+     * Constructor. It leverages the latest server response and challenge
+     * request in order to compute the credentials.
      * 
      * @param challengeRequest
-     *            The challenge request.
-     * @param request
-     *            The request.
+     *            The challenge request sent by the origin server.
      * @param response
-     *            The response.
+     *            The latest server response.
      * @param identifier
      *            The user identifier, such as a login name or an access key.
      * @param baseSecret
      *            The user secret, such as a password or a secret key.
      */
     public ChallengeResponse(final ChallengeRequest challengeRequest,
-            final Request request, final Response response,
-            final String identifier, String baseSecret) {
-        this(challengeRequest, request, response, identifier, baseSecret
-                .toCharArray(), Digest.ALGORITHM_NONE);
+            final Response response, final String identifier, String baseSecret) {
+        this(challengeRequest, response, identifier, baseSecret.toCharArray(),
+                Digest.ALGORITHM_NONE);
     }
 
     // [ifndef gwt] method
     /**
-     * Constructor.
+     * Constructor. It leverages the latest server response and challenge
+     * request in order to compute the credentials.
      * 
      * @param challengeRequest
-     *            The challenge request.
-     * @param request
-     *            The request.
+     *            The challenge request sent by the origin server.
      * @param response
-     *            The response.
+     *            The latest server response.
      * @param identifier
      *            The user identifier, such as a login name or an access key.
      * @param baseSecret
@@ -141,13 +136,13 @@ public final class ChallengeResponse extends ChallengeMessage {
      *            class).
      */
     public ChallengeResponse(final ChallengeRequest challengeRequest,
-            final Request request, final Response response,
-            final String identifier, char[] baseSecret,
-            String baseSecretAlgorithm) {
+            final Response response, final String identifier,
+            char[] baseSecret, String baseSecretAlgorithm) {
         super(challengeRequest.getScheme());
         this.identifier = identifier;
-        org.restlet.engine.security.AuthenticatorUtils.update(this, request,
-                response, identifier, baseSecret, baseSecretAlgorithm);
+        org.restlet.engine.security.AuthenticatorUtils.update(this, response
+                .getRequest(), response, identifier, baseSecret,
+                baseSecretAlgorithm);
     }
 
     /**

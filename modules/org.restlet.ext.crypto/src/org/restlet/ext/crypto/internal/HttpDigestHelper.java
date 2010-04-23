@@ -362,7 +362,9 @@ public class HttpDigestHelper extends AuthenticatorHelper {
             a1 = new String(baseSecret);
         }
 
-        if (a1 != null) {
+        if (a1 != null
+                && !AuthenticatorUtils.anyNull(request.getMethod(),
+                        challengeResponse.getDigestRef())) {
             String a2 = DigestUtils.toMd5(request.getMethod().toString() + ":"
                     + challengeResponse.getDigestRef().toString());
             StringBuilder sb = new StringBuilder().append(a1).append(':')
