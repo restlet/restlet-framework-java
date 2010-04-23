@@ -135,11 +135,11 @@ public abstract class BaseHelper<T extends Connector> extends
     /** The set of active connections. */
     private final Set<Connection<T>> connections;
 
-    /** The controller service. */
-    private volatile ExecutorService controllerService;
-
     /** The controller task. */
     private final Controller controller;
+
+    /** The controller service. */
+    private volatile ExecutorService controllerService;
 
     /** The queue of inbound messages. */
     private final Queue<Response> inboundMessages;
@@ -164,7 +164,7 @@ public abstract class BaseHelper<T extends Connector> extends
         this.connections = new CopyOnWriteArraySet<Connection<T>>();
         this.inboundMessages = new ConcurrentLinkedQueue<Response>();
         this.outboundMessages = new ConcurrentLinkedQueue<Response>();
-        this.controller = new Controller(this);
+        this.controller = createController();
     }
 
     /**
@@ -181,6 +181,15 @@ public abstract class BaseHelper<T extends Connector> extends
      */
     protected abstract Connection<T> createConnection(BaseHelper<T> helper,
             Socket socket, SocketChannel socketChannel) throws IOException;
+
+    /**
+     * Creates a new controller.
+     * 
+     * @return A new controller.
+     */
+    protected Controller createController() {
+        return new Controller(this);
+    }
 
     /**
      * Creates the connector controller service.

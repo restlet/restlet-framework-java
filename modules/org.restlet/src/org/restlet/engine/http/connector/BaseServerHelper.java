@@ -71,11 +71,11 @@ import org.restlet.engine.log.LoggingThreadFactory;
  */
 public abstract class BaseServerHelper extends BaseHelper<Server> {
 
-    /** The connection acceptor service. */
-    private volatile ExecutorService acceptorService;
-
     /** The acceptor task. */
     private volatile Acceptor acceptor;
+
+    /** The connection acceptor service. */
+    private volatile ExecutorService acceptorService;
 
     /** The synchronization aid between listener and handler service. */
     private volatile CountDownLatch latch;
