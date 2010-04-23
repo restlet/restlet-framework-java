@@ -123,10 +123,15 @@ public abstract class SecretVerifier implements Verifier {
             String identifier = getIdentifier(request, response);
             char[] secret = getSecret(request, response);
 
-            if (verify(identifier, secret)) {
-                request.getClientInfo().setUser(new User(identifier));
-            } else {
-                result = RESULT_INVALID;
+            try {
+                if (verify(identifier, secret)) {
+                    request.getClientInfo().setUser(new User(identifier));
+                } else {
+                    result = RESULT_INVALID;
+                }
+            } catch (IllegalArgumentException iae) {
+                // The identifier is unknown.
+                result = RESULT_UNKNOWN;
             }
         }
 
@@ -134,14 +139,19 @@ public abstract class SecretVerifier implements Verifier {
     }
 
     /**
-     * Verifies that the identifier/secret couple is valid.
+     * Verifies that the identifier/secret couple is valid. It throws an
+     * IllegalArgumentException in case the identifier is either null or does
+     * not identify a user.
      * 
      * @param identifier
      *            The user identifier to match.
      * @param secret
      *            The provided secret to verify.
      * @return true if the identifier/secret couple is valid.
+     * @throws IllegalArgumentException
+     *             In case the identifier is unknown.
      */
-    public abstract boolean verify(String identifier, char[] secret);
+    public abstract boolean verify(String identifier, char[] secret)
+            throws IllegalArgumentException;
 
 }

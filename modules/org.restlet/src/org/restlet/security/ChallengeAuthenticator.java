@@ -206,6 +206,18 @@ public class ChallengeAuthenticator extends Authenticator {
 
                 challenge(response, true);
                 break;
+            case Verifier.RESULT_UNKNOWN:
+                if (loggable) {
+                    getLogger().fine(
+                            "Authentication failed. Identifier is unknown.");
+                }
+
+                if (isRechallenging()) {
+                    challenge(response, false);
+                } else {
+                    forbid(response);
+                }
+                break;
             }
         } else {
             getLogger().warning("Authentication failed. No verifier provided.");

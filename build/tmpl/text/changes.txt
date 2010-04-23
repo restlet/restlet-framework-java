@@ -43,6 +43,7 @@ Changes log
       - Fixed support of conditions on non-GET methods.
       - Fixed generation of ChallengeResponse instances for DIGEST
         authentication scheme.
+      - Allowed Verifier to indicate that an identifier doesn't exist.
     - Enhancements
       - Added support of request#onSent and #onResponse callbacks for 
         the net and httpClient extensions.

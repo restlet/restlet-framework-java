@@ -52,6 +52,9 @@ public interface Verifier {
     /** Unsupported credentials. */
     public final static int RESULT_UNSUPPORTED = 3;
 
+    /** Unknown user. */
+    public final static int RESULT_UNKNOWN = 5;
+
     /** Valid credentials provided. */
     public final static int RESULT_VALID = 4;
 
