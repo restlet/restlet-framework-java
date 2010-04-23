@@ -31,22 +31,15 @@
 package org.restlet.engine.nio;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.Socket;
-import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
-import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
-import java.nio.channels.WritableByteChannel;
 import java.security.cert.Certificate;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -56,19 +49,13 @@ import javax.net.ssl.SSLSocket;
 
 import org.restlet.Connector;
 import org.restlet.Message;
-import org.restlet.Response;
 import org.restlet.data.Parameter;
-import org.restlet.engine.ConnectorHelper;
 import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.http.header.HeaderUtils;
 import org.restlet.engine.http.io.Notifiable;
-import org.restlet.engine.io.NioUtils;
 import org.restlet.engine.security.SslUtils;
-import org.restlet.representation.EmptyRepresentation;
-import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.ReadableRepresentation;
 import org.restlet.representation.Representation;
-import org.restlet.service.ConnectorService;
 import org.restlet.util.Series;
 
 /**
@@ -115,8 +102,8 @@ public abstract class Connection<T extends Connector> implements Notifiable {
     public Connection(BaseHelper<T> helper, SocketChannel socketChannel)
             throws IOException {
         this.helper = helper;
-        this.inboundWay = new Way();
-        this.outboundWay = new Way();
+        this.inboundWay = new InboundWay();
+        this.outboundWay = new OutboundWay();
         this.persistent = helper.isPersistingConnections();
         this.pipelining = helper.isPipeliningConnections();
         this.state = ConnectionState.OPENING;
@@ -201,87 +188,6 @@ public abstract class Connection<T extends Connector> implements Notifiable {
     }
 
     /**
-     * Returns the inbound message entity if available.
-     * 
-     * @param headers
-     *            The headers to use.
-     * @return The inbound message if available.
-     */
-    public Representation createInboundEntity(Series<Parameter> headers) {
-        Representation result = null;
-        long contentLength = HeaderUtils.getContentLength(headers);
-        boolean chunkedEncoding = HeaderUtils.isChunkedEncoding(headers);
-
-        // In some cases there is an entity without a content-length header
-        boolean connectionClosed = HeaderUtils.isConnectionClose(headers);
-
-        // Create the representation
-        if ((contentLength != Representation.UNKNOWN_SIZE && contentLength != 0)
-                || chunkedEncoding || connectionClosed) {
-            InputStream inboundEntityStream = getInboundEntityStream(
-                    contentLength, chunkedEncoding);
-            ReadableByteChannel inboundEntityChannel = getInboundEntityChannel(
-                    contentLength, chunkedEncoding);
-
-            if (inboundEntityStream != null) {
-                result = new InputRepresentation(inboundEntityStream, null,
-                        contentLength) {
-
-                    @Override
-                    public String getText() throws IOException {
-                        try {
-                            return super.getText();
-                        } catch (IOException ioe) {
-                            throw ioe;
-                        } finally {
-                            release();
-                        }
-                    }
-
-                    @Override
-                    public void release() {
-                        if (getHelper().isTracing()) {
-                            synchronized (System.out) {
-                                System.out.println("\n");
-                            }
-                        }
-
-                        super.release();
-                        setInboundBusy(false);
-                    }
-                };
-            } else if (inboundEntityChannel != null) {
-                result = new ReadableRepresentation(inboundEntityChannel, null,
-                        contentLength) {
-                    @Override
-                    public void release() {
-                        super.release();
-                        setInboundBusy(false);
-                    }
-                };
-            }
-
-            result.setSize(contentLength);
-        } else {
-            result = new EmptyRepresentation();
-
-            // Mark the inbound as free so new messages can be read if possible
-            setInboundBusy(false);
-        }
-
-        if (headers != null) {
-            try {
-                result = HeaderUtils.copyResponseEntityHeaders(headers, result);
-            } catch (Throwable t) {
-                getLogger().log(Level.WARNING,
-                        "Error while parsing entity headers", t);
-            }
-        }
-
-        return result;
-    }
-
-    /**
      * Returns the socket IP address.
      * 
      * @return The socket IP address.
@@ -301,6 +207,15 @@ public abstract class Connection<T extends Connector> implements Notifiable {
     }
 
     /**
+     * Returns the inbound way.
+     * 
+     * @return The inbound way.
+     */
+    public Way getInboundWay() {
+        return inboundWay;
+    }
+
+    /**
      * Returns the logger.
      * 
      * @return The logger.
@@ -310,28 +225,12 @@ public abstract class Connection<T extends Connector> implements Notifiable {
     }
 
     /**
-     * Returns the response channel if it exists.
+     * Returns the outbound way.
      * 
-     * @return The response channel if it exists.
+     * @return The outbound way.
      */
-    public WritableByteChannel getOutboundEntityChannel(boolean chunked) {
-        return getSocketChannel();
-    }
-
-    /**
-     * Returns the response entity stream if it exists.
-     * 
-     * @return The response entity stream if it exists.
-     */
-    public OutputStream getOutboundEntityStream(boolean chunked) {
-        // OutputStream result = getOutboundChannel();
-        //
-        // if (chunked) {
-        // result = new ChunkedOutputStream(result);
-        // }
-        //
-        // return result;
-        return null;
+    public Way getOutboundWay() {
+        return outboundWay;
     }
 
     /**
@@ -341,31 +240,6 @@ public abstract class Connection<T extends Connector> implements Notifiable {
      */
     public int getPort() {
         return getSocket().getPort();
-    }
-
-    /**
-     * Returns the representation wrapping the given stream.
-     * 
-     * @param stream
-     *            The response input stream.
-     * @return The wrapping representation.
-     */
-    protected Representation getRepresentation(InputStream stream) {
-        return new InputRepresentation(stream, null);
-    }
-
-    // [ifndef gwt] method
-    /**
-     * Returns the representation wrapping the given channel.
-     * 
-     * @param channel
-     *            The response channel.
-     * @return The wrapping representation.
-     */
-    protected Representation getRepresentation(
-            java.nio.channels.ReadableByteChannel channel) {
-        return new org.restlet.representation.ReadableRepresentation(channel,
-                null);
     }
 
     /**
@@ -495,7 +369,7 @@ public abstract class Connection<T extends Connector> implements Notifiable {
      * Set the inbound busy state to false.
      */
     public void onEndReached() {
-        setInboundBusy(false);
+        // setInboundBusy(false);
     }
 
     /**
@@ -503,7 +377,7 @@ public abstract class Connection<T extends Connector> implements Notifiable {
      * {@link ConnectionState#CLOSING}.
      */
     public void onError() {
-        setInboundBusy(false);
+        // setInboundBusy(false);
         setState(ConnectionState.CLOSING);
     }
 
@@ -520,103 +394,6 @@ public abstract class Connection<T extends Connector> implements Notifiable {
     }
 
     /**
-     * Reads available bytes from the socket channel.
-     * 
-     * @return The number of bytes read.
-     * @throws IOException
-     */
-    public int readBytes() throws IOException {
-        getBuffer().clear();
-        int result = getSocketChannel().read(getBuffer());
-        getBuffer().flip();
-        return result;
-    }
-
-    /**
-     * Reads the next message received via the inbound stream or channel. Note
-     * that the optional entity is not fully read.
-     * 
-     * @throws IOException
-     */
-    protected abstract void readMessage() throws IOException;
-
-    /**
-     * Reads the header lines of the current message received.
-     * 
-     * @throws IOException
-     */
-    protected abstract void readMessageHeaders() throws IOException;
-
-    /**
-     * Read the current message line (start line or header line).
-     * 
-     * @return True if the message line was fully read.
-     * @throws IOException
-     */
-    protected boolean readMessageLine() throws IOException {
-        boolean result = false;
-        int next;
-
-        while (!result && getBuffer().hasRemaining()) {
-            next = (int) getBuffer().get();
-
-            if (HeaderUtils.isCarriageReturn(next)) {
-                next = (int) getBuffer().get();
-
-                if (HeaderUtils.isLineFeed(next)) {
-                    result = true;
-                } else {
-                    throw new IOException(
-                            "Missing carriage return character at the end of HTTP line");
-                }
-            } else {
-                getBuilder().append((char) next);
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * Reads inbound messages from the socket. Only one message at a time if
-     * pipelining isn't enabled.
-     */
-    public void readMessages() {
-        try {
-            if (canRead()) {
-                int result = readBytes();
-
-                while (getBuffer().hasRemaining()) {
-                    readMessage();
-
-                    if (!getBuffer().hasRemaining()) {
-                        // Attempt to read more
-                        result = readBytes();
-                    }
-                }
-
-                if (result == -1) {
-                    close(true);
-                }
-            }
-        } catch (Exception e) {
-            getLogger()
-                    .log(
-                            Level.INFO,
-                            "Error while reading a message. Closing the connection.",
-                            e);
-            close(false);
-        }
-    }
-
-    /**
-     * Reads the start line of the current message received.
-     * 
-     * @throws IOException
-     */
-    protected abstract void readMessageStart() throws IOException;
-
-    /**
      * Registers interest of this connection for NIO operations with the given
      * selector. If called several times, it just update the selection key with
      * the new interest operations.
@@ -629,13 +406,13 @@ public abstract class Connection<T extends Connector> implements Notifiable {
         int entityInterest = 0;
 
         try {
-            if (getIoState() == WayIoState.READ_INTEREST) {
+            if (getInboundWay().getIoState() == WayIoState.READ_INTEREST) {
                 socketInterest = socketInterest | SelectionKey.OP_READ;
             }
 
-            if (getOutboundIoState() == WayIoState.WRITE_INTEREST) {
+            if (getOutboundWay().getIoState() == WayIoState.WRITE_INTEREST) {
                 socketInterest = socketInterest | SelectionKey.OP_WRITE;
-            } else if (getOutboundIoState() == WayIoState.READ_INTEREST) {
+            } else if (getOutboundWay().getIoState() == WayIoState.READ_INTEREST) {
                 entityInterest = entityInterest | SelectionKey.OP_READ;
             }
 
@@ -644,20 +421,24 @@ public abstract class Connection<T extends Connector> implements Notifiable {
             }
 
             if (entityInterest > 0) {
-                Representation entity = (getOutboundMessage() == null) ? null
-                        : getOutboundMessage().getEntity();
+                Representation entity = (getOutboundWay().getMessage() == null) ? null
+                        : getOutboundWay().getMessage().getEntity();
 
                 if (entity instanceof ReadableRepresentation) {
                     ReadableRepresentation readableEntity = (ReadableRepresentation) entity;
 
-                    if (readableEntity.getChannel() instanceof SelectableChannel) {
-                        SelectableChannel selectableChannel = (SelectableChannel) readableEntity
-                                .getChannel();
+                    try {
+                        if (readableEntity.getChannel() instanceof SelectableChannel) {
+                            SelectableChannel selectableChannel = (SelectableChannel) readableEntity
+                                    .getChannel();
 
-                        if (!selectableChannel.isBlocking()) {
-                            selectableChannel.register(selector,
-                                    entityInterest, this);
+                            if (!selectableChannel.isBlocking()) {
+                                selectableChannel.register(selector,
+                                        entityInterest, this);
+                            }
                         }
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
                 }
             }
@@ -716,191 +497,5 @@ public abstract class Connection<T extends Connector> implements Notifiable {
     public void updateIoStates() {
 
     }
-
-    /**
-     * Write the next outbound message on the socket.
-     * 
-     */
-    protected abstract void writeMessage();
-
-    /**
-     * Writes the message and its headers.
-     * 
-     * @param message
-     *            The message to write.
-     * @throws IOException
-     *             if the Response could not be written to the network.
-     */
-    protected void writeMessage(Response message, Series<Parameter> headers)
-            throws IOException {
-        if (message != null) {
-            // Get the connector service to callback
-            Representation entity = isClientSide() ? message.getRequest()
-                    .getEntity() : message.getEntity();
-
-            if (entity != null) {
-                entity = entity.isAvailable() ? entity : null;
-            }
-
-            ConnectorService connectorService = ConnectorHelper
-                    .getConnectorService();
-
-            if (connectorService != null) {
-                connectorService.beforeSend(entity);
-            }
-
-            try {
-                writeMessageHead(message, headers);
-
-                if (entity != null) {
-                    // In order to workaround bug #6472250
-                    // (http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6472250),
-                    // it is very important to reuse that exact same
-                    // "entityStream" reference when manipulating the entity
-                    // stream, otherwise "insufficient data sent" exceptions
-                    // will occur in "fixedLengthMode"
-                    boolean chunked = HeaderUtils.isChunkedEncoding(headers);
-                    WritableByteChannel entityChannel = getOutboundEntityChannel(chunked);
-                    OutputStream entityStream = getOutboundEntityStream(chunked);
-                    writeMessageBody(entity, entityChannel, entityStream);
-
-                    if (entityStream != null) {
-                        entityStream.flush();
-                        entityStream.close();
-                    }
-                }
-            } catch (IOException ioe) {
-                // The stream was probably already closed by the
-                // connector. Probably OK, low message priority.
-                getLogger()
-                        .log(
-                                Level.FINE,
-                                "Exception while flushing and closing the entity stream.",
-                                ioe);
-            } finally {
-                if (entity != null) {
-                    entity.release();
-                }
-
-                if (connectorService != null) {
-                    connectorService.afterSend(entity);
-                }
-            }
-        }
-    }
-
-    /**
-     * Effectively writes the message body. The entity to write is guaranteed to
-     * be non null. Attempts to write the entity on the outbound channel or
-     * outbound stream by default.
-     * 
-     * @param entity
-     *            The representation to write as entity of the body.
-     * @param entityChannel
-     *            The outbound entity channel or null if a stream is used.
-     * @param entityStream
-     *            The outbound entity stream or null if a channel is used.
-     * @throws IOException
-     */
-    protected void writeMessageBody(Representation entity,
-            WritableByteChannel entityChannel, OutputStream entityStream)
-            throws IOException {
-        if (entityChannel != null) {
-            entity.write(entityChannel);
-        } else if (entityStream != null) {
-            entity.write(entityStream);
-            entityStream.flush();
-
-            if (getHelper().isTracing()) {
-                synchronized (System.out) {
-                    System.out.println("\n");
-                }
-            }
-        }
-    }
-
-    /**
-     * Writes the message head to the given output stream.
-     * 
-     * @param message
-     *            The source message.
-     * @param headStream
-     *            The target stream.
-     * @throws IOException
-     */
-    protected void writeMessageHead(Response message, OutputStream headStream,
-            Series<Parameter> headers) throws IOException {
-
-        // Write the head line
-        writeMessageStart();
-
-        // Write the headers
-        for (Parameter header : headers) {
-            HeaderUtils.writeHeaderLine(header, headStream);
-        }
-
-        // Write the end of the headers section
-        headStream.write(13); // CR
-        headStream.write(10); // LF
-        headStream.flush();
-    }
-
-    /**
-     * Writes the message head.
-     * 
-     * @param message
-     *            The message.
-     * @param headers
-     *            The series of headers to write.
-     * @throws IOException
-     */
-    protected void writeMessageHead(Response message, Series<Parameter> headers)
-            throws IOException {
-        // writeMessageHead(message, getSocketChannel(), headers);
-    }
-
-    /**
-     * Writes outbound messages to the socket. Only one response at a time if
-     * pipelining isn't enabled.
-     */
-    public void writeMessages() {
-        try {
-            Response message = null;
-
-            if (canWrite()) {
-                message = getOutboundMessages().peek();
-                setOutboundBusy((message != null));
-
-                if (message != null) {
-                    writeMessage(message);
-
-                    // Try to close the connection immediately.
-                    if ((getState() == ConnectionState.CLOSING) && !isBusy()) {
-                        close(true);
-                    }
-                }
-            }
-
-        } catch (Exception e) {
-            getLogger().log(Level.WARNING,
-                    "Error while writing an HTTP message: ", e.getMessage());
-            getLogger().log(Level.INFO, "Error while writing an HTTP message",
-                    e);
-        }
-    }
-
-    /**
-     * Writes the start line of the current outbound message.
-     * 
-     * @throws IOException
-     */
-    protected abstract void writeMessageStart() throws IOException;
-
-    /**
-     * Writes the start line of the current outbound message.
-     * 
-     * @throws IOException
-     */
-    protected abstract void writeMessageStart() throws IOException;
 
 }

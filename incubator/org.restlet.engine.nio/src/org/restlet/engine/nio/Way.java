@@ -30,9 +30,7 @@
 
 package org.restlet.engine.nio;
 
-import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.nio.channels.ReadableByteChannel;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -45,7 +43,7 @@ import org.restlet.engine.io.NioUtils;
  * 
  * @author Jerome Louvel
  */
-public class Way {
+public abstract class Way {
 
     /** The byte buffer. */
     private final ByteBuffer buffer;
@@ -117,41 +115,6 @@ public class Way {
      */
     public int getHeaderIndex() {
         return headerIndex;
-    }
-
-    /**
-     * Returns the inbound message entity channel if it exists.
-     * 
-     * @param size
-     *            The expected entity size or -1 if unknown.
-     * 
-     * @return The inbound message entity channel if it exists.
-     */
-    public ReadableByteChannel getEntityChannel(long size, boolean chunked) {
-        return null; // getSocketChannel();
-    }
-
-    /**
-     * Returns the inbound message entity stream if it exists.
-     * 
-     * @param size
-     *            The expected entity size or -1 if unknown.
-     * 
-     * @return The inbound message entity stream if it exists.
-     */
-    public InputStream getEntityStream(long size, boolean chunked) {
-        // InputStream result = null;
-        //
-        // if (chunked) {
-        // result = new ChunkedInputStream(this, getInboundStream());
-        // } else if (size >= 0) {
-        // result = new SizedInputStream(this, getInboundStream(), size);
-        // } else {
-        // result = new ClosingInputStream(this, getInboundStream());
-        // }
-        //
-        // return result;
-        return null;
     }
 
     /**
