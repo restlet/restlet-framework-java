@@ -135,8 +135,8 @@ public class HttpDigestTestCase extends TestCase {
 
             // Try authenticated request
             cr.getRequest().setMethod(Method.GET);
-            ChallengeResponse c2 = new ChallengeResponse(c1, cr.getRequest(),
-                    cr.getResponse(), "scott", "tiger".toCharArray());
+            ChallengeResponse c2 = new ChallengeResponse(c1, cr.getResponse(),
+                    "scott", "tiger".toCharArray());
             cr.setChallengeResponse(c2);
             cr.get();
             assertTrue(cr.getStatus().isSuccess());
