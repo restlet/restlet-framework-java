@@ -648,7 +648,6 @@ public final class MediaType extends Metadata {
     public static final MediaType TEXT_TSV = register(
             "text/tab-separated-values", "Tab-separated Values");
 
-    // [ifndef gwt] member
     public static final MediaType TEXT_URI_LIST = register("text/uri-list",
             "List of URIs");
 
