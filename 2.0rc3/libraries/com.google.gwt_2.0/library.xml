@@ -1,0 +1,16 @@
+<library id="gwt" dir="com.google.gwt">
+	<package name="com.google.gwt">
+		<maven>
+			<artifactId>gwt-servlet</artifactId>
+		</maven>
+	</package>
+	<version>2.0</version>
+	<release>3</release>
+	<distributions />
+	<homeUri>
+		http://code.google.com/webtoolkit/
+	</homeUri>
+	<downloadUri>
+		http://code.google.com/webtoolkit/download.html
+	</downloadUri>
+</library>

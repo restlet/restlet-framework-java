@@ -1,0 +1,7 @@
+<module>
+	<inherits name='com.google.gwt.user.User' />
+	<inherits name='com.google.gwt.http.HTTP' />
+	<generate-with class="org.restlet.rebind.ClientProxyGenerator">
+		<when-type-assignable class="org.restlet.resource.ClientProxy" />
+	</generate-with>
+</module>
