@@ -44,6 +44,7 @@ Changes log
       - Fixed generation of ChallengeResponse instances for DIGEST
         authentication scheme.
       - Allowed Verifier to indicate that an identifier doesn't exist.
+      - Fixed internal connector for Android edition.
     - Enhancements
       - Added support of request#onSent and #onResponse callbacks for 
         the net and httpClient extensions.
