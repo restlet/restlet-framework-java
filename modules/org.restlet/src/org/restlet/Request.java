@@ -30,19 +30,31 @@
 
 package org.restlet;
 
+import java.security.Principal;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.restlet.data.CacheDirective;
 import org.restlet.data.ChallengeResponse;
+import org.restlet.data.CharacterSet;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
 import org.restlet.data.Cookie;
+import org.restlet.data.Encoding;
+import org.restlet.data.Expectation;
+import org.restlet.data.Language;
+import org.restlet.data.MediaType;
 import org.restlet.data.Method;
+import org.restlet.data.Preference;
 import org.restlet.data.Protocol;
 import org.restlet.data.Range;
 import org.restlet.data.Reference;
+import org.restlet.data.Tag;
+import org.restlet.data.Warning;
 import org.restlet.engine.util.CookieSeries;
 import org.restlet.representation.Representation;
+import org.restlet.security.Role;
 import org.restlet.util.Series;
 
 /**
@@ -203,10 +215,61 @@ public class Request extends Message {
     public Request(Request request) {
         this(request.getMethod(), new Reference(request.getResourceRef()),
                 request.getEntity());
-        this.challengeResponse = request.getChallengeResponse();
-        this.clientInfo = request.getClientInfo();
-        this.conditions = request.getConditions();
-        this.cookies = request.getCookies();
+        challengeResponse = request.getChallengeResponse();
+
+        // Copy client info
+        ClientInfo rci = request.getClientInfo();
+        clientInfo = new ClientInfo();
+        for (Preference<CharacterSet> o : rci.getAcceptedCharacterSets()) {
+            clientInfo.getAcceptedCharacterSets().add(o);
+        }
+        for (Preference<Encoding> o : rci.getAcceptedEncodings()) {
+            clientInfo.getAcceptedEncodings().add(o);
+        }
+        for (Preference<Language> o : rci.getAcceptedLanguages()) {
+            clientInfo.getAcceptedLanguages().add(o);
+        }
+        for (Preference<MediaType> o : rci.getAcceptedMediaTypes()) {
+            clientInfo.getAcceptedMediaTypes().add(o);
+        }
+        clientInfo.setAddress(rci.getAddress());
+        clientInfo.setAgent(rci.getAgent());
+        clientInfo.setAgentAttributes(rci.getAgentAttributes());
+        clientInfo.setAgentProducts(rci.getAgentProducts());
+        clientInfo.setAuthenticated(rci.isAuthenticated());
+        for (Expectation o : rci.getExpectations()) {
+            clientInfo.getExpectations().add(o);
+        }
+        for (String o : rci.getForwardedAddresses()) {
+            clientInfo.getForwardedAddresses().add(o);
+        }
+        clientInfo.setFrom(rci.getFrom());
+        clientInfo.setPort(rci.getPort());
+        for (Principal o : rci.getPrincipals()) {
+            clientInfo.getPrincipals().add(o);
+        }
+        for (Role o : rci.getRoles()) {
+            clientInfo.getRoles().add(o);
+        }
+
+        // Copy conditions
+        conditions = new Conditions();
+        for (Tag o : request.getConditions().getMatch()) {
+            conditions.getMatch().add(o);
+        }
+        conditions.setModifiedSince(request.getConditions().getModifiedSince());
+        for (Tag o : request.getConditions().getNoneMatch()) {
+            conditions.getNoneMatch().add(o);
+        }
+        conditions.setRangeDate(request.getConditions().getRangeDate());
+        conditions.setRangeTag(request.getConditions().getRangeTag());
+        conditions.setUnmodifiedSince(request.getConditions()
+                .getUnmodifiedSince());
+
+        for (Cookie o : request.getCookies()) {
+            getCookies().add(o);            
+        }
+
         this.hostRef = request.getHostRef();
         this.maxForwards = request.getMaxForwards();
         this.originalRef = (request.getOriginalRef() == null) ? null
@@ -215,16 +278,24 @@ public class Request extends Message {
         // [ifndef gwt] instruction
         this.proxyChallengeResponse = request.getProxyChallengeResponse();
         this.protocol = request.getProtocol();
-        this.ranges = request.getRanges();
+        for (Range o : request.getRanges()) {
+            getRanges().add(o);
+        }
         this.referrerRef = (request.getReferrerRef() == null) ? null
                 : new Reference(request.getReferrerRef());
         this.rootRef = (request.getRootRef() == null) ? null : request
                 .getRootRef();
 
-        this.setAttributes(request.getAttributes());
-        this.setCacheDirectives(request.getCacheDirectives());
+        for (Entry<String, Object> e : request.getAttributes().entrySet()) {
+            getAttributes().put(e.getKey(), e.getValue());
+        }
+        for (CacheDirective o : request.getCacheDirectives()) {
+            getCacheDirectives().add(o);
+        }
         this.setOnSent(request.getOnSent());
-        this.setWarnings(request.getWarnings());
+        for (Warning o : request.getWarnings()) {
+            getWarnings().add(o);
+        }
         this.setDate(request.getDate());
     }
 
