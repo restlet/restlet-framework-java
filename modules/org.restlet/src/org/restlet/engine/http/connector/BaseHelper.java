@@ -270,6 +270,14 @@ public abstract class BaseHelper<T extends Connector> extends
     }
 
     /**
+     * Returns the controller task.
+     * @return The controller task.
+     */
+    public Controller getController() {
+        return controller;
+    }
+
+    /**
      * Returns the time for the controller thread to sleep between each control.
      * 
      * @return The time for the controller thread to sleep between each control.
