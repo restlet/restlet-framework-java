@@ -9,11 +9,13 @@ import java.nio.channels.Selector;
 import java.nio.channels.WritableByteChannel;
 import java.util.logging.Level;
 
+import org.restlet.Message;
 import org.restlet.Response;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.engine.ConnectorHelper;
+import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.http.header.HeaderUtils;
 import org.restlet.engine.util.StringUtils;
 import org.restlet.representation.ReadableRepresentation;
@@ -30,6 +32,40 @@ public class OutboundWay extends Way {
      */
     public OutboundWay(Connection<?> connection) {
         super(connection);
+        // this.outboundChannel = new OutboundStream(getSocket()
+        // .getOutputStream());
+
+    }
+
+    /**
+     * Adds the entity headers for the given response.
+     * 
+     * @param entity
+     *            The entity to inspect.
+     */
+    protected void addEntityHeaders(Representation entity,
+            Series<Parameter> headers) {
+        HeaderUtils.addEntityHeaders(entity, headers);
+    }
+
+    /**
+     * Adds the general headers from the {@link Message} to the {@link Series}.
+     * 
+     * @param message
+     *            The source {@link Message}.
+     * @param headers
+     *            The target headers {@link Series}.
+     */
+    protected void addGeneralHeaders(Message message, Series<Parameter> headers) {
+        if (!isPersistent()) {
+            headers.set(HeaderConstants.HEADER_CONNECTION, "close", true);
+        }
+
+        if (shouldBeChunked(message.getEntity())) {
+            headers.add(HeaderConstants.HEADER_TRANSFER_ENCODING, "chunked");
+        }
+
+        HeaderUtils.addGeneralHeaders(message, headers);
     }
 
     /**
@@ -117,6 +153,18 @@ public class OutboundWay extends Way {
                             cce);
             getConnection().setState(ConnectionState.CLOSING);
         }
+    }
+
+    /**
+     * Indicates if the entity should be chunked because its length is unknown.
+     * 
+     * @param entity
+     *            The entity to analyze.
+     * @return True if the entity should be chunked.
+     */
+    protected boolean shouldBeChunked(Representation entity) {
+        return (entity != null)
+                && (entity.getSize() == Representation.UNKNOWN_SIZE);
     }
 
     /**

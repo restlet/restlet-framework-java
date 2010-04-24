@@ -31,6 +31,9 @@ public class InboundWay extends Way {
      */
     public InboundWay(Connection<?> connection) {
         super(connection);
+        // this.inboundChannel = new InboundStream(getSocket()
+        // .getInputStream());
+
     }
 
     /**

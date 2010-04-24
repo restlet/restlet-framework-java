@@ -45,15 +45,9 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
 
 import org.restlet.Connector;
-import org.restlet.Message;
 import org.restlet.Response;
-import org.restlet.data.Parameter;
-import org.restlet.engine.http.header.HeaderConstants;
-import org.restlet.engine.http.header.HeaderUtils;
 import org.restlet.engine.http.io.Notifiable;
 import org.restlet.engine.security.SslUtils;
-import org.restlet.representation.Representation;
-import org.restlet.util.Series;
 
 /**
  * A network connection though which messages are exchanged by connectors.
@@ -91,8 +85,6 @@ public class Connection<T extends Connector> implements Notifiable {
      * 
      * @param helper
      *            The parent connector helper.
-     * @param socket
-     *            The underlying BIO socket.
      * @param socketChannel
      *            The underlying NIO socket channel.
      * @throws IOException
@@ -100,55 +92,12 @@ public class Connection<T extends Connector> implements Notifiable {
     public Connection(BaseHelper<T> helper, SocketChannel socketChannel)
             throws IOException {
         this.helper = helper;
-        this.inboundWay = new InboundWay(this);
-        this.outboundWay = new OutboundWay(this);
+        this.inboundWay = helper.createInboundWay(this);
+        this.outboundWay = helper.createOutboundWay(this);
         this.persistent = helper.isPersistingConnections();
         this.pipelining = helper.isPipeliningConnections();
         this.state = ConnectionState.OPENING;
         this.socketChannel = socketChannel;
-
-        if (getHelper().isTracing()) {
-            // this.inboundChannel = new TraceInputStream(new InboundStream(
-            // getSocket().getInputStream()));
-            // this.outboundChannel = new TraceOutputStream(new OutboundStream(
-            // getSocket().getOutputStream()));
-        } else {
-            // this.inboundChannel = new InboundStream(getSocket()
-            // .getInputStream());
-            // this.outboundChannel = new OutboundStream(getSocket()
-            // .getOutputStream());
-        }
-    }
-
-    /**
-     * Adds the entity headers for the given response.
-     * 
-     * @param entity
-     *            The entity to inspect.
-     */
-    protected void addEntityHeaders(Representation entity,
-            Series<Parameter> headers) {
-        HeaderUtils.addEntityHeaders(entity, headers);
-    }
-
-    /**
-     * Adds the general headers from the {@link Message} to the {@link Series}.
-     * 
-     * @param message
-     *            The source {@link Message}.
-     * @param headers
-     *            The target headers {@link Series}.
-     */
-    protected void addGeneralHeaders(Message message, Series<Parameter> headers) {
-        if (!isPersistent()) {
-            headers.set(HeaderConstants.HEADER_CONNECTION, "close", true);
-        }
-
-        if (shouldBeChunked(message.getEntity())) {
-            headers.add(HeaderConstants.HEADER_TRANSFER_ENCODING, "chunked");
-        }
-
-        HeaderUtils.addGeneralHeaders(message, headers);
     }
 
     /**
@@ -450,18 +399,6 @@ public class Connection<T extends Connector> implements Notifiable {
      */
     public void setState(ConnectionState state) {
         this.state = state;
-    }
-
-    /**
-     * Indicates if the entity should be chunked because its length is unknown.
-     * 
-     * @param entity
-     *            The entity to analyze.
-     * @return True if the entity should be chunked.
-     */
-    protected boolean shouldBeChunked(Representation entity) {
-        return (entity != null)
-                && (entity.getSize() == Representation.UNKNOWN_SIZE);
     }
 
 }

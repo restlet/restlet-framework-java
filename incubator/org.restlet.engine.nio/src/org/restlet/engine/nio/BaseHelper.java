@@ -199,6 +199,28 @@ public abstract class BaseHelper<T extends Connector> extends
     }
 
     /**
+     * Creates an inbound way for the given connection.
+     * 
+     * @param connection
+     *            The parent connection.
+     * @return The inbound way created.
+     */
+    public InboundWay createInboundWay(Connection<T> connection) {
+        return new InboundWay(connection);
+    }
+
+    /**
+     * Creates an outbound way for the given connection.
+     * 
+     * @param connection
+     *            The parent connection.
+     * @return The outbound way created.
+     */
+    public OutboundWay createOutboundWay(Connection<T> connection) {
+        return new OutboundWay(connection);
+    }
+
+    /**
      * Creates the response object.
      * 
      * @param request
