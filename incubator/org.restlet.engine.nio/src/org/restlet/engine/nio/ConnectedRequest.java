@@ -40,6 +40,7 @@ import java.util.logging.Level;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
+import org.restlet.Server;
 import org.restlet.data.CacheDirective;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ClientInfo;
@@ -99,6 +100,9 @@ public class ConnectedRequest extends Request {
     /** Indicates if the conditions were parsed and added. */
     private volatile boolean conditionAdded;
 
+    /** The parent network connection. */
+    private final Connection<Server> connection;
+
     /** The context of the parent connector. */
     private final Context context;
 
@@ -111,29 +115,26 @@ public class ConnectedRequest extends Request {
     /** Indicates if the ranges data was parsed and added. */
     private volatile boolean rangesAdded;
 
-    /** Indicates if the referrer was parsed and added. */
-    private volatile boolean referrerAdded;
-
-    /** Indicates if the security data was parsed and added. */
-    private volatile boolean securityAdded;
-
     /** Indicates if the recipients info was parsed and added. */
     private volatile boolean recipientsInfoAdded;
 
-    /** Indicates if the warning data was parsed and added. */
-    private volatile boolean warningsAdded;
-
-    /** The parent network connection. */
-    private final ServerConnection connection;
-
-    /** The user principal. */
-    private final Principal userPrincipal;
+    /** Indicates if the referrer was parsed and added. */
+    private volatile boolean referrerAdded;
 
     /** The target resource URI. */
     private volatile String resourceUri;
 
+    /** Indicates if the security data was parsed and added. */
+    private volatile boolean securityAdded;
+
+    /** The user principal. */
+    private final Principal userPrincipal;
+
     /** The protocol version. */
     private volatile String version;
+
+    /** Indicates if the warning data was parsed and added. */
+    private volatile boolean warningsAdded;
 
     /**
      * Constructor.
@@ -149,7 +150,7 @@ public class ConnectedRequest extends Request {
      * @param version
      *            The protocol version.
      */
-    public ConnectedRequest(Context context, ServerConnection connection,
+    public ConnectedRequest(Context context, Connection<Server> connection,
             String methodName, String resourceUri, String version) {
         super();
         this.context = context;
@@ -470,7 +471,7 @@ public class ConnectedRequest extends Request {
         return result;
     }
 
-    protected ServerConnection getConnection() {
+    protected Connection<Server> getConnection() {
         return connection;
     }
 

@@ -167,27 +167,25 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
     public void handleOutbound(Response response) {
         if (response != null) {
             ConnectedRequest request = (ConnectedRequest) response.getRequest();
-            ServerConnection connection = request.getConnection();
+            Connection<Server> connection = request.getConnection();
 
             if (request.isExpectingResponse()) {
                 // Check if the response is indeed the next one to be written
                 // for this connection
-                Response nextResponse = connection.getMessages().peek();
+                Response nextResponse = connection.getInboundWay()
+                        .getMessages().peek();
 
                 if ((nextResponse != null)
                         && (nextResponse.getRequest() == request)) {
                     // Add the response to the outbound queue
-                    connection.getOutboundMessages().add(response);
+                    connection.getOutboundWay().getMessages().add(response);
 
                     // Check if a final response was received for the request
                     if (!response.getStatus().isInformational()) {
                         // Remove the matching request from the inbound queue
-                        connection.getMessages().remove(nextResponse);
+                        connection.getInboundWay().getMessages().remove(
+                                nextResponse);
                     }
-
-                    // Attempt to directly write the response, preventing a
-                    // thread context switch
-                    connection.writeMessages();
                 } else {
                     // Put the response at the end of the queue
                     getOutboundMessages().add(response);
@@ -195,7 +193,7 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
             } else {
                 // The request expects no response, the connection is free to
                 // read.
-                connection.setInboundBusy(false);
+                connection.getInboundWay().setBusy(false);
             }
         }
     }

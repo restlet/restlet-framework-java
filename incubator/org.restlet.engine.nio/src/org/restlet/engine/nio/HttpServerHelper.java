@@ -57,7 +57,7 @@ public class HttpServerHelper extends BaseServerHelper {
     @Override
     protected Connection<Server> createConnection(BaseHelper<Server> helper,
             SocketChannel socketChannel) throws IOException {
-        return new ServerConnection(helper, socketChannel);
+        return new Connection<Server>(helper, socketChannel);
     }
 
     @Override

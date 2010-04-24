@@ -32,9 +32,6 @@ package org.restlet.engine.nio;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.nio.channels.ClosedChannelException;
-import java.nio.channels.SelectableChannel;
-import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.security.cert.Certificate;
@@ -49,12 +46,12 @@ import javax.net.ssl.SSLSocket;
 
 import org.restlet.Connector;
 import org.restlet.Message;
+import org.restlet.Response;
 import org.restlet.data.Parameter;
 import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.http.header.HeaderUtils;
 import org.restlet.engine.http.io.Notifiable;
 import org.restlet.engine.security.SslUtils;
-import org.restlet.representation.ReadableRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 
@@ -66,7 +63,8 @@ import org.restlet.util.Series;
  *            The parent connector type.
  * @author Jerome Louvel
  */
-public abstract class Connection<T extends Connector> implements Notifiable {
+public class Connection<T extends Connector> implements Notifiable {
+
     /** The parent connector helper. */
     private final BaseHelper<T> helper;
 
@@ -102,8 +100,8 @@ public abstract class Connection<T extends Connector> implements Notifiable {
     public Connection(BaseHelper<T> helper, SocketChannel socketChannel)
             throws IOException {
         this.helper = helper;
-        this.inboundWay = new InboundWay();
-        this.outboundWay = new OutboundWay();
+        this.inboundWay = new InboundWay(this);
+        this.outboundWay = new OutboundWay(this);
         this.persistent = helper.isPersistingConnections();
         this.pipelining = helper.isPipeliningConnections();
         this.state = ConnectionState.OPENING;
@@ -185,6 +183,19 @@ public abstract class Connection<T extends Connector> implements Notifiable {
         } finally {
             setState(ConnectionState.CLOSED);
         }
+    }
+
+    /**
+     * Asks the server connector to immediately commit the given response
+     * associated to this request, making it ready to be sent back to the
+     * client. Note that all server connectors don't necessarily support this
+     * feature.
+     * 
+     * @param response
+     *            The response to commit.
+     */
+    public void commit(Response response) {
+        getHelper().getOutboundMessages().add(response);
     }
 
     /**
@@ -330,6 +341,15 @@ public abstract class Connection<T extends Connector> implements Notifiable {
     }
 
     /**
+     * Indicates if the connection is busy.
+     * 
+     * @return True if the connection is busy.
+     */
+    public boolean isBusy() {
+        return false; // isInboundBusy() || isOutboundBusy();
+    }
+
+    /**
      * Indicates if it is a client-side connection.
      * 
      * @return True if it is a client-side connection.
@@ -394,62 +414,12 @@ public abstract class Connection<T extends Connector> implements Notifiable {
     }
 
     /**
-     * Registers interest of this connection for NIO operations with the given
-     * selector. If called several times, it just update the selection key with
-     * the new interest operations.
      * 
      * @param selector
-     *            The selector to register with.
      */
     public void registerInterest(Selector selector) {
-        int socketInterest = 0;
-        int entityInterest = 0;
-
-        try {
-            if (getInboundWay().getIoState() == WayIoState.READ_INTEREST) {
-                socketInterest = socketInterest | SelectionKey.OP_READ;
-            }
-
-            if (getOutboundWay().getIoState() == WayIoState.WRITE_INTEREST) {
-                socketInterest = socketInterest | SelectionKey.OP_WRITE;
-            } else if (getOutboundWay().getIoState() == WayIoState.READ_INTEREST) {
-                entityInterest = entityInterest | SelectionKey.OP_READ;
-            }
-
-            if (socketInterest > 0) {
-                getSocketChannel().register(selector, socketInterest, this);
-            }
-
-            if (entityInterest > 0) {
-                Representation entity = (getOutboundWay().getMessage() == null) ? null
-                        : getOutboundWay().getMessage().getEntity();
-
-                if (entity instanceof ReadableRepresentation) {
-                    ReadableRepresentation readableEntity = (ReadableRepresentation) entity;
-
-                    try {
-                        if (readableEntity.getChannel() instanceof SelectableChannel) {
-                            SelectableChannel selectableChannel = (SelectableChannel) readableEntity
-                                    .getChannel();
-
-                            if (!selectableChannel.isBlocking()) {
-                                selectableChannel.register(selector,
-                                        entityInterest, this);
-                            }
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        } catch (ClosedChannelException cce) {
-            getLogger()
-                    .log(
-                            Level.WARNING,
-                            "Unable to register NIO interest operations for this connection",
-                            cce);
-            setState(ConnectionState.CLOSING);
-        }
+        getInboundWay().registerInterest(selector);
+        getOutboundWay().registerInterest(selector);
     }
 
     /**
@@ -492,10 +462,6 @@ public abstract class Connection<T extends Connector> implements Notifiable {
     protected boolean shouldBeChunked(Representation entity) {
         return (entity != null)
                 && (entity.getSize() == Representation.UNKNOWN_SIZE);
-    }
-
-    public void updateIoStates() {
-
     }
 
 }

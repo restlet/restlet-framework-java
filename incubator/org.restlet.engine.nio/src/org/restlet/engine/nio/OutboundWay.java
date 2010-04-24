@@ -2,13 +2,21 @@ package org.restlet.engine.nio;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.channels.ClosedChannelException;
+import java.nio.channels.SelectableChannel;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
 import java.nio.channels.WritableByteChannel;
 import java.util.logging.Level;
 
 import org.restlet.Response;
+import org.restlet.data.CharacterSet;
 import org.restlet.data.Parameter;
+import org.restlet.data.Protocol;
 import org.restlet.engine.ConnectorHelper;
 import org.restlet.engine.http.header.HeaderUtils;
+import org.restlet.engine.util.StringUtils;
+import org.restlet.representation.ReadableRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.service.ConnectorService;
 import org.restlet.util.Series;
@@ -16,12 +24,34 @@ import org.restlet.util.Series;
 public class OutboundWay extends Way {
 
     /**
+     * Constructor.
+     * 
+     * @param connection
+     */
+    public OutboundWay(Connection<?> connection) {
+        super(connection);
+    }
+
+    /**
+     * Adds the response headers.
+     * 
+     * @param response
+     *            The response to inspect.
+     * @param headers
+     *            The headers series to update.
+     */
+    protected void addResponseHeaders(Response response,
+            Series<Parameter> headers) {
+        HeaderUtils.addResponseHeaders(response, headers);
+    }
+
+    /**
      * Returns the response channel if it exists.
      * 
      * @return The response channel if it exists.
      */
     public WritableByteChannel getOutboundEntityChannel(boolean chunked) {
-        return getSocketChannel();
+        return getConnection().getSocketChannel();
     }
 
     /**
@@ -40,11 +70,76 @@ public class OutboundWay extends Way {
         return null;
     }
 
+    @Override
+    public void registerInterest(Selector selector) {
+        int socketInterest = 0;
+        int entityInterest = 0;
+
+        try {
+            if (getIoState() == WayIoState.WRITE_INTEREST) {
+                socketInterest = socketInterest | SelectionKey.OP_WRITE;
+            } else if (getIoState() == WayIoState.READ_INTEREST) {
+                entityInterest = entityInterest | SelectionKey.OP_READ;
+            }
+
+            if (socketInterest > 0) {
+                getConnection().getSocketChannel().register(selector,
+                        socketInterest, this);
+            }
+
+            if (entityInterest > 0) {
+                Representation entity = (getMessage() == null) ? null
+                        : getMessage().getEntity();
+
+                if (entity instanceof ReadableRepresentation) {
+                    ReadableRepresentation readableEntity = (ReadableRepresentation) entity;
+
+                    try {
+                        if (readableEntity.getChannel() instanceof SelectableChannel) {
+                            SelectableChannel selectableChannel = (SelectableChannel) readableEntity
+                                    .getChannel();
+
+                            if (!selectableChannel.isBlocking()) {
+                                selectableChannel.register(selector,
+                                        entityInterest, this);
+                            }
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        } catch (ClosedChannelException cce) {
+            getLogger()
+                    .log(
+                            Level.WARNING,
+                            "Unable to register NIO interest operations for this connection",
+                            cce);
+            getConnection().setState(ConnectionState.CLOSING);
+        }
+    }
+
     /**
-     * Write the next outbound message on the socket.
+     * Write the given response on the socket.
      * 
+     * @param response
+     *            The response to write.
      */
-    protected abstract void writeMessage();
+    @Override
+    protected void writeMessage(Response response) {
+        if (getOutboundMessageState() == null) {
+            setOutboundMessageState(WayMessageState.START_LINE);
+            getOutboundBuilder().delete(0, getOutboundBuilder().length());
+        }
+
+        while (getOutboundBuffer().hasRemaining()) {
+            if (getOutboundMessageState() == WayMessageState.START_LINE) {
+                writeMessageStart();
+            } else if (getMessageState() == WayMessageState.HEADERS) {
+                readMessageHeaders();
+            }
+        }
+    }
 
     /**
      * Writes the message and its headers.
@@ -58,8 +153,8 @@ public class OutboundWay extends Way {
             throws IOException {
         if (message != null) {
             // Get the connector service to callback
-            Representation entity = isClientSide() ? message.getRequest()
-                    .getEntity() : message.getEntity();
+            Representation entity = getConnection().isClientSide() ? message
+                    .getRequest().getEntity() : message.getEntity();
 
             if (entity != null) {
                 entity = entity.isAvailable() ? entity : null;
@@ -133,12 +228,6 @@ public class OutboundWay extends Way {
         } else if (entityStream != null) {
             entity.write(entityStream);
             entityStream.flush();
-
-            if (getHelper().isTracing()) {
-                synchronized (System.out) {
-                    System.out.println("\n");
-                }
-            }
         }
     }
 
@@ -191,7 +280,7 @@ public class OutboundWay extends Way {
             Response message = null;
 
             if (canWrite()) {
-                message = getOutboundMessages().peek();
+                message = getMessages().peek();
                 setOutboundBusy((message != null));
 
                 if (message != null) {
@@ -212,18 +301,42 @@ public class OutboundWay extends Way {
         }
     }
 
-    /**
-     * Writes the start line of the current outbound message.
-     * 
-     * @throws IOException
-     */
-    protected abstract void writeMessageStart() throws IOException;
+    @Override
+    protected void writeMessageStart() throws IOException {
+        getOutboundBuilder().delete(0, getOutboundBuilder().length());
+
+        Protocol protocol = getOutboundMessage().getRequest().getProtocol();
+        String protocolVersion = protocol.getVersion();
+        String version = protocol.getTechnicalName() + '/'
+                + ((protocolVersion == null) ? "1.1" : protocolVersion);
+        getOutboundBuilder().append(
+                version.getBytes(CharacterSet.ISO_8859_1.getName()));
+        getOutboundBuilder().append(' ');
+        getOutboundBuilder().append(
+                StringUtils.getAsciiBytes(Integer.toString(getOutboundMessage()
+                        .getStatus().getCode())));
+        getOutboundBuilder().append(' ');
+
+        if (getOutboundMessage().getStatus().getDescription() != null) {
+            getOutboundBuilder().append(
+                    StringUtils.getLatin1Bytes(getOutboundMessage().getStatus()
+                            .getDescription()));
+        } else {
+            getOutboundBuilder().append(
+                    StringUtils.getAsciiBytes(("Status " + getOutboundMessage()
+                            .getStatus().getCode())));
+        }
+
+        getOutboundBuilder().append("\r\n");
+    }
 
     /**
      * Writes the start line of the current outbound message.
      * 
      * @throws IOException
      */
-    protected abstract void writeMessageStart() throws IOException;
+    protected void writeMessageStart() throws IOException {
+
+    }
 
 }

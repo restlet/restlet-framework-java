@@ -31,7 +31,6 @@
 package org.restlet.engine.nio;
 
 import java.io.IOException;
-import java.net.Socket;
 import java.nio.channels.SocketChannel;
 import java.util.Queue;
 import java.util.Set;
@@ -492,10 +491,10 @@ public abstract class BaseHelper<T extends Connector> extends
             connection.setState(ConnectionState.CLOSING);
 
             // connection.setInboundBusy(false);
-            connection.setInboundIoState(IoState.)
-            
+            // connection.setInboundIoState(IoState.)
+
             // connection.setOutboundBusy(false);
-            connection.setInboundIoState(IoState.)
+            // connection.setInboundIoState(IoState.)
         }
 
         // Await for completion of pending workers
@@ -525,5 +524,4 @@ public abstract class BaseHelper<T extends Connector> extends
             }
         }
     }
-
 }

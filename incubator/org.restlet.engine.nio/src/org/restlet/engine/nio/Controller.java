@@ -46,7 +46,7 @@ import org.restlet.Response;
  */
 public class Controller implements Runnable {
 
-    /** The parent server helper. */
+    /** The parent connector helper. */
     private final BaseHelper<?> helper;
 
     /** Indicates if the controller is overloaded. */
@@ -73,15 +73,8 @@ public class Controller implements Runnable {
             this.selector = Selector.open();
         } catch (IOException ioe) {
             Context.getCurrentLogger().log(Level.WARNING,
-                    "Unable to create NIO task", ioe);
+                    "Unable to open the controller's NIO selector", ioe);
         }
-    }
-
-    /**
-     * Abort the controller.
-     */
-    public void shutdown() throws IOException {
-        setRunning(false);
     }
 
     /**
@@ -104,23 +97,9 @@ public class Controller implements Runnable {
 
         // Select the connections ready for NIO operations
         if (getSelector().selectNow() > 0) {
-            Connection<?> conn = null;
-
             for (SelectionKey key : getSelector().selectedKeys()) {
-                conn = (Connection<?>) key.attachment();
-
-                if (conn != null) {
-                    if (key.isWritable()
-                            && ((isOverloaded() && getHelper().isServerSide()) || conn
-                                    .canWrite())) {
-                        conn.writeMessages();
-                    }
-
-                    if (key.isReadable()
-                            && ((isOverloaded() && getHelper().isClientSide()) || conn
-                                    .canRead())) {
-                        conn.readMessages();
-                    }
+                if (key.attachment() != null) {
+                    ((Way) key.attachment()).select(key);
                 }
             }
         }
@@ -303,6 +282,13 @@ public class Controller implements Runnable {
      */
     public void setRunning(boolean running) {
         this.running = running;
+    }
+
+    /**
+     * Abort the controller.
+     */
+    public void shutdown() throws IOException {
+        setRunning(false);
     }
 
 }

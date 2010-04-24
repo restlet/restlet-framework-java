@@ -31,8 +31,11 @@
 package org.restlet.engine.nio;
 
 import java.nio.ByteBuffer;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Logger;
 
 import org.restlet.Response;
 import org.restlet.engine.io.NioUtils;
@@ -54,6 +57,9 @@ public abstract class Way {
     /** The line builder index. */
     private volatile int builderIndex;
 
+    /** The parent connection. */
+    private final Connection<?> connection;
+
     /** The header index. */
     private volatile int headerIndex;
 
@@ -71,10 +77,14 @@ public abstract class Way {
 
     /**
      * Constructor.
+     * 
+     * @param connection
+     *            The parent connection.
      */
-    public Way() {
+    public Way(Connection<?> connection) {
         this.buffer = ByteBuffer.allocate(NioUtils.BUFFER_SIZE);
         this.builder = new StringBuilder();
+        this.connection = connection;
         this.messageState = WayMessageState.NONE;
         this.ioState = WayIoState.IDLE;
         this.message = null;
@@ -109,6 +119,15 @@ public abstract class Way {
     }
 
     /**
+     * Returns the parent connection.
+     * 
+     * @return The parent connection.
+     */
+    public Connection<?> getConnection() {
+        return connection;
+    }
+
+    /**
      * Returns the header index.
      * 
      * @return The header index.
@@ -124,6 +143,15 @@ public abstract class Way {
      */
     public WayIoState getIoState() {
         return ioState;
+    }
+
+    /**
+     * Returns the logger.
+     * 
+     * @return The logger.
+     */
+    public Logger getLogger() {
+        return getConnection().getLogger();
     }
 
     /**
@@ -152,6 +180,18 @@ public abstract class Way {
     public WayMessageState getMessageState() {
         return messageState;
     }
+
+    /**
+     * Registers interest of this connection way for NIO operations with the
+     * given selector. If called several times, it just update the selection key
+     * with the new interest operations.
+     * 
+     * @param selector
+     *            The selector to register with.
+     */
+    public abstract void registerInterest(Selector selector);
+
+    public abstract void select(SelectionKey key);
 
     /**
      * Sets the line builder index.
