@@ -31,13 +31,13 @@
 package org.restlet.ext.xstream;
 
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.Writer;
 import java.util.logging.Level;
 
 import org.restlet.Context;
 import org.restlet.data.MediaType;
-import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
+import org.restlet.representation.WriterRepresentation;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.HierarchicalStreamDriver;
@@ -54,7 +54,7 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
  * @param <T>
  *            The type to wrap.
  */
-public class XstreamRepresentation<T> extends OutputRepresentation {
+public class XstreamRepresentation<T> extends WriterRepresentation {
 
     /** The XStream JSON driver class. */
     private Class<? extends HierarchicalStreamDriver> jsonDriverClass;
@@ -224,11 +224,11 @@ public class XstreamRepresentation<T> extends OutputRepresentation {
     }
 
     @Override
-    public void write(OutputStream outputStream) throws IOException {
+    public void write(Writer writer) throws IOException {
         if (representation != null) {
-            representation.write(outputStream);
+            representation.write(writer);
         } else if (object != null) {
-            getXstream().toXML(object, outputStream);
+            getXstream().toXML(object, writer);
         }
     }
 }

@@ -485,14 +485,9 @@ public abstract class Representation extends RepresentationInfo {
         String result = null;
 
         if (isAvailable() && getSize() != 0) {
-            final java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
-            write(baos);
-
-            if (getCharacterSet() != null) {
-                result = baos.toString(getCharacterSet().getName());
-            } else {
-                result = baos.toString();
-            }
+            java.io.StringWriter sw = new java.io.StringWriter();
+            write(sw);
+            result = sw.toString();
         }
 
         return result;

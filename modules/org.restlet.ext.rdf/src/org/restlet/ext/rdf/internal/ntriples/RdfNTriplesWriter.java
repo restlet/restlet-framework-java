@@ -30,10 +30,8 @@
 
 package org.restlet.ext.rdf.internal.ntriples;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import java.io.Writer;
 
 import org.restlet.data.Reference;
 import org.restlet.ext.rdf.Graph;
@@ -48,24 +46,24 @@ import org.restlet.ext.rdf.Literal;
  */
 public class RdfNTriplesWriter extends GraphHandler {
 
-    /** Buffered writer. */
-    private BufferedWriter bw;
+    /** The character writer. */
+    private Writer writer;
 
     /**
      * Constructor.
      * 
-     * @param outputStream
-     *            The output stream to write to.
+     * @param writer
+     *            The character writer.
      * @throws IOException
      */
-    public RdfNTriplesWriter(OutputStream outputStream) throws IOException {
+    public RdfNTriplesWriter(Writer writer) throws IOException {
         super();
-        this.bw = new BufferedWriter(new OutputStreamWriter(outputStream));
+        this.writer = writer;
     }
 
     @Override
     public void endGraph() throws IOException {
-        this.bw.flush();
+        this.writer.flush();
     }
 
     @Override
@@ -84,11 +82,11 @@ public class RdfNTriplesWriter extends GraphHandler {
     public void link(Reference source, Reference typeRef, Literal target) {
         try {
             write(source);
-            this.bw.write(" ");
+            this.writer.write(" ");
             write(typeRef);
-            this.bw.write(" ");
+            this.writer.write(" ");
             write(target);
-            this.bw.write(".\n");
+            this.writer.write(".\n");
         } catch (IOException e) {
             org.restlet.Context.getCurrentLogger().warning(
                     "Cannot write the representation of a statement due to: "
@@ -100,11 +98,11 @@ public class RdfNTriplesWriter extends GraphHandler {
     public void link(Reference source, Reference typeRef, Reference target) {
         try {
             write(source);
-            this.bw.write(" ");
+            this.writer.write(" ");
             write(typeRef);
-            this.bw.write(" ");
+            this.writer.write(" ");
             write(target);
-            this.bw.write(".\n");
+            this.writer.write(".\n");
         } catch (IOException e) {
             org.restlet.Context.getCurrentLogger().warning(
                     "Cannot write the representation of a statement due to: "
@@ -121,9 +119,9 @@ public class RdfNTriplesWriter extends GraphHandler {
      */
     private void write(Literal literal) throws IOException {
         // Write it as a string
-        this.bw.write("\"");
-        this.bw.write(literal.getValue());
-        this.bw.write("\"");
+        this.writer.write("\"");
+        this.writer.write(literal.getValue());
+        this.writer.write("\"");
     }
 
     /**
@@ -136,11 +134,11 @@ public class RdfNTriplesWriter extends GraphHandler {
     private void write(Reference reference) throws IOException {
         String uri = reference.toString();
         if (Link.isBlankRef(reference)) {
-            this.bw.write(uri);
+            this.writer.write(uri);
         } else {
-            this.bw.append("<");
-            this.bw.append(uri);
-            this.bw.append(">");
+            this.writer.append("<");
+            this.writer.append(uri);
+            this.writer.append(">");
         }
     }
 

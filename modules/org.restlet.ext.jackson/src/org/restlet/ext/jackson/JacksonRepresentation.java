@@ -31,14 +31,14 @@
 package org.restlet.ext.jackson;
 
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.Writer;
 import java.util.logging.Level;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
-import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
+import org.restlet.representation.WriterRepresentation;
 
 /**
  * Representation based on the Jackson library. It can serialize and deserialize
@@ -49,7 +49,7 @@ import org.restlet.representation.Representation;
  * @param <T>
  *            The type to wrap.
  */
-public class JacksonRepresentation<T> extends OutputRepresentation {
+public class JacksonRepresentation<T> extends WriterRepresentation {
 
     /** The (parsed) object to format. */
     private T object;
@@ -194,11 +194,11 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
     }
 
     @Override
-    public void write(OutputStream outputStream) throws IOException {
+    public void write(Writer writer) throws IOException {
         if (jsonRepresentation != null) {
-            jsonRepresentation.write(outputStream);
+            jsonRepresentation.write(writer);
         } else if (object != null) {
-            getObjectMapper().writeValue(outputStream, object);
+            getObjectMapper().writeValue(writer, object);
         }
     }
 }

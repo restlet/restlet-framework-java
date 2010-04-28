@@ -30,11 +30,11 @@
 
 package org.restlet.representation;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.Reader;
+import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.util.logging.Level;
 
 import org.restlet.Context;
@@ -48,14 +48,14 @@ import org.restlet.data.MediaType;
  * 
  * @author Jerome Louvel
  */
-public class StringRepresentation extends StreamRepresentation {
+public class StringRepresentation extends CharacterRepresentation {
 
     /** The string value. */
     private volatile CharSequence text;
 
     /**
      * Constructor. The following metadata are used by default: "text/plain"
-     * media type, no language and the ISO-8859-1 character set.
+     * media type, no language and the UTF-8 character set.
      * 
      * @param text
      *            The string value.
@@ -66,7 +66,7 @@ public class StringRepresentation extends StreamRepresentation {
 
     /**
      * Constructor. The following metadata are used by default: "text/plain"
-     * media type, no language and the ISO-8859-1 character set.
+     * media type, no language and the UTF-8 character set.
      * 
      * @param text
      *            The string value.
@@ -79,7 +79,7 @@ public class StringRepresentation extends StreamRepresentation {
 
     /**
      * Constructor. The following metadata are used by default: no language and
-     * the ISO-8859-1 character set.
+     * the UTF-8 character set.
      * 
      * @param text
      *            The string value.
@@ -91,8 +91,8 @@ public class StringRepresentation extends StreamRepresentation {
     }
 
     /**
-     * Constructor. The following metadata are used by default: ISO-8859-1
-     * character set.
+     * Constructor. The following metadata are used by default: UTF-8 character
+     * set.
      * 
      * @param text
      *            The string value.
@@ -103,7 +103,7 @@ public class StringRepresentation extends StreamRepresentation {
      */
     public StringRepresentation(CharSequence text, MediaType mediaType,
             Language language) {
-        this(text, mediaType, language, CharacterSet.ISO_8859_1);
+        this(text, mediaType, language, CharacterSet.UTF_8);
     }
 
     /**
@@ -131,20 +131,9 @@ public class StringRepresentation extends StreamRepresentation {
     }
 
     @Override
-    public InputStream getStream() throws IOException {
+    public Reader getReader() throws IOException {
         if (getText() != null) {
-            if (getCharacterSet() != null) {
-                // [ifndef gwt] instruction
-                return new ByteArrayInputStream(getText().getBytes(
-                        getCharacterSet().getName()));
-                // [ifdef gwt] line uncomment
-                // return new java.io.StringBufferInputStream(getText());
-            }
-
-            // [ifndef gwt] line
-            return new ByteArrayInputStream(getText().getBytes());
-            // [ifdef gwt] line uncomment
-            // return new java.io.StringBufferInputStream(getText());
+            return new StringReader(getText());
         }
 
         return null;
@@ -218,19 +207,10 @@ public class StringRepresentation extends StreamRepresentation {
 
     // [ifndef gwt] method
     @Override
-    public void write(OutputStream outputStream) throws IOException {
+    public void write(Writer writer) throws IOException {
         if (getText() != null) {
-            java.io.OutputStreamWriter osw = null;
-
-            if (getCharacterSet() != null) {
-                osw = new java.io.OutputStreamWriter(outputStream,
-                        getCharacterSet().getName());
-            } else {
-                osw = new java.io.OutputStreamWriter(outputStream);
-            }
-
-            osw.write(getText());
-            osw.flush();
+            writer.write(getText());
+            writer.flush();
         }
     }
 

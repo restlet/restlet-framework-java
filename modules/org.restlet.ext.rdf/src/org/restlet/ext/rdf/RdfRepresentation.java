@@ -31,7 +31,7 @@
 package org.restlet.ext.rdf;
 
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.Writer;
 
 import org.restlet.Context;
 import org.restlet.data.MediaType;
@@ -44,8 +44,8 @@ import org.restlet.ext.rdf.internal.turtle.RdfTurtleReader;
 import org.restlet.ext.rdf.internal.turtle.RdfTurtleWriter;
 import org.restlet.ext.rdf.internal.xml.RdfXmlReader;
 import org.restlet.ext.rdf.internal.xml.RdfXmlWriter;
-import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
+import org.restlet.representation.WriterRepresentation;
 
 /**
  * Generic RDF representation. Provides support for the Resource Description
@@ -55,7 +55,7 @@ import org.restlet.representation.Representation;
  * 
  * @author Jerome Louvel
  */
-public class RdfRepresentation extends OutputRepresentation {
+public class RdfRepresentation extends WriterRepresentation {
 
     /** The inner graph of links. */
     private Graph graph;
@@ -125,25 +125,26 @@ public class RdfRepresentation extends OutputRepresentation {
      * 
      * @param mediaType
      *            The given media type of the parsed RDF representation.
-     * 
+     * @param writer
+     *            The character writer to write to.
      * @return An instance of a graph handler used when writing the inner set of
      *         links.
      * @throws IOException
      */
-    public GraphHandler createWriter(MediaType mediaType,
-            OutputStream outputStream) throws IOException {
+    public GraphHandler createWriter(MediaType mediaType, Writer writer)
+            throws IOException {
         if (MediaType.TEXT_RDF_N3.equals(getMediaType())) {
-            return new RdfN3Writer(outputStream);
+            return new RdfN3Writer(writer);
         } else if (MediaType.TEXT_XML.equals(getMediaType())) {
-            return new RdfXmlWriter(outputStream, getCharacterSet());
+            return new RdfXmlWriter(writer);
         } else if (MediaType.APPLICATION_ALL_XML.includes(getMediaType())) {
-            return new RdfXmlWriter(outputStream, getCharacterSet());
+            return new RdfXmlWriter(writer);
         } else if (MediaType.TEXT_PLAIN.equals(getMediaType())) {
-            return new RdfNTriplesWriter(outputStream);
+            return new RdfNTriplesWriter(writer);
         } else if (MediaType.TEXT_RDF_NTRIPLES.equals(getMediaType())) {
-            return new RdfNTriplesWriter(outputStream);
+            return new RdfNTriplesWriter(writer);
         } else if (MediaType.APPLICATION_RDF_TURTLE.equals(getMediaType())) {
-            return new RdfTurtleWriter(outputStream);
+            return new RdfTurtleWriter(writer);
         }
 
         // Writing for other media types goes here.
@@ -319,8 +320,8 @@ public class RdfRepresentation extends OutputRepresentation {
     }
 
     @Override
-    public void write(OutputStream outputStream) throws IOException {
-        write(createWriter(getMediaType(), outputStream));
+    public void write(Writer writer) throws IOException {
+        write(createWriter(getMediaType(), writer));
     }
 
 }

@@ -32,7 +32,7 @@ package org.restlet.ext.xml;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.Writer;
 
 import org.restlet.data.MediaType;
 import org.restlet.engine.Edition;
@@ -257,7 +257,7 @@ public class DomRepresentation extends XmlRepresentation {
     }
 
     @Override
-    public void write(OutputStream outputStream) throws IOException {
+    public void write(Writer writer) throws IOException {
         if (Edition.CURRENT == Edition.ANDROID) {
             throw new UnsupportedOperationException(
                     "Instances of DomRepresentation cannot be written at this time.");
@@ -268,8 +268,7 @@ public class DomRepresentation extends XmlRepresentation {
                 final javax.xml.transform.Transformer transformer = createTransformer();
                 transformer.transform(new javax.xml.transform.dom.DOMSource(
                         getDocument()),
-                        new javax.xml.transform.stream.StreamResult(
-                                outputStream));
+                        new javax.xml.transform.stream.StreamResult(writer));
             }
         } catch (javax.xml.transform.TransformerConfigurationException tce) {
             throw new IOException("Couldn't write the XML representation: "

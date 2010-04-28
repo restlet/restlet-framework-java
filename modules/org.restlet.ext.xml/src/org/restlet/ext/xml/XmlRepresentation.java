@@ -48,8 +48,8 @@ import javax.xml.xpath.XPathFactory;
 
 import org.restlet.Context;
 import org.restlet.data.MediaType;
-import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
+import org.restlet.representation.WriterRepresentation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.EntityResolver;
@@ -64,7 +64,7 @@ import org.xml.sax.SAXException;
  * 
  * @author Jerome Louvel
  */
-public abstract class XmlRepresentation extends OutputRepresentation
+public abstract class XmlRepresentation extends WriterRepresentation
 // [ifndef android]
         implements javax.xml.namespace.NamespaceContext
 // [enddef]

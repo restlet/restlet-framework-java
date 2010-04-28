@@ -31,7 +31,7 @@
 package org.restlet.ext.jibx;
 
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.Writer;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -42,8 +42,8 @@ import org.jibx.runtime.IUnmarshallingContext;
 import org.jibx.runtime.JiBXException;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
-import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
+import org.restlet.representation.WriterRepresentation;
 import org.xml.sax.InputSource;
 
 /**
@@ -55,7 +55,7 @@ import org.xml.sax.InputSource;
  * @author Florian Schwarz
  * @see <a href="http://jibx.sourceforge.net/">JiBX project</a>
  */
-public class JibxRepresentation<T> extends OutputRepresentation {
+public class JibxRepresentation<T> extends WriterRepresentation {
 
     /**
      * Improves performance by caching contexts which are expensive to create.
@@ -259,14 +259,14 @@ public class JibxRepresentation<T> extends OutputRepresentation {
      *             If any error occurs attempting to write the stream.
      */
     @Override
-    public void write(OutputStream outputStream) throws IOException {
+    public void write(Writer writer) throws IOException {
         try {
             final IBindingFactory jibxBFact = JibxRepresentation
                     .getBindingFactory(this.bindingName, this.bindingClass);
             final IMarshallingContext mctx = jibxBFact
                     .createMarshallingContext();
             mctx.marshalDocument(getObject(), getCharacterSet().getName(),
-                    null, outputStream);
+                    null, writer);
         } catch (JiBXException e) {
             throw new IOException(e.getMessage());
         }

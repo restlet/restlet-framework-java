@@ -30,10 +30,8 @@
 
 package org.restlet.ext.rdf.internal.n3;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.Map;
 
 import org.restlet.data.Reference;
@@ -51,9 +49,6 @@ import org.restlet.ext.rdf.internal.turtle.Context;
  */
 public class RdfN3Writer extends GraphHandler {
 
-    /** Buffered writer. */
-    private BufferedWriter bw;
-
     /** The current context object. */
     private Context context;
 
@@ -63,20 +58,23 @@ public class RdfN3Writer extends GraphHandler {
     /** The preceding source used for factorization matter. */
     private Reference precSource;
 
+    /** The character writer. */
+    private Writer writer;
+
     /** Indicates if the end of the statement is to be written. */
     private boolean writingExtraDot;
 
     /**
      * Constructor.
      * 
-     * @param outputStream
-     *            The output stream to write to.
+     * @param writer
+     *            The character writer to write to.
      * @throws IOException
      */
-    public RdfN3Writer(OutputStream outputStream) throws IOException {
+    public RdfN3Writer(Writer writer) throws IOException {
         super();
-        this.bw = new BufferedWriter(new OutputStreamWriter(outputStream));
         this.context = new Context();
+        this.writer = writer;
 
         Map<String, String> prefixes = context.getPrefixes();
         prefixes.put(RdfConstants.RDF_SCHEMA.toString(), "rdf");
@@ -91,21 +89,27 @@ public class RdfN3Writer extends GraphHandler {
         prefixes.put("http://www.w3.org/2001/XMLSchema#", "type");
 
         for (String key : prefixes.keySet()) {
-            this.bw.append("@prefix ").append(prefixes.get(key)).append(": <")
-                    .append(key).append(">.\n");
+            this.writer.append("@prefix ").append(prefixes.get(key)).append(
+                    ": <").append(key).append(">.\n");
         }
 
-        this.bw.append("@keywords a, is, of, has.\n");
+        this.writer.append("@keywords a, is, of, has.\n");
+    }
+
+    @Override
+    public void endGraph() throws IOException {
+        this.writer.write(".\n");
+        this.writer.flush();
     }
 
     @Override
     public void link(Graph source, Reference typeRef, Literal target) {
         try {
-            this.bw.write("{");
+            this.writer.write("{");
             write(source);
-            this.bw.write("} ");
+            this.writer.write("} ");
             write(typeRef, this.context.getPrefixes());
-            this.bw.write(" ");
+            this.writer.write(" ");
             write(target);
 
             this.precSource = null;
@@ -121,11 +125,11 @@ public class RdfN3Writer extends GraphHandler {
     @Override
     public void link(Graph source, Reference typeRef, Reference target) {
         try {
-            this.bw.write("{");
+            this.writer.write("{");
             write(source);
-            this.bw.write("} ");
+            this.writer.write("} ");
             write(typeRef, this.context.getPrefixes());
-            this.bw.write(" ");
+            this.writer.write(" ");
             write(target, this.context.getPrefixes());
 
             this.precSource = null;
@@ -143,20 +147,20 @@ public class RdfN3Writer extends GraphHandler {
         try {
             if (source.equals(this.precSource)) {
                 if (typeRef.equals(this.precPredicate)) {
-                    this.bw.write(", ");
+                    this.writer.write(", ");
                 } else {
-                    this.bw.write("; ");
+                    this.writer.write("; ");
                     write(typeRef, this.context.getPrefixes());
-                    this.bw.write(" ");
+                    this.writer.write(" ");
                 }
             } else {
                 if (this.writingExtraDot) {
-                    this.bw.write(".\n");
+                    this.writer.write(".\n");
                 }
                 write(source, this.context.getPrefixes());
-                this.bw.write(" ");
+                this.writer.write(" ");
                 write(typeRef, this.context.getPrefixes());
-                this.bw.write(" ");
+                this.writer.write(" ");
             }
             write(target);
 
@@ -175,20 +179,20 @@ public class RdfN3Writer extends GraphHandler {
         try {
             if (source.equals(this.precSource)) {
                 if (typeRef.equals(this.precPredicate)) {
-                    this.bw.write(", ");
+                    this.writer.write(", ");
                 } else {
-                    this.bw.write("; ");
+                    this.writer.write("; ");
                     write(typeRef, this.context.getPrefixes());
-                    this.bw.write(" ");
+                    this.writer.write(" ");
                 }
             } else {
                 if (this.writingExtraDot) {
-                    this.bw.write(".\n");
+                    this.writer.write(".\n");
                 }
                 write(source, this.context.getPrefixes());
-                this.bw.write(" ");
+                this.writer.write(" ");
                 write(typeRef, this.context.getPrefixes());
-                this.bw.write(" ");
+                this.writer.write(" ");
             }
             write(target, this.context.getPrefixes());
 
@@ -200,12 +204,6 @@ public class RdfN3Writer extends GraphHandler {
                     "Cannot write the representation of a statement due to "
                             + e.getMessage());
         }
-    }
-
-    @Override
-    public void endGraph() throws IOException {
-        this.bw.write(".\n");
-        this.bw.flush();
     }
 
     /**
@@ -248,7 +246,7 @@ public class RdfN3Writer extends GraphHandler {
                             .warning(
                                     "Cannot write the representation of a statement due to the fact that the object is neither a Reference nor a literal.");
                 }
-                this.bw.write(".\n");
+                this.writer.write(".\n");
             }
             this.precSource = link.getSourceAsReference();
             this.precPredicate = link.getTypeRef();
@@ -264,25 +262,25 @@ public class RdfN3Writer extends GraphHandler {
      */
     private void write(Literal literal) throws IOException {
         // Write it as a string
-        this.bw.write("\"");
+        this.writer.write("\"");
         if (literal.getValue().contains("\n")) {
-            this.bw.write("\"");
-            this.bw.write("\"");
-            this.bw.write(literal.getValue());
-            this.bw.write("\"");
-            this.bw.write("\"");
+            this.writer.write("\"");
+            this.writer.write("\"");
+            this.writer.write(literal.getValue());
+            this.writer.write("\"");
+            this.writer.write("\"");
         } else {
-            this.bw.write(literal.getValue());
+            this.writer.write(literal.getValue());
         }
 
-        this.bw.write("\"");
+        this.writer.write("\"");
         if (literal.getDatatypeRef() != null) {
-            this.bw.write("^^");
+            this.writer.write("^^");
             write(literal.getDatatypeRef(), context.getPrefixes());
         }
         if (literal.getLanguage() != null) {
-            this.bw.write("@");
-            this.bw.write(literal.getLanguage().toString());
+            this.writer.write("@");
+            this.writer.write(literal.getLanguage().toString());
         }
     }
 
@@ -299,22 +297,22 @@ public class RdfN3Writer extends GraphHandler {
             throws IOException {
         String uri = reference.toString();
         if (Link.isBlankRef(reference)) {
-            this.bw.write(uri);
+            this.writer.write(uri);
         } else {
             boolean found = false;
             for (String key : prefixes.keySet()) {
                 if (uri.startsWith(key)) {
                     found = true;
-                    this.bw.append(prefixes.get(key));
-                    this.bw.append(":");
-                    this.bw.append(uri.substring(key.length()));
+                    this.writer.append(prefixes.get(key));
+                    this.writer.append(":");
+                    this.writer.append(uri.substring(key.length()));
                     break;
                 }
             }
             if (!found) {
-                this.bw.append("<");
-                this.bw.append(uri);
-                this.bw.append(">");
+                this.writer.append("<");
+                this.writer.append(uri);
+                this.writer.append(">");
             }
         }
     }

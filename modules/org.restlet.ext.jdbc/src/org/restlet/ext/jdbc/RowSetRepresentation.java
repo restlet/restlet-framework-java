@@ -31,7 +31,7 @@
 package org.restlet.ext.jdbc;
 
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.Writer;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -40,7 +40,7 @@ import javax.sql.rowset.WebRowSet;
 
 import org.restlet.Context;
 import org.restlet.data.MediaType;
-import org.restlet.representation.OutputRepresentation;
+import org.restlet.representation.WriterRepresentation;
 
 /**
  * XML Representation of a ResultSet instance wrapped either in a JdbcResult
@@ -55,7 +55,7 @@ import org.restlet.representation.OutputRepresentation;
  * @author Thierry Boileau
  * @author Jerome Louvel
  */
-public class RowSetRepresentation extends OutputRepresentation {
+public class RowSetRepresentation extends WriterRepresentation {
     /**
      * Creates a WebRowSet from a ResultSet.
      * 
@@ -185,9 +185,9 @@ public class RowSetRepresentation extends OutputRepresentation {
     }
 
     @Override
-    public void write(OutputStream outputStream) throws IOException {
+    public void write(Writer writer) throws IOException {
         try {
-            this.webRowSet.writeXml(outputStream);
+            this.webRowSet.writeXml(writer);
         } catch (SQLException se) {
             throw new IOException(se.getMessage());
         }

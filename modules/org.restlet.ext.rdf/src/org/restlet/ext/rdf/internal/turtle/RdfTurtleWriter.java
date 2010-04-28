@@ -30,10 +30,8 @@
 
 package org.restlet.ext.rdf.internal.turtle;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.Map;
 
 import org.restlet.data.Reference;
@@ -51,7 +49,7 @@ import org.restlet.ext.rdf.internal.RdfConstants;
 public class RdfTurtleWriter extends GraphHandler {
 
     /** Buffered writer. */
-    private BufferedWriter bw;
+    private Writer writer;
 
     /** The current context object. */
     private Context context;
@@ -68,13 +66,13 @@ public class RdfTurtleWriter extends GraphHandler {
     /**
      * Constructor.
      * 
-     * @param outputStream
-     *            The output stream to write to.
+     * @param writer
+     *            The character writer.
      * @throws IOException
      */
-    public RdfTurtleWriter(OutputStream outputStream) throws IOException {
+    public RdfTurtleWriter(Writer writer) throws IOException {
         super();
-        this.bw = new BufferedWriter(new OutputStreamWriter(outputStream));
+        this.writer = writer;
         this.context = new Context();
 
         Map<String, String> prefixes = context.getPrefixes();
@@ -90,28 +88,28 @@ public class RdfTurtleWriter extends GraphHandler {
         prefixes.put("http://www.w3.org/2001/XMLSchema#", "type");
 
         for (String key : prefixes.keySet()) {
-            this.bw.append("@prefix ").append(prefixes.get(key)).append(": <")
-                    .append(key).append(">.\n");
+            this.writer.append("@prefix ").append(prefixes.get(key)).append(
+                    ": <").append(key).append(">.\n");
         }
 
-        this.bw.append("@keywords a, is, of, has.\n");
+        this.writer.append("@keywords a, is, of, has.\n");
     }
 
     @Override
     public void endGraph() throws IOException {
-        this.bw.write(".\n");
-        this.bw.flush();
+        this.writer.write(".\n");
+        this.writer.flush();
     }
 
     @Override
     public void link(Graph source, Reference typeRef, Literal target) {
         try {
             this.writingExtraDot = false;
-            this.bw.write("{");
+            this.writer.write("{");
             write(source);
-            this.bw.write("} ");
+            this.writer.write("} ");
             write(typeRef, this.context.getPrefixes());
-            this.bw.write(" ");
+            this.writer.write(" ");
             write(target);
 
             this.precSource = null;
@@ -128,11 +126,11 @@ public class RdfTurtleWriter extends GraphHandler {
     public void link(Graph source, Reference typeRef, Reference target) {
         try {
             this.writingExtraDot = false;
-            this.bw.write("{");
+            this.writer.write("{");
             write(source);
-            this.bw.write("} ");
+            this.writer.write("} ");
             write(typeRef, this.context.getPrefixes());
-            this.bw.write(" ");
+            this.writer.write(" ");
             write(target, this.context.getPrefixes());
 
             this.precSource = null;
@@ -150,20 +148,20 @@ public class RdfTurtleWriter extends GraphHandler {
         try {
             if (source.equals(this.precSource)) {
                 if (typeRef.equals(this.precPredicate)) {
-                    this.bw.write(", ");
+                    this.writer.write(", ");
                 } else {
-                    this.bw.write("; ");
+                    this.writer.write("; ");
                     write(typeRef, this.context.getPrefixes());
-                    this.bw.write(" ");
+                    this.writer.write(" ");
                 }
             } else {
                 if (this.writingExtraDot) {
-                    this.bw.write(".\n");
+                    this.writer.write(".\n");
                 }
                 write(source, this.context.getPrefixes());
-                this.bw.write(" ");
+                this.writer.write(" ");
                 write(typeRef, this.context.getPrefixes());
-                this.bw.write(" ");
+                this.writer.write(" ");
             }
             write(target);
 
@@ -183,20 +181,20 @@ public class RdfTurtleWriter extends GraphHandler {
             if (source.equals(this.precSource)) {
                 this.writingExtraDot = false;
                 if (typeRef.equals(this.precPredicate)) {
-                    this.bw.write(", ");
+                    this.writer.write(", ");
                 } else {
-                    this.bw.write("; ");
+                    this.writer.write("; ");
                     write(typeRef, this.context.getPrefixes());
-                    this.bw.write(" ");
+                    this.writer.write(" ");
                 }
             } else {
                 if (this.writingExtraDot) {
-                    this.bw.write(".\n");
+                    this.writer.write(".\n");
                 }
                 write(source, this.context.getPrefixes());
-                this.bw.write(" ");
+                this.writer.write(" ");
                 write(typeRef, this.context.getPrefixes());
-                this.bw.write(" ");
+                this.writer.write(" ");
             }
             write(target, this.context.getPrefixes());
 
@@ -254,13 +252,13 @@ public class RdfTurtleWriter extends GraphHandler {
                             .warning(
                                     "Cannot write the representation of a statement due to the fact that the object is neither a Reference nor a literal.");
                 }
-                this.bw.write(".\n");
+                this.writer.write(".\n");
             }
             this.precSource = link.getSourceAsReference();
             this.precPredicate = link.getTypeRef();
         }
         if (writingExtraDot) {
-            this.bw.write(".\n");
+            this.writer.write(".\n");
         }
     }
 
@@ -273,25 +271,25 @@ public class RdfTurtleWriter extends GraphHandler {
      */
     private void write(Literal literal) throws IOException {
         // Write it as a string
-        this.bw.write("\"");
+        this.writer.write("\"");
         if (literal.getValue().contains("\n")) {
-            this.bw.write("\"");
-            this.bw.write("\"");
-            this.bw.write(literal.getValue());
-            this.bw.write("\"");
-            this.bw.write("\"");
+            this.writer.write("\"");
+            this.writer.write("\"");
+            this.writer.write(literal.getValue());
+            this.writer.write("\"");
+            this.writer.write("\"");
         } else {
-            this.bw.write(literal.getValue());
+            this.writer.write(literal.getValue());
         }
 
-        this.bw.write("\"");
+        this.writer.write("\"");
         if (literal.getDatatypeRef() != null) {
-            this.bw.write("^^");
+            this.writer.write("^^");
             write(literal.getDatatypeRef(), context.getPrefixes());
         }
         if (literal.getLanguage() != null) {
-            this.bw.write("@");
-            this.bw.write(literal.getLanguage().toString());
+            this.writer.write("@");
+            this.writer.write(literal.getLanguage().toString());
         }
     }
 
@@ -308,22 +306,22 @@ public class RdfTurtleWriter extends GraphHandler {
             throws IOException {
         String uri = reference.toString();
         if (Link.isBlankRef(reference)) {
-            this.bw.write(uri);
+            this.writer.write(uri);
         } else {
             boolean found = false;
             for (String key : prefixes.keySet()) {
                 if (uri.startsWith(key)) {
                     found = true;
-                    this.bw.append(prefixes.get(key));
-                    this.bw.append(":");
-                    this.bw.append(uri.substring(key.length()));
+                    this.writer.append(prefixes.get(key));
+                    this.writer.append(":");
+                    this.writer.append(uri.substring(key.length()));
                     break;
                 }
             }
             if (!found) {
-                this.bw.append("<");
-                this.bw.append(uri);
-                this.bw.append(">");
+                this.writer.append("<");
+                this.writer.append(uri);
+                this.writer.append(">");
             }
         }
     }

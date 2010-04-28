@@ -30,10 +30,7 @@
 
 package org.restlet.ext.velocity;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.Date;
@@ -51,8 +48,8 @@ import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.MediaType;
-import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
+import org.restlet.representation.WriterRepresentation;
 import org.restlet.util.Resolver;
 
 /**
@@ -62,7 +59,7 @@ import org.restlet.util.Resolver;
  * @see <a href="http://velocity.apache.org/">Velocity home page</a>
  * @author Jerome Louvel
  */
-public class TemplateRepresentation extends OutputRepresentation {
+public class TemplateRepresentation extends WriterRepresentation {
     /**
      * Velocity context based on a Resolver.
      * 
@@ -390,27 +387,11 @@ public class TemplateRepresentation extends OutputRepresentation {
      *            The stream to use when writing.
      */
     @Override
-    public void write(OutputStream outputStream) throws IOException {
-        Writer tmplWriter = null;
-
+    public void write(Writer writer) throws IOException {
         try {
             // Load the template
-            if (getCharacterSet() != null) {
-                tmplWriter = new BufferedWriter(new OutputStreamWriter(
-                        outputStream, getCharacterSet().getName()));
-            } else {
-                if (getTemplate().getEncoding() == null) {
-                    tmplWriter = new BufferedWriter(new OutputStreamWriter(
-                            outputStream));
-                } else {
-                    tmplWriter = new BufferedWriter(new OutputStreamWriter(
-                            outputStream, getTemplate().getEncoding()));
-                }
-            }
-
             // Process the template
-            getTemplate().merge(getContext(), tmplWriter);
-            tmplWriter.flush();
+            getTemplate().merge(getContext(), writer);
         } catch (Exception e) {
             final Context context = Context.getCurrent();
 

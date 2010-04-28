@@ -5,6 +5,17 @@ Changes log
 
 - @version-full@ (@release-date@)
     - API changes
+      - Changed character oriented subclasses of OutputRepresentation
+        to extend WriterRepresentation instead for consistent character
+        set handling.
+      - StringRepresentation now derives from CharacterRepresentation.
+      - WriterRepresentation now uses HTTP's default character set when
+        no one is provided (ISO 8859-1).
+    - Bugs fixed
+      - Fixed character encoding issues (XStream, Jackson, JAXB, etc.)
+
+- 2.0 Release Candidate 3 (2010-04-23)
+    - API changes
       - Replaced MemoryRealm#findRoles(Set<Group>, User) method by
         findRoles(Set<Group>), findRoles(Group) and findRoles(User)
         to clarify contract. Suggested by Brunon Harbulot.

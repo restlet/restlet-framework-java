@@ -31,11 +31,10 @@
 package org.restlet.ext.rdf.internal.xml;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 
 import org.restlet.Context;
-import org.restlet.data.CharacterSet;
 import org.restlet.data.Reference;
 import org.restlet.ext.rdf.Graph;
 import org.restlet.ext.rdf.GraphHandler;
@@ -63,18 +62,13 @@ public class RdfXmlWriter extends GraphHandler {
     /**
      * Constructor.
      * 
-     * @param linkSet
-     *            The set of links to write.
      * @param writer
-     *            The XML writer.
+     *            The character writer.
      * @throws UnsupportedEncodingException
      */
-    public RdfXmlWriter(OutputStream outputStream, CharacterSet characterSet)
-            throws UnsupportedEncodingException {
+    public RdfXmlWriter(Writer writer) throws UnsupportedEncodingException {
         super();
-        this.writer = new XmlWriter(outputStream,
-                (characterSet == null) ? CharacterSet.UTF_8.getName()
-                        : characterSet.getName());
+        this.writer = new XmlWriter(writer);
     }
 
     @Override

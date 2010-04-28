@@ -186,8 +186,8 @@ public class EmfRepresentation<T extends EObject> extends OutputRepresentation {
             } else if (MediaType.TEXT_HTML.isCompatible(getMediaType())) {
                 EmfHtmlWriter htmlWriter = new EmfHtmlWriter(getObject());
                 htmlWriter.write(new OutputStreamWriter(outputStream,
-                        ((getCharacterSet() == null) ? "UTF-8"
-                                : getCharacterSet().getName())));
+                        ((getCharacterSet() == null) ? CharacterSet.ISO_8859_1
+                                .getName() : getCharacterSet().getName())));
             }
         }
     }

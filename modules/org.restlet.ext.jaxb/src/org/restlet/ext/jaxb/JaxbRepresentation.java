@@ -31,7 +31,7 @@
 package org.restlet.ext.jaxb;
 
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.Writer;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Level;
@@ -46,8 +46,8 @@ import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.ext.jaxb.internal.Marshaller;
 import org.restlet.ext.jaxb.internal.Unmarshaller;
-import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
+import org.restlet.representation.WriterRepresentation;
 import org.xml.sax.InputSource;
 
 /**
@@ -59,7 +59,7 @@ import org.xml.sax.InputSource;
  * @param <T>
  *            The type to wrap.
  */
-public class JaxbRepresentation<T> extends OutputRepresentation {
+public class JaxbRepresentation<T> extends WriterRepresentation {
 
     /** Improves performance by caching contexts which are expensive to create. */
     private final static Map<String, JAXBContext> contexts = new TreeMap<String, JAXBContext>();
@@ -309,7 +309,7 @@ public class JaxbRepresentation<T> extends OutputRepresentation {
 
             try {
                 this.object = (T) u.unmarshal(this.xmlRepresentation
-                        .getStream());
+                        .getReader());
             } catch (JAXBException e) {
                 Context.getCurrentLogger().log(Level.WARNING,
                         "Unable to unmarshal the XML representation", e);
@@ -459,18 +459,17 @@ public class JaxbRepresentation<T> extends OutputRepresentation {
      *             If any error occurs attempting to write the stream.
      */
     @Override
-    public void write(OutputStream outputStream) throws IOException {
+    public void write(Writer writer) throws IOException {
         try {
             new Marshaller<T>(this, this.contextPath).marshal(getObject(),
-                    outputStream);
+                    writer);
         } catch (JAXBException e) {
             Context.getCurrentLogger().log(Level.WARNING,
                     "JAXB marshalling error caught.", e);
 
             // Maybe the tree represents a failure, try that.
             try {
-                new Marshaller<T>(this, "failure").marshal(getObject(),
-                        outputStream);
+                new Marshaller<T>(this, "failure").marshal(getObject(), writer);
             } catch (JAXBException e2) {
                 // We don't know what package this tree is from.
                 throw new IOException(e.getMessage());

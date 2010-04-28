@@ -31,7 +31,7 @@
 package org.restlet.ext.xml;
 
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.Writer;
 
 import javax.xml.transform.Result;
 import javax.xml.transform.TransformerConfigurationException;
@@ -222,12 +222,9 @@ public class SaxRepresentation extends XmlRepresentation {
     }
 
     @Override
-    public void write(OutputStream outputStream) throws IOException {
-        XmlWriter xmlWriter = new XmlWriter(outputStream,
-                (getCharacterSet() == null) ? "UTF-8" : getCharacterSet()
-                        .toString());
+    public void write(Writer writer) throws IOException {
+        XmlWriter xmlWriter = new XmlWriter(writer);
         write(xmlWriter);
-        xmlWriter.flush();
     }
 
     /**

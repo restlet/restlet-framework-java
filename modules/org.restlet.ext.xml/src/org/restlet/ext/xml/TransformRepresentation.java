@@ -31,7 +31,7 @@
 package org.restlet.ext.xml;
 
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,8 +54,8 @@ import javax.xml.transform.stream.StreamSource;
 import org.restlet.Context;
 import org.restlet.ext.xml.internal.AbstractXmlReader;
 import org.restlet.ext.xml.internal.ContextResolver;
-import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
+import org.restlet.representation.WriterRepresentation;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLFilter;
@@ -75,7 +75,7 @@ import org.xml.sax.XMLReader;
  * 
  * @author Jerome Louvel
  */
-public class TransformRepresentation extends OutputRepresentation {
+public class TransformRepresentation extends WriterRepresentation {
     /**
      * Wraps a source representation into a {@link SAXSource}. This method can
      * detect other {@link XmlRepresentation} instances to use their
@@ -554,8 +554,8 @@ public class TransformRepresentation extends OutputRepresentation {
      * {@link StreamResult} object.
      */
     @Override
-    public void write(OutputStream outputStream) throws IOException {
-        write(new StreamResult(outputStream));
+    public void write(Writer writer) throws IOException {
+        write(new StreamResult(writer));
     }
 
     /**

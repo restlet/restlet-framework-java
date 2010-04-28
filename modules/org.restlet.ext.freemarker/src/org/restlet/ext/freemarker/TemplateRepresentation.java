@@ -30,10 +30,7 @@
 
 package org.restlet.ext.freemarker;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.Writer;
 
 import org.restlet.Context;
@@ -42,8 +39,8 @@ import org.restlet.Response;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.ext.freemarker.internal.ResolverHashModel;
-import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
+import org.restlet.representation.WriterRepresentation;
 import org.restlet.util.Resolver;
 
 import freemarker.template.Configuration;
@@ -57,7 +54,7 @@ import freemarker.template.TemplateException;
  * @see <a href="http://freemarker.org/">FreeMarker home page</a>
  * @author Jerome Louvel
  */
-public class TemplateRepresentation extends OutputRepresentation {
+public class TemplateRepresentation extends WriterRepresentation {
 
     /**
      * Returns a FreeMarker template from a representation and a configuration.
@@ -318,21 +315,10 @@ public class TemplateRepresentation extends OutputRepresentation {
      *            The stream to use when writing.
      */
     @Override
-    public void write(OutputStream outputStream) throws IOException {
-        Writer tmplWriter = null;
-
+    public void write(Writer writer) throws IOException {
         if (this.template != null) {
             try {
-                if (getCharacterSet() != null) {
-                    tmplWriter = new BufferedWriter(new OutputStreamWriter(
-                            outputStream, getCharacterSet().getName()));
-                } else {
-                    tmplWriter = new BufferedWriter(new OutputStreamWriter(
-                            outputStream, this.template.getEncoding()));
-                }
-
-                this.template.process(getDataModel(), tmplWriter);
-                tmplWriter.flush();
+                this.template.process(getDataModel(), writer);
             } catch (TemplateException te) {
                 throw new IOException("Template processing error "
                         + te.getMessage());

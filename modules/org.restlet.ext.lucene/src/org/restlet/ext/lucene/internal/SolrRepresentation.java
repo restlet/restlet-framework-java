@@ -31,8 +31,7 @@
 package org.restlet.ext.lucene.internal;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import java.io.Writer;
 
 import org.apache.solr.request.JSONResponseWriter;
 import org.apache.solr.request.QueryResponseWriter;
@@ -41,7 +40,7 @@ import org.apache.solr.request.SolrQueryResponse;
 import org.apache.solr.request.XMLResponseWriter;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
-import org.restlet.representation.OutputRepresentation;
+import org.restlet.representation.WriterRepresentation;
 
 /**
  * Representation wrapping a Solr query and exposing its response either as XML
@@ -49,7 +48,7 @@ import org.restlet.representation.OutputRepresentation;
  * 
  * @author Remi Dewitte <remi@gide.net>
  */
-public class SolrRepresentation extends OutputRepresentation {
+public class SolrRepresentation extends WriterRepresentation {
 
     /** The wrapped Solr query request. */
     protected SolrQueryRequest solrQueryRequest;
@@ -91,26 +90,17 @@ public class SolrRepresentation extends OutputRepresentation {
     }
 
     @Override
-    public void write(OutputStream outputStream) throws IOException {
-        QueryResponseWriter writer;
+    public void write(Writer writer) throws IOException {
+        QueryResponseWriter qrWriter;
         if (MediaType.APPLICATION_JSON.isCompatible(getMediaType())
                 || MediaType.APPLICATION_JAVASCRIPT
                         .isCompatible(getMediaType())) {
-            writer = new JSONResponseWriter();
+            qrWriter = new JSONResponseWriter();
         } else {
-            writer = new XMLResponseWriter();
+            qrWriter = new XMLResponseWriter();
         }
 
-        OutputStreamWriter out;
-        if (getCharacterSet() != null) {
-            out = new OutputStreamWriter(outputStream, getCharacterSet()
-                    .getName());
-        } else {
-            out = new OutputStreamWriter(outputStream, "UTF-8");
-        }
-
-        writer.write(out, solrQueryRequest, solrQueryResponse);
-        out.close();
+        qrWriter.write(writer, solrQueryRequest, solrQueryResponse);
     }
 
 }
