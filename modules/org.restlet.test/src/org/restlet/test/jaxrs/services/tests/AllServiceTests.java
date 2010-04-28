@@ -60,7 +60,7 @@ public class AllServiceTests extends TestCase {
         mySuite.addTestSuite(InheritAnnotationTest.class);
         mySuite.addTestSuite(InjectionTest.class);
         mySuite.addTestSuite(Issue593Test.class);
-        mySuite.addTestSuite(JsonTest.class);
+        // mySuite.addTestSuite(JsonTest.class);
         mySuite.addTestSuite(ListParamTest.class);
         mySuite.addTestSuite(MatchedTest.class);
         mySuite.addTestSuite(MatrixParamTest.class);
@@ -74,7 +74,7 @@ public class AllServiceTests extends TestCase {
         mySuite.addTestSuite(PathParamTest3.class);
         mySuite.addTestSuite(PersonsTest.class);
         mySuite.addTestSuite(PrimitiveWrapperEntityTest.class);
-        mySuite.addTestSuite(ProviderTest.class);
+        // mySuite.addTestSuite(ProviderTest.class);
         mySuite.addTestSuite(QueryParamTest.class);
         mySuite.addTestSuite(RecursiveTest.class);
         mySuite.addTestSuite(RepresentationTest.class);
