@@ -36,6 +36,7 @@ import java.io.OutputStream;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 
+import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.engine.io.BioUtils;
 import org.restlet.engine.io.NioUtils;
@@ -46,34 +47,35 @@ import org.restlet.engine.io.NioUtils;
  * @author Jerome Louvel
  */
 public abstract class CharacterRepresentation extends Representation {
-    /**
-     * Constructor.
-     * 
-     * @param mediaType
-     *            The media type.
-     */
-    public CharacterRepresentation(MediaType mediaType) {
-        super(mediaType);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param mediaType
+	 *            The media type.
+	 */
+	public CharacterRepresentation(MediaType mediaType) {
+		super(mediaType);
+		setCharacterSet(CharacterSet.UTF_8);
+	}
 
-    @Override
-    public ReadableByteChannel getChannel() throws IOException {
-        return NioUtils.getChannel(getStream());
-    }
+	@Override
+	public ReadableByteChannel getChannel() throws IOException {
+		return NioUtils.getChannel(getStream());
+	}
 
-    @Override
-    public InputStream getStream() throws IOException {
-        return BioUtils.getStream(getReader(), getCharacterSet());
-    }
+	@Override
+	public InputStream getStream() throws IOException {
+		return BioUtils.getStream(getReader(), getCharacterSet());
+	}
 
-    @Override
-    public void write(OutputStream outputStream) throws IOException {
-        BioUtils.copy(getStream(), outputStream);
-    }
+	@Override
+	public void write(OutputStream outputStream) throws IOException {
+		BioUtils.copy(getStream(), outputStream);
+	}
 
-    @Override
-    public void write(WritableByteChannel writableChannel) throws IOException {
-        write(NioUtils.getStream(writableChannel));
-    }
+	@Override
+	public void write(WritableByteChannel writableChannel) throws IOException {
+		write(NioUtils.getStream(writableChannel));
+	}
 
 }
