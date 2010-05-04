@@ -71,7 +71,7 @@ public class ProviderTest extends JaxRsTestCase {
     public static final boolean LATER = true;
 
     private static Form createForm() {
-        final Form form = new Form();
+        Form form = new Form();
         form.add("firstname", "Angela");
         form.add("lastname", "Merkel");
         return form;
@@ -83,17 +83,19 @@ public class ProviderTest extends JaxRsTestCase {
      * @throws DOMException
      */
     private void getAndCheckJaxb(String subPath) throws Exception {
-        final Response response = get(subPath);
+        Response response = get(subPath);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        final DomRepresentation entity = new DomRepresentation(response
-                .getEntity());
-        final Node xml = entity.getDocument().getFirstChild();
+
+        DomRepresentation entity = new DomRepresentation(response.getEntity());
+        Node xml = entity.getDocument().getFirstChild();
         System.out.println(subPath + ": " + entity.getText());
         assertEquals("person", xml.getNodeName());
-        final NodeList nodeList = xml.getChildNodes();
+
+        NodeList nodeList = xml.getChildNodes();
         Node node = nodeList.item(0);
         assertEquals("firstname", node.getNodeName());
         assertEquals("Angela", node.getFirstChild().getNodeValue());
+
         node = nodeList.item(1);
         assertEquals("lastname", node.getNodeName());
         assertEquals("Merkel", node.getFirstChild().getNodeValue());
@@ -105,10 +107,11 @@ public class ProviderTest extends JaxRsTestCase {
      * @throws IOException
      */
     private Response getAndExpectAlphabet(String subPath) throws IOException {
-        final Response response = get(subPath);
+        Response response = get(subPath);
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        final Representation entity = response.getEntity();
+
+        Representation entity = response.getEntity();
         assertEquals(ProviderTestService.ALPHABET, entity.getText());
         return response;
     }

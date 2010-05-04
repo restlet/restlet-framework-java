@@ -52,56 +52,57 @@ import org.restlet.engine.io.BioUtils;
  */
 public abstract class WriterRepresentation extends CharacterRepresentation {
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param mediaType
-	 *            The representation's mediaType.
-	 */
-	public WriterRepresentation(MediaType mediaType) {
-		super(mediaType);
-	}
+    /**
+     * Constructor.
+     * 
+     * @param mediaType
+     *            The representation's mediaType.
+     */
+    public WriterRepresentation(MediaType mediaType) {
+        super(mediaType);
+    }
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param mediaType
-	 *            The representation's mediaType.
-	 * @param expectedSize
-	 *            The expected writer size in bytes.
-	 */
-	public WriterRepresentation(MediaType mediaType, long expectedSize) {
-		super(mediaType);
-		setSize(expectedSize);
-	}
+    /**
+     * Constructor.
+     * 
+     * @param mediaType
+     *            The representation's mediaType.
+     * @param expectedSize
+     *            The expected writer size in bytes.
+     */
+    public WriterRepresentation(MediaType mediaType, long expectedSize) {
+        super(mediaType);
+        setSize(expectedSize);
+    }
 
-	@Override
-	public Reader getReader() throws IOException {
-		return BioUtils.getReader(this);
-	}
+    @Override
+    public Reader getReader() throws IOException {
+        return BioUtils.getReader(this);
+    }
 
-	/**
-	 * Calls parent's implementation.
-	 */
-	@Override
-	public void release() {
-		super.release();
-	}
+    /**
+     * Calls parent's implementation.
+     */
+    @Override
+    public void release() {
+        super.release();
+    }
 
-	@Override
-	public void write(OutputStream outputStream) throws IOException {
-		Writer writer = null;
+    @Override
+    public void write(OutputStream outputStream) throws IOException {
+        Writer writer = null;
 
-		if (getCharacterSet() != null) {
-			writer = new OutputStreamWriter(outputStream, getCharacterSet()
-					.getName());
-		} else {
-			// Use the default HTTP character set
-			writer = new OutputStreamWriter(outputStream,
-					CharacterSet.ISO_8859_1.getName());
-		}
+        if (getCharacterSet() != null) {
+            writer = new OutputStreamWriter(outputStream, getCharacterSet()
+                    .getName());
+        } else {
+            // Use the default HTTP character set
+            writer = new OutputStreamWriter(outputStream,
+                    CharacterSet.ISO_8859_1.getName());
+        }
 
-		write(writer);
-	}
+        write(writer);
+        writer.flush();
+    }
 
 }

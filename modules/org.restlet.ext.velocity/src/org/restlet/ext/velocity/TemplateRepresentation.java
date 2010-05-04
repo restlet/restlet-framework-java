@@ -32,7 +32,6 @@ package org.restlet.ext.velocity;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.nio.charset.Charset;
 import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
@@ -47,6 +46,7 @@ import org.apache.velocity.runtime.RuntimeSingleton;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
+import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.representation.Representation;
 import org.restlet.representation.WriterRepresentation;
@@ -170,10 +170,11 @@ public class TemplateRepresentation extends WriterRepresentation {
         setDataModel(dataModel);
         this.engine = null;
         this.template = new Template();
-        this.template
-                .setEncoding((templateRepresentation.getCharacterSet() == null) ? Charset
-                        .defaultCharset().name()
-                        : templateRepresentation.getCharacterSet().getName());
+
+        CharacterSet charSet = (templateRepresentation.getCharacterSet() == null) ? templateRepresentation
+                .getCharacterSet()
+                : CharacterSet.DEFAULT;
+        this.template.setEncoding(charSet.getName());
         if (templateRepresentation.getModificationDate() != null) {
             this.template.setLastModified(templateRepresentation
                     .getModificationDate().getTime());
@@ -203,10 +204,11 @@ public class TemplateRepresentation extends WriterRepresentation {
         super(mediaType);
         this.engine = null;
         this.template = new Template();
-        this.template
-                .setEncoding((templateRepresentation.getCharacterSet() == null) ? Charset
-                        .defaultCharset().name()
-                        : templateRepresentation.getCharacterSet().getName());
+
+        CharacterSet charSet = (templateRepresentation.getCharacterSet() == null) ? templateRepresentation
+                .getCharacterSet()
+                : CharacterSet.DEFAULT;
+        this.template.setEncoding(charSet.getName());
         this.template.setLastModified((templateRepresentation
                 .getModificationDate() == null) ? new Date().getTime()
                 : templateRepresentation.getModificationDate().getTime());

@@ -34,6 +34,8 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.logging.Level;
 
+import org.codehaus.jackson.JsonFactory;
+import org.codehaus.jackson.JsonGenerator.Feature;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
@@ -113,7 +115,9 @@ public class JacksonRepresentation<T> extends WriterRepresentation {
      * @return The Jackson object mapper.
      */
     protected ObjectMapper createObjectMapper() {
-        return new ObjectMapper();
+        JsonFactory jsonFactory = new JsonFactory();
+        jsonFactory.configure(Feature.AUTO_CLOSE_TARGET, false);
+        return new ObjectMapper(jsonFactory);
     }
 
     /**
