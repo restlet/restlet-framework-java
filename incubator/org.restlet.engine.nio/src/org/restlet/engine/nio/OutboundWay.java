@@ -1,3 +1,33 @@
+/**
+ * Copyright 2005-2010 Noelios Technologies.
+ * 
+ * The contents of this file are subject to the terms of one of the following
+ * open source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL 1.0 (the
+ * "Licenses"). You can select the license that you prefer but you may not use
+ * this file except in compliance with one of these Licenses.
+ * 
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.opensource.org/licenses/lgpl-3.0.html
+ * 
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.opensource.org/licenses/lgpl-2.1.php
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.opensource.org/licenses/cddl1.php
+ * 
+ * You can obtain a copy of the EPL 1.0 license at
+ * http://www.opensource.org/licenses/eclipse-1.0.php
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royalty free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
+ */
+
 package org.restlet.engine.nio;
 
 import java.io.IOException;
@@ -57,7 +87,7 @@ public class OutboundWay extends Way {
      *            The target headers {@link Series}.
      */
     protected void addGeneralHeaders(Message message, Series<Parameter> headers) {
-        if (!isPersistent()) {
+        if (!getConnection().isPersistent()) {
             headers.set(HeaderConstants.HEADER_CONNECTION, "close", true);
         }
 
@@ -104,6 +134,12 @@ public class OutboundWay extends Way {
         //
         // return result;
         return null;
+    }
+
+    @Override
+    public void onSelected(SelectionKey key) {
+        // TODO Auto-generated method stub
+
     }
 
     @Override
@@ -173,15 +209,14 @@ public class OutboundWay extends Way {
      * @param response
      *            The response to write.
      */
-    @Override
     protected void writeMessage(Response response) {
-        if (getOutboundMessageState() == null) {
-            setOutboundMessageState(WayMessageState.START_LINE);
-            getOutboundBuilder().delete(0, getOutboundBuilder().length());
+        if (getMessageState() == null) {
+            setMessageState(WayMessageState.START_LINE);
+            getBuilder().delete(0, getBuilder().length());
         }
 
-        while (getOutboundBuffer().hasRemaining()) {
-            if (getOutboundMessageState() == WayMessageState.START_LINE) {
+        while (getBuffer().hasRemaining()) {
+            if (getMessageState() == WayMessageState.START_LINE) {
                 writeMessageStart();
             } else if (getMessageState() == WayMessageState.HEADERS) {
                 readMessageHeaders();
@@ -329,13 +364,14 @@ public class OutboundWay extends Way {
 
             if (canWrite()) {
                 message = getMessages().peek();
-                setOutboundBusy((message != null));
+                setBusy((message != null));
 
                 if (message != null) {
                     writeMessage(message);
 
                     // Try to close the connection immediately.
-                    if ((getState() == ConnectionState.CLOSING) && !isBusy()) {
+                    if ((getConnection().getState() == ConnectionState.CLOSING)
+                            && !isBusy()) {
                         close(true);
                     }
                 }
@@ -349,42 +385,37 @@ public class OutboundWay extends Way {
         }
     }
 
-    @Override
-    protected void writeMessageStart() throws IOException {
-        getOutboundBuilder().delete(0, getOutboundBuilder().length());
-
-        Protocol protocol = getOutboundMessage().getRequest().getProtocol();
-        String protocolVersion = protocol.getVersion();
-        String version = protocol.getTechnicalName() + '/'
-                + ((protocolVersion == null) ? "1.1" : protocolVersion);
-        getOutboundBuilder().append(
-                version.getBytes(CharacterSet.ISO_8859_1.getName()));
-        getOutboundBuilder().append(' ');
-        getOutboundBuilder().append(
-                StringUtils.getAsciiBytes(Integer.toString(getOutboundMessage()
-                        .getStatus().getCode())));
-        getOutboundBuilder().append(' ');
-
-        if (getOutboundMessage().getStatus().getDescription() != null) {
-            getOutboundBuilder().append(
-                    StringUtils.getLatin1Bytes(getOutboundMessage().getStatus()
-                            .getDescription()));
-        } else {
-            getOutboundBuilder().append(
-                    StringUtils.getAsciiBytes(("Status " + getOutboundMessage()
-                            .getStatus().getCode())));
-        }
-
-        getOutboundBuilder().append("\r\n");
-    }
-
     /**
      * Writes the start line of the current outbound message.
      * 
      * @throws IOException
      */
     protected void writeMessageStart() throws IOException {
+        getBuilder().delete(0, getBuilder().length());
 
+        Protocol protocol = getMessage().getRequest().getProtocol();
+        String protocolVersion = protocol.getVersion();
+        String version = protocol.getTechnicalName() + '/'
+                + ((protocolVersion == null) ? "1.1" : protocolVersion);
+        getBuilder()
+                .append(version.getBytes(CharacterSet.ISO_8859_1.getName()));
+        getBuilder().append(' ');
+        getBuilder().append(
+                StringUtils.getAsciiBytes(Integer.toString(getMessage()
+                        .getStatus().getCode())));
+        getBuilder().append(' ');
+
+        if (getMessage().getStatus().getDescription() != null) {
+            getBuilder().append(
+                    StringUtils.getLatin1Bytes(getMessage().getStatus()
+                            .getDescription()));
+        } else {
+            getBuilder().append(
+                    StringUtils.getAsciiBytes(("Status " + getMessage()
+                            .getStatus().getCode())));
+        }
+
+        getBuilder().append("\r\n");
     }
 
 }

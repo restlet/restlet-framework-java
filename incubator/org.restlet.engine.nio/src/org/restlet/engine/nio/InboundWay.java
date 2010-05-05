@@ -1,3 +1,33 @@
+/**
+ * Copyright 2005-2010 Noelios Technologies.
+ * 
+ * The contents of this file are subject to the terms of one of the following
+ * open source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL 1.0 (the
+ * "Licenses"). You can select the license that you prefer but you may not use
+ * this file except in compliance with one of these Licenses.
+ * 
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.opensource.org/licenses/lgpl-3.0.html
+ * 
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.opensource.org/licenses/lgpl-2.1.php
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.opensource.org/licenses/cddl1.php
+ * 
+ * You can obtain a copy of the EPL 1.0 license at
+ * http://www.opensource.org/licenses/eclipse-1.0.php
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royalty free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
+ */
+
 package org.restlet.engine.nio;
 
 import java.io.IOException;
@@ -136,28 +166,6 @@ public class InboundWay extends Way {
     }
 
     /**
-     * Creates a new request.
-     * 
-     * @param context
-     *            The current context.
-     * @param connection
-     *            The associated connection.
-     * @param methodName
-     *            The method name.
-     * @param resourceUri
-     *            The target resource URI.
-     * @param version
-     *            The protocol version.
-     * @return The created request.
-     */
-    protected ConnectedRequest createRequest(Context context,
-            ServerConnection connection, String methodName, String resourceUri,
-            String version) {
-        return new ConnectedRequest(getHelper().getContext(), this, methodName,
-                resourceUri, version);
-    }
-
-    /**
      * Returns the inbound message entity channel if it exists.
      * 
      * @param size
@@ -192,6 +200,12 @@ public class InboundWay extends Way {
         return null;
     }
 
+    @Override
+    public void onSelected(SelectionKey key) {
+        // TODO Auto-generated method stub
+
+    }
+
     /**
      * Reads available bytes from the socket channel.
      * 
@@ -206,12 +220,11 @@ public class InboundWay extends Way {
     }
 
     /**
-     * Reads the next request sent by the client if available. Note that the
-     * optional entity is not fully read.
+     * Reads the next message received via the inbound stream or channel. Note
+     * that the optional entity is not fully read.
      * 
      * @throws IOException
      */
-    @Override
     public void readMessage() throws IOException {
         if (getMessageState() == null) {
             setMessageState(WayMessageState.START_LINE);
@@ -228,16 +241,6 @@ public class InboundWay extends Way {
     }
 
     /**
-     * Reads the next message received via the inbound stream or channel. Note
-     * that the optional entity is not fully read.
-     * 
-     * @throws IOException
-     */
-    protected void readMessage() throws IOException {
-
-    }
-
-    /**
      * Reads a message header.
      * 
      * @return The new message header or null.
@@ -249,7 +252,11 @@ public class InboundWay extends Way {
         return header;
     }
 
-    @Override
+    /**
+     * Reads the header lines of the current message received.
+     * 
+     * @throws IOException
+     */
     public void readMessageHeaders() throws IOException {
         if (readMessageLine()) {
             ConnectedRequest request = (ConnectedRequest) getMessage()
@@ -271,11 +278,11 @@ public class InboundWay extends Way {
                     if (header == null) {
                         // Check if the client wants to close the connection
                         if (HeaderUtils.isConnectionClose(headers)) {
-                            setState(ConnectionState.CLOSING);
+                            getConnection().setState(ConnectionState.CLOSING);
                         }
 
                         // Check if an entity is available
-                        Representation entity = createInboundEntity(headers);
+                        Representation entity = createEntity(headers);
 
                         if (entity instanceof EmptyRepresentation) {
                             setMessageState(WayMessageState.END);
@@ -286,9 +293,11 @@ public class InboundWay extends Way {
 
                         // Update the response
                         getMessage().getServerInfo().setAddress(
-                                getHelper().getHelped().getAddress());
+                                getConnection().getHelper().getHelped()
+                                        .getAddress());
                         getMessage().getServerInfo().setPort(
-                                getHelper().getHelped().getPort());
+                                getConnection().getHelper().getHelped()
+                                        .getPort());
 
                         if (request != null) {
                             if (request.isExpectingResponse()) {
@@ -297,7 +306,8 @@ public class InboundWay extends Way {
                             }
 
                             // Add it to the helper queue
-                            getHelper().getInboundMessages().add(getMessage());
+                            getConnection().getHelper().getInboundMessages()
+                                    .add(getMessage());
                         }
                     }
                 } else {
@@ -307,15 +317,6 @@ public class InboundWay extends Way {
 
             request.setHeaders(headers);
         }
-    }
-
-    /**
-     * Reads the header lines of the current message received.
-     * 
-     * @throws IOException
-     */
-    protected void readMessageHeaders() throws IOException {
-
     }
 
     /**
@@ -380,7 +381,11 @@ public class InboundWay extends Way {
         }
     }
 
-    @Override
+    /**
+     * Reads the start line of the current message received.
+     * 
+     * @throws IOException
+     */
     public void readMessageStart() throws IOException {
         if (readMessageLine()) {
             String requestMethod = null;
@@ -444,9 +449,11 @@ public class InboundWay extends Way {
                             "Unable to parse the protocol version. End of line reached too early.");
                 }
 
-                ConnectedRequest request = createRequest(getHelper()
-                        .getContext(), this, requestMethod, requestUri, version);
-                Response response = getHelper().createResponse(request);
+                ConnectedRequest request = createRequest(getConnection()
+                        .getHelper().getContext(), this, requestMethod,
+                        requestUri, version);
+                Response response = getConnection().getHelper().createResponse(
+                        request);
                 setMessage(response);
 
                 setMessageState(WayMessageState.HEADERS);
@@ -455,15 +462,6 @@ public class InboundWay extends Way {
         } else {
             // We need more characters before parsing
         }
-    }
-
-    /**
-     * Reads the start line of the current message received.
-     * 
-     * @throws IOException
-     */
-    protected void readMessageStart() throws IOException {
-
     }
 
     @Override

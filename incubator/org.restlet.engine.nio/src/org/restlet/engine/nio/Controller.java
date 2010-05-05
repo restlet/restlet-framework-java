@@ -99,7 +99,7 @@ public class Controller implements Runnable {
         if (getSelector().selectNow() > 0) {
             for (SelectionKey key : getSelector().selectedKeys()) {
                 if (key.attachment() != null) {
-                    ((Way) key.attachment()).select(key);
+                    ((Way) key.attachment()).onSelected(key);
                 }
             }
         }

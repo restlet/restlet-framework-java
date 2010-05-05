@@ -41,8 +41,8 @@ import org.restlet.Response;
 import org.restlet.engine.io.NioUtils;
 
 /**
- * A network connection way though which messages are either sent or received.
- * Messages can be either requests or responses.
+ * A network connection way though which messages are exchanged. Messages can be
+ * either sent or received, requests or responses.
  * 
  * @author Jerome Louvel
  */
@@ -191,7 +191,14 @@ public abstract class Way {
      */
     public abstract void registerInterest(Selector selector);
 
-    public abstract void select(SelectionKey key);
+    /**
+     * Callback method invoked when the way has been selected for IO operations
+     * it registered interest in.
+     * 
+     * @param key
+     *            The registered selection key.
+     */
+    public abstract void onSelected(SelectionKey key);
 
     /**
      * Sets the line builder index.
