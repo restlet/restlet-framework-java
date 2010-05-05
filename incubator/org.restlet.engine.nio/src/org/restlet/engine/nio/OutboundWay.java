@@ -210,7 +210,7 @@ public class OutboundWay extends Way {
      *            The response to write.
      */
     protected void writeMessage(Response response) {
-        if (getMessageState() == null) {
+        if (getMessageState() == MessageState.NONE) {
             setMessageState(MessageState.START_LINE);
             getBuilder().delete(0, getBuilder().length());
         }
@@ -219,7 +219,7 @@ public class OutboundWay extends Way {
             if (getMessageState() == MessageState.START_LINE) {
                 writeMessageStart();
             } else if (getMessageState() == MessageState.HEADERS) {
-                readMessageHeaders();
+                writeMessageHead();
             }
         }
     }
@@ -364,9 +364,11 @@ public class OutboundWay extends Way {
 
             if (canWrite()) {
                 message = getMessages().peek();
-                setBusy((message != null));
 
                 if (message != null) {
+                    setMessageState(MessageState.START_LINE);
+                    setIoState(IoState.WRITE_INTEREST);
+
                     writeMessage(message);
 
                     // Try to close the connection immediately.

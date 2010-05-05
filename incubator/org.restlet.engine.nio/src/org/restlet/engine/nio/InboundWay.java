@@ -107,7 +107,8 @@ public class InboundWay extends Way {
                     @Override
                     public void release() {
                         super.release();
-                        setBusy(false);
+                        setMessageState(MessageState.NONE);
+                        setIoState(IoState.IDLE);
                     }
                 };
             } else if (inboundEntityChannel != null) {
@@ -116,7 +117,8 @@ public class InboundWay extends Way {
                     @Override
                     public void release() {
                         super.release();
-                        setBusy(false);
+                        setMessageState(MessageState.NONE);
+                        setIoState(IoState.IDLE);
                     }
                 };
             }
@@ -126,7 +128,8 @@ public class InboundWay extends Way {
             result = new EmptyRepresentation();
 
             // Mark the inbound as free so new messages can be read if possible
-            setBusy(false);
+            setMessageState(MessageState.NONE);
+            setIoState(IoState.IDLE);
         }
 
         if (headers != null) {
@@ -285,7 +288,7 @@ public class InboundWay extends Way {
                         Representation entity = createEntity(headers);
 
                         if (entity instanceof EmptyRepresentation) {
-                            setMessageState(MessageState.END);
+                            setMessageState(MessageState.NONE);
                         } else {
                             request.setEntity(entity);
                             setMessageState(MessageState.BODY);

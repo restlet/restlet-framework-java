@@ -66,7 +66,7 @@ public abstract class Way {
     /** The IO state. */
     private volatile IoState ioState;
 
-    /** The current message read. */
+    /** The current message exchanged. */
     private volatile Response message;
 
     /** The queue of messages. */
@@ -89,6 +89,16 @@ public abstract class Way {
         this.ioState = IoState.IDLE;
         this.message = null;
         this.messages = new ConcurrentLinkedQueue<Response>();
+    }
+
+    /**
+     * Indicates if the way is busy.
+     * 
+     * @return True if the way is busy.
+     */
+    public boolean isBusy() {
+        return (getIoState() != IoState.IDLE)
+                || (getMessageState() != MessageState.NONE);
     }
 
     /**
