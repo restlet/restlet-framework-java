@@ -57,184 +57,185 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
  */
 public class XstreamRepresentation<T> extends WriterRepresentation {
 
-	/** The XStream JSON driver class. */
-	private Class<? extends HierarchicalStreamDriver> jsonDriverClass;
+    /** The XStream JSON driver class. */
+    private Class<? extends HierarchicalStreamDriver> jsonDriverClass;
 
-	/** The (parsed) object to format. */
-	private T object;
+    /** The (parsed) object to format. */
+    private T object;
 
-	/** The representation to parse. */
-	private Representation representation;
+    /** The representation to parse. */
+    private Representation representation;
 
-	/** The XStream XML driver class. */
-	private Class<? extends HierarchicalStreamDriver> xmlDriverClass;
+    /** The XStream XML driver class. */
+    private Class<? extends HierarchicalStreamDriver> xmlDriverClass;
 
-	/** The modifiable XStream object. */
-	private XStream xstream;
+    /** The modifiable XStream object. */
+    private XStream xstream;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param mediaType
-	 *            The target media type.
-	 * @param object
-	 *            The object to format.
-	 */
-	public XstreamRepresentation(MediaType mediaType, T object) {
-		super(mediaType);
-		this.object = object;
-		this.representation = null;
-		this.jsonDriverClass = JettisonMappedXmlDriver.class;
-		this.xmlDriverClass = DomDriver.class;
-		this.xstream = null;
-	}
+    /**
+     * Constructor.
+     * 
+     * @param mediaType
+     *            The target media type.
+     * @param object
+     *            The object to format.
+     */
+    public XstreamRepresentation(MediaType mediaType, T object) {
+        super(mediaType);
+        this.object = object;
+        this.representation = null;
+        this.jsonDriverClass = JettisonMappedXmlDriver.class;
+        this.xmlDriverClass = DomDriver.class;
+        this.xstream = null;
+    }
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param representation
-	 *            The representation to parse.
-	 */
-	public XstreamRepresentation(Representation representation) {
-		super(representation.getMediaType());
-		this.object = null;
-		this.representation = representation;
-		this.jsonDriverClass = JettisonMappedXmlDriver.class;
-		this.xmlDriverClass = DomDriver.class;
-		this.xstream = null;
-	}
+    /**
+     * Constructor.
+     * 
+     * @param representation
+     *            The representation to parse.
+     */
+    public XstreamRepresentation(Representation representation) {
+        super(representation.getMediaType());
+        this.object = null;
+        this.representation = representation;
+        this.jsonDriverClass = JettisonMappedXmlDriver.class;
+        this.xmlDriverClass = DomDriver.class;
+        this.xstream = null;
+    }
 
-	/**
-	 * Constructor. Uses the {@link MediaType#APPLICATION_XML} media type by
-	 * default.
-	 * 
-	 * @param object
-	 *            The object to format.
-	 */
-	public XstreamRepresentation(T object) {
-		this(MediaType.APPLICATION_XML, object);
-	}
+    /**
+     * Constructor. Uses the {@link MediaType#APPLICATION_XML} media type by
+     * default.
+     * 
+     * @param object
+     *            The object to format.
+     */
+    public XstreamRepresentation(T object) {
+        this(MediaType.APPLICATION_XML, object);
+    }
 
-	/**
-	 * Creates an XStream object based on a media type. By default, it creates a
-	 * {@link HierarchicalStreamDriver} or a {@link DomDriver}.
-	 * 
-	 * @param mediaType
-	 *            The serialization media type.
-	 * @return The XStream object.
-	 */
-	protected XStream createXstream(MediaType mediaType) {
-		XStream result = null;
+    /**
+     * Creates an XStream object based on a media type. By default, it creates a
+     * {@link HierarchicalStreamDriver} or a {@link DomDriver}.
+     * 
+     * @param mediaType
+     *            The serialization media type.
+     * @return The XStream object.
+     */
+    protected XStream createXstream(MediaType mediaType) {
+        XStream result = null;
 
-		try {
-			if (MediaType.APPLICATION_JSON.isCompatible(mediaType)) {
-				result = new XStream(getJsonDriverClass().newInstance());
-				result.setMode(XStream.NO_REFERENCES);
-				result.autodetectAnnotations(true);
-			} else {
-				result = new XStream(getXmlDriverClass().newInstance());
-			}
-		} catch (Exception e) {
-			Context.getCurrentLogger().log(Level.WARNING,
-					"Unable to create the XStream driver.", e);
-		}
+        try {
+            if (MediaType.APPLICATION_JSON.isCompatible(mediaType)) {
+                result = new XStream(getJsonDriverClass().newInstance());
+                result.setMode(XStream.NO_REFERENCES);
+            } else {
+                result = new XStream(getXmlDriverClass().newInstance());
+            }
 
-		return result;
-	}
+            result.autodetectAnnotations(true);
+        } catch (Exception e) {
+            Context.getCurrentLogger().log(Level.WARNING,
+                    "Unable to create the XStream driver.", e);
+        }
 
-	/**
-	 * Returns the XStream JSON driver class.
-	 * 
-	 * @return TXStream JSON driver class.
-	 */
-	public Class<? extends HierarchicalStreamDriver> getJsonDriverClass() {
-		return jsonDriverClass;
-	}
+        return result;
+    }
 
-	@SuppressWarnings("unchecked")
-	public T getObject() {
-		T result = null;
+    /**
+     * Returns the XStream JSON driver class.
+     * 
+     * @return TXStream JSON driver class.
+     */
+    public Class<? extends HierarchicalStreamDriver> getJsonDriverClass() {
+        return jsonDriverClass;
+    }
 
-		if (this.object != null) {
-			result = this.object;
-		} else if (this.representation != null) {
-			try {
-				result = (T) getXstream().fromXML(
-						this.representation.getStream());
-			} catch (IOException e) {
-				Context.getCurrentLogger().log(Level.WARNING,
-						"Unable to parse the object with XStream.", e);
-			}
-		}
+    @SuppressWarnings("unchecked")
+    public T getObject() {
+        T result = null;
 
-		return result;
-	}
+        if (this.object != null) {
+            result = this.object;
+        } else if (this.representation != null) {
+            try {
+                result = (T) getXstream().fromXML(
+                        this.representation.getStream());
+            } catch (IOException e) {
+                Context.getCurrentLogger().log(Level.WARNING,
+                        "Unable to parse the object with XStream.", e);
+            }
+        }
 
-	/**
-	 * Returns the XStream XML driver class.
-	 * 
-	 * @return The XStream XML driver class.
-	 */
-	public Class<? extends HierarchicalStreamDriver> getXmlDriverClass() {
-		return xmlDriverClass;
-	}
+        return result;
+    }
 
-	/**
-	 * Returns the modifiable XStream object. Useful to customize mappings.
-	 * 
-	 * @return The modifiable XStream object.
-	 */
-	public XStream getXstream() {
-		if (this.xstream == null) {
-			this.xstream = createXstream(getMediaType());
-		}
+    /**
+     * Returns the XStream XML driver class.
+     * 
+     * @return The XStream XML driver class.
+     */
+    public Class<? extends HierarchicalStreamDriver> getXmlDriverClass() {
+        return xmlDriverClass;
+    }
 
-		return this.xstream;
-	}
+    /**
+     * Returns the modifiable XStream object. Useful to customize mappings.
+     * 
+     * @return The modifiable XStream object.
+     */
+    public XStream getXstream() {
+        if (this.xstream == null) {
+            this.xstream = createXstream(getMediaType());
+        }
 
-	/**
-	 * Sets the XStream JSON driver class.
-	 * 
-	 * @param jsonDriverClass
-	 *            The XStream JSON driver class.
-	 */
-	public void setJsonDriverClass(
-			Class<? extends HierarchicalStreamDriver> jsonDriverClass) {
-		this.jsonDriverClass = jsonDriverClass;
-	}
+        return this.xstream;
+    }
 
-	/**
-	 * Sets the XStream XML driver class.
-	 * 
-	 * @param xmlDriverClass
-	 *            The XStream XML driver class.
-	 */
-	public void setXmlDriverClass(
-			Class<? extends HierarchicalStreamDriver> xmlDriverClass) {
-		this.xmlDriverClass = xmlDriverClass;
-	}
+    /**
+     * Sets the XStream JSON driver class.
+     * 
+     * @param jsonDriverClass
+     *            The XStream JSON driver class.
+     */
+    public void setJsonDriverClass(
+            Class<? extends HierarchicalStreamDriver> jsonDriverClass) {
+        this.jsonDriverClass = jsonDriverClass;
+    }
 
-	/**
-	 * Sets the XStream object.
-	 * 
-	 * @param xstream
-	 *            The XStream object.
-	 */
-	public void setXstream(XStream xstream) {
-		this.xstream = xstream;
-	}
+    /**
+     * Sets the XStream XML driver class.
+     * 
+     * @param xmlDriverClass
+     *            The XStream XML driver class.
+     */
+    public void setXmlDriverClass(
+            Class<? extends HierarchicalStreamDriver> xmlDriverClass) {
+        this.xmlDriverClass = xmlDriverClass;
+    }
 
-	@Override
-	public void write(Writer writer) throws IOException {
-		if (representation != null) {
-			representation.write(writer);
-		} else if (object != null) {
-			CharacterSet charSet = (getCharacterSet() == null) ? CharacterSet.ISO_8859_1
-					: getCharacterSet();
+    /**
+     * Sets the XStream object.
+     * 
+     * @param xstream
+     *            The XStream object.
+     */
+    public void setXstream(XStream xstream) {
+        this.xstream = xstream;
+    }
 
-			writer.append("<?xml version=\"1.0\" encoding=\""
-					+ charSet.getName() + "\" ?>\n");
-			getXstream().toXML(object, writer);
-		}
-	}
+    @Override
+    public void write(Writer writer) throws IOException {
+        if (representation != null) {
+            representation.write(writer);
+        } else if (object != null) {
+            CharacterSet charSet = (getCharacterSet() == null) ? CharacterSet.ISO_8859_1
+                    : getCharacterSet();
+
+            writer.append("<?xml version=\"1.0\" encoding=\""
+                    + charSet.getName() + "\" ?>\n");
+            getXstream().toXML(object, writer);
+        }
+    }
 }

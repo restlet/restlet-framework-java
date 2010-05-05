@@ -16,6 +16,8 @@ Changes log
       - Adjusted Jackson configuration as it was automatically closing 
         the target stream/writer, not respecting the 
         Representation#write() contract.
+      - XStream detection of annotations was only working for JSON, not
+        for XML representations. Reported by George Calm.
 
 - 2.0 Release Candidate 3 (2010-04-23)
     - API changes
