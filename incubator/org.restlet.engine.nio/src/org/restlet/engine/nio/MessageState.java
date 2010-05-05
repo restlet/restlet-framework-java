@@ -35,7 +35,7 @@ package org.restlet.engine.nio;
  * 
  * @author Jerome Louvel
  */
-public enum WayMessageState {
+public enum MessageState {
 
     /** No message processed. */
     NONE,

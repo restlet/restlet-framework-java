@@ -227,14 +227,14 @@ public class InboundWay extends Way {
      */
     public void readMessage() throws IOException {
         if (getMessageState() == null) {
-            setMessageState(WayMessageState.START_LINE);
+            setMessageState(MessageState.START_LINE);
             getBuilder().delete(0, getBuilder().length());
         }
 
         while (getBuffer().hasRemaining()) {
-            if (getMessageState() == WayMessageState.START_LINE) {
+            if (getMessageState() == MessageState.START_LINE) {
                 readMessageStart();
-            } else if (getMessageState() == WayMessageState.HEADERS) {
+            } else if (getMessageState() == MessageState.HEADERS) {
                 readMessageHeaders();
             }
         }
@@ -285,10 +285,10 @@ public class InboundWay extends Way {
                         Representation entity = createEntity(headers);
 
                         if (entity instanceof EmptyRepresentation) {
-                            setMessageState(WayMessageState.END);
+                            setMessageState(MessageState.END);
                         } else {
                             request.setEntity(entity);
-                            setMessageState(WayMessageState.BODY);
+                            setMessageState(MessageState.BODY);
                         }
 
                         // Update the response
@@ -456,7 +456,7 @@ public class InboundWay extends Way {
                         request);
                 setMessage(response);
 
-                setMessageState(WayMessageState.HEADERS);
+                setMessageState(MessageState.HEADERS);
                 getBuilder().delete(0, getBuilder().length());
             }
         } else {
@@ -469,7 +469,7 @@ public class InboundWay extends Way {
         int socketInterest = 0;
 
         try {
-            if (getIoState() == WayIoState.READ_INTEREST) {
+            if (getIoState() == IoState.READ_INTEREST) {
                 socketInterest = socketInterest | SelectionKey.OP_READ;
             }
 

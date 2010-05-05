@@ -385,7 +385,7 @@ public abstract class ServerResource extends UniformResource {
         Class<?>[] parameterTypes = annotationInfo.getJavaInputTypes();
         ConverterService cs = getConverterService();
 
-        // Invoke the annoted method and get the resulting object.
+        // Invoke the annotated method and get the resulting object.
         Object resultObject = null;
         try {
             if (parameterTypes.length > 0) {

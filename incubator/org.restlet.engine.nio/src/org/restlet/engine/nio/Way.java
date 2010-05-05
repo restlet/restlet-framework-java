@@ -64,7 +64,7 @@ public abstract class Way {
     private volatile int headerIndex;
 
     /** The IO state. */
-    private volatile WayIoState ioState;
+    private volatile IoState ioState;
 
     /** The current message read. */
     private volatile Response message;
@@ -73,7 +73,7 @@ public abstract class Way {
     private final Queue<Response> messages;
 
     /** The message state. */
-    private volatile WayMessageState messageState;
+    private volatile MessageState messageState;
 
     /**
      * Constructor.
@@ -85,8 +85,8 @@ public abstract class Way {
         this.buffer = ByteBuffer.allocate(NioUtils.BUFFER_SIZE);
         this.builder = new StringBuilder();
         this.connection = connection;
-        this.messageState = WayMessageState.NONE;
-        this.ioState = WayIoState.IDLE;
+        this.messageState = MessageState.NONE;
+        this.ioState = IoState.IDLE;
         this.message = null;
         this.messages = new ConcurrentLinkedQueue<Response>();
     }
@@ -141,7 +141,7 @@ public abstract class Way {
      * 
      * @return The IO state.
      */
-    public WayIoState getIoState() {
+    public IoState getIoState() {
         return ioState;
     }
 
@@ -177,7 +177,7 @@ public abstract class Way {
      * 
      * @return The message state.
      */
-    public WayMessageState getMessageState() {
+    public MessageState getMessageState() {
         return messageState;
     }
 
@@ -223,11 +223,11 @@ public abstract class Way {
     /**
      * Sets the IO state.
      * 
-     * @param wayIoState
+     * @param ioState
      *            The IO state.
      */
-    public void setIoState(WayIoState wayIoState) {
-        this.ioState = wayIoState;
+    public void setIoState(IoState ioState) {
+        this.ioState = ioState;
     }
 
     /**
@@ -243,11 +243,11 @@ public abstract class Way {
     /**
      * Sets the message state.
      * 
-     * @param wayMessageState
+     * @param messageState
      *            The message state.
      */
-    public void setMessageState(WayMessageState wayMessageState) {
-        this.messageState = wayMessageState;
+    public void setMessageState(MessageState messageState) {
+        this.messageState = messageState;
     }
 
 }

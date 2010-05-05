@@ -36,7 +36,7 @@ package org.restlet.engine.nio;
  * 
  * @author Jerome Louvel
  */
-public enum WayIoState {
+public enum IoState {
 
     /** No activity going on. */
     IDLE,

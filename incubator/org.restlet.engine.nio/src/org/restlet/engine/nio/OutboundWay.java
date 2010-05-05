@@ -148,9 +148,9 @@ public class OutboundWay extends Way {
         int entityInterest = 0;
 
         try {
-            if (getIoState() == WayIoState.WRITE_INTEREST) {
+            if (getIoState() == IoState.WRITE_INTEREST) {
                 socketInterest = socketInterest | SelectionKey.OP_WRITE;
-            } else if (getIoState() == WayIoState.READ_INTEREST) {
+            } else if (getIoState() == IoState.READ_INTEREST) {
                 entityInterest = entityInterest | SelectionKey.OP_READ;
             }
 
@@ -211,14 +211,14 @@ public class OutboundWay extends Way {
      */
     protected void writeMessage(Response response) {
         if (getMessageState() == null) {
-            setMessageState(WayMessageState.START_LINE);
+            setMessageState(MessageState.START_LINE);
             getBuilder().delete(0, getBuilder().length());
         }
 
         while (getBuffer().hasRemaining()) {
-            if (getMessageState() == WayMessageState.START_LINE) {
+            if (getMessageState() == MessageState.START_LINE) {
                 writeMessageStart();
-            } else if (getMessageState() == WayMessageState.HEADERS) {
+            } else if (getMessageState() == MessageState.HEADERS) {
                 readMessageHeaders();
             }
         }
