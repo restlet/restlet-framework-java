@@ -13,6 +13,8 @@ Changes log
         no one is provided (ISO 8859-1).
       - Added missing ServerResource#abort() method.
         Reported by Tal Liron.
+      - Deprecated the GwtShellServletWrapper as the hosted mode has been
+        removed in GWT 2.0. Reported by Rob Heittman.
     - Bugs fixed
       - Fixed character encoding issues (XStream, Jackson, JAXB, etc.)
       - Adjusted Jackson configuration as it was automatically closing 

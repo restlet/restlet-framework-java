@@ -61,7 +61,9 @@ import org.restlet.ext.servlet.ServerServlet;
  * 
  * @see org.restlet.ext.servlet.ServerServlet
  * @author Rob Heittman (rob.heittman@solertium.com)
+ * @deprecated The hosted mode has been removed in GWT 2.0
  */
+@Deprecated
 public class GwtShellServletWrapper extends ServerServlet {
 
     /** Fulfill serialization contract of servlets. */
