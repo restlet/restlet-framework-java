@@ -110,6 +110,14 @@ public abstract class ServerResource extends UniformResource {
     }
 
     /**
+     * Ask the connector to abort the related network connection, for example
+     * immediately closing the socket.
+     */
+    public void abort() {
+        getResponse().abort();
+    }
+
+    /**
      * Asks the response to immediately commit making it ready to be sent back
      * to the client. Note that all server connectors don't necessarily support
      * this feature.

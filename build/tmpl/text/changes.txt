@@ -11,6 +11,8 @@ Changes log
       - StringRepresentation now derives from CharacterRepresentation.
       - WriterRepresentation now uses HTTP's default character set when
         no one is provided (ISO 8859-1).
+      - Added missing ServerResource#abort() method.
+        Reported by Tal Liron.
     - Bugs fixed
       - Fixed character encoding issues (XStream, Jackson, JAXB, etc.)
       - Adjusted Jackson configuration as it was automatically closing 
