@@ -132,33 +132,35 @@ public class FormReader {
         boolean readNext = true;
         Parameter param = null;
 
-        // Let's read all form parameters
-        try {
-            while (readNext) {
-                param = readNextParameter();
+        if (this.stream != null) {
+            // Let's read all form parameters
+            try {
+                while (readNext) {
+                    param = readNextParameter();
 
-                if (param != null) {
-                    // Add parsed parameter to the form
-                    form.add(param);
-                } else {
-                    // Last parameter parsed
-                    readNext = false;
+                    if (param != null) {
+                        // Add parsed parameter to the form
+                        form.add(param);
+                    } else {
+                        // Last parameter parsed
+                        readNext = false;
+                    }
                 }
+            } catch (IOException ioe) {
+                Context
+                        .getCurrentLogger()
+                        .log(
+                                Level.WARNING,
+                                "Unable to parse a form parameter. Skipping the remaining parameters.",
+                                ioe);
             }
-        } catch (IOException ioe) {
-            Context
-                    .getCurrentLogger()
-                    .log(
-                            Level.WARNING,
-                            "Unable to parse a form parameter. Skipping the remaining parameters.",
-                            ioe);
-        }
 
-        try {
-            this.stream.close();
-        } catch (IOException ioe) {
-            Context.getCurrentLogger().log(Level.WARNING,
-                    "Unable to close the form input stream", ioe);
+            try {
+                this.stream.close();
+            } catch (IOException ioe) {
+                Context.getCurrentLogger().log(Level.WARNING,
+                        "Unable to close the form input stream", ioe);
+            }
         }
     }
 

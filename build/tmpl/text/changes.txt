@@ -22,6 +22,8 @@ Changes log
         Representation#write() contract.
       - XStream detection of annotations was only working for JSON, not
         for XML representations. Reported by George Calm.
+      - Conversion of empty entities to Form instances.
+        Reported by Jean-Baptiste Dusseaut.
 
 - 2.0 Release Candidate 3 (2010-04-23)
     - API changes
