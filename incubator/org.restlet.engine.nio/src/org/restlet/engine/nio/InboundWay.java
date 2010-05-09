@@ -205,7 +205,7 @@ public class InboundWay extends Way {
     }
 
     @Override
-    public int getSocketInterestOps() {
+    protected int getSocketInterestOps() {
         int result = 0;
 
         if (getIoState() == IoState.READ_INTEREST) {
@@ -218,15 +218,21 @@ public class InboundWay extends Way {
     @Override
     public void onSelected() {
         try {
-            if (true) { // canRead()) {
-                int result = readBytes();
+            if (getIoState() == IoState.READ_INTEREST) {
+                int result = readSocketBytes();
 
-                while (getBuffer().hasRemaining()) {
-                    readMessage();
+                while (getBuffer().hasRemaining()
+                        && (getMessageState() != MessageState.BODY)) {
+                    if (getMessageState() == MessageState.START_LINE) {
+                        readStartLine();
+                    } else if (getMessageState() == MessageState.HEADERS) {
+                        readHeaders();
+                    }
 
-                    if (!getBuffer().hasRemaining()) {
-                        // Attempt to read more
-                        result = readBytes();
+                    // Attempt to read more available bytes
+                    if (!getBuffer().hasRemaining()
+                            && (getMessageState() != MessageState.BODY)) {
+                        result = readSocketBytes();
                     }
                 }
 
@@ -245,46 +251,12 @@ public class InboundWay extends Way {
     }
 
     /**
-     * Reads available bytes from the socket channel.
-     * 
-     * @return The number of bytes read.
-     * @throws IOException
-     */
-    public int readBytes() throws IOException {
-        getBuffer().clear();
-        int result = getConnection().getSocketChannel().read(getBuffer());
-        getBuffer().flip();
-        return result;
-    }
-
-    /**
-     * Reads the next message received via the inbound stream or channel. Note
-     * that the optional entity is not fully read.
-     * 
-     * @throws IOException
-     */
-    public void readMessage() throws IOException {
-        if (getMessageState() == null) {
-            setMessageState(MessageState.START_LINE);
-            getBuilder().delete(0, getBuilder().length());
-        }
-
-        while (getBuffer().hasRemaining()) {
-            if (getMessageState() == MessageState.START_LINE) {
-                readMessageStart();
-            } else if (getMessageState() == MessageState.HEADERS) {
-                readMessageHeaders();
-            }
-        }
-    }
-
-    /**
      * Reads a message header.
      * 
      * @return The new message header or null.
      * @throws IOException
      */
-    protected Parameter readMessageHeader() throws IOException {
+    protected Parameter readHeader() throws IOException {
         Parameter header = HeaderReader.readHeader(getBuilder());
         getBuilder().delete(0, getBuilder().length());
         return header;
@@ -295,12 +267,12 @@ public class InboundWay extends Way {
      * 
      * @throws IOException
      */
-    public void readMessageHeaders() throws IOException {
-        if (readMessageLine()) {
+    protected void readHeaders() throws IOException {
+        if (readLine()) {
             ConnectedRequest request = (ConnectedRequest) getMessage()
                     .getRequest();
             Series<Parameter> headers = request.getHeaders();
-            Parameter header = readMessageHeader();
+            Parameter header = readHeader();
 
             while (header != null) {
                 if (headers == null) {
@@ -309,8 +281,8 @@ public class InboundWay extends Way {
 
                 headers.add(header);
 
-                if (readMessageLine()) {
-                    header = readMessageHeader();
+                if (readLine()) {
+                    header = readHeader();
 
                     // End of headers
                     if (header == null) {
@@ -362,7 +334,7 @@ public class InboundWay extends Way {
      * @return True if the message line was fully read.
      * @throws IOException
      */
-    protected boolean readMessageLine() throws IOException {
+    protected boolean readLine() throws IOException {
         boolean result = false;
         int next;
 
@@ -387,12 +359,25 @@ public class InboundWay extends Way {
     }
 
     /**
+     * Reads available bytes from the socket channel and fill the way's buffer.
+     * 
+     * @return The number of bytes read.
+     * @throws IOException
+     */
+    protected int readSocketBytes() throws IOException {
+        getBuffer().clear();
+        int result = getConnection().getSocketChannel().read(getBuffer());
+        getBuffer().flip();
+        return result;
+    }
+
+    /**
      * Reads the start line of the current message received.
      * 
      * @throws IOException
      */
-    public void readMessageStart() throws IOException {
-        if (readMessageLine()) {
+    protected void readStartLine() throws IOException {
+        if (readLine()) {
             String requestMethod = null;
             String requestUri = null;
             String version = null;

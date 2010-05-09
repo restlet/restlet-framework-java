@@ -159,7 +159,7 @@ public abstract class Way {
      * 
      * @return The operations of interest.
      */
-    public abstract int getSocketInterestOps();
+    protected abstract int getSocketInterestOps();
 
     /**
      * Returns the IO state.
@@ -213,7 +213,7 @@ public abstract class Way {
      * @return The socket's NIO selection key holding the link between the
      *         channel and the way.
      */
-    public SelectionKey getSocketKey() {
+    protected SelectionKey getSocketKey() {
         return socketKey;
     }
 
@@ -317,7 +317,7 @@ public abstract class Way {
      *            The socket's NIO selection key holding the link between the
      *            channel and the way.
      */
-    public void setSocketKey(SelectionKey socketKey) {
+    protected void setSocketKey(SelectionKey socketKey) {
         this.socketKey = socketKey;
     }
 
