@@ -125,6 +125,21 @@ public class OutboundWay extends Way {
     }
 
     /**
+     * Registers interest of this way for socket NIO operations.
+     * 
+     * @return The operations of interest.
+     */
+    public int getEntityInterestOps() {
+        int result = 0;
+
+        if (getIoState() == IoState.READ_INTEREST) {
+            result = SelectionKey.OP_READ;
+        }
+
+        return result;
+    }
+
+    /**
      * Returns the entity's NIO selection key holding the link between the
      * entity to be written and the way.
      * 
@@ -160,6 +175,17 @@ public class OutboundWay extends Way {
     }
 
     @Override
+    public int getSocketInterestOps() {
+        int result = 0;
+
+        if (getIoState() == IoState.WRITE_INTEREST) {
+            result = SelectionKey.OP_WRITE;
+        }
+
+        return result;
+    }
+
+    @Override
     public void onSelected() {
         try {
             Response message = null;
@@ -192,51 +218,67 @@ public class OutboundWay extends Way {
 
     @Override
     public void registerInterest(Selector selector) {
-        int socketInterest = 0;
-        int entityInterest = 0;
+        // Register socket interest
+        super.registerInterest(selector);
 
-        try {
-            if (getIoState() == IoState.WRITE_INTEREST) {
-                socketInterest = socketInterest | SelectionKey.OP_WRITE;
-            } else if (getIoState() == IoState.READ_INTEREST) {
-                entityInterest = entityInterest | SelectionKey.OP_READ;
-            }
+        // If the entity is available as a non-blocking selectable channel,
+        // register it as well
+        SelectableChannel entitySelectableChannel = getEntitySelectableChannel();
 
-            if (socketInterest > 0) {
-                getConnection().getSocketChannel().register(selector,
-                        socketInterest, this);
-            }
+        if (entitySelectableChannel != null) {
+            int entityInterestOps = getEntityInterestOps();
 
-            if (entityInterest > 0) {
-                Representation entity = (getMessage() == null) ? null
-                        : getMessage().getEntity();
-
-                if (entity instanceof ReadableRepresentation) {
-                    ReadableRepresentation readableEntity = (ReadableRepresentation) entity;
-
-                    try {
-                        if (readableEntity.getChannel() instanceof SelectableChannel) {
-                            SelectableChannel selectableChannel = (SelectableChannel) readableEntity
-                                    .getChannel();
-
-                            if (!selectableChannel.isBlocking()) {
-                                selectableChannel.register(selector,
-                                        entityInterest, this);
-                            }
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+            if ((getEntityKey() == null) && (entityInterestOps > 0)) {
+                try {
+                    setEntityKey(entitySelectableChannel.register(selector,
+                            entityInterestOps, this));
+                } catch (ClosedChannelException cce) {
+                    getLogger()
+                            .log(
+                                    Level.WARNING,
+                                    "Unable to register NIO interest operations for this entity",
+                                    cce);
+                    getConnection().setState(ConnectionState.CLOSING);
+                }
+            } else {
+                if (entityInterestOps == 0) {
+                    getEntityKey().cancel();
+                } else {
+                    getEntityKey().interestOps(entityInterestOps);
                 }
             }
-        } catch (ClosedChannelException cce) {
-            getLogger()
-                    .log(
-                            Level.WARNING,
-                            "Unable to register NIO interest operations for this connection",
-                            cce);
-            getConnection().setState(ConnectionState.CLOSING);
         }
+    }
+
+    /**
+     * Returns the non-blocking selectable channel of the request entity if
+     * available.
+     * 
+     * @return The non-blocking selectable channel of the request entity if
+     *         available.
+     */
+    protected SelectableChannel getEntitySelectableChannel() {
+        SelectableChannel result = null;
+        Representation entity = (getMessage() == null) ? null : getMessage()
+                .getEntity();
+
+        if (entity instanceof ReadableRepresentation) {
+            ReadableRepresentation readableEntity = (ReadableRepresentation) entity;
+
+            try {
+                if (readableEntity.getChannel() instanceof SelectableChannel) {
+                    result = (SelectableChannel) readableEntity.getChannel();
+
+                    if (result.isBlocking()) {
+                        result = null;
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return result;
     }
 
     /**

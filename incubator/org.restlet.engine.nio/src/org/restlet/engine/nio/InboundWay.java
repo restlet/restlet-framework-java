@@ -33,6 +33,7 @@ package org.restlet.engine.nio;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.SelectionKey;
 import java.util.logging.Level;
 
 import org.restlet.data.Form;
@@ -201,6 +202,17 @@ public class InboundWay extends Way {
         //
         // return result;
         return null;
+    }
+
+    @Override
+    public int getSocketInterestOps() {
+        int result = 0;
+
+        if (getIoState() == IoState.READ_INTEREST) {
+            result = SelectionKey.OP_READ;
+        }
+
+        return result;
     }
 
     @Override

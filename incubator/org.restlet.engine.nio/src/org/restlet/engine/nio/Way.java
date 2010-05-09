@@ -155,24 +155,11 @@ public abstract class Way {
     }
 
     /**
-     * Registers interest of this connection way for NIO operations with the
-     * given selector. If called several times, it just update the selection key
-     * with the new interest operations.
+     * Registers interest of this way for socket NIO operations.
      * 
-     * @param selector
-     *            The selector to register with.
+     * @return The operations of interest.
      */
-    public int getInterestOps() {
-        int result = 0;
-
-        if (getIoState() == IoState.READ_INTEREST) {
-            result = SelectionKey.OP_READ;
-        } else if (getIoState() == IoState.WRITE_INTEREST) {
-            result = SelectionKey.OP_WRITE;
-        }
-
-        return result;
-    }
+    public abstract int getSocketInterestOps();
 
     /**
      * Returns the IO state.
@@ -241,20 +228,20 @@ public abstract class Way {
 
     /**
      * Registers interest of this connection way for NIO operations with the
-     * given selector. If called several times, it just update the selection key
-     * with the new interest operations.
+     * given selector. If called several times, it just update the selection
+     * keys with the new interest operations.
      * 
      * @param selector
      *            The selector to register with.
      * @throws ClosedChannelException
      */
     public void registerInterest(Selector selector) {
-        int interestOps = getInterestOps();
+        int socketInterestOps = getSocketInterestOps();
 
-        if ((getSocketKey() == null) && (interestOps > 0)) {
+        if ((getSocketKey() == null) && (socketInterestOps > 0)) {
             try {
                 setSocketKey(getConnection().getSocketChannel().register(
-                        selector, interestOps, this));
+                        selector, socketInterestOps, this));
             } catch (ClosedChannelException cce) {
                 getLogger()
                         .log(
@@ -264,10 +251,10 @@ public abstract class Way {
                 getConnection().setState(ConnectionState.CLOSING);
             }
         } else {
-            if (interestOps == 0) {
+            if (socketInterestOps == 0) {
                 getSocketKey().cancel();
             } else {
-                getSocketKey().interestOps(interestOps);
+                getSocketKey().interestOps(socketInterestOps);
             }
         }
     }
