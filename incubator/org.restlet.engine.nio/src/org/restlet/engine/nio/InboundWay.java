@@ -295,12 +295,12 @@ public class InboundWay extends Way {
                         }
 
                         // Update the response
-                        getMessage().getServerInfo().setAddress(
-                                getConnection().getHelper().getHelped()
-                                        .getAddress());
-                        getMessage().getServerInfo().setPort(
-                                getConnection().getHelper().getHelped()
-                                        .getPort());
+                        // getMessage().getServerInfo().setAddress(
+                        // getConnection().getHelper().getHelped()
+                        // .getAddress());
+                        // getMessage().getServerInfo().setPort(
+                        // getConnection().getHelper().getHelped()
+                        // .getPort());
 
                         if (request != null) {
                             if (request.isExpectingResponse()) {
@@ -371,7 +371,7 @@ public class InboundWay extends Way {
                 }
 
                 if (result == -1) {
-                    close(true);
+                    getConnection().close(true);
                 }
             }
         } catch (Exception e) {
@@ -380,7 +380,7 @@ public class InboundWay extends Way {
                             Level.INFO,
                             "Error while reading a message. Closing the connection.",
                             e);
-            close(false);
+            getConnection().close(false);
         }
     }
 

@@ -374,7 +374,7 @@ public class OutboundWay extends Way {
                     // Try to close the connection immediately.
                     if ((getConnection().getState() == ConnectionState.CLOSING)
                             && !isBusy()) {
-                        close(true);
+                        getConnection().close(true);
                     }
                 }
             }
