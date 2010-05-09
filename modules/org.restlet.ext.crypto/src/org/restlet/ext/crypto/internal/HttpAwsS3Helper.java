@@ -152,7 +152,7 @@ public class HttpAwsS3Helper extends AuthenticatorHelper {
             }
         }
 
-        // Setup the ContentType header
+        // Setup the Content-MD5 header
         String contentMd5 = httpHeaders.getFirstValue(
                 HeaderConstants.HEADER_CONTENT_MD5, true);
         if (contentMd5 == null) {
