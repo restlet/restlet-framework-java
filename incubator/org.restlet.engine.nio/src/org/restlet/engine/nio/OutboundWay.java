@@ -53,7 +53,19 @@ import org.restlet.representation.Representation;
 import org.restlet.service.ConnectorService;
 import org.restlet.util.Series;
 
+/**
+ * A network connection way though which messages are sent. Messages can be
+ * either requests or responses.
+ * 
+ * @author Jerome Louvel
+ */
 public class OutboundWay extends Way {
+
+    /**
+     * The entity's NIO selection key holding the link between the entity to be
+     * written and the way.
+     */
+    private volatile SelectionKey entityKey;
 
     /**
      * Constructor.
@@ -62,6 +74,7 @@ public class OutboundWay extends Way {
      */
     public OutboundWay(Connection<?> connection) {
         super(connection);
+        this.entityKey = null;
         // this.outboundChannel = new OutboundStream(getSocket()
         // .getOutputStream());
 
@@ -109,6 +122,16 @@ public class OutboundWay extends Way {
     protected void addResponseHeaders(Response response,
             Series<Parameter> headers) {
         HeaderUtils.addResponseHeaders(response, headers);
+    }
+
+    /**
+     * Returns the entity's NIO selection key holding the link between the
+     * entity to be written and the way.
+     * 
+     * @return The entity's NIO selection key.
+     */
+    public SelectionKey getEntityKey() {
+        return entityKey;
     }
 
     /**
@@ -214,6 +237,17 @@ public class OutboundWay extends Way {
                             cce);
             getConnection().setState(ConnectionState.CLOSING);
         }
+    }
+
+    /**
+     * Sets the entity's NIO selection key holding the link between the entity
+     * to be written and the way.
+     * 
+     * @param entityKey
+     *            The entity's NIO selection key.
+     */
+    public void setEntityKey(SelectionKey entityKey) {
+        this.entityKey = entityKey;
     }
 
     /**

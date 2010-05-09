@@ -77,8 +77,11 @@ public abstract class Way {
     /** The message state. */
     private volatile MessageState messageState;
 
-    /** The NIO selection key holding the link between the channel and the way. */
-    private volatile SelectionKey selectionKey;
+    /**
+     * The socket's NIO selection key holding the link between the channel and
+     * the way.
+     */
+    private volatile SelectionKey socketKey;
 
     /**
      * Constructor.
@@ -94,7 +97,7 @@ public abstract class Way {
         this.ioState = IoState.IDLE;
         this.message = null;
         this.messages = new ConcurrentLinkedQueue<Response>();
-        this.selectionKey = null;
+        this.socketKey = null;
     }
 
     /**
@@ -217,14 +220,14 @@ public abstract class Way {
     }
 
     /**
-     * Returns the NIO selection key holding the link between the channel and
-     * the way.
+     * Returns the socket's NIO selection key holding the link between the
+     * channel and the way.
      * 
-     * @return The NIO selection key holding the link between the channel and
-     *         the way.
+     * @return The socket's NIO selection key holding the link between the
+     *         channel and the way.
      */
-    public SelectionKey getSelectionKey() {
-        return selectionKey;
+    public SelectionKey getSocketKey() {
+        return socketKey;
     }
 
     /**
@@ -248,9 +251,9 @@ public abstract class Way {
     public void registerInterest(Selector selector) {
         int interestOps = getInterestOps();
 
-        if ((getSelectionKey() == null) && (interestOps > 0)) {
+        if ((getSocketKey() == null) && (interestOps > 0)) {
             try {
-                setSelectionKey(getConnection().getSocketChannel().register(
+                setSocketKey(getConnection().getSocketChannel().register(
                         selector, interestOps, this));
             } catch (ClosedChannelException cce) {
                 getLogger()
@@ -262,9 +265,9 @@ public abstract class Way {
             }
         } else {
             if (interestOps == 0) {
-                getSelectionKey().cancel();
+                getSocketKey().cancel();
             } else {
-                getSelectionKey().interestOps(interestOps);
+                getSocketKey().interestOps(interestOps);
             }
         }
     }
@@ -320,15 +323,15 @@ public abstract class Way {
     }
 
     /**
-     * Sets the NIO selection key holding the link between the channel and the
-     * way.
+     * Sets the socket's NIO selection key holding the link between the channel
+     * and the way.
      * 
-     * @param selectionKey
-     *            The NIO selection key holding the link between the channel and
-     *            the way.
+     * @param socketKey
+     *            The socket's NIO selection key holding the link between the
+     *            channel and the way.
      */
-    public void setSelectionKey(SelectionKey selectionKey) {
-        this.selectionKey = selectionKey;
+    public void setSocketKey(SelectionKey socketKey) {
+        this.socketKey = socketKey;
     }
 
 }

@@ -80,9 +80,11 @@ public class Controller implements Runnable {
     /**
      * Control each connection for messages to read or write.
      * 
+     * @param overloaded
+     *            Indicates if the controller is overloaded.
      * @throws IOException
      */
-    protected void controlConnections() throws IOException {
+    protected void controlConnections(boolean overloaded) throws IOException {
         // Close connections or register interest in NIO operations
         for (final Connection<?> conn : getHelper().getConnections()) {
             if (conn.getState() == ConnectionState.CLOSED) {
@@ -251,9 +253,10 @@ public class Controller implements Runnable {
                                         "Stop accepting new connections and transactions. Consider increasing the maximum number of threads.");
                     }
 
-                    controlConnections();
-                    controlHelper();
                 }
+
+                controlConnections(isOverloaded());
+                controlHelper();
 
                 // Sleep a bit
                 Thread.sleep(getHelper().getControllerSleepTimeMs());

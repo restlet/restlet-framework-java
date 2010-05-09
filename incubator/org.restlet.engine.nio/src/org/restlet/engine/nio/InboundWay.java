@@ -45,6 +45,12 @@ import org.restlet.representation.ReadableRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 
+/**
+ * A network connection way though which messages are received. Messages can be
+ * either requests or responses.
+ * 
+ * @author Jerome Louvel
+ */
 public class InboundWay extends Way {
 
     /**

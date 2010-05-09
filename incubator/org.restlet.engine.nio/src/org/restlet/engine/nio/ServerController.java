@@ -92,50 +92,54 @@ public class ServerController extends Controller {
     }
 
     @Override
-    protected void controlConnections() throws IOException {
+    protected void controlConnections(boolean overloaded) throws IOException {
         // Select keys with ready operations
-        super.controlConnections();
+        super.controlConnections(overloaded);
 
-        // Attempt to accept new connections
-        try {
-            if (this.acceptKey.isAcceptable()) {
-                SocketChannel socketChannel = getHelper()
-                        .getServerSocketChannel().accept();
+        if (!overloaded) {
+            // Attempt to accept new connections
+            try {
+                if (this.acceptKey.isAcceptable()) {
+                    SocketChannel socketChannel = getHelper()
+                            .getServerSocketChannel().accept();
 
-                if (socketChannel != null) {
-                    socketChannel.configureBlocking(false);
-                    int connectionsCount = getHelper().getConnections().size();
+                    if (socketChannel != null) {
+                        socketChannel.configureBlocking(false);
+                        int connectionsCount = getHelper().getConnections()
+                                .size();
 
-                    if ((getHelper().getMaxTotalConnections() == -1)
-                            || (connectionsCount <= getHelper()
-                                    .getMaxTotalConnections())) {
-                        Connection<Server> connection = getHelper()
-                                .createConnection(getHelper(), socketChannel);
-                        connection.open();
-                        getHelper().getConnections().add(connection);
-                    } else {
-                        // Rejection connection
-                        socketChannel.close();
-                        getHelper()
-                                .getLogger()
-                                .info(
-                                        "Maximum number of concurrent connections reached. New connection rejected.");
+                        if ((getHelper().getMaxTotalConnections() == -1)
+                                || (connectionsCount <= getHelper()
+                                        .getMaxTotalConnections())) {
+                            Connection<Server> connection = getHelper()
+                                    .createConnection(getHelper(),
+                                            socketChannel);
+                            connection.open();
+                            getHelper().getConnections().add(connection);
+                        } else {
+                            // Rejection connection
+                            socketChannel.close();
+                            getHelper()
+                                    .getLogger()
+                                    .info(
+                                            "Maximum number of concurrent connections reached. New connection rejected.");
+                        }
                     }
                 }
+            } catch (ClosedByInterruptException ex) {
+                getHelper().getLogger().log(Level.FINE,
+                        "ServerSocket channel was closed by interrupt", ex);
+                throw ex;
+            } catch (AsynchronousCloseException ace) {
+                getHelper().getLogger().log(Level.FINE,
+                        "The server socket was closed", ace);
+            } catch (SocketException se) {
+                getHelper().getLogger().log(Level.FINE,
+                        "The server socket was closed", se);
+            } catch (IOException ex) {
+                getHelper().getLogger().log(Level.WARNING,
+                        "Unexpected error while accepting new connection", ex);
             }
-        } catch (ClosedByInterruptException ex) {
-            getHelper().getLogger().log(Level.FINE,
-                    "ServerSocket channel was closed by interrupt", ex);
-            throw ex;
-        } catch (AsynchronousCloseException ace) {
-            getHelper().getLogger().log(Level.FINE,
-                    "The server socket was closed", ace);
-        } catch (SocketException se) {
-            getHelper().getLogger().log(Level.FINE,
-                    "The server socket was closed", se);
-        } catch (IOException ex) {
-            getHelper().getLogger().log(Level.WARNING,
-                    "Unexpected error while accepting new connection", ex);
         }
     }
 
