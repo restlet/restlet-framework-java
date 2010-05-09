@@ -32,15 +32,9 @@ package org.restlet.engine.nio;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.channels.ClosedChannelException;
 import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.SelectableChannel;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
 import java.util.logging.Level;
 
-import org.restlet.Context;
-import org.restlet.Response;
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.engine.http.header.HeaderReader;
@@ -205,7 +199,31 @@ public class InboundWay extends Way {
 
     @Override
     public void onSelected() {
+        try {
+            if (true) { // canRead()) {
+                int result = readBytes();
 
+                while (getBuffer().hasRemaining()) {
+                    readMessage();
+
+                    if (!getBuffer().hasRemaining()) {
+                        // Attempt to read more
+                        result = readBytes();
+                    }
+                }
+
+                if (result == -1) {
+                    getConnection().close(true);
+                }
+            }
+        } catch (Exception e) {
+            getLogger()
+                    .log(
+                            Level.INFO,
+                            "Error while reading a message. Closing the connection.",
+                            e);
+            getConnection().close(false);
+        }
     }
 
     /**
@@ -308,8 +326,7 @@ public class InboundWay extends Way {
                             }
 
                             // Add it to the helper queue
-                            getConnection().getHelper().getInboundMessages()
-                                    .add(getMessage());
+                            getHelper().getInboundMessages().add(getMessage());
                         }
                     }
                 } else {
@@ -349,38 +366,6 @@ public class InboundWay extends Way {
         }
 
         return result;
-    }
-
-    /**
-     * Reads inbound messages from the socket. Only one message at a time if
-     * pipelining isn't enabled.
-     */
-    public void readMessages() {
-        try {
-            if (canRead()) {
-                int result = readBytes();
-
-                while (getBuffer().hasRemaining()) {
-                    readMessage();
-
-                    if (!getBuffer().hasRemaining()) {
-                        // Attempt to read more
-                        result = readBytes();
-                    }
-                }
-
-                if (result == -1) {
-                    getConnection().close(true);
-                }
-            }
-        } catch (Exception e) {
-            getLogger()
-                    .log(
-                            Level.INFO,
-                            "Error while reading a message. Closing the connection.",
-                            e);
-            getConnection().close(false);
-        }
     }
 
     /**
@@ -451,12 +436,10 @@ public class InboundWay extends Way {
                             "Unable to parse the protocol version. End of line reached too early.");
                 }
 
-                ConnectedRequest request = createRequest(getConnection()
-                        .getHelper().getContext(), this, requestMethod,
-                        requestUri, version);
-                Response response = getConnection().getHelper().createResponse(
-                        request);
-                setMessage(response);
+                // ConnectedRequest request = getHelper().createRequest(
+                // getConnection(), requestMethod, requestUri, version);
+                // Response response = getHelper().createResponse(request);
+                // setMessage(response);
 
                 setMessageState(MessageState.HEADERS);
                 getBuilder().delete(0, getBuilder().length());

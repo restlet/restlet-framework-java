@@ -89,6 +89,25 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
     }
 
     /**
+     * Creates a new request.
+     * 
+     * @param connection
+     *            The associated connection.
+     * @param methodName
+     *            The method name.
+     * @param resourceUri
+     *            The target resource URI.
+     * @param version
+     *            The protocol version.
+     * @return The created request.
+     */
+    protected ConnectedRequest createRequest(Connection<Server> connection,
+            String methodName, String resourceUri, String version) {
+        return new ConnectedRequest(getContext(), connection, methodName,
+                resourceUri, version);
+    }
+
+    /**
      * Create a server socket channel and bind it to the given address
      * 
      * @return Bound server socket channel.

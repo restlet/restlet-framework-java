@@ -138,7 +138,33 @@ public class OutboundWay extends Way {
 
     @Override
     public void onSelected() {
+        try {
+            Response message = null;
 
+            if (true) { // canWrite()) {
+                message = getMessages().peek();
+
+                if (message != null) {
+                    // getBuilder().delete(0, getBuilder().length()); ??
+                    setMessageState(MessageState.START_LINE);
+                    setIoState(IoState.WRITE_INTEREST);
+
+                    writeMessage(message);
+
+                    // Try to close the connection immediately.
+                    if ((getConnection().getState() == ConnectionState.CLOSING)
+                            && (getIoState() == IoState.IDLE)) {
+                        getConnection().close(true);
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            getLogger().log(Level.WARNING,
+                    "Error while writing an HTTP message: ", e.getMessage());
+            getLogger().log(Level.INFO, "Error while writing an HTTP message",
+                    e);
+        }
     }
 
     @Override
@@ -213,9 +239,9 @@ public class OutboundWay extends Way {
 
         while (getBuffer().hasRemaining()) {
             if (getMessageState() == MessageState.START_LINE) {
-                writeMessageStart();
+                // writeMessageStart();
             } else if (getMessageState() == MessageState.HEADERS) {
-                writeMessageHead();
+                // writeMessageHead();
             }
         }
     }
@@ -348,40 +374,6 @@ public class OutboundWay extends Way {
     protected void writeMessageHead(Response message, Series<Parameter> headers)
             throws IOException {
         // writeMessageHead(message, getSocketChannel(), headers);
-    }
-
-    /**
-     * Writes outbound messages to the socket. Only one response at a time if
-     * pipelining isn't enabled.
-     */
-    public void writeMessages() {
-        try {
-            Response message = null;
-
-            if (canWrite()) {
-                message = getMessages().peek();
-
-                if (message != null) {
-                    // getBuilder().delete(0, getBuilder().length()); ??
-                    setMessageState(MessageState.START_LINE);
-                    setIoState(IoState.WRITE_INTEREST);
-
-                    writeMessage(message);
-
-                    // Try to close the connection immediately.
-                    if ((getConnection().getState() == ConnectionState.CLOSING)
-                            && (getIoState() == IoState.IDLE)) {
-                        getConnection().close(true);
-                    }
-                }
-            }
-
-        } catch (Exception e) {
-            getLogger().log(Level.WARNING,
-                    "Error while writing an HTTP message: ", e.getMessage());
-            getLogger().log(Level.INFO, "Error while writing an HTTP message",
-                    e);
-        }
     }
 
     /**

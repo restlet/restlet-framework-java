@@ -134,6 +134,15 @@ public abstract class Way {
     }
 
     /**
+     * Returns the parent connector helper.
+     * 
+     * @return The parent connector helper.
+     */
+    public BaseHelper<?> getHelper() {
+        return getConnection().getHelper();
+    }
+
+    /**
      * Returns the header index.
      * 
      * @return The header index.

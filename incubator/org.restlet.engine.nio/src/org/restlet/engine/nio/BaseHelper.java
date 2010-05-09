@@ -221,6 +221,15 @@ public abstract class BaseHelper<T extends Connector> extends
     }
 
     /**
+     * Creates the request object.
+     * 
+     * @return The request object.
+     */
+    protected Request createRequest() {
+        return new Request();
+    }
+
+    /**
      * Creates the response object.
      * 
      * @param request
