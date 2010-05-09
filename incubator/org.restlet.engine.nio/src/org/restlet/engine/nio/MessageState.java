@@ -37,9 +37,6 @@ package org.restlet.engine.nio;
  */
 public enum MessageState {
 
-    /** No message processed. */
-    NONE,
-
     /** The start line is being processed. */
     START_LINE,
 

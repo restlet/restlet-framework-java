@@ -107,7 +107,7 @@ public class InboundWay extends Way {
                     @Override
                     public void release() {
                         super.release();
-                        setMessageState(MessageState.NONE);
+                        setMessageState(MessageState.START_LINE);
                         setIoState(IoState.IDLE);
                     }
                 };
@@ -117,7 +117,7 @@ public class InboundWay extends Way {
                     @Override
                     public void release() {
                         super.release();
-                        setMessageState(MessageState.NONE);
+                        setMessageState(MessageState.START_LINE);
                         setIoState(IoState.IDLE);
                     }
                 };
@@ -128,7 +128,7 @@ public class InboundWay extends Way {
             result = new EmptyRepresentation();
 
             // Mark the inbound as free so new messages can be read if possible
-            setMessageState(MessageState.NONE);
+            setMessageState(MessageState.START_LINE);
             setIoState(IoState.IDLE);
         }
 
@@ -204,8 +204,7 @@ public class InboundWay extends Way {
     }
 
     @Override
-    public void onSelected(SelectionKey key) {
-        // TODO Auto-generated method stub
+    public void onSelected() {
 
     }
 
@@ -288,7 +287,7 @@ public class InboundWay extends Way {
                         Representation entity = createEntity(headers);
 
                         if (entity instanceof EmptyRepresentation) {
-                            setMessageState(MessageState.NONE);
+                            setMessageState(MessageState.START_LINE);
                         } else {
                             request.setEntity(entity);
                             setMessageState(MessageState.BODY);
@@ -464,29 +463,6 @@ public class InboundWay extends Way {
             }
         } else {
             // We need more characters before parsing
-        }
-    }
-
-    @Override
-    public void registerInterest(Selector selector) {
-        int socketInterest = 0;
-
-        try {
-            if (getIoState() == IoState.READ_INTEREST) {
-                socketInterest = socketInterest | SelectionKey.OP_READ;
-            }
-
-            if (socketInterest > 0) {
-                getConnection().getSocketChannel().register(selector,
-                        socketInterest, this);
-            }
-        } catch (ClosedChannelException cce) {
-            getLogger()
-                    .log(
-                            Level.WARNING,
-                            "Unable to register NIO interest operations for this connection",
-                            cce);
-            getConnection().setState(ConnectionState.CLOSING);
         }
     }
 

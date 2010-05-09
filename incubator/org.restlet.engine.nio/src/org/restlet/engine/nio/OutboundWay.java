@@ -137,8 +137,7 @@ public class OutboundWay extends Way {
     }
 
     @Override
-    public void onSelected(SelectionKey key) {
-        // TODO Auto-generated method stub
+    public void onSelected() {
 
     }
 
@@ -210,10 +209,7 @@ public class OutboundWay extends Way {
      *            The response to write.
      */
     protected void writeMessage(Response response) {
-        if (getMessageState() == MessageState.NONE) {
-            setMessageState(MessageState.START_LINE);
-            getBuilder().delete(0, getBuilder().length());
-        }
+        setMessageState(MessageState.START_LINE);
 
         while (getBuffer().hasRemaining()) {
             if (getMessageState() == MessageState.START_LINE) {
@@ -366,6 +362,7 @@ public class OutboundWay extends Way {
                 message = getMessages().peek();
 
                 if (message != null) {
+                    // getBuilder().delete(0, getBuilder().length()); ??
                     setMessageState(MessageState.START_LINE);
                     setIoState(IoState.WRITE_INTEREST);
 
@@ -373,7 +370,7 @@ public class OutboundWay extends Way {
 
                     // Try to close the connection immediately.
                     if ((getConnection().getState() == ConnectionState.CLOSING)
-                            && !isBusy()) {
+                            && (getIoState() == IoState.IDLE)) {
                         getConnection().close(true);
                     }
                 }

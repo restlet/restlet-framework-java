@@ -31,10 +31,12 @@
 package org.restlet.engine.nio;
 
 import java.nio.ByteBuffer;
+import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.Response;
@@ -75,6 +77,9 @@ public abstract class Way {
     /** The message state. */
     private volatile MessageState messageState;
 
+    /** The NIO selection key holding the link between the channel and the way. */
+    private volatile SelectionKey selectionKey;
+
     /**
      * Constructor.
      * 
@@ -85,20 +90,11 @@ public abstract class Way {
         this.buffer = ByteBuffer.allocate(NioUtils.BUFFER_SIZE);
         this.builder = new StringBuilder();
         this.connection = connection;
-        this.messageState = MessageState.NONE;
+        this.messageState = MessageState.START_LINE;
         this.ioState = IoState.IDLE;
         this.message = null;
         this.messages = new ConcurrentLinkedQueue<Response>();
-    }
-
-    /**
-     * Indicates if the way is busy.
-     * 
-     * @return True if the way is busy.
-     */
-    public boolean isBusy() {
-        return (getIoState() != IoState.IDLE)
-                || (getMessageState() != MessageState.NONE);
+        this.selectionKey = null;
     }
 
     /**
@@ -147,6 +143,26 @@ public abstract class Way {
     }
 
     /**
+     * Registers interest of this connection way for NIO operations with the
+     * given selector. If called several times, it just update the selection key
+     * with the new interest operations.
+     * 
+     * @param selector
+     *            The selector to register with.
+     */
+    public int getInterestOps() {
+        int result = 0;
+
+        if (getIoState() == IoState.READ_INTEREST) {
+            result = SelectionKey.OP_READ;
+        } else if (getIoState() == IoState.WRITE_INTEREST) {
+            result = SelectionKey.OP_WRITE;
+        }
+
+        return result;
+    }
+
+    /**
      * Returns the IO state.
      * 
      * @return The IO state.
@@ -192,14 +208,15 @@ public abstract class Way {
     }
 
     /**
-     * Registers interest of this connection way for NIO operations with the
-     * given selector. If called several times, it just update the selection key
-     * with the new interest operations.
+     * Returns the NIO selection key holding the link between the channel and
+     * the way.
      * 
-     * @param selector
-     *            The selector to register with.
+     * @return The NIO selection key holding the link between the channel and
+     *         the way.
      */
-    public abstract void registerInterest(Selector selector);
+    public SelectionKey getSelectionKey() {
+        return selectionKey;
+    }
 
     /**
      * Callback method invoked when the way has been selected for IO operations
@@ -208,7 +225,40 @@ public abstract class Way {
      * @param key
      *            The registered selection key.
      */
-    public abstract void onSelected(SelectionKey key);
+    public abstract void onSelected();
+
+    /**
+     * Registers interest of this connection way for NIO operations with the
+     * given selector. If called several times, it just update the selection key
+     * with the new interest operations.
+     * 
+     * @param selector
+     *            The selector to register with.
+     * @throws ClosedChannelException
+     */
+    public void registerInterest(Selector selector) {
+        int interestOps = getInterestOps();
+
+        if ((getSelectionKey() == null) && (interestOps > 0)) {
+            try {
+                setSelectionKey(getConnection().getSocketChannel().register(
+                        selector, interestOps, this));
+            } catch (ClosedChannelException cce) {
+                getLogger()
+                        .log(
+                                Level.WARNING,
+                                "Unable to register NIO interest operations for this connection",
+                                cce);
+                getConnection().setState(ConnectionState.CLOSING);
+            }
+        } else {
+            if (interestOps == 0) {
+                getSelectionKey().cancel();
+            } else {
+                getSelectionKey().interestOps(interestOps);
+            }
+        }
+    }
 
     /**
      * Sets the line builder index.
@@ -258,6 +308,18 @@ public abstract class Way {
      */
     public void setMessageState(MessageState messageState) {
         this.messageState = messageState;
+    }
+
+    /**
+     * Sets the NIO selection key holding the link between the channel and the
+     * way.
+     * 
+     * @param selectionKey
+     *            The NIO selection key holding the link between the channel and
+     *            the way.
+     */
+    public void setSelectionKey(SelectionKey selectionKey) {
+        this.selectionKey = selectionKey;
     }
 
 }
