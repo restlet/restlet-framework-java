@@ -1537,13 +1537,13 @@ public class Reference {
 
                 if (!diffFound) {
                     if (localPath.length() == basePath.length()) {
-                        // Both paths are strictely equivalent
+                        // Both paths are strictly equivalent
                         relativePath = ".";
                     } else if (i == localPath.length()) {
                         // End of local path reached
                         if (basePath.charAt(i) == '/') {
                             if ((i + 1) == basePath.length()) {
-                                // Both paths are strictely equivalent
+                                // Both paths are strictly equivalent
                                 relativePath = ".";
                             } else {
                                 // The local path is a direct parent of the base
@@ -1606,7 +1606,7 @@ public class Reference {
                     } else if (i == basePath.length()) {
                         if (localPath.charAt(i) == '/') {
                             if ((i + 1) == localPath.length()) {
-                                // Both paths are strictely equivalent
+                                // Both paths are strictly equivalent
                                 relativePath = ".";
                             } else {
                                 // The local path is a direct child of the base
@@ -1655,7 +1655,7 @@ public class Reference {
                 }
             }
 
-            // Builde the result reference
+            // Build the result reference
             result = new Reference();
             final String query = getQuery();
             final String fragment = getFragment();
@@ -2241,7 +2241,7 @@ public class Reference {
                     // [ifndef gwt] instruction
                     output.append(input);
                     // [ifdef gwt] instruction uncomment
-                    //output.append(input.toString());
+                    // output.append(input.toString());
                     input.delete(0, input.length());
                 }
             }
