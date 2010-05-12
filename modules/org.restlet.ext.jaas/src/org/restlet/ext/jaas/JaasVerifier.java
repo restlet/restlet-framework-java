@@ -30,6 +30,8 @@
 
 package org.restlet.ext.jaas;
 
+import java.security.Principal;
+
 import javax.security.auth.Subject;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.login.Configuration;
@@ -38,6 +40,8 @@ import javax.security.auth.login.LoginException;
 
 import org.restlet.Request;
 import org.restlet.Response;
+import org.restlet.data.ClientInfo;
+import org.restlet.security.User;
 import org.restlet.security.Verifier;
 
 /**
@@ -58,6 +62,9 @@ public class JaasVerifier implements Verifier {
 
     /** The JAAS login context name. */
     private volatile String name;
+
+    /** Optional class from which to build a user principal */
+    private volatile String userPrincipalClassName;
 
     /**
      * Constructor.
@@ -99,6 +106,15 @@ public class JaasVerifier implements Verifier {
     }
 
     /**
+     * Gets the user principal class name.
+     * 
+     * @return the user principal class name.
+     */
+    public String getUserPrincipalClassName() {
+        return this.userPrincipalClassName;
+    }
+
+    /**
      * Sets the optional JAAS login configuration.
      * 
      * @param configuration
@@ -119,6 +135,20 @@ public class JaasVerifier implements Verifier {
     }
 
     /**
+     * Sets the user principal class name. If a {@link User} is not associated
+     * with the {@link Request}'s {@link ClientInfo} and if one of the
+     * principals returned after the JAAS login is of this type, a new
+     * {@link User} will be associated with the {@link ClientInfo} using its
+     * name.
+     * 
+     * @param userPrincipalClassName
+     *            the user principal class name.
+     */
+    public void setUserPrincipalClassName(String userPrincipalClassName) {
+        this.userPrincipalClassName = userPrincipalClassName;
+    }
+
+    /**
      * Verifies that the proposed secret is correct for the specified
      * identifier. By default, it creates a JAAS login context with the callback
      * handler obtained by {@link #createCallbackHandler(Request, Response)} and
@@ -135,6 +165,13 @@ public class JaasVerifier implements Verifier {
 
         try {
             Subject subject = new Subject();
+            if (request.getClientInfo().getUser() != null) {
+                subject.getPrincipals().add(request.getClientInfo().getUser());
+            }
+            if (request.getClientInfo().getRoles() != null) {
+                subject.getPrincipals().addAll(
+                        request.getClientInfo().getRoles());
+            }
             subject.getPrincipals().addAll(
                     request.getClientInfo().getPrincipals());
 
@@ -142,11 +179,36 @@ public class JaasVerifier implements Verifier {
                     createCallbackHandler(request, response),
                     getConfiguration());
             loginContext.login();
+
+            /*
+             * If the login operation added new principals to the subject, we
+             * add them back to the ClientInfo.
+             */
+            for (Principal principal : subject.getPrincipals()) {
+                if ((!principal.equals(request.getClientInfo().getUser()))
+                        && (!request.getClientInfo().getRoles().contains(
+                                principal))
+                        && (!request.getClientInfo().getPrincipals().contains(
+                                principal))) {
+                    request.getClientInfo().getPrincipals().add(principal);
+                }
+                /*
+                 * If no user has been set yet and if this principal if of the
+                 * type we expect for a user, we create a new User based on the
+                 * principal's name.
+                 */
+                if ((request.getClientInfo().getUser() == null)
+                        && (this.userPrincipalClassName != null)
+                        && (principal.getClass().getName()
+                                .equals(this.userPrincipalClassName))) {
+                    request.getClientInfo().setUser(
+                            new User(principal.getName()));
+                }
+            }
         } catch (LoginException le) {
             result = RESULT_INVALID;
         }
 
         return result;
     }
-
 }

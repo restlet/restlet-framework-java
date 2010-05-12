@@ -24,6 +24,10 @@ Changes log
         for XML representations. Reported by George Calm.
       - Conversion of empty entities to Form instances.
         Reported by Jean-Baptiste Dusseaut.
+      - Fixed implementation of JaasVerifier to provide the User and 
+        Roles principals to the JAAS Subject before login and to retrieve
+        the User if no one exist and a principal user classname is 
+        provided. Contributed by Bruno Harbulot.
 
 - 2.0 Release Candidate 3 (2010-04-23)
     - API changes
