@@ -167,9 +167,8 @@ public class TunnelFilter extends Filter {
                     this.acceptReplacers = a = new ArrayList<AcceptReplacer>();
 
                     // Load the accept.properties file.
-                    final URL userAgentPropertiesUrl = Engine.getClassLoader()
-                            .getResource(
-                                    "org/restlet/service/accept.properties");
+                    final URL userAgentPropertiesUrl = Engine
+                            .getResource("org/restlet/service/accept.properties");
                     if (userAgentPropertiesUrl != null) {
                         BufferedReader reader;
                         try {

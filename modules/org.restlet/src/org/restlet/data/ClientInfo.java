@@ -155,8 +155,7 @@ public final class ClientInfo {
                 if (u == null) {
                     // Load from the "agent.properties" file
                     final java.net.URL userAgentPropertiesUrl = Engine
-                            .getClassLoader().getResource(
-                                    "org/restlet/data/agent.properties");
+                            .getResource("org/restlet/data/agent.properties");
                     if (userAgentPropertiesUrl != null) {
                         BufferedReader reader;
                         try {

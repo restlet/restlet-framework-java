@@ -68,10 +68,6 @@ import org.restlet.engine.log.LoggerFacade;
  */
 public class Engine {
 
-    // [ifndef gwt]
-    /** Engine class loader to use for dynamic class loading. */
-    private static volatile ClassLoader classLoader = new org.restlet.engine.util.EngineClassLoader();
-
     public static final String DESCRIPTOR = "META-INF/services";
 
     public static final String DESCRIPTOR_AUTHENTICATOR = "org.restlet.engine.security.AuthenticatorHelper";
@@ -113,10 +109,6 @@ public class Engine {
     /** Release number. */
     public static final String RELEASE_NUMBER = "@release-type@@release-number@";
 
-    // [ifndef gwt] member
-    /** User class loader to use for dynamic class loading. */
-    private static volatile ClassLoader userClassLoader;
-
     /** Complete version. */
     public static final String VERSION = MAJOR_NUMBER + '.' + MINOR_NUMBER
             + RELEASE_NUMBER;
@@ -132,21 +124,6 @@ public class Engine {
      */
     public static Logger getAnonymousLogger() {
         return getInstance().getLoggerFacade().getAnonymousLogger();
-    }
-
-    // [ifndef gwt] method
-    /**
-     * Returns the engine class loader. It uses the delegation model with the
-     * Engine class's class loader as a parent. If this parent doesn't find a
-     * class or resource, it then tries the user class loader (via
-     * {@link #getUserClassLoader()} and finally the
-     * {@link Thread#getContextClassLoader()}.
-     * 
-     * @return The engine class loader.
-     * @see org.restlet.engine.util.EngineClassLoader
-     */
-    public static ClassLoader getClassLoader() {
-        return classLoader;
     }
 
     /**
@@ -218,13 +195,14 @@ public class Engine {
 
     // [ifndef gwt] method
     /**
-     * Returns the class loader specified by the user and that should be used in
-     * priority.
+     * Returns the classloader resource for a given name/path.
      * 
-     * @return The user class loader
+     * @param name
+     *            The name/path to lookup.
+     * @return The resource URL.
      */
-    public static ClassLoader getUserClassLoader() {
-        return userClassLoader;
+    public static java.net.URL getResource(String name) {
+        return getInstance().getClassLoader().getResource(name);
     }
 
     // [ifndef gwt] method
@@ -238,7 +216,7 @@ public class Engine {
      */
     public static Class<?> loadClass(String className)
             throws ClassNotFoundException {
-        return getClassLoader().loadClass(className);
+        return getInstance().getClassLoader().loadClass(className);
     }
 
     /**
@@ -258,7 +236,9 @@ public class Engine {
      * @return The registered engine.
      */
     public static synchronized Engine register(boolean discoverPlugins) {
-        return new Engine(discoverPlugins);
+        Engine result = new Engine(discoverPlugins);
+        org.restlet.engine.Engine.setInstance(result);
+        return result;
     }
 
     /**
@@ -271,16 +251,9 @@ public class Engine {
         instance = engine;
     }
 
-    // [ifndef gwt] method
-    /**
-     * Sets the user class loader that should used in priority.
-     * 
-     * @param newClassLoader
-     *            The new user class loader to use.
-     */
-    public static void setUserClassLoader(ClassLoader newClassLoader) {
-        userClassLoader = newClassLoader;
-    }
+    // [ifndef gwt]
+    /** Class loader to use for dynamic class loading. */
+    private volatile ClassLoader classLoader;
 
     /** The logger facade to use. */
     private LoggerFacade loggerFacade;
@@ -303,6 +276,10 @@ public class Engine {
     /** List of available server connectors. */
     private final List<ConnectorHelper<org.restlet.Server>> registeredServers;
 
+    // [ifndef gwt] member
+    /** User class loader to use for dynamic class loading. */
+    private volatile ClassLoader userClassLoader;
+
     /**
      * Constructor that will automatically attempt to discover connectors.
      */
@@ -317,18 +294,23 @@ public class Engine {
      *            True if helpers should be automatically discovered.
      */
     public Engine(boolean discoverHelpers) {
-        org.restlet.engine.Engine.setInstance(this);
+        // Prevent engine initialization code from recreating other engines
+        setInstance(this);
+
         // Instantiate the logger facade
         if (Edition.CURRENT == Edition.GWT) {
             this.loggerFacade = new LoggerFacade();
         } else {
             // [ifndef gwt]
+            this.classLoader = createClassLoader();
+            this.userClassLoader = null;
+
             String loggerFacadeClass = System.getProperty(
                     "org.restlet.engine.loggerFacadeClass",
                     "org.restlet.engine.log.LoggerFacade");
             try {
-                this.loggerFacade = (LoggerFacade) loadClass(loggerFacadeClass)
-                        .newInstance();
+                this.loggerFacade = (LoggerFacade) getClassLoader().loadClass(
+                        loggerFacadeClass).newInstance();
             } catch (Exception e) {
                 this.loggerFacade = new LoggerFacade();
                 this.loggerFacade.getLogger("org.restlet").log(Level.WARNING,
@@ -364,6 +346,17 @@ public class Engine {
                                 e);
             }
         }
+    }
+
+    // [ifndef gwt] method
+    /**
+     * Creates a new class loader. By default, it returns an instance of
+     * {@link org.restlet.engine.util.EngineClassLoader}.
+     * 
+     * @return A new class loader.
+     */
+    protected ClassLoader createClassLoader() {
+        return new org.restlet.engine.util.EngineClassLoader(this);
     }
 
     /**
@@ -587,6 +580,21 @@ public class Engine {
         return result;
     }
 
+    // [ifndef gwt] method
+    /**
+     * Returns the class loader. It uses the delegation model with the Engine
+     * class's class loader as a parent. If this parent doesn't find a class or
+     * resource, it then tries the user class loader (via
+     * {@link #getUserClassLoader()} and finally the
+     * {@link Thread#getContextClassLoader()}.
+     * 
+     * @return The engine class loader.
+     * @see org.restlet.engine.util.EngineClassLoader
+     */
+    public ClassLoader getClassLoader() {
+        return classLoader;
+    }
+
     /**
      * Returns the logger facade to use.
      * 
@@ -657,6 +665,17 @@ public class Engine {
      */
     public List<ConnectorHelper<org.restlet.Server>> getRegisteredServers() {
         return this.registeredServers;
+    }
+
+    // [ifndef gwt] method
+    /**
+     * Returns the class loader specified by the user and that should be used in
+     * priority.
+     * 
+     * @return The user class loader
+     */
+    public ClassLoader getUserClassLoader() {
+        return userClassLoader;
     }
 
     // [ifndef gwt] method
@@ -810,8 +829,7 @@ public class Engine {
     @SuppressWarnings("unchecked")
     public void registerHelpers(String descriptorPath, List helpers,
             Class constructorClass) throws IOException {
-        final ClassLoader classLoader = org.restlet.engine.Engine
-                .getClassLoader();
+        final ClassLoader classLoader = getClassLoader();
         Enumeration<java.net.URL> configUrls = classLoader
                 .getResources(descriptorPath);
 
@@ -888,6 +906,17 @@ public class Engine {
                     }
 
                 });
+    }
+
+    // [ifndef gwt] method
+    /**
+     * Sets the engine class loader.
+     * 
+     * @param newClassLoader
+     *            The new user class loader to use.
+     */
+    public void setClassLoader(ClassLoader newClassLoader) {
+        this.classLoader = newClassLoader;
     }
 
     /**
@@ -983,6 +1012,17 @@ public class Engine {
                 this.registeredServers.addAll(registeredServers);
             }
         }
+    }
+
+    // [ifndef gwt] method
+    /**
+     * Sets the user class loader that should used in priority.
+     * 
+     * @param newClassLoader
+     *            The new user class loader to use.
+     */
+    public void setUserClassLoader(ClassLoader newClassLoader) {
+        this.userClassLoader = newClassLoader;
     }
 
 }

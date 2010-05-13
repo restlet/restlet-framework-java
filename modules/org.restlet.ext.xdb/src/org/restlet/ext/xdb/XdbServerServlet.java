@@ -59,13 +59,12 @@ import org.restlet.ext.servlet.ServerServlet;
 import org.restlet.ext.xdb.internal.XdbServletCall;
 import org.restlet.ext.xdb.internal.XdbServletWarClient;
 
-
 /**
  * Servlet acting like an HTTP server connector. See <a
  * href="/documentation/1.1/faq#02">Developper FAQ #2</a> for details on how to
- * integrate a Restlet application into a Servlet container.<br/> Here is a
- * sample configuration for your Restlet webapp:
- *
+ * integrate a Restlet application into a Servlet container.<br/>
+ * Here is a sample configuration for your Restlet webapp:
+ * 
  * <pre>
  * &lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt;
  * &lt;!DOCTYPE web-app PUBLIC
@@ -73,8 +72,8 @@ import org.restlet.ext.xdb.internal.XdbServletWarClient;
  *       &quot;http://java.sun.com/dtd/web-app_2_3.dtd&quot;&gt;
  * &lt;web-app&gt;
  *         &lt;display-name&gt;Restlet adapter&lt;/display-name&gt;
- *
- *
+ * 
+ * 
  *       &lt;!-- Restlet adapter --&gt;
  *       &lt;servlet&gt;
  *        &lt;servlet-name&gt;XDBServerServlet&lt;/servlet-name&gt;
@@ -91,7 +90,7 @@ import org.restlet.ext.xdb.internal.XdbServletWarClient;
  *            &lt;description&gt;REST Application&lt;/description&gt;
  *          &lt;/init-param&gt;
  *       &lt;/servlet&gt;
- *
+ * 
  *       &lt;!-- Catch all requests --&gt;
  *       &lt;servlet-mapping&gt;
  *         &lt;servlet-name&gt;XDBServerServlet&lt;/servlet-name&gt;
@@ -99,19 +98,18 @@ import org.restlet.ext.xdb.internal.XdbServletWarClient;
  *       &lt;/servlet-mapping&gt;
  * &lt;/web-app&gt;
  * </pre>
- *
+ * 
  * The enumeration of initParameters of your Servlet will be copied to the
  * "context.parameters" property of your application. This way, you can pass
  * additional initialization parameters to your Restlet application, and share
  * them with existing Servlets.
- *
+ * 
  * @see <a href="http://java.sun.com/j2ee/">J2EE home page</a>
  * @author Marcelo F. Ochoa (mochoa@ieee.org)
  */
 public class XdbServerServlet extends ServerServlet {
     /** Serial version identifier. */
     private static final long serialVersionUID = 1L;
-
 
     /**
      * Closes JDBC resources
@@ -216,8 +214,8 @@ public class XdbServerServlet extends ServerServlet {
     }
 
     @Override
-    protected ServerCall createCall(Server server,
-            HttpServletRequest request, HttpServletResponse response) {
+    protected ServerCall createCall(Server server, HttpServletRequest request,
+            HttpServletResponse response) {
         return new XdbServletCall(server, request, response);
     }
 
@@ -250,43 +248,48 @@ public class XdbServerServlet extends ServerServlet {
         Class<?> targetClass;
 
         if (doubleDotPos > 0) {
-          final String sch = className.substring(0, doubleDotPos).toUpperCase();
-          final String cName = className.substring(doubleDotPos + 1);
-          if (System.getProperty("java.vm.name").equals("JServer VM")) {
-            // Use DbmsJava by reflection to avoid dependency to Oracle libs
-            // at compiling time
-            try {
-              final Class<?> loaderClass =
-                Engine.loadClass("oracle.aurora.rdbms.DbmsJava");
-              final Method meth =
-                loaderClass.getMethod("classForNameAndSchema", new Class[] { String.class,
-                                                                             String.class });
-              log("[Noelios Restlet Engine] - Schema: " + sch + " class: " +
-                  cName + " loader: " + loaderClass);
-              targetClass =
-                  (Class<?>)meth.invoke(null, new Object[] { cName, sch });
-            } catch (NoSuchMethodException nse) {
-              log("[Noelios Restlet Engine] - Could not instantiate a class using SCHEMA: " +
-                  sch + " and class: " + cName, nse);
-              targetClass = Engine.loadClass(className);
-            } catch (IllegalAccessException iae) {
-              log("[Noelios Restlet Engine] - Could not instantiate a class using SCHEMA: " +
-                  sch + " and class: " + cName, iae);
-              targetClass = Engine.loadClass(className);
-            } catch (InvocationTargetException ite) {
-              log("[Noelios Restlet Engine] - Could not instantiate a class using SCHEMA: " +
-                  sch + " and class: " + cName, ite);
-              targetClass = Engine.loadClass(className);
-            } catch (AccessControlException ace) {
-              log("[Noelios Restlet Engine] - Could not instantiate a class using oracle.aurora.rdbms.DbmsJava " +
-                  sch + " and class: " + cName, ace);
-              targetClass = Engine.loadClass(className);
+            final String sch = className.substring(0, doubleDotPos)
+                    .toUpperCase();
+            final String cName = className.substring(doubleDotPos + 1);
+            if (System.getProperty("java.vm.name").equals("JServer VM")) {
+                // Use DbmsJava by reflection to avoid dependency to Oracle libs
+                // at compiling time
+                try {
+                    final Class<?> loaderClass = Engine
+                            .loadClass("oracle.aurora.rdbms.DbmsJava");
+                    final Method meth = loaderClass.getMethod(
+                            "classForNameAndSchema", new Class[] {
+                                    String.class, String.class });
+                    log("[Restlet Framework] - Schema: " + sch + " class: "
+                            + cName + " loader: " + loaderClass);
+                    targetClass = (Class<?>) meth.invoke(null, new Object[] {
+                            cName, sch });
+                } catch (NoSuchMethodException nse) {
+                    log(
+                            "[Restlet Framework] - Could not instantiate a class using SCHEMA: "
+                                    + sch + " and class: " + cName, nse);
+                    targetClass = Engine.loadClass(className);
+                } catch (IllegalAccessException iae) {
+                    log(
+                            "[Restlet Framework] - Could not instantiate a class using SCHEMA: "
+                                    + sch + " and class: " + cName, iae);
+                    targetClass = Engine.loadClass(className);
+                } catch (InvocationTargetException ite) {
+                    log(
+                            "[Restlet Framework] - Could not instantiate a class using SCHEMA: "
+                                    + sch + " and class: " + cName, ite);
+                    targetClass = Engine.loadClass(className);
+                } catch (AccessControlException ace) {
+                    log(
+                            "[Restlet Framework] - Could not instantiate a class using oracle.aurora.rdbms.DbmsJava "
+                                    + sch + " and class: " + cName, ace);
+                    targetClass = Engine.loadClass(className);
+                }
+            } else {
+                targetClass = Engine.loadClass(className);
             }
-          } else {
-            targetClass = Engine.loadClass(className);
-          }
         } else { // Not running inside OJVM, may be outside testing
-          targetClass = Engine.loadClass(className);
+            targetClass = Engine.loadClass(className);
         }
 
         return targetClass;
@@ -325,7 +328,7 @@ public class XdbServerServlet extends ServerServlet {
 
             this.localAddress = preparedstatement.getString(1);
             if (this.localAddress == null)
-              this.localAddress = "127.0.0.1";
+                this.localAddress = "127.0.0.1";
             this.localPort = preparedstatement.getInt(2);
             endPoint = preparedstatement.getInt(3);
 
@@ -356,12 +359,13 @@ public class XdbServerServlet extends ServerServlet {
         }
 
         try {
-            String bootstrapClassName = 
-              (System.getProperty("java.vm.name").equals("JServer VM")) ? 
-                    "RESTLET:org.restlet.ext.xdb.XdbServerServlet" : 
-                    "org.restlet.ext.xdb.XdbServerServlet";
-            Engine.setUserClassLoader(this.loadClass(bootstrapClassName).getClassLoader());
+            String bootstrapClassName = (System.getProperty("java.vm.name")
+                    .equals("JServer VM")) ? "RESTLET:org.restlet.ext.xdb.XdbServerServlet"
+                    : "org.restlet.ext.xdb.XdbServerServlet";
+            Engine.getInstance().setUserClassLoader(
+                    this.loadClass(bootstrapClassName).getClassLoader());
             Application app = getApplication();
+
             if ((app != null) && (app.isStopped())) {
                 try {
                     app.start();
@@ -372,27 +376,25 @@ public class XdbServerServlet extends ServerServlet {
             }
         } catch (AccessControlException ace) {
             log("Error loading Restlet Application", ace);
-            throw new ServletException("Error loading Restlet application",
-                                       ace);
+            throw new ServletException("Error loading Restlet application", ace);
         } catch (final ClassNotFoundException cne) {
             log("Error loading Restlet Application", cne);
-            throw new ServletException("Error loading Restlet application",
-                                       cne);
+            throw new ServletException("Error loading Restlet application", cne);
         }
     }
 
     @Override
     protected String getContextPath(HttpServletRequest request) {
-      return "";
+        return "";
     }
 
     @Override
     protected String getLocalAddr(HttpServletRequest request) {
-      return this.localAddress;
+        return this.localAddress;
     }
 
     @Override
     protected int getLocalPort(HttpServletRequest request) {
-      return this.localPort;
+        return this.localPort;
     }
 }

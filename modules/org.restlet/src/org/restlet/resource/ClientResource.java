@@ -1659,8 +1659,8 @@ public class ClientResource extends UniformResource {
 
         // Instantiate our dynamic proxy
         result = (T) java.lang.reflect.Proxy.newProxyInstance(
-                org.restlet.engine.Engine.getClassLoader(), new Class<?>[] {
-                        ClientProxy.class, resourceInterface }, h);
+                org.restlet.engine.Engine.getInstance().getClassLoader(),
+                new Class<?>[] { ClientProxy.class, resourceInterface }, h);
 
         return result;
     }

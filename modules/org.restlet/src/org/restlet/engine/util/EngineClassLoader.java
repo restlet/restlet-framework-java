@@ -48,11 +48,15 @@ import org.restlet.engine.Engine;
  */
 public class EngineClassLoader extends ClassLoader {
 
+    /** The parent Restlet engine. */
+    private final Engine engine;
+
     /**
      * Constructor.
      */
-    public EngineClassLoader() {
+    public EngineClassLoader(Engine engine) {
         super(EngineClassLoader.class.getClassLoader());
+        this.engine = engine;
     }
 
     @Override
@@ -60,7 +64,7 @@ public class EngineClassLoader extends ClassLoader {
         Class<?> result = null;
 
         // First try the user class loader
-        ClassLoader cl = Engine.getUserClassLoader();
+        ClassLoader cl = getEngine().getUserClassLoader();
 
         if (cl != null) {
             try {
@@ -105,7 +109,7 @@ public class EngineClassLoader extends ClassLoader {
         URL result = null;
 
         // First try the user class loader
-        ClassLoader cl = Engine.getUserClassLoader();
+        ClassLoader cl = getEngine().getUserClassLoader();
 
         if (cl != null) {
             result = cl.getResource(name);
@@ -128,7 +132,7 @@ public class EngineClassLoader extends ClassLoader {
         Enumeration<URL> result = null;
 
         // First try the user class loader
-        ClassLoader cl = Engine.getUserClassLoader();
+        ClassLoader cl = getEngine().getUserClassLoader();
 
         if (cl != null) {
             result = cl.getResources(name);
@@ -144,6 +148,15 @@ public class EngineClassLoader extends ClassLoader {
         }
 
         return result;
+    }
+
+    /**
+     * Returns the parent Restlet engine.
+     * 
+     * @return The parent Restlet engine.
+     */
+    protected Engine getEngine() {
+        return engine;
     }
 
     @Override

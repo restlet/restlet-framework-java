@@ -103,7 +103,7 @@ public class ObjectRepresentation<T> extends StringRepresentation {
         if ((this.object == null) && (getText() != null)) {
             try {
                 ServerSerializationStreamReader objectReader = new ServerSerializationStreamReader(
-                        Engine.getClassLoader(),
+                        Engine.getInstance().getClassLoader(),
                         new SimpleSerializationPolicyProvider());
                 String encodedString = getText();
 
