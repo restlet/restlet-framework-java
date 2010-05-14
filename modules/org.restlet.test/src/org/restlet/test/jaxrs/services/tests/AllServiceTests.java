@@ -60,6 +60,7 @@ public class AllServiceTests extends TestCase {
         mySuite.addTestSuite(InheritAnnotationTest.class);
         mySuite.addTestSuite(InjectionTest.class);
         mySuite.addTestSuite(Issue593Test.class);
+        mySuite.addTestSuite(Issue971Test.class);
         mySuite.addTestSuite(JsonTest.class);
         mySuite.addTestSuite(ListParamTest.class);
         mySuite.addTestSuite(MatchedTest.class);

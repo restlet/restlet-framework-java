@@ -35,6 +35,9 @@ Changes log
         Roles principals to the JAAS Subject before login and to retrieve
         the User if no one exist and a principal user classname is 
         provided. Contributed by Bruno Harbulot.
+      - Fixed bug preventing MessageBodyReader/Writer implementors 
+        from being recognized as providers. 
+        Contributed by Martin Krasser.
 
 - 2.0 Release Candidate 3 (2010-04-23)
     - API changes

@@ -842,16 +842,27 @@ public class Util {
         }
         Class<?> superClass = clazz.getSuperclass();
         Type genericSuperClass = clazz.getGenericSuperclass();
-        if (genericSuperClass instanceof Class<?>) {
-            return null;
+
+        if ((genericSuperClass instanceof Class<?>)) {
+            if (!implInterface.isAssignableFrom((Class<?>) genericSuperClass)) {
+                // if the superclass doesn't implemented the
+                // required interface, give up here ...
+                return null;
+            }
         }
-        if (gsatp == null) {
+
+        // ... otherwise, obtain type arguments from
+        // superclass if it's a parameterized type ...
+        if ((gsatp == null) && (genericSuperClass instanceof ParameterizedType)) {
             // LATER this is a hack
             gsatp = ((ParameterizedType) genericSuperClass)
                     .getActualTypeArguments();
         }
+
+        // ... or make a recursion for a non-parameterized superclass.
         if (superClass != null)
             return getGenericClass(superClass, implInterface, gsatp);
+
         return null;
     }
 

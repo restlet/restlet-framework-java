@@ -390,6 +390,8 @@ public class ReferenceTestCase extends RestletTestCase {
         testRef2(base, uri120, uri20);
         testRef2(base, uri121, uri21);
         testRef2(base, uri123, uri23);
+        testRef2(uri104, uri116, uri18);
+        testRef2(uri104, uri118, uri21);
 
         // Test the toString method with or without query/fragment
         testRef3("http://localhost/path#fragment", true, true,
@@ -492,6 +494,11 @@ public class ReferenceTestCase extends RestletTestCase {
                 "&_dc=1244741620627&callback=stcCallback1001");
         assertEquals("1244741620627", extJsQuery.getFirstValue("_dc"));
         assertEquals("stcCallback1001", extJsQuery.getFirstValue("callback"));
+
+        Reference ref = new Reference("http://localhost/v1/projects/13404");
+        ref.addQueryParameter("dyn", "true");
+        assertEquals("http://localhost/v1/projects/13404?dyn=true", ref
+                .toString());
     }
 
     /**

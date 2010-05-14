@@ -81,7 +81,8 @@ public class ListHomeDirResource extends ServerResource {
             }
         };
 
-        StringBuilder sb = Subject.doAsPrivileged(subject, action, null);
+        StringBuilder sb = null; // TO FIX
+        Subject.doAsPrivileged(subject, action, null);
 
         Representation rep = new StringRepresentation(sb, MediaType.TEXT_PLAIN,
                 Language.ALL, CharacterSet.UTF_8);
