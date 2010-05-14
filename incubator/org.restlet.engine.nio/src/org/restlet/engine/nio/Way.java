@@ -56,14 +56,8 @@ public abstract class Way {
     /** The line builder. */
     private final StringBuilder builder;
 
-    /** The line builder index. */
-    private volatile int builderIndex;
-
     /** The parent connection. */
     private final Connection<?> connection;
-
-    /** The header index. */
-    private volatile int headerIndex;
 
     /** The IO state. */
     private volatile IoState ioState;
@@ -119,15 +113,6 @@ public abstract class Way {
     }
 
     /**
-     * Returns the line builder index.
-     * 
-     * @return The line builder index.
-     */
-    protected int getBuilderIndex() {
-        return builderIndex;
-    }
-
-    /**
      * Returns the parent connection.
      * 
      * @return The parent connection.
@@ -144,22 +129,6 @@ public abstract class Way {
     protected BaseHelper<?> getHelper() {
         return getConnection().getHelper();
     }
-
-    /**
-     * Returns the header index.
-     * 
-     * @return The header index.
-     */
-    protected int getHeaderIndex() {
-        return headerIndex;
-    }
-
-    /**
-     * Registers interest of this way for socket NIO operations.
-     * 
-     * @return The operations of interest.
-     */
-    protected abstract int getSocketInterestOps();
 
     /**
      * Returns the IO state.
@@ -205,6 +174,13 @@ public abstract class Way {
     protected MessageState getMessageState() {
         return messageState;
     }
+
+    /**
+     * Registers interest of this way for socket NIO operations.
+     * 
+     * @return The operations of interest.
+     */
+    protected abstract int getSocketInterestOps();
 
     /**
      * Returns the socket's NIO selection key holding the link between the
@@ -257,26 +233,6 @@ public abstract class Way {
                 getSocketKey().interestOps(socketInterestOps);
             }
         }
-    }
-
-    /**
-     * Sets the line builder index.
-     * 
-     * @param builderIndex
-     *            The line builder index.
-     */
-    protected void setBuilderIndex(int builderIndex) {
-        this.builderIndex = builderIndex;
-    }
-
-    /**
-     * Sets the header index.
-     * 
-     * @param headerIndex
-     *            The header index.
-     */
-    protected void setHeaderIndex(int headerIndex) {
-        this.headerIndex = headerIndex;
     }
 
     /**

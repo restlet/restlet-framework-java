@@ -67,6 +67,9 @@ public class OutboundWay extends Way {
      */
     private volatile SelectionKey entityKey;
 
+    /** The header index. */
+    private volatile int headerIndex;
+
     /**
      * Constructor.
      * 
@@ -77,7 +80,6 @@ public class OutboundWay extends Way {
         this.entityKey = null;
         // this.outboundChannel = new OutboundStream(getSocket()
         // .getOutputStream());
-
     }
 
     /**
@@ -181,6 +183,15 @@ public class OutboundWay extends Way {
     }
 
     /**
+     * Returns the header index.
+     * 
+     * @return The header index.
+     */
+    protected int getHeaderIndex() {
+        return headerIndex;
+    }
+
+    /**
      * Returns the response channel if it exists.
      * 
      * @return The response channel if it exists.
@@ -219,26 +230,57 @@ public class OutboundWay extends Way {
     @Override
     public void onSelected() {
         try {
-            Response message = null;
-
-            if (true) { // canWrite()) {
-                message = getMessage();
+            if (getIoState() == IoState.WRITE_INTEREST) {
+                Response message = getMessage();
 
                 if (message != null) {
-                    // getBuilder().delete(0, getBuilder().length()); ??
-                    setMessageState(MessageState.START_LINE);
-                    setIoState(IoState.WRITE_INTEREST);
+                    boolean canWrite = true;
 
-                    writeMessage(message);
+                    while (canWrite) {
+                        if (!getBuffer().hasRemaining()) {
+                            if (getBuilder().length() == 0) {
+                                writeLine();
+                            }
+
+                            if (getBuilder().length() > 0) {
+                                int remaining = getBuffer().remaining();
+
+                                if (remaining >= getBuilder().length()) {
+                                    // Put the whole builder line in the buffer
+                                    getBuffer().put(
+                                            getBuilder().toString().getBytes(
+                                                    CharacterSet.ISO_8859_1
+                                                            .getName()));
+                                    getBuilder().delete(0,
+                                            getBuilder().length());
+                                } else {
+                                    // Fill the buffer with part of the builder
+                                    // line
+                                    getBuffer()
+                                            .put(
+                                                    getBuilder()
+                                                            .substring(0,
+                                                                    remaining)
+                                                            .getBytes(
+                                                                    CharacterSet.ISO_8859_1
+                                                                            .getName()));
+                                    getBuilder().delete(0, remaining);
+                                }
+                            }
+                        } else {
+                            canWrite = (getConnection().getSocketChannel()
+                                    .write(getBuffer()) > 0);
+                        }
+                    }
 
                     // Try to close the connection immediately.
-                    if ((getConnection().getState() == ConnectionState.CLOSING)
-                            && (getIoState() == IoState.IDLE)) {
-                        getConnection().close(true);
-                    }
+                    // if ((getConnection().getState() ==
+                    // ConnectionState.CLOSING)
+                    // && (getIoState() == IoState.IDLE)) {
+                    // getConnection().close(true);
+                    // }
                 }
             }
-
         } catch (Exception e) {
             getLogger().log(Level.WARNING,
                     "Error while writing an HTTP message: ", e.getMessage());
@@ -254,6 +296,9 @@ public class OutboundWay extends Way {
             if (getMessage() == null) {
                 setIoState(IoState.WRITE_INTEREST);
                 setMessage(getMessages().peek());
+                setMessageState(MessageState.START_LINE);
+                setHeaderIndex(0);
+                setSocketKey(null);
             } else {
                 System.out
                         .println("Outbound message with an IDLE IO state detected!");
@@ -304,6 +349,16 @@ public class OutboundWay extends Way {
     }
 
     /**
+     * Sets the header index.
+     * 
+     * @param headerIndex
+     *            The header index.
+     */
+    protected void setHeaderIndex(int headerIndex) {
+        this.headerIndex = headerIndex;
+    }
+
+    /**
      * Indicates if the entity should be chunked because its length is unknown.
      * 
      * @param entity
@@ -316,21 +371,35 @@ public class OutboundWay extends Way {
     }
 
     /**
-     * Write the given response on the socket.
+     * Write a new line into the line builder.
      * 
-     * @param response
-     *            The response to write.
+     * @return True if a new line was written.
+     * @throws IOException
      */
-    protected void writeMessage(Response response) {
-        setMessageState(MessageState.START_LINE);
+    protected boolean writeLine() throws IOException {
+        boolean result = true;
 
-        while (getBuffer().hasRemaining()) {
-            if (getMessageState() == MessageState.START_LINE) {
-                // writeMessageStart();
-            } else if (getMessageState() == MessageState.HEADERS) {
-                // writeMessageHead();
-            }
+        switch (getMessageState()) {
+        case START_LINE:
+            writeStartLine();
+            break;
+
+        case HEADERS:
+            // Write the headers
+            // for (Parameter header : headers) {
+            // HeaderUtils.writeHeaderLine(header, headStream);
+            // }
+            break;
+
+        case BODY:
+            // Write the end of the headers section
+            // headStream.write(13); // CR
+            // headStream.write(10); // LF
+            // headStream.flush();
+            break;
         }
+
+        return result;
     }
 
     /**
@@ -424,32 +493,6 @@ public class OutboundWay extends Way {
     }
 
     /**
-     * Writes the message head to the given output stream.
-     * 
-     * @param message
-     *            The source message.
-     * @param headStream
-     *            The target stream.
-     * @throws IOException
-     */
-    protected void writeMessageHead(Response message, OutputStream headStream,
-            Series<Parameter> headers) throws IOException {
-
-        // Write the head line
-        writeMessageStart();
-
-        // Write the headers
-        for (Parameter header : headers) {
-            HeaderUtils.writeHeaderLine(header, headStream);
-        }
-
-        // Write the end of the headers section
-        headStream.write(13); // CR
-        headStream.write(10); // LF
-        headStream.flush();
-    }
-
-    /**
      * Writes the message head.
      * 
      * @param message
@@ -468,7 +511,7 @@ public class OutboundWay extends Way {
      * 
      * @throws IOException
      */
-    protected void writeMessageStart() throws IOException {
+    protected void writeStartLine() throws IOException {
         getBuilder().delete(0, getBuilder().length());
 
         Protocol protocol = getMessage().getRequest().getProtocol();

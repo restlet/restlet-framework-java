@@ -54,6 +54,9 @@ import org.restlet.util.Series;
  */
 public abstract class InboundWay extends Way {
 
+    /** The line builder index. */
+    private volatile int builderIndex;
+
     /**
      * Constructor.
      * 
@@ -64,7 +67,6 @@ public abstract class InboundWay extends Way {
         super(connection);
         // this.inboundChannel = new InboundStream(getSocket()
         // .getInputStream());
-
     }
 
     /**
@@ -167,6 +169,15 @@ public abstract class InboundWay extends Way {
             java.nio.channels.ReadableByteChannel channel) {
         return new org.restlet.representation.ReadableRepresentation(channel,
                 null);
+    }
+
+    /**
+     * Returns the line builder index.
+     * 
+     * @return The line builder index.
+     */
+    protected int getBuilderIndex() {
+        return builderIndex;
     }
 
     /**
@@ -377,5 +388,15 @@ public abstract class InboundWay extends Way {
      * @throws IOException
      */
     protected abstract void readStartLine() throws IOException;
+
+    /**
+     * Sets the line builder index.
+     * 
+     * @param builderIndex
+     *            The line builder index.
+     */
+    protected void setBuilderIndex(int builderIndex) {
+        this.builderIndex = builderIndex;
+    }
 
 }
