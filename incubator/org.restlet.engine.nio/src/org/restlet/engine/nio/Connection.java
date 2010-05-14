@@ -351,15 +351,13 @@ public class Connection<T extends Connector> implements Notifiable {
     }
 
     /**
-     * Opens the connection. By default, set the state to
-     * {@link ConnectionState#OPEN}.
+     * Opens the connection. By default, set the IO state of the connection to
+     * {@link ConnectionState#OPEN} and the IO state of the inbound way to
+     * {@link IoState#READ_INTEREST}.
      */
     public void open() {
-        try {
-            setState(ConnectionState.OPEN);
-        } catch (Exception ex) {
-            getLogger().log(Level.FINE, "Unable to properly open socket", ex);
-        }
+        setState(ConnectionState.OPEN);
+        getInboundWay().setIoState(IoState.READ_INTEREST);
     }
 
     /**

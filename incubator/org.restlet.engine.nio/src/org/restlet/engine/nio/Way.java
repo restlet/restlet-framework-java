@@ -250,7 +250,7 @@ public abstract class Way {
                                 cce);
                 getConnection().setState(ConnectionState.CLOSING);
             }
-        } else {
+        } else if (getSocketKey() != null) {
             if (socketInterestOps == 0) {
                 getSocketKey().cancel();
             } else {
