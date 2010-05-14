@@ -52,7 +52,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
-public class InboundWay extends Way {
+public abstract class InboundWay extends Way {
 
     /**
      * Constructor.
@@ -376,80 +376,6 @@ public class InboundWay extends Way {
      * 
      * @throws IOException
      */
-    protected void readStartLine() throws IOException {
-        if (readLine()) {
-            String requestMethod = null;
-            String requestUri = null;
-            String version = null;
-
-            int i = 0;
-            int start = 0;
-            int size = getBuilder().length();
-            char next;
-
-            if (size == 0) {
-                // Skip leading empty lines per HTTP specification
-            } else {
-                // Parse the request method
-                for (i = start; (requestMethod == null) && (i < size); i++) {
-                    next = getBuilder().charAt(i);
-
-                    if (HeaderUtils.isSpace(next)) {
-                        requestMethod = getBuilder().substring(start, i);
-                        start = i + 1;
-                    }
-                }
-
-                if ((requestMethod == null) || (i == size)) {
-                    throw new IOException(
-                            "Unable to parse the request method. End of line reached too early.");
-                }
-
-                // Parse the request URI
-                for (i = start; (requestUri == null) && (i < size); i++) {
-                    next = getBuilder().charAt(i);
-
-                    if (HeaderUtils.isSpace(next)) {
-                        requestUri = getBuilder().substring(start, i);
-                        start = i + 1;
-                    }
-                }
-
-                if (i == size) {
-                    throw new IOException(
-                            "Unable to parse the request URI. End of line reached too early.");
-                }
-
-                if ((requestUri == null) || (requestUri.equals(""))) {
-                    requestUri = "/";
-                }
-
-                // Parse the protocol version
-                for (i = start; (version == null) && (i < size); i++) {
-                    next = getBuilder().charAt(i);
-                }
-
-                if (i == size) {
-                    version = getBuilder().substring(start, i);
-                    start = i + 1;
-                }
-
-                if (version == null) {
-                    throw new IOException(
-                            "Unable to parse the protocol version. End of line reached too early.");
-                }
-
-                // ConnectedRequest request = getHelper().createRequest(
-                // getConnection(), requestMethod, requestUri, version);
-                // Response response = getHelper().createResponse(request);
-                // setMessage(response);
-
-                setMessageState(MessageState.HEADERS);
-                getBuilder().delete(0, getBuilder().length());
-            }
-        } else {
-            // We need more characters before parsing
-        }
-    }
+    protected abstract void readStartLine() throws IOException;
 
 }

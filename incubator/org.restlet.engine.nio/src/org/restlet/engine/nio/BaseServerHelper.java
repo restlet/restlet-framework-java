@@ -107,6 +107,11 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
                 resourceUri, version);
     }
 
+    @Override
+    public ServerInboundWay createInboundWay(Connection<Server> connection) {
+        return new ServerInboundWay(connection);
+    }
+
     /**
      * Create a server socket channel and bind it to the given address
      * 
