@@ -12,6 +12,8 @@ Changes log
           according to the 2009 WADL RNC (generate the Parameter 
           elements before the Method ones).
           Reported by Leigh Klotz.
+        - Fixed generation of XML header according to the character 
+          set of the DomRepresentation.
 
 - 1.1.9 (2010-03-30)
     - Bugs fixed

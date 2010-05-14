@@ -42,6 +42,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
 
+import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentType;
@@ -108,6 +109,12 @@ public class DomRepresentation extends XmlRepresentation {
             final Transformer transformer = TransformerFactory.newInstance()
                     .newTransformer();
             transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+
+            if (getCharacterSet() != null) {
+                transformer.setOutputProperty(
+                        javax.xml.transform.OutputKeys.ENCODING,
+                        getCharacterSet().getName());
+            }
 
             DocumentType docType = getDocument().getDoctype();
             if (docType != null) {
