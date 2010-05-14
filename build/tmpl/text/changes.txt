@@ -41,7 +41,10 @@ Changes log
       - Fixed constructor DigestAuthenticator(Context,String,String)
         to properly take into account the "serverKey" parameter.
         Reported by Yang Xudong.
-
+    - Misc
+      - Server connectors now display the port they are listening on
+        in their start message.  
+      
 - 2.0 Release Candidate 3 (2010-04-23)
     - API changes
       - Replaced MemoryRealm#findRoles(Set<Group>, User) method by

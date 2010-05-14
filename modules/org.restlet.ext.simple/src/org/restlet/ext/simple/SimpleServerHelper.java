@@ -185,7 +185,9 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
     @Override
     public synchronized void start() throws Exception {
         super.start();
-        getLogger().info("Starting the Simple server");
+        getLogger().info(
+                "Starting the Simple " + getProtocols() + " server on port "
+                        + getHelped().getPort());
 
         // Sets the ephemeral port is necessary
         // setEphemeralPort(getAddress().getPort());

@@ -85,7 +85,7 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
 
     @Override
     protected ServerController createController() {
-        return (ServerController) super.createController();
+        return new ServerController(this);
     }
 
     /**

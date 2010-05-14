@@ -74,7 +74,9 @@ public class SipServerHelper extends BaseServerHelper {
 
     @Override
     public synchronized void start() throws Exception {
-        getLogger().info("Starting the SIP server");
+        getLogger().info(
+                "Starting the " + getProtocols() + " server on port "
+                        + getHelped().getPort());
         super.start();
     }
 

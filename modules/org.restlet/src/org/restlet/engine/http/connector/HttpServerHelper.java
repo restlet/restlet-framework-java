@@ -63,7 +63,9 @@ public class HttpServerHelper extends BaseServerHelper {
 
     @Override
     public synchronized void start() throws Exception {
-        getLogger().info("Starting the default HTTP server");
+        getLogger().info(
+                "Starting the default " + getProtocols() + " server on port "
+                        + getHelped().getPort());
         super.start();
     }
 

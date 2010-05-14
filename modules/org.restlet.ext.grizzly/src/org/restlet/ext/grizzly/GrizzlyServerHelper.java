@@ -105,7 +105,9 @@ public abstract class GrizzlyServerHelper extends HttpServerHelper {
             configure(this.controller);
         }
 
-        getLogger().info("Starting the Grizzly " + getProtocols() + " server");
+        getLogger().info(
+                "Starting the Grizzly " + getProtocols() + " server on port "
+                        + getHelped().getPort());
         final CountDownLatch latch = new CountDownLatch(1);
         final Controller controller = this.controller;
         final TCPSelectorHandler selectorHandler = getSelectorHandler();
