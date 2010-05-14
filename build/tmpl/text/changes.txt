@@ -38,6 +38,9 @@ Changes log
       - Fixed bug preventing MessageBodyReader/Writer implementors 
         from being recognized as providers. 
         Contributed by Martin Krasser.
+      - Fixed constructor DigestAuthenticator(Context,String,String)
+        to properly take into account the "serverKey" parameter.
+        Reported by Yang Xudong.
 
 - 2.0 Release Candidate 3 (2010-04-23)
     - API changes

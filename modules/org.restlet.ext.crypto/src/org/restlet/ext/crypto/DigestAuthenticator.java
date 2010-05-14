@@ -103,7 +103,7 @@ public class DigestAuthenticator extends ChallengeAuthenticator {
      *            secret key known only to server
      */
     public DigestAuthenticator(Context context, String realm, String serverKey) {
-        this(context, false, realm, null, null);
+        this(context, false, realm, null, serverKey);
     }
 
     @Override
