@@ -26,5 +26,7 @@
       <dependency type="module" id="xml" />
       <dependency type="module" id="xstream" />
       <dependency type="module" id="wadl" />
+      <dependency type="module" id="crypto" />
+      <dependency type="module" id="jaas" />
    </dependencies>
 </module>
