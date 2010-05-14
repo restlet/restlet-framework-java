@@ -41,6 +41,9 @@ Changes log
       - Fixed constructor DigestAuthenticator(Context,String,String)
         to properly take into account the "serverKey" parameter.
         Reported by Yang Xudong.
+      - Fixed support of inherited annotated methods by ServerResource. 
+        Reported by Kevin Pauli.
+
     - Misc
       - Server connectors now display the port they are listening on
         in their start message.  
