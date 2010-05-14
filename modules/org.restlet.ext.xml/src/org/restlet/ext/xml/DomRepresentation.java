@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
 
+import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.engine.Edition;
 import org.restlet.representation.Representation;
@@ -120,6 +121,15 @@ public class DomRepresentation extends XmlRepresentation {
             transformer.setOutputProperty(
                     javax.xml.transform.OutputKeys.INDENT,
                     isIndenting() ? "yes" : "no");
+            if (getCharacterSet() != null) {
+                transformer.setOutputProperty(
+                        javax.xml.transform.OutputKeys.ENCODING,
+                        getCharacterSet().getName());
+            } else {
+                transformer.setOutputProperty(
+                        javax.xml.transform.OutputKeys.ENCODING,
+                        CharacterSet.ISO_8859_1.getName());
+            }
 
             DocumentType docType = getDocument().getDoctype();
             if (docType != null) {
