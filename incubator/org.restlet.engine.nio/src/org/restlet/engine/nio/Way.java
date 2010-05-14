@@ -105,7 +105,7 @@ public abstract class Way {
      * 
      * @return The byte buffer.
      */
-    public ByteBuffer getBuffer() {
+    protected ByteBuffer getBuffer() {
         return buffer;
     }
 
@@ -114,7 +114,7 @@ public abstract class Way {
      * 
      * @return The line builder.
      */
-    public StringBuilder getBuilder() {
+    protected StringBuilder getBuilder() {
         return builder;
     }
 
@@ -123,7 +123,7 @@ public abstract class Way {
      * 
      * @return The line builder index.
      */
-    public int getBuilderIndex() {
+    protected int getBuilderIndex() {
         return builderIndex;
     }
 
@@ -132,7 +132,7 @@ public abstract class Way {
      * 
      * @return The parent connection.
      */
-    public Connection<?> getConnection() {
+    protected Connection<?> getConnection() {
         return connection;
     }
 
@@ -141,7 +141,7 @@ public abstract class Way {
      * 
      * @return The parent connector helper.
      */
-    public BaseHelper<?> getHelper() {
+    protected BaseHelper<?> getHelper() {
         return getConnection().getHelper();
     }
 
@@ -150,7 +150,7 @@ public abstract class Way {
      * 
      * @return The header index.
      */
-    public int getHeaderIndex() {
+    protected int getHeaderIndex() {
         return headerIndex;
     }
 
@@ -166,7 +166,7 @@ public abstract class Way {
      * 
      * @return The IO state.
      */
-    public IoState getIoState() {
+    protected IoState getIoState() {
         return ioState;
     }
 
@@ -175,7 +175,7 @@ public abstract class Way {
      * 
      * @return The logger.
      */
-    public Logger getLogger() {
+    protected Logger getLogger() {
         return getConnection().getLogger();
     }
 
@@ -184,7 +184,7 @@ public abstract class Way {
      * 
      * @return The current message processed.
      */
-    public Response getMessage() {
+    protected Response getMessage() {
         return message;
     }
 
@@ -202,7 +202,7 @@ public abstract class Way {
      * 
      * @return The message state.
      */
-    public MessageState getMessageState() {
+    protected MessageState getMessageState() {
         return messageState;
     }
 
@@ -265,7 +265,7 @@ public abstract class Way {
      * @param builderIndex
      *            The line builder index.
      */
-    public void setBuilderIndex(int builderIndex) {
+    protected void setBuilderIndex(int builderIndex) {
         this.builderIndex = builderIndex;
     }
 
@@ -275,7 +275,7 @@ public abstract class Way {
      * @param headerIndex
      *            The header index.
      */
-    public void setHeaderIndex(int headerIndex) {
+    protected void setHeaderIndex(int headerIndex) {
         this.headerIndex = headerIndex;
     }
 
@@ -285,7 +285,7 @@ public abstract class Way {
      * @param ioState
      *            The IO state.
      */
-    public void setIoState(IoState ioState) {
+    protected void setIoState(IoState ioState) {
         this.ioState = ioState;
     }
 
@@ -295,7 +295,7 @@ public abstract class Way {
      * @param message
      *            The current message processed.
      */
-    public void setMessage(Response message) {
+    protected void setMessage(Response message) {
         this.message = message;
     }
 
@@ -305,7 +305,7 @@ public abstract class Way {
      * @param messageState
      *            The message state.
      */
-    public void setMessageState(MessageState messageState) {
+    protected void setMessageState(MessageState messageState) {
         this.messageState = messageState;
     }
 

@@ -10,8 +10,7 @@ public class NioServer {
     public static void main(String[] args) throws Exception {
 
         // Register the NIO server
-        Engine.register(false);
-        Engine.getInstance().getRegisteredServers().add(
+        Engine.getInstance().getRegisteredServers().add(0,
                 new HttpServerHelper(null));
 
         // Start an HTTP server using this NIO connector

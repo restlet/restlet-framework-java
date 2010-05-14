@@ -150,6 +150,37 @@ public class OutboundWay extends Way {
     }
 
     /**
+     * Returns the non-blocking selectable channel of the request entity if
+     * available.
+     * 
+     * @return The non-blocking selectable channel of the request entity if
+     *         available.
+     */
+    protected SelectableChannel getEntitySelectableChannel() {
+        SelectableChannel result = null;
+        Representation entity = (getMessage() == null) ? null : getMessage()
+                .getEntity();
+
+        if (entity instanceof ReadableRepresentation) {
+            ReadableRepresentation readableEntity = (ReadableRepresentation) entity;
+
+            try {
+                if (readableEntity.getChannel() instanceof SelectableChannel) {
+                    result = (SelectableChannel) readableEntity.getChannel();
+
+                    if (result.isBlocking()) {
+                        result = null;
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return result;
+    }
+
+    /**
      * Returns the response channel if it exists.
      * 
      * @return The response channel if it exists.
@@ -191,7 +222,7 @@ public class OutboundWay extends Way {
             Response message = null;
 
             if (true) { // canWrite()) {
-                message = getMessages().peek();
+                message = getMessage();
 
                 if (message != null) {
                     // getBuilder().delete(0, getBuilder().length()); ??
@@ -218,6 +249,17 @@ public class OutboundWay extends Way {
 
     @Override
     public void registerInterest(Selector selector) {
+        // Update the IO state if necessary
+        if ((getIoState() == IoState.IDLE) && (getMessages().size() > 0)) {
+            if (getMessage() == null) {
+                setIoState(IoState.WRITE_INTEREST);
+                setMessage(getMessages().peek());
+            } else {
+                System.out
+                        .println("Outbound message with an IDLE IO state detected!");
+            }
+        }
+
         // Register socket interest
         super.registerInterest(selector);
 
@@ -248,37 +290,6 @@ public class OutboundWay extends Way {
                 }
             }
         }
-    }
-
-    /**
-     * Returns the non-blocking selectable channel of the request entity if
-     * available.
-     * 
-     * @return The non-blocking selectable channel of the request entity if
-     *         available.
-     */
-    protected SelectableChannel getEntitySelectableChannel() {
-        SelectableChannel result = null;
-        Representation entity = (getMessage() == null) ? null : getMessage()
-                .getEntity();
-
-        if (entity instanceof ReadableRepresentation) {
-            ReadableRepresentation readableEntity = (ReadableRepresentation) entity;
-
-            try {
-                if (readableEntity.getChannel() instanceof SelectableChannel) {
-                    result = (SelectableChannel) readableEntity.getChannel();
-
-                    if (result.isBlocking()) {
-                        result = null;
-                    }
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return result;
     }
 
     /**
