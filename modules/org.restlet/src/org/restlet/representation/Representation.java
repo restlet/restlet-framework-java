@@ -484,10 +484,14 @@ public abstract class Representation extends RepresentationInfo {
     public String getText() throws IOException {
         String result = null;
 
-        if (isAvailable() && getSize() != 0) {
-            java.io.StringWriter sw = new java.io.StringWriter();
-            write(sw);
-            result = sw.toString();
+        if (isAvailable()) {
+            if (getSize() > 0) {
+                java.io.StringWriter sw = new java.io.StringWriter();
+                write(sw);
+                result = sw.toString();
+            } else if (getSize() == 0) {
+                result = "";
+            }
         }
 
         return result;
