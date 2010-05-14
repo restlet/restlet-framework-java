@@ -41,16 +41,16 @@ import java.util.logging.Level;
 
 import org.restlet.Message;
 import org.restlet.Response;
-import org.restlet.data.CharacterSet;
+import org.restlet.data.Form;
+import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
-import org.restlet.engine.ConnectorHelper;
+import org.restlet.data.Status;
 import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.http.header.HeaderUtils;
 import org.restlet.engine.util.StringUtils;
 import org.restlet.representation.ReadableRepresentation;
 import org.restlet.representation.Representation;
-import org.restlet.service.ConnectorService;
 import org.restlet.util.Series;
 
 /**
@@ -70,6 +70,9 @@ public class OutboundWay extends Way {
     /** The header index. */
     private volatile int headerIndex;
 
+    /** The response headers. */
+    private volatile Series<Parameter> headers;
+
     /**
      * Constructor.
      * 
@@ -78,8 +81,8 @@ public class OutboundWay extends Way {
     public OutboundWay(Connection<?> connection) {
         super(connection);
         this.entityKey = null;
-        // this.outboundChannel = new OutboundStream(getSocket()
-        // .getOutputStream());
+        this.headerIndex = 0;
+        this.headers = null;
     }
 
     /**
@@ -96,34 +99,29 @@ public class OutboundWay extends Way {
     /**
      * Adds the general headers from the {@link Message} to the {@link Series}.
      * 
-     * @param message
-     *            The source {@link Message}.
      * @param headers
      *            The target headers {@link Series}.
      */
-    protected void addGeneralHeaders(Message message, Series<Parameter> headers) {
+    protected void addGeneralHeaders(Series<Parameter> headers) {
         if (!getConnection().isPersistent()) {
             headers.set(HeaderConstants.HEADER_CONNECTION, "close", true);
         }
 
-        if (shouldBeChunked(message.getEntity())) {
+        if (shouldBeChunked(getMessage().getEntity())) {
             headers.add(HeaderConstants.HEADER_TRANSFER_ENCODING, "chunked");
         }
 
-        HeaderUtils.addGeneralHeaders(message, headers);
+        HeaderUtils.addGeneralHeaders(getMessage(), headers);
     }
 
     /**
      * Adds the response headers.
      * 
-     * @param response
-     *            The response to inspect.
      * @param headers
      *            The headers series to update.
      */
-    protected void addResponseHeaders(Response response,
-            Series<Parameter> headers) {
-        HeaderUtils.addResponseHeaders(response, headers);
+    protected void addResponseHeaders(Series<Parameter> headers) {
+        HeaderUtils.addResponseHeaders(getMessage(), headers);
     }
 
     /**
@@ -192,6 +190,15 @@ public class OutboundWay extends Way {
     }
 
     /**
+     * Returns the response headers.
+     * 
+     * @return The response headers to be written.
+     */
+    public Series<Parameter> getHeaders() {
+        return headers;
+    }
+
+    /**
      * Returns the response channel if it exists.
      * 
      * @return The response channel if it exists.
@@ -237,7 +244,8 @@ public class OutboundWay extends Way {
                     boolean canWrite = true;
 
                     while (canWrite) {
-                        if (!getBuffer().hasRemaining()) {
+                        if (getBuffer().hasRemaining()
+                                && (getMessageState() != MessageState.BODY)) {
                             if (getBuilder().length() == 0) {
                                 writeLine();
                             }
@@ -247,10 +255,11 @@ public class OutboundWay extends Way {
 
                                 if (remaining >= getBuilder().length()) {
                                     // Put the whole builder line in the buffer
-                                    getBuffer().put(
-                                            getBuilder().toString().getBytes(
-                                                    CharacterSet.ISO_8859_1
-                                                            .getName()));
+                                    getBuffer()
+                                            .put(
+                                                    StringUtils
+                                                            .getLatin1Bytes(getBuilder()
+                                                                    .toString()));
                                     getBuilder().delete(0,
                                             getBuilder().length());
                                 } else {
@@ -258,16 +267,16 @@ public class OutboundWay extends Way {
                                     // line
                                     getBuffer()
                                             .put(
-                                                    getBuilder()
-                                                            .substring(0,
-                                                                    remaining)
-                                                            .getBytes(
-                                                                    CharacterSet.ISO_8859_1
-                                                                            .getName()));
+                                                    StringUtils
+                                                            .getLatin1Bytes(getBuilder()
+                                                                    .substring(
+                                                                            0,
+                                                                            remaining)));
                                     getBuilder().delete(0, remaining);
                                 }
                             }
                         } else {
+                            getBuffer().flip();
                             canWrite = (getConnection().getSocketChannel()
                                     .write(getBuffer()) > 0);
                         }
@@ -359,6 +368,95 @@ public class OutboundWay extends Way {
     }
 
     /**
+     * Sets the response headers to be written.
+     * 
+     * @param headers
+     *            The response headers.
+     */
+    public void setHeaders(Series<Parameter> headers) {
+        this.headers = headers;
+    }
+
+    /**
+     * Add headers.
+     * 
+     * @param headers
+     *            The headers to update.
+     */
+    protected void addHeaders(Series<Parameter> headers) {
+        Response response = getMessage();
+        ConnectedRequest request = (ConnectedRequest) response.getRequest();
+
+        if ((request.getMethod() != null)
+                && request.getMethod().equals(Method.HEAD)) {
+            addEntityHeaders(response.getEntity(), headers);
+            response.setEntity(null);
+        } else if (Method.GET.equals(request.getMethod())
+                && Status.SUCCESS_OK.equals(response.getStatus())
+                && (!response.isEntityAvailable())) {
+            addEntityHeaders(response.getEntity(), headers);
+            getLogger()
+                    .warning(
+                            "A response with a 200 (Ok) status should have an entity. Make sure that resource \""
+                                    + request.getResourceRef()
+                                    + "\" returns one or sets the status to 204 (No content).");
+        } else if (response.getStatus().equals(Status.SUCCESS_NO_CONTENT)) {
+            addEntityHeaders(response.getEntity(), headers);
+
+            if (response.isEntityAvailable()) {
+                getLogger()
+                        .fine(
+                                "Responses with a 204 (No content) status generally don't have an entity. Only adding entity headers for resource \""
+                                        + request.getResourceRef() + "\".");
+                response.setEntity(null);
+            }
+        } else if (response.getStatus().equals(Status.SUCCESS_RESET_CONTENT)) {
+            if (response.isEntityAvailable()) {
+                getLogger()
+                        .warning(
+                                "Responses with a 205 (Reset content) status can't have an entity. Ignoring the entity for resource \""
+                                        + request.getResourceRef() + "\".");
+                response.setEntity(null);
+            }
+        } else if (response.getStatus().equals(Status.REDIRECTION_NOT_MODIFIED)) {
+            addEntityHeaders(response.getEntity(), headers);
+
+            if (response.isEntityAvailable()) {
+                getLogger()
+                        .warning(
+                                "Responses with a 304 (Not modified) status can't have an entity. Only adding entity headers for resource \""
+                                        + request.getResourceRef() + "\".");
+                response.setEntity(null);
+            }
+        } else if (response.getStatus().isInformational()) {
+            if (response.isEntityAvailable()) {
+                getLogger()
+                        .warning(
+                                "Responses with an informational (1xx) status can't have an entity. Ignoring the entity for resource \""
+                                        + request.getResourceRef() + "\".");
+                response.setEntity(null);
+            }
+
+            addGeneralHeaders(headers);
+            addResponseHeaders(headers);
+        } else {
+            addGeneralHeaders(headers);
+            addResponseHeaders(headers);
+            addEntityHeaders(response.getEntity(), headers);
+
+            if ((response.getEntity() != null)
+                    && !response.getEntity().isAvailable()) {
+                // An entity was returned but isn't really available
+                getLogger()
+                        .warning(
+                                "A response with an unavailable entity was returned. Ignoring the entity for resource \""
+                                        + request.getResourceRef() + "\".");
+                response.setEntity(null);
+            }
+        }
+    }
+
+    /**
      * Indicates if the entity should be chunked because its length is unknown.
      * 
      * @param entity
@@ -382,128 +480,44 @@ public class OutboundWay extends Way {
         switch (getMessageState()) {
         case START_LINE:
             writeStartLine();
+            setMessageState(MessageState.HEADERS);
             break;
 
         case HEADERS:
-            // Write the headers
-            // for (Parameter header : headers) {
-            // HeaderUtils.writeHeaderLine(header, headStream);
-            // }
+            if (getHeaders() == null) {
+                setHeaders(new Form());
+                setHeaderIndex(0);
+                addHeaders(getHeaders());
+            }
+
+            if (getHeaderIndex() < getHeaders().size()) {
+                // Write header
+                Parameter header = getHeaders().get(getHeaderIndex());
+                getBuilder().append(header.getName());
+                getBuilder().append(": ");
+                getBuilder().append(header.getValue());
+                getBuilder().append('\r'); // CR
+                getBuilder().append('\n'); // LF
+
+                // Move to the next header
+                setHeaderIndex(getHeaderIndex() + 1);
+            } else {
+                // Write the end of the headers section
+                getBuilder().append('\r'); // CR
+                getBuilder().append('\n'); // LF
+
+                // Change state
+                setMessageState(MessageState.BODY);
+            }
+
             break;
 
         case BODY:
-            // Write the end of the headers section
-            // headStream.write(13); // CR
-            // headStream.write(10); // LF
-            // headStream.flush();
+            // TODO
             break;
         }
 
         return result;
-    }
-
-    /**
-     * Writes the message and its headers.
-     * 
-     * @param message
-     *            The message to write.
-     * @throws IOException
-     *             if the Response could not be written to the network.
-     */
-    protected void writeMessage(Response message, Series<Parameter> headers)
-            throws IOException {
-        if (message != null) {
-            // Get the connector service to callback
-            Representation entity = getConnection().isClientSide() ? message
-                    .getRequest().getEntity() : message.getEntity();
-
-            if (entity != null) {
-                entity = entity.isAvailable() ? entity : null;
-            }
-
-            ConnectorService connectorService = ConnectorHelper
-                    .getConnectorService();
-
-            if (connectorService != null) {
-                connectorService.beforeSend(entity);
-            }
-
-            try {
-                writeMessageHead(message, headers);
-
-                if (entity != null) {
-                    // In order to workaround bug #6472250
-                    // (http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6472250),
-                    // it is very important to reuse that exact same
-                    // "entityStream" reference when manipulating the entity
-                    // stream, otherwise "insufficient data sent" exceptions
-                    // will occur in "fixedLengthMode"
-                    boolean chunked = HeaderUtils.isChunkedEncoding(headers);
-                    WritableByteChannel entityChannel = getOutboundEntityChannel(chunked);
-                    OutputStream entityStream = getOutboundEntityStream(chunked);
-                    writeMessageBody(entity, entityChannel, entityStream);
-
-                    if (entityStream != null) {
-                        entityStream.flush();
-                        entityStream.close();
-                    }
-                }
-            } catch (IOException ioe) {
-                // The stream was probably already closed by the
-                // connector. Probably OK, low message priority.
-                getLogger()
-                        .log(
-                                Level.FINE,
-                                "Exception while flushing and closing the entity stream.",
-                                ioe);
-            } finally {
-                if (entity != null) {
-                    entity.release();
-                }
-
-                if (connectorService != null) {
-                    connectorService.afterSend(entity);
-                }
-            }
-        }
-    }
-
-    /**
-     * Effectively writes the message body. The entity to write is guaranteed to
-     * be non null. Attempts to write the entity on the outbound channel or
-     * outbound stream by default.
-     * 
-     * @param entity
-     *            The representation to write as entity of the body.
-     * @param entityChannel
-     *            The outbound entity channel or null if a stream is used.
-     * @param entityStream
-     *            The outbound entity stream or null if a channel is used.
-     * @throws IOException
-     */
-    protected void writeMessageBody(Representation entity,
-            WritableByteChannel entityChannel, OutputStream entityStream)
-            throws IOException {
-        if (entityChannel != null) {
-            entity.write(entityChannel);
-        } else if (entityStream != null) {
-            entity.write(entityStream);
-            entityStream.flush();
-        }
-    }
-
-    /**
-     * Writes the message head.
-     * 
-     * @param message
-     *            The message.
-     * @param headers
-     *            The series of headers to write.
-     * @throws IOException
-     */
-    protected void writeMessageHead(Response message, Series<Parameter> headers)
-            throws IOException {
-        // writeMessageHead(message, getSocketChannel(), headers);
     }
 
     /**
@@ -512,28 +526,19 @@ public class OutboundWay extends Way {
      * @throws IOException
      */
     protected void writeStartLine() throws IOException {
-        getBuilder().delete(0, getBuilder().length());
-
         Protocol protocol = getMessage().getRequest().getProtocol();
         String protocolVersion = protocol.getVersion();
         String version = protocol.getTechnicalName() + '/'
                 + ((protocolVersion == null) ? "1.1" : protocolVersion);
-        getBuilder()
-                .append(version.getBytes(CharacterSet.ISO_8859_1.getName()));
+        getBuilder().append(version);
         getBuilder().append(' ');
-        getBuilder().append(
-                StringUtils.getAsciiBytes(Integer.toString(getMessage()
-                        .getStatus().getCode())));
+        getBuilder().append(getMessage().getStatus().getCode());
         getBuilder().append(' ');
 
         if (getMessage().getStatus().getDescription() != null) {
-            getBuilder().append(
-                    StringUtils.getLatin1Bytes(getMessage().getStatus()
-                            .getDescription()));
+            getBuilder().append(getMessage().getStatus().getDescription());
         } else {
-            getBuilder().append(
-                    StringUtils.getAsciiBytes(("Status " + getMessage()
-                            .getStatus().getCode())));
+            getBuilder().append("Status " + getMessage().getStatus().getCode());
         }
 
         getBuilder().append("\r\n");

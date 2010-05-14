@@ -311,6 +311,7 @@ public class ServerConnection extends Connection<Server> {
                                             + request.getResourceRef() + "\".");
                     response.setEntity(null);
                 }
+
                 addGeneralHeaders(response, headers);
                 addResponseHeaders(response, headers);
             } else {
