@@ -45,6 +45,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Preference;
 import org.restlet.data.Protocol;
+import org.restlet.engine.Engine;
 import org.restlet.resource.ResourceException;
 import org.restlet.routing.Router;
 
@@ -83,6 +84,8 @@ public class AnnotatedResource9TestCase extends TestCase {
     private Client client;
 
     protected void setUp() throws Exception {
+        Engine.getInstance().getRegisteredConverters().clear();
+        Engine.getInstance().registerDefaultConverters();
         c = new Component();
         c.getServers().add(Protocol.HTTP, 8182);
         c.getDefaultHost().attach(new TestApplication());

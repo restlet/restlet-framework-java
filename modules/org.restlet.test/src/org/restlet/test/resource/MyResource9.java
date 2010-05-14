@@ -50,14 +50,14 @@ public class MyResource9 extends ServerResource {
         return "usi-html";
     }
 
-    @USIMethod("txt")
-    public String usi3(String txt) {
-        return "usi-string+" + txt;
-    }
-
     @USIMethod("form:txt")
     public String usi3(Form form) {
         return "usi-string+form";
+    }
+
+    @USIMethod("txt")
+    public String usi3(String txt) {
+        return "usi-string+" + txt;
     }
 
     @USNIMethod("form:html")

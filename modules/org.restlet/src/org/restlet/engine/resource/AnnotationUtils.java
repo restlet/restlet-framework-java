@@ -37,6 +37,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.restlet.data.Method;
+import org.restlet.resource.ServerResource;
 
 // [excludes gwt]
 /**
@@ -115,13 +116,28 @@ public class AnnotationUtils {
             List<AnnotationInfo> descriptors, Class<?> clazz) {
         List<AnnotationInfo> result = descriptors;
 
-        // Add the annotation descriptor
-        if (result == null) {
-            result = new CopyOnWriteArrayList<AnnotationInfo>();
-        }
+        if (clazz != null && !ServerResource.class.equals(clazz)) {
+            // Add the annotation descriptor
+            if (result == null) {
+                result = new CopyOnWriteArrayList<AnnotationInfo>();
+            }
 
-        for (java.lang.reflect.Method javaMethod : clazz.getMethods()) {
-            addAnnotationDescriptors(result, javaMethod);
+            for (java.lang.reflect.Method javaMethod : clazz
+                    .getDeclaredMethods()) {
+                addAnnotationDescriptors(result, javaMethod);
+            }
+
+            // Inspect the implemented interfaces for annotations
+            Class<?>[] interfaces = clazz.getInterfaces();
+
+            if (interfaces != null) {
+                for (Class<?> interfaceClass : interfaces) {
+                    result = addAnnotations(result, interfaceClass);
+                }
+            }
+
+            // Add the annotations from the super class.
+            addAnnotations(result, clazz.getSuperclass());
         }
 
         return result;
@@ -191,17 +207,8 @@ public class AnnotationUtils {
         List<AnnotationInfo> result = cache.get(clazz);
 
         if (result == null) {
-            // Inspect the class itself for annotation
+            // Inspect the class itself for annotations
             result = addAnnotations(result, clazz);
-
-            // Inspect the implemented interfaces for annotations
-            Class<?>[] interfaces = clazz.getInterfaces();
-
-            if (interfaces != null) {
-                for (Class<?> interfaceClass : interfaces) {
-                    result = addAnnotations(result, interfaceClass);
-                }
-            }
 
             // Put the list in the cache if no one was previously present
             List<AnnotationInfo> prev = cache.putIfAbsent(clazz, result);
