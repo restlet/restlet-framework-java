@@ -21,6 +21,7 @@ Changes log
         properties are no longer static. A createClassLoader() method
         was added as well as a static getResource(String) : URL one. 
         Reported by Bruno Harbulot.
+      - Deprecated WedlResource. Use WadlServerResource instead.        
     - Bugs fixed
       - Fixed character encoding issues (XStream, Jackson, JAXB, etc.)
       - Adjusted Jackson configuration as it was automatically closing 

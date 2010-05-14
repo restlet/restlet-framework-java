@@ -27,25 +27,26 @@
  * 
  * Restlet is a registered trademark of Noelios Technologies.
  */
- 
+
 package org.restlet.ext.wadl;
 
 import org.restlet.resource.Directory;
+import org.restlet.resource.ServerResource;
 
 /**
  * Interface that any Restlet can implement in order to provide their own WADL
  * documentation. This is especially useful for subclasses of {@link Directory}
- * or other resource finders when the WADL introspection can reach Resource or
- * better WadlResource instances.
+ * or other resource finders when the WADL introspection can't reach
+ * {@link ServerResource} or better {@link WadlServerResource} instances.
  * 
  * @author Thierry Boileau
  */
 public interface WadlDescribable {
 
     /**
-     * Returns a full documented resourceInfo instance.
+     * Returns a full documented {@link ResourceInfo} instance.
      * 
-     * @return A full documented resourceInfo instance.
+     * @return A full documented {@link ResourceInfo} instance.
      */
     public ResourceInfo getResourceInfo();
 

@@ -57,8 +57,9 @@ import org.restlet.resource.Resource;
  * are invoked, like {@link #describe()} and delegate methods.
  * 
  * @author Jerome Louvel
+ * @deprecated Use the {@link WadlServerResource} class instead
  */
-@SuppressWarnings("deprecation")
+@Deprecated
 public class WadlResource extends Resource {
 
     /**
