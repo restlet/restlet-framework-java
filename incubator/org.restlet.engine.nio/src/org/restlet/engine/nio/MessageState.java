@@ -44,6 +44,9 @@ public enum MessageState {
     HEADERS,
 
     /** The body is being processed. */
-    BODY;
+    BODY,
+
+    /** The end has been reached. */
+    END;
 
 }

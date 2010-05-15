@@ -51,16 +51,16 @@ import org.restlet.engine.io.NioUtils;
 public abstract class Way {
 
     /** The byte buffer. */
-    private final ByteBuffer buffer;
-
-    /** The line builder. */
-    private final StringBuilder builder;
+    private final ByteBuffer byteBuffer;
 
     /** The parent connection. */
     private final Connection<?> connection;
 
     /** The IO state. */
     private volatile IoState ioState;
+
+    /** The line builder. */
+    private final StringBuilder lineBuilder;
 
     /** The current message exchanged. */
     private volatile Response message;
@@ -84,8 +84,8 @@ public abstract class Way {
      *            The parent connection.
      */
     public Way(Connection<?> connection) {
-        this.buffer = ByteBuffer.allocate(NioUtils.BUFFER_SIZE);
-        this.builder = new StringBuilder();
+        this.byteBuffer = ByteBuffer.allocate(NioUtils.BUFFER_SIZE);
+        this.lineBuilder = new StringBuilder();
         this.connection = connection;
         this.messageState = MessageState.START_LINE;
         this.ioState = IoState.IDLE;
@@ -99,17 +99,8 @@ public abstract class Way {
      * 
      * @return The byte buffer.
      */
-    protected ByteBuffer getBuffer() {
-        return buffer;
-    }
-
-    /**
-     * Returns the line builder.
-     * 
-     * @return The line builder.
-     */
-    protected StringBuilder getBuilder() {
-        return builder;
+    protected ByteBuffer getByteBuffer() {
+        return byteBuffer;
     }
 
     /**
@@ -137,6 +128,15 @@ public abstract class Way {
      */
     protected IoState getIoState() {
         return ioState;
+    }
+
+    /**
+     * Returns the line builder.
+     * 
+     * @return The line builder.
+     */
+    protected StringBuilder getLineBuilder() {
+        return lineBuilder;
     }
 
     /**

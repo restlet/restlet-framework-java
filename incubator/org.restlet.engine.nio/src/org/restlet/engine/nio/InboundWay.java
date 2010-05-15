@@ -232,7 +232,7 @@ public abstract class InboundWay extends Way {
             if (getIoState() == IoState.READ_INTEREST) {
                 int result = readSocketBytes();
 
-                while (getBuffer().hasRemaining()
+                while (getByteBuffer().hasRemaining()
                         && (getMessageState() != MessageState.BODY)) {
                     if (getMessageState() == MessageState.START_LINE) {
                         readStartLine();
@@ -241,7 +241,7 @@ public abstract class InboundWay extends Way {
                     }
 
                     // Attempt to read more available bytes
-                    if (!getBuffer().hasRemaining()
+                    if (!getByteBuffer().hasRemaining()
                             && (getMessageState() != MessageState.BODY)) {
                         result = readSocketBytes();
                     }
@@ -268,8 +268,8 @@ public abstract class InboundWay extends Way {
      * @throws IOException
      */
     protected Parameter readHeader() throws IOException {
-        Parameter header = HeaderReader.readHeader(getBuilder());
-        getBuilder().delete(0, getBuilder().length());
+        Parameter header = HeaderReader.readHeader(getLineBuilder());
+        getLineBuilder().delete(0, getLineBuilder().length());
         return header;
     }
 
@@ -349,11 +349,11 @@ public abstract class InboundWay extends Way {
         boolean result = false;
         int next;
 
-        while (!result && getBuffer().hasRemaining()) {
-            next = (int) getBuffer().get();
+        while (!result && getByteBuffer().hasRemaining()) {
+            next = (int) getByteBuffer().get();
 
             if (HeaderUtils.isCarriageReturn(next)) {
-                next = (int) getBuffer().get();
+                next = (int) getByteBuffer().get();
 
                 if (HeaderUtils.isLineFeed(next)) {
                     result = true;
@@ -362,7 +362,7 @@ public abstract class InboundWay extends Way {
                             "Missing carriage return character at the end of HTTP line");
                 }
             } else {
-                getBuilder().append((char) next);
+                getLineBuilder().append((char) next);
             }
         }
 
@@ -376,9 +376,9 @@ public abstract class InboundWay extends Way {
      * @throws IOException
      */
     protected int readSocketBytes() throws IOException {
-        getBuffer().clear();
-        int result = getConnection().getSocketChannel().read(getBuffer());
-        getBuffer().flip();
+        getByteBuffer().clear();
+        int result = getConnection().getSocketChannel().read(getByteBuffer());
+        getByteBuffer().flip();
         return result;
     }
 

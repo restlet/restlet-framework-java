@@ -237,48 +237,82 @@ public class OutboundWay extends Way {
     @Override
     public void onSelected() {
         try {
-            if (getIoState() == IoState.WRITE_INTEREST) {
-                Response message = getMessage();
+            Response message = getMessage();
 
-                if (message != null) {
-                    boolean canWrite = true;
+            if (message != null) {
+                boolean canWrite = (getIoState() == IoState.WRITE_INTEREST);
+                boolean filling = getByteBuffer().hasRemaining();
 
-                    while (canWrite) {
-                        if (getBuffer().hasRemaining()
-                                && (getMessageState() != MessageState.BODY)) {
-                            if (getBuilder().length() == 0) {
+                while (canWrite) {
+                    if (filling) {
+                        // Before writing the byte buffer, we need to try
+                        // to fill it as much as possible
+
+                        if (getMessageState() == MessageState.BODY) {
+                            // Writing the body doesn't rely on the line builder
+                            // ...
+                        } else {
+                            // Write the start line or the headers relies on the
+                            // line builder
+                            if (getLineBuilder().length() == 0) {
+                                // A new line can be written in the builder
                                 writeLine();
                             }
 
-                            if (getBuilder().length() > 0) {
-                                int remaining = getBuffer().remaining();
+                            if (getLineBuilder().length() > 0) {
+                                // We can fill the byte buffer with the
+                                // remaining line builder
+                                int remaining = getByteBuffer().remaining();
 
-                                if (remaining >= getBuilder().length()) {
+                                if (remaining >= getLineBuilder().length()) {
                                     // Put the whole builder line in the buffer
-                                    getBuffer()
+                                    getByteBuffer()
                                             .put(
                                                     StringUtils
-                                                            .getLatin1Bytes(getBuilder()
+                                                            .getLatin1Bytes(getLineBuilder()
                                                                     .toString()));
-                                    getBuilder().delete(0,
-                                            getBuilder().length());
+                                    getLineBuilder().delete(0,
+                                            getLineBuilder().length());
                                 } else {
-                                    // Fill the buffer with part of the builder
-                                    // line
-                                    getBuffer()
+                                    // Put the maximum number of characters
+                                    // into the byte buffer
+                                    getByteBuffer()
                                             .put(
                                                     StringUtils
-                                                            .getLatin1Bytes(getBuilder()
+                                                            .getLatin1Bytes(getLineBuilder()
                                                                     .substring(
                                                                             0,
                                                                             remaining)));
-                                    getBuilder().delete(0, remaining);
+                                    getLineBuilder().delete(0, remaining);
                                 }
                             }
+                        }
+
+                        canWrite = (getIoState() == IoState.WRITE_INTEREST);
+                        filling = (getMessageState() != MessageState.END)
+                                && getByteBuffer().hasRemaining();
+                    } else {
+                        // After filling the byte buffer, we can now flip it
+                        // and start draining it.
+                        getByteBuffer().flip();
+                        int bytesWritten = getConnection().getSocketChannel()
+                                .write(getByteBuffer());
+
+                        if (bytesWritten == 0) {
+                            // The byte buffer hasn't been written, the socket
+                            // channel can't write more. We needs to put the
+                            // byte buffer in the filling state again and wait
+                            // for a new NIO selection.
+                            getByteBuffer().flip();
+                            canWrite = false;
+                        } else if (getByteBuffer().hasRemaining()) {
+                            // All the buffer couldn't be written. Compact the
+                            // remaining
+                            // bytes so that filling can happen again.
+                            getByteBuffer().compact();
                         } else {
-                            getBuffer().flip();
-                            canWrite = (getConnection().getSocketChannel()
-                                    .write(getBuffer()) > 0);
+                            // The byte buffer has been fully written, but the
+                            // socket channel wants more.
                         }
                     }
 
@@ -493,18 +527,18 @@ public class OutboundWay extends Way {
             if (getHeaderIndex() < getHeaders().size()) {
                 // Write header
                 Parameter header = getHeaders().get(getHeaderIndex());
-                getBuilder().append(header.getName());
-                getBuilder().append(": ");
-                getBuilder().append(header.getValue());
-                getBuilder().append('\r'); // CR
-                getBuilder().append('\n'); // LF
+                getLineBuilder().append(header.getName());
+                getLineBuilder().append(": ");
+                getLineBuilder().append(header.getValue());
+                getLineBuilder().append('\r'); // CR
+                getLineBuilder().append('\n'); // LF
 
                 // Move to the next header
                 setHeaderIndex(getHeaderIndex() + 1);
             } else {
                 // Write the end of the headers section
-                getBuilder().append('\r'); // CR
-                getBuilder().append('\n'); // LF
+                getLineBuilder().append('\r'); // CR
+                getLineBuilder().append('\n'); // LF
 
                 // Change state
                 setMessageState(MessageState.BODY);
@@ -530,18 +564,19 @@ public class OutboundWay extends Way {
         String protocolVersion = protocol.getVersion();
         String version = protocol.getTechnicalName() + '/'
                 + ((protocolVersion == null) ? "1.1" : protocolVersion);
-        getBuilder().append(version);
-        getBuilder().append(' ');
-        getBuilder().append(getMessage().getStatus().getCode());
-        getBuilder().append(' ');
+        getLineBuilder().append(version);
+        getLineBuilder().append(' ');
+        getLineBuilder().append(getMessage().getStatus().getCode());
+        getLineBuilder().append(' ');
 
         if (getMessage().getStatus().getDescription() != null) {
-            getBuilder().append(getMessage().getStatus().getDescription());
+            getLineBuilder().append(getMessage().getStatus().getDescription());
         } else {
-            getBuilder().append("Status " + getMessage().getStatus().getCode());
+            getLineBuilder().append(
+                    "Status " + getMessage().getStatus().getCode());
         }
 
-        getBuilder().append("\r\n");
+        getLineBuilder().append("\r\n");
     }
 
 }

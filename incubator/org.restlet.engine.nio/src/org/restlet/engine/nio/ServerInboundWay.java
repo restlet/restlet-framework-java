@@ -67,7 +67,7 @@ public class ServerInboundWay extends InboundWay {
 
             int i = 0;
             int start = 0;
-            int size = getBuilder().length();
+            int size = getLineBuilder().length();
             char next;
 
             if (size == 0) {
@@ -75,10 +75,10 @@ public class ServerInboundWay extends InboundWay {
             } else {
                 // Parse the request method
                 for (i = start; (requestMethod == null) && (i < size); i++) {
-                    next = getBuilder().charAt(i);
+                    next = getLineBuilder().charAt(i);
 
                     if (HeaderUtils.isSpace(next)) {
-                        requestMethod = getBuilder().substring(start, i);
+                        requestMethod = getLineBuilder().substring(start, i);
                         start = i + 1;
                     }
                 }
@@ -90,10 +90,10 @@ public class ServerInboundWay extends InboundWay {
 
                 // Parse the request URI
                 for (i = start; (requestUri == null) && (i < size); i++) {
-                    next = getBuilder().charAt(i);
+                    next = getLineBuilder().charAt(i);
 
                     if (HeaderUtils.isSpace(next)) {
-                        requestUri = getBuilder().substring(start, i);
+                        requestUri = getLineBuilder().substring(start, i);
                         start = i + 1;
                     }
                 }
@@ -109,11 +109,11 @@ public class ServerInboundWay extends InboundWay {
 
                 // Parse the protocol version
                 for (i = start; (version == null) && (i < size); i++) {
-                    next = getBuilder().charAt(i);
+                    next = getLineBuilder().charAt(i);
                 }
 
                 if (i == size) {
-                    version = getBuilder().substring(start, i);
+                    version = getLineBuilder().substring(start, i);
                     start = i + 1;
                 }
 
@@ -129,7 +129,7 @@ public class ServerInboundWay extends InboundWay {
                 setMessage(response);
 
                 setMessageState(MessageState.HEADERS);
-                getBuilder().delete(0, getBuilder().length());
+                getLineBuilder().delete(0, getLineBuilder().length());
             }
         } else {
             // We need more characters before parsing
