@@ -31,8 +31,11 @@
 package org.restlet.engine.nio;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.ClosedChannelException;
+import java.nio.channels.FileChannel;
+import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -49,6 +52,7 @@ import org.restlet.data.Status;
 import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.http.header.HeaderUtils;
 import org.restlet.engine.util.StringUtils;
+import org.restlet.representation.FileRepresentation;
 import org.restlet.representation.ReadableRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
@@ -72,6 +76,12 @@ public class OutboundWay extends Way {
 
     /** The response headers. */
     private volatile Series<Parameter> headers;
+
+    private volatile InputStream entityStream;
+
+    private volatile ReadableByteChannel entityReadableChannel;
+
+    private volatile FileChannel entityFileChannel;
 
     /**
      * Constructor.
@@ -234,94 +244,118 @@ public class OutboundWay extends Way {
         return result;
     }
 
+    private boolean isFilling() {
+        return (getMessageState() != MessageState.END)
+                && getByteBuffer().hasRemaining();
+    }
+
     @Override
     public void onSelected() {
+        if (getIoState() == IoState.WRITE_INTEREST) {
+            setIoState(IoState.WRITING);
+        } else if (getIoState() == IoState.READ_INTEREST) {
+            setIoState(IoState.READING);
+        } else if (getIoState() == IoState.CANCELING) {
+            setIoState(IoState.CANCELLED);
+
+            // Try to close the connection immediately.
+            // if ((getConnection().getState() ==
+            // ConnectionState.CLOSING)
+            // && (getIoState() == IoState.IDLE)) {
+            // getConnection().close(true);
+            // }
+        }
+
         try {
             Response message = getMessage();
 
             if (message != null) {
-                boolean canWrite = (getIoState() == IoState.WRITE_INTEREST);
-                boolean filling = getByteBuffer().hasRemaining();
-
-                while (canWrite) {
-                    if (filling) {
+                while (getIoState() == IoState.WRITING) {
+                    if (isFilling()) {
                         // Before writing the byte buffer, we need to try
                         // to fill it as much as possible
 
                         if (getMessageState() == MessageState.BODY) {
                             // Writing the body doesn't rely on the line builder
-                            // ...
-                        } else {
-                            // Write the start line or the headers relies on the
-                            // line builder
-                            if (getLineBuilder().length() == 0) {
-                                // A new line can be written in the builder
-                                writeLine();
+                            if (message.getEntity() instanceof FileRepresentation) {
+
+                            } else if (message.getEntity() instanceof ReadableRepresentation) {
+
+                            } else {
+                                InputStream entityStream = message.getEntity()
+                                        .getStream();
                             }
 
-                            if (getLineBuilder().length() > 0) {
-                                // We can fill the byte buffer with the
-                                // remaining line builder
-                                int remaining = getByteBuffer().remaining();
+                            if (getByteBuffer().hasArray()) {
+                                byte[] byteArray = getByteBuffer().array();
 
-                                if (remaining >= getLineBuilder().length()) {
-                                    // Put the whole builder line in the buffer
-                                    getByteBuffer()
-                                            .put(
-                                                    StringUtils
-                                                            .getLatin1Bytes(getLineBuilder()
-                                                                    .toString()));
-                                    getLineBuilder().delete(0,
-                                            getLineBuilder().length());
-                                } else {
-                                    // Put the maximum number of characters
-                                    // into the byte buffer
-                                    getByteBuffer()
-                                            .put(
-                                                    StringUtils
-                                                            .getLatin1Bytes(getLineBuilder()
-                                                                    .substring(
-                                                                            0,
-                                                                            remaining)));
-                                    getLineBuilder().delete(0, remaining);
+                            } else {
+                                // Write the start line or the headers relies on
+                                // the
+                                // line builder
+                                if (getLineBuilder().length() == 0) {
+                                    // A new line can be written in the builder
+                                    writeLine();
+                                }
+
+                                if (getLineBuilder().length() > 0) {
+                                    // We can fill the byte buffer with the
+                                    // remaining line builder
+                                    int remaining = getByteBuffer().remaining();
+
+                                    if (remaining >= getLineBuilder().length()) {
+                                        // Put the whole builder line in the
+                                        // buffer
+                                        getByteBuffer()
+                                                .put(
+                                                        StringUtils
+                                                                .getLatin1Bytes(getLineBuilder()
+                                                                        .toString()));
+                                        getLineBuilder().delete(0,
+                                                getLineBuilder().length());
+                                    } else {
+                                        // Put the maximum number of characters
+                                        // into the byte buffer
+                                        getByteBuffer()
+                                                .put(
+                                                        StringUtils
+                                                                .getLatin1Bytes(getLineBuilder()
+                                                                        .substring(
+                                                                                0,
+                                                                                remaining)));
+                                        getLineBuilder().delete(0, remaining);
+                                    }
                                 }
                             }
-                        }
-
-                        canWrite = (getIoState() == IoState.WRITE_INTEREST);
-                        filling = (getMessageState() != MessageState.END)
-                                && getByteBuffer().hasRemaining();
-                    } else {
-                        // After filling the byte buffer, we can now flip it
-                        // and start draining it.
-                        getByteBuffer().flip();
-                        int bytesWritten = getConnection().getSocketChannel()
-                                .write(getByteBuffer());
-
-                        if (bytesWritten == 0) {
-                            // The byte buffer hasn't been written, the socket
-                            // channel can't write more. We needs to put the
-                            // byte buffer in the filling state again and wait
-                            // for a new NIO selection.
-                            getByteBuffer().flip();
-                            canWrite = false;
-                        } else if (getByteBuffer().hasRemaining()) {
-                            // All the buffer couldn't be written. Compact the
-                            // remaining
-                            // bytes so that filling can happen again.
-                            getByteBuffer().compact();
                         } else {
-                            // The byte buffer has been fully written, but the
-                            // socket channel wants more.
+                            // After filling the byte buffer, we can now flip it
+                            // and start draining it.
+                            getByteBuffer().flip();
+                            int bytesWritten = getConnection()
+                                    .getSocketChannel().write(getByteBuffer());
+
+                            if (bytesWritten == 0) {
+                                // The byte buffer hasn't been written, the
+                                // socket
+                                // channel can't write more. We needs to put the
+                                // byte buffer in the filling state again and
+                                // wait
+                                // for a new NIO selection.
+                                getByteBuffer().flip();
+                                setIoState(IoState.WRITE_INTEREST);
+                            } else if (getByteBuffer().hasRemaining()) {
+                                // All the buffer couldn't be written. Compact
+                                // the
+                                // remaining
+                                // bytes so that filling can happen again.
+                                getByteBuffer().compact();
+                            } else {
+                                // The byte buffer has been fully written, but
+                                // the
+                                // socket channel wants more.
+                            }
                         }
                     }
-
-                    // Try to close the connection immediately.
-                    // if ((getConnection().getState() ==
-                    // ConnectionState.CLOSING)
-                    // && (getIoState() == IoState.IDLE)) {
-                    // getConnection().close(true);
-                    // }
                 }
             }
         } catch (Exception e) {
@@ -541,13 +575,14 @@ public class OutboundWay extends Way {
                 getLineBuilder().append('\n'); // LF
 
                 // Change state
-                setMessageState(MessageState.BODY);
+                if ((getMessage().getEntity() != null)
+                        && getMessage().getEntity().isAvailable()) {
+                    setMessageState(MessageState.BODY);
+                } else {
+                    setMessageState(MessageState.END);
+                }
             }
 
-            break;
-
-        case BODY:
-            // TODO
             break;
         }
 
