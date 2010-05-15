@@ -66,7 +66,9 @@ public class ReaderInputStream extends InputStream {
      * Constructor.
      * 
      * @param reader
+     *            The reader to wrap as an input stream.
      * @param characterSet
+     *            The character set to use for encoding.
      * @throws IOException
      */
     public ReaderInputStream(Reader reader, CharacterSet characterSet)
@@ -81,7 +83,7 @@ public class ReaderInputStream extends InputStream {
                     this.pipedOutputStream, characterSet.getName());
         } else {
             this.outputStreamWriter = new OutputStreamWriter(
-                    this.pipedOutputStream);
+                    this.pipedOutputStream, CharacterSet.ISO_8859_1.getName());
         }
     }
 

@@ -30,7 +30,9 @@
 
 package org.restlet.representation;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
@@ -128,6 +130,15 @@ public class StringRepresentation extends CharacterRepresentation {
 
         setCharacterSet(characterSet);
         setText(text);
+    }
+
+    @Override
+    public InputStream getStream() throws IOException {
+        CharacterSet charset = getCharacterSet() == null ? CharacterSet.ISO_8859_1
+                : getCharacterSet();
+        ByteArrayInputStream result = new ByteArrayInputStream(getText()
+                .getBytes(charset.getName()));
+        return result;
     }
 
     @Override

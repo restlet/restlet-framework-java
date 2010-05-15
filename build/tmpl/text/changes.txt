@@ -47,6 +47,8 @@ Changes log
     - Misc
       - Server connectors now display the port they are listening on
         in their start message.  
+      - Optimized by a factor 10, the speed of the getStream() method
+        in StringRepresentation, using a ByteArrayInputStream.
       
 - 2.0 Release Candidate 3 (2010-04-23)
     - API changes
