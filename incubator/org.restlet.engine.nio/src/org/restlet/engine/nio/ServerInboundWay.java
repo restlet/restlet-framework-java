@@ -60,79 +60,75 @@ public class ServerInboundWay extends InboundWay {
 
     @Override
     protected void readStartLine() throws IOException {
-        if (readLine()) {
-            String requestMethod = null;
-            String requestUri = null;
-            String version = null;
+        String requestMethod = null;
+        String requestUri = null;
+        String version = null;
 
-            int i = 0;
-            int start = 0;
-            int size = getLineBuilder().length();
-            char next;
+        int i = 0;
+        int start = 0;
+        int size = getLineBuilder().length();
+        char next;
 
-            if (size == 0) {
-                // Skip leading empty lines per HTTP specification
-            } else {
-                // Parse the request method
-                for (i = start; (requestMethod == null) && (i < size); i++) {
-                    next = getLineBuilder().charAt(i);
+        if (size == 0) {
+            // Skip leading empty lines per HTTP specification
+        } else {
+            // Parse the request method
+            for (i = start; (requestMethod == null) && (i < size); i++) {
+                next = getLineBuilder().charAt(i);
 
-                    if (HeaderUtils.isSpace(next)) {
-                        requestMethod = getLineBuilder().substring(start, i);
-                        start = i + 1;
-                    }
-                }
-
-                if ((requestMethod == null) || (i == size)) {
-                    throw new IOException(
-                            "Unable to parse the request method. End of line reached too early.");
-                }
-
-                // Parse the request URI
-                for (i = start; (requestUri == null) && (i < size); i++) {
-                    next = getLineBuilder().charAt(i);
-
-                    if (HeaderUtils.isSpace(next)) {
-                        requestUri = getLineBuilder().substring(start, i);
-                        start = i + 1;
-                    }
-                }
-
-                if (i == size) {
-                    throw new IOException(
-                            "Unable to parse the request URI. End of line reached too early.");
-                }
-
-                if ((requestUri == null) || (requestUri.equals(""))) {
-                    requestUri = "/";
-                }
-
-                // Parse the protocol version
-                for (i = start; (version == null) && (i < size); i++) {
-                    next = getLineBuilder().charAt(i);
-                }
-
-                if (i == size) {
-                    version = getLineBuilder().substring(start, i);
+                if (HeaderUtils.isSpace(next)) {
+                    requestMethod = getLineBuilder().substring(start, i);
                     start = i + 1;
                 }
-
-                if (version == null) {
-                    throw new IOException(
-                            "Unable to parse the protocol version. End of line reached too early.");
-                }
-
-                // Create a new request object
-                ConnectedRequest request = getHelper().createRequest(
-                        getConnection(), requestMethod, requestUri, version);
-                Response response = getHelper().createResponse(request);
-                setMessage(response);
-
-                setMessageState(MessageState.HEADERS);
-                getLineBuilder().delete(0, getLineBuilder().length());
             }
-        } else {
-            // We need more characters before parsing
+
+            if ((requestMethod == null) || (i == size)) {
+                throw new IOException(
+                        "Unable to parse the request method. End of line reached too early.");
+            }
+
+            // Parse the request URI
+            for (i = start; (requestUri == null) && (i < size); i++) {
+                next = getLineBuilder().charAt(i);
+
+                if (HeaderUtils.isSpace(next)) {
+                    requestUri = getLineBuilder().substring(start, i);
+                    start = i + 1;
+                }
+            }
+
+            if (i == size) {
+                throw new IOException(
+                        "Unable to parse the request URI. End of line reached too early.");
+            }
+
+            if ((requestUri == null) || (requestUri.equals(""))) {
+                requestUri = "/";
+            }
+
+            // Parse the protocol version
+            for (i = start; (version == null) && (i < size); i++) {
+                next = getLineBuilder().charAt(i);
+            }
+
+            if (i == size) {
+                version = getLineBuilder().substring(start, i);
+                start = i + 1;
+            }
+
+            if (version == null) {
+                throw new IOException(
+                        "Unable to parse the protocol version. End of line reached too early.");
+            }
+
+            // Create a new request object
+            ConnectedRequest request = getHelper().createRequest(
+                    getConnection(), requestMethod, requestUri, version);
+            Response response = getHelper().createResponse(request);
+            setMessage(response);
+
+            setMessageState(MessageState.HEADERS);
+            getLineBuilder().delete(0, getLineBuilder().length());
         }
     }
 }

@@ -353,11 +353,6 @@ public class OutboundWay extends Way {
         return result;
     }
 
-    private boolean isFilling() {
-        return (getMessageState() != MessageState.END)
-                && getByteBuffer().hasRemaining();
-    }
-
     @Override
     public void onSelected() {
         if (getIoState() == IoState.WRITE_INTEREST) {

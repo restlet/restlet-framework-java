@@ -228,27 +228,87 @@ public abstract class InboundWay extends Way {
 
     @Override
     public void onSelected() {
+        if (getIoState() == IoState.READ_INTEREST) {
+            setIoState(IoState.READING);
+        } else if (getIoState() == IoState.CANCELING) {
+            setIoState(IoState.CANCELLED);
+        }
+
         try {
-            if (getIoState() == IoState.READ_INTEREST) {
-                int result = readSocketBytes();
+            while ((getIoState() == IoState.READING)
+                    && (getMessageState() != MessageState.BODY)) {
+                if (isFilling()) {
+                    int result = readSocketBytes();
 
-                while (getByteBuffer().hasRemaining()
-                        && (getMessageState() != MessageState.BODY)) {
-                    if (getMessageState() == MessageState.START_LINE) {
-                        readStartLine();
-                    } else if (getMessageState() == MessageState.HEADERS) {
-                        readHeaders();
+                    if (result == 0) {
+                        // Socket channel exhausted
+                        setIoState(IoState.READ_INTEREST);
+                    } else if (result == -1) {
+                        // End of channel reached
+                        // if (!getConnection().isPersistent()) {
+                        // getConnection().close(true);
+                        // }
+                        setIoState(IoState.CANCELING);
+                    } else {
+                        // Parse ready lines
+                        while (readLine()) {
+                            if (getMessageState() == MessageState.START_LINE) {
+                                readStartLine();
+                            } else if (getMessageState() == MessageState.HEADERS) {
+                                ConnectedRequest request = (ConnectedRequest) getMessage()
+                                        .getRequest();
+                                Series<Parameter> headers = request
+                                        .getHeaders();
+                                Parameter header = readHeader();
+
+                                if (header != null) {
+                                    if (headers == null) {
+                                        headers = new Form();
+                                        request.setHeaders(headers);
+                                    }
+
+                                    headers.add(header);
+                                } else {
+                                    // End of headers
+                                    // Check if the client wants to close the
+                                    // connection
+                                    if (HeaderUtils.isConnectionClose(headers)) {
+                                        getConnection().setState(
+                                                ConnectionState.CLOSING);
+                                    }
+
+                                    // Check if an entity is available
+                                    Representation entity = createEntity(headers);
+
+                                    if (entity instanceof EmptyRepresentation) {
+                                        setMessageState(MessageState.START_LINE);
+                                    } else {
+                                        request.setEntity(entity);
+                                        setMessageState(MessageState.BODY);
+                                    }
+
+                                    // Update the response
+                                    // getMessage().getServerInfo().setAddress(
+                                    // getConnection().getHelper().getHelped()
+                                    // .getAddress());
+                                    // getMessage().getServerInfo().setPort(
+                                    // getConnection().getHelper().getHelped()
+                                    // .getPort());
+
+                                    if (request != null) {
+                                        if (request.isExpectingResponse()) {
+                                            // Add it to the connection queue
+                                            getMessages().add(getMessage());
+                                        }
+
+                                        // Add it to the helper queue
+                                        getHelper().getInboundMessages().add(
+                                                getMessage());
+                                    }
+                                }
+                            }
+                        }
                     }
-
-                    // Attempt to read more available bytes
-                    if (!getByteBuffer().hasRemaining()
-                            && (getMessageState() != MessageState.BODY)) {
-                        result = readSocketBytes();
-                    }
-                }
-
-                if (result == -1) {
-                    getConnection().close(true);
                 }
             }
         } catch (Exception e) {
@@ -271,72 +331,6 @@ public abstract class InboundWay extends Way {
         Parameter header = HeaderReader.readHeader(getLineBuilder());
         getLineBuilder().delete(0, getLineBuilder().length());
         return header;
-    }
-
-    /**
-     * Reads the header lines of the current message received.
-     * 
-     * @throws IOException
-     */
-    protected void readHeaders() throws IOException {
-        if (readLine()) {
-            ConnectedRequest request = (ConnectedRequest) getMessage()
-                    .getRequest();
-            Series<Parameter> headers = request.getHeaders();
-            Parameter header = readHeader();
-
-            while (header != null) {
-                if (headers == null) {
-                    headers = new Form();
-                }
-
-                headers.add(header);
-
-                if (readLine()) {
-                    header = readHeader();
-
-                    // End of headers
-                    if (header == null) {
-                        // Check if the client wants to close the connection
-                        if (HeaderUtils.isConnectionClose(headers)) {
-                            getConnection().setState(ConnectionState.CLOSING);
-                        }
-
-                        // Check if an entity is available
-                        Representation entity = createEntity(headers);
-
-                        if (entity instanceof EmptyRepresentation) {
-                            setMessageState(MessageState.START_LINE);
-                        } else {
-                            request.setEntity(entity);
-                            setMessageState(MessageState.BODY);
-                        }
-
-                        // Update the response
-                        // getMessage().getServerInfo().setAddress(
-                        // getConnection().getHelper().getHelped()
-                        // .getAddress());
-                        // getMessage().getServerInfo().setPort(
-                        // getConnection().getHelper().getHelped()
-                        // .getPort());
-
-                        if (request != null) {
-                            if (request.isExpectingResponse()) {
-                                // Add it to the connection queue
-                                getMessages().add(getMessage());
-                            }
-
-                            // Add it to the helper queue
-                            getHelper().getInboundMessages().add(getMessage());
-                        }
-                    }
-                } else {
-                    // Missing characters
-                }
-            }
-
-            request.setHeaders(headers);
-        }
     }
 
     /**

@@ -194,6 +194,16 @@ public abstract class Way {
     }
 
     /**
+     * Indicates if we are filling the byte buffer.
+     * 
+     * @return True if we are filling the byte buffer.
+     */
+    protected boolean isFilling() {
+        return (getMessageState() != MessageState.END)
+                && getByteBuffer().hasRemaining();
+    }
+
+    /**
      * Callback method invoked when the way has been selected for IO operations
      * it registered interest in.
      * 
