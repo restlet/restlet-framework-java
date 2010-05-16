@@ -421,6 +421,12 @@ public class OutboundWay extends Way {
                                                             + result);
                                             setEntityIndex(getEntityIndex()
                                                     + result);
+                                        } else if (result == -1) {
+                                            getByteBuffer().position(
+                                                    getByteBuffer().position()
+                                                            + available);
+                                            setEntityIndex(getEntityIndex()
+                                                    + available);
                                         }
 
                                         // Detect end of entity reached
