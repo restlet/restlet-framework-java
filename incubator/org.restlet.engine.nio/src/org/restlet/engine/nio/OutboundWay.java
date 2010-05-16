@@ -65,23 +65,29 @@ import org.restlet.util.Series;
  */
 public class OutboundWay extends Way {
 
+    /** The entity as a NIO readable byte channel. */
+    private volatile ReadableByteChannel entityChannel;
+
+    /** The entity index. */
+    private volatile long entityIndex;
+
     /**
      * The entity's NIO selection key holding the link between the entity to be
      * written and the way.
      */
     private volatile SelectionKey entityKey;
 
+    /** The entity as a BIO input stream. */
+    private volatile InputStream entityStream;
+
+    /** The entity type. */
+    private volatile EntityType entityType;
+
     /** The header index. */
     private volatile int headerIndex;
 
     /** The response headers. */
     private volatile Series<Parameter> headers;
-
-    private volatile InputStream entityStream;
-
-    private volatile ReadableByteChannel entityReadableChannel;
-
-    private volatile FileChannel entityFileChannel;
 
     /**
      * Constructor.
@@ -91,6 +97,7 @@ public class OutboundWay extends Way {
     public OutboundWay(Connection<?> connection) {
         super(connection);
         this.entityKey = null;
+        this.entityIndex = 0;
         this.headerIndex = 0;
         this.headers = null;
     }
@@ -125,6 +132,85 @@ public class OutboundWay extends Way {
     }
 
     /**
+     * Add headers.
+     * 
+     * @param headers
+     *            The headers to update.
+     */
+    protected void addHeaders(Series<Parameter> headers) {
+        Response response = getMessage();
+        ConnectedRequest request = (ConnectedRequest) response.getRequest();
+
+        if ((request.getMethod() != null)
+                && request.getMethod().equals(Method.HEAD)) {
+            addEntityHeaders(response.getEntity(), headers);
+            response.setEntity(null);
+        } else if (Method.GET.equals(request.getMethod())
+                && Status.SUCCESS_OK.equals(response.getStatus())
+                && (!response.isEntityAvailable())) {
+            addEntityHeaders(response.getEntity(), headers);
+            getLogger()
+                    .warning(
+                            "A response with a 200 (Ok) status should have an entity. Make sure that resource \""
+                                    + request.getResourceRef()
+                                    + "\" returns one or sets the status to 204 (No content).");
+        } else if (response.getStatus().equals(Status.SUCCESS_NO_CONTENT)) {
+            addEntityHeaders(response.getEntity(), headers);
+
+            if (response.isEntityAvailable()) {
+                getLogger()
+                        .fine(
+                                "Responses with a 204 (No content) status generally don't have an entity. Only adding entity headers for resource \""
+                                        + request.getResourceRef() + "\".");
+                response.setEntity(null);
+            }
+        } else if (response.getStatus().equals(Status.SUCCESS_RESET_CONTENT)) {
+            if (response.isEntityAvailable()) {
+                getLogger()
+                        .warning(
+                                "Responses with a 205 (Reset content) status can't have an entity. Ignoring the entity for resource \""
+                                        + request.getResourceRef() + "\".");
+                response.setEntity(null);
+            }
+        } else if (response.getStatus().equals(Status.REDIRECTION_NOT_MODIFIED)) {
+            addEntityHeaders(response.getEntity(), headers);
+
+            if (response.isEntityAvailable()) {
+                getLogger()
+                        .warning(
+                                "Responses with a 304 (Not modified) status can't have an entity. Only adding entity headers for resource \""
+                                        + request.getResourceRef() + "\".");
+                response.setEntity(null);
+            }
+        } else if (response.getStatus().isInformational()) {
+            if (response.isEntityAvailable()) {
+                getLogger()
+                        .warning(
+                                "Responses with an informational (1xx) status can't have an entity. Ignoring the entity for resource \""
+                                        + request.getResourceRef() + "\".");
+                response.setEntity(null);
+            }
+
+            addGeneralHeaders(headers);
+            addResponseHeaders(headers);
+        } else {
+            addGeneralHeaders(headers);
+            addResponseHeaders(headers);
+            addEntityHeaders(response.getEntity(), headers);
+
+            if ((response.getEntity() != null)
+                    && !response.getEntity().isAvailable()) {
+                // An entity was returned but isn't really available
+                getLogger()
+                        .warning(
+                                "A response with an unavailable entity was returned. Ignoring the entity for resource \""
+                                        + request.getResourceRef() + "\".");
+                response.setEntity(null);
+            }
+        }
+    }
+
+    /**
      * Adds the response headers.
      * 
      * @param headers
@@ -132,6 +218,33 @@ public class OutboundWay extends Way {
      */
     protected void addResponseHeaders(Series<Parameter> headers) {
         HeaderUtils.addResponseHeaders(getMessage(), headers);
+    }
+
+    /**
+     * Returns the entity as a NIO readable byte channel.
+     * 
+     * @return The entity as a NIO readable byte channel.
+     */
+    public ReadableByteChannel getEntityChannel() {
+        return entityChannel;
+    }
+
+    /**
+     * Returns the entity as a NIO file channel.
+     * 
+     * @return The entity as a NIO file channel.
+     */
+    public FileChannel getEntityFileChannel() {
+        return (FileChannel) getEntityChannel();
+    }
+
+    /**
+     * Returns the entity index.
+     * 
+     * @return The entity index.
+     */
+    public long getEntityIndex() {
+        return entityIndex;
     }
 
     /**
@@ -160,34 +273,30 @@ public class OutboundWay extends Way {
     }
 
     /**
-     * Returns the non-blocking selectable channel of the request entity if
-     * available.
+     * Returns the entity as a NIO non-blocking selectable channel.
      * 
-     * @return The non-blocking selectable channel of the request entity if
-     *         available.
+     * @return The entity as a NIO non-blocking selectable channel.
      */
-    protected SelectableChannel getEntitySelectableChannel() {
-        SelectableChannel result = null;
-        Representation entity = (getMessage() == null) ? null : getMessage()
-                .getEntity();
+    public SelectableChannel getEntitySelectableChannel() {
+        return (SelectableChannel) getEntityChannel();
+    }
 
-        if (entity instanceof ReadableRepresentation) {
-            ReadableRepresentation readableEntity = (ReadableRepresentation) entity;
+    /**
+     * Returns the entity as a BIO input stream.
+     * 
+     * @return The entity as a BIO input stream.
+     */
+    public InputStream getEntityStream() {
+        return entityStream;
+    }
 
-            try {
-                if (readableEntity.getChannel() instanceof SelectableChannel) {
-                    result = (SelectableChannel) readableEntity.getChannel();
-
-                    if (result.isBlocking()) {
-                        result = null;
-                    }
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return result;
+    /**
+     * Returns the entity type.
+     * 
+     * @return The entity type.
+     */
+    public EntityType getEntityType() {
+        return entityType;
     }
 
     /**
@@ -277,83 +386,121 @@ public class OutboundWay extends Way {
 
                         if (getMessageState() == MessageState.BODY) {
                             // Writing the body doesn't rely on the line builder
-                            if (message.getEntity() instanceof FileRepresentation) {
+                            switch (getEntityType()) {
+                            case ASYNC_CHANNEL:
 
-                            } else if (message.getEntity() instanceof ReadableRepresentation) {
+                                break;
 
-                            } else {
-                                InputStream entityStream = message.getEntity()
-                                        .getStream();
-                            }
+                            case SYNC_CHANNEL:
 
-                            if (getByteBuffer().hasArray()) {
-                                byte[] byteArray = getByteBuffer().array();
+                                break;
 
-                            } else {
-                                // Write the start line or the headers relies on
-                                // the
-                                // line builder
-                                if (getLineBuilder().length() == 0) {
-                                    // A new line can be written in the builder
-                                    writeLine();
-                                }
+                            case FILE_CHANNEL:
 
-                                if (getLineBuilder().length() > 0) {
-                                    // We can fill the byte buffer with the
-                                    // remaining line builder
-                                    int remaining = getByteBuffer().remaining();
+                                break;
 
-                                    if (remaining >= getLineBuilder().length()) {
-                                        // Put the whole builder line in the
-                                        // buffer
-                                        getByteBuffer()
-                                                .put(
-                                                        StringUtils
-                                                                .getLatin1Bytes(getLineBuilder()
-                                                                        .toString()));
-                                        getLineBuilder().delete(0,
-                                                getLineBuilder().length());
+                            case STREAM:
+                                if (getByteBuffer().hasArray()) {
+                                    byte[] byteArray = getByteBuffer().array();
+                                    int available = getEntityStream()
+                                            .available();
+
+                                    if (available > 0) {
+                                        long entitySize = getMessage()
+                                                .getEntity().getSize();
+
+                                        // Non-blocking read guaranteed
+                                        int result = getEntityStream().read(
+                                                byteArray,
+                                                getByteBuffer().position(),
+                                                available);
+
+                                        if (result > 0) {
+                                            getByteBuffer().position(
+                                                    getByteBuffer().position()
+                                                            + result);
+                                            setEntityIndex(getEntityIndex()
+                                                    + result);
+                                        }
+
+                                        // Detect end of entity reached
+                                        if ((result == -1)
+                                                || ((entitySize != -1) && (getEntityIndex() >= entitySize))) {
+                                            setMessageState(MessageState.END);
+                                        }
                                     } else {
-                                        // Put the maximum number of characters
-                                        // into the byte buffer
-                                        getByteBuffer()
-                                                .put(
-                                                        StringUtils
-                                                                .getLatin1Bytes(getLineBuilder()
-                                                                        .substring(
-                                                                                0,
-                                                                                remaining)));
-                                        getLineBuilder().delete(0, remaining);
+                                        // Blocking read, need to launch a new
+                                        // thread
+                                        // ...
                                     }
+                                } else {
+                                    System.out
+                                            .println("No underlying byte array for the NIO byte buffer!");
                                 }
+                                break;
                             }
                         } else {
-                            // After filling the byte buffer, we can now flip it
-                            // and start draining it.
-                            getByteBuffer().flip();
-                            int bytesWritten = getConnection()
-                                    .getSocketChannel().write(getByteBuffer());
-
-                            if (bytesWritten == 0) {
-                                // The byte buffer hasn't been written, the
-                                // socket
-                                // channel can't write more. We needs to put the
-                                // byte buffer in the filling state again and
-                                // wait
-                                // for a new NIO selection.
-                                getByteBuffer().flip();
-                                setIoState(IoState.WRITE_INTEREST);
-                            } else if (getByteBuffer().hasRemaining()) {
-                                // All the buffer couldn't be written. Compact
-                                // the
-                                // remaining
-                                // bytes so that filling can happen again.
-                                getByteBuffer().compact();
-                            } else {
-                                // The byte buffer has been fully written, but
-                                // the
-                                // socket channel wants more.
+                            // Write the start line or the headers relies on
+                            // the
+                            // line builder
+                            if (getLineBuilder().length() == 0) {
+                                // A new line can be written in the builder
+                                writeLine();
                             }
+
+                            if (getLineBuilder().length() > 0) {
+                                // We can fill the byte buffer with the
+                                // remaining line builder
+                                int remaining = getByteBuffer().remaining();
+
+                                if (remaining >= getLineBuilder().length()) {
+                                    // Put the whole builder line in the
+                                    // buffer
+                                    getByteBuffer()
+                                            .put(
+                                                    StringUtils
+                                                            .getLatin1Bytes(getLineBuilder()
+                                                                    .toString()));
+                                    getLineBuilder().delete(0,
+                                            getLineBuilder().length());
+                                } else {
+                                    // Put the maximum number of characters
+                                    // into the byte buffer
+                                    getByteBuffer()
+                                            .put(
+                                                    StringUtils
+                                                            .getLatin1Bytes(getLineBuilder()
+                                                                    .substring(
+                                                                            0,
+                                                                            remaining)));
+                                    getLineBuilder().delete(0, remaining);
+                                }
+                            }
+                        }
+                    } else {
+                        // After filling the byte buffer, we can now flip it
+                        // and start draining it.
+                        getByteBuffer().flip();
+                        int bytesWritten = getConnection().getSocketChannel()
+                                .write(getByteBuffer());
+
+                        if (bytesWritten == 0) {
+                            // The byte buffer hasn't been written, the socket
+                            // channel can't write more. We needs to put the
+                            // byte buffer in the filling state again and
+                            // wait for a new NIO selection.
+                            getByteBuffer().flip();
+                            setIoState(IoState.WRITE_INTEREST);
+                        } else if (getByteBuffer().hasRemaining()) {
+                            // All the buffer couldn't be written. Compact the
+                            // remaining bytes so that filling can happen again.
+                            getByteBuffer().compact();
+                        } else if (getMessageState() == MessageState.END) {
+                            // Message fully sent, ready for a new one
+                            setIoState(IoState.IDLE);
+                        } else {
+                            // The byte buffer has been fully written, but
+                            // the socket channel wants more.
                         }
                     }
                 }
@@ -376,9 +523,6 @@ public class OutboundWay extends Way {
                 setMessageState(MessageState.START_LINE);
                 setHeaderIndex(0);
                 setSocketKey(null);
-            } else {
-                System.out
-                        .println("Outbound message with an IDLE IO state detected!");
             }
         }
 
@@ -415,6 +559,26 @@ public class OutboundWay extends Way {
     }
 
     /**
+     * Sets the entity as a NIO readable byte channel.
+     * 
+     * @param entityChannel
+     *            The entity as a NIO readable byte channel.
+     */
+    public void setEntityChannel(ReadableByteChannel entityChannel) {
+        this.entityChannel = entityChannel;
+    }
+
+    /**
+     * Sets the entity index.
+     * 
+     * @param entityIndex
+     *            The entity index.
+     */
+    public void setEntityIndex(long entityIndex) {
+        this.entityIndex = entityIndex;
+    }
+
+    /**
      * Sets the entity's NIO selection key holding the link between the entity
      * to be written and the way.
      * 
@@ -423,6 +587,26 @@ public class OutboundWay extends Way {
      */
     public void setEntityKey(SelectionKey entityKey) {
         this.entityKey = entityKey;
+    }
+
+    /**
+     * Sets the entity as a BIO input stream.
+     * 
+     * @param entityStream
+     *            The entity as a BIO input stream.
+     */
+    public void setEntityStream(InputStream entityStream) {
+        this.entityStream = entityStream;
+    }
+
+    /**
+     * Sets the entity type.
+     * 
+     * @param entityType
+     *            The entity type.
+     */
+    public void setEntityType(EntityType entityType) {
+        this.entityType = entityType;
     }
 
     /**
@@ -443,85 +627,6 @@ public class OutboundWay extends Way {
      */
     public void setHeaders(Series<Parameter> headers) {
         this.headers = headers;
-    }
-
-    /**
-     * Add headers.
-     * 
-     * @param headers
-     *            The headers to update.
-     */
-    protected void addHeaders(Series<Parameter> headers) {
-        Response response = getMessage();
-        ConnectedRequest request = (ConnectedRequest) response.getRequest();
-
-        if ((request.getMethod() != null)
-                && request.getMethod().equals(Method.HEAD)) {
-            addEntityHeaders(response.getEntity(), headers);
-            response.setEntity(null);
-        } else if (Method.GET.equals(request.getMethod())
-                && Status.SUCCESS_OK.equals(response.getStatus())
-                && (!response.isEntityAvailable())) {
-            addEntityHeaders(response.getEntity(), headers);
-            getLogger()
-                    .warning(
-                            "A response with a 200 (Ok) status should have an entity. Make sure that resource \""
-                                    + request.getResourceRef()
-                                    + "\" returns one or sets the status to 204 (No content).");
-        } else if (response.getStatus().equals(Status.SUCCESS_NO_CONTENT)) {
-            addEntityHeaders(response.getEntity(), headers);
-
-            if (response.isEntityAvailable()) {
-                getLogger()
-                        .fine(
-                                "Responses with a 204 (No content) status generally don't have an entity. Only adding entity headers for resource \""
-                                        + request.getResourceRef() + "\".");
-                response.setEntity(null);
-            }
-        } else if (response.getStatus().equals(Status.SUCCESS_RESET_CONTENT)) {
-            if (response.isEntityAvailable()) {
-                getLogger()
-                        .warning(
-                                "Responses with a 205 (Reset content) status can't have an entity. Ignoring the entity for resource \""
-                                        + request.getResourceRef() + "\".");
-                response.setEntity(null);
-            }
-        } else if (response.getStatus().equals(Status.REDIRECTION_NOT_MODIFIED)) {
-            addEntityHeaders(response.getEntity(), headers);
-
-            if (response.isEntityAvailable()) {
-                getLogger()
-                        .warning(
-                                "Responses with a 304 (Not modified) status can't have an entity. Only adding entity headers for resource \""
-                                        + request.getResourceRef() + "\".");
-                response.setEntity(null);
-            }
-        } else if (response.getStatus().isInformational()) {
-            if (response.isEntityAvailable()) {
-                getLogger()
-                        .warning(
-                                "Responses with an informational (1xx) status can't have an entity. Ignoring the entity for resource \""
-                                        + request.getResourceRef() + "\".");
-                response.setEntity(null);
-            }
-
-            addGeneralHeaders(headers);
-            addResponseHeaders(headers);
-        } else {
-            addGeneralHeaders(headers);
-            addResponseHeaders(headers);
-            addEntityHeaders(response.getEntity(), headers);
-
-            if ((response.getEntity() != null)
-                    && !response.getEntity().isAvailable()) {
-                // An entity was returned but isn't really available
-                getLogger()
-                        .warning(
-                                "A response with an unavailable entity was returned. Ignoring the entity for resource \""
-                                        + request.getResourceRef() + "\".");
-                response.setEntity(null);
-            }
-        }
     }
 
     /**
@@ -574,10 +679,33 @@ public class OutboundWay extends Way {
                 getLineBuilder().append('\r'); // CR
                 getLineBuilder().append('\n'); // LF
 
-                // Change state
+                // Prepare entity writing if available
                 if ((getMessage().getEntity() != null)
                         && getMessage().getEntity().isAvailable()) {
                     setMessageState(MessageState.BODY);
+
+                    if (getMessage().getEntity() instanceof FileRepresentation) {
+                        FileRepresentation fr = (FileRepresentation) getMessage()
+                                .getEntity();
+                        setEntityChannel(fr.getChannel());
+                        setEntityType(EntityType.FILE_CHANNEL);
+                    } else if (getMessage().getEntity() instanceof ReadableRepresentation) {
+                        ReadableRepresentation rr = (ReadableRepresentation) getMessage()
+                                .getEntity();
+                        setEntityChannel(rr.getChannel());
+                        setEntityType(EntityType.SYNC_CHANNEL);
+
+                        if (getEntityChannel() instanceof SelectableChannel) {
+                            SelectableChannel sc = (SelectableChannel) getEntityChannel();
+
+                            if (!sc.isBlocking()) {
+                                setEntityType(EntityType.ASYNC_CHANNEL);
+                            }
+                        }
+                    } else {
+                        setEntityStream(getMessage().getEntity().getStream());
+                        setEntityType(EntityType.STREAM);
+                    }
                 } else {
                     setMessageState(MessageState.END);
                 }
