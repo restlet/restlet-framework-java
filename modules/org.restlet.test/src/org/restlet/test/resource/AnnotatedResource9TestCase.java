@@ -97,6 +97,9 @@ public class AnnotatedResource9TestCase extends TestCase {
     @Override
     protected void tearDown() throws Exception {
         c.stop();
+
+        // Restore default converters
+        Engine.register();
     }
 
     /**

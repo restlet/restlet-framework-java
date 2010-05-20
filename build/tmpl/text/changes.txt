@@ -43,6 +43,8 @@ Changes log
         Reported by Yang Xudong.
       - Fixed support of inherited annotated methods by ServerResource. 
         Reported by Kevin Pauli.
+      - Fixed potential NPE in HttpBasicHelper.
+        Reported by Myriam Leggieri        
     - Misc
       - Server connectors now display the port they are listening on
         in their start message.  
@@ -52,6 +54,8 @@ Changes log
         Suggested by Alex Milowski.
       - Added links from API packages to user guide (wiki).
         Suggested by Alex Milowski.
+      - OData Generator now uses the current directory by default
+        if none is provided via arguments.
       
 - 2.0 Release Candidate 3 (2010-04-23)
     - API changes
