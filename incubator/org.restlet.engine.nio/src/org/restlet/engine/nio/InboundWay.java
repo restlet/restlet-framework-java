@@ -250,26 +250,34 @@ public abstract class InboundWay extends Way {
                         // }
                         setIoState(IoState.CANCELING);
                     } else {
+                        ConnectedRequest request = (ConnectedRequest) ((getMessage() == null) ? null
+                                : getMessage().getRequest());
+                        Series<Parameter> headers = (request == null) ? null
+                                : request.getHeaders();
+
                         // Parse ready lines
-                        while (readLine()) {
+                        while (fillLine()) {
                             if (getMessageState() == MessageState.START_LINE) {
                                 readStartLine();
                             } else if (getMessageState() == MessageState.HEADERS) {
-                                ConnectedRequest request = (ConnectedRequest) getMessage()
+                                request = (ConnectedRequest) getMessage()
                                         .getRequest();
-                                Series<Parameter> headers = request
-                                        .getHeaders();
+                                headers = (headers == null) ? request
+                                        .getHeaders() : headers;
                                 Parameter header = readHeader();
 
                                 if (header != null) {
                                     if (headers == null) {
                                         headers = new Form();
-                                        request.setHeaders(headers);
                                     }
 
                                     headers.add(header);
                                 } else {
                                     // End of headers
+                                    if (headers != null) {
+                                        request.setHeaders(headers);
+                                    }
+
                                     // Check if the client wants to close the
                                     // connection
                                     if (HeaderUtils.isConnectionClose(headers)) {
@@ -322,7 +330,7 @@ public abstract class InboundWay extends Way {
     }
 
     /**
-     * Reads a message header.
+     * Read a message header.
      * 
      * @return The new message header or null.
      * @throws IOException
@@ -339,7 +347,7 @@ public abstract class InboundWay extends Way {
      * @return True if the message line was fully read.
      * @throws IOException
      */
-    protected boolean readLine() throws IOException {
+    protected boolean fillLine() throws IOException {
         boolean result = false;
         int next;
 
@@ -377,7 +385,7 @@ public abstract class InboundWay extends Way {
     }
 
     /**
-     * Reads the start line of the current message received.
+     * Read the start line of the current message received.
      * 
      * @throws IOException
      */
