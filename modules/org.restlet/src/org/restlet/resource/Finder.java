@@ -44,11 +44,11 @@ import org.restlet.data.Status;
 
 /**
  * Restlet that can find the target server resource that will effectively handle
- * incoming calls. Based on a given {@link ServerResource} (or the now
- * deprecated {@link Handler}) subclass available via the
- * {@link #getTargetClass()} method, it can instantiate for each incoming call
- * the target resource using the default constructor and invoking the
- * {@link ServerResource#init(Context, Request, Response)} method.<br>
+ * incoming calls. By default, based on a given {@link ServerResource} (or the
+ * now deprecated {@link Handler}) subclass available via the
+ * {@link #getTargetClass()} method, it automatically instantiates for each
+ * incoming call the target resource class using its default constructor and
+ * invoking the {@link ServerResource#init(Context, Request, Response)} method.<br>
  * <br>
  * Once the target has been created, the call is automatically dispatched to the
  * {@link ServerResource#handle()} method (or for {@link Handler} subclasses to
