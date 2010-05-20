@@ -76,12 +76,17 @@ public class HttpBasicHelper extends AuthenticatorHelper {
             ChallengeResponse challenge, Request request,
             Series<Parameter> httpHeaders) {
         try {
-            CharArrayWriter credentials = new CharArrayWriter();
-            credentials.write(challenge.getIdentifier());
-            credentials.write(":");
-            credentials.write(challenge.getSecret());
-            cw.append(Base64.encode(credentials.toCharArray(), "ISO-8859-1",
-                    false));
+            if (challenge == null) {
+                throw new RuntimeException(
+                        "No challenge provided, unable to encode credentials");
+            } else {
+                CharArrayWriter credentials = new CharArrayWriter();
+                credentials.write(challenge.getIdentifier());
+                credentials.write(":");
+                credentials.write(challenge.getSecret());
+                cw.append(Base64.encode(credentials.toCharArray(),
+                        "ISO-8859-1", false));
+            }
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(
                     "Unsupported encoding, unable to encode credentials");

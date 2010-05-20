@@ -32,6 +32,7 @@ package org.restlet.ext.odata;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -65,7 +66,8 @@ public class Generator {
      * Takes two (or three) parameters:<br>
      * <ol>
      * <li>The URI of the OData service</li>
-     * <li>The output directory</li>
+     * <li>The output directory (optional, used the current directory by
+     * default)</li>
      * <li>The name of the generated service class name (optional)</li>
      * </ol>
      * 
@@ -80,14 +82,24 @@ public class Generator {
 
         String errorMessage = null;
 
-        if (args.length != 2 && args.length != 3) {
-            errorMessage = "Wrong number of arguments.";
+        if (args.length == 0) {
+            errorMessage = "Missing mandatory argument: URI of the OData service.";
         }
 
         File outputDir = null;
 
         if (errorMessage == null) {
-            outputDir = new File(args[1]);
+            if (args.length > 1) {
+                outputDir = new File(args[1]);
+            } else {
+                try {
+                    outputDir = new File(".").getCanonicalFile();
+                } catch (IOException e) {
+                    errorMessage = "Unable to get the target directory. "
+                            + e.getMessage();
+                }
+            }
+
             if (outputDir.exists()) {
                 System.out.println("step 2 - check the ouput directory");
                 if (!outputDir.isDirectory()) {
