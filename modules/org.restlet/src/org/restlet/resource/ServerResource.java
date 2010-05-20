@@ -57,13 +57,30 @@ import org.restlet.engine.resource.VariantInfo;
 import org.restlet.representation.Representation;
 import org.restlet.representation.RepresentationInfo;
 import org.restlet.representation.Variant;
+import org.restlet.routing.Filter;
+import org.restlet.routing.Router;
 import org.restlet.service.ConverterService;
 import org.restlet.service.MetadataService;
 import org.restlet.util.Series;
 
 /**
  * Base class for server-side resources. It is a full replacement for the
- * deprecated {@link Resource} class.<br>
+ * deprecated {@link Resource} class. It acts as a wrapper to a given call,
+ * including the incoming {@link Request} and the outgoing {@link Response}. <br>
+ * <br>
+ * It's life cycle is managed by a {@link Finder} created either explicitly or
+ * more likely implicitly when your {@link ServerResource} subclass is attached
+ * to a {@link Filter} or a {@link Router} via the {@link Filter#setNext(Class)}
+ * or {@link Router#attach(String, Class)} methods for example. After
+ * instantiation using the default constructor, the final
+ * {@link #init(Context, Request, Response)} method is invoked, setting the
+ * context, request and response. You can intercept this by overriding the
+ * {@link #doInit()} method. Then, if the response status is still a success,
+ * the {@link #handle()} method is invoked to actually handle the call. Finally,
+ * the final {@link #release()} method is invoked to do the necessary clean-up,
+ * which you can intercept by overriding the {@link #doRelease()} method. During
+ * this life cycle, if any exception is caught, then the
+ * {@link #doCatch(Throwable)} method is invoked.<br>
  * <br>
  * Concurrency note: contrary to the {@link org.restlet.Uniform} class and its
  * main {@link Restlet} subclass where a single instance can handle several

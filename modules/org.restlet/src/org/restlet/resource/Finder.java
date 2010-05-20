@@ -510,8 +510,7 @@ public class Finder extends Restlet {
                 } else {
                     targetResource.init(getContext(), request, response);
 
-                    if ((response == null)
-                            || response.getStatus().equals(Status.SUCCESS_OK)) {
+                    if ((response == null) || response.getStatus().isSuccess()) {
                         targetResource.handle();
                     } else {
                         // Probably during the instantiation of the target
