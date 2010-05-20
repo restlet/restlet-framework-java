@@ -50,8 +50,8 @@ Changes log
         in their start message.  
       - Optimized by a factor 10, the speed of the getStream() method
         in StringRepresentation, using a ByteArrayInputStream.
-      - Improved ServerResource Javadocs with lifecycle information.
-        Suggested by Alex Milowski.
+      - Improved ServerResource and Finder Javadocs with lifecycle 
+        information. Suggested by Alex Milowski.
       - Added links from API packages to user guide (wiki).
         Suggested by Alex Milowski.
       - OData Generator now uses the current directory by default
