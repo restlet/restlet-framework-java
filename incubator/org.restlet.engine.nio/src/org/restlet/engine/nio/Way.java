@@ -204,6 +204,15 @@ public abstract class Way {
     }
 
     /**
+     * Callback method invoked when the current message has been completely
+     * received or sent.
+     * 
+     * @param message
+     *            The message completed.
+     */
+    protected abstract void onCompleted(Response message);
+
+    /**
      * Callback method invoked when the way has been selected for IO operations
      * it registered interest in.
      * 
@@ -285,6 +294,11 @@ public abstract class Way {
      */
     protected void setSocketKey(SelectionKey socketKey) {
         this.socketKey = socketKey;
+    }
+
+    @Override
+    public String toString() {
+        return getIoState() + ", " + getMessageState();
     }
 
 }

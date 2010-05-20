@@ -217,7 +217,7 @@ public abstract class BaseHelper<T extends Connector> extends
      * @return The outbound way created.
      */
     public OutboundWay createOutboundWay(Connection<T> connection) {
-        return new OutboundWay(connection);
+        return new ServerOutboundWay(connection);
     }
 
     /**

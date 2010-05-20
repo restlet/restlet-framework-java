@@ -297,6 +297,15 @@ public class Connection<T extends Connector> implements Notifiable {
     }
 
     /**
+     * Indicates if it is a client-side connection.
+     * 
+     * @return True if it is a client-side connection.
+     */
+    public boolean isClientSide() {
+        return getHelper().isClientSide();
+    }
+
+    /**
      * Indicates if the connection is empty.
      * 
      * @return True if the connection is empty.
@@ -304,15 +313,6 @@ public class Connection<T extends Connector> implements Notifiable {
     public boolean isEmpty() {
         return getInboundWay().getMessages().isEmpty()
                 && getOutboundWay().getMessages().isEmpty();
-    }
-
-    /**
-     * Indicates if it is a client-side connection.
-     * 
-     * @return True if it is a client-side connection.
-     */
-    public boolean isClientSide() {
-        return getHelper().isClientSide();
     }
 
     /**
@@ -404,6 +404,11 @@ public class Connection<T extends Connector> implements Notifiable {
      */
     public void setState(ConnectionState state) {
         this.state = state;
+    }
+
+    @Override
+    public String toString() {
+        return getState() + ", " + getInboundWay() + ", " + getOutboundWay();
     }
 
 }

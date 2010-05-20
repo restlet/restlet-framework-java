@@ -63,7 +63,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
-public class OutboundWay extends Way {
+public abstract class OutboundWay extends Way {
 
     /** The entity as a NIO readable byte channel. */
     private volatile ReadableByteChannel entityChannel;
@@ -427,7 +427,7 @@ public class OutboundWay extends Way {
                                         // Detect end of entity reached
                                         if ((result == -1)
                                                 || ((entitySize != -1) && (getEntityIndex() >= entitySize))) {
-                                            setMessageState(MessageState.END);
+                                            onCompleted(getMessage());
                                         }
                                     } else {
                                         // Blocking read, need to launch a new
@@ -442,8 +442,7 @@ public class OutboundWay extends Way {
                             }
                         } else {
                             // Write the start line or the headers relies on
-                            // the
-                            // line builder
+                            // the line builder
                             if (getLineBuilder().length() == 0) {
                                 // A new line can be written in the builder
                                 writeLine();
@@ -498,7 +497,7 @@ public class OutboundWay extends Way {
                             getByteBuffer().compact();
                         } else if (getMessageState() == MessageState.END) {
                             // Message fully sent, ready for a new one
-                            setIoState(IoState.IDLE);
+                            onCompleted(getMessage());
                         } else {
                             // The byte buffer has been fully written, but
                             // the socket channel wants more.
@@ -708,7 +707,7 @@ public class OutboundWay extends Way {
                         setEntityType(EntityType.STREAM);
                     }
                 } else {
-                    setMessageState(MessageState.END);
+                    onCompleted(getMessage());
                 }
             }
 

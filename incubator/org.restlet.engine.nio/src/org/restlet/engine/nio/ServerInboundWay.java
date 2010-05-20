@@ -59,6 +59,20 @@ public class ServerInboundWay extends InboundWay {
     }
 
     @Override
+    protected void onCompleted(Response message) {
+        // Mark the inbound as free so new messages can be read if possible
+        setMessageState(MessageState.END);
+
+        if (getConnection().isPipelining()) {
+            // Read the next request
+            setIoState(IoState.READ_INTEREST);
+        } else {
+            // Wait for the response to be sent
+            setIoState(IoState.IDLE);
+        }
+    }
+
+    @Override
     protected void readStartLine() throws IOException {
         String requestMethod = null;
         String requestUri = null;

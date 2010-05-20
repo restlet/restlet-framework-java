@@ -110,8 +110,7 @@ public abstract class InboundWay extends Way {
                     @Override
                     public void release() {
                         super.release();
-                        setMessageState(MessageState.START_LINE);
-                        setIoState(IoState.IDLE);
+                        onCompleted(getMessage());
                     }
                 };
             } else if (inboundEntityChannel != null) {
@@ -120,8 +119,7 @@ public abstract class InboundWay extends Way {
                     @Override
                     public void release() {
                         super.release();
-                        setMessageState(MessageState.START_LINE);
-                        setIoState(IoState.IDLE);
+                        onCompleted(getMessage());
                     }
                 };
             }
@@ -129,10 +127,7 @@ public abstract class InboundWay extends Way {
             result.setSize(contentLength);
         } else {
             result = new EmptyRepresentation();
-
-            // Mark the inbound as free so new messages can be read if possible
-            setMessageState(MessageState.START_LINE);
-            setIoState(IoState.IDLE);
+            onCompleted(getMessage());
         }
 
         if (headers != null) {
@@ -279,7 +274,7 @@ public abstract class InboundWay extends Way {
                                     }
 
                                     // Check if the client wants to close the
-                                    // connection
+                                    // connection after the response is sent
                                     if (HeaderUtils.isConnectionClose(headers)) {
                                         getConnection().setState(
                                                 ConnectionState.CLOSING);
@@ -287,13 +282,7 @@ public abstract class InboundWay extends Way {
 
                                     // Check if an entity is available
                                     Representation entity = createEntity(headers);
-
-                                    if (entity instanceof EmptyRepresentation) {
-                                        setMessageState(MessageState.START_LINE);
-                                    } else {
-                                        request.setEntity(entity);
-                                        setMessageState(MessageState.BODY);
-                                    }
+                                    request.setEntity(entity);
 
                                     // Update the response
                                     // getMessage().getServerInfo().setAddress(
@@ -305,7 +294,7 @@ public abstract class InboundWay extends Way {
 
                                     if (request != null) {
                                         if (request.isExpectingResponse()) {
-                                            // Add it to the connection queue
+                                            // Add it to the inbound queue
                                             getMessages().add(getMessage());
                                         }
 
