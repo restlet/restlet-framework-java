@@ -517,15 +517,9 @@ public abstract class BaseHelper<T extends Connector> extends
             this.workerService.shutdown();
         }
 
-        // Close the open connections
+        // Gracefully close the open connections
         for (Connection<T> connection : getConnections()) {
-            connection.setState(ConnectionState.CLOSING);
-
-            // connection.setInboundBusy(false);
-            // connection.setInboundIoState(IoState.)
-
-            // connection.setOutboundBusy(false);
-            // connection.setInboundIoState(IoState.)
+            connection.close(true);
         }
 
         // Await for completion of pending workers

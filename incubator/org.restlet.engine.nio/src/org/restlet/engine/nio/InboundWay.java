@@ -325,7 +325,7 @@ public abstract class InboundWay extends Way {
                             Level.INFO,
                             "Error while reading a message. Closing the connection.",
                             e);
-            getConnection().close(false);
+            getConnection().onError();
         }
     }
 

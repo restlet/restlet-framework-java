@@ -108,29 +108,36 @@ public class Connection<T extends Connector> implements Notifiable {
      *            Indicates if a graceful close should be attempted.
      */
     public void close(boolean graceful) {
-        try {
-            if (!getSocket().isClosed()) {
-                // Flush the output stream
-                getSocket().getOutputStream().flush();
+        if (graceful) {
+            setState(ConnectionState.CLOSING);
+        } else {
+            try {
+                if (!getSocket().isClosed()) {
+                    // Flush the output stream
+                    getSocket().getOutputStream().flush();
 
-                if (!(getSocket() instanceof SSLSocket)) {
-                    getSocket().shutdownInput();
-                    getSocket().shutdownOutput();
+                    if (!(getSocket() instanceof SSLSocket)) {
+                        getSocket().shutdownInput();
+                        getSocket().shutdownOutput();
+                    }
                 }
+            } catch (IOException ex) {
+                getLogger().log(Level.FINE,
+                        "Unable to properly shutdown socket", ex);
+            } finally {
+                setState(ConnectionState.CLOSED);
             }
-        } catch (IOException ex) {
-            getLogger().log(Level.FINE, "Unable to properly shutdown socket",
-                    ex);
-        }
 
-        try {
-            if (!getSocket().isClosed()) {
-                getSocket().close();
+            try {
+                if (!getSocket().isClosed()) {
+                    getSocket().close();
+                }
+            } catch (IOException ex) {
+                getLogger().log(Level.FINE, "Unable to properly close socket",
+                        ex);
+            } finally {
+                setState(ConnectionState.CLOSED);
             }
-        } catch (IOException ex) {
-            getLogger().log(Level.FINE, "Unable to properly close socket", ex);
-        } finally {
-            setState(ConnectionState.CLOSED);
         }
     }
 
@@ -290,12 +297,13 @@ public class Connection<T extends Connector> implements Notifiable {
     }
 
     /**
-     * Indicates if the connection is busy.
+     * Indicates if the connection is empty.
      * 
-     * @return True if the connection is busy.
+     * @return True if the connection is empty.
      */
-    public boolean isBusy() {
-        return false; // isInboundBusy() || isOutboundBusy();
+    public boolean isEmpty() {
+        return getInboundWay().getMessages().isEmpty()
+                && getOutboundWay().getMessages().isEmpty();
     }
 
     /**
@@ -342,12 +350,11 @@ public class Connection<T extends Connector> implements Notifiable {
     }
 
     /**
-     * Set the inbound busy state to false and the connection state to
-     * {@link ConnectionState#CLOSING}.
+     * Called on error. By default, it calls {@link #close(boolean)} with a
+     * 'false' parameter.
      */
     public void onError() {
-        // setInboundBusy(false);
-        setState(ConnectionState.CLOSING);
+        close(false);
     }
 
     /**

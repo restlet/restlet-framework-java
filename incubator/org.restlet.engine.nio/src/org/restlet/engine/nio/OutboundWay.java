@@ -547,7 +547,7 @@ public class OutboundWay extends Way {
                                     Level.WARNING,
                                     "Unable to register NIO interest operations for this entity",
                                     cce);
-                    getConnection().setState(ConnectionState.CLOSING);
+                    getConnection().onError();
                 }
             } else {
                 if (entityInterestOps == 0) {

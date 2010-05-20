@@ -234,7 +234,7 @@ public abstract class Way {
                                 Level.WARNING,
                                 "Unable to register NIO interest operations for this connection",
                                 cce);
-                getConnection().setState(ConnectionState.CLOSING);
+                getConnection().onError();
             }
         } else if (getSocketKey() != null) {
             if (socketInterestOps == 0) {

@@ -90,8 +90,8 @@ public class Controller implements Runnable {
             if (conn.getState() == ConnectionState.CLOSED) {
                 getHelper().getConnections().remove(conn);
             } else if ((conn.getState() == ConnectionState.CLOSING)
-                    && !conn.isBusy()) {
-                conn.close(true);
+                    && conn.isEmpty()) {
+                conn.close(false);
             } else {
                 conn.registerInterest(getSelector());
             }
