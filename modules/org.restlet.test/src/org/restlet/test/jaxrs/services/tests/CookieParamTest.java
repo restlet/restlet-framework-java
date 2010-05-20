@@ -59,7 +59,8 @@ public class CookieParamTest extends JaxRsTestCase {
             @Override
             @SuppressWarnings("unchecked")
             public Set<Class<?>> getClasses() {
-                return (Set) Collections.singleton(CookieParamTestService.class);
+                return (Set) Collections
+                        .singleton(CookieParamTestService.class);
             }
         };
     }
