@@ -261,7 +261,7 @@ public class Controller implements Runnable {
                 // Sleep a bit
                 Thread.sleep(getHelper().getControllerSleepTimeMs());
             } catch (Exception ex) {
-                this.helper.getLogger().log(Level.FINE,
+                this.helper.getLogger().log(Level.INFO,
                         "Unexpected error while controlling connector", ex);
             }
         }

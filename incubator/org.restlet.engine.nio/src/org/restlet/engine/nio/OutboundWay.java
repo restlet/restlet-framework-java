@@ -427,7 +427,7 @@ public abstract class OutboundWay extends Way {
                                         // Detect end of entity reached
                                         if ((result == -1)
                                                 || ((entitySize != -1) && (getEntityIndex() >= entitySize))) {
-                                            onCompleted(getMessage());
+                                            setMessageState(MessageState.END);
                                         }
                                     } else {
                                         // Blocking read, need to launch a new
