@@ -70,7 +70,7 @@ public class SpringBeanFinder extends SpringFinder implements BeanFactoryAware,
      */
     public SpringBeanFinder() {
     }
-   
+
     /**
      * Constructor.
      * 
@@ -154,7 +154,8 @@ public class SpringBeanFinder extends SpringFinder implements BeanFactoryAware,
 
     @Override
     public Context getContext() {
-        return getSpringBeanRouter().getContext();
+        return (getSpringBeanRouter() == null) ? null : getSpringBeanRouter()
+                .getContext();
     }
 
     /**
