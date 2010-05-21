@@ -45,7 +45,8 @@ Changes log
         Reported by Kevin Pauli.
       - Fixed potential NPE in HttpBasicHelper.
         Reported by Myriam Leggieri        
-      - Fixed potential NPE in SpringBeanFinder#getContext()
+      - Fixed potential NPE in SpringBeanFinder#getContext() and
+        added missing setSpringBeanRouter(SpringBeanRouter) method.
         Reported by Thierry Templier.
     - Misc
       - Server connectors now display the port they are listening on

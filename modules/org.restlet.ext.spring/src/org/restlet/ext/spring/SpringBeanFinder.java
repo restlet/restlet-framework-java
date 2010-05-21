@@ -196,4 +196,12 @@ public class SpringBeanFinder extends SpringFinder implements BeanFactoryAware,
     public void setBeanName(String beanName) {
         this.beanName = beanName;
     }
+
+    /**
+     * Sets the associated router.
+     * @param springBeanRouter The associated router.
+     */
+    public void setSpringBeanRouter(SpringBeanRouter springBeanRouter) {
+        this.springBeanRouter = springBeanRouter;
+    }
 }
