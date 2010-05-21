@@ -154,8 +154,8 @@ public class SpringBeanFinder extends SpringFinder implements BeanFactoryAware,
 
     @Override
     public Context getContext() {
-        return (getSpringBeanRouter() == null) ? null : getSpringBeanRouter()
-                .getContext();
+        return (getSpringBeanRouter() == null) ? Context.getCurrent()
+                : getSpringBeanRouter().getContext();
     }
 
     /**
