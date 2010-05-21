@@ -549,11 +549,7 @@ public abstract class OutboundWay extends Way {
                     getConnection().onError();
                 }
             } else {
-                if (entityInterestOps == 0) {
-                    getEntityKey().cancel();
-                } else {
-                    getEntityKey().interestOps(entityInterestOps);
-                }
+                getEntityKey().interestOps(entityInterestOps);
             }
         }
     }

@@ -33,6 +33,7 @@ package org.restlet.engine.nio;
 import java.io.IOException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
+import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 
@@ -99,10 +100,20 @@ public class Controller implements Runnable {
 
         // Select the connections ready for NIO operations
         if (getSelector().selectNow() > 0) {
-            for (SelectionKey key : getSelector().selectedKeys()) {
+            SelectionKey key;
+
+            for (Iterator<SelectionKey> selectedKeys = getSelector()
+                    .selectedKeys().iterator(); selectedKeys.hasNext();) {
+                // Retrieve the next selected key
+                key = selectedKeys.next();
+
+                // Notify the selected way
                 if (key.attachment() != null) {
                     ((Way) key.attachment()).onSelected();
                 }
+
+                // Remove the processed key from the set
+                selectedKeys.remove();
             }
         }
     }

@@ -246,11 +246,7 @@ public abstract class Way {
                 getConnection().onError();
             }
         } else if (getSocketKey() != null) {
-            if (socketInterestOps == 0) {
-                getSocketKey().cancel();
-            } else {
-                getSocketKey().interestOps(socketInterestOps);
-            }
+            getSocketKey().interestOps(socketInterestOps);
         }
     }
 
