@@ -32,6 +32,7 @@ package org.restlet.ext.spring;
 
 import org.restlet.Context;
 import org.restlet.resource.ServerResource;
+import org.restlet.routing.Router;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.context.ApplicationContext;
@@ -63,7 +64,7 @@ public class SpringBeanFinder extends SpringFinder implements BeanFactoryAware,
     private volatile String beanName;
 
     /** The associated router. */
-    private volatile SpringBeanRouter springBeanRouter;
+    private volatile Router router;
 
     /**
      * Default constructor.
@@ -74,16 +75,16 @@ public class SpringBeanFinder extends SpringFinder implements BeanFactoryAware,
     /**
      * Constructor.
      * 
-     * @param springBeanRouter
+     * @param router
      *            The associated router used to retrieve the context.
      * @param beanFactory
      *            The Spring bean factory.
      * @param beanName
      *            The bean name.
      */
-    public SpringBeanFinder(SpringBeanRouter springBeanRouter,
-            BeanFactory beanFactory, String beanName) {
-        this.springBeanRouter = springBeanRouter;
+    public SpringBeanFinder(Router router, BeanFactory beanFactory,
+            String beanName) {
+        this.router = router;
         setBeanFactory(beanFactory);
         setBeanName(beanName);
     }
@@ -154,8 +155,8 @@ public class SpringBeanFinder extends SpringFinder implements BeanFactoryAware,
 
     @Override
     public Context getContext() {
-        return (getSpringBeanRouter() == null) ? Context.getCurrent()
-                : getSpringBeanRouter().getContext();
+        return (getRouter() == null) ? Context.getCurrent() : getRouter()
+                .getContext();
     }
 
     /**
@@ -163,8 +164,19 @@ public class SpringBeanFinder extends SpringFinder implements BeanFactoryAware,
      * 
      * @return The associated router.
      */
+    public Router getRouter() {
+        return router;
+    }
+
+    /**
+     * Returns the associated router.
+     * 
+     * @return The associated router.
+     * @deprecated Use {@link #getRouter()} instead
+     */
+    @Deprecated
     public SpringBeanRouter getSpringBeanRouter() {
-        return springBeanRouter;
+        return (SpringBeanRouter) router;
     }
 
     /**
@@ -199,9 +211,12 @@ public class SpringBeanFinder extends SpringFinder implements BeanFactoryAware,
 
     /**
      * Sets the associated router.
-     * @param springBeanRouter The associated router.
+     * 
+     * @param router
+     *            The associated router.
      */
-    public void setSpringBeanRouter(SpringBeanRouter springBeanRouter) {
-        this.springBeanRouter = springBeanRouter;
+    public void setRouter(Router router) {
+        this.router = router;
     }
+
 }
