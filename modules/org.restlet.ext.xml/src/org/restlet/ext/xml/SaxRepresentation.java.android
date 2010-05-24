@@ -32,6 +32,7 @@ package org.restlet.ext.xml;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Writer;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -177,4 +178,11 @@ public class SaxRepresentation extends XmlRepresentation {
     public void write(XmlWriter writer) throws IOException {
         // Do nothing by default.
     }
+    
+    @Override
+    public void write(Writer writer) throws IOException {
+    XmlWriter xmlWriter = new XmlWriter(writer);
+    write(xmlWriter);
+    }
+    
 }
