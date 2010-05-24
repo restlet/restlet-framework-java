@@ -92,6 +92,18 @@ import org.restlet.engine.log.LoggingThreadFactory;
  * <td>Maximum number of concurrent connections per host (IP address).</td>
  * </tr>
  * <tr>
+ * <td>maxIoIdleTimeMs</td>
+ * <td>int</td>
+ * <td>30000</td>
+ * <td>Maximum time to wait on an idle IO operation.</td>
+ * </tr>
+ * <tr>
+ * <td>maxThreadIdleTimeMs</td>
+ * <td>int</td>
+ * <td>60000</td>
+ * <td>Time for an idle thread to wait for an operation before being collected.</td>
+ * </tr>
+ * <tr>
  * <td>maxTotalConnections</td>
  * <td>int</td>
  * <td>-1</td>
@@ -108,12 +120,6 @@ import org.restlet.engine.log.LoggingThreadFactory;
  * <td>boolean</td>
  * <td>false</td>
  * <td>Indicates if pipelining connections are supported.</td>
- * </tr>
- * <tr>
- * <td>threadMaxIdleTimeMs</td>
- * <td>int</td>
- * <td>60000</td>
- * <td>Time for an idle thread to wait for an operation before being collected.</td>
  * </tr>
  * <tr>
  * <td>tracing</td>
@@ -250,7 +256,7 @@ public abstract class BaseHelper<T extends Connector> extends
         int minThreads = getMinThreads();
 
         ThreadPoolExecutor result = new ThreadPoolExecutor(minThreads,
-                maxThreads, getThreadMaxIdleTimeMs(), TimeUnit.MILLISECONDS,
+                maxThreads, getMaxThreadIdleTimeMs(), TimeUnit.MILLISECONDS,
                 new SynchronousQueue<Runnable>(), new LoggingThreadFactory(
                         getLogger(), true));
         result.setRejectedExecutionHandler(new RejectedExecutionHandler() {
@@ -377,15 +383,27 @@ public abstract class BaseHelper<T extends Connector> extends
     }
 
     /**
+     * Returns the time for an idle IO connection to wait for an operation
+     * before being closed.
+     * 
+     * @return The time for an idle IO connection to wait for an operation
+     *         before being closed.
+     */
+    public int getMaxIoIdleTimeMs() {
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "maxIoIdleTimeMs", "30000"));
+    }
+
+    /**
      * Returns the time for an idle thread to wait for an operation before being
      * collected.
      * 
      * @return The time for an idle thread to wait for an operation before being
      *         collected.
      */
-    public int getThreadMaxIdleTimeMs() {
+    public int getMaxThreadIdleTimeMs() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "threadMaxIdleTimeMs", "60000"));
+                "maxThreadIdleTimeMs", "60000"));
     }
 
     /**

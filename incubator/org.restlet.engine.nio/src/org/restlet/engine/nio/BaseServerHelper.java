@@ -122,6 +122,7 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
             throws IOException {
         ServerSocketChannel result = ServerSocketChannel.open();
         result.socket().setReuseAddress(true);
+        result.socket().setSoTimeout(getMaxIoIdleTimeMs());
         result.socket().bind(createSocketAddress());
         result.configureBlocking(false);
         return result;

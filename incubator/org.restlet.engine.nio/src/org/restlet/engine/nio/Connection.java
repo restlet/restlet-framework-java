@@ -65,6 +65,9 @@ public class Connection<T extends Connector> implements Notifiable {
     /** The inbound way. */
     private final Way inboundWay;
 
+    /** The timestamp of the last IO activity. */
+    private volatile long lastActivity;
+
     /** The outbound way. */
     private final Way outboundWay;
 
@@ -98,6 +101,7 @@ public class Connection<T extends Connector> implements Notifiable {
         this.pipelining = helper.isPipeliningConnections();
         this.state = ConnectionState.OPENING;
         this.socketChannel = socketChannel;
+        this.lastActivity = System.currentTimeMillis();
     }
 
     /**
@@ -297,6 +301,16 @@ public class Connection<T extends Connector> implements Notifiable {
     }
 
     /**
+     * Indicates if the connection has timed out.
+     * 
+     * @return True if the connection has timed out.
+     */
+    public boolean hasTimedOut() {
+        return (System.currentTimeMillis() - this.lastActivity) >= getHelper()
+                .getMaxIoIdleTimeMs();
+    }
+
+    /**
      * Indicates if it is a client-side connection.
      * 
      * @return True if it is a client-side connection.
@@ -340,6 +354,14 @@ public class Connection<T extends Connector> implements Notifiable {
      */
     public boolean isServerSide() {
         return getHelper().isServerSide();
+    }
+
+    /**
+     * Callback method when an IO activity occurs. It updates the timestamp that
+     * allows the detection of expired connections.
+     */
+    protected void onActivity() {
+        this.lastActivity = System.currentTimeMillis();
     }
 
     /**

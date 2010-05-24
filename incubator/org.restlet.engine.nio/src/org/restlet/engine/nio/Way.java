@@ -214,12 +214,15 @@ public abstract class Way {
 
     /**
      * Callback method invoked when the way has been selected for IO operations
-     * it registered interest in.
+     * it registered interest in. By default it call
+     * {@link Connection#onActivity()}.
      * 
      * @param key
      *            The registered selection key.
      */
-    public abstract void onSelected();
+    public void onSelected() {
+        getConnection().onActivity();
+    }
 
     /**
      * Registers interest of this connection way for NIO operations with the

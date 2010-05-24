@@ -93,6 +93,12 @@ public class Controller implements Runnable {
             } else if ((conn.getState() == ConnectionState.CLOSING)
                     && conn.isEmpty()) {
                 conn.close(false);
+            } else if (conn.hasTimedOut()) {
+                conn.close(false);
+                getHelper().getLogger().fine(
+                        "A network connection timeout as no IO activity was detected during "
+                                + getHelper().getMaxIoIdleTimeMs()
+                                + " ms. Connection closed.");
             } else {
                 conn.registerInterest(getSelector());
             }
