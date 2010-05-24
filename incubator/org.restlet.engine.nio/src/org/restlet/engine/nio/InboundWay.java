@@ -82,38 +82,15 @@ public abstract class InboundWay extends Way {
         boolean chunkedEncoding = HeaderUtils.isChunkedEncoding(headers);
 
         // In some cases there is an entity without a content-length header
-        boolean connectionClosed = HeaderUtils.isConnectionClose(headers);
+        boolean connectionClose = HeaderUtils.isConnectionClose(headers);
 
         // Create the representation
         if ((contentLength != Representation.UNKNOWN_SIZE && contentLength != 0)
-                || chunkedEncoding || connectionClosed) {
-            InputStream inboundEntityStream = getEntityStream(contentLength,
-                    chunkedEncoding);
+                || chunkedEncoding || connectionClose) {
             ReadableByteChannel inboundEntityChannel = getEntityChannel(
                     contentLength, chunkedEncoding);
 
-            if (inboundEntityStream != null) {
-                result = new InputRepresentation(inboundEntityStream, null,
-                        contentLength) {
-
-                    @Override
-                    public String getText() throws IOException {
-                        try {
-                            return super.getText();
-                        } catch (IOException ioe) {
-                            throw ioe;
-                        } finally {
-                            release();
-                        }
-                    }
-
-                    @Override
-                    public void release() {
-                        super.release();
-                        onCompleted(getMessage());
-                    }
-                };
-            } else if (inboundEntityChannel != null) {
+            if (inboundEntityChannel != null) {
                 result = new ReadableRepresentation(inboundEntityChannel, null,
                         contentLength) {
                     @Override
@@ -122,9 +99,9 @@ public abstract class InboundWay extends Way {
                         onCompleted(getMessage());
                     }
                 };
-            }
 
-            result.setSize(contentLength);
+                result.setSize(contentLength);
+            }
         } else {
             result = new EmptyRepresentation();
             onCompleted(getMessage());
@@ -184,30 +161,7 @@ public abstract class InboundWay extends Way {
      * @return The inbound message entity channel if it exists.
      */
     public ReadableByteChannel getEntityChannel(long size, boolean chunked) {
-        return null; // getSocketChannel();
-    }
-
-    /**
-     * Returns the inbound message entity stream if it exists.
-     * 
-     * @param size
-     *            The expected entity size or -1 if unknown.
-     * 
-     * @return The inbound message entity stream if it exists.
-     */
-    public InputStream getEntityStream(long size, boolean chunked) {
-        // InputStream result = null;
-        //
-        // if (chunked) {
-        // result = new ChunkedInputStream(this, getInboundStream());
-        // } else if (size >= 0) {
-        // result = new SizedInputStream(this, getInboundStream(), size);
-        // } else {
-        // result = new ClosingInputStream(this, getInboundStream());
-        // }
-        //
-        // return result;
-        return null;
+        return getConnection().getSocketChannel();
     }
 
     @Override
@@ -224,7 +178,7 @@ public abstract class InboundWay extends Way {
     @Override
     public void onSelected() {
         super.onSelected();
-        
+
         if (getIoState() == IoState.READ_INTEREST) {
             setIoState(IoState.READING);
         } else if (getIoState() == IoState.CANCELING) {
@@ -242,9 +196,6 @@ public abstract class InboundWay extends Way {
                         setIoState(IoState.READ_INTEREST);
                     } else if (result == -1) {
                         // End of channel reached
-                        // if (!getConnection().isPersistent()) {
-                        // getConnection().close(true);
-                        // }
                         setIoState(IoState.CANCELING);
                     } else {
                         ConnectedRequest request = (ConnectedRequest) ((getMessage() == null) ? null
@@ -354,6 +305,8 @@ public abstract class InboundWay extends Way {
                     throw new IOException(
                             "Missing carriage return character at the end of HTTP line");
                 }
+            } else if (next == -1) {
+                setMessageState(MessageState.END);
             } else {
                 getLineBuilder().append((char) next);
             }
