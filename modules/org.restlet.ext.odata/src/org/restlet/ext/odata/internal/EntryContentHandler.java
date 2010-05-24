@@ -359,7 +359,7 @@ public class EntryContentHandler<T> extends EntryReader {
         }
 
         // If the entity is a blob, get the edit reference
-        if (entityType.isBlob()
+        if (entityType != null && entityType.isBlob()
                 && entityType.getBlobValueEditRefProperty() != null) {
             // Look for en entry with a "edit-media" relation value.
             Link link = entry.getLink(Relation.EDIT_MEDIA);
@@ -499,7 +499,7 @@ public class EntryContentHandler<T> extends EntryReader {
     public void startContent(Content content) {
         if (State.ENTRY == getState()) {
             pushState(State.CONTENT);
-            if (entityType.isBlob()
+            if (entityType != null && entityType.isBlob()
                     && entityType.getBlobValueRefProperty() != null) {
                 Reference ref = content.getExternalRef();
                 if (ref != null) {
