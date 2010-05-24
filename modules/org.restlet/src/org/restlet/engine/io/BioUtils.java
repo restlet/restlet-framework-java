@@ -50,7 +50,6 @@ import org.restlet.data.CharacterSet;
 import org.restlet.engine.Edition;
 import org.restlet.representation.Representation;
 import org.restlet.representation.WriterRepresentation;
-import org.restlet.service.TaskService;
 
 /**
  * Basic IO manipulation utilities.
@@ -275,7 +274,7 @@ public final class BioUtils {
                     pipedWriter);
             final org.restlet.Application application = org.restlet.Application
                     .getCurrent();
-            TaskService taskService = (application == null) ? new TaskService()
+            org.restlet.service.TaskService taskService = (application == null) ? new org.restlet.service.TaskService()
                     : application.getTaskService();
 
             // Gets a thread that will handle the task of continuously
