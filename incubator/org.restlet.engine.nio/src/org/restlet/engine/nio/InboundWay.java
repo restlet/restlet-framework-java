@@ -101,6 +101,7 @@ public abstract class InboundWay extends Way {
                 };
 
                 result.setSize(contentLength);
+                setMessageState(MessageState.BODY);
             }
         } else {
             result = new EmptyRepresentation();
@@ -186,6 +187,10 @@ public abstract class InboundWay extends Way {
         }
 
         try {
+            if (!getByteBuffer().hasRemaining()) {
+                getByteBuffer().clear();
+            }
+
             while ((getIoState() == IoState.READING)
                     && (getMessageState() != MessageState.BODY)) {
                 if (isFilling()) {
