@@ -40,6 +40,7 @@ import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.engine.http.header.HeaderReader;
 import org.restlet.engine.http.header.HeaderUtils;
+import org.restlet.engine.http.io.ReadableEntityChannel;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.ReadableRepresentation;
@@ -162,7 +163,23 @@ public abstract class InboundWay extends Way {
      * @return The inbound message entity channel if it exists.
      */
     public ReadableByteChannel getEntityChannel(long size, boolean chunked) {
-        return getConnection().getSocketChannel();
+        ReadableByteChannel result = null;
+
+        if (getByteBuffer().hasRemaining()) {
+            if (chunked) {
+                getLogger()
+                        .warning(
+                                "Chunked encoding not supported (yet) in the NIO connector.");
+            } else {
+                // Wraps the remaining bytes into a special entity channel
+                result = new ReadableEntityChannel(getByteBuffer(),
+                        getConnection().getSocketChannel(), size);
+            }
+        } else {
+            result = getConnection().getSocketChannel();
+        }
+
+        return result;
     }
 
     @Override
