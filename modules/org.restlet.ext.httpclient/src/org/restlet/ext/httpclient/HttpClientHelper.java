@@ -244,6 +244,7 @@ public class HttpClientHelper extends org.restlet.engine.http.HttpClientHelper {
         schemeRegistry.register(new Scheme("http", PlainSocketFactory
                 .getSocketFactory(), 80));
 
+        // [ifndef android]
         SSLSocketFactory sslSocketFactory = null;
         SslContextFactory sslContextFactory = SslUtils
                 .getSslContextFactory(this);
@@ -260,6 +261,7 @@ public class HttpClientHelper extends org.restlet.engine.http.HttpClientHelper {
         }
 
         schemeRegistry.register(new Scheme("https", sslSocketFactory, 443));
+        // [enddef]
     }
 
     /**

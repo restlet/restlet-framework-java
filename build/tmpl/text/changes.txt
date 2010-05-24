@@ -49,6 +49,8 @@ Changes log
         Reported by Myriam Leggieri        
       - Fixed potential NPE in SpringBeanFinder#getContext() and
         Reported by Thierry Templier.
+      - Fixed HttpClient client connector for the Android extension.
+
     - Misc
       - Server connectors now display the port they are listening on
         in their start message.  
