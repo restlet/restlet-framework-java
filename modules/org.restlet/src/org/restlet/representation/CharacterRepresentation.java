@@ -39,7 +39,6 @@ import java.nio.channels.WritableByteChannel;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.engine.io.BioUtils;
-import org.restlet.engine.io.NioUtils;
 
 /**
  * Representation based on a BIO character stream.
@@ -47,35 +46,39 @@ import org.restlet.engine.io.NioUtils;
  * @author Jerome Louvel
  */
 public abstract class CharacterRepresentation extends Representation {
-	/**
-	 * Constructor.
-	 * 
-	 * @param mediaType
-	 *            The media type.
-	 */
-	public CharacterRepresentation(MediaType mediaType) {
-		super(mediaType);
-		setCharacterSet(CharacterSet.UTF_8);
-	}
+    /**
+     * Constructor.
+     * 
+     * @param mediaType
+     *            The media type.
+     */
+    public CharacterRepresentation(MediaType mediaType) {
+        super(mediaType);
+        setCharacterSet(CharacterSet.UTF_8);
+    }
 
-	@Override
-	public ReadableByteChannel getChannel() throws IOException {
-		return NioUtils.getChannel(getStream());
-	}
+    // [ifndef gwt] method
+    @Override
+    public ReadableByteChannel getChannel() throws IOException {
+        return org.restlet.engine.io.NioUtils.getChannel(getStream());
+    }
 
-	@Override
-	public InputStream getStream() throws IOException {
-		return BioUtils.getStream(getReader(), getCharacterSet());
-	}
+    // [ifndef gwt] method
+    @Override
+    public InputStream getStream() throws IOException {
+        return BioUtils.getStream(getReader(), getCharacterSet());
+    }
 
-	@Override
-	public void write(OutputStream outputStream) throws IOException {
-		BioUtils.copy(getStream(), outputStream);
-	}
+    // [ifndef gwt] method
+    @Override
+    public void write(OutputStream outputStream) throws IOException {
+        BioUtils.copy(getStream(), outputStream);
+    }
 
-	@Override
-	public void write(WritableByteChannel writableChannel) throws IOException {
-		write(NioUtils.getStream(writableChannel));
-	}
+    // [ifndef gwt] method
+    @Override
+    public void write(WritableByteChannel writableChannel) throws IOException {
+        write(org.restlet.engine.io.NioUtils.getStream(writableChannel));
+    }
 
 }

@@ -251,7 +251,7 @@ public class Engine {
         instance = engine;
     }
 
-    // [ifndef gwt]
+    // [ifndef gwt] member
     /** Class loader to use for dynamic class loading. */
     private volatile ClassLoader classLoader;
 

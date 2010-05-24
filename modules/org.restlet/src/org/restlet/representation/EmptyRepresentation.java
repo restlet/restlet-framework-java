@@ -68,6 +68,7 @@ public class EmptyRepresentation extends Representation {
         return null;
     }
     
+    // [ifndef gwt] method
     @Override
     public String getText() throws IOException {
         return null;

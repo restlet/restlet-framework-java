@@ -151,7 +151,6 @@
          <exclude name="src/org/restlet/engine/util/MapResolver.java" />
          <exclude name="src/org/restlet/representation/AppendableRepresentation.java" />
          <exclude name="src/org/restlet/representation/ChannelRepresentation.java" />
-         <exclude name="src/org/restlet/representation/CharacterRepresentation.java" />
          <exclude name="src/org/restlet/representation/DigesterRepresentation.java" />
          <exclude name="src/org/restlet/representation/DigestRepresentation.java" />
          <exclude name="src/org/restlet/representation/FileRepresentation.java" />
