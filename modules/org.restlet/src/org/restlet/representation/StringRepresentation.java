@@ -134,10 +134,14 @@ public class StringRepresentation extends CharacterRepresentation {
 
     @Override
     public InputStream getStream() throws IOException {
+        // [ifndef gwt]
         CharacterSet charset = getCharacterSet() == null ? CharacterSet.ISO_8859_1
                 : getCharacterSet();
         ByteArrayInputStream result = new ByteArrayInputStream(getText()
                 .getBytes(charset.getName()));
+        // [enddef]
+        // [ifdef gwt] instruction uncomment
+        // InputStream result = new java.io.StringBufferInputStream(getText());
         return result;
     }
 
