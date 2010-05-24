@@ -392,7 +392,7 @@ public class Engine {
                                     .getCurrentLogger()
                                     .log(
                                             Level.SEVERE,
-                                            "Exception while instantiation the client connector.",
+                                            "Exception during the instantiation of the client connector.",
                                             e);
                         }
                     }
