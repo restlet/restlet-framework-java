@@ -622,26 +622,25 @@ public final class Status {
     public static final Status SUCCESS_RESET_CONTENT = new Status(205);
 
     /**
-     * Check if the provided description of the status contains forbidden
-     * characters such as CR and LF. an IllegalArgumentException is thrown in
-     * this case.
+     * Check if the provided name of the status contains forbidden characters
+     * such as CR and LF. an IllegalArgumentException is thrown in this case.
      * 
      * @see <a
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec6.html#sec6.1.1">Status
      *      Code and Reason Phrase</a>
-     * @param description
-     *            the description to check
-     * @return the description if it is correct.
+     * @param name
+     *            The name to check
+     * @return The name if it is correct.
      */
-    private static String checkDescription(String description) {
-        if (description != null) {
-            if (description.contains("\n") && description.contains("\r")) {
+    private static String checkName(String name) {
+        if (name != null) {
+            if (name.contains("\n") || name.contains("\r")) {
                 throw new IllegalArgumentException(
-                        "Description of the status must not contain CR and LF characters.");
+                        "Name of the status must not contain CR or LF characters.");
             }
         }
 
-        return description;
+        return name;
     }
 
     /**
@@ -1003,8 +1002,8 @@ public final class Status {
      */
     public Status(int code, Throwable throwable, final String name,
             final String description, final String uri) {
-        this.name = name;
-        this.description = checkDescription(description);
+        this.name = checkName(name);
+        this.description = description;
         this.throwable = throwable;
         this.code = code;
         this.uri = uri;

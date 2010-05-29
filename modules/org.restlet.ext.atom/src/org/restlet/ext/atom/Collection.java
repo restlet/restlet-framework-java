@@ -152,7 +152,7 @@ public class Collection {
 
         throw new Exception(
                 "Couldn't get the feed representation. Status returned: "
-                        + response.getStatus().getDescription());
+                        + response.getStatus());
     }
 
     /**
@@ -202,7 +202,7 @@ public class Collection {
 
         throw new Exception(
                 "Couldn't post the member representation. Status returned: "
-                        + response.getStatus().getDescription());
+                        + response.getStatus());
     }
 
     /**

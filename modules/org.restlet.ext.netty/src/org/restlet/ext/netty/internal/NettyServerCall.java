@@ -294,7 +294,7 @@ public class NettyServerCall extends ServerCall {
         } else {
             final HttpResponseStatus status = new HttpResponseStatus(
                     restletResponse.getStatus().getCode(), restletResponse
-                            .getStatus().getDescription());
+                            .getStatus().getName());
             this.response = new DefaultHttpResponse(HttpVersion.HTTP_1_1,
                     status);
         }

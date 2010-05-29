@@ -730,8 +730,8 @@ public abstract class OutboundWay extends Way {
         getLineBuilder().append(getMessage().getStatus().getCode());
         getLineBuilder().append(' ');
 
-        if (getMessage().getStatus().getDescription() != null) {
-            getLineBuilder().append(getMessage().getStatus().getDescription());
+        if (getMessage().getStatus().getName() != null) {
+            getLineBuilder().append(getMessage().getStatus().getName());
         } else {
             getLineBuilder().append(
                     "Status " + getMessage().getStatus().getCode());

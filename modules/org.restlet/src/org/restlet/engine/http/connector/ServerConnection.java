@@ -382,9 +382,9 @@ public class ServerConnection extends Connection<Server> {
                 .getStatus().getCode())));
         headStream.write(' ');
 
-        if (response.getStatus().getDescription() != null) {
+        if (response.getStatus().getName() != null) {
             headStream.write(StringUtils.getLatin1Bytes(response.getStatus()
-                    .getDescription()));
+                    .getName()));
         } else {
             headStream.write(StringUtils.getAsciiBytes(("Status " + response
                     .getStatus().getCode())));

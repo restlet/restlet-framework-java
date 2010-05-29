@@ -146,7 +146,7 @@ public class StatusFilter extends Filter {
      * @return The continuation status.
      */
     @Override
-    public int doHandle(Request request, Response response) {
+    protected int doHandle(Request request, Response response) {
         // Normally handle the call
         try {
             super.doHandle(request, response);
@@ -180,7 +180,7 @@ public class StatusFilter extends Filter {
      *            The response updated.
      * @return The representation of the given status.
      */
-    public Representation getDefaultRepresentation(Status status,
+    protected Representation getDefaultRepresentation(Status status,
             Request request, Response response) {
         final StringBuilder sb = new StringBuilder();
         sb.append("<html>\n");
@@ -190,11 +190,7 @@ public class StatusFilter extends Filter {
         sb.append("<body style=\"font-family: sans-serif;\">\n");
 
         sb.append("<h3>");
-        if (status.getDescription() != null) {
-            sb.append(status.getDescription());
-        } else {
-            sb.append("No description available for this result status");
-        }
+        sb.append(getStatusInfo(status));
         sb.append("</h3>");
         sb.append("<p>You can get technical details <a href=\"");
         sb.append(status.getUri());
@@ -242,7 +238,7 @@ public class StatusFilter extends Filter {
      *            The response updated.
      * @return The representation of the given status.
      */
-    public Representation getRepresentation(Status status, Request request,
+    protected Representation getRepresentation(Status status, Request request,
             Response response) {
         Representation result = getStatusService().getRepresentation(status,
                 request, response);
@@ -268,9 +264,23 @@ public class StatusFilter extends Filter {
      *            The response updated.
      * @return The representation of the given status.
      */
-    public Status getStatus(Throwable throwable, Request request,
+    protected Status getStatus(Throwable throwable, Request request,
             Response response) {
         return getStatusService().getStatus(throwable, request, response);
+    }
+
+    /**
+     * Returns the status information to display in the default representation.
+     * By default it returns the status's name.
+     * 
+     * @param status
+     *            The status.
+     * @return The status information.
+     * @see #getDefaultRepresentation(Status, Request, Response)
+     */
+    protected String getStatusInfo(Status status) {
+        return (status.getName() != null) ? status.getName()
+                : "No information available for this result status";
     }
 
     /**

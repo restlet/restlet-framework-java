@@ -24,6 +24,9 @@ Changes log
       - Deprecated WedlResource. Use WadlServerResource instead.        
       - Added get/setRouter methods and deprecated getSpringBeanRouter
         in the SpringBeanFinder class. Reported by Thierry Templier.
+      - The status name is now returned to clients for display instead
+        of the description, in order to not expose internal information
+        by default for security reasons. Reported by Marc Knaup.
     - Bugs fixed
       - Fixed character encoding issues (XStream, Jackson, JAXB, etc.)
       - Adjusted Jackson configuration as it was automatically closing 

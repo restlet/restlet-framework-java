@@ -148,7 +148,7 @@ public class ResourceException extends RuntimeException {
      *            The wrapped cause error or exception.
      */
     public ResourceException(final Status status, final Throwable cause) {
-        super((status == null) ? null : status.getDescription(), cause);
+        super((status == null) ? null : status.getName(), cause);
         this.status = status;
     }
 
