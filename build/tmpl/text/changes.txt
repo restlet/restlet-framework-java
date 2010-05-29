@@ -57,6 +57,8 @@ Changes log
         Reported by Pierre-Yves Ricau.       
       - Fixed bug in DigesterRepresentation#getText() not working as
         expected. Reported by Bruno Harbulot.
+      - Fixed bug in OData extension when parsing complex properties.
+        Reported by Roger Heim.
     - Misc
       - Server connectors now display the port they are listening on
         in their start message.  

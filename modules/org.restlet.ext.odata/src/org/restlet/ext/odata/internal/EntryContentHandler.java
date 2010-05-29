@@ -260,16 +260,22 @@ public class EntryContentHandler<T> extends EntryReader {
                     }
                 }
                 Property property = metadata.getProperty(obj, localName);
-                try {
-                    ReflectUtils.setProperty(obj, property, sb.toString());
-                } catch (Exception e) {
-                    getLogger().warning(
-                            "Cannot set " + localName + " property on " + obj
-                                    + " with value " + sb.toString());
+                if (property != null) {
+                    try {
+                        ReflectUtils.setProperty(obj, property, sb.toString());
+                    } catch (Exception e) {
+                        getLogger().warning(
+                                "Cannot set " + localName + " property on "
+                                        + obj + " with value " + sb.toString());
+                    }
                 }
-                popState();
                 if (!propertyPath.isEmpty()) {
                     propertyPath.remove(propertyPath.size() - 1);
+                }
+                if (propertyPath.isEmpty()) {
+                    // There is only one state for parsing complex or simple
+                    // properties.
+                    popState();
                 }
             }
         } else if (State.PROPERTIES == getState()) {
@@ -287,7 +293,6 @@ public class EntryContentHandler<T> extends EntryReader {
                             "Cannot set the mapped property "
                                     + mapping.getPropertyPath() + " on "
                                     + entity + " with value " + sb.toString());
-
                 }
             }
             mapping = null;
@@ -599,6 +604,7 @@ public class EntryContentHandler<T> extends EntryReader {
                 propertyPath.add(localName);
             }
         } else if (State.PROPERTY == getState()) {
+            sb = new StringBuilder();
             propertyPath.add(localName);
         } else if (State.ENTRY == getState()) {
             if (localName.equalsIgnoreCase("link") && association != null) {
