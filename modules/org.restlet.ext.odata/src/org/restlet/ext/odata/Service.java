@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -49,6 +50,7 @@ import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
+import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Tag;
 import org.restlet.engine.http.header.HeaderConstants;
@@ -104,6 +106,9 @@ public class Service {
     /** WCF data services scheme namespace. */
     public final static String WCF_DATASERVICES_SCHEME_NAMESPACE = "http://schemas.microsoft.com/ado/2007/08/dataservices/scheme";
 
+    /** The client connector used in case the context does not deliver one. */
+    private Client clientConnector;
+
     /**
      * The version of the OData protocol extensions defined in every request
      * issued by this service.
@@ -148,7 +153,24 @@ public class Service {
      */
     public Service(Reference serviceRef) {
         try {
+            // Test the given service URI which may be actually redirected.
             ClientResource cr = new ClientResource(serviceRef);
+            if (cr.getNext() == null) {
+                // The context does not provide a client connector.
+                // Let instantiate our own.
+                Protocol rProtocol = cr.getProtocol();
+                Reference rReference = cr.getReference();
+                Protocol protocol = (rProtocol != null) ? rProtocol
+                        : (rReference != null) ? rReference.getSchemeProtocol()
+                                : null;
+
+                if (protocol != null) {
+                    this.clientConnector = new Client(protocol);
+                    // Set the next handler for reuse
+                    cr.setNext(this.clientConnector);
+                }
+            }
+
             cr.setFollowingRedirects(false);
             cr.get();
 
@@ -160,7 +182,6 @@ public class Service {
         } catch (Throwable e) {
             this.serviceRef = serviceRef;
         }
-
     }
 
     /**
@@ -259,6 +280,10 @@ public class Service {
      */
     public ClientResource createResource(Reference reference) {
         ClientResource resource = new ClientResource(reference);
+        if (clientConnector != null) {
+            // We provide our own cient connector.
+            resource.setNext(clientConnector);
+        }
         resource.setChallengeResponse(getCredentials());
 
         if (getClientVersion() != null || getMaxClientVersion() != null) {
@@ -288,7 +313,7 @@ public class Service {
      *         the service reference).
      */
     public ClientResource createResource(String relativePath) {
-        String ref = serviceRef.toString();
+        String ref = getServiceRef().toString();
         if (ref.endsWith("/")) {
             if (relativePath.startsWith("/")) {
                 ref = ref + relativePath.substring(1);
@@ -302,6 +327,7 @@ public class Service {
                 ref = ref + "/" + relativePath;
             }
         }
+
         return createResource(new Reference(ref));
     }
 
@@ -444,19 +470,19 @@ public class Service {
             try {
                 getLogger().log(
                         Level.INFO,
-                        "Get the metadata for " + serviceRef + " at "
+                        "Get the metadata for " + getServiceRef() + " at "
                                 + resource.getReference());
                 Representation rep = resource.get(MediaType.APPLICATION_XML);
                 this.metadata = new Metadata(rep, resource.getReference());
             } catch (ResourceException e) {
                 getLogger().log(
                         Level.SEVERE,
-                        "Can't get the metadata for " + serviceRef
+                        "Can't get the metadata for " + getServiceRef()
                                 + " (response's status: "
                                 + resource.getStatus() + ")");
             } catch (Exception e) {
                 getLogger().log(Level.SEVERE,
-                        "Can't get the metadata for " + serviceRef, e);
+                        "Can't get the metadata for " + getServiceRef(), e);
             } finally {
                 this.latestRequest = resource.getRequest();
                 this.latestResponse = resource.getResponse();
@@ -892,7 +918,7 @@ public class Service {
                         Level.WARNING,
                         "Can't set the property " + propertyName + " of "
                                 + entity.getClass() + " for the service"
-                                + serviceRef, e);
+                                + getServiceRef(), e);
             }
         } else {
             ClientResource resource = createResource(getSubpath(entity,
@@ -910,14 +936,14 @@ public class Service {
                             Level.WARNING,
                             "Can't set the property " + propertyName + " of "
                                     + entity.getClass() + " for the service"
-                                    + serviceRef, e);
+                                    + getServiceRef(), e);
                 }
             } catch (ResourceException e) {
                 getLogger().log(
                         Level.WARNING,
                         "Can't get the following resource "
                                 + resource.getReference() + " for the service"
-                                + serviceRef, e);
+                                + getServiceRef(), e);
             }
         }
     }
@@ -994,7 +1020,7 @@ public class Service {
                 StringBuilder sb = new StringBuilder("<uri xmlns=\"");
                 sb.append(WCF_DATASERVICES_NAMESPACE);
                 sb.append("\">");
-                sb.append(serviceRef.toString());
+                sb.append(getServiceRef().toString());
                 sb.append(metadata.getSubpath(target));
                 sb.append("</uri>");
 
