@@ -415,11 +415,11 @@ public class Connection<T extends Connector> implements Selectable {
     /**
      * Opens the connection. By default, set the IO state of the connection to
      * {@link ConnectionState#OPEN} and the IO state of the inbound way to
-     * {@link IoState#READ_INTEREST}.
+     * {@link IoState#INTEREST}.
      */
     public void open() {
         setState(ConnectionState.OPEN);
-        getInboundWay().setIoState(IoState.READ_INTEREST);
+        getInboundWay().setIoState(IoState.INTEREST);
     }
 
     /**

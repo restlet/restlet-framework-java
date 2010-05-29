@@ -186,7 +186,7 @@ public abstract class InboundWay extends Way {
     protected int getSocketInterestOps() {
         int result = 0;
 
-        if (getIoState() == IoState.READ_INTEREST) {
+        if (getIoState() == IoState.INTEREST) {
             result = SelectionKey.OP_READ;
         }
 
@@ -195,25 +195,21 @@ public abstract class InboundWay extends Way {
 
     @Override
     public void onSelected(SelectionKey key) {
-        if (getIoState() == IoState.READ_INTEREST) {
-            setIoState(IoState.READING);
-        } else if (getIoState() == IoState.CANCELING) {
-            setIoState(IoState.CANCELLED);
-        }
+        super.onSelected(key);
 
         try {
             if (!getByteBuffer().hasRemaining()) {
                 getByteBuffer().clear();
             }
 
-            while ((getIoState() == IoState.READING)
+            while ((getIoState() == IoState.PROCESSING)
                     && (getMessageState() != MessageState.BODY)) {
                 if (isFilling()) {
                     int result = readSocketBytes();
 
                     if (result == 0) {
                         // Socket channel exhausted
-                        setIoState(IoState.READ_INTEREST);
+                        setIoState(IoState.INTEREST);
                     } else if (result == -1) {
                         // End of channel reached
                         setIoState(IoState.CANCELING);
@@ -274,6 +270,7 @@ public abstract class InboundWay extends Way {
                                         // Add it to the helper queue
                                         getHelper().getInboundMessages().add(
                                                 getMessage());
+                                        setMessage(null);
                                     }
                                 }
                             }
@@ -326,7 +323,7 @@ public abstract class InboundWay extends Way {
                             "Missing carriage return character at the end of HTTP line");
                 }
             } else if (next == -1) {
-                setMessageState(MessageState.END);
+                setMessageState(MessageState.IDLE);
             } else {
                 getLineBuilder().append((char) next);
             }

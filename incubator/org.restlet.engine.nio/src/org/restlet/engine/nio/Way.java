@@ -80,7 +80,7 @@ public abstract class Way {
         this.byteBuffer = ByteBuffer.allocate(NioUtils.BUFFER_SIZE);
         this.lineBuilder = new StringBuilder();
         this.connection = connection;
-        this.messageState = MessageState.START_LINE;
+        this.messageState = MessageState.IDLE;
         this.ioState = IoState.IDLE;
         this.message = null;
         this.messages = new ConcurrentLinkedQueue<Response>();
@@ -180,7 +180,7 @@ public abstract class Way {
      * @return True if we are filling the byte buffer.
      */
     protected boolean isFilling() {
-        return (getMessageState() != MessageState.END)
+        return (getMessageState() != MessageState.IDLE)
                 && getByteBuffer().hasRemaining();
     }
 
@@ -201,7 +201,17 @@ public abstract class Way {
      * @param key
      *            The registered selection key.
      */
-    public abstract void onSelected(SelectionKey key);
+    public void onSelected(SelectionKey key) {
+        if (getIoState() == IoState.INTEREST) {
+            setIoState(IoState.PROCESSING);
+
+            if (getMessageState() == MessageState.IDLE) {
+                setMessageState(MessageState.START_LINE);
+            }
+        } else if (getIoState() == IoState.CANCELING) {
+            setIoState(IoState.CANCELLED);
+        }
+    }
 
     /**
      * Registers interest of this connection way for NIO operations with the
@@ -213,6 +223,13 @@ public abstract class Way {
      * @throws ClosedChannelException
      */
     public void registerInterest(Selector selector) {
+        // Update the IO state if necessary
+        if ((getIoState() == IoState.IDLE) && (getMessages().size() > 0)) {
+            if (getMessage() == null) {
+                setIoState(IoState.INTEREST);
+                setMessage(getMessages().peek());
+            }
+        }
     }
 
     /**

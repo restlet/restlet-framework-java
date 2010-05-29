@@ -61,11 +61,11 @@ public class ServerInboundWay extends InboundWay {
     @Override
     protected void onCompleted(Response message) {
         // Mark the inbound as free so new messages can be read if possible
-        setMessageState(MessageState.END);
+        setMessageState(MessageState.IDLE);
 
         if (getConnection().isPipelining()) {
             // Read the next request
-            setIoState(IoState.READ_INTEREST);
+            setIoState(IoState.INTEREST);
         } else {
             // Wait for the response to be sent
             setIoState(IoState.IDLE);

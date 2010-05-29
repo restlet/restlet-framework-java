@@ -255,7 +255,7 @@ public abstract class OutboundWay extends Way {
     public int getEntityInterestOps() {
         int result = 0;
 
-        if (getIoState() == IoState.READ_INTEREST) {
+        if (getIoState() == IoState.INTEREST) {
             result = SelectionKey.OP_READ;
         }
 
@@ -346,7 +346,7 @@ public abstract class OutboundWay extends Way {
     public int getSocketInterestOps() {
         int result = 0;
 
-        if (getIoState() == IoState.WRITE_INTEREST) {
+        if (getIoState() == IoState.INTEREST) {
             result = SelectionKey.OP_WRITE;
         }
 
@@ -355,26 +355,13 @@ public abstract class OutboundWay extends Way {
 
     @Override
     public void onSelected(SelectionKey key) {
-        if (getIoState() == IoState.WRITE_INTEREST) {
-            setIoState(IoState.WRITING);
-        } else if (getIoState() == IoState.READ_INTEREST) {
-            setIoState(IoState.READING);
-        } else if (getIoState() == IoState.CANCELING) {
-            setIoState(IoState.CANCELLED);
-
-            // Try to close the connection immediately.
-            // if ((getConnection().getState() ==
-            // ConnectionState.CLOSING)
-            // && (getIoState() == IoState.IDLE)) {
-            // getConnection().close(true);
-            // }
-        }
+        super.onSelected(key);
 
         try {
             Response message = getMessage();
 
             if (message != null) {
-                while (getIoState() == IoState.WRITING) {
+                while (getIoState() == IoState.PROCESSING) {
                     if (isFilling()) {
                         // Before writing the byte buffer, we need to try
                         // to fill it as much as possible
@@ -427,12 +414,11 @@ public abstract class OutboundWay extends Way {
                                         // Detect end of entity reached
                                         if ((result == -1)
                                                 || ((entitySize != -1) && (getEntityIndex() >= entitySize))) {
-                                            setMessageState(MessageState.END);
+                                            setMessageState(MessageState.IDLE);
                                         }
                                     } else {
                                         // Blocking read, need to launch a new
-                                        // thread
-                                        // ...
+                                        // thread...
                                     }
                                 } else {
                                     System.out
@@ -490,12 +476,12 @@ public abstract class OutboundWay extends Way {
                             // byte buffer in the filling state again and
                             // wait for a new NIO selection.
                             getByteBuffer().flip();
-                            setIoState(IoState.WRITE_INTEREST);
+                            setIoState(IoState.INTEREST);
                         } else if (getByteBuffer().hasRemaining()) {
                             // All the buffer couldn't be written. Compact the
                             // remaining bytes so that filling can happen again.
                             getByteBuffer().compact();
-                        } else if (getMessageState() == MessageState.END) {
+                        } else if (getMessageState() == MessageState.IDLE) {
                             // Message fully sent, ready for a new one
                             onCompleted(getMessage());
                         } else {
@@ -515,15 +501,7 @@ public abstract class OutboundWay extends Way {
 
     @Override
     public void registerInterest(Selector selector) {
-        // Update the IO state if necessary
-        if ((getIoState() == IoState.IDLE) && (getMessages().size() > 0)) {
-            if (getMessage() == null) {
-                setIoState(IoState.WRITE_INTEREST);
-                setMessage(getMessages().peek());
-                setMessageState(MessageState.START_LINE);
-                setHeaderIndex(0);
-            }
-        }
+        super.registerInterest(selector);
 
         // If the entity is available as a non-blocking selectable channel,
         // register it as well

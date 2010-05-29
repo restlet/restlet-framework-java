@@ -41,19 +41,13 @@ public enum IoState {
     /** No activity going on. */
     IDLE,
 
-    /** Read interest reported. */
-    READ_INTEREST,
+    /** IO interest reported. */
+    INTEREST,
 
-    /** Read activity going on. */
-    READING,
+    /** IO activity going on. */
+    PROCESSING,
 
-    /** Write interest reported. */
-    WRITE_INTEREST,
-
-    /** Write activity going on. */
-    WRITING,
-
-    /** Canceling activity going on. */
+    /** IO canceling going on. */
     CANCELING,
 
     /** No more activity expected. */
