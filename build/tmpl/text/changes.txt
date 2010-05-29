@@ -52,7 +52,8 @@ Changes log
       - Fixed HttpClient client connector for the Android extension.
       - Fixed conversion bug with annotated methods returning void.
         Reported by Pierre-Yves Ricau.       
-
+      - Fixed bug in DigesterRepresentation#getText() not working as
+        expected. Reported by Bruno Harbulot.
     - Misc
       - Server connectors now display the port they are listening on
         in their start message.  

@@ -178,6 +178,23 @@ public abstract class DigestRepresentation extends WrapperRepresentation {
                 this.computedDigest);
     }
 
+    @Override
+    public String getText() throws IOException {
+        String result = null;
+
+        if (isAvailable()) {
+            if (getSize() == 0) {
+                result = "";
+            } else {
+                java.io.StringWriter sw = new java.io.StringWriter();
+                write(sw);
+                result = sw.toString();
+            }
+        }
+
+        return result;
+    }
+
     /**
      * {@inheritDoc}<br>
      * 
