@@ -1643,7 +1643,8 @@ public class ClientResource extends UniformResource {
                                         .getStatus());
                             }
 
-                            if (annotation.getJavaOutputType() != null) {
+                            if (!annotation.getJavaOutputType().equals(
+                                    void.class)) {
                                 result = toObject((response == null ? null
                                         : response.getEntity()), annotation
                                         .getJavaOutputType());
