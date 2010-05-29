@@ -32,11 +32,9 @@ package org.restlet.engine.nio;
 
 import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
-import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.Response;
@@ -72,12 +70,6 @@ public abstract class Way {
     private volatile MessageState messageState;
 
     /**
-     * The socket's NIO selection key holding the link between the channel and
-     * the way.
-     */
-    private volatile SelectionKey socketKey;
-
-    /**
      * Constructor.
      * 
      * @param connection
@@ -91,7 +83,6 @@ public abstract class Way {
         this.ioState = IoState.IDLE;
         this.message = null;
         this.messages = new ConcurrentLinkedQueue<Response>();
-        this.socketKey = null;
     }
 
     /**
@@ -183,17 +174,6 @@ public abstract class Way {
     protected abstract int getSocketInterestOps();
 
     /**
-     * Returns the socket's NIO selection key holding the link between the
-     * channel and the way.
-     * 
-     * @return The socket's NIO selection key holding the link between the
-     *         channel and the way.
-     */
-    protected SelectionKey getSocketKey() {
-        return socketKey;
-    }
-
-    /**
      * Indicates if we are filling the byte buffer.
      * 
      * @return True if we are filling the byte buffer.
@@ -215,42 +195,23 @@ public abstract class Way {
     /**
      * Callback method invoked when the way has been selected for IO operations
      * it registered interest in. By default it call
-     * {@link Connection#onActivity()}.
+     * {@link Connection#onSelected()}.
      * 
      * @param key
      *            The registered selection key.
      */
-    public void onSelected() {
-        getConnection().onActivity();
-    }
+    public abstract void onSelected();
 
     /**
      * Registers interest of this connection way for NIO operations with the
-     * given selector. If called several times, it just update the selection
-     * keys with the new interest operations.
+     * given selector. If called several times, it just updates the selection
+     * keys with the new interest operations. By default, it does nothing.
      * 
      * @param selector
      *            The selector to register with.
      * @throws ClosedChannelException
      */
     public void registerInterest(Selector selector) {
-        int socketInterestOps = getSocketInterestOps();
-
-        if ((getSocketKey() == null) && (socketInterestOps > 0)) {
-            try {
-                setSocketKey(getConnection().getSocketChannel().register(
-                        selector, socketInterestOps, this));
-            } catch (ClosedChannelException cce) {
-                getLogger()
-                        .log(
-                                Level.WARNING,
-                                "Unable to register NIO interest operations for this connection",
-                                cce);
-                getConnection().onError();
-            }
-        } else if (getSocketKey() != null) {
-            getSocketKey().interestOps(socketInterestOps);
-        }
     }
 
     /**
@@ -281,18 +242,6 @@ public abstract class Way {
      */
     protected void setMessageState(MessageState messageState) {
         this.messageState = messageState;
-    }
-
-    /**
-     * Sets the socket's NIO selection key holding the link between the channel
-     * and the way.
-     * 
-     * @param socketKey
-     *            The socket's NIO selection key holding the link between the
-     *            channel and the way.
-     */
-    protected void setSocketKey(SelectionKey socketKey) {
-        this.socketKey = socketKey;
     }
 
     @Override

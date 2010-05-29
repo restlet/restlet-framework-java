@@ -195,8 +195,6 @@ public abstract class InboundWay extends Way {
 
     @Override
     public void onSelected() {
-        super.onSelected();
-
         if (getIoState() == IoState.READ_INTEREST) {
             setIoState(IoState.READING);
         } else if (getIoState() == IoState.CANCELING) {

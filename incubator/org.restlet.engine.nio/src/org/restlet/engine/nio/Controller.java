@@ -115,7 +115,7 @@ public class Controller implements Runnable {
 
                 // Notify the selected way
                 if (key.attachment() != null) {
-                    ((Way) key.attachment()).onSelected();
+                    ((Selectable) key.attachment()).onSelected(key);
                 }
 
                 // Remove the processed key from the set
@@ -136,6 +136,8 @@ public class Controller implements Runnable {
             if (response != null) {
                 execute(new Runnable() {
                     public void run() {
+                        getHelper().getLogger().info(
+                                "Handling new inbound message");
                         getHelper().handleInbound(response);
                     }
 
@@ -155,6 +157,8 @@ public class Controller implements Runnable {
             if (response != null) {
                 execute(new Runnable() {
                     public void run() {
+                        getHelper().getLogger().info(
+                                "Handling new outbound message");
                         getHelper().handleOutbound(response);
                     }
 

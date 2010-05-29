@@ -32,6 +32,8 @@ package org.restlet.engine.nio;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.nio.channels.ClosedChannelException;
+import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.security.cert.Certificate;
@@ -46,7 +48,6 @@ import javax.net.ssl.SSLSocket;
 
 import org.restlet.Connector;
 import org.restlet.Response;
-import org.restlet.engine.http.io.Notifiable;
 import org.restlet.engine.security.SslUtils;
 
 /**
@@ -57,7 +58,7 @@ import org.restlet.engine.security.SslUtils;
  *            The parent connector type.
  * @author Jerome Louvel
  */
-public class Connection<T extends Connector> implements Notifiable {
+public class Connection<T extends Connector> implements Selectable {
 
     /** The parent connector helper. */
     private final BaseHelper<T> helper;
@@ -79,6 +80,12 @@ public class Connection<T extends Connector> implements Notifiable {
 
     /** The underlying socket channel. */
     private final SocketChannel socketChannel;
+
+    /**
+     * The socket's NIO selection key holding the link between the channel and
+     * the way.
+     */
+    private volatile SelectionKey socketKey;
 
     /** The state of the connection. */
     private volatile ConnectionState state;
@@ -102,6 +109,7 @@ public class Connection<T extends Connector> implements Notifiable {
         this.state = ConnectionState.OPENING;
         this.socketChannel = socketChannel;
         this.lastActivity = System.currentTimeMillis();
+        this.socketKey = null;
     }
 
     /**
@@ -233,6 +241,27 @@ public class Connection<T extends Connector> implements Notifiable {
     }
 
     /**
+     * Registers interest of this way for socket NIO operations.
+     * 
+     * @return The operations of interest.
+     */
+    protected int getSocketInterestOps() {
+        return getInboundWay().getSocketInterestOps()
+                | getOutboundWay().getSocketInterestOps();
+    }
+
+    /**
+     * Returns the socket's NIO selection key holding the link between the
+     * channel and the way.
+     * 
+     * @return The socket's NIO selection key holding the link between the
+     *         channel and the way.
+     */
+    protected SelectionKey getSocketKey() {
+        return socketKey;
+    }
+
+    /**
      * Returns the SSL cipher suite.
      * 
      * @return The SSL cipher suite.
@@ -357,14 +386,6 @@ public class Connection<T extends Connector> implements Notifiable {
     }
 
     /**
-     * Callback method when an IO activity occurs. It updates the timestamp that
-     * allows the detection of expired connections.
-     */
-    protected void onActivity() {
-        this.lastActivity = System.currentTimeMillis();
-    }
-
-    /**
      * Set the inbound busy state to false.
      */
     public void onEndReached() {
@@ -380,6 +401,19 @@ public class Connection<T extends Connector> implements Notifiable {
     }
 
     /**
+     * Callback method invoked when the connection has been selected for IO
+     * operations it registered interest in. By default it updates the timestamp
+     * that allows the detection of expired connections and calls
+     * {@link Way#onSelected()} on the inbound or outbound way.
+     * 
+     * @param key
+     *            The registered selection key.
+     */
+    public void onSelected(SelectionKey key) {
+        this.lastActivity = System.currentTimeMillis();
+    }
+
+    /**
      * Opens the connection. By default, set the IO state of the connection to
      * {@link ConnectionState#OPEN} and the IO state of the inbound way to
      * {@link IoState#READ_INTEREST}.
@@ -390,10 +424,34 @@ public class Connection<T extends Connector> implements Notifiable {
     }
 
     /**
+     * Registers interest of this connection for NIO operations with the given
+     * selector. If called several times, it just update the selection keys with
+     * the new interest operations.
      * 
      * @param selector
+     *            The selector to register with.
+     * @throws ClosedChannelException
      */
     public void registerInterest(Selector selector) {
+        int socketInterestOps = getSocketInterestOps();
+
+        if ((getSocketKey() == null) && (socketInterestOps > 0)) {
+            try {
+                setSocketKey(getSocketChannel().register(selector,
+                        socketInterestOps, this));
+            } catch (ClosedChannelException cce) {
+                getLogger()
+                        .log(
+                                Level.WARNING,
+                                "Unable to register NIO interest operations for this connection",
+                                cce);
+                onError();
+            }
+        } else if (getSocketKey() != null) {
+            getSocketKey().interestOps(socketInterestOps);
+        }
+
+        // Give a chance to ways for addition registrations
         getInboundWay().registerInterest(selector);
         getOutboundWay().registerInterest(selector);
     }
@@ -416,6 +474,18 @@ public class Connection<T extends Connector> implements Notifiable {
      */
     public void setPipelining(boolean pipelining) {
         this.pipelining = pipelining;
+    }
+
+    /**
+     * Sets the socket's NIO selection key holding the link between the channel
+     * and the way.
+     * 
+     * @param socketKey
+     *            The socket's NIO selection key holding the link between the
+     *            channel and the way.
+     */
+    protected void setSocketKey(SelectionKey socketKey) {
+        this.socketKey = socketKey;
     }
 
     /**

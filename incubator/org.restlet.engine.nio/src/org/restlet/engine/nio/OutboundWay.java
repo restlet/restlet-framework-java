@@ -355,8 +355,6 @@ public abstract class OutboundWay extends Way {
 
     @Override
     public void onSelected() {
-        super.onSelected();
-
         if (getIoState() == IoState.WRITE_INTEREST) {
             setIoState(IoState.WRITING);
         } else if (getIoState() == IoState.READ_INTEREST) {
@@ -524,12 +522,8 @@ public abstract class OutboundWay extends Way {
                 setMessage(getMessages().peek());
                 setMessageState(MessageState.START_LINE);
                 setHeaderIndex(0);
-                setSocketKey(null);
             }
         }
-
-        // Register socket interest
-        super.registerInterest(selector);
 
         // If the entity is available as a non-blocking selectable channel,
         // register it as well
@@ -541,7 +535,13 @@ public abstract class OutboundWay extends Way {
             if ((getEntityKey() == null) && (entityInterestOps > 0)) {
                 try {
                     setEntityKey(entitySelectableChannel.register(selector,
-                            entityInterestOps, this));
+                            entityInterestOps, new Selectable() {
+
+                                public void onSelected(SelectionKey key) {
+                                    // TODO
+                                }
+
+                            }));
                 } catch (ClosedChannelException cce) {
                     getLogger()
                             .log(
