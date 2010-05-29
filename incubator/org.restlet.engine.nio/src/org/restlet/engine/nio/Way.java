@@ -32,6 +32,7 @@ package org.restlet.engine.nio;
 
 import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
+import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -200,7 +201,7 @@ public abstract class Way {
      * @param key
      *            The registered selection key.
      */
-    public abstract void onSelected();
+    public abstract void onSelected(SelectionKey key);
 
     /**
      * Registers interest of this connection way for NIO operations with the

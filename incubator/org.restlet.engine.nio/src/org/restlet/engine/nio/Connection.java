@@ -386,13 +386,6 @@ public class Connection<T extends Connector> implements Selectable {
     }
 
     /**
-     * Set the inbound busy state to false.
-     */
-    public void onEndReached() {
-        // setInboundBusy(false);
-    }
-
-    /**
      * Called on error. By default, it calls {@link #close(boolean)} with a
      * 'false' parameter.
      */
@@ -411,6 +404,12 @@ public class Connection<T extends Connector> implements Selectable {
      */
     public void onSelected(SelectionKey key) {
         this.lastActivity = System.currentTimeMillis();
+
+        if (key.isReadable()) {
+            getInboundWay().onSelected(key);
+        } else if (key.isWritable()) {
+            getOutboundWay().onSelected(key);
+        }
     }
 
     /**
@@ -435,20 +434,33 @@ public class Connection<T extends Connector> implements Selectable {
     public void registerInterest(Selector selector) {
         int socketInterestOps = getSocketInterestOps();
 
-        if ((getSocketKey() == null) && (socketInterestOps > 0)) {
-            try {
-                setSocketKey(getSocketChannel().register(selector,
-                        socketInterestOps, this));
-            } catch (ClosedChannelException cce) {
-                getLogger()
-                        .log(
-                                Level.WARNING,
-                                "Unable to register NIO interest operations for this connection",
-                                cce);
-                onError();
+        if (socketInterestOps > 0) {
+            // IO interest declared
+            if (getSocketKey() == null) {
+                // Create a new selection key
+                try {
+                    setSocketKey(getSocketChannel().register(selector,
+                            socketInterestOps, this));
+                } catch (ClosedChannelException cce) {
+                    getLogger()
+                            .log(
+                                    Level.WARNING,
+                                    "Unable to register NIO interest operations for this connection",
+                                    cce);
+                    onError();
+                }
+            } else {
+                // Update the existing selection key
+                getSocketKey().interestOps(socketInterestOps);
             }
-        } else if (getSocketKey() != null) {
-            getSocketKey().interestOps(socketInterestOps);
+        } else {
+            // No IO interest declared
+            if (getSocketKey() != null) {
+                // Free the existing selection key
+                getSocketKey().cancel();
+                getSocketKey().attach(null);
+                setSocketKey(null);
+            }
         }
 
         // Give a chance to ways for addition registrations

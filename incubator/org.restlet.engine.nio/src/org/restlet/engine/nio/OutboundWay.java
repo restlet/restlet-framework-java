@@ -354,7 +354,7 @@ public abstract class OutboundWay extends Way {
     }
 
     @Override
-    public void onSelected() {
+    public void onSelected(SelectionKey key) {
         if (getIoState() == IoState.WRITE_INTEREST) {
             setIoState(IoState.WRITING);
         } else if (getIoState() == IoState.READ_INTEREST) {

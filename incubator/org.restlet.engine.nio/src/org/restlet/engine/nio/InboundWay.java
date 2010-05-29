@@ -194,7 +194,7 @@ public abstract class InboundWay extends Way {
     }
 
     @Override
-    public void onSelected() {
+    public void onSelected(SelectionKey key) {
         if (getIoState() == IoState.READ_INTEREST) {
             setIoState(IoState.READING);
         } else if (getIoState() == IoState.CANCELING) {
