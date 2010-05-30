@@ -53,11 +53,11 @@ import org.restlet.representation.Representation;
  * @author Jerome Louvel
  */
 public class NioUtils {
-    /** The number of milliseconds after which NIO operation will time out. */
-    public static final int NIO_TIMEOUT = 60000;
-
     /** The buffer size. */
     public static final int BUFFER_SIZE = 8192;
+
+    /** The number of milliseconds after which NIO operation will time out. */
+    public static final int NIO_TIMEOUT = 60000;
 
     /**
      * Writes the representation to a byte channel. Optimizes using the file
