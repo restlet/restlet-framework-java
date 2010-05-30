@@ -49,6 +49,7 @@ import org.restlet.Connector;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.engine.ConnectorHelper;
+import org.restlet.engine.io.NioUtils;
 import org.restlet.engine.log.LoggingThreadFactory;
 
 /**
@@ -75,6 +76,12 @@ import org.restlet.engine.log.LoggingThreadFactory;
  * <td>Time for the controller thread to sleep between each control.</td>
  * </tr>
  * <tr>
+ * <td>inboundBufferSize</td>
+ * <td>int</td>
+ * <td>{@link NioUtils#BUFFER_SIZE}</td>
+ * <td>The size of the buffer when reading messages.</td>
+ * </tr>
+ * <tr>
  * <td>minThreads</td>
  * <td>int</td>
  * <td>1</td>
@@ -97,6 +104,12 @@ import org.restlet.engine.log.LoggingThreadFactory;
  * <td>int</td>
  * <td>-1</td>
  * <td>Maximum number of concurrent connections in total.</td>
+ * </tr>
+ * <tr>
+ * <td>outboundBufferSize</td>
+ * <td>int</td>
+ * <td>{@link NioUtils#BUFFER_SIZE}</td>
+ * <td>The size of the buffer when writing messages.</td>
  * </tr>
  * <tr>
  * <td>persistingConnections</td>
@@ -271,6 +284,7 @@ public abstract class BaseHelper<T extends Connector> extends
 
     /**
      * Returns the controller task.
+     * 
      * @return The controller task.
      */
     public Controller getController() {
@@ -285,6 +299,16 @@ public abstract class BaseHelper<T extends Connector> extends
     public int getControllerSleepTimeMs() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
                 "controllerSleepTimeMs", "100"));
+    }
+
+    /**
+     * Returns the size of the buffer when reading messages..
+     * 
+     * @return The size of the buffer when reading messages..
+     */
+    public int getInboundBufferSize() {
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "inboundBufferSize", Integer.toString(NioUtils.BUFFER_SIZE)));
     }
 
     /**
@@ -336,6 +360,16 @@ public abstract class BaseHelper<T extends Connector> extends
     public int getMinThreads() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
                 "minThreads", "1"));
+    }
+
+    /**
+     * Returns the size of the buffer when writing messages..
+     * 
+     * @return The size of the buffer when writing messages..
+     */
+    public int getOutboundBufferSize() {
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "outboundBufferSize", Integer.toString(NioUtils.BUFFER_SIZE)));
     }
 
     /**

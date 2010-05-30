@@ -61,6 +61,9 @@ Changes log
         Reported by Roger Heim.
       - Fixed Generator class in OData extension when the service URI 
         is actually to be redirected.
+      - Fixed instantiation of BufferedInputStream and 
+        BufferedOutputStream using the constructor with size. 
+        Reported by Matthew Drooker.
 
     - Misc
       - Server connectors now display the port they are listening on

@@ -34,6 +34,8 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.restlet.engine.io.NioUtils;
+
 // [excludes gwt]
 /**
  * Buffered output stream that prevents the underlying stream from being closed.
@@ -49,7 +51,19 @@ public class OutboundStream extends BufferedOutputStream {
      *            The decorated source stream.
      */
     public OutboundStream(OutputStream source) {
-        super(source);
+        super(source, NioUtils.BUFFER_SIZE);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param source
+     *            The decorated source stream.
+     * @param size
+     *            the buffer size.
+     */
+    public OutboundStream(OutputStream source, int size) {
+        super(source, size);
     }
 
     @Override

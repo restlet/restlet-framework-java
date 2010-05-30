@@ -34,6 +34,8 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.restlet.engine.io.NioUtils;
+
 // [excludes gwt]
 /**
  * Buffered input stream that prevent the underlying stream from being closed.
@@ -49,7 +51,19 @@ public class InboundStream extends BufferedInputStream {
      *            The source input stream.
      */
     public InboundStream(InputStream source) {
-        super(source);
+        super(source, NioUtils.BUFFER_SIZE);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param source
+     *            The source input stream.
+     * @param size
+     *            the buffer size.
+     */
+    public InboundStream(InputStream source, int size) {
+        super(source, size);
     }
 
     @Override

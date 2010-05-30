@@ -56,6 +56,19 @@ public class BufferedReader extends Reader {
     }
 
     /**
+     * Constructor.
+     * 
+     * @param source
+     *            The source reader.
+     * @param size
+     *            The size of the buffer.
+     */
+    public BufferedReader(Reader source, int size) {
+        this.source = source;
+        this.savedNextChar = -2;
+    }
+    
+    /**
      * 
      */
     public void close() throws IOException {

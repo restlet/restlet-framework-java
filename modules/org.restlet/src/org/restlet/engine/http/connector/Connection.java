@@ -143,14 +143,17 @@ public abstract class Connection<T extends Connector> implements Notifiable {
         this.outboundBusy = false;
 
         if (getHelper().isTracing()) {
-            this.inboundStream = new TraceInputStream(new InboundStream(
-                    getSocket().getInputStream()));
+            this.inboundStream = new TraceInputStream(
+                    new InboundStream(getSocket().getInputStream(), helper
+                            .getInboundBufferSize()));
             this.outboundStream = new TraceOutputStream(new OutboundStream(
-                    getSocket().getOutputStream()));
+                    getSocket().getOutputStream(), helper
+                            .getOutboundBufferSize()));
         } else {
-            this.inboundStream = new InboundStream(getSocket().getInputStream());
+            this.inboundStream = new InboundStream(
+                    getSocket().getInputStream(), helper.getInboundBufferSize());
             this.outboundStream = new OutboundStream(getSocket()
-                    .getOutputStream());
+                    .getOutputStream(), helper.getOutboundBufferSize());
         }
     }
 
