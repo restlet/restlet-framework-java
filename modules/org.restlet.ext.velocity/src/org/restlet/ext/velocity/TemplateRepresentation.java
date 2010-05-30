@@ -383,10 +383,10 @@ public class TemplateRepresentation extends WriterRepresentation {
     }
 
     /**
-     * Writes the datum as a stream of bytes.
+     * Writes the datum as a stream of characters.
      * 
-     * @param outputStream
-     *            The stream to use when writing.
+     * @param writer
+     *            The writer to use when writing.
      */
     @Override
     public void write(Writer writer) throws IOException {
