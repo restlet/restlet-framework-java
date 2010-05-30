@@ -92,11 +92,11 @@ public class ServerController extends Controller {
     }
 
     @Override
-    protected void controlConnections(boolean overloaded) throws IOException {
-        // Select keys with ready operations
-        super.controlConnections(overloaded);
-
-        if (!overloaded) {
+    protected void onSelected(SelectionKey key)
+            throws ClosedByInterruptException {
+        if (key != this.acceptKey) {
+            super.onSelected(key);
+        } else if (!isOverloaded()) {
             // Attempt to accept new connections
             try {
                 if (this.acceptKey.isAcceptable()) {
@@ -116,7 +116,8 @@ public class ServerController extends Controller {
                                             socketChannel);
                             connection.open();
                             getHelper().getConnections().add(connection);
-                            getHelper().getLogger().info(
+                            getHelper().getLogger().log(
+                                    BaseHelper.DEFAULT_LEVEL,
                                     "New connection accepted. Total : "
                                             + getHelper().getConnections()
                                                     .size());

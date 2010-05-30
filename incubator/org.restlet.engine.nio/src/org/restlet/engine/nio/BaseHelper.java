@@ -134,6 +134,8 @@ import org.restlet.engine.log.LoggingThreadFactory;
 public abstract class BaseHelper<T extends Connector> extends
         ConnectorHelper<T> {
 
+    public static Level DEFAULT_LEVEL = Level.FINE;
+
     /** Indicates if it is helping a client connector. */
     private final boolean clientSide;
 

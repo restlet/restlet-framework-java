@@ -31,6 +31,7 @@
 package org.restlet.engine.nio;
 
 import java.io.IOException;
+import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.util.Iterator;
@@ -85,7 +86,8 @@ public class Controller implements Runnable {
      *            Indicates if the controller is overloaded.
      * @throws IOException
      */
-    protected void controlConnections(boolean overloaded) throws IOException {
+    protected void controlConnections(boolean overloaded, long sleepTime)
+            throws IOException {
         // Close connections or register interest in NIO operations
         for (final Connection<?> conn : getHelper().getConnections()) {
             if (conn.getState() == ConnectionState.CLOSED) {
@@ -95,7 +97,8 @@ public class Controller implements Runnable {
                 conn.close(false);
             } else if (conn.hasTimedOut()) {
                 conn.close(false);
-                getHelper().getLogger().info(
+                getHelper().getLogger().log(
+                        BaseHelper.DEFAULT_LEVEL,
                         "Closing connection with no IO activity during "
                                 + getHelper().getMaxIoIdleTimeMs() + " ms.");
             } else {
@@ -104,18 +107,11 @@ public class Controller implements Runnable {
         }
 
         // Select the connections ready for NIO operations
-        if (getSelector().selectNow() > 0) {
-            SelectionKey key;
-
+        if (getSelector().select(sleepTime) > 0) {
             for (Iterator<SelectionKey> selectedKeys = getSelector()
                     .selectedKeys().iterator(); selectedKeys.hasNext();) {
                 // Retrieve the next selected key
-                key = selectedKeys.next();
-
-                // Notify the selected way
-                if (key.attachment() != null) {
-                    ((Selectable) key.attachment()).onSelected(key);
-                }
+                onSelected(selectedKeys.next());
 
                 // Remove the processed key from the set
                 selectedKeys.remove();
@@ -124,9 +120,34 @@ public class Controller implements Runnable {
     }
 
     /**
-     * Control the helper for inbound or outbound messages to handle.
+     * Callback when a key has been selected.
+     * 
+     * @param key
+     *            The selected key.
      */
-    protected void controlHelper() {
+    protected void onSelected(SelectionKey key)
+            throws ClosedByInterruptException {
+        // Notify the selected way
+        if (key.attachment() != null) {
+            ((Selectable) key.attachment()).onSelected(key);
+        }
+    }
+
+    /**
+     * Wakes up the controller. By default it wakesup the selector.
+     */
+    public void wakeup() {
+        getSelector().wakeup();
+    }
+
+    /**
+     * Control the helper for inbound or outbound messages to handle.
+     * 
+     * @return Indicates if some concrete activity occurred.
+     */
+    protected boolean controlHelper() {
+        boolean result = false;
+
         // Control if there are some pending requests that could
         // be processed
         for (int i = 0; i < getHelper().getInboundMessages().size(); i++) {
@@ -164,6 +185,8 @@ public class Controller implements Runnable {
                 });
             }
         }
+
+        return result;
     }
 
     /**
@@ -248,6 +271,7 @@ public class Controller implements Runnable {
      */
     public void run() {
         setRunning(true);
+        long sleepTime = getHelper().getControllerSleepTimeMs();
 
         while (isRunning()) {
             try {
@@ -271,11 +295,8 @@ public class Controller implements Runnable {
 
                 }
 
-                controlConnections(isOverloaded());
+                controlConnections(isOverloaded(), sleepTime);
                 controlHelper();
-
-                // Sleep a bit
-                Thread.sleep(getHelper().getControllerSleepTimeMs());
             } catch (Exception ex) {
                 this.helper.getLogger().log(Level.INFO,
                         "Unexpected error while controlling connector", ex);

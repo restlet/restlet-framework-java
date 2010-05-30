@@ -196,7 +196,7 @@ public abstract class InboundWay extends Way {
     @Override
     protected void onCompleted(Response message) {
         super.onCompleted(message);
-        getLogger().info("Inbound message received");
+        getLogger().log(BaseHelper.DEFAULT_LEVEL, "Inbound message received");
     }
 
     @Override
@@ -272,6 +272,7 @@ public abstract class InboundWay extends Way {
                                         // Add it to the helper queue
                                         getHelper().getInboundMessages().add(
                                                 getMessage());
+                                        getHelper().getController().wakeup();
                                     }
 
                                     if ((request.getEntity() == null)

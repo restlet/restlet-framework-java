@@ -175,7 +175,8 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
     @Override
     public void handleInbound(Response response) {
         if ((response != null) && (response.getRequest() != null)) {
-            getLogger().info("Handling inbound message");
+            getLogger().log(BaseHelper.DEFAULT_LEVEL,
+                    "Handling inbound message");
             ConnectedRequest request = (ConnectedRequest) response.getRequest();
 
             // Effectively handle the request
@@ -184,6 +185,7 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
             if (!response.isCommitted() && response.isAutoCommitting()) {
                 getOutboundMessages().add(response);
                 response.setCommitted(true);
+                getController().wakeup();
             }
         }
 
@@ -193,7 +195,8 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
     @Override
     public void handleOutbound(Response response) {
         if (response != null) {
-            getLogger().info("Handling outbound message");
+            getLogger().log(BaseHelper.DEFAULT_LEVEL,
+                    "Handling outbound message");
             ConnectedRequest request = (ConnectedRequest) response.getRequest();
             Connection<Server> connection = request.getConnection();
 
@@ -210,6 +213,7 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
                 } else {
                     // Put the response at the end of the queue
                     getOutboundMessages().add(response);
+                    getController().wakeup();
                 }
             } else {
                 // The request expects no response, the connection is free to
