@@ -105,7 +105,6 @@ public class ZipClientTestCase extends RestletTestCase {
         ClientResource r2d = new ClientResource(fzr2 + "/");
         r2d.put(new EmptyRepresentation());
         assertFalse(r2d.getStatus().equals(Status.SUCCESS_OK));
-
     }
 
 }
