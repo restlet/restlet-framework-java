@@ -61,7 +61,7 @@ import org.xml.sax.SAXException;
  * schema.
  */
 public class RestletXmlTestCase extends TestCase {
-    private static final String XML_BODY = "<server protocol=\"HTTP\" port=\"9090\"/>\n"
+    private static final String _XML_BODY = "<server protocol=\"HTTP\" port=\"9090\"/>\n"
             + "<server protocol=\"HTTP\" port=\"9091\"/>\n"
             + "<defaultHost hostPort=\"9091\">\n"
             + "<attach uriPattern=\"/abcd\" "
@@ -72,17 +72,17 @@ public class RestletXmlTestCase extends TestCase {
             + "targetClass=\"org.restlet.test.HelloWorldApplication\"/>\n"
             + "</host>\n" + "</component>\n";
 
-    private static final String XML_WITHOUT_XMLNS = "<?xml version=\"1.0\"?>\n"
-            + "<component>\n" + XML_BODY;
-
-    private static final String XML_WITH_XMLNS = "<?xml version=\"1.0\"?>\n"
-            + "<component xmlns=\"http://www.restlet.org/schemas/2.0/Component\">\n"
-            + XML_BODY;
-
     private static final String BAD_XML = "<?xml version=\"1.0\"?>\n"
             + "<component xmlns=\"http://www.restlet.org/schemas/2.0/Component\">\n"
             + "<bad-element bad-attribute=\"some-value\">abcd</bad-element>"
-            + XML_BODY;
+            + _XML_BODY;
+
+    private static final String XML_WITH_XMLNS = "<?xml version=\"1.0\"?>\n"
+            + "<component xmlns=\"http://www.restlet.org/schemas/2.0/Component\">\n"
+            + _XML_BODY;
+
+    private static final String XML_WITHOUT_XMLNS = "<?xml version=\"1.0\"?>\n"
+            + "<component>\n" + _XML_BODY;
 
     private DocumentBuilder builder;
 
@@ -90,12 +90,12 @@ public class RestletXmlTestCase extends TestCase {
 
     // default 0-arguments constructor
 
-    private InputStream getAsStream(String xmlString) {
-        return new ByteArrayInputStream(xmlString.getBytes());
-    }
-
     private Source getAsSource(String xmlString) {
         return new StreamSource(getAsStream(xmlString));
+    }
+
+    private InputStream getAsStream(String xmlString) {
+        return new ByteArrayInputStream(xmlString.getBytes());
     }
 
     @Override
@@ -126,6 +126,25 @@ public class RestletXmlTestCase extends TestCase {
         validator = schema.newValidator();
     }
 
+    @Override
+    protected void tearDown() throws Exception {
+        builder = null;
+        validator = null;
+        super.tearDown();
+    }
+
+    public void testParserBadXML() {
+        System.out.println("-- testParserBadXML");
+        try {
+            builder.parse(getAsStream(BAD_XML));
+            assertTrue(true);
+        } catch (SAXException x) {
+            fail("MUST be able to parse a good restlet.xml with xmlns attribute");
+        } catch (IOException x) {
+            fail("MUST be able to parse a good restlet.xml with xmlns attribute");
+        }
+    }
+
     public void testParserWithoutXMLNS() {
         System.out.println("-- testParserWithoutXMLNS");
         try {
@@ -150,15 +169,41 @@ public class RestletXmlTestCase extends TestCase {
         }
     }
 
-    public void testParserBadXML() {
-        System.out.println("-- testParserBadXML");
+    public void testValidateMethod() {
+        System.out.println("-- testValidateMethod");
+        InputStream is = getClass().getResourceAsStream(
+                "/org/restlet/Component.xsd");
+        assertNotNull("Component.xsd stream MUST NOT be null", is);
+        Representation schemaRepresentation = new InputRepresentation(is,
+                MediaType.APPLICATION_W3C_SCHEMA);
+
+        DomRepresentation configRepresentation = new DomRepresentation(
+                new StringRepresentation(XML_WITH_XMLNS));
+
         try {
-            builder.parse(getAsStream(BAD_XML));
+            configRepresentation.validate(schemaRepresentation);
             assertTrue(true);
+        } catch (Exception x) {
+            x.printStackTrace(System.err);
+            fail(x.getLocalizedMessage());
+        }
+    }
+
+    public void testValidatorBadXML() {
+        System.out.println("-- testValidatorBadXML");
+        try {
+            validator.validate(getAsSource(BAD_XML));
+            fail("MUST NOT be able to validate bad restlet.xml");
         } catch (SAXException x) {
-            fail("MUST be able to parse a good restlet.xml with xmlns attribute");
+            // the error must be a "cvc-complex-type.2.4.a"
+            assertTrue("MUST detect schema violation", x.getLocalizedMessage()
+                    .startsWith("cvc-complex-type.2.4.a"));
+            // ...and it has to refer to 'bad-element'
+            assertTrue("MUST detect schema violation related to 'bad-element'",
+                    x.getLocalizedMessage().indexOf("bad-element") > 0);
+
         } catch (IOException x) {
-            fail("MUST be able to parse a good restlet.xml with xmlns attribute");
+            fail("MUST throw a SAXException only");
         }
     }
 
@@ -183,44 +228,6 @@ public class RestletXmlTestCase extends TestCase {
             fail("MUST be able to validate restlet.xml with xmlns attribute");
         } catch (IOException x) {
             fail("MUST be able to validate restlet.xml with xmlns attribute");
-        }
-    }
-
-    public void testValidatorBadXML() {
-        System.out.println("-- testValidatorBadXML");
-        try {
-            validator.validate(getAsSource(BAD_XML));
-            fail("MUST NOT be able to validate bad restlet.xml");
-        } catch (SAXException x) {
-            // the error must be a "cvc-complex-type.2.4.a"
-            assertTrue("MUST detect schema violation", x.getLocalizedMessage()
-                    .startsWith("cvc-complex-type.2.4.a"));
-            // ...and it has to refer to 'bad-element'
-            assertTrue("MUST detect schema violation related to 'bad-element'",
-                    x.getLocalizedMessage().indexOf("bad-element") > 0);
-
-        } catch (IOException x) {
-            fail("MUST throw a SAXException only");
-        }
-    }
-
-    public void testValidateMethod() {
-        System.out.println("-- testValidateMethod");
-        InputStream is = getClass().getResourceAsStream(
-                "/org/restlet/Component.xsd");
-        assertNotNull("Component.xsd stream MUST NOT be null", is);
-        Representation schemaRepresentation = new InputRepresentation(is,
-                MediaType.APPLICATION_W3C_SCHEMA);
-
-        DomRepresentation configRepresentation = new DomRepresentation(
-                new StringRepresentation(XML_WITH_XMLNS));
-
-        try {
-            configRepresentation.validate(schemaRepresentation);
-            assertTrue(true);
-        } catch (Exception x) {
-            x.printStackTrace(System.err);
-            fail(x.getLocalizedMessage());
         }
     }
 }

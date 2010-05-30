@@ -102,6 +102,7 @@ public class HttpDigestTestCase extends TestCase {
     @Override
     protected void tearDown() throws Exception {
         component.stop();
+        component = null;
         super.tearDown();
     }
 

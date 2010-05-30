@@ -89,6 +89,8 @@ public class JaxbIntegrationConverterTestCase extends RestletTestCase {
       if (component != null) {
         component.stop();
       }
+      
+      this.component = null;
     }
     
     protected Application createApplication(Component component) {

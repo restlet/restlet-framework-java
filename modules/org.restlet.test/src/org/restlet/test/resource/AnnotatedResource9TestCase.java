@@ -98,6 +98,8 @@ public class AnnotatedResource9TestCase extends TestCase {
     protected void tearDown() throws Exception {
         c.stop();
 
+        c = null;
+        client = null;
         // Restore default converters
         Engine.register();
     }

@@ -128,6 +128,7 @@ public class HeaderTestCase extends RestletTestCase {
     @Override
     public void tearDown() throws Exception {
         this.component.stop();
+        this.component = null;
     }
 
     /** test with no test header */

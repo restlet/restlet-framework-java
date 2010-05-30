@@ -57,13 +57,13 @@ import org.restlet.test.RestletTestCase;
  */
 public class FileRepresentationTestCase extends RestletTestCase {
 
-    private String uri;
-
     private Component component;
+
+    private File file;
 
     private File testDir;
 
-    private File file;
+    private String uri;
 
     @Override
     public void setUp() throws Exception {
@@ -92,6 +92,9 @@ public class FileRepresentationTestCase extends RestletTestCase {
         component.stop();
         BioUtils.delete(this.file);
         BioUtils.delete(this.testDir, true);
+        component = null;
+        this.file = null;
+        this.testDir = null;
     }
 
     public void testConstructors() {

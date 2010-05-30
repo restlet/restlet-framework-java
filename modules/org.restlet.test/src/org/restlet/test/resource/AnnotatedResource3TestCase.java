@@ -56,14 +56,20 @@ public class AnnotatedResource3TestCase extends TestCase {
         this.clientResource.setNext(finder);
     }
 
+    @Override
+    protected void tearDown() throws Exception {
+        clientResource = null;
+        super.tearDown();
+    }
+
     public void testGet() throws IOException, ResourceException {
         Status status = null;
-    	try {
-	    	clientResource.get();
-	    	status = clientResource.getStatus();
-		} catch (ResourceException e) {
-			status = e.getStatus();
-		}
+        try {
+            clientResource.get();
+            status = clientResource.getStatus();
+        } catch (ResourceException e) {
+            status = e.getStatus();
+        }
         assertEquals(Status.CLIENT_ERROR_NOT_FOUND, status);
     }
 

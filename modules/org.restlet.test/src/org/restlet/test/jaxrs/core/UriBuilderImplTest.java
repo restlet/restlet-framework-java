@@ -334,6 +334,13 @@ public class UriBuilderImplTest extends TestCase {
         this.uriBuilderWithVars.segment("abc", "{var1}", "def", "{var2}");
     }
 
+    @Override
+    protected void tearDown() throws Exception {
+        this.uriBuilder = null;
+        this.uriBuilderWithVars = null;
+        super.tearDown();
+    }
+
     /**
      * Test method for
      * {@link org.restlet.ext.jaxrs.impl.UriBuilderImpl#build(java.lang.String[])}

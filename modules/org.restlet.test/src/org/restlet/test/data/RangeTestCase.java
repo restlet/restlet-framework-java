@@ -172,6 +172,7 @@ public class RangeTestCase extends RestletTestCase {
     @Override
     protected void tearDown() throws Exception {
         component.stop();
+        component = null;
     }
 
     /**

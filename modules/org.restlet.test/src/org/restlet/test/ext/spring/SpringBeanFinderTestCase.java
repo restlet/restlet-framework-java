@@ -47,10 +47,10 @@ import org.springframework.context.support.StaticApplicationContext;
  */
 @SuppressWarnings("deprecation")
 public class SpringBeanFinderTestCase extends RestletTestCase {
-    private static class SomeResource extends Resource {
+    private static class AnotherResource extends Resource {
     }
 
-    private static class AnotherResource extends Resource {
+    private static class SomeResource extends Resource {
     }
 
     private static class SomeServerResource extends ServerResource {
@@ -72,11 +72,32 @@ public class SpringBeanFinderTestCase extends RestletTestCase {
 
     private static final String BEAN_NAME = "fish";
 
-    private SpringBeanFinder finder;
+    private StaticApplicationContext applicationContext;
 
     private DefaultListableBeanFactory beanFactory;
 
-    private StaticApplicationContext applicationContext;
+    private SpringBeanFinder finder;
+
+    private MutablePropertyValues createServerResourcePropertyValues() {
+        return new MutablePropertyValues(Arrays.asList(new PropertyValue("src",
+                "spring")));
+    }
+
+    private void registerApplicationContextBean(String beanName,
+            Class<SomeResource> resourceClass) {
+        this.applicationContext.registerPrototype(beanName, resourceClass);
+        this.applicationContext.refresh();
+    }
+
+    private void registerBeanFactoryBean(String beanName, Class<?> resourceClass) {
+        registerBeanFactoryBean(beanName, resourceClass, null);
+    }
+
+    private void registerBeanFactoryBean(String beanName,
+            Class<?> resourceClass, MutablePropertyValues values) {
+        this.beanFactory.registerBeanDefinition(beanName,
+                new RootBeanDefinition(resourceClass, values));
+    }
 
     @Override
     protected void setUp() throws Exception {
@@ -85,6 +106,27 @@ public class SpringBeanFinderTestCase extends RestletTestCase {
         this.applicationContext = new StaticApplicationContext();
         this.finder = new SpringBeanFinder();
         this.finder.setBeanName(BEAN_NAME);
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        this.beanFactory = null;
+        this.applicationContext = null;
+        this.finder = null;
+
+        super.tearDown();
+    }
+
+    public void testBeanResolutionFailsWithNeitherApplicationContextOrBeanFactory()
+            throws Exception {
+        try {
+            this.finder.createResource();
+            fail("Exception not thrown");
+        } catch (IllegalStateException iae) {
+            assertEquals(
+                    "Either a beanFactory or an applicationContext is required for SpringBeanFinder.",
+                    iae.getMessage());
+        }
     }
 
     public void testExceptionWhenResourceBeanIsWrongType() throws Exception {
@@ -102,6 +144,36 @@ public class SpringBeanFinderTestCase extends RestletTestCase {
         }
     }
 
+    public void testExceptionWhenServerResourceBeanIsWrongType()
+            throws Exception {
+        registerBeanFactoryBean(BEAN_NAME, String.class);
+
+        this.finder.setBeanFactory(beanFactory);
+
+        try {
+            this.finder.create();
+            fail("Exception not thrown");
+        } catch (ClassCastException cce) {
+            assertEquals(
+                    "fish does not resolve to an instance of org.restlet.resource.ServerResource",
+                    cce.getMessage());
+        }
+    }
+
+    public void testPrefersApplicationContextOverBeanFactoryIfTheBeanIsInBoth()
+            throws Exception {
+        registerApplicationContextBean(BEAN_NAME, SomeResource.class);
+        registerBeanFactoryBean(BEAN_NAME, AnotherResource.class);
+
+        this.finder.setApplicationContext(applicationContext);
+
+        Resource actual = this.finder.createResource();
+
+        assertNotNull("Resource not found", actual);
+        assertTrue("Resource not from application context: "
+                + actual.getClass().getName(), actual instanceof SomeResource);
+    }
+
     public void testReturnsResourceBeanWhenExists() throws Exception {
         registerBeanFactoryBean(BEAN_NAME, SomeResource.class);
 
@@ -112,19 +184,6 @@ public class SpringBeanFinderTestCase extends RestletTestCase {
         assertNotNull("Resource not found", actual);
         assertTrue("Resource not the correct type",
                 actual instanceof SomeResource);
-    }
-
-    public void testReturnsServerResourceBeanWhenExists() throws Exception {
-        registerBeanFactoryBean(BEAN_NAME, SomeServerResource.class,
-                createServerResourcePropertyValues());
-
-        this.finder.setBeanFactory(beanFactory);
-
-        final ServerResource actual = this.finder.create();
-
-        assertNotNull("Resource not found", actual);
-        assertTrue("Resource not the correct type",
-                actual instanceof SomeServerResource);
     }
 
     public void testReturnsServerResourceBeanForLongFormOfCreate()
@@ -144,20 +203,17 @@ public class SpringBeanFinderTestCase extends RestletTestCase {
                 ((SomeServerResource) actual).getSrc());
     }
 
-    public void testExceptionWhenServerResourceBeanIsWrongType()
-            throws Exception {
-        registerBeanFactoryBean(BEAN_NAME, String.class);
+    public void testReturnsServerResourceBeanWhenExists() throws Exception {
+        registerBeanFactoryBean(BEAN_NAME, SomeServerResource.class,
+                createServerResourcePropertyValues());
 
         this.finder.setBeanFactory(beanFactory);
 
-        try {
-            this.finder.create();
-            fail("Exception not thrown");
-        } catch (ClassCastException cce) {
-            assertEquals(
-                    "fish does not resolve to an instance of org.restlet.resource.ServerResource",
-                    cce.getMessage());
-        }
+        final ServerResource actual = this.finder.create();
+
+        assertNotNull("Resource not found", actual);
+        assertTrue("Resource not the correct type",
+                actual instanceof SomeServerResource);
     }
 
     public void testUsesApplicationContextIfPresent() throws Exception {
@@ -170,52 +226,5 @@ public class SpringBeanFinderTestCase extends RestletTestCase {
         assertNotNull("Resource not found", actual);
         assertTrue("Resource not the correct type",
                 actual instanceof SomeResource);
-    }
-
-    public void testPrefersApplicationContextOverBeanFactoryIfTheBeanIsInBoth()
-            throws Exception {
-        registerApplicationContextBean(BEAN_NAME, SomeResource.class);
-        registerBeanFactoryBean(BEAN_NAME, AnotherResource.class);
-
-        this.finder.setApplicationContext(applicationContext);
-
-        Resource actual = this.finder.createResource();
-
-        assertNotNull("Resource not found", actual);
-        assertTrue("Resource not from application context: "
-                + actual.getClass().getName(), actual instanceof SomeResource);
-    }
-
-    public void testBeanResolutionFailsWithNeitherApplicationContextOrBeanFactory()
-            throws Exception {
-        try {
-            this.finder.createResource();
-            fail("Exception not thrown");
-        } catch (IllegalStateException iae) {
-            assertEquals(
-                    "Either a beanFactory or an applicationContext is required for SpringBeanFinder.",
-                    iae.getMessage());
-        }
-    }
-
-    private void registerBeanFactoryBean(String beanName, Class<?> resourceClass) {
-        registerBeanFactoryBean(beanName, resourceClass, null);
-    }
-
-    private void registerBeanFactoryBean(String beanName,
-            Class<?> resourceClass, MutablePropertyValues values) {
-        this.beanFactory.registerBeanDefinition(beanName,
-                new RootBeanDefinition(resourceClass, values));
-    }
-
-    private void registerApplicationContextBean(String beanName,
-            Class<SomeResource> resourceClass) {
-        this.applicationContext.registerPrototype(beanName, resourceClass);
-        this.applicationContext.refresh();
-    }
-
-    private MutablePropertyValues createServerResourcePropertyValues() {
-        return new MutablePropertyValues(Arrays.asList(new PropertyValue("src",
-                "spring")));
     }
 }

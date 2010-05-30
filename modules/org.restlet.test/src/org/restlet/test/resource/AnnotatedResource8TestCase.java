@@ -59,6 +59,12 @@ public class AnnotatedResource8TestCase extends TestCase {
         this.clientResource.setNext(finder);
     }
 
+    @Override
+    protected void tearDown() throws Exception {
+        clientResource = null;
+        super.tearDown();
+    }
+
     public void testGet() throws IOException, ResourceException {
         Representation input = new StringRepresentation("<root/>",
                 MediaType.APPLICATION_XML);

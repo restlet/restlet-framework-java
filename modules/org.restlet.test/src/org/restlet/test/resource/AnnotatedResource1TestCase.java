@@ -61,6 +61,13 @@ public class AnnotatedResource1TestCase extends TestCase {
         this.myResource = clientResource.wrap(MyResource1.class);
     }
 
+    @Override
+    protected void tearDown() throws Exception {
+        clientResource = null;
+        myResource = null;
+        super.tearDown();
+    }
+
     public void testDelete() {
         assertEquals("Done", myResource.remove());
     }

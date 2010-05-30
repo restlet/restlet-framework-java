@@ -165,6 +165,7 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
         if ((this.component != null) && this.component.isStarted()) {
             this.component.stop();
         }
+        this.component = null;
     }
 
     @Override

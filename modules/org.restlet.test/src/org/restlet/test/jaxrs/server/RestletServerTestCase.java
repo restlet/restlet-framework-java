@@ -544,6 +544,7 @@ public abstract class RestletServerTestCase extends TestCase {
         if (this.serverWrapper != null) {
             this.serverWrapper.stopServer();
         }
+        this.serverWrapper = null;
     }
 
     @Override

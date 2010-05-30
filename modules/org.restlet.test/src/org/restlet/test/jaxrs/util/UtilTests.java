@@ -51,14 +51,6 @@ import org.restlet.ext.jaxrs.internal.util.Util;
 public class UtilTests extends TestCase {
 
     /** test interface for test of {@link Util#doesImplement(Class, Class)}. */
-    private static interface I1 {
-    }
-
-    /** test interface for test of {@link Util#doesImplement(Class, Class)}. */
-    private static interface I2 extends I1 {
-    }
-
-    /** test interface for test of {@link Util#doesImplement(Class, Class)}. */
     private static class C1 {
     }
 
@@ -76,6 +68,14 @@ public class UtilTests extends TestCase {
 
     /** test class for test of {@link Util#doesImplement(Class, Class)}. */
     private static class C5 extends C3 implements I2 {
+    }
+
+    /** test interface for test of {@link Util#doesImplement(Class, Class)}. */
+    private static interface I1 {
+    }
+
+    /** test interface for test of {@link Util#doesImplement(Class, Class)}. */
+    private static interface I2 extends I1 {
     }
 
     private MultivaluedMap<String, Object> httpHeaders;
@@ -136,6 +136,12 @@ public class UtilTests extends TestCase {
 
     public void setUp() {
         this.httpHeaders = new MultivaluedMapImpl<String, Object>();
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        this.httpHeaders = null;
+        super.tearDown();
     }
 
     public void testDoesImplements() {

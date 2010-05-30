@@ -48,7 +48,19 @@ import org.restlet.test.RestletTestCase;
  */
 public class ConnegTestCase extends RestletTestCase {
 
-    MetadataService ms = new MetadataService();
+    MetadataService ms;
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        ms = new MetadataService();
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        ms = null;
+        super.tearDown();
+    }
 
     /**
      * Conneg tests.

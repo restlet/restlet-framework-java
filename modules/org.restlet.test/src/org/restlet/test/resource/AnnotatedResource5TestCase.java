@@ -57,6 +57,12 @@ public class AnnotatedResource5TestCase extends TestCase {
         this.clientResource.setNext(finder);
     }
 
+    @Override
+    protected void tearDown() throws Exception {
+        clientResource = null;
+        super.tearDown();
+    }
+
     public void testGet() throws IOException, ResourceException {
         Representation result = clientResource.post("[\"root\"]",
                 MediaType.APPLICATION_JSON);

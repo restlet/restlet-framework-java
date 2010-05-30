@@ -242,6 +242,15 @@ public class TunnelFilterTestCase extends TestCase {
                 .setExtensionsTunnel(true);
     }
 
+    @Override
+    protected void tearDown() throws Exception {
+        this.tunnelFilter = null;
+        this.request = null;
+        this.response = null;
+
+        super.tearDown();
+    }
+
     public void testExtMappingOff1() {
         extensionTunnelOff();
         createGet(UNEFFECTED);

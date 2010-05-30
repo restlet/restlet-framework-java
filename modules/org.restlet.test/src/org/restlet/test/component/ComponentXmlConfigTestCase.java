@@ -105,11 +105,15 @@ public class ComponentXmlConfigTestCase extends RestletTestCase {
     private static final int PORT1 = TEST_PORT;
 
     private static final int PORT2 = PORT1 + 1;
+
     private static final String R_NAME = "routerParamName";
+
     private static final String R_VALUE = "routerParamValue";
+
     private static final String RESTLET_DESCRIPTION = "restletDescription";
+
     private static final String RESTLET_NAME = "restletName";
-    
+
     /** Correct restlet.xml test instances. */
     private static final String RESTLET_XML = "<?xml version=\"1.0\"?>\n"
             + "<component xmlns=\"http://www.restlet.org/schemas/2.0/Component\">\n"
@@ -235,14 +239,20 @@ public class ComponentXmlConfigTestCase extends RestletTestCase {
             + "6\"/>\n"
             + "</attach>\n"
             + "</host>\n"
-            + "<logService enabled=\"" + LOG_ENABLED+ "\" identityCheck=\"" + LOG_IDENTITY_CHECKED+ "\" logFormat=\"" + LOG_FORMAT+ "\" loggerName=\"" + LOGGER_NAME+ "\" />\n"
+            + "<logService enabled=\""
+            + LOG_ENABLED
+            + "\" identityCheck=\""
+            + LOG_IDENTITY_CHECKED
+            + "\" logFormat=\""
+            + LOG_FORMAT
+            + "\" loggerName=\""
+            + LOGGER_NAME
+            + "\" />\n"
             + "</component>";
 
     private static final String SERVER = "SERVER";
 
     private Component c;
-
-    // default 0-arguments constructor
 
     /**
      * Check if a designated {@code init-param} element does not exist within a
@@ -259,6 +269,8 @@ public class ComponentXmlConfigTestCase extends RestletTestCase {
         Parameter p = ctx.getParameters().getFirst(n);
         assertNull(msg + " Parameter '" + n + "' MUST be null", p);
     }
+
+    // default 0-arguments constructor
 
     /**
      * Check if a designated {@code init-param} element exist within a given
@@ -295,6 +307,12 @@ public class ComponentXmlConfigTestCase extends RestletTestCase {
         Representation xml = new StringRepresentation(RESTLET_XML);
         c = new Component(xml);
         assertNotNull("Component (parsed) MUST NOT be null", c);
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        c = null;
+        super.tearDown();
     }
 
     public void testAttachParams1a() throws Exception {
@@ -536,6 +554,18 @@ public class ComponentXmlConfigTestCase extends RestletTestCase {
         checkNegativeParam(msg, ctx, A_PARAM_NAME + "6");
     }
 
+    public void testLogService() throws Exception {
+        System.out.println("-- testLogService()");
+
+        LogService ls = c.getLogService();
+        assertNotNull("Log service MUST NOT be null", ls);
+
+        assertEquals(LOG_ENABLED, ls.isEnabled());
+        assertEquals(LOG_IDENTITY_CHECKED, ls.isIdentityCheck());
+        assertEquals(LOG_FORMAT, ls.getLogFormat());
+        assertEquals(LOGGER_NAME, ls.getLoggerName());
+    }
+
     public void testServer() throws Exception {
         System.out.println("-- testServerParams()");
 
@@ -582,17 +612,5 @@ public class ComponentXmlConfigTestCase extends RestletTestCase {
         checkNegativeParam(msg, ctx, A_PARAM_NAME + "4");
         checkNegativeParam(msg, ctx, A_PARAM_NAME + "5");
         checkNegativeParam(msg, ctx, A_PARAM_NAME + "6");
-    }
-    
-    public void testLogService() throws Exception {
-        System.out.println("-- testLogService()");
-
-        LogService ls = c.getLogService();
-        assertNotNull("Log service MUST NOT be null", ls);
-        
-        assertEquals(LOG_ENABLED, ls.isEnabled());
-        assertEquals(LOG_IDENTITY_CHECKED, ls.isIdentityCheck());
-        assertEquals(LOG_FORMAT, ls.getLogFormat());
-        assertEquals(LOGGER_NAME, ls.getLoggerName());
     }
 }

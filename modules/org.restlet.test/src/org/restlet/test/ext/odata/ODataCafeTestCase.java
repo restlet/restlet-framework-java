@@ -42,6 +42,7 @@ public class ODataCafeTestCase extends RestletTestCase {
     @Override
     protected void tearDown() throws Exception {
         component.stop();
+        component = null;
         super.tearDown();
     }
 

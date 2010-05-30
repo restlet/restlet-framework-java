@@ -81,6 +81,7 @@ public class AnnotatedResource10TestCase extends TestCase {
     @Override
     protected void tearDown() throws Exception {
         c.stop();
+        c = null;
     }
 
     /**

@@ -122,6 +122,12 @@ public class ExceptionMappersTest extends TestCase {
         this.exceptionMappers.addSingleton(illegalArgExcMapper, false);
     }
 
+    @Override
+    protected void tearDown() throws Exception {
+        this.exceptionMappers = null;
+        super.tearDown();
+    }
+
     public void testIae() throws Exception {
         final Response r = convert(new IllegalArgumentException());
         assertNotNull(r);
