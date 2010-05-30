@@ -631,7 +631,7 @@ public class HeaderUtils {
      *         if no representation has been provided and the response has not
      *         sent any entity header.
      * @throws NumberFormatException
-     * @see {@link HeaderUtils#copyResponseTransportHeaders(Series, Response)}
+     * @see HeaderUtils#copyResponseTransportHeaders(Series, Response)
      */
     public static Representation copyResponseEntityHeaders(
             Iterable<Parameter> responseHeaders, Representation representation)

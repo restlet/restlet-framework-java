@@ -450,10 +450,10 @@ public class JaxbRepresentation<T> extends WriterRepresentation {
     }
 
     /**
-     * Writes the representation to a byte stream.
+     * Writes the representation to a stream of characters.
      * 
-     * @param outputStream
-     *            The output stream.
+     * @param writer
+     *            The writer to use when writing.
      * 
      * @throws IOException
      *             If any error occurs attempting to write the stream.

@@ -317,7 +317,7 @@ public class HttpClientHelper extends org.restlet.engine.http.HttpClientHelper {
      * 
      * @return A value indicating the idle connection check interval or 0 if a
      *         value has not been provided
-     * @see {@link #getIdleTimeout()}
+     * @see #getIdleTimeout()
      */
     public long getIdleCheckInterval() {
         return Long.parseLong(getHelpedParameters().getFirstValue(
@@ -330,7 +330,7 @@ public class HttpClientHelper extends org.restlet.engine.http.HttpClientHelper {
      * 
      * @return The time in millis beyond which idle connections are eligible for
      *         reaping.
-     * @see {@link #getIdleCheckInterval()}
+     * @see #getIdleCheckInterval()
      */
     public long getIdleTimeout() {
         return Long.parseLong(getHelpedParameters().getFirstValue(

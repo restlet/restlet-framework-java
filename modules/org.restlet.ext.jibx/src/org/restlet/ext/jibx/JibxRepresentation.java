@@ -251,10 +251,11 @@ public class JibxRepresentation<T> extends WriterRepresentation {
     }
 
     /**
-     * Marshals the document and writes the representation to a byte stream.
+     * Marshals the document and writes the representation to a stream of
+     * characters.
      * 
-     * @param outputStream
-     *            The output stream.
+     * @param writer
+     *            The writer to use when writing.
      * @throws IOException
      *             If any error occurs attempting to write the stream.
      */
