@@ -36,6 +36,7 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SelectionKey;
 import java.util.logging.Level;
 
+import org.restlet.Response;
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.engine.http.header.HeaderReader;
@@ -190,6 +191,12 @@ public abstract class InboundWay extends Way {
         }
 
         return result;
+    }
+
+    @Override
+    protected void onCompleted(Response message) {
+        super.onCompleted(message);
+        getLogger().info("Inbound message fully received");
     }
 
     @Override

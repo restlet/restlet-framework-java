@@ -62,7 +62,12 @@ public class ServerInboundWay extends InboundWay {
     @Override
     public void registerInterest(Selector selector) {
         if (getIoState() == IoState.IDLE) {
-            if (getConnection().isPipelining() || (getMessages().size() == 0)) {
+            if (getConnection().isPipelining()) {
+                // Read the next request
+                setIoState(IoState.INTEREST);
+            } else if (getMessages().isEmpty()
+                    && (getConnection().getOutboundWay().getMessages()
+                            .isEmpty())) {
                 // Read the next request
                 setIoState(IoState.INTEREST);
             }

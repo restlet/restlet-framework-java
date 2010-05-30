@@ -354,6 +354,12 @@ public abstract class OutboundWay extends Way {
     }
 
     @Override
+    protected void onCompleted(Response message) {
+        super.onCompleted(message);
+        getLogger().info("Outbound message fully sent");
+    }
+
+    @Override
     public void onSelected(SelectionKey key) {
         super.onSelected(key);
 
@@ -502,7 +508,7 @@ public abstract class OutboundWay extends Way {
     @Override
     public void registerInterest(Selector selector) {
         // Update the IO state if necessary
-        if ((getIoState() == IoState.IDLE) && (getMessages().size() > 0)) {
+        if ((getIoState() == IoState.IDLE) && !getMessages().isEmpty()) {
             if (getMessage() == null) {
                 setIoState(IoState.INTEREST);
                 setMessage(getMessages().peek());

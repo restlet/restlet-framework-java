@@ -136,8 +136,6 @@ public class Controller implements Runnable {
             if (response != null) {
                 execute(new Runnable() {
                     public void run() {
-                        getHelper().getLogger().info(
-                                "Handling new inbound message");
                         getHelper().handleInbound(response);
                     }
 
@@ -157,8 +155,6 @@ public class Controller implements Runnable {
             if (response != null) {
                 execute(new Runnable() {
                     public void run() {
-                        getHelper().getLogger().info(
-                                "Handling new outbound message");
                         getHelper().handleOutbound(response);
                     }
 
