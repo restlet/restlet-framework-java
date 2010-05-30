@@ -59,6 +59,9 @@ Changes log
         expected. Reported by Bruno Harbulot.
       - Fixed bug in OData extension when parsing complex properties.
         Reported by Roger Heim.
+      - Fixed Generator class in OData extension when the service URI 
+        is actually to be redirected.
+
     - Misc
       - Server connectors now display the port they are listening on
         in their start message.  
