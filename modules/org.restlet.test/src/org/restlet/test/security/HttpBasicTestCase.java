@@ -178,8 +178,6 @@ public class HttpBasicTestCase extends RestletTestCase {
         final Response response = client.handle(request);
         assertEquals("No user did not throw 401",
                 Status.CLIENT_ERROR_UNAUTHORIZED, response.getStatus());
-        assertTrue(response.getEntity().getText().contains(
-                "requires user authentication"));
     }
 
     public void HTTPBasicShort() throws IOException {
