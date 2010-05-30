@@ -218,8 +218,6 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
             } else {
                 // The request expects no response, the connection is free to
                 // read.
-                // TODO
-                // connection.getInboundWay().setBusy(false);
             }
         }
     }

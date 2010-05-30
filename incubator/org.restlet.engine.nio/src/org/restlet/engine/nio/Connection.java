@@ -419,7 +419,6 @@ public class Connection<T extends Connector> implements Selectable {
      */
     public void open() {
         setState(ConnectionState.OPEN);
-        getInboundWay().setIoState(IoState.INTEREST);
     }
 
     /**

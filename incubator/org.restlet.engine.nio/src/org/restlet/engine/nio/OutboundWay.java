@@ -501,7 +501,13 @@ public abstract class OutboundWay extends Way {
 
     @Override
     public void registerInterest(Selector selector) {
-        super.registerInterest(selector);
+        // Update the IO state if necessary
+        if ((getIoState() == IoState.IDLE) && (getMessages().size() > 0)) {
+            if (getMessage() == null) {
+                setIoState(IoState.INTEREST);
+                setMessage(getMessages().peek());
+            }
+        }
 
         // If the entity is available as a non-blocking selectable channel,
         // register it as well

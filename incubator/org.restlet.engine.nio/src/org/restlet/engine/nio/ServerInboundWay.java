@@ -31,6 +31,7 @@
 package org.restlet.engine.nio;
 
 import java.io.IOException;
+import java.nio.channels.Selector;
 
 import org.restlet.Response;
 import org.restlet.Server;
@@ -59,16 +60,12 @@ public class ServerInboundWay extends InboundWay {
     }
 
     @Override
-    protected void onCompleted(Response message) {
-        // Mark the inbound as free so new messages can be read if possible
-        setMessageState(MessageState.IDLE);
-
-        if (getConnection().isPipelining()) {
-            // Read the next request
-            setIoState(IoState.INTEREST);
-        } else {
-            // Wait for the response to be sent
-            setIoState(IoState.IDLE);
+    public void registerInterest(Selector selector) {
+        if (getIoState() == IoState.IDLE) {
+            if (getConnection().isPipelining() || (getMessages().size() == 0)) {
+                // Read the next request
+                setIoState(IoState.INTEREST);
+            }
         }
     }
 

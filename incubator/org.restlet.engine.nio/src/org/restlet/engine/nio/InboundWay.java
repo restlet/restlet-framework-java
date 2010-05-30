@@ -36,6 +36,7 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SelectionKey;
 import java.util.logging.Level;
 
+import org.restlet.Response;
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.engine.http.header.HeaderReader;
@@ -224,7 +225,8 @@ public abstract class InboundWay extends Way {
                             if (getMessageState() == MessageState.START_LINE) {
                                 readStartLine();
                             } else if (getMessageState() == MessageState.HEADERS) {
-                                request = (ConnectedRequest) getMessage()
+                                Response response = getMessage();
+                                request = (ConnectedRequest) response
                                         .getRequest();
                                 headers = (headers == null) ? request
                                         .getHeaders() : headers;
@@ -264,13 +266,12 @@ public abstract class InboundWay extends Way {
                                     if (request != null) {
                                         if (request.isExpectingResponse()) {
                                             // Add it to the inbound queue
-                                            getMessages().add(getMessage());
+                                            getMessages().add(response);
                                         }
 
                                         // Add it to the helper queue
                                         getHelper().getInboundMessages().add(
-                                                getMessage());
-                                        setMessage(null);
+                                                response);
                                     }
                                 }
                             }

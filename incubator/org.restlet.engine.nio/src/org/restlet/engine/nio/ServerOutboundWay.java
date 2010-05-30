@@ -51,26 +51,16 @@ public class ServerOutboundWay extends OutboundWay {
 
     @Override
     protected void onCompleted(Response message) {
-        setMessageState(MessageState.IDLE);
+        super.onCompleted(message);
         getMessages().remove(message);
-        setMessage(null);
 
-        if (getConnection().isPersistent()) {
-            if (getMessages().isEmpty()) {
-                setIoState(IoState.IDLE);
-            } else {
-                setIoState(IoState.INTEREST);
-                setMessageState(MessageState.START_LINE);
-            }
+        if (!message.getStatus().isInformational()) {
+            // Attempt to read additional inbound messages
+            getConnection().getInboundWay().getMessages().remove(getMessage());
+        }
 
-            if (!message.getStatus().isInformational()) {
-                // Attempt to read additional inbound messages
-                getConnection().getInboundWay().getMessages().remove(
-                        getMessage());
-                getConnection().getInboundWay().setIoState(IoState.INTEREST);
-                getConnection().getInboundWay().setMessageState(
-                        MessageState.START_LINE);
-            }
+        if (!getConnection().isPersistent()) {
+            getConnection().close(true);
         }
     }
 

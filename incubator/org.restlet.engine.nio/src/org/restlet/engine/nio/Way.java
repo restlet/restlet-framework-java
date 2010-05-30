@@ -191,7 +191,11 @@ public abstract class Way {
      * @param message
      *            The message completed.
      */
-    protected abstract void onCompleted(Response message);
+    protected void onCompleted(Response message) {
+        setIoState(IoState.IDLE);
+        setMessageState(MessageState.IDLE);
+        setMessage(null);
+    }
 
     /**
      * Callback method invoked when the way has been selected for IO operations
@@ -222,15 +226,7 @@ public abstract class Way {
      *            The selector to register with.
      * @throws ClosedChannelException
      */
-    public void registerInterest(Selector selector) {
-        // Update the IO state if necessary
-        if ((getIoState() == IoState.IDLE) && (getMessages().size() > 0)) {
-            if (getMessage() == null) {
-                setIoState(IoState.INTEREST);
-                setMessage(getMessages().peek());
-            }
-        }
-    }
+    public abstract void registerInterest(Selector selector);
 
     /**
      * Sets the IO state.
