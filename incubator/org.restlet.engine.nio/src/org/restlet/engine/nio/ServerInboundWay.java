@@ -31,7 +31,6 @@
 package org.restlet.engine.nio;
 
 import java.io.IOException;
-import java.nio.channels.Selector;
 
 import org.restlet.Response;
 import org.restlet.Server;
@@ -57,21 +56,6 @@ public class ServerInboundWay extends InboundWay {
     @Override
     public BaseServerHelper getHelper() {
         return (BaseServerHelper) super.getHelper();
-    }
-
-    @Override
-    public void registerInterest(Selector selector) {
-        if (getIoState() == IoState.IDLE) {
-            if (getConnection().isPipelining()) {
-                // Read the next request
-                setIoState(IoState.INTEREST);
-            } else if (getMessages().isEmpty()
-                    && (getConnection().getOutboundWay().getMessages()
-                            .isEmpty())) {
-                // Read the next request
-                setIoState(IoState.INTEREST);
-            }
-        }
     }
 
     @Override
@@ -145,6 +129,21 @@ public class ServerInboundWay extends InboundWay {
 
             setMessageState(MessageState.HEADERS);
             getLineBuilder().delete(0, getLineBuilder().length());
+        }
+    }
+
+    @Override
+    public void updateState() {
+        if (getIoState() == IoState.IDLE) {
+            if (getConnection().isPipelining()) {
+                // Read the next request
+                setIoState(IoState.INTEREST);
+            } else if (getMessages().isEmpty()
+                    && (getConnection().getOutboundWay().getMessages()
+                            .isEmpty())) {
+                // Read the next request
+                setIoState(IoState.INTEREST);
+            }
         }
     }
 }

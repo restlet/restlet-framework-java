@@ -32,7 +32,6 @@ package org.restlet.engine.nio;
 
 import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
-import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -201,11 +200,8 @@ public abstract class Way {
      * Callback method invoked when the way has been selected for IO operations
      * it registered interest in. By default it call
      * {@link Connection#onSelected()}.
-     * 
-     * @param key
-     *            The registered selection key.
      */
-    public void onSelected(SelectionKey key) {
+    public void onSelected() {
         if (getIoState() == IoState.INTEREST) {
             setIoState(IoState.PROCESSING);
 
@@ -230,7 +226,9 @@ public abstract class Way {
      *            The selector to register with.
      * @throws ClosedChannelException
      */
-    public abstract void registerInterest(Selector selector);
+    public void registerInterest(Selector selector) {
+        updateState();
+    }
 
     /**
      * Sets the IO state.
@@ -266,5 +264,10 @@ public abstract class Way {
     public String toString() {
         return getIoState() + ", " + getMessageState();
     }
+
+    /**
+     * Updates the way IO and message states.
+     */
+    public abstract void updateState();
 
 }

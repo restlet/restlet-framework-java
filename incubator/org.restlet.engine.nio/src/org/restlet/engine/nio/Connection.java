@@ -406,10 +406,10 @@ public class Connection<T extends Connector> implements Selectable {
     public void onSelected(SelectionKey key) {
         this.lastActivity = System.currentTimeMillis();
 
-        if (key.isReadable()) {
-            getInboundWay().onSelected(key);
+        if ((key == null) || key.isReadable()) {
+            getInboundWay().onSelected();
         } else if (key.isWritable()) {
-            getOutboundWay().onSelected(key);
+            getOutboundWay().onSelected();
         }
     }
 
@@ -420,6 +420,7 @@ public class Connection<T extends Connector> implements Selectable {
      */
     public void open() {
         setState(ConnectionState.OPEN);
+        updateState();
     }
 
     /**
@@ -514,6 +515,14 @@ public class Connection<T extends Connector> implements Selectable {
     @Override
     public String toString() {
         return getState() + ", " + getInboundWay() + ", " + getOutboundWay();
+    }
+
+    /**
+     * Updates the connection states.
+     */
+    public void updateState() {
+        getInboundWay().updateState();
+        getOutboundWay().updateState();
     }
 
 }

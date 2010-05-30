@@ -52,9 +52,6 @@ public class ServerController extends Controller {
     /** The latch to countdown when the socket is ready to accept connections. */
     private final CountDownLatch latch;
 
-    /** The selection key for accept NIO events. */
-    private volatile SelectionKey acceptKey;
-
     /**
      * Constructor.
      * 
@@ -64,7 +61,6 @@ public class ServerController extends Controller {
     public ServerController(BaseServerHelper helper) {
         super(helper);
         this.latch = new CountDownLatch(1);
-        this.acceptKey = null;
     }
 
     @Override
@@ -94,41 +90,39 @@ public class ServerController extends Controller {
     @Override
     protected void onSelected(SelectionKey key)
             throws ClosedByInterruptException {
-        if (key != this.acceptKey) {
+        if (!key.isAcceptable()) {
             super.onSelected(key);
         } else if (!isOverloaded()) {
-            // Attempt to accept new connections
             try {
-                if (this.acceptKey.isAcceptable()) {
-                    SocketChannel socketChannel = getHelper()
-                            .getServerSocketChannel().accept();
+                // Accept the new connection
+                SocketChannel socketChannel = getHelper()
+                        .getServerSocketChannel().accept();
 
-                    if (socketChannel != null) {
-                        socketChannel.configureBlocking(false);
-                        int connectionsCount = getHelper().getConnections()
-                                .size();
+                if (socketChannel != null) {
+                    socketChannel.configureBlocking(false);
+                    int connectionsCount = getHelper().getConnections().size();
 
-                        if ((getHelper().getMaxTotalConnections() == -1)
-                                || (connectionsCount <= getHelper()
-                                        .getMaxTotalConnections())) {
-                            Connection<Server> connection = getHelper()
-                                    .createConnection(getHelper(),
-                                            socketChannel);
-                            connection.open();
-                            getHelper().getConnections().add(connection);
-                            getHelper().getLogger().log(
-                                    BaseHelper.DEFAULT_LEVEL,
-                                    "New connection accepted. Total : "
-                                            + getHelper().getConnections()
-                                                    .size());
-                        } else {
-                            // Rejection connection
-                            socketChannel.close();
-                            getHelper()
-                                    .getLogger()
-                                    .info(
-                                            "Maximum number of concurrent connections reached. New connection rejected.");
-                        }
+                    if ((getHelper().getMaxTotalConnections() == -1)
+                            || (connectionsCount <= getHelper()
+                                    .getMaxTotalConnections())) {
+                        Connection<Server> connection = getHelper()
+                                .createConnection(getHelper(), socketChannel);
+                        connection.open();
+                        getHelper().getConnections().add(connection);
+                        getHelper().getLogger().log(
+                                BaseHelper.DEFAULT_LEVEL,
+                                "New connection accepted. Total : "
+                                        + getHelper().getConnections().size());
+
+                        // Attempt to read immediately
+                        connection.onSelected(null);
+                    } else {
+                        // Rejection connection
+                        socketChannel.close();
+                        getHelper()
+                                .getLogger()
+                                .info(
+                                        "Maximum number of concurrent connections reached. New connection rejected.");
                     }
                 }
             } catch (ClosedByInterruptException ex) {
@@ -154,8 +148,8 @@ public class ServerController extends Controller {
     public void run() {
         // Register interest in NIO accept events
         try {
-            this.acceptKey = getHelper().getServerSocketChannel().register(
-                    getSelector(), SelectionKey.OP_ACCEPT);
+            getHelper().getServerSocketChannel().register(getSelector(),
+                    SelectionKey.OP_ACCEPT);
         } catch (IOException ioe) {
             getHelper().getLogger().log(Level.WARNING,
                     "Unexpected error while registering an NIO selection key",

@@ -360,8 +360,8 @@ public abstract class OutboundWay extends Way {
     }
 
     @Override
-    public void onSelected(SelectionKey key) {
-        super.onSelected(key);
+    public void onSelected() {
+        super.onSelected();
 
         try {
             Response message = getMessage();
@@ -507,13 +507,7 @@ public abstract class OutboundWay extends Way {
 
     @Override
     public void registerInterest(Selector selector) {
-        // Update the IO state if necessary
-        if ((getIoState() == IoState.IDLE) && !getMessages().isEmpty()) {
-            if (getMessage() == null) {
-                setIoState(IoState.INTEREST);
-                setMessage(getMessages().peek());
-            }
-        }
+        super.registerInterest(selector);
 
         // If the entity is available as a non-blocking selectable channel,
         // register it as well
@@ -627,6 +621,17 @@ public abstract class OutboundWay extends Way {
     protected boolean shouldBeChunked(Representation entity) {
         return (entity != null)
                 && (entity.getSize() == Representation.UNKNOWN_SIZE);
+    }
+
+    @Override
+    public void updateState() {
+        // Update the IO state if necessary
+        if ((getIoState() == IoState.IDLE) && !getMessages().isEmpty()) {
+            if (getMessage() == null) {
+                setIoState(IoState.INTEREST);
+                setMessage(getMessages().peek());
+            }
+        }
     }
 
     /**

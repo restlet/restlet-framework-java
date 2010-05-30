@@ -86,8 +86,7 @@ public class Controller implements Runnable {
      *            Indicates if the controller is overloaded.
      * @throws IOException
      */
-    protected void controlConnections(boolean overloaded, long sleepTime)
-            throws IOException {
+    protected void controlConnections(boolean overloaded) throws IOException {
         // Close connections or register interest in NIO operations
         for (final Connection<?> conn : getHelper().getConnections()) {
             if (conn.getState() == ConnectionState.CLOSED) {
@@ -105,39 +104,6 @@ public class Controller implements Runnable {
                 conn.registerInterest(getSelector());
             }
         }
-
-        // Select the connections ready for NIO operations
-        if (getSelector().select(sleepTime) > 0) {
-            for (Iterator<SelectionKey> selectedKeys = getSelector()
-                    .selectedKeys().iterator(); selectedKeys.hasNext();) {
-                // Retrieve the next selected key
-                onSelected(selectedKeys.next());
-
-                // Remove the processed key from the set
-                selectedKeys.remove();
-            }
-        }
-    }
-
-    /**
-     * Callback when a key has been selected.
-     * 
-     * @param key
-     *            The selected key.
-     */
-    protected void onSelected(SelectionKey key)
-            throws ClosedByInterruptException {
-        // Notify the selected way
-        if (key.attachment() != null) {
-            ((Selectable) key.attachment()).onSelected(key);
-        }
-    }
-
-    /**
-     * Wakes up the controller. By default it wakesup the selector.
-     */
-    public void wakeup() {
-        getSelector().wakeup();
     }
 
     /**
@@ -267,6 +233,20 @@ public class Controller implements Runnable {
     }
 
     /**
+     * Callback when a key has been selected.
+     * 
+     * @param key
+     *            The selected key.
+     */
+    protected void onSelected(SelectionKey key)
+            throws ClosedByInterruptException {
+        // Notify the selected way
+        if (key.attachment() != null) {
+            ((Selectable) key.attachment()).onSelected(key);
+        }
+    }
+
+    /**
      * Listens on the given server socket for incoming connections.
      */
     public void run() {
@@ -295,11 +275,35 @@ public class Controller implements Runnable {
 
                 }
 
-                controlConnections(isOverloaded(), sleepTime);
+                selectKey(sleepTime);
+                controlConnections(isOverloaded());
                 controlHelper();
             } catch (Exception ex) {
                 this.helper.getLogger().log(Level.INFO,
                         "Unexpected error while controlling connector", ex);
+            }
+        }
+    }
+
+    /**
+     * Selects the key ready for IO operations.
+     * 
+     * @param sleepTime
+     *            The max sleep time.
+     * @throws IOException
+     * @throws ClosedByInterruptException
+     */
+    protected void selectKey(long sleepTime) throws IOException,
+            ClosedByInterruptException {
+        // Select the connections ready for NIO operations
+        if (getSelector().select(sleepTime) > 0) {
+            for (Iterator<SelectionKey> selectedKeys = getSelector()
+                    .selectedKeys().iterator(); selectedKeys.hasNext();) {
+                // Retrieve the next selected key
+                onSelected(selectedKeys.next());
+
+                // Remove the processed key from the set
+                selectedKeys.remove();
             }
         }
     }
@@ -329,6 +333,13 @@ public class Controller implements Runnable {
      */
     public void shutdown() throws IOException {
         setRunning(false);
+    }
+
+    /**
+     * Wakes up the controller. By default it wakes up the selector.
+     */
+    public void wakeup() {
+        getSelector().wakeup();
     }
 
 }

@@ -67,8 +67,6 @@ public abstract class InboundWay extends Way {
      */
     public InboundWay(Connection<?> connection) {
         super(connection);
-        // this.inboundChannel = new InboundStream(getSocket()
-        // .getInputStream());
     }
 
     /**
@@ -200,8 +198,8 @@ public abstract class InboundWay extends Way {
     }
 
     @Override
-    public void onSelected(SelectionKey key) {
-        super.onSelected(key);
+    public void onSelected() {
+        super.onSelected();
 
         try {
             while ((getIoState() == IoState.PROCESSING)
