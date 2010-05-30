@@ -422,7 +422,11 @@ public abstract class ServerResource extends UniformResource {
                         parameters.add(variant);
                     } else {
                         if (getRequestEntity() != null
-                                && getRequestEntity().isAvailable()) {
+                                && getRequestEntity().isAvailable()
+                                && getRequestEntity().getSize() != 0) {
+                            // Assume there is content to be read.
+                            // NB: it does not handle the case where the size is
+                            // unknown, but there is no content.
                             try {
                                 parameter = cs.toObject(getRequestEntity(),
                                         parameterType, this);
