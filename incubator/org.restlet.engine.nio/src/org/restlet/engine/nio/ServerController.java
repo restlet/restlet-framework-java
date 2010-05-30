@@ -104,9 +104,6 @@ public class ServerController extends Controller {
                             .getServerSocketChannel().accept();
 
                     if (socketChannel != null) {
-                        getHelper().getLogger().fine(
-                                "New connection accepted. Total : "
-                                        + getHelper().getConnections().size());
                         socketChannel.configureBlocking(false);
                         int connectionsCount = getHelper().getConnections()
                                 .size();
@@ -119,6 +116,10 @@ public class ServerController extends Controller {
                                             socketChannel);
                             connection.open();
                             getHelper().getConnections().add(connection);
+                            getHelper().getLogger().info(
+                                    "New connection accepted. Total : "
+                                            + getHelper().getConnections()
+                                                    .size());
                         } else {
                             // Rejection connection
                             socketChannel.close();

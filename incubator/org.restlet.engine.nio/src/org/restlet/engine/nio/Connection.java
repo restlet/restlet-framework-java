@@ -431,6 +431,11 @@ public class Connection<T extends Connector> implements Selectable {
      * @throws ClosedChannelException
      */
     public void registerInterest(Selector selector) {
+        // Give a chance to ways for addition registrations
+        getInboundWay().registerInterest(selector);
+        getOutboundWay().registerInterest(selector);
+
+        // Get the socket interest
         int socketInterestOps = getSocketInterestOps();
 
         if (socketInterestOps > 0) {
@@ -461,10 +466,6 @@ public class Connection<T extends Connector> implements Selectable {
                 setSocketKey(null);
             }
         }
-
-        // Give a chance to ways for addition registrations
-        getInboundWay().registerInterest(selector);
-        getOutboundWay().registerInterest(selector);
     }
 
     /**
