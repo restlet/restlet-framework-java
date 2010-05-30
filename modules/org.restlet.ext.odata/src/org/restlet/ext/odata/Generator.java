@@ -136,10 +136,9 @@ public class Generator {
                 System.out.println("step 4 - generate source code");
                 Generator svcUtil = null;
                 if (args.length == 3) {
-                    svcUtil = new Generator(new Reference(dataServiceUri),
-                            args[2]);
+                    svcUtil = new Generator(service.getServiceRef(), args[2]);
                 } else {
-                    svcUtil = new Generator(new Reference(dataServiceUri));
+                    svcUtil = new Generator(service.getServiceRef());
                 }
 
                 try {
