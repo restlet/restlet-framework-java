@@ -175,7 +175,7 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
     @Override
     public void handleInbound(Response response) {
         if ((response != null) && (response.getRequest() != null)) {
-            getLogger().info("Handling new inbound message");
+            getLogger().info("Handling inbound message");
             ConnectedRequest request = (ConnectedRequest) response.getRequest();
 
             // Effectively handle the request
@@ -193,7 +193,7 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
     @Override
     public void handleOutbound(Response response) {
         if (response != null) {
-            getLogger().info("Handling new outbound message");
+            getLogger().info("Handling outbound message");
             ConnectedRequest request = (ConnectedRequest) response.getRequest();
             Connection<Server> connection = request.getConnection();
 

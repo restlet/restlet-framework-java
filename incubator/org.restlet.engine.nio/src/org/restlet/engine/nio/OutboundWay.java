@@ -356,7 +356,7 @@ public abstract class OutboundWay extends Way {
     @Override
     protected void onCompleted(Response message) {
         super.onCompleted(message);
-        getLogger().info("Outbound message fully sent");
+        getLogger().info("Outbound message sent");
     }
 
     @Override

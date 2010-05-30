@@ -215,6 +215,10 @@ public abstract class Way {
         } else if (getIoState() == IoState.CANCELING) {
             setIoState(IoState.CANCELLED);
         }
+
+        if (!getByteBuffer().hasRemaining()) {
+            getByteBuffer().clear();
+        }
     }
 
     /**

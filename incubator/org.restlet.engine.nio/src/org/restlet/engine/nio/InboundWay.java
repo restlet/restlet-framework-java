@@ -196,7 +196,7 @@ public abstract class InboundWay extends Way {
     @Override
     protected void onCompleted(Response message) {
         super.onCompleted(message);
-        getLogger().info("Inbound message fully received");
+        getLogger().info("Inbound message received");
     }
 
     @Override
@@ -204,10 +204,6 @@ public abstract class InboundWay extends Way {
         super.onSelected(key);
 
         try {
-            if (!getByteBuffer().hasRemaining()) {
-                getByteBuffer().clear();
-            }
-
             while ((getIoState() == IoState.PROCESSING)
                     && (getMessageState() != MessageState.BODY)) {
                 if (isFilling()) {
@@ -352,7 +348,6 @@ public abstract class InboundWay extends Way {
      * @throws IOException
      */
     protected int readSocketBytes() throws IOException {
-        getByteBuffer().clear();
         int result = getConnection().getSocketChannel().read(getByteBuffer());
         getByteBuffer().flip();
         return result;

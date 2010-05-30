@@ -56,7 +56,7 @@ public class ServerOutboundWay extends OutboundWay {
 
         if (!message.getStatus().isInformational()) {
             // Attempt to read additional inbound messages
-            getConnection().getInboundWay().getMessages().remove(getMessage());
+            getConnection().getInboundWay().getMessages().remove(message);
         }
 
         if (!getConnection().isPersistent()) {
