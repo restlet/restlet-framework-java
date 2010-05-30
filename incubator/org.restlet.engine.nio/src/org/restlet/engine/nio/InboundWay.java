@@ -36,7 +36,6 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SelectionKey;
 import java.util.logging.Level;
 
-import org.restlet.Response;
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.engine.http.header.HeaderReader;
@@ -107,7 +106,6 @@ public abstract class InboundWay extends Way {
             }
         } else {
             result = new EmptyRepresentation();
-            onCompleted(getMessage());
         }
 
         if (headers != null) {
@@ -225,8 +223,7 @@ public abstract class InboundWay extends Way {
                             if (getMessageState() == MessageState.START_LINE) {
                                 readStartLine();
                             } else if (getMessageState() == MessageState.HEADERS) {
-                                Response response = getMessage();
-                                request = (ConnectedRequest) response
+                                request = (ConnectedRequest) getMessage()
                                         .getRequest();
                                 headers = (headers == null) ? request
                                         .getHeaders() : headers;
@@ -266,12 +263,20 @@ public abstract class InboundWay extends Way {
                                     if (request != null) {
                                         if (request.isExpectingResponse()) {
                                             // Add it to the inbound queue
-                                            getMessages().add(response);
+                                            getMessages().add(getMessage());
                                         }
 
                                         // Add it to the helper queue
                                         getHelper().getInboundMessages().add(
-                                                response);
+                                                getMessage());
+                                    }
+
+                                    if ((request.getEntity() == null)
+                                            || !request.getEntity()
+                                                    .isAvailable()
+                                            || (request.getEntity().getSize() == 0)) {
+                                        // The request has been completely read
+                                        onCompleted(getMessage());
                                     }
                                 }
                             }
